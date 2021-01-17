@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <!-- <script src="../lib/MyReact.js"></script> -->
+    <script src="./lib/MyReactLib.js"></script>
+    <!-- <script src="../lib/react.development.js"></script> -->
+    <!-- <script src="../lib/react-dom.development.js"></script> -->
+    <script src="./lib/babel.min.js"></script>
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      /** @jsx MReact.createElement */
+      // var value = 100;
+
+      // const clickHandler = () => {
+      //   console.log("运行了");
+      //   const val = Math.random();
+      //   let element;
+      //   if (val > 0.5) {
+      //     element = (
+      //       <div>
+      //         <button onClick={clickHandler}>点击</button>
+      //         <p>hello</p>
+      //       </div>
+      //     );
+      //   } else {
+      //     element = (
+      //       <div>
+      //         <p className="red">world</p>
+      //         <button onClick={clickHandler}>点击</button>
+      //       </div>
+      //     );
+      //   }
+      //   MReact.render(element, container);
+      // };
+
+      // const element =(
+      //   <div>
+      //     <input value={100} />
+      //     <h2>Hello 100</h2>
+      //     <div>
+      //       <p className="red">1</p>
+      //       <p>2</p>
+      //       <p>3</p>
+      //       <p>4</p>
+      //       <button>点击测试</button>
+      //     </div>
+      //   </div>
+      // );
+
+      // const container = document.getElementById("root");
+      // MReact.render(element, container);
+
+      // const updateValue = (e) => {
+      //   // console.log(e);
+      //   rerender(e.target.value);
+      // };
+
+      // const rerender = (value) => {
+      //   const element = (
+      //     <div>
+      //       <input onInput={updateValue} value={value} />
+      //       <h2>Hello {value}</h2>
+      //     </div>
+      //   );
+      //   Didact.render(element, container);
+      // };
+
+      // rerender("World");
+
+      // 函数组件
+      function App(props) {
+        // console.log(props);
+        const [val, setVal] = MReact.useState(1);
+        console.log(val);
+        console.log(setVal);
+        return (
+          <div>
+            <h1>{props.name}</h1>
+            <p>{props.children}</p>
+          </div>
+        );
+      }
+
+      const Test = ({ name }) => (
+        <App name={name}>
+          <span>测试输出? </span>
+          <span>输出测试</span>
+        </App>
+      );
+
+      const container = document.getElementById("root");
+      // MReact.render(<App name="hello" />, container);
+      MReact.render(<Test name="hello" />, container);
+    </script>
+  </body>
+</html>

@@ -23,44 +23,46 @@
       /** @jsx MReact.createElement */
       // var value = 100;
 
-      // const clickHandler = () => {
-      //   console.log("运行了");
-      //   const val = Math.random();
-      //   let element;
-      //   if (val > 0.5) {
-      //     element = (
-      //       <div>
-      //         <button onClick={clickHandler}>点击</button>
-      //         <p>hello</p>
-      //       </div>
-      //     );
-      //   } else {
-      //     element = (
-      //       <div>
-      //         <p className="red">world</p>
-      //         <button onClick={clickHandler}>点击</button>
-      //       </div>
-      //     );
-      //   }
-      //   MReact.render(element, container);
-      // };
+      /*
+      const clickHandler = (e) => {
+        console.log("运行了", e);
+        const val = Math.random();
+        let element;
+        if (val > 0.5) {
+          element = (
+            <div>
+              <button onClick={clickHandler}>点击</button>
+              <p>hello</p>
+            </div>
+          );
+        } else {
+          element = (
+            <div>
+              <p className="red">world</p>
+              <button onClick={clickHandler}>点击</button>
+            </div>
+          );
+        }
+        MReact.render(element, container);
+      };
 
-      // const element =(
-      //   <div>
-      //     <input value={100} />
-      //     <h2>Hello 100</h2>
-      //     <div>
-      //       <p className="red">1</p>
-      //       <p>2</p>
-      //       <p>3</p>
-      //       <p>4</p>
-      //       <button>点击测试</button>
-      //     </div>
-      //   </div>
-      // );
+      const element = (
+        <div>
+          <input value={100} />
+          <h2>Hello 100</h2>
+          <div>
+            <p className="red">1</p>
+            <p>2</p>
+            <p>3</p>
+            <p>4</p>
+            <button onClick={clickHandler}>点击测试</button>
+          </div>
+        </div>
+      );
 
-      // const container = document.getElementById("root");
-      // MReact.render(element, container);
+      const container = document.getElementById("root");
+      MReact.render(element, container);
+      */
 
       // const updateValue = (e) => {
       //   // console.log(e);
@@ -81,23 +83,28 @@
 
       // 函数组件
       function App(props) {
-        // console.log(props);
+        console.log(props);
         const [val, setVal] = MReact.useState(1);
+        // const [num] = MReact.useState(1000);
         console.log(val);
-        console.log(setVal);
         return (
           <div>
             <h1>{props.name}</h1>
-            <p>{props.children}</p>
+            <p className="red">{props.children}</p>
+            <p>{val}</p>
+            <button onClick={() => setVal(Math.random())}>{12}</button>
           </div>
         );
       }
 
       const Test = ({ name }) => (
-        <App name={name}>
-          <span>测试输出? </span>
-          <span>输出测试</span>
-        </App>
+        <div>
+          <div>图形</div>
+          <App name={name}>
+            <span>测试输出? </span>
+            <span>输出测试</span>
+          </App>
+        </div>
       );
 
       const container = document.getElementById("root");

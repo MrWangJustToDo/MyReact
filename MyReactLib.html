@@ -86,12 +86,22 @@
 
       // rerender("World");
 
+      const O = (props) => (
+        <div>
+          <p>test</p>
+          {props.children}
+        </div>
+      );
+
       // 函数组件
       function App(props) {
         const [val, setVal] = MReact.useState(1);
         const [num] = MReact.useState(1000);
         return (
           <div>
+            <O>
+              <span>另一个</span>
+            </O>
             <h1>{props.name}</h1>
             <p className="red">{props.children}</p>
             <p className="box">{val}</p>

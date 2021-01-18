@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <!-- <script src="../lib/MyReact.js"></script> -->
+    <!-- <script src="./lib/MyReact.js"></script> -->
     <script src="./lib/MyReactLib.js"></script>
-    <!-- <script src="../lib/react.development.js"></script> -->
-    <!-- <script src="../lib/react-dom.development.js"></script> -->
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
     <style>
       .red {
@@ -21,7 +21,6 @@
 
     <script type="text/babel">
       /** @jsx MReact.createElement */
-      // var value = 100;
 
       /*
       const clickHandler = (e) => {
@@ -82,17 +81,32 @@
       // rerender("World");
 
       // 函数组件
-      function App(props) {
-        console.log(props);
+      // function App(props) {
+      //   const [val, setVal] = MReact.useState(1);
+      //   console.log(setVal);
+      //   // const [num] = MReact.useState(1000);
+      //   return (
+      //     <div>
+      //       <h1>{props.name}</h1>
+      //       <p className="red">{props.children}</p>
+      //       <p>{val}</p>
+      //       <button onClick={() => setVal(Math.random())}>{12}</button>
+      //     </div>
+      //   );
+      // }
+
+      function App() {
         const [val, setVal] = MReact.useState(1);
-        // const [num] = MReact.useState(1000);
-        console.log(val);
+        const [str, setStr] = MReact.useState("hello");
         return (
           <div>
-            <h1>{props.name}</h1>
-            <p className="red">{props.children}</p>
-            <p>{val}</p>
-            <button onClick={() => setVal(Math.random())}>{12}</button>
+            <p>1111</p>
+            <p className="red">{val}</p>
+            <p>{str}</p>
+            <button onClick={() => setVal(Math.random())}>点击</button>
+            <button onClick={() => setStr(Math.random().toString(16))}>
+              变化
+            </button>
           </div>
         );
       }
@@ -108,8 +122,8 @@
       );
 
       const container = document.getElementById("root");
-      // MReact.render(<App name="hello" />, container);
-      MReact.render(<Test name="hello" />, container);
+      MReact.render(<App />, container);
+      // MReact.render(<Test name="hello" />, container);
     </script>
   </body>
 </html>

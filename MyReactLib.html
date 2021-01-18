@@ -14,6 +14,12 @@
         color: red;
         font-size: 20px;
       }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
     </style>
   </head>
   <body>
@@ -81,35 +87,34 @@
       // rerender("World");
 
       // 函数组件
-      // function App(props) {
-      //   const [val, setVal] = MReact.useState(1);
-      //   console.log(setVal);
-      //   // const [num] = MReact.useState(1000);
-      //   return (
-      //     <div>
-      //       <h1>{props.name}</h1>
-      //       <p className="red">{props.children}</p>
-      //       <p>{val}</p>
-      //       <button onClick={() => setVal(Math.random())}>{12}</button>
-      //     </div>
-      //   );
-      // }
-
-      function App() {
+      function App(props) {
         const [val, setVal] = MReact.useState(1);
-        const [str, setStr] = MReact.useState("hello");
+        const [num] = MReact.useState(1000);
         return (
           <div>
-            <p>1111</p>
-            <p className="red">{val}</p>
-            <p>{str}</p>
-            <button onClick={() => setVal(Math.random())}>点击</button>
-            <button onClick={() => setStr(Math.random().toString(16))}>
-              变化
-            </button>
+            <h1>{props.name}</h1>
+            <p className="red">{props.children}</p>
+            <p className="box">{val}</p>
+            <button onClick={() => setVal(Math.random())}>{num}</button>
           </div>
         );
       }
+
+      // function App() {
+      //   const [val, setVal] = MReact.useState(1);
+      //   const [str, setStr] = MReact.useState("hello");
+      //   return (
+      //     <div>
+      //       <p>1111</p>
+      //       <p className="red">{val}</p>
+      //       <p>{str}</p>
+      //       <button onClick={() => setVal(Math.random())}>点击</button>
+      //       <button onClick={() => setStr(Math.random().toString(16))}>
+      //         变化
+      //       </button>
+      //     </div>
+      //   );
+      // }
 
       const Test = ({ name }) => (
         <div>
@@ -122,8 +127,8 @@
       );
 
       const container = document.getElementById("root");
-      MReact.render(<App />, container);
-      // MReact.render(<Test name="hello" />, container);
+      // MReact.render(<App />, container);
+      MReact.render(<Test name="hello" />, container);
     </script>
   </body>
 </html>

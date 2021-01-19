@@ -20,6 +20,10 @@
         border: 1px solid red;
         border-radius: 3px;
       }
+
+      .green {
+        color: green;
+      }
     </style>
   </head>
   <body>
@@ -86,12 +90,16 @@
 
       // rerender("World");
 
-      const O = (props) => (
-        <div>
-          <p>test</p>
-          {props.children}
-        </div>
-      );
+      const O = (props) => {
+        const [val, setVal] = MReact.useState("random");
+        return (
+          <div>
+            <button onClick={() => setVal(Math.random())}>{val}</button>
+            <p className="green">{val}</p>
+            {props.children}
+          </div>
+        );
+      };
 
       // 函数组件
       function App(props) {

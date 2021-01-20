@@ -30,6 +30,11 @@
     <div id="root"></div>
 
     <script type="text/babel">
+      try {
+        if (React) {
+          var MReact = React;
+        }
+      } catch (e) {}
       /** @jsx MReact.createElement */
 
       /*
@@ -137,15 +142,21 @@
       //   );
       // }
 
-      const Test = ({ name }) => (
-        <div>
-          <div>图形</div>
-          <App name={name}>
-            <span>测试输出? </span>
-            <span>输出测试</span>
-          </App>
-        </div>
-      );
+      const Test = ({ name }) => {
+        const [count, setCount] = MReact.useState(1);
+        return (
+          <div>
+            <p>{count}</p>
+            <button onClick={() => setCount((last) => last + 1)}>add</button>
+            <button onClick={() => setCount((last) => last - 1)}>desc</button>
+            <div>图形</div>
+            <App name={name}>
+              <span>测试输出? </span>
+              <span>输出测试</span>
+            </App>
+          </div>
+        );
+      };
 
       // const O = () => {
       //   const [val, setVal] = MReact.useState(1);
@@ -172,6 +183,7 @@
       const container = document.getElementById("root");
       // MReact.render(<App />, container);
       MReact.render(<Test name="hello" />, container);
+      // ReactDOM.render(<Test name="hello" />, container);
     </script>
   </body>
 </html>

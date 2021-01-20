@@ -97,11 +97,15 @@
 
       const O = (props) => {
         const [val, setVal] = MReact.useState("random");
+        const [v, setV] = MReact.useState("");
         return (
           <div>
             <button onClick={() => setVal(Math.random())}>{val}</button>
             <br />
             <button onClick={() => props.handler(Math.random())}>{val}</button>
+            <br />
+            <input type="text" value={v} onInput={(e) => setV(e.target.value)} />
+            <input type="text" value={v} onInput={(e) => setV(e.target.value)} />
             <p className="green">{val}</p>
             {props.children}
           </div>
@@ -118,10 +122,10 @@
               <span>另一个</span>
             </O>
             <h1>{props.name}</h1>
-            <p className="red">{props.children}</p>
+            {val > 0.5 ? <p className="red">{props.children}</p> : ''}
             <p className="box">{val}</p>
             <button onClick={() => setVal(Math.random())}>{num}</button>
-            {val > 0.5 ? <p>大于</p> : <strong>小于</strong>}
+            {val > 0.5 ? <p className='green'>大于</p> : <strong className='red'>小于</strong>}
           </div>
         );
       }

@@ -95,6 +95,8 @@
         return (
           <div>
             <button onClick={() => setVal(Math.random())}>{val}</button>
+            <br />
+            <button onClick={() => props.handler(Math.random())}>{val}</button>
             <p className="green">{val}</p>
             {props.children}
           </div>
@@ -104,16 +106,17 @@
       // 函数组件
       function App(props) {
         const [val, setVal] = MReact.useState(1);
-        const [num] = MReact.useState(1000);
+        const [num, setNum] = MReact.useState(1000);
         return (
           <div>
-            <O>
+            <O handler={setNum}>
               <span>另一个</span>
             </O>
             <h1>{props.name}</h1>
             <p className="red">{props.children}</p>
             <p className="box">{val}</p>
             <button onClick={() => setVal(Math.random())}>{num}</button>
+            {val > 0.5 ? <p>大于</p> : <strong>小于</strong>}
           </div>
         );
       }
@@ -143,6 +146,28 @@
           </App>
         </div>
       );
+
+      // const O = () => {
+      //   const [val, setVal] = MReact.useState(1);
+
+      //   return (
+      //     <div>
+      //       <p>{val}</p>
+      //       <button onClick={() => setVal(Math.random())}>点击</button>
+      //     </div>
+      //   );
+      // };
+
+      // const App = () => {
+      //   return (
+      //     <div>
+      //       <O />
+      //       <div>
+      //         <O />
+      //       </div>
+      //     </div>
+      //   );
+      // };
 
       const container = document.getElementById("root");
       // MReact.render(<App />, container);

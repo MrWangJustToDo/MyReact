@@ -106,21 +106,27 @@
         );
       };
 
-      const B = () => <div>123</div>;
+      const C = () => <p>12</p>;
+
+      const B = (props) => <div>123{props.children}</div>;
 
       const A = () => (
         <div>
           <p>
-            <B />
+            <B>
+              <p>fff</p>
+              <p>fff</p>
+              <p>fff</p>
+            </B>
           </p>
         </div>
       );
 
       const container = document.getElementById("root");
-      console.log(<A />);
+      // console.log(<A />);
       // MReact.render(<A />, container);
       // MReact.render(<App />, container);
-      // MReact.render(<Test name="hello" />, container);
+      MReact.render(<Test name="hello" />, container);
       // ReactDOM.render(<Test name="hello" />, container);
     </script>
   </body>

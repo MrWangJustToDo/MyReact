@@ -106,17 +106,21 @@
         );
       };
 
-      const A = (
+      const B = () => <div>123</div>;
+
+      const A = () => (
         <div>
-          <p>1</p>
-          <p>2</p>
+          <p>
+            <B />
+          </p>
         </div>
       );
 
       const container = document.getElementById("root");
-      // MReact.render(A, container);
+      console.log(<A />);
+      // MReact.render(<A />, container);
       // MReact.render(<App />, container);
-      MReact.render(<Test name="hello" />, container);
+      // MReact.render(<Test name="hello" />, container);
       // ReactDOM.render(<Test name="hello" />, container);
     </script>
   </body>

@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <!-- <script src="./lib/MyReact.js"></script> -->
     <script src="./lib/MyReactLib.js"></script>
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
@@ -37,66 +36,8 @@
       } catch (e) {}
       /** @jsx MReact.createElement */
 
-      /*
-      const clickHandler = (e) => {
-        console.log("运行了", e);
-        const val = Math.random();
-        let element;
-        if (val > 0.5) {
-          element = (
-            <div>
-              <button onClick={clickHandler}>点击</button>
-              <p>hello</p>
-            </div>
-          );
-        } else {
-          element = (
-            <div>
-              <p className="red">world</p>
-              <button onClick={clickHandler}>点击</button>
-            </div>
-          );
-        }
-        MReact.render(element, container);
-      };
-
-      const element = (
-        <div>
-          <input value={100} />
-          <h2>Hello 100</h2>
-          <div>
-            <p className="red">1</p>
-            <p>2</p>
-            <p>3</p>
-            <p>4</p>
-            <button onClick={clickHandler}>点击测试</button>
-          </div>
-        </div>
-      );
-
-      const container = document.getElementById("root");
-      MReact.render(element, container);
-      */
-
-      // const updateValue = (e) => {
-      //   // console.log(e);
-      //   rerender(e.target.value);
-      // };
-
-      // const rerender = (value) => {
-      //   const element = (
-      //     <div>
-      //       <input onInput={updateValue} value={value} />
-      //       <h2>Hello {value}</h2>
-      //     </div>
-      //   );
-      //   Didact.render(element, container);
-      // };
-
-      // rerender("World");
-
       const O = (props) => {
-        const [val, setVal] = MReact.useState("random");
+        const [val, setVal] = MReact.useState("点击");
         const [v, setV] = MReact.useState("");
         return (
           <div>
@@ -104,8 +45,16 @@
             <br />
             <button onClick={() => props.handler(Math.random())}>{val}</button>
             <br />
-            <input type="text" value={v} onInput={(e) => setV(e.target.value)} />
-            <input type="text" value={v} onInput={(e) => setV(e.target.value)} />
+            <input
+              type="text"
+              value={v}
+              onInput={(e) => setV(e.target.value)}
+            />
+            <input
+              type="text"
+              value={v}
+              onInput={(e) => setV(e.target.value)}
+            />
             <p className="green">{val}</p>
             {props.children}
           </div>
@@ -114,7 +63,7 @@
 
       // 函数组件
       function App(props) {
-        const [val, setVal] = MReact.useState(1);
+        const [val, setVal] = MReact.useState(() => 2626226);
         const [num, setNum] = MReact.useState(1000);
         return (
           <div>
@@ -122,37 +71,32 @@
               <span>另一个</span>
             </O>
             <h1>{props.name}</h1>
-            {val > 0.5 ? <p className="red">{props.children}</p> : ''}
-            <p className="box">{val}</p>
             <button onClick={() => setVal(Math.random())}>{num}</button>
-            {val > 0.5 ? <p className='green'>大于</p> : <strong className='red'>小于</strong>}
+            {val > 0.5 ? <p className="red">{props.children}</p> : ""}
+            <p className="box">{val}</p>
+            {val > 0.5 ? (
+              <p className="green">大于0.5</p>
+            ) : (
+              <strong className="red">小于0.5</strong>
+            )}
           </div>
         );
       }
 
-      // function App() {
-      //   const [val, setVal] = MReact.useState(1);
-      //   const [str, setStr] = MReact.useState("hello");
-      //   return (
-      //     <div>
-      //       <p>1111</p>
-      //       <p className="red">{val}</p>
-      //       <p>{str}</p>
-      //       <button onClick={() => setVal(Math.random())}>点击</button>
-      //       <button onClick={() => setStr(Math.random().toString(16))}>
-      //         变化
-      //       </button>
-      //     </div>
-      //   );
-      // }
+      const counter = (init = 1) => {
+        const [count, setCount] = MReact.useState(init);
+        const i = () => setCount((last) => last + 1);
+        const j = () => setCount((last) => last - 1);
+        return [count, i, j];
+      };
 
       const Test = ({ name }) => {
-        const [count, setCount] = MReact.useState(1);
+        const [val, i, j] = counter();
         return (
           <div>
-            <p>{count}</p>
-            <button onClick={() => setCount((last) => last + 1)}>add</button>
-            <button onClick={() => setCount((last) => last - 1)}>desc</button>
+            <p>{val}</p>
+            <button onClick={i}>add</button>
+            <button onClick={j}>desc</button>
             <div>图形</div>
             <App name={name}>
               <span>测试输出? </span>
@@ -162,29 +106,15 @@
         );
       };
 
-      // const O = () => {
-      //   const [val, setVal] = MReact.useState(1);
-
-      //   return (
-      //     <div>
-      //       <p>{val}</p>
-      //       <button onClick={() => setVal(Math.random())}>点击</button>
-      //     </div>
-      //   );
-      // };
-
-      // const App = () => {
-      //   return (
-      //     <div>
-      //       <O />
-      //       <div>
-      //         <O />
-      //       </div>
-      //     </div>
-      //   );
-      // };
+      const A = (
+        <div>
+          <p>1</p>
+          <p>2</p>
+        </div>
+      );
 
       const container = document.getElementById("root");
+      // MReact.render(A, container);
       // MReact.render(<App />, container);
       MReact.render(<Test name="hello" />, container);
       // ReactDOM.render(<Test name="hello" />, container);

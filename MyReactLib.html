@@ -38,13 +38,14 @@
 
       const O = (props) => {
         const [val, setVal] = MReact.useState("点击");
-        const [v, setV] = MReact.useState("");
+        const [v, setV] = MReact.useState(0.6);
         return (
           <div>
             <button onClick={() => setVal(Math.random())}>{val}</button>
             <br />
             <button onClick={() => props.handler(Math.random())}>{val}</button>
             <br />
+            {v > 0.5 ? <div>123</div> : <p>456</p>}
             <input
               type="text"
               value={v}

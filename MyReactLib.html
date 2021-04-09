@@ -36,6 +36,16 @@
       } catch (e) {}
       /** @jsx MReact.createElement */
 
+
+      const J = (props) => {
+        return (
+          <div>
+            <span>jjjj</span>
+            {props.children}
+          </div>
+        );
+      };
+
       const O = (props) => {
         const [val, setVal] = MReact.useState("点击");
         const [v, setV] = MReact.useState(0.2);
@@ -57,7 +67,7 @@
               onInput={(e) => setV(e.target.value)}
             />
             <p className="green">{val}</p>
-            {props.children}
+            <J {...props} />
           </div>
         );
       };
@@ -124,6 +134,41 @@
           </p>
         </div>
       );
+      
+      /*
+      const J = (props) => {
+        return (
+          <div>
+            <p>3333</p>
+            {props.children}
+          </div>
+        );
+      };
+
+      const O = (props) => {
+        return (
+          <div>
+            {props.children}
+            <J children={props.children}>
+              <strong>sss</strong>
+            </J>
+            <J children={<div>from props</div>} />
+            <J children={123} />
+          </div>
+        );
+      };
+
+      const Test = () => {
+        return (
+          <div>
+            <p>1</p>
+            <O>
+              <p>2</p>
+            </O>
+          </div>
+        );
+      };
+      */
 
       const container = document.getElementById("root");
       // console.log(<A />);

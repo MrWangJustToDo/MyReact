@@ -36,11 +36,11 @@
       } catch (e) {}
       /** @jsx MReact.createElement */
 
-
       const J = (props) => {
         return (
           <div>
             <span>jjjj</span>
+            <br />
             {props.children}
           </div>
         );
@@ -68,6 +68,8 @@
             />
             <p className="green">{val}</p>
             <J {...props} />
+            <div>分割</div>
+            {props.children}
           </div>
         );
       };
@@ -78,10 +80,12 @@
       function App(props) {
         const [val, setVal] = MReact.useState(() => 2626226);
         const [num, setNum] = MReact.useState(1000);
+        const [str, setStr] = MReact.useState('nice to meet you');
         return (
           <div>
+            <button onClick={() => setStr(Math.random())}>改变</button>
             <O handler={setNum}>
-              <span>另一个</span>
+              <span>{str}</span>
             </O>
             <h1>{props.name}</h1>
             <button onClick={() => setVal(Math.random())}>{num}</button>
@@ -112,8 +116,8 @@
             <button onClick={j}>desc</button>
             <div>图形</div>
             <App name={name}>
-              <span>测试输出? </span>
-              <span>输出测试</span>
+              <span key="1">测试输出? </span>
+              <span key="2">输出测试</span>
             </App>
           </div>
         );
@@ -134,7 +138,7 @@
           </p>
         </div>
       );
-      
+
       /*
       const J = (props) => {
         return (

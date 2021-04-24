@@ -80,7 +80,7 @@
       function App(props) {
         const [val, setVal] = MReact.useState(() => 2626226);
         const [num, setNum] = MReact.useState(1000);
-        const [str, setStr] = MReact.useState('nice to meet you');
+        const [str, setStr] = MReact.useState("nice to meet you");
         return (
           <div>
             <button onClick={() => setStr(Math.random())}>改变</button>
@@ -89,12 +89,14 @@
             </O>
             <h1>{props.name}</h1>
             <button onClick={() => setVal(Math.random())}>{num}</button>
-            {val > 0.5 ? <p className="red">{props.children}</p> : ""}
+            {val > 0.5 ? <p className="red">{props.children}</p> : <A />}
             <p className="box">{val}</p>
             {val > 0.5 ? (
               <p className="green">大于0.5</p>
             ) : (
-              <strong className="red">小于0.5</strong>
+              <div>
+                <strong className="red">小于0.5</strong>
+              </div>
             )}
           </div>
         );
@@ -122,6 +124,8 @@
           </div>
         );
       };
+
+      const D = () => <strong>45</strong>;
 
       const C = () => <p>12</p>;
 
@@ -174,11 +178,26 @@
       };
       */
 
+      const Entry = () => {
+        const [count, i, j] = counter();
+
+        return (
+          <div>
+            <h2>测试条件渲染</h2>
+            <div>{count}</div>
+            <button onClick={i}>add</button>
+            <button onClick={j}>dec</button>
+            {count > 0 ? <C /> : <D />}
+          </div>
+        );
+      };
+
       const container = document.getElementById("root");
       // console.log(<A />);
       // MReact.render(<A />, container);
       // MReact.render(<App />, container);
       MReact.render(<Test name="hello" />, container);
+      // MReact.render(<Entry />, container);
       // ReactDOM.render(<Test name="hello" />, container);
     </script>
   </body>

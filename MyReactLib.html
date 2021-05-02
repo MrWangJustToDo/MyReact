@@ -109,14 +109,29 @@
         return [count, i, j];
       };
 
+      const useTime = () => {
+        const [currentTime, setCurrentTime] = MReact.useState(() =>
+          new Date().toLocaleString()
+        );
+        MReact.useEffect(() => {
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, []);
+
+        return currentTime;
+      };
+
       const Test = ({ name }) => {
         const [val, i, j] = counter();
+        const time = useTime();
         return (
           <div>
             <p>{val}</p>
             <button onClick={i}>add</button>
             <button onClick={j}>desc</button>
-            <div>图形</div>
+            <div>{time}</div>
             <App name={name}>
               <span key={1}>测试输出? </span>
               <span key={val}>输出测试</span>

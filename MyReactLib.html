@@ -81,9 +81,13 @@
         const [val, setVal] = MReact.useState(() => 2626226);
         const [num, setNum] = MReact.useState(1000);
         const [str, setStr] = MReact.useState("nice to meet you");
+        const time = useTime();
         return (
           <div>
             <button onClick={() => setStr(Math.random())}>改变</button>
+            <div>
+              <h2>{time}</h2>
+            </div>
             <O handler={setNum}>
               <span>{str}</span>
             </O>
@@ -92,7 +96,10 @@
             {val > 0.5 ? <p className="red">{props.children}</p> : <A />}
             <p className="box">{val}</p>
             {val > 0.5 ? (
-              <p className="green">大于0.5</p>
+              <div>
+                <p className="green">大于0.5</p>
+                <p className="green">{time}</p>
+              </div>
             ) : (
               <div>
                 <strong className="red">小于0.5</strong>
@@ -110,6 +117,7 @@
       };
 
       const useTime = () => {
+        // console.log('执行了');
         const [currentTime, setCurrentTime] = MReact.useState(() =>
           new Date().toLocaleString()
         );
@@ -126,6 +134,7 @@
       const Test = ({ name }) => {
         const [val, i, j] = counter();
         const time = useTime();
+        // const time = 100;
         return (
           <div>
             <h1>{time}</h1>

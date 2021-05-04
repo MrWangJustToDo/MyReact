@@ -131,13 +131,34 @@
         return currentTime;
       };
 
+      const usePosition = () => {
+        const [currentPositin, setCurrentPositin] = MReact.useState({
+          x: 0,
+          y: 0,
+        });
+
+        MReact.useEffect(() => {
+          const action = throtle((e) => {
+            setCurrentPositin({ x: e.clientX, y: e.clientY });
+          }, 200);
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPositin.x, currentPositin.y];
+      };
+
       const Test = ({ name }) => {
         const [val, i, j] = counter();
         const time = useTime();
+        const [x, y] = usePosition();
         // const time = 100;
         return (
           <div>
             <h1>{time}</h1>
+            <h1>
+              {x}, {y}
+            </h1>
             <hr />
             <p>{val}</p>
             <button onClick={i}>add</button>

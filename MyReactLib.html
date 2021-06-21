@@ -140,7 +140,8 @@
           // const action = throtle((e) => {
           //   setCurrentPositin({ x: e.clientX, y: e.clientY });
           // }, 200);
-          const action = (e) => setCurrentPositin({x: e.clientX, y: e.clientY})
+          const action = (e) =>
+            setCurrentPositin({ x: e.clientX, y: e.clientY });
           window.addEventListener("mousemove", action);
           return () => window.removeEventListener("mousemove", action);
         }, []);
@@ -233,8 +234,28 @@
             <h2>测试条件渲染</h2>
             <div>{count}</div>
             <button onClick={i}>add</button>
+            <div children={<p>1234</p>}>
+              {[1, 2].map((i) => (
+                <div>{i}</div>
+              ))}
+            </div>
             <button onClick={j}>dec</button>
-            {count > 0 ? <C /> : <D />}
+            <div>
+              {count > 0 ? <C /> : <D />}
+              <br />
+              {count > 0 ? <div>gogogo</div> : <div>lllllll</div>}
+            </div>
+          </div>
+        );
+      };
+
+      const EntryWrapper = () => {
+        const [x, y] = usePosition();
+        return (
+          <div>
+            <div>{x}</div>
+            <div>{y}</div>
+            <Entry />
           </div>
         );
       };
@@ -243,8 +264,8 @@
       // console.log(<A />);
       // MReact.render(<A />, container);
       // MReact.render(<App />, container);
-      MReact.render(<Test name="hello" />, container);
-      // MReact.render(<Entry />, container);
+      // MReact.render(<Test name="hello" />, container);
+      MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
     </script>
   </body>

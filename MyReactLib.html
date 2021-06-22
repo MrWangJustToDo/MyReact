@@ -251,8 +251,10 @@
 
       const EntryWrapper = () => {
         const [x, y] = usePosition();
+        const time = useTime();
         return (
           <div>
+            <div>{time}</div>
             <div>{x}</div>
             <div>{y}</div>
             <Entry />
@@ -264,8 +266,9 @@
       // console.log(<A />);
       // MReact.render(<A />, container);
       // MReact.render(<App />, container);
-      // MReact.render(<Test name="hello" />, container);
-      MReact.render(<EntryWrapper />, container);
+      MReact.render(<Test name="hello" />, container);
+      // MReact.render(<EntryWrapper />, container);
+      // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
     </script>
   </body>

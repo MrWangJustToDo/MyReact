@@ -46,7 +46,7 @@
         );
       };
 
-      const O = (props) => {
+      const O = MReact.memo((props) => {
         const [val, setVal] = MReact.useState("点击");
         const [v, setV] = MReact.useState(0.2);
         return (
@@ -72,7 +72,7 @@
             {props.children}
           </div>
         );
-      };
+      });
 
       // let O = () => null;
 
@@ -226,7 +226,7 @@
       };
       */
 
-      const Entry = () => {
+      const Entry = MReact.memo(() => {
         const [count, i, j] = counter();
 
         return (
@@ -247,7 +247,7 @@
             </div>
           </div>
         );
-      };
+      });
 
       const EntryWrapper = () => {
         const [x, y] = usePosition();
@@ -301,7 +301,6 @@
         );
       };
       */
-
 
       const container = document.getElementById("root");
       // console.log(<A />);

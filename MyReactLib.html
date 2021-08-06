@@ -4,7 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <script src="./lib/MyReactLib.js"></script>
+    <!-- <script src="./lib/MyReactLib.js"></script> -->
+    <script src="./lib/index.js"></script>
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
@@ -36,6 +37,7 @@
       } catch (e) {}
       /** @jsx MReact.createElement */
 
+      /*
       const J = (props) => {
         return (
           <div>
@@ -73,11 +75,14 @@
           </div>
         );
       });
+      */
 
       // let O = () => null;
 
       // 函数组件
-      function App(props) {
+      /*
+      const App = MReact.memo((props) => {
+        console.log("app 重新运行");
         const [val, setVal] = MReact.useState(() => 2626226);
         const [num, setNum] = MReact.useState(1000);
         const [str, setStr] = MReact.useState("nice to meet you");
@@ -107,7 +112,7 @@
             )}
           </div>
         );
-      }
+      });
 
       const counter = (init = 1) => {
         const [count, setCount] = MReact.useState(init);
@@ -150,6 +155,7 @@
       };
 
       const Test = ({ name }) => {
+        console.log("test 重新运行");
         const [val, i, j] = counter();
         const [x, y] = usePosition();
         const time = useTime();
@@ -190,6 +196,7 @@
           </p>
         </div>
       );
+      */
 
       /*
       const J = (props) => {
@@ -226,6 +233,7 @@
       };
       */
 
+      /*
       const Entry = MReact.memo(() => {
         const [count, i, j] = counter();
 
@@ -249,15 +257,73 @@
         );
       });
 
-      const EntryWrapper = () => {
-        const [x, y] = usePosition();
+      const Inner = MReact.memo(() => {
+        const x = useTime();
+
+        return <div>{x}</div>;
+      });
+      */
+
+      const useTime = () => {
+        const [currentTime, setCurrentTime] = MReact.useState(() =>
+          new Date().toLocaleString()
+        );
+        MReact.useEffect(() => {
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, [currentTime]);
+
+        return currentTime;
+      };
+
+      const Inner = () => {
+        console.log("运行了");
+        const arr = [1, 2, 3, 4];
         const time = useTime();
+
+        return (
+          <div>
+            {arr.map((i) => (
+              <span>{i}</span>
+            ))}
+            <div>{time}</div>
+          </div>
+        );
+      };
+
+      const usePosition = () => {
+        const [currentPositin, setCurrentPositin] = MReact.useState({
+          x: 0,
+          y: 0,
+        });
+
+        MReact.useEffect(() => {
+          const action = (e) =>
+            setCurrentPositin({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPositin.x, currentPositin.y];
+      };
+
+      const EntryWrapper = () => {
+        console.log("yunxinle");
+        const [x, y] = usePosition();
+        // const time = useTime();
+        // const x = 100;
+        // const y = 100;
+        const time = 100;
+        // const x = useTime();
+        // const y = useTime();
         return (
           <div>
             <div>{time}</div>
             <div>{x}</div>
             <div>{y}</div>
-            <Entry />
+            <Inner />
           </div>
         );
       };
@@ -306,8 +372,8 @@
       // console.log(<A />);
       // MReact.render(<A />, container);
       // MReact.render(<App />, container);
-      MReact.render(<Test name="hello" />, container);
-      // MReact.render(<EntryWrapper />, container);
+      // MReact.render(<Test name="hello" />, container);
+      MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
     </script>

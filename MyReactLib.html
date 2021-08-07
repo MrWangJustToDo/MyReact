@@ -79,7 +79,7 @@
 
       // 函数组件
       const App = MReact.memo((props) => {
-        console.log("app 重新运行");
+        // console.log("app 重新运行");
         const [val, setVal] = MReact.useState(() => 2626226);
         const [num, setNum] = MReact.useState(1000);
         const [str, setStr] = MReact.useState("nice to meet you");
@@ -152,7 +152,7 @@
       };
 
       const Test = ({ name }) => {
-        console.log("test 重新运行");
+        // console.log("test 重新运行");
         const [val, i, j] = counter();
         const [x, y] = usePosition();
         const time = useTime();

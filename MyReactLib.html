@@ -37,7 +37,6 @@
       } catch (e) {}
       /** @jsx MReact.createElement */
 
-      /*
       const J = (props) => {
         return (
           <div>
@@ -75,12 +74,10 @@
           </div>
         );
       });
-      */
 
       // let O = () => null;
 
       // 函数组件
-      /*
       const App = MReact.memo((props) => {
         console.log("app 重新运行");
         const [val, setVal] = MReact.useState(() => 2626226);
@@ -196,7 +193,6 @@
           </p>
         </div>
       );
-      */
 
       /*
       const J = (props) => {
@@ -264,6 +260,7 @@
       });
       */
 
+      /*
       const useTime = () => {
         const [currentTime, setCurrentTime] = MReact.useState(() =>
           new Date().toLocaleString()
@@ -349,6 +346,7 @@
           </div>
         );
       };
+      */
 
       /*
       这种形式的children需要提供key来保证唯一性
@@ -372,8 +370,8 @@
       // console.log(<A />);
       // MReact.render(<A />, container);
       // MReact.render(<App />, container);
-      // MReact.render(<Test name="hello" />, container);
-      MReact.render(<EntryWrapper />, container);
+      MReact.render(<Test name="hello" />, container);
+      // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
     </script>

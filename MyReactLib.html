@@ -153,9 +153,17 @@
 
       const Test = ({ name }) => {
         // console.log("test 重新运行");
+        const a = [1, 2, 3, null, undefined];
         const [val, i, j] = counter();
         const [x, y] = usePosition();
         const time = useTime();
+        const [count, setCount] = MReact.useState(0);
+        const add = () => {
+          setCount((i) => i + 1);
+        };
+        const del = () => {
+          setCount((i) => i - 1);
+        };
         // const time = 100;
         return (
           <div>
@@ -168,10 +176,30 @@
             <button onClick={i}>add</button>
             <button onClick={j}>desc</button>
             <p>{time}</p>
+            <div>
+              <p>{count}</p>
+              <button onClick={add}>每次增加 更新</button>
+              <button onClick={del}>每次减少 更新</button>
+            </div>
+            <div>
+              {a.map((i) => (
+                <div>{i}</div>
+              ))}
+            </div>
             <App name={name}>
               <span key={1}>测试输出? </span>
               <span key={val}>输出测试</span>
             </App>
+          </div>
+        );
+      };
+
+      const Po = () => {
+        const [x, y] = usePosition();
+
+        return (
+          <div>
+            {x}, {y}
           </div>
         );
       };
@@ -185,6 +213,7 @@
       const A = () => (
         <div>
           <p>
+            <Po />
             <B>
               <p>fff</p>
               <p>fff</p>

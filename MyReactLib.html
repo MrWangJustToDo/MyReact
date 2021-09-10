@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh_cn">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
     <!-- <script src="./lib/MyReactLib.js"></script> -->
-    <script src="./lib/index.js"></script>
+    <script src="./lib/all.js"></script>
+    <!-- <script src="./lib/index.js"></script> -->
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
@@ -33,6 +34,7 @@
       try {
         if (React) {
           var MReact = React;
+          MReact.render = ReactDOM.render;
         }
       } catch (e) {}
       /** @jsx MReact.createElement */
@@ -47,7 +49,7 @@
         );
       };
 
-      const O = MReact.memo((props) => {
+      const O = (props) => {
         const [val, setVal] = MReact.useState("点击");
         const [v, setV] = MReact.useState(0.2);
         return (
@@ -73,17 +75,18 @@
             {props.children}
           </div>
         );
-      });
+      };
 
       // let O = () => null;
 
       // 函数组件
-      const App = MReact.memo((props) => {
+      const App = (props) => {
         // console.log("app 重新运行");
         const [val, setVal] = MReact.useState(() => 2626226);
         const [num, setNum] = MReact.useState(1000);
         const [str, setStr] = MReact.useState("nice to meet you");
-        const time = useTime();
+        // const time = useTime();
+        const time = 100;
         return (
           <div>
             <button onClick={() => setStr(Math.random())}>改变</button>
@@ -109,7 +112,7 @@
             )}
           </div>
         );
-      });
+      };
 
       const counter = (init = 1) => {
         const [count, setCount] = MReact.useState(init);
@@ -139,9 +142,6 @@
         });
 
         MReact.useEffect(() => {
-          // const action = throtle((e) => {
-          //   setCurrentPositin({ x: e.clientX, y: e.clientY });
-          // }, 200);
           const action = (e) =>
             setCurrentPositin({ x: e.clientX, y: e.clientY });
           window.addEventListener("mousemove", action);
@@ -152,7 +152,6 @@
       };
 
       const Test = ({ name }) => {
-        // console.log("test 重新运行");
         const a = [1, 2, 3, null, undefined];
         const [val, i, j] = counter();
         const [x, y] = usePosition();
@@ -196,6 +195,8 @@
 
       const Po = () => {
         const [x, y] = usePosition();
+        // const x = 110;
+        // const y = 110;
 
         return (
           <div>
@@ -208,20 +209,41 @@
 
       const C = () => <p>12</p>;
 
-      const B = (props) => <div>123{props.children}</div>;
+      const B = (props) => {
+        // const [x, y] = usePosition();
+        const x = 10;
+        const y = 10;
+        return (
+          <div>
+            {x} , {y}
+            <div>123{props.children}</div>
+          </div>
+        );
+      };
 
-      const A = () => (
-        <div>
-          <p>
-            <Po />
-            <B>
-              <p>fff</p>
-              <p>fff</p>
-              <p>fff</p>
-            </B>
-          </p>
-        </div>
-      );
+      const A = () => {
+        const [val, i, j] = counter();
+        // const val = 100;
+        // const i = () => {};
+        // const j = () => {};
+        return (
+          <div>
+            <p>
+              <p>{val}</p>
+              <div>
+                <button onClick={i}>增加</button>
+                <button onClick={j}>减少</button>
+              </div>
+              {val % 2 === 0 ? <Po /> : 1010}
+              <B>
+                <p>fff</p>
+                <p>fff</p>
+                <p>fff</p>
+              </B>
+            </p>
+          </div>
+        );
+      };
 
       /*
       const J = (props) => {
@@ -387,9 +409,9 @@
 
       这种形式的children不需要key
       var Q = function Q() {
-        return MReact.createElement("div", null, 
-          MReact.createElement("p", null, "1"), 
-          MReact.createElement("p", null, "2"), 
+        return MReact.createElement("div", null,
+          MReact.createElement("p", null, "1"),
+          MReact.createElement("p", null, "2"),
           MReact.createElement("p", null, "3")
         );
       };
@@ -397,9 +419,9 @@
 
       const container = document.getElementById("root");
       // console.log(<A />);
-      // MReact.render(<A />, container);
+      MReact.render(<A />, container);
       // MReact.render(<App />, container);
-      MReact.render(<Test name="hello" />, container);
+      // MReact.render(<Test name="hello" />, container);
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);

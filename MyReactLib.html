@@ -130,7 +130,7 @@
             setCurrentTime(new Date().toLocaleString());
           }, 1000);
           return () => clearInterval(id);
-        }, [currentTime]);
+        }, []);
 
         return currentTime;
       };
@@ -194,9 +194,9 @@
       };
 
       const Po = () => {
-        const [x, y] = usePosition();
-        // const x = 110;
-        // const y = 110;
+        // const [x, y] = usePosition();
+        const x = 110;
+        const y = 110;
 
         return (
           <div>
@@ -210,12 +210,18 @@
       const C = () => <p>12</p>;
 
       const B = (props) => {
-        // const [x, y] = usePosition();
-        const x = 10;
-        const y = 10;
+        const [x, y] = usePosition();
+        const time = useTime();
+        const [val] = MReact.useState(12);
+        // const x = 10;
+        // const y = 10;
         return (
           <div>
-            {x} , {y}
+            <p>{time}</p>
+            <p>{val}</p>
+            <div>
+              {x} , {y}
+            </div>
             <div>123{props.children}</div>
           </div>
         );
@@ -223,13 +229,15 @@
 
       const A = () => {
         const [val, i, j] = counter();
+        const time = useTime();
         // const val = 100;
         // const i = () => {};
         // const j = () => {};
         return (
           <div>
             <p>
-              <p>{val}</p>
+              <p>条件渲染的切换dom还存在问题</p>
+              <p>{time}</p>
               <div>
                 <button onClick={i}>增加</button>
                 <button onClick={j}>减少</button>

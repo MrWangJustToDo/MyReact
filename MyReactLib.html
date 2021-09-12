@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
     <!-- <script src="./lib/MyReactLib.js"></script> -->
-    <script src="./lib/all.js"></script>
-    <!-- <script src="./lib/index.js"></script> -->
+    <script src="./lib/index.js"></script>
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
@@ -194,9 +193,9 @@
       };
 
       const Po = () => {
-        // const [x, y] = usePosition();
-        const x = 110;
-        const y = 110;
+        const [x, y] = usePosition();
+        // const x = 110;
+        // const y = 110;
 
         return (
           <div>
@@ -427,8 +426,8 @@
       const container = document.getElementById("root");
       // console.log(<A />);
       // MReact.render(<A />, container);
-      // MReact.render(<App />, container);
-      MReact.render(<Test name="hello" />, container);
+      MReact.render(<App />, container);
+      // MReact.render(<Test name="hello" />, container);
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);

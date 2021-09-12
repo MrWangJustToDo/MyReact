@@ -38,7 +38,7 @@
       } catch (e) {}
       /** @jsx MReact.createElement */
 
-      const J = (props) => {
+      const J = MReact.memo((props) => {
         return (
           <div>
             <span>jjjj</span>
@@ -46,9 +46,9 @@
             {props.children}
           </div>
         );
-      };
+      });
 
-      const O = (props) => {
+      const O = MReact.memo((props) => {
         const [val, setVal] = MReact.useState("点击");
         const [v, setV] = MReact.useState(0.2);
         return (
@@ -74,12 +74,12 @@
             {props.children}
           </div>
         );
-      };
+      });
 
       // let O = () => null;
 
       // 函数组件
-      const App = (props) => {
+      const App = MReact.memo((props) => {
         // console.log("app 重新运行");
         const [val, setVal] = MReact.useState(() => 2626226);
         const [num, setNum] = MReact.useState(1000);
@@ -111,7 +111,7 @@
             )}
           </div>
         );
-      };
+      });
 
       const counter = (init = 1) => {
         const [count, setCount] = MReact.useState(init);
@@ -426,8 +426,8 @@
       const container = document.getElementById("root");
       // console.log(<A />);
       // MReact.render(<A />, container);
-      MReact.render(<App />, container);
-      // MReact.render(<Test name="hello" />, container);
+      // MReact.render(<App />, container);
+      MReact.render(<Test name="hello" />, container);
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);

@@ -38,7 +38,10 @@
       } catch (e) {}
       /** @jsx MReact.createElement */
 
-      const J = MReact.memo((props) => {
+      const { memo, useState, useCallback, useEffect, useRef, useMemo } =
+        MReact;
+
+      const J = memo((props) => {
         return (
           <div>
             <span>jjjj</span>
@@ -48,9 +51,9 @@
         );
       });
 
-      const O = MReact.memo((props) => {
-        const [val, setVal] = MReact.useState("点击");
-        const [v, setV] = MReact.useState(0.2);
+      const O = memo((props) => {
+        const [val, setVal] = useState("点击");
+        const [v, setV] = useState(0.2);
         return (
           <div>
             <button onClick={() => setVal(Math.random())}>{val}</button>
@@ -76,15 +79,10 @@
         );
       });
 
-      // let O = () => null;
-
-      // 函数组件
-      const App = MReact.memo((props) => {
-        // console.log("app 重新运行");
-        const [val, setVal] = MReact.useState(() => 2626226);
-        const [num, setNum] = MReact.useState(1000);
-        const [str, setStr] = MReact.useState("nice to meet you");
-        // const time = useTime();
+      const App = memo((props) => {
+        const [val, setVal] = useState(() => 2626226);
+        const [num, setNum] = useState(1000);
+        const [str, setStr] = useState("nice to meet you");
         const time = 100;
         return (
           <div>
@@ -113,25 +111,19 @@
         );
       });
 
-      const counter = (init = 1) => {
-        const [count, setCount] = MReact.useState(init);
-        const i = MReact.useCallback(
-          () => setCount((last) => last + 1),
-          [setCount]
-        );
-        const j = MReact.useCallback(
-          () => setCount((last) => last - 1),
-          [setCount]
-        );
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
 
         return [count, i, j];
       };
 
       const useTime = () => {
-        const [currentTime, setCurrentTime] = MReact.useState(() =>
+        const [currentTime, setCurrentTime] = useState(() =>
           new Date().toLocaleString()
         );
-        MReact.useEffect(() => {
+        useEffect(() => {
           const id = setInterval(() => {
             setCurrentTime(new Date().toLocaleString());
           }, 1000);
@@ -142,12 +134,12 @@
       };
 
       const usePosition = () => {
-        const [currentPositin, setCurrentPositin] = MReact.useState({
+        const [currentPositin, setCurrentPositin] = useState({
           x: 0,
           y: 0,
         });
 
-        MReact.useEffect(() => {
+        useEffect(() => {
           const action = (e) =>
             setCurrentPositin({ x: e.clientX, y: e.clientY });
           window.addEventListener("mousemove", action);
@@ -158,15 +150,15 @@
       };
 
       const Test = ({ name }) => {
-        const a = [1, 2, 3, null, undefined];
-        const [val, i, j] = counter();
+        const a = useRef([1, 2, 3, null, undefined]);
+        const [val, i, j] = useCounter();
         const [x, y] = usePosition();
         const time = useTime();
-        const [count, setCount] = MReact.useState(0);
-        const add = MReact.useCallback(() => {
+        const [count, setCount] = useState(0);
+        const add = useCallback(() => {
           setCount((i) => i + 1);
         }, [setCount]);
-        const del = MReact.useMemo(
+        const del = useMemo(
           () => () => {
             setCount((i) => i - 1);
           },
@@ -191,7 +183,7 @@
               <button onClick={del}>每次减少 更新</button>
             </div>
             <div>
-              {a.map((i) => (
+              {a.current.map((i) => (
                 <div>{i}</div>
               ))}
             </div>
@@ -205,8 +197,6 @@
 
       const Po = () => {
         const [x, y] = usePosition();
-        // const x = 110;
-        // const y = 110;
 
         return (
           <div>
@@ -222,9 +212,7 @@
       const B = (props) => {
         const [x, y] = usePosition();
         const time = useTime();
-        const [val] = MReact.useState(12);
-        // const x = 10;
-        // const y = 10;
+        const [val] = useState(12);
         return (
           <div>
             <p>{time}</p>
@@ -238,11 +226,8 @@
       };
 
       const A = () => {
-        const [val, i, j] = counter();
+        const [val, i, j] = useCounter();
         const time = useTime();
-        // const val = 100;
-        // const i = () => {};
-        // const j = () => {};
         return (
           <div>
             <p>
@@ -261,160 +246,6 @@
           </div>
         );
       };
-
-      /*
-      const J = (props) => {
-        return (
-          <div>
-            <p>3333</p>
-            {props.children}
-          </div>
-        );
-      };
-
-      const O = (props) => {
-        return (
-          <div>
-            {props.children}
-            <J children={props.children}>
-              <strong>sss</strong>
-            </J>
-            <J children={<div>from props</div>} />
-            <J children={123} />
-          </div>
-        );
-      };
-
-      const Test = () => {
-        return (
-          <div>
-            <p>1</p>
-            <O>
-              <p>2</p>
-            </O>
-          </div>
-        );
-      };
-      */
-
-      /*
-      const Entry = MReact.memo(() => {
-        const [count, i, j] = counter();
-
-        return (
-          <div>
-            <h2>测试条件渲染</h2>
-            <div>{count}</div>
-            <button onClick={i}>add</button>
-            <div children={<p>1234</p>}>
-              {[1, 2].map((i) => (
-                <div>{i}</div>
-              ))}
-            </div>
-            <button onClick={j}>dec</button>
-            <div>
-              {count > 0 ? <C /> : <D />}
-              <br />
-              {count > 0 ? <div>gogogo</div> : <div>lllllll</div>}
-            </div>
-          </div>
-        );
-      });
-
-      const Inner = MReact.memo(() => {
-        const x = useTime();
-
-        return <div>{x}</div>;
-      });
-      */
-
-      /*
-      const useTime = () => {
-        const [currentTime, setCurrentTime] = MReact.useState(() =>
-          new Date().toLocaleString()
-        );
-        MReact.useEffect(() => {
-          const id = setInterval(() => {
-            setCurrentTime(new Date().toLocaleString());
-          }, 1000);
-          return () => clearInterval(id);
-        }, [currentTime]);
-
-        return currentTime;
-      };
-
-      const Inner = () => {
-        console.log("运行了");
-        const arr = [1, 2, 3, 4];
-        const time = useTime();
-
-        return (
-          <div>
-            {arr.map((i) => (
-              <span>{i}</span>
-            ))}
-            <div>{time}</div>
-          </div>
-        );
-      };
-
-      const usePosition = () => {
-        const [currentPositin, setCurrentPositin] = MReact.useState({
-          x: 0,
-          y: 0,
-        });
-
-        MReact.useEffect(() => {
-          const action = (e) =>
-            setCurrentPositin({ x: e.clientX, y: e.clientY });
-          window.addEventListener("mousemove", action);
-          return () => window.removeEventListener("mousemove", action);
-        }, []);
-
-        return [currentPositin.x, currentPositin.y];
-      };
-
-      const EntryWrapper = () => {
-        console.log("yunxinle");
-        const [x, y] = usePosition();
-        // const time = useTime();
-        // const x = 100;
-        // const y = 100;
-        const time = 100;
-        // const x = useTime();
-        // const y = useTime();
-        return (
-          <div>
-            <div>{time}</div>
-            <div>{x}</div>
-            <div>{y}</div>
-            <Inner />
-          </div>
-        );
-      };
-
-      // 对于这两种形式  babel 编译后的结果不一样
-
-      const T = () => {
-        return (
-          <div>
-            {[1, 2, 3].map((i) => (
-              <p>{i}</p>
-            ))}
-          </div>
-        );
-      };
-
-      const Q = () => {
-        return (
-          <div>
-            <p>1</p>
-            <p>2</p>
-            <p>3</p>
-          </div>
-        );
-      };
-      */
 
       /*
       这种形式的children需要提供key来保证唯一性

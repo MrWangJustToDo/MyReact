@@ -115,8 +115,15 @@
 
       const counter = (init = 1) => {
         const [count, setCount] = MReact.useState(init);
-        const i = () => setCount((last) => last + 1);
-        const j = () => setCount((last) => last - 1);
+        const i = MReact.useCallback(
+          () => setCount((last) => last + 1),
+          [setCount]
+        );
+        const j = MReact.useCallback(
+          () => setCount((last) => last - 1),
+          [setCount]
+        );
+
         return [count, i, j];
       };
 
@@ -156,13 +163,17 @@
         const [x, y] = usePosition();
         const time = useTime();
         const [count, setCount] = MReact.useState(0);
-        const add = () => {
+        const add = MReact.useCallback(() => {
           setCount((i) => i + 1);
-        };
-        const del = () => {
-          setCount((i) => i - 1);
-        };
-        // const time = 100;
+        }, [setCount]);
+        const del = MReact.useMemo(
+          () => () => {
+            setCount((i) => i - 1);
+          },
+          [setCount]
+        );
+        // console.log("add", add);
+        // console.log("del", del);
         return (
           <div>
             <h1>{time}</h1>

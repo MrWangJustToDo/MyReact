@@ -52,6 +52,7 @@
       });
 
       const O = memo((props) => {
+        console.log(props)
         const [val, setVal] = useState("点击");
         const [v, setV] = useState(0.2);
         return (
@@ -174,7 +175,7 @@
             </h1>
             <hr />
             <p>{val}</p>
-            <button onClick={i}>add</button>
+            <button onClick={i}>{add}</button>
             <button onClick={j}>desc</button>
             <p>{time}</p>
             <div>

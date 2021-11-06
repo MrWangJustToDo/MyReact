@@ -10,3 +10,5 @@
 ## useCallback
 ## useRef
 ## memo  not stable    fix & use 
+
+## 观察学习rax源码  补齐验证逻辑

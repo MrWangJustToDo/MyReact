@@ -52,7 +52,6 @@
       });
 
       const O = memo((props) => {
-        console.log(props)
         const [val, setVal] = useState("点击");
         const [v, setV] = useState(0.2);
         return (
@@ -135,19 +134,19 @@
       };
 
       const usePosition = () => {
-        const [currentPositin, setCurrentPositin] = useState({
+        const [currentPosition, setCurrentPosition] = useState({
           x: 0,
           y: 0,
         });
 
         useEffect(() => {
           const action = (e) =>
-            setCurrentPositin({ x: e.clientX, y: e.clientY });
+            setCurrentPosition({ x: e.clientX, y: e.clientY });
           window.addEventListener("mousemove", action);
           return () => window.removeEventListener("mousemove", action);
         }, []);
 
-        return [currentPositin.x, currentPositin.y];
+        return [currentPosition.x, currentPosition.y];
       };
 
       const Test = ({ name }) => {
@@ -165,7 +164,9 @@
           },
           [setCount]
         );
+        // const ss = useCallback(() => a.current)
         // console.log("add", add);
+        // console.log(add);
         // console.log("del", del);
         return (
           <div>

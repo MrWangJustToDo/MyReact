@@ -54,11 +54,19 @@
       const O = memo((props) => {
         const [val, setVal] = useState("点击");
         const [v, setV] = useState(0.2);
+        const ref = useRef();
+        console.log(ref);
+
+        // setTimeout(() => {
+        //   useRef()
+        // })
         return (
-          <div>
+          <div id="1010" ref={ref}>
             <button onClick={() => setVal(Math.random())}>{val}</button>
             <br />
-            <button onClick={() => props.handler(Math.random())}>{val}</button>
+            <button ref="100" onClick={() => props.handler(Math.random())}>
+              {val}
+            </button>
             <br />
             {v > 0.5 ? <div>123</div> : <p>456</p>}
             <input
@@ -164,6 +172,7 @@
           },
           [setCount]
         );
+        // const aeee = Math.random() > 0.5 ? useRef() : useMemo(() => 100, []);
         // const ss = useCallback(() => a.current)
         // console.log("add", add);
         // console.log(add);

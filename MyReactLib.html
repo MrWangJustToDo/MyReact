@@ -64,9 +64,7 @@
           <div id="1010" ref={ref}>
             <button onClick={() => setVal(Math.random())}>{val}</button>
             <br />
-            <button onClick={() => props.handler(Math.random())}>
-              {val}
-            </button>
+            <button onClick={() => props.handler(Math.random())}>{val}</button>
             <br />
             {v > 0.5 ? <div>123</div> : <p>456</p>}
             <input
@@ -276,11 +274,26 @@
       };
       */
 
+      const TextHightLight = () => {
+        const [counter, add, del] = useCounter();
+
+        return (
+          <div>
+            <p>{counter}</p>
+            <button onClick={add}>增加</button>
+            <button onClick={del}>减少</button>
+          </div>
+        );
+      };
+
       const container = document.getElementById("root");
       // console.log(<A />);
       // MReact.render(<A />, container);
       // MReact.render(<App />, container);
+      // console.log(<Test name="hello" />);
       MReact.render(<Test name="hello" />, container);
+      // MReact.render(Test, container);
+      // MReact.render(<TextHightLight />, container);
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);

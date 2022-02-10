@@ -101,7 +101,7 @@
             </O>
             <h1>{props.name}</h1>
             <button onClick={() => setVal(Math.random())}>{num}</button>
-            {val > 0.5 ? <p className="red">{props.children}</p> : <A />}
+            {val < 0.5 ? <p className="red">{props.children}</p> : <A />}
             <p className="box">{val}</p>
             {val > 0.5 ? (
               <div>
@@ -130,6 +130,7 @@
           new Date().toLocaleString()
         );
         useEffect(() => {
+          console.log("init");
           const id = setInterval(() => {
             setCurrentTime(new Date().toLocaleString());
           }, 1000);
@@ -159,7 +160,9 @@
         const a = useRef([1, 2, 3, null, undefined]);
         const [val, i, j] = useCounter();
         const [x, y] = usePosition();
+        // console.log("time1");
         const time = useTime();
+        // console.log("time1", time);
         const [count, setCount] = useState(0);
         const add = useCallback(() => {
           setCount((i) => i + 1);
@@ -220,7 +223,9 @@
 
       const B = (props) => {
         const [x, y] = usePosition();
+        // console.log("time3");
         const time = useTime();
+        // console.log("time3", time);
         const [val] = useState(12);
         return (
           <div>
@@ -236,7 +241,9 @@
 
       const A = () => {
         const [val, i, j] = useCounter();
+        // console.log("time2");
         const time = useTime();
+        // console.log("time2", time);
         return (
           <div>
             <p>
@@ -291,6 +298,7 @@
       // MReact.render(<A />, container);
       // MReact.render(<App />, container);
       // console.log(<Test name="hello" />);
+      console.log(<Test name="hello" />);
       MReact.render(<Test name="hello" />, container);
       // MReact.render(Test, container);
       // MReact.render(<TextHightLight />, container);

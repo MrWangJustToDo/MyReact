@@ -179,7 +179,11 @@
         // console.log(add);
         // console.log("del", del);
         return (
-          <div>
+          <div
+            ref={(dom) => {
+              console.log(dom);
+            }}
+          >
             <h1>{time}</h1>
             <h1>
               {x}, {y}

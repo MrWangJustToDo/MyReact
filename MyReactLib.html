@@ -105,7 +105,14 @@
           <div id="1010" ref={ref}>
             <button onClick={() => setVal(Math.random())}>{val}</button>
             <br />
-            <button onClick={() => props.handler(Math.random())}>{val}</button>
+            <button
+              onClick={useCallback(
+                () => props.handler(Math.random()),
+                [props.handler]
+              )}
+            >
+              {val}
+            </button>
             <br />
             {v > 0.5 ? <div>123</div> : <p>456</p>}
             <input
@@ -122,7 +129,9 @@
             <p className="green">{val}</p>
             <J {...props} />
             <div>分割</div>
+            <hr />
             {props.children}
+            <hr />
           </div>
         );
       });
@@ -179,7 +188,8 @@
           },
           [setCount]
         );
-        // const all = Math.random() > 0.5 ? useRef() : useMemo(() => 100, []);
+        let it = Math.random() > 0.5;
+        const all = it ? useRef() : useMemo(() => 100, []);
         // const ss = useCallback(() => a.current)
         // console.log("add", add);
         // console.log(add);

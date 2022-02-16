@@ -131,8 +131,9 @@
         const [val, setVal] = useState(() => 2626226);
         const [num, setNum] = useState(1000);
         const [str, setStr] = useState("nice to meet you");
-        const time = useTime();
-        // console.log("rerun");
+        // const time = useTime();
+        const time = 1000;
+        console.log("rerun");
         return (
           <div>
             <button onClick={() => setStr(Math.random())}>改变</button>
@@ -217,15 +218,15 @@
         );
       };
 
-      const Po = () => {
+      const Po = memo(() => {
         const [x, y] = usePosition();
-
+        console.log("rerun po");
         return (
           <div>
             {x}, {y}
           </div>
         );
-      };
+      });
 
       // const D = () => <strong>45</strong>;
 
@@ -268,6 +269,7 @@
                 <p>fff</p>
                 <p>fff</p>
               </B>
+              <Po />
             </p>
           </div>
         );

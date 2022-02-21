@@ -142,7 +142,7 @@
         const [str, setStr] = useState("nice to meet you");
         // const time = useTime();
         const time = 1000;
-        console.log("rerun");
+        console.log("rerun", props);
         return (
           <div>
             <button onClick={() => setStr(Math.random())}>改变</button>
@@ -189,7 +189,7 @@
           [setCount]
         );
         let it = Math.random() > 0.5;
-        const all = it ? useRef() : useMemo(() => 100, []);
+        // const all = it ? useRef() : useMemo(() => 100, []);
         // const ss = useCallback(() => a.current)
         // console.log("add", add);
         // console.log(add);
@@ -248,6 +248,7 @@
         const time = useTime();
         // console.log("time3", time);
         const [val] = useState(12);
+        // console.log(props);
         return (
           <div>
             <p>{time}</p>
@@ -320,7 +321,7 @@
       // MReact.render(<A />, container);
       // MReact.render(<App />, container);
       // console.log(<Test name="hello" />);
-      console.log(<Test name="hello" />);
+      // console.log(<Test name="hello" />);
       MReact.render(<Test name="hello" />, container);
       // MReact.render(Test, container);
       // MReact.render(<TextHightLight />, container);

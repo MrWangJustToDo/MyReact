@@ -38,8 +38,16 @@
       } catch (e) {}
       /** @jsx MReact.createElement */
 
-      const { memo, useState, useCallback, useEffect, useRef, useMemo } =
-        MReact;
+      const {
+        memo,
+        useState,
+        useCallback,
+        useEffect,
+        useRef,
+        useMemo,
+        map,
+        cloneElement,
+      } = MReact;
 
       const useCounter = (init = 1) => {
         const [count, setCount] = useState(init);
@@ -211,7 +219,9 @@
             <p>{time}</p>
             <div>
               <p>{count}</p>
-              <button onClick={add}>每次增加 更新</button>
+              <button onClick={add} style="border: 1px solid red, ">
+                每次增加 更新
+              </button>
               <button onClick={del}>每次减少 更新</button>
             </div>
             <div>
@@ -242,13 +252,30 @@
 
       // const C = () => <p>12</p>;
 
-      const B = (props) => {
+      const B = memo(({ children }) => {
         const [x, y] = usePosition();
         // console.log("time3");
         const time = useTime();
         // console.log("time3", time);
         const [val] = useState(12);
-        // console.log(props);
+        function overWrite(children) {
+          return map(children, (child) => {
+            if (MReact.isValidElement(child)) {
+              return cloneElement(
+                child,
+                {
+                  ...child.props,
+                  style: { color: "red", border: "1px solid red" },
+                },
+                "clone element"
+              );
+            }
+            return child;
+          });
+        }
+
+        const overWriteChildren = overWrite(children);
+
         return (
           <div>
             <p>{time}</p>
@@ -256,10 +283,11 @@
             <div>
               {x} , {y}
             </div>
-            <div>123{props.children}</div>
+            <div>123{children}</div>
+            <div>{overWriteChildren}</div>
           </div>
         );
-      };
+      });
 
       const A = () => {
         const [val, i, j] = useCounter();
@@ -279,6 +307,7 @@
                 <p>fff</p>
                 <p>fff</p>
                 <p>fff</p>
+                hello every one
               </B>
               <Po />
             </p>

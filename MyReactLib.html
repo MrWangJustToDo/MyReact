@@ -37,6 +37,7 @@
         }
       } catch (e) {}
       /** @jsx MReact.createElement */
+      /** @jsxFrag MReact.Fragment */
 
       const {
         memo,
@@ -219,9 +220,7 @@
             <p>{time}</p>
             <div>
               <p>{count}</p>
-              <button onClick={add} style="border: 1px solid red">
-                每次增加 更新
-              </button>
+              <button onClick={add}>每次增加 更新</button>
               <button onClick={del}>每次减少 更新</button>
             </div>
             <div>
@@ -258,23 +257,24 @@
         const time = useTime();
         // console.log("time3", time);
         const [val] = useState(12);
-        // function overWrite(children) {
-        //   return map(children, (child) => {
-        //     if (MReact.isValidElement(child)) {
-        //       return cloneElement(
-        //         child,
-        //         {
-        //           ...child.props,
-        //           style: { color: "red", border: "1px solid red" },
-        //         },
-        //         "clone element"
-        //       );
-        //     }
-        //     return child;
-        //   });
-        // }
+        function overWrite(children) {
+          return map(children, (child) => {
+            if (MReact.isValidElement(child)) {
+              return cloneElement(
+                child,
+                {
+                  ...child.props,
+                  style: { color: "red", border: "1px solid red" },
+                },
+                child.props.children,
+                "clone element"
+              );
+            }
+            return child;
+          });
+        }
 
-        // const overWriteChildren = overWrite(children);
+        const overWriteChildren = overWrite(children);
 
         return (
           <div>
@@ -283,8 +283,9 @@
             <div>
               {x} , {y}
             </div>
+            <>{123}</>
             <div>123{children}</div>
-            <div>{children}</div>
+            <div>{overWriteChildren}57686</div>
           </div>
         );
       });
@@ -338,7 +339,7 @@
 
         return (
           <div>
-            <p>{counter}</p>
+            <p>{counter % 2 === 0 ? "1" : "2"}</p>
             <button onClick={add}>增加</button>
             <button onClick={del}>减少</button>
           </div>

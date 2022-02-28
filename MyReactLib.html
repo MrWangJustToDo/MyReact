@@ -48,6 +48,7 @@
         useMemo,
         map,
         cloneElement,
+        createContext,
       } = MReact;
 
       const useCounter = (init = 1) => {
@@ -247,10 +248,6 @@
         );
       });
 
-      // const D = () => <strong>45</strong>;
-
-      // const C = () => <p>12</p>;
-
       const B = memo(({ children }) => {
         const [x, y] = usePosition();
         // console.log("time3");
@@ -274,6 +271,11 @@
           });
         }
 
+        // inprogress context
+        const context = useContext(Context);
+
+        // console.log(context);
+
         const overWriteChildren = overWrite(children);
 
         return (
@@ -284,8 +286,10 @@
               {x} , {y}
             </div>
             <>{123}</>
-            <div>123{children}</div>
-            <div>{overWriteChildren}57686</div>
+            <div style={{ border: "1px solid red" }}>123{children}</div>
+            <div style={{ border: "1px solid green" }}>
+              {overWriteChildren}57686
+            </div>
           </div>
         );
       });
@@ -315,6 +319,37 @@
           </div>
         );
       };
+
+      const Context = createContext("123");
+
+      const AC = function ({ value }) {
+        return (
+          <Context value={value}>
+            <A />
+          </Context>
+        );
+      };
+
+      function TestContext() {
+        const [value, add, del] = useCounter();
+        const time = useTime();
+
+        return (
+          <div>
+            <p>{time}</p>
+            <p>{value}</p>
+            <AC value={value} />
+            <div>
+              <p>
+                <button onClick={add}>add</button>
+              </p>
+              <p>
+                <button onClick={del}>del</button>
+              </p>
+            </div>
+          </div>
+        );
+      }
 
       /*
       这种形式的children需要提供key来保证唯一性
@@ -352,12 +387,13 @@
       // MReact.render(<App />, container);
       // console.log(<Test name="hello" />);
       // console.log(<Test name="hello" />);
-      MReact.render(<Test name="hello" />, container);
+      // MReact.render(<Test name="hello" />, container);
       // MReact.render(Test, container);
       // MReact.render(<TextHightLight />, container);
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
+      MReact.render(<TestContext />, container);
     </script>
   </body>
 </html>

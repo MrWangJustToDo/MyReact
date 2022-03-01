@@ -90,154 +90,6 @@
         return [currentPosition.x, currentPosition.y];
       };
 
-      const J = memo((props) => {
-        return (
-          <div>
-            <span>jjjj</span>
-            <br />
-            {props.children}
-          </div>
-        );
-      });
-
-      const O = memo((props) => {
-        const [val, setVal] = useState("点击");
-        const [v, setV] = useState(0.2);
-        const ref = useRef();
-        const time = useTime();
-        // console.log(ref);
-        // console.log(props)
-
-        // setTimeout(() => {
-        //   useRef()
-        // })
-        return (
-          <div id="1010" ref={ref}>
-            <button onClick={() => setVal(Math.random())}>{val}</button>
-            <br />
-            <button
-              onClick={useCallback(
-                () => props.handler(Math.random()),
-                [props.handler]
-              )}
-            >
-              {val}
-            </button>
-            <br />
-            {v > 0.5 ? <div>123</div> : <p>456</p>}
-            <input
-              type="text"
-              value={v}
-              onInput={(e) => setV(e.target.value)}
-            />
-            <input
-              type="text"
-              value={v}
-              onInput={(e) => setV(e.target.value)}
-            />
-            <p>{time}</p>
-            <p className="green">{val}</p>
-            <J {...props} />
-            <div>分割</div>
-            <hr />
-            {props.children}
-            <hr />
-          </div>
-        );
-      });
-
-      const App = memo((props) => {
-        const [val, setVal] = useState(() => 2626226);
-        const [num, setNum] = useState(1000);
-        const [str, setStr] = useState("nice to meet you");
-        // const time = useTime();
-        const time = 1000;
-        console.log("rerun", props);
-        return (
-          <div>
-            <button onClick={() => setStr(Math.random())}>改变</button>
-            <div>
-              <h2>{time}</h2>
-            </div>
-            <O handler={setNum}>
-              <span>{str}</span>
-            </O>
-            <h1>{props.name}</h1>
-            <p>{time}</p>
-            <button onClick={() => setVal(Math.random())}>{num}</button>
-            {val < 0.5 ? <p className="red">{props.children}</p> : <A />}
-            <p className="box">{val}</p>
-            {val > 0.5 ? (
-              <div>
-                <p className="green">大于0.5</p>
-                <p className="green">{time}</p>
-              </div>
-            ) : (
-              <div>
-                <strong className="red">小于0.5</strong>
-              </div>
-            )}
-          </div>
-        );
-      });
-
-      const Test = ({ name }) => {
-        const a = useRef([1, 2, 3, null, undefined]);
-        const [val, i, j] = useCounter();
-        const [x, y] = usePosition();
-        // console.log("time1");
-        const time = useTime();
-        // console.log("time1", time);
-        const [count, setCount] = useState(0);
-        const add = useCallback(() => {
-          setCount((i) => i + 1);
-        }, [setCount]);
-        const del = useMemo(
-          () => () => {
-            setCount((i) => i - 1);
-          },
-          [setCount]
-        );
-        let it = Math.random() > 0.5;
-        // const all = it ? useRef() : useMemo(() => 100, []);
-        // const ss = useCallback(() => a.current)
-        // console.log("add", add);
-        // console.log(add);
-        // console.log("del", del);
-        return (
-          <div
-            ref={(dom) => {
-              // console.log(dom);
-            }}
-          >
-            <h1>{time}</h1>
-            <h1>
-              {x}, {y}
-            </h1>
-            <hr />
-            <p>{val}</p>
-            <button onClick={i}>{add}</button>
-            <button onClick={j}>desc</button>
-            <p>{time}</p>
-            <div>
-              <p>{count}</p>
-              <button onClick={add}>每次增加 更新</button>
-              <button onClick={del}>每次减少 更新</button>
-            </div>
-            <div>
-              {a.current.map((i) => (
-                <div>{i}</div>
-              ))}
-            </div>
-            <App name={name}>
-              <span key={1}>测试输出? </span>
-              <span key={val}>输出测试</span>
-            </App>
-            <br />
-          </div>
-        );
-      };
-
       const Po = memo(() => {
         const [x, y] = usePosition();
         console.log("rerun po");
@@ -248,10 +100,17 @@
         );
       });
 
+      const C = memo(() => {
+        const value = useContext(Context);
+        console.log("run Context");
+        return <p>context {value}</p>;
+      });
+
       const B = memo(({ children }) => {
         const [x, y] = usePosition();
         // console.log("time3");
-        const time = useTime();
+        // const time = useTime();
+        const time = "B time";
         // console.log("time3", time);
         const [val] = useState(12);
         function overWrite(children) {
@@ -274,13 +133,14 @@
         // inprogress context
         const context = useContext(Context);
 
-        // console.log(context);
+        console.log("B context", context);
 
         const overWriteChildren = overWrite(children);
 
         return (
           <div>
             <p>{time}</p>
+            <p style={{ border: "2px solid pink" }}>context {context}</p>
             <p>{val}</p>
             <div>
               {x} , {y}
@@ -290,7 +150,6 @@
             <div style={{ border: "1px solid green" }}>
               {overWriteChildren}57686
             </div>
-            <strong>context {context}</strong>
           </div>
         );
       });
@@ -316,6 +175,7 @@
                 hello every one
               </B>
               <Po />
+              <C />
             </p>
           </div>
         );
@@ -334,12 +194,13 @@
       function TestContext() {
         const [value, add, del] = useCounter();
         const time = useTime();
+        const [x] = usePosition();
 
         return (
           <div>
             <p>{time}</p>
             <p>{value}</p>
-            <AC value={value} />
+            <AC value={x} />
             <div>
               <p>
                 <button onClick={add}>add</button>
@@ -369,18 +230,6 @@
         );
       };
       */
-
-      const TextHightLight = () => {
-        const [counter, add, del] = useCounter();
-
-        return (
-          <div>
-            <p>{counter % 2 === 0 ? "1" : "2"}</p>
-            <button onClick={add}>增加</button>
-            <button onClick={del}>减少</button>
-          </div>
-        );
-      };
 
       const container = document.getElementById("root");
       // console.log(<A />);

@@ -150,8 +150,8 @@
         const [val, setVal] = useState(() => 2626226);
         const [num, setNum] = useState(1000);
         const [str, setStr] = useState("nice to meet you");
-        // const time = useTime();
-        const time = 1000;
+        const time = useTime();
+        // const time = 1000;
         console.log("rerun", props);
         return (
           <div>
@@ -165,7 +165,11 @@
             <h1>{props.name}</h1>
             <p>{time}</p>
             <button onClick={() => setVal(Math.random())}>{num}</button>
-            {val < 0.5 ? <p className="red">{props.children}</p> : <A />}
+            {val < 0.5 ? (
+              <p className="red">{props.children}</p>
+            ) : (
+              <AC value={time} />
+            )}
             <p className="box">{val}</p>
             {val > 0.5 ? (
               <div>
@@ -238,12 +242,24 @@
         );
       };
 
+      const Pi = memo(() => {
+        const c = useContext(Context);
+
+        return (
+          <div>
+            <p>context value</p>
+            <p style={{ border: "1px dashed blue" }}>{c}</p>
+          </div>
+        );
+      });
+
       const Po = memo(() => {
         const [x, y] = usePosition();
         console.log("rerun po");
         return (
           <div>
             {x}, {y}
+            <Pi />
           </div>
         );
       });
@@ -316,6 +332,7 @@
                 hello every one
               </B>
               <Po />
+              <Pi />
             </p>
           </div>
         );
@@ -388,13 +405,13 @@
       // MReact.render(<App />, container);
       // console.log(<Test name="hello" />);
       // console.log(<Test name="hello" />);
-      // MReact.render(<Test name="hello" />, container);
+      MReact.render(<Test name="hello" />, container);
       // MReact.render(Test, container);
       // MReact.render(<TextHightLight />, container);
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
-      MReact.render(<TestContext />, container);
+      // MReact.render(<TestContext />, container);
     </script>
   </body>
 </html>

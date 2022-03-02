@@ -152,12 +152,14 @@
         const [str, setStr] = useState("nice to meet you");
         const time = useTime();
         // const time = 1000;
-        console.log("rerun", props);
+        console.log("rerun app", props);
         return (
           <div>
-            <button onClick={() => setStr(Math.random())}>改变</button>
+            <button onClick={() => setStr(Math.random())}>改变 vvv</button>
             <div>
-              <h2>{time}</h2>
+              <h2>
+                {time} {str}
+              </h2>
             </div>
             <O handler={setNum}>
               <span>{str}</span>
@@ -392,7 +394,7 @@
 
         return (
           <div>
-            <p>{counter % 2 === 0 ? "1" : "2"}</p>
+            <p>{counter}</p>
             <button onClick={add}>增加</button>
             <button onClick={del}>减少</button>
           </div>

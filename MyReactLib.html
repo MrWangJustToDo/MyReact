@@ -60,6 +60,7 @@
       };
 
       const useTime = () => {
+        const [val, setVal] = useState(100);
         const [currentTime, setCurrentTime] = useState(() =>
           new Date().toLocaleString()
         );
@@ -402,7 +403,7 @@
       };
 
       const container = document.getElementById("root");
-      // console.log(<A />);
+      console.log(<Test />);
       // MReact.render(<A />, container);
       // MReact.render(<App />, container);
       // console.log(<Test name="hello" />);

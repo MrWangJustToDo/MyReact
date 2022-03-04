@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <!-- <script src="./lib/MyReactLib.js"></script> -->
+    <script src="./lib/index.js"></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <script src="./lib/babel.min.js"></script>
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
+
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      try {
+        if (React) {
+          var MReact = React;
+          MReact.render = ReactDOM.render;
+        }
+      } catch (e) {}
+      /** @jsx MReact.createElement */
+      /** @jsxFrag MReact.Fragment */
+
+      const {
+        memo,
+        useState,
+        useCallback,
+        useEffect,
+        useRef,
+        useMemo,
+        map,
+        Component,
+        cloneElement,
+        createContext,
+      } = MReact;
+
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+        return [count, i, j];
+      };
+
+      const useTime = () => {
+        const [c, setC] = useState(100);
+        const [currentTime, setCurrentTime] = useState(() =>
+          new Date().toLocaleString()
+        );
+        useEffect(() => {
+          console.log("init");
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, []);
+
+        return currentTime;
+      };
+
+      const usePosition = () => {
+        const [currentPosition, setCurrentPosition] = useState({
+          x: 0,
+          y: 0,
+        });
+
+        useEffect(() => {
+          const action = (e) =>
+            setCurrentPosition({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPosition.x, currentPosition.y];
+      };
+
+      class FRR extends Component {
+        constructor(props) {
+          super(props);
+          console.log("更新");
+          this.state = { a: this.props.foo };
+        }
+        // state = { a: Math.random() };
+        click = () => {
+          this.props.add();
+          // this.setState({ a: Math.random() });
+        };
+        render() {
+          return (
+            <p>
+              <p>class component</p>
+              <p>state {this.state.a}</p>
+              <p>props {this.props.foo}</p>
+              <button onClick={this.click}>update</button>
+            </p>
+          );
+        }
+      }
+
+      function TestContext() {
+        const [value, add, del] = useCounter();
+        const time = useTime();
+
+        return (
+          <>
+            <p>{time}</p>
+            <p>{value}</p>
+            <MReact.Fragment>FGFGFG</MReact.Fragment>
+            <FRR foo={value} add={add} />
+          </>
+        );
+      }
+
+      /*
+      这种形式的children需要提供key来保证唯一性
+      var T = function T() {
+        return MReact.createElement("div", null, [1, 2, 3].map(function (i) {
+          return MReact.createElement("p", null, i);
+        }));
+      };
+
+      这种形式的children不需要key
+      var Q = function Q() {
+        return MReact.createElement("div", null,
+          MReact.createElement("p", null, "1"),
+          MReact.createElement("p", null, "2"),
+          MReact.createElement("p", null, "3")
+        );
+      };
+      */
+
+      const container = document.getElementById("root");
+      // console.log(<A />);
+      // MReact.render(<A />, container);
+      // MReact.render(<App />, container);
+      // console.log(<Test name="hello" />);
+      // console.log(<Test name="hello" />);
+      // MReact.render(<Test name="hello" />, container);
+      // MReact.render(Test, container);
+      // MReact.render(<TextHightLight />, container);
+      // MReact.render(<EntryWrapper />, container);
+      // ReactDOM.render(<EntryWrapper />, container);
+      // ReactDOM.render(<Test name="hello" />, container);
+      MReact.render(<TestContext />, container);
+    </script>
+  </body>
+</html>

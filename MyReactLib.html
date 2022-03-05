@@ -91,6 +91,26 @@
         return [currentPosition.x, currentPosition.y];
       };
 
+      class Fr extends MReact.Component {
+        state = { a: Math.random() };
+
+        changeState = () => {
+          this.setState({ a: Math.random() });
+        };
+
+        render() {
+          return (
+            <>
+              class component:
+              <p>foo</p>
+              <p>props: {JSON.stringify(this.props)}</p>
+              <p>state: {JSON.stringify(this.state)}</p>
+              <button onClick={this.changeState}>change state</button>
+            </>
+          );
+        }
+      }
+
       const J = memo((props) => {
         return (
           <div>
@@ -240,6 +260,7 @@
               <span key={1}>测试输出? </span>
               <span key={val}>输出测试</span>
             </App>
+            <Fr time={time} />
             <br />
           </div>
         );

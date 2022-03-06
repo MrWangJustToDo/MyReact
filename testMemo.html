@@ -44,6 +44,7 @@
         useState,
         useCallback,
         useEffect,
+        useLayoutEffect,
         useRef,
         useMemo,
         map,
@@ -146,9 +147,13 @@
       function TestContext() {
         const [value, add, del] = useCounter();
         const time = useTime();
+        const ref = useRef();
+        useLayoutEffect(() => {
+          console.log(ref);
+        }, [value, ref]);
 
         return (
-          <div>
+          <div ref={ref}>
             <p>{time}</p>
             <p>{value}</p>
             <A />

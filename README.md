@@ -30,6 +30,6 @@
 
 ## Context & useContext
 
-## class component in progress...
+## class component almost done
 
-## todo class Component / improve update / diff key
+## todo improve update / diff key

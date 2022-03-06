@@ -92,26 +92,29 @@
         return [currentPosition.x, currentPosition.y];
       };
 
+      const Context = createContext({ foo: Math.random() });
+
       class FRR extends Component {
-        constructor(props) {
-          super(props);
-          console.log("更新");
+        static context = Context;
+
+        constructor(props, context) {
+          super(props, context);
+          console.log("初始化", props);
           this.state = { a: this.props?.foo || "9" };
         }
-        // state = { a: Math.random() };
-        click = () => {
-          this.props?.add();
-          // this.setState({ a: Math.random() });
-        };
+
+        componentDidMount() {
+          console.log("state", this.state);
+          console.log("props", this.props);
+          console.log("context", this.context);
+        }
 
         add = () => {
           this.setState((val) => ({ ...val, a: val.a + 1 }));
         };
 
-        shouldComponentUpdate(newProps, newState) {
-          console.log(this.props, newProps, this.props === newProps);
-          console.log(this.state, newState, this.state === newState);
-          return true;
+        componentDidUpdate() {
+          console.log(this.context);
         }
 
         render() {
@@ -119,9 +122,9 @@
             <p>
               <p>class component</p>
               <p>state {this.state.a}</p>
-              <p>props {this.props.foo}</p>
-              <button onClick={this.click}>update</button>
-              <button onClick={this.add}>add</button>
+              <p>props {this.props.x}</p>
+              <p>context {this.context}</p>
+              <button onClick={this.add}>state change</button>
             </p>
           );
         }
@@ -130,14 +133,15 @@
       function TestContext() {
         const [value, add, del] = useCounter();
         const time = useTime();
+        const [x] = usePosition();
 
         return (
-          <>
+          <Context value={time}>
             <p>{time}</p>
             <p>{value}</p>
-            <MReact.Fragment>FGFGFG</MReact.Fragment>
-            <FRR foo={value} add={add} />
-          </>
+
+            <FRR x={x} />
+          </Context>
         );
       }
 

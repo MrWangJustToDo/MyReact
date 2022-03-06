@@ -98,6 +98,16 @@
           this.setState({ a: Math.random() });
         };
 
+        componentDidMount() {
+          console.log("class component mount");
+        }
+
+        componentDidUpdate(prevProps, prevState) {
+          console.log("class component update");
+          console.log("props: ", prevProps, this.props);
+          console.log("state: ", prevState, this.state);
+        }
+
         render() {
           return (
             <>

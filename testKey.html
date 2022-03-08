@@ -111,9 +111,13 @@
         // const time = useTime();
         // console.log("time3", time);
         const [val] = useState(12);
+        useEffect(() => {
+          console.log("mount b");
+          return () => console.log("unmount b");
+        }, []);
 
         return (
-          <div>
+          <div className="b">
             <p>{children}</p>
             <p>{val}</p>
             <>{123}</>
@@ -126,10 +130,14 @@
         const [val, i, j] = useCounter();
         console.log("time2");
         // const time = useTime();
-        const time = '100F'
+        const time = "100F";
         // console.log("time2", time);
+        useEffect(() => {
+          console.log("mount a");
+          return () => console.log("unmount a");
+        }, []);
         return (
-          <div>
+          <div className="A">
             <p>
               <p>{time}</p>
               <div>
@@ -143,12 +151,51 @@
       });
 
       function TestContext() {
-        const time = useTime();
-
+        const [val, add, del] = useCounter();
         return (
-          <div>
-            <p>{time}</p>
-            <A />
+          <div className="outer">
+            {val % 2 === 0 ? (
+              <>
+                <A />
+                <B />
+              </>
+            ) : (
+              <>
+                <B />
+                <A />
+              </>
+            )}
+            <button onClick={add}>add</button>
+          </div>
+        );
+      }
+
+      const S = () => {
+        return <p className="p">s</p>;
+      };
+
+      const T = () => {
+        return <strong>T</strong>;
+      };
+
+      function TetsFre() {
+        const [time, add] = useCounter();
+
+        // need update dom replace
+        return (
+          <div className="foo">
+            {time % 2 === 0 ? (
+              <>
+                <S />
+                <T />
+              </>
+            ) : (
+              <h1>
+                <T />
+                <S />
+              </h1>
+            )}
+            <button onClick={add}>add</button>
           </div>
         );
       }
@@ -183,7 +230,8 @@
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
-      MReact.render(<TestContext />, container);
+      // MReact.render(<TestContext />, container);
+      MReact.render(<TetsFre />, container);
     </script>
   </body>
 </html>

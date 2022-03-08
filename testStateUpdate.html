@@ -141,6 +141,11 @@
         );
       });
 
+      const Fd = ({ children }) => {
+        console.log(children);
+        return <p>{children}</p>;
+      };
+
       function TestContext() {
         const [value, add, del] = useCounter();
         const time = useTime();
@@ -149,7 +154,7 @@
           <div>
             <p>{time}</p>
             <p>{value}</p>
-            <MReact.Fragment>FGFGFG</MReact.Fragment>
+            <Fd>{0}</Fd>
             <div>
               <p>
                 <button onClick={add}>add</button>

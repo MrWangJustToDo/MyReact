@@ -171,11 +171,19 @@
       }
 
       const S = () => {
-        return <p className="p">s</p>;
+        return (
+          <p className="p">
+            s<span>123</span>
+          </p>
+        );
       };
 
       const T = () => {
-        return <strong>T</strong>;
+        return (
+          <strong>
+            T <span>345</span>
+          </strong>
+        );
       };
 
       function TetsFre() {
@@ -185,15 +193,15 @@
         return (
           <div className="foo">
             {time % 2 === 0 ? (
-              <>
+              <div>
                 <S />
                 <T />
-              </>
+              </div>
             ) : (
-              <h1>
+              <>
                 <T />
                 <S />
-              </h1>
+              </>
             )}
             <button onClick={add}>add</button>
           </div>
@@ -230,8 +238,8 @@
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
-      // MReact.render(<TestContext />, container);
-      MReact.render(<TetsFre />, container);
+      MReact.render(<TestContext />, container);
+      // MReact.render(<TetsFre />, container);
     </script>
   </body>
 </html>

@@ -91,60 +91,53 @@
         return [currentPosition.x, currentPosition.y];
       };
 
-      const Po = memo(() => {
-        const [x, y] = usePosition();
-        console.log("rerun po");
-        return (
-          <div>
-            {x}, {y}
-          </div>
-        );
-      });
-
-      const C = memo(({ foo }) => {
-        return <p>memo {foo}</p>;
-      });
-
-      const B = memo(({ children }) => {
+      const B = memo(() => {
         // const [x, y] = usePosition();
-        // console.log("time3");
+        console.log("time3");
         // const time = useTime();
         // console.log("time3", time);
-        const [val] = useState(12);
+        const [val, set] = useState(12);
         useEffect(() => {
           console.log("mount b");
           return () => console.log("unmount b");
         }, []);
 
         return (
-          <div className="b">
-            <p>{children}</p>
-            <p>{val}</p>
-            <>{123}</>
-            <div style={{ border: "1px solid red" }}>123{children}</div>
+          <div className="b" style={{ border: "1px solid red" }}>
+            <strong>B</strong>
           </div>
         );
       });
 
-      const A = memo(() => {
-        const [val, i, j] = useCounter();
+      const A = memo(({ val }) => {
         console.log("time2");
         // const time = useTime();
-        const time = "100F";
         // console.log("time2", time);
+        const [v, a, d] = useCounter();
         useEffect(() => {
           console.log("mount a");
           return () => console.log("unmount a");
         }, []);
         return (
-          <div className="A">
+          <div className="A" style={{ border: "1px solid red" }}>
+            <strong>A</strong>
             <p>
-              <p>{time}</p>
-              <div>
-                <button onClick={i}>增加</button>
-                <button onClick={j}>减少</button>
-              </div>
-              <>val: {val}</>
+              {val % 2 === 0 ? (
+                <>
+                  <S key="s" />
+                  <T key="t" />
+                </>
+              ) : (
+                <>
+                  <T key="t" />
+                  <S key="s" />
+                </>
+              )}
+            </p>
+            <p>
+              状态: {v}
+              <button onClick={a}>add</button>
+              <button onClick={d}>del</button>
             </p>
           </div>
         );
@@ -156,34 +149,28 @@
           <div className="outer">
             {val % 2 === 0 ? (
               <>
-                <A />
-                <B />
+                <A key="a" val={val} />
+                <p>123</p>
+                <B key="b" />
               </>
             ) : (
               <>
-                <B />
-                <A />
+                <B key="b" />
+                <p>345</p>
+                <A key="a" val={val} />
               </>
             )}
-            <button onClick={add}>add</button>
+            <button onClick={add}>diff</button>
           </div>
         );
       }
 
       const S = () => {
-        return (
-          <p className="p">
-            s<span>123</span>
-          </p>
-        );
+        return <p style={{ border: "1px solid red" }}>S</p>;
       };
 
       const T = () => {
-        return (
-          <strong>
-            T <span>345</span>
-          </strong>
-        );
+        return <p style={{ border: "1px solid red" }}>T</p>;
       };
 
       function TetsFre() {

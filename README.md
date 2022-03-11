@@ -32,4 +32,6 @@
 
 ## class component almost done
 
-## todo improve update / diff key
+## key diff
+
+## todo improve update

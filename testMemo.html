@@ -111,6 +111,7 @@
         // const time = useTime();
         // console.log("time3", time);
         const [val] = useState(12);
+        console.log("run b");
 
         return (
           <div>
@@ -125,7 +126,9 @@
       const A = memo(() => {
         const [val, i, j] = useCounter();
         // console.log("time2");
-        const time = useTime();
+        // const time = useTime();
+        const time = 100;
+        console.log("run a");
         // console.log("time2", time);
         return (
           <div>
@@ -156,7 +159,7 @@
           <div ref={ref}>
             <p>{time}</p>
             <p>{value}</p>
-            <A />
+            <A a={"1"}></A>
             <div>
               <p>
                 <button onClick={add}>add</button>

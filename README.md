@@ -32,6 +32,6 @@
 
 ## class component almost done
 
-## key diff
+## PureComponent
 
-## todo improve update
+## todo key/diff/improve update

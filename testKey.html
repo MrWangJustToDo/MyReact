@@ -143,6 +143,29 @@
         );
       });
 
+      const AL = memo(({ val }) => {
+        useEffect(() => {
+          console.log("mount a");
+          return () => console.log("unmount a");
+        }, []);
+
+        return (
+          <>
+            {val % 2 === 0 ? (
+              <>
+                <S key="s" />
+                <T key="t" />
+              </>
+            ) : (
+              <>
+                <T key="t" />
+                <S key="s" />
+              </>
+            )}
+          </>
+        );
+      });
+
       function TestContext() {
         const [val, add, del] = useCounter();
         return (

@@ -47,6 +47,7 @@
         useRef,
         useMemo,
         map,
+        Component,
         cloneElement,
         createContext,
       } = MReact;
@@ -90,6 +91,8 @@
         return [currentPosition.x, currentPosition.y];
       };
 
+      const Context = createContext("123");
+
       const Po = memo(() => {
         const [x, y] = usePosition();
         console.log("rerun po");
@@ -105,6 +108,18 @@
         console.log("run Context");
         return <p>context {value}</p>;
       });
+
+      class Y extends Component {
+        static context = Context;
+        constructor(p, c) {
+          super(p, c);
+          console.log(p, c);
+        }
+
+        render() {
+          return <p>class component: {this.context}</p>;
+        }
+      }
 
       const B = memo(({ children }) => {
         const [x, y] = usePosition();
@@ -168,20 +183,19 @@
                 <button onClick={j}>减少</button>
               </div>
               {val % 2 === 0 ? <Po /> : 1010}
-              <B>
-                <p>fff</p>
-                <p>fff</p>
-                <p>fff</p>
-                hello every one
-              </B>
-              <Po />
-              <C />
             </p>
+            <B>
+              <p>fff</p>
+              <p>fff</p>
+              <p>fff</p>
+              hello every one
+            </B>
+            <Po />
+            <C />
+            <Y />
           </div>
         );
       };
-
-      const Context = createContext("123");
 
       const AC = function ({ value }) {
         return (

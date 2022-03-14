@@ -48,6 +48,8 @@
         useRef,
         useMemo,
         map,
+        Component,
+        PureComponent,
         cloneElement,
         createContext,
       } = MReact;
@@ -131,7 +133,7 @@
         console.log("run a");
         // console.log("time2", time);
         return (
-          <div>
+          <div style={{ border: "1px solid red" }}>
             <p>
               <p>{time}</p>
               <div>
@@ -147,6 +149,20 @@
         );
       });
 
+      class GG extends PureComponent {
+        render() {
+          console.log("component memo run----");
+          return <p>{JSON.stringify(this.props)}</p>;
+        }
+      }
+
+      class FF extends Component {
+        render() {
+          console.log("component run -----");
+          return <p>{JSON.stringify(this.props)}</p>;
+        }
+      }
+
       function TestContext() {
         const [value, add, del] = useCounter();
         const time = useTime();
@@ -159,7 +175,7 @@
           <div ref={ref}>
             <p>{time}</p>
             <p>{value}</p>
-            <A a={"1"}></A>
+            <A p={value} />
             <div>
               <p>
                 <button onClick={add}>add</button>
@@ -168,27 +184,11 @@
                 <button onClick={del}>del</button>
               </p>
             </div>
+            <GG p={value} />
+            <FF p={value} />
           </div>
         );
       }
-
-      /*
-      这种形式的children需要提供key来保证唯一性
-      var T = function T() {
-        return MReact.createElement("div", null, [1, 2, 3].map(function (i) {
-          return MReact.createElement("p", null, i);
-        }));
-      };
-
-      这种形式的children不需要key
-      var Q = function Q() {
-        return MReact.createElement("div", null,
-          MReact.createElement("p", null, "1"),
-          MReact.createElement("p", null, "2"),
-          MReact.createElement("p", null, "3")
-        );
-      };
-      */
 
       const container = document.getElementById("root");
       // console.log(<A />);

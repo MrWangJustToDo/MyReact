@@ -126,7 +126,7 @@
         const [val, i, j] = useCounter();
         console.log("time2");
         // const time = useTime();
-        const time = '100F'
+        const time = "100F";
         // console.log("time2", time);
         return (
           <div>
@@ -149,6 +149,40 @@
           <div>
             <p>{time}</p>
             <A />
+          </div>
+        );
+      }
+
+      function BBB() {
+        return <div>bbb</div>;
+      }
+
+      function FFF() {
+        return (
+          <>
+            <p>3</p>
+          </>
+        );
+      }
+
+      function Tt() {
+        const [v, add] = useCounter();
+        return (
+          <div>
+            <p>{v} ccc</p>
+            <button onClick={add}>add</button>
+            {v % 2 === 0 ? <FFF /> : 1000}
+            <p>{v}</p>
+            {v % 2 !== 0 ? (
+              <div>
+                <p style={{ border: "1px solid red" }}>123</p>
+              </div>
+            ) : (
+              <div>
+                <span style={{ color: "red" }}>999</span>
+              </div>
+            )}
+            <p>end</p>
           </div>
         );
       }
@@ -183,7 +217,7 @@
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
-      MReact.render(<TestContext />, container);
+      MReact.render(<Tt />, container);
     </script>
   </body>
 </html>

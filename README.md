@@ -34,4 +34,6 @@
 
 ## PureComponent
 
-## todo key/diff/improve update
+## key diff
+
+## todo diff/improve update

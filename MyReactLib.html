@@ -177,6 +177,34 @@
         );
       });
 
+      const OL = memo(() => {
+        const [val, setVal] = useState("点击");
+        const [v, setV] = useState(0.2);
+        const ref = useRef();
+        // const time = useTime();
+        // console.log(ref);
+        // console.log(props)
+
+        // setTimeout(() => {
+        //   useRef()
+        // })
+        return (
+          <div id="1010" ref={ref}>
+            {v > 0.5 ? <div>123</div> : <p>456</p>}
+            <input
+              type="text"
+              value={v}
+              onInput={(e) => setV(e.target.value)}
+            />
+            <input
+              type="text"
+              value={v}
+              onInput={(e) => setV(e.target.value)}
+            />
+          </div>
+        );
+      });
+
       const App = memo((props) => {
         const [val, setVal] = useState(() => 2626226);
         const [num, setNum] = useState(1000);
@@ -264,7 +292,7 @@
               <button onClick={del}>每次减少 更新</button>
             </div>
             <div>
-              {a.current.map((i) => (
+              {a.current.map((i, _i) => (
                 <div>{i}</div>
               ))}
             </div>
@@ -442,6 +470,7 @@
       // console.log(<Test name="hello" />);
       // console.log(<Test name="hello" />);
       MReact.render(<Test name="hello" />, container);
+      // MReact.render(<OL />, container);
       // MReact.render(Test, container);
       // MReact.render(<TextHightLight />, container);
       // MReact.render(<EntryWrapper />, container);

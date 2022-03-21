@@ -45,8 +45,9 @@
         useCallback,
         useEffect,
         useRef,
+        useContext,
         useMemo,
-        map,
+        Children: { map },
         Component,
         cloneElement,
         createContext,
@@ -69,6 +70,9 @@
           const id = setInterval(() => {
             setCurrentTime(new Date().toLocaleString());
           }, 1000);
+          // const id = setTimeout(() => {
+          // setCurrentTime(new Date().toLocaleString());
+          // }, 1000);
           return () => clearInterval(id);
         }, []);
 
@@ -110,98 +114,40 @@
       });
 
       class Y extends Component {
-        static context = Context;
+        static contextType = Context;
+
         constructor(p, c) {
           super(p, c);
           console.log(p, c);
         }
 
         render() {
-          return <p>class component: {this.context}</p>;
+          return <p>class component context: {this.context}</p>;
         }
       }
 
-      const B = memo(({ children }) => {
-        const [x, y] = usePosition();
-        // console.log("time3");
-        // const time = useTime();
-        const time = "B time";
-        // console.log("time3", time);
-        const [val] = useState(12);
-        function overWrite(children) {
-          return map(children, (child) => {
-            if (MReact.isValidElement(child)) {
-              return cloneElement(
-                child,
-                {
-                  ...child.props,
-                  style: { color: "red", border: "1px solid red" },
-                },
-                child.props.children,
-                "clone element"
-              );
-            }
-            return child;
-          });
-        }
-
-        // inprogress context
-        const context = useContext(Context);
-
-        console.log("B context", context);
-
-        const overWriteChildren = overWrite(children);
-
+      const Cum = memo(() => {
+        const foo = useCallback((val) => <p>{val}</p>, []);
+        console.log("run");
         return (
-          <div>
-            <p>{time}</p>
-            <p style={{ border: "2px solid pink" }}>context {context}</p>
-            <p>{val}</p>
-            <div>
-              {x} , {y}
-            </div>
-            <>{123}</>
-            <div style={{ border: "1px solid red" }}>123{children}</div>
-            <div style={{ border: "1px solid green" }}>
-              {overWriteChildren}57686
-            </div>
-          </div>
+          <>
+            <p>234</p>
+            <Context.Consumer key="1">{foo}</Context.Consumer>
+            <Context.Consumer key="2">
+              {(val) => <p style={{ color: "red" }}>{val}</p>}
+            </Context.Consumer>
+            <p>123</p>
+          </>
         );
       });
 
-      const A = () => {
-        const [val, i, j] = useCounter();
-        // console.log("time2");
-        const time = useTime();
-        // console.log("time2", time);
-        return (
-          <div>
-            <p>
-              <p>{time}</p>
-              <div>
-                <button onClick={i}>增加</button>
-                <button onClick={j}>减少</button>
-              </div>
-              {val % 2 === 0 ? <Po /> : 1010}
-            </p>
-            <B>
-              <p>fff</p>
-              <p>fff</p>
-              <p>fff</p>
-              hello every one
-            </B>
-            <Po />
-            <C />
-            <Y />
-          </div>
-        );
-      };
-
       const AC = function ({ value }) {
         return (
-          <Context value={value}>
-            <A />
-          </Context>
+          <Context.Provider value={value}>
+            <Cum />
+            <Y />
+            <C />
+          </Context.Provider>
         );
       };
 
@@ -209,6 +155,9 @@
         const [value, add, del] = useCounter();
         const time = useTime();
         const [x] = usePosition();
+
+        // const time = 100;
+        // const value = "200";
 
         return (
           <div>
@@ -226,24 +175,6 @@
           </div>
         );
       }
-
-      /*
-      这种形式的children需要提供key来保证唯一性
-      var T = function T() {
-        return MReact.createElement("div", null, [1, 2, 3].map(function (i) {
-          return MReact.createElement("p", null, i);
-        }));
-      };
-
-      这种形式的children不需要key
-      var Q = function Q() {
-        return MReact.createElement("div", null,
-          MReact.createElement("p", null, "1"),
-          MReact.createElement("p", null, "2"),
-          MReact.createElement("p", null, "3")
-        );
-      };
-      */
 
       const container = document.getElementById("root");
       // console.log(<A />);

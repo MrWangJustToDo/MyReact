@@ -46,8 +46,7 @@
         useEffect,
         useRef,
         useMemo,
-        Children: { map },
-        Component,
+        map,
         cloneElement,
         createContext,
       } = MReact;
@@ -92,76 +91,29 @@
         return [currentPosition.x, currentPosition.y];
       };
 
-      const Context = createContext({ foo: Math.random() });
-
-      class FRR extends Component {
-        static context = Context;
-
-        constructor(props, context) {
-          super(props, context);
-          console.log("初始化", props);
-          this.state = { a: this.props?.foo || "9" };
-        }
-
-        componentDidMount() {
-          console.log("state", this.state);
-          console.log("props", this.props);
-          console.log("context", this.context);
-        }
-
-        add = () => {
-          this.setState((val) => ({ ...val, a: val.a + 1 }));
-        };
-
-        componentDidUpdate() {
-          console.log(this.context);
-        }
-
-        render() {
-          return (
-            <p>
-              <p>class component</p>
-              <p>state {this.state.a}</p>
-              <p>props {this.props.x}</p>
-              <p>context {this.context}</p>
-              <button onClick={this.add}>state change</button>
-            </p>
-          );
-        }
-      }
-
-      function TestContext() {
-        const [value, add, del] = useCounter();
+      const A = () => {
         const time = useTime();
-        const [x] = usePosition();
+        return <p>a {time}</p>;
+      };
 
+      const B = () => {
+        const time = useTime();
+        return <p>b {time}</p>;
+      };
+
+      const Test = () => {
+        const time = useTime();
+        const [val, add] = useCounter();
         return (
-          <Context.Provider value={time}>
-            <p>{time}</p>
-            <p>{value}</p>
-
-            <FRR x={x} />
-          </Context.Provider>
-        );
-      }
-
-      /*
-      这种形式的children需要提供key来保证唯一性
-      var T = function T() {
-        return MReact.createElement("div", null, [1, 2, 3].map(function (i) {
-          return MReact.createElement("p", null, i);
-        }));
-      };
-
-      这种形式的children不需要key
-      var Q = function Q() {
-        return MReact.createElement("div", null,
-          MReact.createElement("p", null, "1"),
-          MReact.createElement("p", null, "2"),
-          MReact.createElement("p", null, "3")
+          <div>
+            test
+            <p>time {time}</p>
+            <p>val {val}</p>
+            <button onClick={add}>add</button>
+            {val % 2 === 0 ? <A /> : <B />}
+          </div>
         );
       };
-      */
 
       const container = document.getElementById("root");
       // console.log(<A />);
@@ -175,8 +127,7 @@
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
-      MReact.render(<TestContext />, container);
-      // MReact.render(<FRR />, container);
+      MReact.render(<Test />, container);
     </script>
   </body>
 </html>

@@ -46,7 +46,7 @@
         useEffect,
         useRef,
         useMemo,
-        map,
+        Children: { map },
         cloneElement,
         createContext,
       } = MReact;
@@ -406,9 +406,9 @@
 
       const AC = function ({ value }) {
         return (
-          <Context value={value}>
+          <Context.Provider value={value}>
             <A />
-          </Context>
+          </Context.Provider>
         );
       };
 

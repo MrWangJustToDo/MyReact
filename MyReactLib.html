@@ -51,6 +51,8 @@
         createContext,
       } = MReact;
 
+      const Context = createContext("123");
+
       const useCounter = (init = 1) => {
         const [count, setCount] = useState(init);
         const i = useCallback(() => setCount((last) => last + 1), [setCount]);
@@ -401,8 +403,6 @@
           </div>
         );
       };
-
-      const Context = createContext("123");
 
       const AC = function ({ value }) {
         return (

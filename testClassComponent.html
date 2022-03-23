@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
     <!-- <script src="./lib/MyReactLib.js"></script> -->
-    <script src="./lib/index.js"></script>
+    <script src="./lib/index.js"></script>/
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
@@ -47,6 +47,7 @@
         useRef,
         useMemo,
         Children: { map },
+        PureComponent,
         Component,
         cloneElement,
         createContext,
@@ -94,7 +95,7 @@
 
       const Context = createContext({ foo: Math.random() });
 
-      class FRR extends Component {
+      class FRR extends PureComponent {
         static contextType = Context;
 
         constructor(props, context) {
@@ -113,8 +114,8 @@
           this.setState((val) => ({ ...val, a: val.a + 1 }));
         };
 
-        componentDidUpdate() {
-          console.log(this.context);
+        componentDidUpdate(...args) {
+          console.log(args);
         }
 
         render() {

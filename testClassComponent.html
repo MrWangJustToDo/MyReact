@@ -95,7 +95,7 @@
       const Context = createContext({ foo: Math.random() });
 
       class FRR extends Component {
-        static context = Context;
+        static contextType = Context;
 
         constructor(props, context) {
           super(props, context);

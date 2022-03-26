@@ -46,6 +46,7 @@
         useEffect,
         useRef,
         useMemo,
+        forwardRef,
         Children: { map },
         cloneElement,
         createContext,
@@ -91,104 +92,28 @@
         return [currentPosition.x, currentPosition.y];
       };
 
-      const Po = memo(() => {
-        const [x, y] = usePosition();
-        console.log("rerun po");
-        return (
-          <div>
-            {x}, {y}
-          </div>
-        );
-      });
-
-      const C = memo(({ foo }) => {
-        return <p>memo {foo}</p>;
-      });
-
-      const B = memo(({ children }) => {
-        // const [x, y] = usePosition();
-        // console.log("time3");
-        // const time = useTime();
-        // console.log("time3", time);
-        const [val] = useState(12);
-
-        return (
-          <div>
-            <p>{children}</p>
-            <p>{val}</p>
-            <>{123}</>
-            <div style={{ border: "1px solid red" }}>123{children}</div>
-          </div>
-        );
-      });
-
-      const A = memo(() => {
-        const [val, i, j] = useCounter();
-        // console.log("time2");
-        // const time = useTime();
-        // console.log("time2", time);
-        return (
-          <div>
-            <p>
-              <p>{"time"}</p>
-              <div>
-                <button onClick={i}>增加</button>
-                <button onClick={j}>减少</button>
-              </div>
-              <>val: {val}</>
-            </p>
-          </div>
-        );
-      });
-
-      const TG = ({ children }) => <>{children}</>;
-
-      const BG = ({ children }) => <TG>{children}</TG>;
+      const C = memo(
+        forwardRef((props, ref) => {
+          // console.log(props, ref);
+          const time = useTime();
+          return <p ref={ref}>memo {time} </p>;
+        })
+      );
 
       function TestContext() {
-        // const time = useTime();
-        const time = 100;
+        const time = useTime();
+        const ref = useRef();
+        useEffect(() => {
+          console.log(ref.current);
+        }, []);
 
         return (
           <div>
             <p>{time}</p>
-            <p>
-              {1}
-              {[1, 2, 3].map((i) => (
-                <>{i}</>
-              ))}
-            </p>
+            <C ref={ref} foo />
           </div>
         );
       }
-
-      // <>
-      //   <MReact.Fragment>FGFGFG</MReact.Fragment>
-      //   <BG>
-      //     {[1, 2, 3].map((i) => (
-      //       <>{i}</>
-      //     ))}
-      //   </BG>
-      //   <BG children={[3, 4, 5].map((i) => i)}></BG>
-      // </>;
-
-      /*
-      这种形式的children需要提供key来保证唯一性
-      var T = function T() {
-        return MReact.createElement("div", null, [1, 2, 3].map(function (i) {
-          return MReact.createElement("p", null, i);
-        }));
-      };
-
-      这种形式的children不需要key
-      var Q = function Q() {
-        return MReact.createElement("div", null,
-          MReact.createElement("p", null, "1"),
-          MReact.createElement("p", null, "2"),
-          MReact.createElement("p", null, "3")
-        );
-      };
-      */
 
       const container = document.getElementById("root");
       // console.log(<A />);

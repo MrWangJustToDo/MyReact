@@ -9,6 +9,7 @@
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
+    <!-- <script src="./lib/app.js"></script> -->
     <style>
       .red {
         color: red;
@@ -33,7 +34,8 @@
       try {
         if (React) {
           var MReact = React;
-          MReact.render = ReactDOM.render;
+          MReact.render =
+            typeof ReactDOM !== "undefined" ? ReactDOM.render : React.render;
         }
       } catch (e) {}
       /** @jsx MReact.createElement */
@@ -43,6 +45,7 @@
         memo,
         useState,
         useCallback,
+        useContext,
         useEffect,
         useRef,
         useMemo,

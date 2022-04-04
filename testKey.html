@@ -218,6 +218,36 @@
         );
       }
 
+      function PO({ children }) {
+        console.log("po", children);
+        return <PB>{[1, 2, 3].map((i) => children)}</PB>;
+      }
+      function PB({ children }) {
+        console.log("pb", children);
+        return <>{children}</>;
+      }
+
+      function TestF() {
+        const [all, setAll] = useState([1,2,3]);
+
+        return (
+          <div>
+            <PO>
+              {all.map((i, _i) => (
+                <p>{i}</p>
+              ))}
+            </PO>
+            <button
+              onClick={() => {
+                setAll((last) => [...last, Math.random()]);
+              }}
+            >
+              add
+            </button>
+          </div>
+        );
+      }
+
       /*
       这种形式的children需要提供key来保证唯一性
       var T = function T() {
@@ -248,8 +278,9 @@
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
-      MReact.render(<TestContext />, container);
+      // MReact.render(<TestContext />, container);
       // MReact.render(<TetsFre />, container);
+      MReact.render(<TestF />, container);
     </script>
   </body>
 </html>

@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "babel src -d lib -w",
+    "build:all": "browserify lib/react -o app.js",
+    "test": "babel --help"
+  },
+  "dependencies": {
+    "@babel/cli": "^7.17.6",
+    "@babel/core": "^7.17.8",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
+    "browserify": "^17.0.0"
+  }
+}

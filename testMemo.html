@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
     <!-- <script src="./lib/MyReactLib.js"></script> -->
-    <script src="./lib/index.js"></script>
-    <!-- <script src="./lib/react.development.js"></script> -->
-    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <!-- <script src="./lib/index.js"></script> -->
+    <script src="./lib/react.development.js"></script>
+    <script src="./lib/react-dom.development.js"></script>
     <script src="./lib/babel.min.js"></script>
     <style>
       .red {
@@ -190,6 +190,23 @@
         );
       }
 
+      const Context = createContext({ value: 100 });
+
+      const FOO = ({ children }) => {
+        console.log(children);
+        return children;
+      };
+
+      const FGG = () => {
+        return (
+          <Context.Provider>
+            <FOO>
+              <Context.Consumer>{(v) => <>{v}</>}</Context.Consumer>
+            </FOO>
+          </Context.Provider>
+        );
+      };
+
       const container = document.getElementById("root");
       // console.log(<A />);
       // MReact.render(<A />, container);
@@ -202,7 +219,8 @@
       // MReact.render(<EntryWrapper />, container);
       // ReactDOM.render(<EntryWrapper />, container);
       // ReactDOM.render(<Test name="hello" />, container);
-      MReact.render(<TestContext />, container);
+      // MReact.render(<TestContext />, container);
+      MReact.render(<FGG />, container);
     </script>
   </body>
 </html>

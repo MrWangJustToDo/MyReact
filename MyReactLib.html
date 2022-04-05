@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
     <!-- <script src="./lib/MyReactLib.js"></script> -->
-    <script src="./lib/index.js"></script>
+    <!-- <script src="./lib/index.js"></script> -->
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
-    <!-- <script src="./lib/app.js"></script> -->
+    <script src="./lib/app.js"></script>
     <style>
       .red {
         color: red;
@@ -126,7 +126,7 @@
         }
       }
 
-      const J = memo((props) => {
+      const J = (props) => {
         return (
           <div>
             <span>jjjj</span>
@@ -134,7 +134,7 @@
             {props.children}
           </div>
         );
-      });
+      };
 
       const O = memo((props) => {
         const [val, setVal] = useState("点击");

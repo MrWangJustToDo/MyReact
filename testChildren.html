@@ -30,14 +30,6 @@
     <div id="root"></div>
 
     <script type="text/babel">
-      try {
-        if (React) {
-          var MReact = React;
-          MReact.render = ReactDOM.render;
-        }
-      } catch (e) {}
-      /** @jsx MReact.createElement */
-      /** @jsxFrag MReact.Fragment */
 
       const {
         memo,
@@ -50,7 +42,7 @@
         Children: { map },
         cloneElement,
         createContext,
-      } = MReact;
+      } = React;
 
       const useCounter = (init = 1) => {
         const [count, setCount] = useState(init);
@@ -116,20 +108,7 @@
       }
 
       const container = document.getElementById("root");
-      // console.log(<A />);
-      // MReact.render(<A />, container);
-      // MReact.render(<App />, container);
-      // console.log(<Test name="hello" />);
-      // console.log(<Test name="hello" />);
-      // MReact.render(<Test name="hello" />, container);
-      // MReact.render(Test, container);
-      // MReact.render(<TextHightLight />, container);
-      // MReact.render(<EntryWrapper />, container);
-      // ReactDOM.render(<EntryWrapper />, container);
-      // ReactDOM.render(<Test name="hello" />, container);
-      // MReact.render(<TestContext />, container);
-
-      MReact.render(<C />, container);
+      ReactDOM.render(<TestContext />, container);
     </script>
   </body>
 </html>

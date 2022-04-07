@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <!-- <script src="./lib/MyReactLib.js"></script> -->
-    <script src="./lib/index.js"></script>
+    <script src="./lib/app.js"></script>
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
+
     <style>
       .red {
         color: red;
@@ -30,15 +30,6 @@
     <div id="root"></div>
 
     <script type="text/babel">
-      try {
-        if (React) {
-          var MReact = React;
-          MReact.render = ReactDOM.render;
-        }
-      } catch (e) {}
-      /** @jsx MReact.createElement */
-      /** @jsxFrag MReact.Fragment */
-
       const {
         memo,
         useState,
@@ -51,7 +42,7 @@
         Component,
         cloneElement,
         createContext,
-      } = MReact;
+      } = React;
 
       const useCounter = (init = 1) => {
         const [count, setCount] = useState(init);
@@ -177,18 +168,7 @@
       }
 
       const container = document.getElementById("root");
-      // console.log(<A />);
-      // MReact.render(<A />, container);
-      // MReact.render(<App />, container);
-      // console.log(<Test name="hello" />);
-      // console.log(<Test name="hello" />);
-      // MReact.render(<Test name="hello" />, container);
-      // MReact.render(Test, container);
-      // MReact.render(<TextHightLight />, container);
-      // MReact.render(<EntryWrapper />, container);
-      // ReactDOM.render(<EntryWrapper />, container);
-      // ReactDOM.render(<Test name="hello" />, container);
-      MReact.render(<TestContext />, container);
+      ReactDOM.render(<TestContext />, container);
     </script>
   </body>
 </html>

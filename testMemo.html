@@ -4,11 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <!-- <script src="./lib/MyReactLib.js"></script> -->
-    <!-- <script src="./lib/index.js"></script> -->
-    <script src="./lib/react.development.js"></script>
-    <script src="./lib/react-dom.development.js"></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
+    <script src="./lib/app.js"></script>
     <style>
       .red {
         color: red;
@@ -30,15 +29,6 @@
     <div id="root"></div>
 
     <script type="text/babel">
-      try {
-        if (React) {
-          var MReact = React;
-          MReact.render = ReactDOM.render;
-        }
-      } catch (e) {}
-      /** @jsx MReact.createElement */
-      /** @jsxFrag MReact.Fragment */
-
       const {
         memo,
         useState,
@@ -52,7 +42,7 @@
         PureComponent,
         cloneElement,
         createContext,
-      } = MReact;
+      } = React;
 
       const useCounter = (init = 1) => {
         const [count, setCount] = useState(init);
@@ -199,7 +189,7 @@
 
       const FGG = () => {
         return (
-          <Context.Provider>
+          <Context.Provider value={"123"}>
             <FOO>
               <Context.Consumer>{(v) => <>{v}</>}</Context.Consumer>
             </FOO>
@@ -208,19 +198,7 @@
       };
 
       const container = document.getElementById("root");
-      // console.log(<A />);
-      // MReact.render(<A />, container);
-      // MReact.render(<App />, container);
-      // console.log(<Test name="hello" />);
-      // console.log(<Test name="hello" />);
-      // MReact.render(<Test name="hello" />, container);
-      // MReact.render(Test, container);
-      // MReact.render(<TextHightLight />, container);
-      // MReact.render(<EntryWrapper />, container);
-      // ReactDOM.render(<EntryWrapper />, container);
-      // ReactDOM.render(<Test name="hello" />, container);
-      // MReact.render(<TestContext />, container);
-      MReact.render(<FGG />, container);
+      ReactDOM.render(<FGG />, container);
     </script>
   </body>
 </html>

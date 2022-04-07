@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <!-- <script src="./lib/MyReactLib.js"></script> -->
-    <!-- <script src="./lib/index.js"></script> -->
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
@@ -31,16 +29,6 @@
     <div id="root"></div>
 
     <script type="text/babel">
-      try {
-        if (React) {
-          var MReact = React;
-          MReact.render =
-            typeof ReactDOM !== "undefined" ? ReactDOM.render : React.render;
-        }
-      } catch (e) {}
-      /** @jsx MReact.createElement */
-      /** @jsxFrag MReact.Fragment */
-
       const {
         memo,
         useState,
@@ -52,7 +40,7 @@
         Children: { map },
         cloneElement,
         createContext,
-      } = MReact;
+      } = React;
 
       const Context = createContext("123");
 
@@ -96,7 +84,7 @@
         return [currentPosition.x, currentPosition.y];
       };
 
-      class Fr extends MReact.PureComponent {
+      class Fr extends React.PureComponent {
         state = { a: Math.random() };
 
         changeState = () => {
@@ -341,7 +329,7 @@
         const [val] = useState(12);
         function overWrite(children) {
           return map(children, (child) => {
-            if (MReact.isValidElement(child)) {
+            if (React.isValidElement(child)) {
               return cloneElement(
                 child,
                 {
@@ -436,24 +424,6 @@
         );
       }
 
-      /*
-      这种形式的children需要提供key来保证唯一性
-      var T = function T() {
-        return MReact.createElement("div", null, [1, 2, 3].map(function (i) {
-          return MReact.createElement("p", null, i);
-        }));
-      };
-
-      这种形式的children不需要key
-      var Q = function Q() {
-        return MReact.createElement("div", null,
-          MReact.createElement("p", null, "1"),
-          MReact.createElement("p", null, "2"),
-          MReact.createElement("p", null, "3")
-        );
-      };
-      */
-
       const TextHightLight = () => {
         const [counter, add, del] = useCounter();
 
@@ -468,18 +438,7 @@
 
       const container = document.getElementById("root");
       console.log(<Test />);
-      // MReact.render(<A />, container);
-      // MReact.render(<App />, container);
-      // console.log(<Test name="hello" />);
-      // console.log(<Test name="hello" />);
-      MReact.render(<Test name="hello" />, container);
-      // MReact.render(<OL />, container);
-      // MReact.render(Test, container);
-      // MReact.render(<TextHightLight />, container);
-      // MReact.render(<EntryWrapper />, container);
-      // ReactDOM.render(<EntryWrapper />, container);
-      // ReactDOM.render(<Test name="hello" />, container);
-      // MReact.render(<TestContext />, container);
+      ReactDOM.render(<Test name="hello" />, container);
     </script>
   </body>
 </html>

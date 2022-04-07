@@ -6,15 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="./lib/babel.min.js"></script>
-    <script src="./lib/react.development.js"></script>
-    <script src="./lib/react-dom.development.js"></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <script src="./lib/app.js"></script>
   </head>
   <body>
     <div id="root"></div>
     <script type="text/babel">
+      const { useState, useRef } = React;
       const Foo = ({ children }) => {
+        const [v, setV] = useState(1);
+        // v % 2 === 0 ? useState() : useRef();
         console.log(children);
-        return <>{children}</>;
+        return (
+          <>
+            {children} <button onClick={() => setV((i) => i + 1)}>add</button>
+          </>
+        );
       };
 
       const App = () => (

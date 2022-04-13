@@ -7,7 +7,8 @@
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
-    <script src="./lib/app.js"></script>
+    <!-- <script src="./lib/app.js"></script> -->
+    <script type="module" src="./lib/Core/lib/react.js"></script>
     <style>
       .red {
         color: red;
@@ -28,7 +29,7 @@
   <body>
     <div id="root"></div>
 
-    <script type="text/babel">
+    <script type="text/babel" async>
       const {
         memo,
         useState,
@@ -118,8 +119,8 @@
       const A = memo(() => {
         const [val, i, j] = useCounter();
         // console.log("time2");
-        // const time = useTime();
-        const time = 100;
+        const time = useTime();
+        // const time = 100;
         console.log("run a");
         // console.log("time2", time);
         return (
@@ -131,13 +132,14 @@
                 <button onClick={j}>减少</button>
               </div>
               <>val: {val}</>
-              <B>
-                <div>children {val}</div>
-              </B>
             </p>
           </div>
         );
       });
+
+      // <B>
+      //   <div>children {val}</div>
+      // </B>
 
       class GG extends PureComponent {
         render() {
@@ -160,6 +162,8 @@
         useLayoutEffect(() => {
           console.log(ref);
         }, [value, ref]);
+
+        console.log('run outer')
 
         return (
           <div ref={ref}>
@@ -198,7 +202,7 @@
       };
 
       const container = document.getElementById("root");
-      ReactDOM.render(<FGG />, container);
+      ReactDOM.render(<TestContext />, container);
     </script>
   </body>
 </html>

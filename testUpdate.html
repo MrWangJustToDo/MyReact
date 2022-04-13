@@ -4,10 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <script src="./lib/app.js"></script>
+    <!-- <script src="./lib/app.js"></script> -->
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
+    <script type="module" src="./lib/Core/lib/react.js"></script>
     <style>
       .red {
         color: red;
@@ -28,8 +29,7 @@
   <body>
     <div id="root"></div>
 
-    <script type="text/babel">
-
+    <script type="text/babel" async>
       const {
         memo,
         useState,
@@ -158,9 +158,11 @@
 
       function Tt() {
         const [v, add] = useCounter();
+        const time = useTime();
         return (
           <div>
             <p>{v} ccc</p>
+            <p>{time}</p>
             <button onClick={add}>add</button>
             {v % 2 === 0 ? <FFF /> : 1000}
             <p>{v}</p>
@@ -177,7 +179,6 @@
           </div>
         );
       }
-
 
       const container = document.getElementById("root");
       ReactDOM.render(<Tt />, container);

@@ -163,13 +163,13 @@
           console.log(ref);
         }, [value, ref]);
 
-        console.log('run outer')
+        console.log("run outer");
 
         return (
           <div ref={ref}>
             <p>{time}</p>
             <p>{value}</p>
-            <A p={value} />
+            <A p={value}></A>
             <div>
               <p>
                 <button onClick={add}>add</button>
@@ -202,7 +202,7 @@
       };
 
       const container = document.getElementById("root");
-      ReactDOM.render(<TestContext />, container);
+      ReactDOM.render(<FGG />, container);
     </script>
   </body>
 </html>

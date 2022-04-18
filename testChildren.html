@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <!-- <script src="./lib/MyReactLib.js"></script> -->
-    <script src="./lib/app.js"></script>
+    <!-- <script src="./lib/app.js"></script> -->
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
+    <script type="module" src="./lib/Core/lib/react.js"></script>
     <style>
       .red {
         color: red;
@@ -29,8 +29,7 @@
   <body>
     <div id="root"></div>
 
-    <script type="text/babel">
-
+    <script type="text/babel" async>
       const {
         memo,
         useState,
@@ -87,22 +86,54 @@
       const C = memo(
         forwardRef((props, ref) => {
           // console.log(props, ref);
-          const time = useTime();
-          return <p ref={ref}>memo {time} </p>;
+          // const time = useTime();
+          const time = 100;
+          return (
+            <p ref={ref}>
+              memo {time} {props.children}
+            </p>
+          );
         })
       );
 
-      function TestContext() {
+      const GG = forwardRef((P, R) => {
+        return <div ref={R}>{P.children}</div>;
+      });
+
+      const B = () => {
+        console.log("run b", '相同的children只会执行一次');
+        return <div>bbb</div>;
+      };
+
+      const D = ({ children }) => {
         const time = useTime();
+        return (
+          <>
+            {children} {time}
+          </>
+        );
+      };
+
+      function TestContext() {
+        // const time = useTime();
+        const time = 1000;
         const ref = useRef();
+        const ref2 = useRef();
         useEffect(() => {
           console.log(ref.current);
+          console.log(ref2.current);
         }, []);
 
         return (
           <div>
             <p>{time}</p>
-            <C ref={ref} foo />
+            <C ref={ref} foo></C>
+            <D>
+              <B />
+            </D>
+            <GG ref={ref2}>
+              <p>123</p>
+            </GG>
           </div>
         );
       }

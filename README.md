@@ -16,6 +16,8 @@
 
 ## useRef
 
+## useReducer
+
 ## memo
 
 ## cloneElement
@@ -30,7 +32,7 @@
 
 ## Context & useContext & Provider & Consumer
 
-## class component almost done
+## class component
 
 ## PureComponent
 
@@ -39,5 +41,7 @@
 ## createPortal
 
 ## forwardRef
+
+## createRef
 
 ## todo: more Props/improve update ...

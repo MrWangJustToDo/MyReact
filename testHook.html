@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <script src="./lib/app.js"></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <script src="./lib/babel.min.js"></script>
+    <!-- <script type="module" src="./lib/Core/lib/react.js"></script> -->
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
+
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel" async>
+      const {
+        memo,
+        useState,
+        useCallback,
+        useEffect,
+        useReducer,
+        useRef,
+        useMemo,
+        map,
+        cloneElement,
+        createContext,
+      } = React;
+
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+        return [count, i, j];
+      };
+
+      const useTime = () => {
+        const [c, setC] = useState(100);
+        const [currentTime, setCurrentTime] = useState(() =>
+          new Date().toLocaleString()
+        );
+        useEffect(() => {
+          console.log("init");
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, []);
+
+        return currentTime;
+      };
+
+      const usePosition = () => {
+        const [currentPosition, setCurrentPosition] = useState({
+          x: 0,
+          y: 0,
+        });
+
+        useEffect(() => {
+          const action = (e) =>
+            setCurrentPosition({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPosition.x, currentPosition.y];
+      };
+
+      function init(initialCount) {
+        return { count: initialCount };
+      }
+
+      function reducer(state, action) {
+        switch (action.type) {
+          case "increment":
+            return { count: state.count + 1 };
+          case "decrement":
+            return { count: state.count - 1 };
+          case "reset":
+            return init(action.payload);
+          default:
+            throw new Error();
+        }
+      }
+
+      function Counter({ initialCount }) {
+        const [state, dispatch] = useReducer(reducer, initialCount, (i) => ({
+          count: i + initialCount,
+        }));
+        return (
+          <>
+            Count: {state.count}
+            <button
+              onClick={() => dispatch({ type: "reset", payload: initialCount })}
+            >
+              Reset
+            </button>
+            <button onClick={() => dispatch({ type: "decrement" })}>-</button>
+            <button onClick={() => dispatch({ type: "increment" })}>+</button>
+          </>
+        );
+      }
+
+      function App() {
+        const [val, add] = useCounter();
+
+        return (
+          <div>
+            <Counter initialCount={val} />
+            <button onClick={add}>add</button>
+          </div>
+        );
+      }
+
+      const container = document.getElementById("root");
+      ReactDOM.render(<App />, container);
+    </script>
+  </body>
+</html>

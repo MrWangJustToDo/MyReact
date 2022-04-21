@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./lib/babel.min.js"></script>
+    <script src="./lib/app.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/redux/4.1.2/redux.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/react-redux/7.2.8/react-redux.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+
+  <script type="text/babel" async>
+    function counterReducer(state = { value: 0 }, action) {
+      switch (action.type) {
+        case "counter/incremented":
+          return { value: state.value + 1 };
+        case "counter/decremented":
+          return { value: state.value - 1 };
+        default:
+          return state;
+      }
+    }
+
+    // Create a Redux store holding the state of your app.
+    // Its API is { subscribe, dispatch, getState }.
+    let store = Redux.createStore(
+      counterReducer,
+      window.__REDUX_DEVTOOLS_EXTENSION__ &&
+        window.__REDUX_DEVTOOLS_EXTENSION__()
+    );
+
+    const { Provider, useSelector, useDispatch } = ReactRedux;
+
+    const Counter = () => {
+      const value = useSelector((s) => {
+        return s.value;
+      });
+
+      const dispatch = useDispatch();
+
+      return (
+        <div>
+          123 redux value: {value}
+          <button onClick={() => dispatch({ type: "counter/incremented" })}>
+            add
+          </button>
+          <button onClick={() => dispatch({ type: "counter/decremented" })}>
+            del
+          </button>
+        </div>
+      );
+    };
+
+    const App = () => {
+      return (
+        <div>
+          test redux
+          <Provider store={store}>
+            <Counter />
+          </Provider>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.querySelector("#root"));
+  </script>
+</html>

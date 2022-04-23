@@ -8,11 +8,12 @@
     <script src="./lib/babel.min.js"></script>
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
-    <script src="./lib/app.js"></script>
+    <!-- <script src="./lib/app.js"></script> -->
+    <script type="module" src="./lib/Core/lib/react.js"></script>
   </head>
   <body>
     <div id="root"></div>
-    <script type="text/babel">
+    <script type="text/babel" async>
       const { useState, useRef } = React;
       const Foo = ({ children }) => {
         const [v, setV] = useState(1);
@@ -42,7 +43,29 @@
         </>
       );
 
-      ReactDOM.render(<App />, document.querySelector("#root"));
+      const Bb = ({ children }) => {
+        // console.log(children);
+        return children;
+      };
+
+      const F = () => {
+        const [v, setV] = useState([1]);
+
+        console.log(v);
+
+        return (
+          <Bb>
+            {v.map((y) => (
+              <p>{y}</p>
+            ))}
+            <button onClick={() => setV((l) => [...l, Math.random()])}>
+              add
+            </button>
+          </Bb>
+        );
+      };
+
+      ReactDOM.render(<F />, document.querySelector("#root"));
     </script>
   </body>
 </html>

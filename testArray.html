@@ -55,10 +55,11 @@
 
         return (
           <Bb>
+            <p key="1">123</p>
             {v.map((y) => (
               <p>{y}</p>
             ))}
-            <button onClick={() => setV((l) => [...l, Math.random()])}>
+            <button key="2" onClick={() => setV((l) => [...l, Math.random()])}>
               add
             </button>
           </Bb>

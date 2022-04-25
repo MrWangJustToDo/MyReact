@@ -1,14 +1,10 @@
 name: auto create a pr to main when branch create
 
 on:
-  create:
-    branches-ignore:
-      - 'develop'
-      - 'test/**'
   push:
     branches-ignore:
-      - 'develop'
-      - 'test/*'
+      - "develop"
+      - "test/**"
 
 jobs:
   autopr:
@@ -18,5 +14,5 @@ jobs:
       - name: create pr
         uses: repo-sync/pull-request@v2
         with:
-          destination_branch: 'main'
+          destination_branch: "main"
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -2,8 +2,7 @@
   "private": true,
   "scripts": {
     "build": "babel src -d lib -w",
-    "build:all": "browserify lib/react -o ../app.js",
-    "test": "babel --help"
+    "build:all": "browserify lib/react -o ../app.js"
   },
   "dependencies": {
     "@babel/cli": "^7.17.6",

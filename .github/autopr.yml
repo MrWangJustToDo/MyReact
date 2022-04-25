@@ -5,6 +5,10 @@ on:
     branches-ignore:
       - 'develop'
       - 'test/**'
+  push:
+    branches-ignore:
+      - 'develop'
+      - 'test/*'
 
 jobs:
   autopr:

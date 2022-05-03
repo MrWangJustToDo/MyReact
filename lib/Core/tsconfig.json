@@ -24,6 +24,6 @@
     "noUnusedParameters": true,
     "incremental": true
   },
-  "exclude": ["lib"],
+  "exclude": ["lib", "build"],
   "include": ["**/*.js"]
 }

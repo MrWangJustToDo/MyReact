@@ -24,6 +24,7 @@
     ></script> -->
     <script src="./lib/bundle.js"></script>
     <script src="./lib/reduxBundle.js"></script>
+    <script src="./lib/reactReduxBundle.js"></script>
   </head>
   <body>
     <div id="root"></div>
@@ -58,7 +59,7 @@
         window.__REDUX_DEVTOOLS_EXTENSION__()
     );
 
-    const { Provider, useSelector, useDispatch } = ReactRedux;
+    const { Provider, useSelector, useDispatch, connect } = ReactRedux;
 
     const Vf = () => {
       const s = useSelector((s) => s.counterReducer.value);
@@ -101,6 +102,21 @@
       );
     };
 
+    class G extends Component {
+      render() {
+        return (
+          <div>
+            <h2>class component</h2>
+            <p>counter : {this.props.count}</p>
+            <button onClick={this.props.add}>add</button>
+            <button onClick={this.props.del}>del</button>
+          </div>
+        );
+      }
+    }
+
+    const RG = connect((state) => ({ count: state.counterReducer.value }))(G);
+
     const App = () => {
       return (
         <div>
@@ -110,6 +126,7 @@
             <div>
               <Val />
             </div>
+            <RG />
             <div>
               <Vf />
             </div>

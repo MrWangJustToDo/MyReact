@@ -25,6 +25,7 @@
     <script src="./lib/bundle.js"></script>
     <script src="./lib/reduxBundle.js"></script>
     <script src="./lib/reactReduxBundle.js"></script>
+    <script src="./lib/thunkBundle.js"></script>
   </head>
   <body>
     <div id="root"></div>
@@ -55,8 +56,7 @@
     // Its API is { subscribe, dispatch, getState }.
     let store = Redux.createStore(
       Redux.combineReducers({ counterReducer, timer }),
-      window.__REDUX_DEVTOOLS_EXTENSION__ &&
-        window.__REDUX_DEVTOOLS_EXTENSION__()
+      Redux.applyMiddleware([thunk])
     );
 
     const { Provider, useSelector, useDispatch, connect } = ReactRedux;
@@ -110,12 +110,22 @@
             <p>counter : {this.props.count}</p>
             <button onClick={this.props.add}>add</button>
             <button onClick={this.props.del}>del</button>
+            <button onClick={() => this.props.addAsync(1000)}>addDelay</button>
           </div>
         );
       }
     }
 
-    const RG = connect((state) => ({ count: state.counterReducer.value }))(G);
+    const RG = connect((state) => ({ count: state.counterReducer.value }), {
+      add: () => ({ type: "counter/incremented" }),
+      del: () => ({ type: "counter/decremented" }),
+      addAsync: (time) => (dispatch) => {
+        dispatch({ type: "counter/incremented" });
+        setTimeout(() => {
+          dispatch({ type: "counter/incremented" });
+        }, time);
+      },
+    })(G);
 
     const App = () => {
       return (

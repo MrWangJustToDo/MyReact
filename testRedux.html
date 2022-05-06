@@ -17,8 +17,8 @@
     <!-- <script
       src="https://cdn.bootcdn.net/ajax/libs/redux/4.1.2/redux.js"
       defer
-    ></script>
-    <script
+    ></script> -->
+    <!-- <script
       src="https://cdn.bootcdn.net/ajax/libs/react-redux/7.2.8/react-redux.js"
       defer
     ></script> -->
@@ -56,7 +56,8 @@
     // Its API is { subscribe, dispatch, getState }.
     let store = Redux.createStore(
       Redux.combineReducers({ counterReducer, timer }),
-      Redux.applyMiddleware([thunk])
+      { counterReducer: { value: 100 } },
+      Redux.applyMiddleware(thunk)
     );
 
     const { Provider, useSelector, useDispatch, connect } = ReactRedux;
@@ -102,7 +103,11 @@
       );
     };
 
-    class G extends Component {
+    class G extends React.Component {
+      componentDidUpdate() {
+        console.log("update");
+      }
+
       render() {
         return (
           <div>
@@ -116,16 +121,21 @@
       }
     }
 
-    const RG = connect((state) => ({ count: state.counterReducer.value }), {
-      add: () => ({ type: "counter/incremented" }),
-      del: () => ({ type: "counter/decremented" }),
-      addAsync: (time) => (dispatch) => {
-        dispatch({ type: "counter/incremented" });
-        setTimeout(() => {
+    const RG = connect(
+      (state) => ({
+        count: state.counterReducer.value,
+      }),
+      {
+        add: () => ({ type: "counter/incremented" }),
+        del: () => ({ type: "counter/decremented" }),
+        addAsync: (time) => (dispatch) => {
           dispatch({ type: "counter/incremented" });
-        }, time);
-      },
-    })(G);
+          setTimeout(() => {
+            dispatch({ type: "counter/incremented" });
+          }, time);
+        },
+      }
+    )(G);
 
     const App = () => {
       return (

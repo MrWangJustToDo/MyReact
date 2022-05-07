@@ -22,10 +22,11 @@
       src="https://cdn.bootcdn.net/ajax/libs/react-redux/7.2.8/react-redux.js"
       defer
     ></script> -->
-    <script src="./lib/bundle.js"></script>
+    <script src="./lib/reactBundle.js"></script>
     <script src="./lib/reduxBundle.js"></script>
     <script src="./lib/reactReduxBundle.js"></script>
     <script src="./lib/thunkBundle.js"></script>
+    <script src="./lib/reactiveBundle.js"></script>
   </head>
   <body>
     <div id="root"></div>
@@ -151,6 +152,20 @@
               <Vf />
             </div>
           </Provider>
+          <Foo />
+        </div>
+      );
+    };
+
+    const data = createReactive({ a: 1, b: 2, c: 3, d: 4, e: 5 });
+
+    const Foo = () => {
+      return (
+        <div>
+          <p>{data.a}</p>
+          <p>{data.b}</p>
+          <button onClick={() => data.a++}>test</button>
+          <div></div>
         </div>
       );
     };

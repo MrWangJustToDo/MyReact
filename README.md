@@ -45,3 +45,14 @@
 ## createRef
 
 ## todo: more Props/improve update ...
+
+## Redux
+
+## ReactRedux
+
+## thunkMiddleware
+
+## Build tools
+
+## more
+

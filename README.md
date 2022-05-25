@@ -44,6 +44,8 @@
 
 ## createRef
 
+## in progress server side render
+
 ## todo: more Props/improve update ...
 
 ## Redux
@@ -53,6 +55,8 @@
 ## thunkMiddleware
 
 ## Build tools
+
+## zustand
 
 ## more
 

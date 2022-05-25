@@ -29,6 +29,8 @@
   </head>
   <body>
     <div id="root"></div>
+    <h2>Test renderToString</h2>
+    <div id="app"></div>
 
     <script type="text/babel" defer>
       const {
@@ -439,8 +441,10 @@
       };
 
       const container = document.getElementById("root");
-      console.log(<Test />);
-      ReactDOM.render(<Test name="hello" />, container);
+      const app = document.getElementById("app");
+      const stringElement = ReactDOM.renderToString(<Test name="hello" />);
+      container.append(stringElement);
+      app.innerHTML = stringElement;
     </script>
   </body>
 </html>

@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "build": "babel src -d lib -w",
+    "build:ssr": "babel src -d ../../../MyReact-SSR/lib -w",
     "build:all": "browserify lib/react -o ../app.js"
   },
   "dependencies": {

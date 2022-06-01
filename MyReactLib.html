@@ -116,9 +116,7 @@
         this.setState({ a: Math.random() });
       };
 
-      componentDidMount() {
-        console.log("class component mount");
-      }
+      // componentDidMount = 100
 
       componentDidUpdate(prevProps, prevState) {
         console.log("class component update");
@@ -229,7 +227,7 @@
       const [str, setStr] = useState("nice to meet you");
       const time = useTime();
       // const time = 1000;
-      console.log("rerun app", props);
+      // console.log("rerun app", props);
       return (
         <div>
           <button onClick={() => setStr(Math.random())}>改变 vvv</button>
@@ -337,7 +335,7 @@
 
     const Po = memo(() => {
       const [x, y] = usePosition();
-      console.log("rerun po");
+      // console.log("rerun po");
       return (
         <div>
           {x}, {y}

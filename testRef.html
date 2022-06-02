@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./lib/babel.min.js"></script>
+    <script type="module" src="./lib/Core/src/react.js" defer></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const {
+        forwardRef,
+        useRef,
+        useImperativeHandle,
+        useEffect,
+        useLayoutEffect,
+      } = React;
+      const Foo = forwardRef((p, ref) => {
+        const bRef = useRef();
+
+        useLayoutEffect(() => {
+          console.log("layout inner");
+        }, []);
+
+        useEffect(() => {
+          console.log("inner");
+        }, []);
+
+        useImperativeHandle(ref, () => {
+          console.log("inner handler");
+          return {
+            foo: bRef.current,
+          };
+        });
+
+        return <div ref={bRef}>12345</div>;
+      });
+
+      const Bar = () => {
+        const ref = useRef();
+
+        useLayoutEffect(() => {
+          console.log("layout outer");
+        }, []);
+
+        useEffect(() => {
+          console.log("outer");
+        }, []);
+
+        console.log(ref);
+
+        return <Foo ref={ref} />;
+      };
+
+      ReactDOM.render(<Bar />, document.querySelector("#root"));
+    </script>
+  </body>
+</html>

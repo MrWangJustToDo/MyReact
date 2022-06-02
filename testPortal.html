@@ -1,140 +1,141 @@
 <!DOCTYPE html>
 <html lang="zh_cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <!-- <script src="./lib/app.js"></script> -->
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <script src="./lib/babel.min.js"></script>
+    <script type="module" src="./lib/Core/src/react.js"></script>
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>测试react框架</title>
-  <!-- <script src="./lib/app.js"></script> -->
-  <!-- <script src="./lib/react.development.js"></script> -->
-  <!-- <script src="./lib/react-dom.development.js"></script> -->
-  <script src="./lib/babel.min.js"></script>
-  <script type="module" src="./lib/Core/src/react.js"></script>
-  <style>
-    .red {
-      color: red;
-      font-size: 20px;
-    }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
 
-    .box {
-      width: 100px;
-      height: 100px;
-      border: 1px solid red;
-      border-radius: 3px;
-    }
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
 
-    .green {
-      color: green;
-    }
-  </style>
-</head>
+  <body>
+    <div id="root"></div>
+    <div id="foo"></div>
 
-<body>
-  <div id="root"></div>
-  <div id="foo"></div>
+    <script type="text/babel" defer>
+      const {
+        memo,
+        useState,
+        useCallback,
+        useEffect,
+        useRef,
+        useMemo,
+        map,
+        cloneElement,
+        createContext,
+      } = React;
 
-  <script type="text/babel" defer>
-    const {
-      memo,
-      useState,
-      useCallback,
-      useEffect,
-      useRef,
-      useMemo,
-      map,
-      cloneElement,
-      createContext,
-    } = React;
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
 
-    const useCounter = (init = 1) => {
-      const [count, setCount] = useState(init);
-      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
-      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+        return [count, i, j];
+      };
 
-      return [count, i, j];
-    };
+      const useIsMount = () => {
+        const [mount, setMount] = useState(false);
+        useEffect(() => {
+          setMount(true);
+        }, []);
 
-    const useIsMount = () => {
-      const [mount, setMount] = useState(false);
-      useEffect(() => {
-        setMount(true)
-      }, [])
+        return mount;
+      };
 
-      return mount
-    }
+      const useTime = () => {
+        const [c, setC] = useState(100);
+        const [currentTime, setCurrentTime] = useState(() =>
+          new Date().toLocaleString()
+        );
+        useEffect(() => {
+          console.log("init");
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, []);
 
-    const useTime = () => {
-      const [c, setC] = useState(100);
-      const [currentTime, setCurrentTime] = useState(() =>
-        new Date().toLocaleString()
-      );
-      useEffect(() => {
-        console.log("init");
-        const id = setInterval(() => {
-          setCurrentTime(new Date().toLocaleString());
-        }, 1000);
-        return () => clearInterval(id);
-      }, []);
+        return currentTime;
+      };
 
-      return currentTime;
-    };
+      const usePosition = () => {
+        const [currentPosition, setCurrentPosition] = useState({
+          x: 0,
+          y: 0,
+        });
 
-    const usePosition = () => {
-      const [currentPosition, setCurrentPosition] = useState({
-        x: 0,
-        y: 0,
-      });
+        useEffect(() => {
+          const action = (e) =>
+            setCurrentPosition({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
 
-      useEffect(() => {
-        const action = (e) =>
-          setCurrentPosition({ x: e.clientX, y: e.clientY });
-        window.addEventListener("mousemove", action);
-        return () => window.removeEventListener("mousemove", action);
-      }, []);
+        return [currentPosition.x, currentPosition.y];
+      };
 
-      return [currentPosition.x, currentPosition.y];
-    };
+      function H({ children }) {
+        const time = useTime();
+        return (
+          <>
+            <p>time {time}</p> {children}
+          </>
+        );
+      }
 
-    function H({ children }) {
-      const time = useTime();
-      return (
-        <>
-          <p>time {time}</p> {children}
-        </>
-      );
-    }
+      const div = <div>123</div>;
 
-    const div = <div>123</div>;
+      function Por({ ele }) {
+        const [x] = usePosition();
+        const isMount = useIsMount();
+        return isMount
+          ? ReactDOM.createPortal(
+              <H>
+                <div>123</div>
+                <p>position: {x}</p>
+                <div>{ele}</div>
+              </H>,
+              document.querySelector("#foo")
+            )
+          : null;
+      }
 
-    function Por() {
-      const [x] = usePosition();
-      const isMount = useIsMount();
-      return isMount ? ReactDOM.createPortal(
-        <H>
-          <div>123</div>
-          <p>position: {x}</p>
-        </H>,
-        document.querySelector("#foo")
-      ) : null;
-    }
+      function Tt() {
+        const [v, add] = useCounter();
+        return (
+          <div>
+            <p>{v} ccc</p>
+            <button onClick={add}>add</button>
+            <p>{v}</p>
+            {v % 2 !== 0 ? <Por ele={<H>inner</H>} /> : "placeholder"}
+            <p>end</p>
+          </div>
+        );
+      }
 
-    function Tt() {
-      const [v, add] = useCounter();
-      return (
-        <div>
-          <p>{v} ccc</p>
-          <button onClick={add}>add</button>
-          <p>{v}</p>
-          {v % 2 !== 0 ? <Por /> : "placeholder"}
-          <p>end</p>
-        </div>
-      );
-    }
-
-    const container = document.getElementById("root");
-    ReactDOM.render(<Tt />, container);
-    // console.log(ReactDOM.renderToString(<Tt />))
-  </script>
-</body>
-
+      const container = document.getElementById("root");
+      ReactDOM.render(<Tt />, container);
+      // console.log(ReactDOM.renderToString(<Tt />))
+    </script>
+  </body>
 </html>

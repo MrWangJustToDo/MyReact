@@ -46,7 +46,7 @@
 
 ## server side render
 
-## todo: more Props/improve update ...
+## todo: more Props/improve update ... support svg
 
 ## Redux
 

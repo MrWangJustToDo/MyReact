@@ -180,8 +180,23 @@
         );
       }
 
+      const Bar = () => <div>456</div>;
+
+      const App = () => {
+        const [c, add, del] = useCounter();
+        console.log("run");
+
+        return (
+          <div>
+            {c % 2 === 0 ? 123 : [1, 2, 3].map((i) => <p>{i}</p>)}
+            <button onClick={add}>add</button>
+            <button onClick={del}>del</button>
+          </div>
+        );
+      };
+
       const container = document.getElementById("root");
-      ReactDOM.render(<Tt />, container);
+      ReactDOM.render(<App />, container);
     </script>
   </body>
 </html>

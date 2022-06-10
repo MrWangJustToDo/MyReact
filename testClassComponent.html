@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <!-- <script src="./lib/react.development.js"></script> -->
-    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <script src="./lib/react.development.js"></script>
+    <script src="./lib/react-dom.development.js"></script>
     <script src="./lib/babel.min.js"></script>
-    <script src="./lib/app.js"></script>
+    <!-- <script src="./lib/app.js"></script> -->
     <style>
       .red {
         color: red;
@@ -29,7 +29,6 @@
     <div id="root"></div>
 
     <script type="text/babel">
-
       const {
         memo,
         useState,
@@ -137,8 +136,44 @@
         );
       }
 
+      class B extends Component {
+        state = { b: 1 };
+
+        shouldComponentUpdate(nextProps) {
+          console.log("b", this.props, nextProps);
+          return false;
+        }
+
+        render() {
+          return (
+            <div>
+              b<button onClick={() => this.props.click()}>add</button>
+            </div>
+          );
+        }
+      }
+
+      class A extends Component {
+        state = { a: 1 };
+        shouldComponentUpdate(_, nextState) {
+          console.log("a", nextState, this.state);
+          return true;
+        }
+
+        render() {
+          return (
+            <div>
+              <B
+                click={() => this.setState({ a: Math.random() })}
+                bar={this.state.a}
+              />
+            </div>
+          );
+        }
+      }
+
       const container = document.getElementById("root");
-      ReactDOM.render(<TestContext />, container);
+      ReactDOM.render(<A />, container);
     </script>
   </body>
 </html>

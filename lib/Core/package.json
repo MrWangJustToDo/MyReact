@@ -3,7 +3,8 @@
   "scripts": {
     "build": "babel src -d lib -w",
     "build:ssr": "babel src -d ../../../MyReact-SSR/lib -w",
-    "build:all": "browserify lib/react -o ../app.js"
+    "build:all": "browserify lib/react -o ../app.js",
+    "build:ssrAll": "browserify lib/react -o ../../../MyReact-SSR/static/reactBundle.js"
   },
   "dependencies": {
     "@babel/cli": "^7.17.6",

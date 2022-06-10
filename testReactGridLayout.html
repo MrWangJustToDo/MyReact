@@ -224,7 +224,8 @@
       }
     </style>
     <script src="./lib/babel.min.js"></script>
-    <script src="./lib/reactBundle.js"></script>
+    <!-- <script src="./lib/reactBundle.js"></script> -->
+    <script src="./lib/app.js"></script>
     <!-- <script type="module" src="./lib/Core/src/react.js"></script> -->
     <script src="./grid.js" defer></script>
   </head>
@@ -268,7 +269,6 @@
         }
 
         render() {
-          console.log(this);
           return (
             <div>
               <button onClick={this.resetLayout}>Reset Layout</button>

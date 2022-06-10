@@ -141,12 +141,14 @@
       //   <div>children {val}</div>
       // </B>
 
-      class GG extends PureComponent {
+      class _GG extends Component {
         render() {
           console.log("component memo run----");
           return <p>{JSON.stringify(this.props)}</p>;
         }
       }
+
+      const GG = memo(_GG);
 
       class FF extends Component {
         render() {
@@ -202,7 +204,7 @@
       };
 
       const container = document.getElementById("root");
-      ReactDOM.render(<FGG />, container);
+      ReactDOM.render(<TestContext />, container);
     </script>
   </body>
 </html>

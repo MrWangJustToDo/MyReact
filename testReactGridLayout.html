@@ -230,6 +230,7 @@
     <script src="./grid.js" defer></script>
   </head>
   <body>
+    <div><button id="hydrate">hydrate</button></div>
     <div id="root"></div>
     <script type="text/babel">
       const { WidthProvider } = ReactGridLayout;
@@ -298,7 +299,15 @@
         }
       }
 
-      ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
+      const root = document.querySelector("#root");
+
+      root.innerHTML = ReactDOM.renderToString(<LocalStorageLayout />);
+
+      // ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
+
+      document.querySelector("#hydrate").addEventListener("click", () => {
+        ReactDOM.hydrate(<LocalStorageLayout />, root);
+      });
     </script>
   </body>
 </html>

@@ -46,7 +46,11 @@
 
 ## server side render
 
-## todo: more Props/improve update ... support svg
+## hydrate
+
+## lazy & Suspense
+
+## todo: more Props/improve update ...
 
 ## Redux
 

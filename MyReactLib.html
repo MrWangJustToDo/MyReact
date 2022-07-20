@@ -8,9 +8,7 @@
   <!-- <script src="./lib/react.development.js"></script> -->
   <!-- <script src="./lib/react-dom.development.js"></script> -->
   <script src="./lib/babel.min.js"></script>
-  <!-- <script src="./lib/app.js"></script> -->
-  <script type="module" src="./lib/Core/src/react.js"></script>
-  <!-- <script src="./lib/reactBundle.js"></script> -->
+  <script type="module" src="./lib/Core/dist/myreact.esm.js"></script>
   <style>
     .red {
       color: red;
@@ -113,7 +111,10 @@
       state = { a: Math.random() };
 
       changeState = () => {
-        this.setState({ a: Math.random() });
+        console.log('runrun')
+        this.setState({ a: Math.random() }, () => {
+          console.log('update')
+        });
       };
 
       // componentDidMount = 100
@@ -470,12 +471,12 @@
 
     const container = document.getElementById("root");
     const app = document.getElementById("app");
-    const stringElement = ReactDOM.renderToString(<Test name="hello" />);
+    const stringElement = ReactDOM.render(<Test name="hello" />, app);
     // container.append(stringElement);
-    app.innerHTML = stringElement;
-    window.start = () => {
-      ReactDOM.hydrate(<Test name='hel' />, app)
-    }
+    // app.innerHTML = stringElement;
+    // window.start = () => {
+    //   ReactDOM.hydrate(<Test name='hel' />, app)
+    // }
   </script>
 </body>
 

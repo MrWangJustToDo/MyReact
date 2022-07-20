@@ -4,11 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <!-- <script src="./lib/app.js"></script> -->
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
-    <script type="module" src="./lib/Core/src/react.js"></script>
+    <script type="module" src="./lib/Core/dist/myreact.esm.js"></script>
     <style>
       .red {
         color: red;
@@ -101,9 +100,11 @@
       });
 
       const B = () => {
-        console.log("run b", '相同的children只会执行一次');
+        console.log("run b", "相同的children只会执行一次");
         return <div>bbb</div>;
       };
+
+      const _B = <B />;
 
       const D = ({ children }) => {
         const time = useTime();
@@ -115,8 +116,8 @@
       };
 
       function TestContext() {
-        // const time = useTime();
-        const time = 1000;
+        const time = useTime();
+        // const time = 1000;
         const ref = useRef();
         const ref2 = useRef();
         useEffect(() => {
@@ -128,9 +129,7 @@
           <div>
             <p>{time}</p>
             <C ref={ref} foo></C>
-            <D>
-              <B />
-            </D>
+            <D>{_B}</D>
             <GG ref={ref2}>
               <p>123</p>
             </GG>

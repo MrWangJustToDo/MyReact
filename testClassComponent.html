@@ -4,10 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <script src="./lib/react.development.js"></script>
-    <script src="./lib/react-dom.development.js"></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
-    <!-- <script src="./lib/app.js"></script> -->
+    <script type="module" src="./lib/Core/dist/myreact.esm.js"></script>
     <style>
       .red {
         color: red;
@@ -147,7 +147,7 @@
         render() {
           return (
             <div>
-              b<button onClick={() => this.props.click()}>add</button>
+              b<button onClick={() => this.props.click()}>add {this.props.bar}</button>
             </div>
           );
         }
@@ -173,7 +173,8 @@
       }
 
       const container = document.getElementById("root");
-      ReactDOM.render(<A />, container);
+      // ReactDOM.render(<A />, container);
+      ReactDOM.render(<TestContext />, container);
     </script>
   </body>
 </html>

@@ -4,11 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>测试react框架</title>
-    <!-- <script src="./lib/app.js"></script> -->
     <!-- <script src="./lib/react.development.js"></script> -->
     <!-- <script src="./lib/react-dom.development.js"></script> -->
     <script src="./lib/babel.min.js"></script>
-    <script type="module" src="./lib/Core/src/react.js"></script>
+    <script type="module" src="./lib/Core/dist/myreact.esm.js"></script>
     <style>
       .red {
         color: red;
@@ -265,7 +264,7 @@
             </div>
             <p>start</p>
             {state
-              .slice(0)
+              // .slice(0)
               .reverse()
               .map((i) => (
                 <p key={i}>{i}</p>
@@ -280,7 +279,7 @@
       };
 
       const container = document.getElementById("root");
-      ReactDOM.render(<TestKey />, container);
+      ReactDOM.render(<TestContext />, container);
     </script>
   </body>
 </html>

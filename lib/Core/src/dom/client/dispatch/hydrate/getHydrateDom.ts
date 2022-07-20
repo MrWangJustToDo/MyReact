@@ -1,0 +1,77 @@
+import { log } from '../../../../share';
+
+import type { MyReactFiberNode } from '../../../../fiber';
+import type { Children } from '../../../../vdom';
+
+type HydrateDOM = HTMLElement & {
+  __hydrate__: boolean;
+};
+
+const getNextHydrateDom = (parentDom: HTMLElement) => {
+  const children = Array.from(parentDom.childNodes);
+
+  return children.find(
+    (dom) =>
+      dom.nodeType !== document.COMMENT_NODE && !(dom as HydrateDOM).__hydrate__
+  );
+};
+
+const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
+  if (!dom) {
+    log({
+      fiber,
+      level: 'error',
+      message: 'hydrate error, dom not render from server',
+    });
+    return false;
+  }
+  if (fiber.__isTextNode__) {
+    if (dom.nodeType !== Node.TEXT_NODE) {
+      log({
+        fiber,
+        level: 'error',
+        message: `hydrate error, dom not match from server. server: ${dom.nodeName.toLowerCase()}, client: ${
+          fiber.element
+        }`,
+      });
+      return false;
+    }
+    return true;
+  }
+  if (fiber.__isPlainNode__) {
+    const typedElement = fiber.element as Children;
+    if (dom.nodeType !== Node.ELEMENT_NODE) {
+      log({
+        fiber,
+        level: 'error',
+        message: `hydrate error, dom not match from server. server: ${dom.nodeName.toLowerCase()}, client: ${typedElement.type.toString()}`,
+      });
+      return false;
+    }
+    if (typedElement.type.toString() !== dom.nodeName.toLowerCase()) {
+      log({
+        fiber,
+        level: 'error',
+        message: `hydrate error, dom not match from server. server: ${dom.nodeName.toLowerCase()}, client: ${typedElement.type.toString()}`,
+      });
+      return false;
+    }
+    return true;
+  }
+  throw new Error('hydrate error, look like a bug');
+};
+
+export const getHydrateDom = (
+  fiber: MyReactFiberNode,
+  parentDom: HTMLElement
+): HTMLElement | false => {
+  const dom = getNextHydrateDom(parentDom);
+  const result = checkHydrateDom(fiber, dom);
+  if (result) {
+    const typedDom = dom as HydrateDOM;
+    typedDom.__hydrate__ = true;
+    return typedDom;
+  } else {
+    return false;
+  }
+};

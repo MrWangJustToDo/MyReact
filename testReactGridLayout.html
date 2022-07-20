@@ -224,9 +224,7 @@
       }
     </style>
     <script src="./lib/babel.min.js"></script>
-    <!-- <script src="./lib/reactBundle.js"></script> -->
-    <script src="./lib/app.js"></script>
-    <!-- <script type="module" src="./lib/Core/src/react.js"></script> -->
+    <script type="module" src="./lib/Core/dist/myreact.esm.js"></script>
     <script src="./grid.js" defer></script>
   </head>
   <body>
@@ -301,13 +299,7 @@
 
       const root = document.querySelector("#root");
 
-      root.innerHTML = ReactDOM.renderToString(<LocalStorageLayout />);
-
-      // ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
-
-      document.querySelector("#hydrate").addEventListener("click", () => {
-        ReactDOM.hydrate(<LocalStorageLayout />, root);
-      });
+      ReactDOM.render(<LocalStorageLayout />, document.querySelector("#root"));
     </script>
   </body>
 </html>

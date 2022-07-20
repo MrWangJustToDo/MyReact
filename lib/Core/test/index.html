@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./babel.min.js"></script>
+    <script src="../dist/myreact-ts.esm.js" type="module"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel" async>
+      const { useState, useRef } = React;
+      const Foo = ({ children }) => {
+        const [v, setV] = useState(1);
+        // v % 2 === 0 ? useState() : useRef();
+        console.log(children);
+        return (
+          <>
+            {children} <button onClick={() => setV((i) => i + 1)}>add</button>{' '}
+            {v}
+          </>
+        );
+      };
+
+      const App = () => (
+        <>
+          <Foo>
+            <p>1</p>
+            <p>1</p>
+            <p>1</p>
+            <p>1</p>
+          </Foo>
+          <Foo>
+            {[1, 2, 3, 4].map((i) => (
+              <p>{i}</p>
+            ))}
+          </Foo>
+        </>
+      );
+
+      const Bb = ({ children }) => {
+        console.log(children);
+        return children;
+      };
+
+      const F = () => {
+        const [v, setV] = useState([1]);
+
+        console.log(v);
+
+        return (
+          <Bb>
+            <p key="1">123</p>
+            {v.map((y) => (
+              <p>{y}</p>
+            ))}
+            <button key="2" onClick={() => setV((l) => [...l, Math.random()])}>
+              add
+            </button>
+          </Bb>
+        );
+      };
+
+      ReactDOM.render(<F />, document.querySelector('#root'));
+    </script>
+  </body>
+</html>

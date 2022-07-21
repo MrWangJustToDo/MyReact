@@ -19,8 +19,7 @@
       );
       const App = ({ text }) => {
         return (
-          <div>
-            <Bar text={text} />
+          <div dangerouslySetInnerHTML={{ __html: "<p>123</p>" }}>
           </div>
         );
       };

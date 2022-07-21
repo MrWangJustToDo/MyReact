@@ -26,9 +26,12 @@ export const getContextValue = (
     fiber ? fiber.__props__.value : ContextObject?.Provider.value
   ) as Record<string, unknown> | null;
 
-  return typeof contextValue === 'object' && contextValue !== null
-    ? Object.assign({}, contextValue)
-    : contextValue;
+  // context value should keep original
+  return contextValue;
+
+  // return typeof contextValue === 'object' && contextValue !== null
+  //   ? Object.assign({}, contextValue)
+  //   : contextValue;
 };
 
 const getAllUpdater = (fiber: MyReactFiberNode) => {

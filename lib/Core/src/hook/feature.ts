@@ -3,7 +3,7 @@ import {
   createRef,
   currentFunctionFiber,
   currentHookDeepIndex,
-  enableAllCheck,
+  enableDebugLog,
   getFiberTree,
 } from '../share';
 
@@ -154,7 +154,7 @@ export const useImperativeHandle = (
 };
 
 export const useDebugValue = (...args: any[]) => {
-  if (enableAllCheck.current) {
+  if (enableDebugLog.current) {
     console.log(
       `[debug]: `,
       ...args,

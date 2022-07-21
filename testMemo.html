@@ -202,8 +202,24 @@
         );
       };
 
+      const Inner = ({ time }) => {
+        const foo = useMemo(() => time, [time]);
+
+        return <div>inner: {foo}</div>;
+      };
+
+      const TestMemo = () => {
+        const time = useTime();
+
+        return (
+          <div>
+            <Inner time={time} />
+          </div>
+        );
+      };
+
       const container = document.getElementById("root");
-      ReactDOM.render(<FGG />, container);
+      ReactDOM.render(<TestMemo />, container);
     </script>
   </body>
 </html>

@@ -31,7 +31,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, dom: HTMLElement) => {
         ) {
           if (key === 'className') {
             if (fiber.nameSpace) {
-              const v = dom.getAttribute('class');
+              const v = dom.getAttribute('class')?.toString();
               if (v !== String(props[key])) {
                 log({
                   fiber,
@@ -40,7 +40,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, dom: HTMLElement) => {
                 dom.setAttribute('class', props[key] as string);
               }
             } else {
-              if (dom[key] !== String(props[key])) {
+              if (dom[key].toString() !== String(props[key])) {
                 log({
                   fiber,
                   message: `hydrate warning, dom ${key} not match from server. server: ${dom[key]}, client: ${props[key]}`,
@@ -50,7 +50,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, dom: HTMLElement) => {
             }
           } else {
             if (key in dom && !fiber.nameSpace) {
-              if ((dom as any)[key] !== String(props[key])) {
+              if ((dom as any)[key].toString() !== String(props[key])) {
                 log({
                   fiber,
                   message: `hydrate warning, dom ${key} props not match from server. server: ${
@@ -61,7 +61,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, dom: HTMLElement) => {
               }
             } else {
               const v = dom.getAttribute(key);
-              if (v !== String(props[key])) {
+              if (v?.toString() !== String(props[key])) {
                 log({
                   fiber,
                   message: `hydrate warning, dom ${v} attr not match from server. server: ${v}, client: ${props[key]}`,
@@ -82,7 +82,7 @@ const domStyleHydrate = (fiber: MyReactFiberNode, dom: HTMLElement) => {
     Object.keys(props)
       .filter(isStyle)
       .forEach((styleKey) => {
-        const typedProps = props[styleKey] as Record<string, unknown>;
+        const typedProps = (props[styleKey] as Record<string, unknown>) || {};
         Object.keys(typedProps).forEach((styleName) => {
           if (
             Object.prototype.hasOwnProperty.call(
@@ -127,6 +127,8 @@ export const domHydrate = (
   dispatch: FiberDispatch
 ) => {
   fiber.dom = dom;
+
+  fiber.applyRef();
 
   domPropsHydrate(fiber, dom);
   domStyleHydrate(fiber, dom);

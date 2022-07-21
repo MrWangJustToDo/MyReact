@@ -24,6 +24,8 @@ export const updateFiberNode = (
 
   const newVDom = fiber.__vdom__;
 
+  fiber.checkVDom();
+
   if (prevVDom !== newVDom) {
     // only need update if vdom changed
     fiber.prepareUpdate();

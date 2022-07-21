@@ -1,7 +1,9 @@
+import { HOOK_TYPE } from '../hook';
 import { enableAllCheck, globalDispatch, MyReactInternalType } from '../share';
 import { getSafeVDom, getTypeFromVDom, isValidElement } from '../vdom';
 
 import type { MyReactComponent } from '../component';
+import type { forwardRef, memo } from '../element';
 import type { Action, MyReactHookNode } from '../hook';
 import type { MyReactInternalInstance } from '../share';
 import type {
@@ -150,8 +152,11 @@ class MyReactFiberInternal extends MyReactInternalType {
     __pendingUpdate__: false,
     __pendingAppend__: false,
     __pendingPosition__: false,
-    __pendingUnmount__: false,
     __pendingContext__: false,
+    __pendingUnmount__: false,
+    // current fiber have effect
+    __pendingEffect__: false,
+    __pendingReconcile__: false,
   };
 
   get __pendingCreate__() {
@@ -494,6 +499,75 @@ export class MyReactFiberNode extends MyReactFiberInternal {
     this.__vdom__ = safeVDom;
   }
 
+  // TODO
+  checkVDom() {
+    if (enableAllCheck.current) {
+      const vdom = this.element;
+      if (isValidElement(vdom)) {
+        const typedVDom = vdom as Children;
+        if (!typedVDom._store['validType']) {
+          if (this.__isContextConsumer__) {
+            if (typeof typedVDom.props.children !== 'function') {
+              throw new Error(`Consumer need a function children`);
+            }
+          }
+          if (this.__isMemo__ || this.__isForwardRef__) {
+            const typedType = typedVDom.type as
+              | ReturnType<typeof forwardRef>
+              | ReturnType<typeof memo>;
+            if (
+              typeof typedType.render !== 'function' &&
+              typeof typedType.render !== 'object'
+            ) {
+              throw new Error('invalid render type');
+            }
+            if (
+              this.__isForwardRef__ &&
+              typeof typedType.render !== 'function'
+            ) {
+              throw new Error('forwardRef() need a function component');
+            }
+          }
+          if (typedVDom.ref) {
+            if (
+              typeof typedVDom.ref !== 'object' &&
+              typeof typedVDom.ref !== 'function'
+            ) {
+              throw new Error(
+                'unSupport ref usage, should be a function or a object like {current: any}'
+              );
+            }
+          }
+          if (typedVDom.key && typeof typedVDom.key !== 'string') {
+            throw new Error('invalid key type');
+          }
+          if (
+            typedVDom.props.children &&
+            typedVDom.props['dangerouslySetInnerHTML']
+          ) {
+            throw new Error(
+              'can not render contain `children` and `dangerouslySetInnerHTML`'
+            );
+          }
+          if (typedVDom.props['dangerouslySetInnerHTML']) {
+            if (
+              typeof typedVDom.props['dangerouslySetInnerHTML'] !== 'object' ||
+              !Object.prototype.hasOwnProperty.call(
+                typedVDom.props['dangerouslySetInnerHTML'],
+                '__html'
+              )
+            ) {
+              throw new Error(
+                'invalid dangerouslySetInnerHTML props, should like {__html: string}'
+              );
+            }
+          }
+          typedVDom._store['validType'] = true;
+        }
+      }
+    }
+  }
+
   initialType() {
     const vdom = this.element;
     if (isValidElement(vdom)) {
@@ -556,6 +630,26 @@ export class MyReactFiberNode extends MyReactFiberInternal {
       this.hookFoot.hookNext = hookNode;
       hookNode.hookPrev = this.hookFoot;
       this.hookFoot = hookNode;
+    }
+  }
+
+  checkHook(hookNode: MyReactHookNode) {
+    if (enableAllCheck.current) {
+      if (
+        hookNode.hookType === HOOK_TYPE.useMemo ||
+        hookNode.hookType === HOOK_TYPE.useEffect ||
+        hookNode.hookType === HOOK_TYPE.useCallback ||
+        hookNode.hookType === HOOK_TYPE.useLayoutEffect
+      ) {
+        if (typeof hookNode.value !== 'function') {
+          throw new Error(`${hookNode.hookType} initial error`);
+        }
+      }
+      if (hookNode.hookType === HOOK_TYPE.useContext) {
+        if (typeof hookNode.value !== 'object' || hookNode.value === null) {
+          throw new Error(`${hookNode.hookType} initial error`);
+        }
+      }
     }
   }
 

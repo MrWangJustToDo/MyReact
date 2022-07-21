@@ -34,6 +34,8 @@ export const createHookNode = (
 
   fiber.addHook(newHookNode);
 
+  fiber.checkHook(newHookNode);
+
   newHookNode.initialResult();
 
   return newHookNode;

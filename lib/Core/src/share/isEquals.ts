@@ -33,7 +33,12 @@ export const isNormalEquals = (
 
 export const isArrayEquals = (src: any[], target: any[]) => {
   if (src.length === target.length) {
-    return src.every((index) => src[index] === target[index]);
+    let re = true;
+    for (const key in src) {
+      re = re && Object.is(src[key], target[key]);
+      if (!re) return re;
+    }
+    return re;
   }
   return false;
 };

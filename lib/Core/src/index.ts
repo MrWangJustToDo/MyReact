@@ -103,4 +103,43 @@ const mixin = { ...React, ...ReactDOM };
 
 export { React, ReactDOM };
 
+export {
+  Component,
+  PureComponent,
+  createElement,
+  cloneElement,
+  isValidElement,
+  lazy,
+  memo,
+  createRef,
+  forwardRef,
+  createContext,
+  Portal,
+  Element,
+  Provider,
+  Consumer,
+  Fragment,
+  Suspense,
+  StrictMode,
+  ForwardRef,
+  useRef,
+  useMemo,
+  useState,
+  useEffect,
+  useReducer,
+  useContext,
+  useCallback,
+  useDebugValue,
+  useLayoutEffect,
+  useImperativeHandle,
+  Children,
+  render,
+  hydrate,
+  findDOMNode,
+  createPortal,
+  renderToString,
+  unmountComponentAtNode,
+  unstable_batchedUpdates,
+};
+
 export default mixin;

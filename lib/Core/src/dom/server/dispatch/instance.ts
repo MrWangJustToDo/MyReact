@@ -65,7 +65,7 @@ export class ServerDispatch implements FiberDispatch {
       Object.keys(props)
         .filter(isStyle)
         .forEach((styleKey) => {
-          const typedProps = props[styleKey] as Record<string, unknown>;
+          const typedProps = (props[styleKey] as Record<string, unknown>) || {};
           Object.keys(typedProps).forEach((styleName) => {
             if (
               !Object.prototype.hasOwnProperty.call(
@@ -80,6 +80,12 @@ export class ServerDispatch implements FiberDispatch {
             (dom as any)[styleKey][styleName] = typedProps[styleName];
           });
         });
+      if (props['dangerouslySetInnerHTML']) {
+        dom.append(
+          (props['dangerouslySetInnerHTML'] as Record<string, unknown>)
+            .__html as string
+        );
+      }
     }
   }
   position(_fiber: MyReactFiberNode): void {

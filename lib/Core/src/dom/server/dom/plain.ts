@@ -8,7 +8,7 @@ export class PlainElement {
   // attrs
   style: Record<string, string | null | undefined> = {};
   attrs: Record<string, string | boolean | null | undefined> = {};
-  children: Array<TextElement | PlainElement> = [];
+  children: Array<TextElement | PlainElement | string> = [];
   constructor(type: string) {
     this.type = type;
   }
@@ -41,8 +41,12 @@ export class PlainElement {
     dom.forEach((d) => this.appendChild(d));
   }
 
-  appendChild(dom: PlainElement | TextElement) {
-    if (dom instanceof PlainElement || dom instanceof TextElement) {
+  appendChild(dom: PlainElement | TextElement | string) {
+    if (
+      dom instanceof PlainElement ||
+      dom instanceof TextElement ||
+      typeof dom === 'string'
+    ) {
       this.children.push(dom);
       return dom;
     } else {

@@ -18,6 +18,8 @@ export const createFiberNode = (
 ) => {
   const newFiberNode = new MyReactFiberNode(fiberIndex, parent, VDom);
 
+  newFiberNode.checkVDom();
+
   newFiberNode.initialType();
 
   newFiberNode.initialParent();

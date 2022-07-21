@@ -125,7 +125,6 @@ const getNewFiberWithUpdate = (
       newChild as ChildrenNode
     );
   } else {
-    console.log(newChild, assignPrevRenderedChild);
     if (assignPrevRenderedChild) {
       mapFiber(assignPrevRenderedChild, (f) => pushUnmount(f));
     }

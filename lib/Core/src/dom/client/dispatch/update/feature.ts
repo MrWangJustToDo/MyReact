@@ -68,19 +68,29 @@ export const updateDom = (fiber: MyReactFiberNode, dispatch: FiberDispatch) => {
             dom[key] = (newProps[key] as string) || '';
           }
         } else {
-          if (
-            newProps[key] !== null &&
-            newProps[key] !== false &&
-            newProps[key] !== undefined
-          ) {
-            if (key in dom && !fiber.nameSpace) {
+          if (key in dom && !fiber.nameSpace) {
+            if (
+              newProps[key] !== null &&
+              newProps[key] !== false &&
+              newProps[key] !== undefined
+            ) {
               (dom as any)[key] = newProps[key];
             } else {
+              (dom as any)[key] = '';
+            }
+          } else {
+            if (
+              newProps[key] !== null &&
+              newProps[key] !== false &&
+              newProps[key] !== undefined
+            ) {
               dom.setAttribute(key, String(newProps[key]));
+            } else {
+              dom.removeAttribute(key);
             }
-            if (key === 'autofocus' || key === 'autoFocus') {
-              Promise.resolve().then(() => dom.focus());
-            }
+          }
+          if ((key === 'autofocus' || key === 'autoFocus') && newProps[key]) {
+            Promise.resolve().then(() => dom.focus());
           }
         }
       });
@@ -109,9 +119,20 @@ export const updateDom = (fiber: MyReactFiberNode, dispatch: FiberDispatch) => {
               typedNewProps[styleName] !== undefined
             ) {
               (dom as any)[styleKey][styleName] = typedNewProps[styleName];
+            } else {
+              (dom as any)[styleKey][styleName] = '';
             }
           });
       });
+    if (
+      newProps['dangerouslySetInnerHTML'] &&
+      newProps['dangerouslySetInnerHTML'] !==
+        oldProps['dangerouslySetInnerHTML']
+    ) {
+      dom.innerHTML = (
+        newProps['dangerouslySetInnerHTML'] as Record<string, unknown>
+      ).__html as string;
+    }
   }
   fiber.applyVDom();
 

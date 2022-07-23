@@ -35,11 +35,12 @@ export type HookUpdateQueue = {
 class MyReactFiberInternal extends MyReactInternalType {
   __internal_node_diff__: {
     __renderedChildren__: Array<MyReactFiberNode | MyReactFiberNode[]>;
+    __renderedChildHead__: MyReactFiberNode | null;
+    __renderedChildFoot__: MyReactFiberNode | null;
     __renderedCount__: number;
     __dynamicChildren__: ChildrenNode | null;
     __isRenderDynamic__: boolean;
     __isUpdateRender__: boolean;
-    __isIgnoreHook__: boolean;
     __updateTimeStep__: number;
     __lastUpdateTimeStep__: number;
     __updateTimeSpace__: number;
@@ -48,6 +49,10 @@ class MyReactFiberInternal extends MyReactInternalType {
   } = {
     __renderedChildren__: [],
 
+    __renderedChildHead__: null,
+
+    __renderedChildFoot__: null,
+
     __renderedCount__: 1,
 
     __isRenderDynamic__: false,
@@ -55,8 +60,6 @@ class MyReactFiberInternal extends MyReactInternalType {
     __dynamicChildren__: null,
 
     __isUpdateRender__: false,
-
-    __isIgnoreHook__: false,
 
     __updateTimeStep__: Date.now(),
 
@@ -75,14 +78,6 @@ class MyReactFiberInternal extends MyReactInternalType {
 
   set __isUpdateRender__(v) {
     this.__internal_node_diff__.__isUpdateRender__ = v;
-  }
-
-  get __isIgnoreHook__() {
-    return this.__internal_node_diff__.__isIgnoreHook__;
-  }
-
-  set __isIgnoreHook__(v) {
-    this.__internal_node_diff__.__isIgnoreHook__ = v;
   }
 
   get __isRenderDynamic__() {
@@ -107,6 +102,22 @@ class MyReactFiberInternal extends MyReactInternalType {
 
   set __renderedChildren__(v) {
     this.__internal_node_diff__.__renderedChildren__ = v;
+  }
+
+  get __renderedChildHead__() {
+    return this.__internal_node_diff__.__renderedChildHead__;
+  }
+
+  set __renderedChildHead__(v) {
+    this.__internal_node_diff__.__renderedChildHead__ = v;
+  }
+
+  get __renderedChildFoot__() {
+    return this.__internal_node_diff__.__renderedChildFoot__;
+  }
+
+  set __renderedChildFoot__(v) {
+    this.__internal_node_diff__.__renderedChildFoot__ = v;
   }
 
   get __dynamicChildren__() {
@@ -153,10 +164,6 @@ class MyReactFiberInternal extends MyReactInternalType {
     __pendingAppend__: false,
     __pendingPosition__: false,
     __pendingContext__: false,
-    __pendingUnmount__: false,
-    // current fiber have effect
-    __pendingEffect__: false,
-    __pendingReconcile__: false,
   };
 
   get __pendingCreate__() {
@@ -191,44 +198,12 @@ class MyReactFiberInternal extends MyReactInternalType {
     this.__internal_node_state__.__pendingPosition__ = v;
   }
 
-  get __pendingUnmount__() {
-    return this.__internal_node_state__.__pendingUnmount__;
-  }
-
-  set __pendingUnmount__(v) {
-    this.__internal_node_state__.__pendingUnmount__ = v;
-  }
-
   get __pendingContext__() {
     return this.__internal_node_state__.__pendingContext__;
   }
 
   set __pendingContext__(v) {
     this.__internal_node_state__.__pendingContext__ = v;
-  }
-
-  __internal_node_dom__: {
-    dom: HTMLElement | Text | null;
-    nameSpace: string | null;
-  } = {
-    dom: null,
-    nameSpace: null,
-  };
-
-  get dom() {
-    return this.__internal_node_dom__.dom;
-  }
-
-  set dom(v) {
-    this.__internal_node_dom__.dom = v;
-  }
-
-  get nameSpace() {
-    return this.__internal_node_dom__.nameSpace;
-  }
-
-  set nameSpace(v) {
-    this.__internal_node_dom__.nameSpace = v;
   }
 
   __internal_node_event__: Record<
@@ -319,18 +294,28 @@ class MyReactFiberInternal extends MyReactInternalType {
     return this.__internal_node_props__.__prevProps__;
   }
 
-  __internal_node_update__: {
-    updateQueue: Array<ComponentUpdateQueue | HookUpdateQueue>;
+  __internal_node_dom__: {
+    dom: Element | Text | null;
+    nameSpace: string | null;
   } = {
-    updateQueue: [],
+    dom: null,
+    nameSpace: null,
   };
 
-  get updateQueue() {
-    return this.__internal_node_update__.updateQueue;
+  get dom() {
+    return this.__internal_node_dom__.dom;
   }
 
-  set updateQueue(v) {
-    this.__internal_node_update__.updateQueue = v;
+  set dom(v) {
+    this.__internal_node_dom__.dom = v;
+  }
+
+  get nameSpace() {
+    return this.__internal_node_dom__.nameSpace;
+  }
+
+  set nameSpace(v) {
+    this.__internal_node_dom__.nameSpace = v;
   }
 
   __internal_node_hook__: {
@@ -369,6 +354,60 @@ class MyReactFiberInternal extends MyReactInternalType {
   set hookType(v) {
     this.__internal_node_hook__.hookType = v;
   }
+
+  __internal_node_update__: {
+    compUpdateQueue: Array<ComponentUpdateQueue>;
+    hookUpdateQueue: Array<HookUpdateQueue>;
+    unmountQueue: Array<MyReactFiberNode | MyReactFiberNode[]>;
+    effectQueue: Array<() => void>;
+    layoutEffectQueue: Array<() => void>;
+  } = {
+    compUpdateQueue: [],
+    hookUpdateQueue: [],
+    unmountQueue: [],
+    effectQueue: [],
+    layoutEffectQueue: [],
+  };
+
+  get compUpdateQueue() {
+    return this.__internal_node_update__.compUpdateQueue;
+  }
+
+  set compUpdateQueue(v) {
+    this.__internal_node_update__.compUpdateQueue = v;
+  }
+
+  get hookUpdateQueue() {
+    return this.__internal_node_update__.hookUpdateQueue;
+  }
+
+  set hookUpdateQueue(v) {
+    this.__internal_node_update__.hookUpdateQueue = v;
+  }
+
+  get unmountQueue() {
+    return this.__internal_node_update__.unmountQueue;
+  }
+
+  set unmountQueue(v) {
+    this.__internal_node_update__.unmountQueue = v;
+  }
+
+  get effectQueue() {
+    return this.__internal_node_update__.effectQueue;
+  }
+
+  set effectQueue(v) {
+    this.__internal_node_update__.effectQueue = v;
+  }
+
+  get layoutEffectQueue() {
+    return this.__internal_node_update__.layoutEffectQueue;
+  }
+
+  set layoutEffectQueue(v) {
+    this.__internal_node_update__.layoutEffectQueue = v;
+  }
 }
 
 export class MyReactFiberNode extends MyReactFiberInternal {
@@ -380,29 +419,19 @@ export class MyReactFiberNode extends MyReactFiberInternal {
 
   child: MyReactFiberNode | null = null;
 
-  fiberHead: MyReactFiberNode | null = null;
-
-  fiberFoot: MyReactFiberNode | null = null;
-
   parent: MyReactFiberNode | null = null;
 
   sibling: MyReactFiberNode | null = null;
 
   instance: MyReactInternalInstance | null = null;
 
-  // hookHead: null | MyReactHookNode = null;
-
-  // hookFoot: null | MyReactHookNode = null;
-
-  // hookList: MyReactHookNode[] = [];
-
-  // hookType: MyReactHookNode['hookType'][] = [];
-
   element: DynamicChildrenNode;
 
   __needUpdate__ = true;
 
   __needTrigger__ = false;
+
+  __needReconcile__ = true;
 
   constructor(
     index: number,
@@ -418,13 +447,13 @@ export class MyReactFiberNode extends MyReactFiberInternal {
 
   addChild(child: MyReactFiberNode) {
     this.children.push(child);
-    if (this.fiberFoot) {
-      this.fiberFoot.sibling = child;
-      this.fiberFoot = child;
+    if (this.__renderedChildFoot__) {
+      this.__renderedChildFoot__.sibling = child;
+      this.__renderedChildFoot__ = child;
     } else {
       this.child = child;
-      this.fiberHead = child;
-      this.fiberFoot = child;
+      this.__renderedChildHead__ = child;
+      this.__renderedChildFoot__ = child;
     }
   }
 
@@ -475,19 +504,34 @@ export class MyReactFiberNode extends MyReactFiberInternal {
   beforeUpdate() {
     this.child = null;
     this.children = [];
-    this.fiberHead = null;
-    this.fiberFoot = null;
+    this.__renderedChildHead__ = null;
+    this.__renderedChildFoot__ = null;
+  }
+
+  triggerUpdate() {
+    this.__needUpdate__ = true;
+    this.__needTrigger__ = true;
+    this.__needReconcile__ = true;
+    this.__isUpdateRender__ = true;
   }
 
   prepareUpdate() {
     this.__needUpdate__ = true;
+    this.__needReconcile__ = true;
     this.__isUpdateRender__ = true;
   }
 
   afterUpdate() {
     this.__needUpdate__ = false;
     this.__needTrigger__ = false;
-    this.__isIgnoreHook__ = false;
+    this.__isUpdateRender__ = false;
+    this.__isRenderDynamic__ = false;
+  }
+
+  stopUpdate() {
+    this.__needUpdate__ = false;
+    this.__needTrigger__ = false;
+    this.__needReconcile__ = false;
     this.__isUpdateRender__ = false;
     this.__isRenderDynamic__ = false;
   }
@@ -539,7 +583,7 @@ export class MyReactFiberNode extends MyReactFiberInternal {
             }
           }
           if (typedVDom.key && typeof typedVDom.key !== 'string') {
-            throw new Error('invalid key type');
+            throw new Error(`invalid key type, ${typedVDom.key}`);
           }
           if (
             typedVDom.props.children &&
@@ -661,10 +705,20 @@ export class MyReactFiberNode extends MyReactFiberInternal {
         if (typeof ref === 'object' && ref !== null) {
           ref.current = this.dom;
         } else if (typeof ref === 'function') {
-          ref(this.dom as HTMLElement);
+          ref(this.dom as Element);
         }
       } else {
         throw new Error('do not have a dom for plain node');
+      }
+    } else if (this.__isClassComponent__) {
+      const typedElement = this.element as Children;
+      if (this.instance) {
+        const ref = typedElement.ref;
+        if (typeof ref === 'object' && ref !== null) {
+          ref.current = this.instance;
+        } else if (typeof ref === 'function') {
+          ref(this.instance);
+        }
       }
     }
   }
@@ -680,6 +734,6 @@ export class MyReactFiberNode extends MyReactFiberInternal {
   }
 
   update() {
-    globalDispatch.current.pendingUpdate(this);
+    globalDispatch.current.trigger(this);
   }
 }

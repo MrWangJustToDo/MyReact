@@ -1,35 +1,42 @@
 import type { MyReactFiberNode } from '../fiber';
 
 export interface FiberDispatch {
-  _createPlainNode(_fiber: MyReactFiberNode): void;
+  trigger(_fiber: MyReactFiberNode): void;
 
-  _createTextNode(_fiber: MyReactFiberNode): void;
-
-  _addEventListener(
+  reconcileCreate(
     _fiber: MyReactFiberNode,
-    _dom: HTMLElement,
-    _key: string
+    _hydrate: boolean,
+    _parentFiberWithDom: MyReactFiberNode
   ): void;
 
-  _removeEventListener(
+  // loop to mount/hydrate/update
+  reconcileCommit(
     _fiber: MyReactFiberNode,
-    _dom: HTMLElement,
-    _key: string
+    _hydrate: boolean,
+    _parentFiberWithDom: MyReactFiberNode
   ): void;
 
-  hydrate(_fiber: MyReactFiberNode): void;
-
-  create(_fiber: MyReactFiberNode): void;
-
-  append(_fiber: MyReactFiberNode): void;
-
-  update(_fiber: MyReactFiberNode): void;
-
-  position(_fiber: MyReactFiberNode): void;
-
-  unmount(_fiber: MyReactFiberNode): void;
+  pendingCreate(_fiber: MyReactFiberNode): void;
 
   pendingUpdate(_fiber: MyReactFiberNode): void;
+
+  pendingAppend(_fiber: MyReactFiberNode): void;
+
+  pendingContext(_fiber: MyReactFiberNode): void;
+
+  pendingPosition(_fiber: MyReactFiberNode): void;
+
+  pendingUnmount(
+    _fiber: MyReactFiberNode,
+    _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]
+  ): void;
+
+  pendingLayoutEffect(
+    _fiber: MyReactFiberNode,
+    _layoutEffect: () => void
+  ): void;
+
+  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void;
 
   updateAllSync(): void;
 

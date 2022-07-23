@@ -1,2 +1,4 @@
-export * from './text';
+export * from './append';
+export * from './create';
+export * from './update';
 export * from './plain';

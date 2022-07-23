@@ -1,12 +1,7 @@
-import {
-  renderLoopSync,
-  runAppend,
-  runCreate,
-  runHydrate,
-  runUpdate,
-} from '../../core';
-import { runEffect, runLayoutEffect } from '../../effect';
+import { renderLoopSync } from '../../core';
 import { globalLoop, isAppMounted, safeCall } from '../../share';
+
+import { reconcile } from './reconcile';
 
 import type { MyReactFiberNode } from '../../fiber';
 
@@ -15,19 +10,7 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
 
   safeCall(() => renderLoopSync(fiber));
 
-  if (hydrate) {
-    runHydrate();
-  }
-
-  runCreate();
-
-  runUpdate();
-
-  runAppend();
-
-  runLayoutEffect();
-
-  runEffect();
+  reconcile(fiber, hydrate);
 
   isAppMounted.current = true;
 

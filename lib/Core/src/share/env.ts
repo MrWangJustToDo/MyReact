@@ -5,9 +5,8 @@ import { createRef } from './createRef';
 import type { FiberDispatch } from '../dispatch';
 import type { PlainElement } from '../dom';
 import type { MyReactFiberNode } from '../fiber';
-import type { MyReactHookNode } from '../hook';
 
-export const asyncUpdateTimeLimit = 8;
+export const asyncUpdateTimeLimit = 6;
 
 export const globalLoop = createRef(false);
 
@@ -15,7 +14,7 @@ export const globalDispatch = createRef<FiberDispatch>(new EmptyDispatch());
 
 export const rootFiber = createRef<MyReactFiberNode | null>(null);
 
-export const rootContainer = createRef<HTMLElement | PlainElement | null>(null);
+export const rootContainer = createRef<Element | PlainElement | null>(null);
 
 export const currentRunningFiber = createRef<MyReactFiberNode | null>(null);
 
@@ -56,11 +55,6 @@ export const nRoundTransformFiberArray = createRef<MyReactFiberNode[]>([]);
 export const cRoundTransformFiberArray = createRef<MyReactFiberNode[]>([]);
 
 // ==== update ==== //
-export const pendingEffectArray = createRef<MyReactHookNode[][]>([]);
-
-export const pendingLayoutEffectArray = createRef<
-  Array<MyReactHookNode | (() => void)>[]
->([]);
 
 export const pendingSyncModifyFiberArray = createRef<MyReactFiberNode[]>([]);
 
@@ -71,12 +65,4 @@ export const pendingAsyncModifyTopLevelFiber =
 
 export const yieldAsyncModifyFiber = createRef<MyReactFiberNode | null>(null);
 
-export const pendingCreateFiberArray = createRef<MyReactFiberNode[]>([]);
-
-export const pendingUpdateFiberArray = createRef<MyReactFiberNode[]>([]);
-
-export const pendingAppendFiberArray = createRef<MyReactFiberNode[]>([]);
-
-export const pendingPositionFiberArray = createRef<MyReactFiberNode[]>([]);
-
-export const pendingUnmountFiberArray = createRef<MyReactFiberNode[]>([]);
+export const pendingReconcileFiberArray = createRef<MyReactFiberNode[]>([]);

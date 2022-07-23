@@ -1,33 +1,39 @@
 import { cloneElement, isValidElement } from '../vdom';
 
-import { mapByJudgeFunction } from './tool';
+import { mapByJudge } from './tool';
 
-import type { MaybeArrayChildrenNode } from '../vdom';
+import type { MaybeArrayChildrenNode, Children } from '../vdom';
 
 export const map = (
   arrayLike: MaybeArrayChildrenNode,
-  action: (...args: any[]) => any
-) => mapByJudgeFunction(arrayLike, (v) => v !== undefined, action);
+  action: (child: Children, index: number) => Children
+) => mapByJudge(arrayLike, (v) => v !== undefined && v !== null, action);
 
 export const toArray = (arrayLike: MaybeArrayChildrenNode) =>
-  map(arrayLike, (vdom, index) =>
-    cloneElement(vdom, {
-      key: vdom.key !== undefined ? `.$${vdom.key}` : `.${index}`,
+  map(arrayLike, (element, index) =>
+    cloneElement(element, {
+      key: element?.key !== undefined ? `.$${element.key}` : `.${index}`,
     })
   );
 
 export const forEach = (
   arrayLike: MaybeArrayChildrenNode,
-  action: (...args: any[]) => any
+  action: (
+    child: Children,
+    index: number,
+    children: MaybeArrayChildrenNode
+  ) => Children
 ) => {
-  mapByJudgeFunction(arrayLike, (v) => v !== undefined, action);
+  mapByJudge(arrayLike, (v) => v !== undefined && v !== null, action);
 };
+
 export const count = (arrayLike: MaybeArrayChildrenNode): number => {
   if (Array.isArray(arrayLike)) {
     return arrayLike.reduce<number>((p, c) => p + count(c), 0);
   }
   return 1;
 };
+
 export const only = (child: MaybeArrayChildrenNode) => {
   if (isValidElement(child)) return child;
   if (

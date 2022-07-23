@@ -1,4 +1,3 @@
-import { pushEffect, pushLayoutEffect } from '../effect';
 import {
   createRef,
   currentFunctionFiber,
@@ -11,7 +10,7 @@ import { getHookNode } from './create';
 import { HOOK_TYPE } from './instance';
 
 import type { createContext } from '../element';
-import type { Reducer, MyReactHookNode } from './instance';
+import type { Reducer } from './instance';
 
 export const useState = <T = any>(initial: T | (() => T)) => {
   const currentHookNode = getHookNode(
@@ -160,16 +159,5 @@ export const useDebugValue = (...args: any[]) => {
       ...args,
       getFiberTree(currentFunctionFiber.current)
     );
-  }
-};
-
-export const pushHookEffect = (hookNode: MyReactHookNode) => {
-  if (!hookNode.__pendingEffect__ && hookNode.__fiber__) {
-    hookNode.__pendingEffect__ = true;
-    if (hookNode.hookType === HOOK_TYPE.useEffect) {
-      pushEffect(hookNode.__fiber__, hookNode);
-    } else {
-      pushLayoutEffect(hookNode.__fiber__, hookNode);
-    }
   }
 };

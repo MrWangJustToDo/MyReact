@@ -11,23 +11,25 @@ export const renderLoopSync = (fiber: MyReactFiberNode) => {
 };
 
 export const renderLoopAsync = (
-  control: {
-    get: () => MyReactFiberNode | null;
-    set: (f: MyReactFiberNode) => void;
-    has: () => boolean;
-    yield: () => boolean;
+  loopController: {
+    setYield: (f: MyReactFiberNode | null) => void;
+    getNext: () => MyReactFiberNode | null;
+    hasNext: () => boolean;
+    doesPause: () => boolean;
   },
-  shouldYield: () => boolean,
-  cb: () => void,
-  final: () => void
+  shouldPause: () => boolean,
+  reconcileCommit: () => void,
+  afterAsyncLoop: () => void
 ) => {
-  while (control.has() && !shouldYield()) {
-    const fiber = control.get();
+  while (loopController.hasNext() && !shouldPause()) {
+    const fiber = loopController.getNext();
     if (fiber) {
       const nextFiber = safeCall(() => nextWorkAsync(fiber));
-      if (nextFiber) control.set(nextFiber);
+      loopController.setYield(nextFiber);
     }
   }
-  cb();
-  final();
+  if (!loopController.doesPause()) {
+    reconcileCommit();
+  }
+  afterAsyncLoop();
 };

@@ -7,7 +7,7 @@ import type { Children } from '../../../../vdom';
 
 export const removeEventListener = (
   fiber: MyReactFiberNode,
-  dom: HTMLElement,
+  dom: Element,
   key: string
 ) => {
   const typedElement = fiber.__prevVdom__ as Children;

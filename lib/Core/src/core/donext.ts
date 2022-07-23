@@ -11,6 +11,7 @@ import {
   isServerRender,
   pendingAsyncModifyTopLevelFiber,
 } from '../share';
+import { createElement } from '../vdom';
 
 import { transformChildrenFiber } from './tool';
 
@@ -26,13 +27,11 @@ import type {
 export const nextWorkCommon = (fiber: MyReactFiberNode) => {
   if (fiber.__isRenderDynamic__) {
     return transformChildrenFiber(fiber, fiber.__dynamicChildren__);
-  } else if (fiber.__children__ !== undefined) {
+  } else {
     return transformChildrenFiber(
       fiber,
       fiber.__children__ as MaybeArrayChildrenNode
     );
-  } else {
-    return [];
   }
 };
 
@@ -119,37 +118,11 @@ const nextWorkLazy = (fiber: MyReactFiberNode) => {
   const typedType = type as ReturnType<typeof lazy>;
 
   if (typedType._loaded === true) {
-    const render = typedType.render;
+    const render = typedType.render as Children;
 
-    if (typeof render === 'function') {
-      const isClassComponent = render.prototype.isMyReactComponent;
+    fiber.__dynamicChildren__ = render;
 
-      if (isClassComponent) {
-        return nextWorkClassComponent(fiber);
-      } else {
-        processHookUpdateQueue(fiber);
-
-        currentHookDeepIndex.current = 0;
-
-        currentFunctionFiber.current = fiber;
-
-        const typedRender = render as FunctionComponent;
-
-        const children = typedRender(fiber.__props__);
-
-        currentFunctionFiber.current = null;
-
-        currentHookDeepIndex.current = 0;
-
-        fiber.__dynamicChildren__ = children;
-
-        return nextWorkCommon(fiber);
-      }
-    } else {
-      fiber.__dynamicChildren__ = render as Children;
-
-      return nextWorkCommon(fiber);
-    }
+    return nextWorkCommon(fiber);
   } else if (typedType._loading === false) {
     if (!isServerRender.current) {
       typedType._loading = true;
@@ -162,8 +135,10 @@ const nextWorkLazy = (fiber: MyReactFiberNode) => {
               : re;
           typedType._loaded = true;
           typedType._loading = false;
-          typedType.render = render as ClassComponent | FunctionComponent;
-          fiber.__isIgnoreHook__ = true;
+          typedType.render = createElement(
+            render as ClassComponent | FunctionComponent,
+            fiber.__props__
+          );
           fiber.update();
         });
     }
@@ -199,15 +174,15 @@ const nextWorkForwardRef = (fiber: MyReactFiberNode) => {
 };
 
 const nextWorkProvider = (fiber: MyReactFiberNode) => {
-  if (fiber.__pendingContext__) {
-    const allListeners = fiber.__dependence__.map((n) => n.__fiber__);
+  // if (fiber.__pendingContext__) {
+  //   const allListeners = fiber.__dependence__.map((n) => n.__fiber__);
 
-    Promise.resolve().then(() => {
-      allListeners.filter((f) => f && f.mount).forEach((f) => f?.update());
-    });
+  //   Promise.resolve().then(() =>
+  //     allListeners.filter((f) => f && f.mount).forEach((f) => f?.update())
+  //   );
 
-    fiber.__pendingContext__ = false;
-  }
+  //   fiber.__pendingContext__ = false;
+  // }
 
   return nextWorkCommon(fiber);
 };
@@ -286,10 +261,10 @@ export const nextWorkAsync = (fiber: MyReactFiberNode) => {
     else nextWorkCommon(fiber);
 
     currentRunningFiber.current = null;
-  }
 
-  if (fiber.children.length) {
-    return fiber.child;
+    if (fiber.children.length) {
+      return fiber.child;
+    }
   }
 
   let nextFiber: MyReactFiberNode | null = fiber;

@@ -1,11 +1,10 @@
 import { nextWorkCommon } from '../core';
-import { pushLayoutEffect } from '../effect';
 import {
   getContextFiber,
   getContextValue,
   processComponentUpdateQueue,
 } from '../fiber';
-import { safeCallWithFiber } from '../share';
+import { globalDispatch } from '../share';
 
 import type { memo } from '../element';
 import type { MyReactFiberNode } from '../fiber';
@@ -68,16 +67,9 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   instance.setContext(ProviderFiber);
 };
 
-const processComponentRefOnMount = (fiber: MyReactFiberNode) => {
-  const typedElement = fiber.element as Children;
+const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
-  if (typedElement.ref) {
-    if (typeof typedElement.ref === 'function') {
-      typedElement.ref(typedInstance);
-    } else {
-      typedElement.ref.current = typedInstance;
-    }
-  }
+  typedInstance.setFiber(fiber);
 };
 
 const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
@@ -93,15 +85,11 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  // TODO remove all the effect array
-  if (!typedInstance.__pendingEffect__ && typedInstance.componentDidMount) {
+  if (typedInstance.componentDidMount && !typedInstance.__pendingEffect__) {
     typedInstance.__pendingEffect__ = true;
-    pushLayoutEffect(fiber, () => {
-      safeCallWithFiber({
-        action: () => typedInstance.componentDidMount?.(),
-        fiber,
-      });
+    globalDispatch.current.pendingLayoutEffect(fiber, () => {
       typedInstance.__pendingEffect__ = false;
+      typedInstance.componentDidMount?.();
     });
   }
 };
@@ -173,24 +161,20 @@ const processComponentDidUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
   const hasEffect = typedInstance.componentDidUpdate || callback.length;
+
+  // TODO it is necessary to use __pendingEffect__ field ?
   if (hasEffect && !typedInstance.__pendingEffect__) {
     typedInstance.__pendingEffect__ = true;
-    pushLayoutEffect(fiber, () => {
-      safeCallWithFiber({
-        action: () => {
-          callback.forEach((c) => c.call(null));
-          typedInstance.componentDidUpdate?.(baseProps, baseState, baseContext);
-        },
-        fiber,
-      });
+    globalDispatch.current.pendingLayoutEffect(fiber, () => {
       typedInstance.__pendingEffect__ = false;
+      callback.forEach((c) => c.call(null));
+      typedInstance.componentDidUpdate?.(baseProps, baseState, baseContext);
     });
   }
 };
 
 export const classComponentMount = (fiber: MyReactFiberNode) => {
   processComponentInstanceOnMount(fiber);
-  processComponentRefOnMount(fiber);
   const payloadState = processComponentStateFromProps(fiber);
   const typedInstance = fiber.instance as MixinMyReactComponentType;
   typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
@@ -200,7 +184,7 @@ export const classComponentMount = (fiber: MyReactFiberNode) => {
 };
 
 export const classComponentUpdate = (fiber: MyReactFiberNode) => {
-  fiber.instance?.setFiber(fiber);
+  processComponentFiberOnUpdate(fiber);
   const payloadState = processComponentStateFromProps(fiber);
   const { newState, isForce, callback } = processComponentUpdateQueue(fiber);
   const typedInstance = fiber.instance as MixinMyReactComponentType;

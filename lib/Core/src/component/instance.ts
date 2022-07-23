@@ -34,7 +34,7 @@ export type MixinMyReactComponentType<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,
   C extends Record<string, unknown> = any
-> = MyReactComponent & MyReactComponentType<P, S, C>;
+> = MyReactComponent<P, S, C> & MyReactComponentType<P, S, C>;
 
 export class MyReactComponent<
   P extends Record<string, unknown> = any,
@@ -69,7 +69,7 @@ export class MyReactComponent<
       callback,
       trigger: this,
     };
-    this.__fiber__?.updateQueue.push(updater);
+    this.__fiber__?.compUpdateQueue.push(updater);
     this.__fiber__?.update();
   }
 
@@ -79,7 +79,7 @@ export class MyReactComponent<
       isForce: true,
       trigger: this,
     };
-    this.__fiber__?.updateQueue.push(updater);
+    this.__fiber__?.compUpdateQueue.push(updater);
     this.__fiber__?.update();
   }
 }

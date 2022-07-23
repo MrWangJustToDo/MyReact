@@ -1,29 +1,34 @@
 import {
+  cannotUpdate,
+  enableAsyncUpdate,
   globalDispatch,
-  pendingUpdateFiberArray,
-  safeCallWithFiber,
+  globalLoop,
+  pendingAsyncModifyFiberArray,
+  pendingSyncModifyFiberArray,
 } from '../share';
 
 import type { MyReactFiberNode } from '../fiber';
 
-export const pushUpdate = (fiber: MyReactFiberNode) => {
-  if (!fiber.__isTextNode__ && !fiber.__isPlainNode__) return;
-  if (!fiber.__pendingUpdate__) {
-    fiber.__pendingUpdate__ = true;
-    pendingUpdateFiberArray.current.push(fiber);
+const updateEntry = () => {
+  if (globalLoop.current) return;
+  if (enableAsyncUpdate.current) {
+    globalDispatch.current.updateAllAsync();
+  } else {
+    globalDispatch.current.updateAllSync();
   }
 };
 
-export const runUpdate = () => {
-  const allPendingUpdate = pendingUpdateFiberArray.current.slice(0);
-  allPendingUpdate.forEach((fiber) => {
-    if (fiber.mount && fiber.__pendingUpdate__) {
-      safeCallWithFiber({
-        action: () => globalDispatch.current.update(fiber),
-        fiber,
-      });
-      fiber.__pendingUpdate__ = false;
+const asyncUpdate = () => Promise.resolve().then(updateEntry);
+
+export const triggerUpdate = (fiber: MyReactFiberNode) => {
+  const canUpdate = cannotUpdate();
+  if (canUpdate) {
+    fiber.triggerUpdate();
+    if (enableAsyncUpdate.current) {
+      pendingAsyncModifyFiberArray.current.push(fiber);
+    } else {
+      pendingSyncModifyFiberArray.current.push(fiber);
     }
-  });
-  pendingUpdateFiberArray.current = [];
+    asyncUpdate();
+  }
 };

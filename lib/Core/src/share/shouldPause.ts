@@ -1,6 +1,6 @@
 import { asyncUpdateTimeLimit, asyncUpdateTimeStep } from './env';
 
-export const shouldYieldAsyncUpdate = () => {
+export const shouldPauseAsyncUpdate = () => {
   if (!asyncUpdateTimeStep.current) {
     asyncUpdateTimeStep.current = performance.now();
     return false;

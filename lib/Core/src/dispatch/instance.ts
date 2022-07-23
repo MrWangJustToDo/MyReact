@@ -2,45 +2,51 @@ import type { MyReactFiberNode } from '../fiber';
 import type { FiberDispatch } from './interface';
 
 export class EmptyDispatch implements FiberDispatch {
-  _createPlainNode(_fiber: MyReactFiberNode): void {
+  trigger(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  _createTextNode(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-  _addEventListener(
+  reconcileCreate(
     _fiber: MyReactFiberNode,
-    _dom: HTMLElement,
-    _key: string
+    _hydrate: boolean,
+    _parentFiberWithDom: MyReactFiberNode
   ): void {
     void 0;
   }
-  _removeEventListener(
+  reconcileCommit(
     _fiber: MyReactFiberNode,
-    _dom: HTMLElement,
-    _key: string
+    _hydrate: boolean,
+    _parentFiberWithDom: MyReactFiberNode
   ): void {
     void 0;
   }
-  hydrate(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-  create(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-  append(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-  update(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-  position(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-  unmount(_fiber: MyReactFiberNode): void {
+  pendingCreate(_fiber: MyReactFiberNode): void {
     void 0;
   }
   pendingUpdate(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  pendingAppend(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  pendingContext(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  pendingPosition(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  pendingUnmount(
+    _fiber: MyReactFiberNode,
+    _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]
+  ): void {
+    void 0;
+  }
+  pendingLayoutEffect(
+    _fiber: MyReactFiberNode,
+    _layoutEffect: () => void
+  ): void {
+    void 0;
+  }
+  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
     void 0;
   }
   updateAllSync(): void {

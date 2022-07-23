@@ -36,15 +36,15 @@ export const isValidElement = (element?: MaybeArrayChildrenNode | null) => {
 export const getSafeVDom = <
   T extends DynamicChildrenNode = DynamicChildrenNode
 >(
-  vdom: T
-) => (vdom === null || vdom === undefined || vdom === false ? '' : vdom);
+  element: T
+) =>
+  element === null || element === undefined || element === false ? '' : element;
 
-export const getTypeFromVDom = (vdom: Children) => {
+export const getTypeFromVDom = (element: Children) => {
   const nodeType: { [key in typeof NODE_TYPE_KEY[number]]?: boolean } = {};
-  const rawType = vdom.type;
+  const rawType = element.type;
   if (typeof rawType === 'object') {
     nodeType.__isObjectNode__ = true;
-    // build-error
     const typedRawType = rawType as { ['$$typeof']: symbol };
     switch (typedRawType['$$typeof']) {
       case My_React_Provider:
@@ -94,7 +94,7 @@ export const getTypeFromVDom = (vdom: Children) => {
   } else if (typeof rawType === 'string') {
     nodeType.__isPlainNode__ = true;
   } else {
-    throw new Error(`invalid vdom type ${rawType}`);
+    throw new Error(`invalid element type ${rawType}`);
   }
   return nodeType;
 };

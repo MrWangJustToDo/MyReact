@@ -1,10 +1,6 @@
 import type { MixinMyReactComponentType } from '../component';
 import type { createContext } from '../element';
-import type {
-  ComponentUpdateQueue,
-  HookUpdateQueue,
-  MyReactFiberNode,
-} from './instance';
+import type { MyReactFiberNode } from './instance';
 
 export const getContextFiber = (
   fiber: MyReactFiberNode | null,
@@ -26,37 +22,17 @@ export const getContextValue = (
     fiber ? fiber.__props__.value : ContextObject?.Provider.value
   ) as Record<string, unknown> | null;
 
-  // context value should keep original
   return contextValue;
-
-  // return typeof contextValue === 'object' && contextValue !== null
-  //   ? Object.assign({}, contextValue)
-  //   : contextValue;
-};
-
-const getAllUpdater = (fiber: MyReactFiberNode) => {
-  const allUpdater = fiber.updateQueue.slice(0);
-  const allComponentUpdater: ComponentUpdateQueue[] = [];
-  const allHookUpdater: HookUpdateQueue[] = [];
-  allUpdater.forEach((updater) => {
-    if (updater.type === 'hook') {
-      allHookUpdater.push(updater);
-    } else {
-      allComponentUpdater.push(updater);
-    }
-  });
-
-  return { allComponentUpdater, allHookUpdater };
 };
 
 export const processComponentUpdateQueue = (fiber: MyReactFiberNode) => {
-  const { allComponentUpdater, allHookUpdater } = getAllUpdater(fiber);
-  fiber.updateQueue = allHookUpdater;
+  const allComponentUpdater = fiber.compUpdateQueue.slice(0);
+  fiber.compUpdateQueue = [];
   const typedInstance = fiber.instance as MixinMyReactComponentType;
   const baseState = Object.assign({}, typedInstance.state);
   const baseProps = Object.assign({}, typedInstance.props);
   return allComponentUpdater.reduce<{
-    newState: any;
+    newState: Record<string, unknown>;
     isForce: boolean;
     callback: Array<() => void>;
   }>(
@@ -75,8 +51,8 @@ export const processComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 };
 
 export const processHookUpdateQueue = (fiber: MyReactFiberNode) => {
-  const { allComponentUpdater, allHookUpdater } = getAllUpdater(fiber);
-  fiber.updateQueue = allComponentUpdater;
+  const allHookUpdater = fiber.hookUpdateQueue.slice(0);
+  fiber.hookUpdateQueue = [];
   allHookUpdater.forEach(({ action, trigger }) => {
     trigger.result = trigger.reducer(trigger.result, action);
   });

@@ -1,13 +1,13 @@
-import { log } from '../../../../share';
+import { IS_SINGLE_ELEMENT, log } from '../../../../share';
 
 import type { MyReactFiberNode } from '../../../../fiber';
 import type { Children } from '../../../../vdom';
 
-type HydrateDOM = HTMLElement & {
+type HydrateDOM = Element & {
   __hydrate__: boolean;
 };
 
-const getNextHydrateDom = (parentDom: HTMLElement) => {
+const getNextHydrateDom = (parentDom: Element) => {
   const children = Array.from(parentDom.childNodes);
 
   return children.find(
@@ -61,17 +61,22 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
   throw new Error('hydrate error, look like a bug');
 };
 
-export const getHydrateDom = (
-  fiber: MyReactFiberNode,
-  parentDom: HTMLElement
-): HTMLElement | false => {
+export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
+  if (
+    Object.prototype.hasOwnProperty.call(
+      IS_SINGLE_ELEMENT,
+      parentDom.tagName.toLowerCase()
+    )
+  )
+    return { result: true };
   const dom = getNextHydrateDom(parentDom);
   const result = checkHydrateDom(fiber, dom);
   if (result) {
     const typedDom = dom as HydrateDOM;
     typedDom.__hydrate__ = true;
-    return typedDom;
+    fiber.dom = typedDom;
+    return { dom: typedDom, result };
   } else {
-    return false;
+    return { dom, result };
   }
 };

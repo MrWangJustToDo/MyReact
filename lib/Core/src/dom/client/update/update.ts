@@ -1,19 +1,12 @@
-import {
-  renderLoopAsync,
-  renderLoopSync,
-  runAppend,
-  runCreate,
-  runPosition,
-  runUnmount,
-  runUpdate,
-} from '../../../core';
-import { runEffect, runLayoutEffect } from '../../../effect';
+import { renderLoopAsync, renderLoopSync } from '../../../core';
 import {
   globalLoop,
+  pendingReconcileFiberArray,
   pendingSyncModifyFiberArray,
   safeCall,
-  shouldYieldAsyncUpdate,
+  shouldPauseAsyncUpdate,
 } from '../../../share';
+import { reconcile } from '../../shared';
 
 import {
   getPendingSyncModifyFiberArray,
@@ -27,21 +20,9 @@ export const updateAllSync = () => {
 
   if (allPendingUpdate.length) {
     safeCall(() => allPendingUpdate.forEach(renderLoopSync));
-
-    runCreate();
-
-    runUpdate();
-
-    runPosition();
-
-    runAppend();
-
-    runUnmount();
-
-    runLayoutEffect();
-
-    runEffect();
   }
+
+  allPendingUpdate.forEach((fiber) => reconcile(fiber, false));
 
   globalLoop.current = false;
 
@@ -57,23 +38,11 @@ export const updateAllAsync = () => {
 
   renderLoopAsync(
     pendingAsyncModifyFiberControl,
-    shouldYieldAsyncUpdate,
+    shouldPauseAsyncUpdate,
     () => {
-      if (!pendingAsyncModifyFiberControl.yield()) {
-        runCreate();
-
-        runUpdate();
-
-        runPosition();
-
-        runAppend();
-
-        runUnmount();
-
-        runLayoutEffect();
-
-        runEffect();
-      }
+      const allUpdate = pendingReconcileFiberArray.current;
+      allUpdate.forEach((fiber) => reconcile(fiber, false));
+      pendingReconcileFiberArray.current = [];
     },
     () => {
       globalLoop.current = false;
@@ -81,7 +50,7 @@ export const updateAllAsync = () => {
   );
 
   Promise.resolve().then(() => {
-    if (pendingAsyncModifyFiberControl.has()) {
+    if (pendingAsyncModifyFiberControl.hasNext()) {
       updateAllAsync();
     }
   });

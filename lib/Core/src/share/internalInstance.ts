@@ -9,7 +9,9 @@ export class MyReactInternalInstance {
     __context__: null,
   };
 
-  context: null | any = null;
+  __pendingEffect__ = false;
+
+  context: null | unknown = null;
 
   get __fiber__() {
     return this.__internal_instance_state__.__fiber__;
@@ -26,8 +28,6 @@ export class MyReactInternalInstance {
   set __context__(v) {
     this.__internal_instance_state__.__context__ = v;
   }
-
-  __pendingEffect__ = false;
 
   setContext(context: MyReactFiberNode | null) {
     if (this.__context__) this.__context__.removeDependence(this);

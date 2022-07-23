@@ -1,11 +1,11 @@
 import { debugWithDOM, IS_UNIT_LESS_NUMBER, log } from '../../../../share';
 import { isEvent, isProperty, isStyle } from '../../../shared';
+import { addEventListener } from '../event';
 
-import type { FiberDispatch } from '../../../../dispatch';
 import type { MyReactFiberNode } from '../../../../fiber';
 import type { Children } from '../../../../vdom';
 
-const domPropsHydrate = (fiber: MyReactFiberNode, dom: HTMLElement) => {
+const domPropsHydrate = (fiber: MyReactFiberNode, dom: Element) => {
   if (fiber.__isTextNode__) {
     if (dom.textContent !== String(fiber.element)) {
       if (dom.textContent === ' ' && fiber.element === '') {
@@ -75,7 +75,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, dom: HTMLElement) => {
   }
 };
 
-const domStyleHydrate = (fiber: MyReactFiberNode, dom: HTMLElement) => {
+const domStyleHydrate = (fiber: MyReactFiberNode, dom: Element) => {
   if (fiber.__isPlainNode__) {
     const typedElement = fiber.element as Children;
     const props = typedElement.props;
@@ -105,36 +105,29 @@ const domStyleHydrate = (fiber: MyReactFiberNode, dom: HTMLElement) => {
   }
 };
 
-const domEventHydrate = (
-  fiber: MyReactFiberNode,
-  dom: HTMLElement,
-  dispatch: FiberDispatch
-) => {
+const domEventHydrate = (fiber: MyReactFiberNode, dom: Element) => {
   if (fiber.__isPlainNode__) {
     const typedElement = fiber.element as Children;
     const props = typedElement.props;
     Object.keys(props)
       .filter(isEvent)
       .forEach((key) => {
-        dispatch._addEventListener(fiber, dom, key);
+        addEventListener(fiber, dom, key);
       });
   }
 };
 
-export const domHydrate = (
-  fiber: MyReactFiberNode,
-  dom: HTMLElement,
-  dispatch: FiberDispatch
-) => {
-  fiber.dom = dom;
+export const hydrateUpdate = (fiber: MyReactFiberNode) => {
+  const dom = fiber.dom as Element;
 
-  fiber.applyRef();
+  // for now it is necessary to judge
+  if (dom) {
+    domPropsHydrate(fiber, dom);
+    domStyleHydrate(fiber, dom);
+    domEventHydrate(fiber, dom);
 
-  domPropsHydrate(fiber, dom);
-  domStyleHydrate(fiber, dom);
-  domEventHydrate(fiber, dom, dispatch);
-
-  debugWithDOM(fiber);
+    debugWithDOM(fiber);
+  }
 
   fiber.__pendingCreate__ = false;
 

@@ -42,6 +42,8 @@ export class PlainElement {
   }
 
   appendChild(dom: PlainElement | TextElement | string) {
+    if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type))
+      return;
     if (
       dom instanceof PlainElement ||
       dom instanceof TextElement ||
@@ -85,23 +87,16 @@ export class PlainElement {
     return props;
   }
 
+  serialize() {
+    return `${this.serializeProps()} ${this.serializeStyle()} ${this.serializeAttrs()}`;
+  }
+
   toString(): string {
     if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type)) {
-      if (this.children.length) {
-        if (this.children.length > 1) {
-          throw new Error(`can not add child to <${this.type} /> element`);
-        } else if (this.children[0].toString() === ' ') {
-          // ignore
-        }
-      }
-      return `<${
-        this.type
-      } ${this.serializeProps()} ${this.serializeStyle()} ${this.serializeAttrs()} />`;
+      return `<${this.type} ${this.serialize()} />`;
     } else {
       if (this.type) {
-        return `<${
-          this.type
-        } ${this.serializeProps()} ${this.serializeStyle()} ${this.serializeAttrs()} >${this.children
+        return `<${this.type} ${this.serialize()} >${this.children
           .reduce<Array<TextElement | string | PlainElement>>((p, c) => {
             if (
               p.length &&

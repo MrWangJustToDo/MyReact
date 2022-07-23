@@ -69,7 +69,7 @@ export type CreateVDomProps = {
   key: string | null;
   ref:
     | ReturnType<typeof createRef>
-    | ((node?: HTMLElement | MyReactInternalInstance) => void)
+    | ((node?: Element | MyReactInternalInstance) => void)
     | null;
   props: Props;
   _self: MyReactInternalInstance | null;
@@ -197,7 +197,7 @@ export function cloneElement(
         owner = currentFunctionFiber.current;
       }
       if (_key !== undefined) {
-        key = _key;
+        key = _key + '';
       }
       let defaultProps: Record<string, unknown> | undefined = {};
       if (typeof typedElement.type === 'function') {

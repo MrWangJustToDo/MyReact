@@ -159,7 +159,7 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
 
 export const debugWithDOM = (fiber: MyReactFiberNode) => {
   if (fiber.dom) {
-    const debugDOM = fiber.dom as HTMLElement & {
+    const debugDOM = fiber.dom as Element & {
       __fiber__: MyReactFiberNode;
       __vdom__: MyReactFiberNode['element'];
       __children__: MyReactFiberNode['children'];

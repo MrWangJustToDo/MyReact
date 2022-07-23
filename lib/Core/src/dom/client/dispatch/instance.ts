@@ -1,98 +1,129 @@
-import { pendingUpdate } from '../../../dispatch';
-import { debugWithDOM, rootContainer } from '../../../share';
-import { appendAll, getDom } from '../../shared';
+import { triggerUpdate } from '../../../core';
+import { safeCallWithFiber } from '../../../share';
 import { updateAllAsync, updateAllSync } from '../update';
 
-import { addEventListener, removeEventListener } from './event';
-import { tryHydrate } from './hydrate';
+import { append } from './append';
+import { context } from './context';
+import { create } from './create';
+import { effect, layoutEffect } from './effect';
 import { position } from './position';
-import { unmountFiberNode } from './unmount';
-import { updateDom } from './update';
+import { unmount } from './unmount';
+import { update } from './update';
 
 import type { FiberDispatch } from '../../../dispatch';
 import type { MyReactFiberNode } from '../../../fiber';
-import type { Children } from '../../../vdom';
 
 export class ClientDispatch implements FiberDispatch {
-  _createPlainNode(fiber: MyReactFiberNode): void {
-    const typedElement = fiber.element as Children;
-    if (fiber.nameSpace) {
-      fiber.dom = document.createElementNS(
-        fiber.nameSpace,
-        typedElement.type as string
-      ) as HTMLElement;
-    } else {
-      fiber.dom = document.createElement(typedElement.type as string);
-    }
+  trigger(_fiber: MyReactFiberNode): void {
+    triggerUpdate(_fiber);
   }
-
-  _createTextNode(fiber: MyReactFiberNode): void {
-    fiber.dom = document.createTextNode(fiber.element as string);
-  }
-
-  _addEventListener(
-    fiber: MyReactFiberNode,
-    dom: HTMLElement,
-    key: string
+  reconcileCreate(
+    _fiber: MyReactFiberNode,
+    _hydrate: boolean,
+    _parentFiberWithDom: MyReactFiberNode
   ): void {
-    addEventListener(fiber, dom, key);
-  }
+    const _result = safeCallWithFiber({
+      fiber: _fiber,
+      action: () => create(_fiber, _hydrate, _parentFiberWithDom),
+    });
 
-  _removeEventListener(
-    fiber: MyReactFiberNode,
-    dom: HTMLElement,
-    key: string
-  ): void {
-    removeEventListener(fiber, dom, key);
-  }
+    safeCallWithFiber({
+      fiber: _fiber,
+      action: () => update(_fiber, _result),
+    });
 
-  hydrate(_fiber: MyReactFiberNode): void {
-    tryHydrate(_fiber, rootContainer.current as HTMLElement, this);
-  }
-
-  create(fiber: MyReactFiberNode): void {
-    if (fiber.__isTextNode__) {
-      this._createTextNode(fiber);
-    } else if (fiber.__isPlainNode__) {
-      this._createPlainNode(fiber);
-    } else {
-      // portal element
-      fiber.dom = fiber.__props__.container as HTMLElement;
-    }
-    fiber.applyRef();
-    debugWithDOM(fiber);
-  }
-
-  append(fiber: MyReactFiberNode): void {
-    if (fiber.__pendingAppend__) {
-      appendAll(
-        fiber,
-        (getDom(fiber.parent, (f) => f.parent) as HTMLElement) ||
-          rootContainer.current
+    if (_fiber.__needReconcile__ && _fiber.child) {
+      this.reconcileCreate(
+        _fiber.child,
+        _result,
+        _fiber.dom ? _fiber : _parentFiberWithDom
       );
     }
-  }
 
-  update(fiber: MyReactFiberNode): void {
-    updateDom(fiber, this);
+    if (_fiber.sibling) {
+      this.reconcileCreate(_fiber.sibling, _result, _parentFiberWithDom);
+    }
   }
+  reconcileCommit(
+    _fiber: MyReactFiberNode,
+    _hydrate: boolean,
+    _parentFiberWithDom: MyReactFiberNode
+  ): void {
+    context(_fiber);
 
-  position(fiber: MyReactFiberNode): void {
-    position(fiber);
+    safeCallWithFiber({ fiber: _fiber, action: () => unmount(_fiber) });
+
+    safeCallWithFiber({
+      fiber: _fiber,
+      action: () => position(_fiber, _parentFiberWithDom),
+    });
+
+    safeCallWithFiber({
+      fiber: _fiber,
+      action: () => append(_fiber, _parentFiberWithDom.dom as Element),
+    });
+
+    _fiber.applyRef();
+
+    if (_fiber.__needReconcile__ && _fiber.child) {
+      this.reconcileCommit(
+        _fiber.child,
+        _hydrate,
+        _fiber.dom ? _fiber : _parentFiberWithDom
+      );
+    }
+
+    safeCallWithFiber({ fiber: _fiber, action: () => layoutEffect(_fiber) });
+
+    effect(_fiber);
+
+    _fiber.__needReconcile__ = false;
+
+    if (_fiber.sibling) {
+      this.reconcileCommit(_fiber.sibling, _hydrate, _parentFiberWithDom);
+    }
   }
-
-  unmount(fiber: MyReactFiberNode): void {
-    unmountFiberNode(fiber);
+  pendingCreate(_fiber: MyReactFiberNode): void {
+    if (
+      !_fiber.__isTextNode__ &&
+      !_fiber.__isPlainNode__ &&
+      !_fiber.__isPortal__
+    )
+      return;
+    _fiber.__pendingCreate__ = true;
   }
-
-  pendingUpdate(fiber: MyReactFiberNode): void {
-    pendingUpdate(fiber);
+  pendingUpdate(_fiber: MyReactFiberNode): void {
+    if (!_fiber.__isTextNode__ && !_fiber.__isPlainNode__) return;
+    _fiber.__pendingUpdate__ = true;
   }
-
+  pendingAppend(_fiber: MyReactFiberNode): void {
+    if (!_fiber.__isTextNode__ && !_fiber.__isPlainNode__) return;
+    _fiber.__pendingAppend__ = true;
+  }
+  pendingContext(_fiber: MyReactFiberNode): void {
+    _fiber.__pendingContext__ = true;
+  }
+  pendingPosition(_fiber: MyReactFiberNode): void {
+    _fiber.__pendingPosition__ = true;
+  }
+  pendingUnmount(
+    _fiber: MyReactFiberNode,
+    _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]
+  ): void {
+    _fiber.unmountQueue.push(_pendingUnmount);
+  }
+  pendingLayoutEffect(
+    _fiber: MyReactFiberNode,
+    _layoutEffect: () => void
+  ): void {
+    _fiber.layoutEffectQueue.push(_layoutEffect);
+  }
+  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
+    _fiber.effectQueue.push(_effect);
+  }
   updateAllSync(): void {
     updateAllSync();
   }
-
   updateAllAsync(): void {
     updateAllAsync();
   }

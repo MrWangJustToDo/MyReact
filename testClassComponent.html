@@ -147,7 +147,10 @@
         render() {
           return (
             <div>
-              b<button onClick={() => this.props.click()}>add {this.props.bar}</button>
+              b
+              <button onClick={() => this.props.click()}>
+                add {this.props.bar}
+              </button>
             </div>
           );
         }
@@ -164,7 +167,11 @@
           return (
             <div>
               <B
-                click={() => this.setState({ a: Math.random() })}
+                click={() =>
+                  this.setState({ a: Math.random() }, () => {
+                    console.log("updated");
+                  })
+                }
                 bar={this.state.a}
               />
             </div>
@@ -173,8 +180,8 @@
       }
 
       const container = document.getElementById("root");
-      // ReactDOM.render(<A />, container);
-      ReactDOM.render(<TestContext />, container);
+      ReactDOM.render(<A />, container);
+      // ReactDOM.render(<TestContext />, container);
     </script>
   </body>
 </html>

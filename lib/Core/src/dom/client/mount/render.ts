@@ -7,7 +7,7 @@ import type { Children } from '../../../vdom';
 
 export const render = (
   element: Children,
-  container: HTMLElement & { __fiber__: MyReactFiberNode }
+  container: Element & { __fiber__: MyReactFiberNode }
 ) => {
   globalDispatch.current = new ClientDispatch();
 

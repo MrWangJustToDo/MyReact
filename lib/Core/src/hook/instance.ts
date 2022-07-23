@@ -3,8 +3,6 @@ import { MyReactInternalInstance, isArrayEquals } from '../share';
 
 import type { HookUpdateQueue } from '../fiber';
 
-// import type { HookUpdateQueue } from '../fiber';
-
 export enum HOOK_TYPE {
   useRef = 'useRef',
   useMemo = 'useMemo',
@@ -42,8 +40,6 @@ export class MyReactHookNode extends MyReactInternalInstance {
   deps: any[] = [];
 
   result: any = null;
-
-  __pendingEffect__ = false;
 
   constructor(
     hookIndex: number,
@@ -169,14 +165,13 @@ export class MyReactHookNode extends MyReactInternalInstance {
   }
 
   dispatch = (action: Action) => {
-    if (!this.__fiber__) return;
     const updater: HookUpdateQueue = {
       type: 'hook',
       trigger: this,
       action,
     };
 
-    this.__fiber__.updateQueue.push(updater);
-    this.__fiber__.update();
+    this.__fiber__?.hookUpdateQueue.push(updater);
+    this.__fiber__?.update();
   };
 }

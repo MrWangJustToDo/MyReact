@@ -1,12 +1,12 @@
 import type { MyReactFiberNode } from '../../fiber';
 
-export const getDom = (
+export const getFiberWithDom = (
   fiber: MyReactFiberNode | null,
   transform: (f: MyReactFiberNode) => MyReactFiberNode | null
-): HTMLElement | Text | null => {
+): MyReactFiberNode | null => {
   if (fiber) {
-    if (fiber.dom) return fiber.dom;
-    return getDom(transform(fiber), transform);
+    if (fiber.dom) return fiber;
+    return getFiberWithDom(transform(fiber), transform);
   }
   return null;
 };

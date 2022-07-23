@@ -1,10 +1,21 @@
 import { unmountFiber } from '../../../../fiber';
+import { mapFiber } from '../../../../share';
 
 import { clearFiberDom } from './clearFiberDom';
 
 import type { MyReactFiberNode } from '../../../../fiber';
 
-export const unmountFiberNode = (fiber: MyReactFiberNode) => {
+export const _unmount = (fiber: MyReactFiberNode) => {
   unmountFiber(fiber);
   clearFiberDom(fiber);
+};
+
+export const unmount = (fiber: MyReactFiberNode) => {
+  const allUnmountFiber = fiber.unmountQueue.slice(0);
+
+  mapFiber(allUnmountFiber as MyReactFiberNode | MyReactFiberNode[], (f) =>
+    _unmount(f)
+  );
+
+  fiber.unmountQueue = [];
 };

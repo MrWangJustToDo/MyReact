@@ -2,6 +2,7 @@ import {
   isAppCrash,
   pendingAsyncModifyFiberArray,
   pendingAsyncModifyTopLevelFiber,
+  pendingReconcileFiberArray,
   pendingSyncModifyFiberArray,
   yieldAsyncModifyFiber,
 } from '../../../share';
@@ -21,10 +22,12 @@ export const getPendingSyncModifyFiberArray = () => {
 };
 
 export const pendingAsyncModifyFiberControl = {
-  set: (fiber: MyReactFiberNode) => {
-    yieldAsyncModifyFiber.current = fiber;
+  setYield: (fiber: MyReactFiberNode | null) => {
+    if (fiber) {
+      yieldAsyncModifyFiber.current = fiber;
+    }
   },
-  get: () => {
+  getNext: () => {
     if (isAppCrash.current) return null;
     const fiber = yieldAsyncModifyFiber.current;
     yieldAsyncModifyFiber.current = null;
@@ -34,18 +37,19 @@ export const pendingAsyncModifyFiberControl = {
     while (pendingAsyncModifyFiberArray.current.length) {
       const nextFiber = pendingAsyncModifyFiberArray.current.shift();
       if (nextFiber?.mount) {
+        pendingReconcileFiberArray.current.push(nextFiber);
         pendingAsyncModifyTopLevelFiber.current = nextFiber;
         return nextFiber;
       }
     }
     return null;
   },
-  has: () => {
+  hasNext: () => {
     if (isAppCrash.current) return false;
     return (
       yieldAsyncModifyFiber.current !== null ||
       pendingAsyncModifyFiberArray.current.length > 0
     );
   },
-  yield: () => yieldAsyncModifyFiber.current !== null,
+  doesPause: () => yieldAsyncModifyFiber.current !== null,
 };

@@ -1,5 +1,4 @@
-import { pushPosition, pushUpdate } from '../core';
-import { isNormalEquals } from '../share';
+import { globalDispatch, isNormalEquals } from '../share';
 
 import type { Children, ChildrenNode } from '../vdom';
 import type { MyReactFiberNode } from './instance';
@@ -27,9 +26,6 @@ export const updateFiberNode = (
   fiber.checkVDom();
 
   if (prevVDom !== newVDom) {
-    // only need update if vdom changed
-    fiber.prepareUpdate();
-
     if (fiber.__isMemo__) {
       const typedPrevVDom = prevVDom as Children;
       const typedNewVDom = newVDom as Children;
@@ -37,38 +33,46 @@ export const updateFiberNode = (
         !fiber.__needTrigger__ &&
         isNormalEquals(typedPrevVDom.props, typedNewVDom.props)
       ) {
-        fiber.afterUpdate();
+        if (fiber.__needReconcile__) {
+          fiber.afterUpdate();
+        } else {
+          fiber.stopUpdate();
+        }
+      } else {
+        fiber.prepareUpdate();
       }
-    }
+    } else {
+      fiber.prepareUpdate();
 
-    if (fiber.__isContextProvider__) {
-      const typedPrevVDom = prevVDom as Children;
-      const typedNewVDom = newVDom as Children;
-      if (
-        !isNormalEquals(
-          typedPrevVDom.props.value as Record<string, unknown>,
-          typedNewVDom.props.value as Record<string, unknown>
-        )
-      ) {
-        fiber.__pendingContext__ = true;
+      if (fiber.__isContextProvider__) {
+        const typedPrevVDom = prevVDom as Children;
+        const typedNewVDom = newVDom as Children;
+        if (
+          !isNormalEquals(
+            typedPrevVDom.props.value as Record<string, unknown>,
+            typedNewVDom.props.value as Record<string, unknown>
+          )
+        ) {
+          globalDispatch.current.pendingContext(fiber);
+        }
       }
-    }
 
-    if (fiber.__isPlainNode__) {
-      const typedPrevVDom = prevVDom as Children;
-      const typedNewVDom = newVDom as Children;
-      if (!isNormalEquals(typedPrevVDom.props, typedNewVDom.props, false)) {
-        pushUpdate(fiber);
+      if (fiber.__isPlainNode__) {
+        const typedPrevVDom = prevVDom as Children;
+        const typedNewVDom = newVDom as Children;
+        if (!isNormalEquals(typedPrevVDom.props, typedNewVDom.props, false)) {
+          globalDispatch.current.pendingUpdate(fiber);
+        }
       }
-    }
 
-    if (fiber.__isTextNode__) {
-      pushUpdate(fiber);
+      if (fiber.__isTextNode__) {
+        globalDispatch.current.pendingUpdate(fiber);
+      }
     }
   }
 
   if (fiber !== prevFiber) {
-    pushPosition(fiber);
+    globalDispatch.current.pendingPosition(fiber);
   }
 
   return fiber;

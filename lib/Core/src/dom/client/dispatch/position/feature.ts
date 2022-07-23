@@ -1,31 +1,31 @@
 import { append } from './append';
-import { getFiberWithDom } from './getFiberWithDom';
 import { getInsertBeforeDomFromSiblingAndParent } from './getInsertBeforeDom';
 import { insertBefore } from './insertBefore';
 
 import type { MyReactFiberNode } from '../../../../fiber';
 
-export const position = (fiber: MyReactFiberNode) => {
-  const parent = fiber.parent as MyReactFiberNode;
-  const children = parent.children;
-  if (children.some((child) => child.__pendingPosition__)) {
-    const parentDomFiber = getFiberWithDom(parent);
-    if (!parentDomFiber) throw new Error('position error, look like a bug');
+export const position = (
+  fiber: MyReactFiberNode,
+  parentFiberWithDom: MyReactFiberNode
+) => {
+  if (fiber.__pendingPosition__) {
+    const parent = fiber.parent as MyReactFiberNode;
+    const children = parent.children;
     for (let i = children.length - 1; i >= 0; i--) {
       const childFiber = children[i];
       if (childFiber.__pendingPosition__) {
-        const beforeDomFiber = getInsertBeforeDomFromSiblingAndParent(
+        const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(
           childFiber,
-          parentDomFiber
+          parentFiberWithDom
         );
-        if (beforeDomFiber) {
+        if (beforeFiberWithDom) {
           insertBefore(
             childFiber,
-            beforeDomFiber.dom as HTMLElement,
-            parentDomFiber.dom as HTMLElement
+            beforeFiberWithDom.dom as Element,
+            parentFiberWithDom.dom as Element
           );
         } else {
-          append(childFiber, parentDomFiber.dom as HTMLElement);
+          append(childFiber, parentFiberWithDom.dom as Element);
         }
         childFiber.__pendingPosition__ = false;
       }

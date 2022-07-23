@@ -1,4 +1,4 @@
-import { pushAppend, pushCreate, pushPosition, pushUpdate } from '../core';
+import { globalDispatch } from '../share';
 
 import { MyReactFiberNode } from './instance';
 
@@ -24,14 +24,14 @@ export const createFiberNode = (
 
   newFiberNode.initialParent();
 
-  pushCreate(newFiberNode);
+  globalDispatch.current.pendingCreate(newFiberNode);
 
-  pushUpdate(newFiberNode);
+  globalDispatch.current.pendingUpdate(newFiberNode);
 
   if (type === 'append') {
-    pushAppend(newFiberNode);
+    globalDispatch.current.pendingAppend(newFiberNode);
   } else {
-    pushPosition(newFiberNode);
+    globalDispatch.current.pendingPosition(newFiberNode);
   }
 
   return newFiberNode;

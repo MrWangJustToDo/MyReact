@@ -11,7 +11,7 @@ export * from './once';
 export * from './singleElement';
 export * from './symbol';
 export * from './flattenChildren';
-export * from './shouldYield';
+export * from './shouldPause';
 export * from './mapFiber';
 export * from './cannotUpdate';
 export * from './numberStyle';

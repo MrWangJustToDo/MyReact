@@ -7,7 +7,7 @@ import type { Children } from '../../../../vdom';
 
 export const addEventListener = (
   fiber: MyReactFiberNode,
-  dom: HTMLElement,
+  dom: Element,
   key: string
 ) => {
   const typedElement = fiber.__vdom__ as Children;

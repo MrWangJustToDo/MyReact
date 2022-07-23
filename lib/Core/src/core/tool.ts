@@ -1,14 +1,12 @@
 import { MyReactFiberNode, createFiberNode, updateFiberNode } from '../fiber';
 import {
   enableKeyDiff,
+  globalDispatch,
   isAppMounted,
   isHydrateRender,
   isServerRender,
-  mapFiber,
 } from '../share';
 import { isValidElement } from '../vdom';
-
-import { pushUnmount } from './unmount';
 
 import type {
   ArrayChildrenNode,
@@ -31,6 +29,7 @@ const getKeyMatchedChildren = (
   const tempChildren = prevFiberChildren.slice(0);
   const assignPrevChildren: Array<MyReactFiberNode | MyReactFiberNode[]> =
     Array(tempChildren.length).fill(null);
+
   newChildren.forEach((vDom, index) => {
     if (tempChildren.length) {
       if (
@@ -102,8 +101,9 @@ const getNewFiberWithUpdate = (
         assignPrevRenderedChild
       ) as MyReactFiberNode[];
       if (newChild.length < assignPrevRenderedChildren.length) {
-        mapFiber(assignPrevRenderedChildren.slice(newChild.length), (f) =>
-          pushUnmount(f)
+        globalDispatch.current.pendingUnmount(
+          parentFiber,
+          assignPrevRenderedChildren.slice(newChild.length)
         );
       }
       return newChild.map((v, index) =>
@@ -126,7 +126,10 @@ const getNewFiberWithUpdate = (
     );
   } else {
     if (assignPrevRenderedChild) {
-      mapFiber(assignPrevRenderedChild, (f) => pushUnmount(f));
+      globalDispatch.current.pendingUnmount(
+        parentFiber,
+        assignPrevRenderedChild
+      );
     }
 
     if (Array.isArray(newChild)) {

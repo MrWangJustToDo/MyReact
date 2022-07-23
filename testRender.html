@@ -85,8 +85,18 @@
         );
       };
 
+      const TestNew = () => {
+        const [x, y] = usePosition();
+
+        return (
+          <div>
+            {x}, {y}
+          </div>
+        );
+      };
+
       const container = document.getElementById("root");
-      ReactDOM.render(<App />, container);
+      ReactDOM.render(<TestNew />, container);
     </script>
   </body>
 </html>

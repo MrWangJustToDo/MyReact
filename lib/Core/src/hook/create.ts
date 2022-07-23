@@ -1,21 +1,21 @@
 import { getHookTree } from '../share';
 
-import { pushHookEffect } from './feature';
+import { effect } from './effect';
 import { MyReactHookNode } from './instance';
 
 import type { MyReactFiberNode } from '../fiber';
-import type { HOOK_TYPE, Reducer, Action } from './instance';
+import type { Reducer, Action, HOOK_TYPE } from './instance';
 
-const defaultReducer: Reducer = (state?: any, action?: Action) => {
+const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === 'function' ? action(state) : action;
 };
 
 type CreateHookParams = {
   hookIndex: number;
   hookType: HOOK_TYPE;
-  value: any;
+  value: unknown;
   reducer: Reducer | null;
-  deps: any[];
+  deps: unknown[];
 };
 
 export const createHookNode = (
@@ -61,7 +61,7 @@ export const getHookNode = (
     currentHook.setFiber(fiber);
 
     currentHook.updateResult(value, reducer || defaultReducer, deps);
-  } else if (!fiber.__isUpdateRender__ || fiber.__isIgnoreHook__) {
+  } else if (!fiber.__isUpdateRender__) {
     currentHook = createHookNode(
       { hookIndex, hookType, value, reducer, deps },
       fiber
@@ -72,9 +72,7 @@ export const getHookNode = (
     );
   }
 
-  if (currentHook.effect) {
-    pushHookEffect(currentHook);
-  }
+  effect(fiber, currentHook);
 
   return currentHook;
 };

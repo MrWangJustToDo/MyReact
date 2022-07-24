@@ -82,6 +82,12 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
   return nextWorkCommon(fiber);
 };
 
+const processComponentRefOnMount = (fiber: MyReactFiberNode) => {
+  globalDispatch.current.pendingLayoutEffect(fiber, () => {
+    fiber.applyRef();
+  });
+};
+
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
@@ -175,6 +181,7 @@ const processComponentDidUpdateOnUpdate = (
 
 export const classComponentMount = (fiber: MyReactFiberNode) => {
   processComponentInstanceOnMount(fiber);
+  processComponentRefOnMount(fiber);
   const payloadState = processComponentStateFromProps(fiber);
   const typedInstance = fiber.instance as MixinMyReactComponentType;
   typedInstance.state = Object.assign({}, typedInstance.state, payloadState);

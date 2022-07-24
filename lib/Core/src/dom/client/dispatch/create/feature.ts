@@ -9,19 +9,19 @@ export const create = (
   parentFiberWithDom: MyReactFiberNode
 ): boolean => {
   if (fiber.__pendingCreate__) {
-    fiber.__pendingCreate__ = false;
+    let re = false;
     if (hydrate) {
       const result = hydrateCreate(fiber, parentFiberWithDom);
-      if (result) {
-        return true;
-      } else {
+      if (!result) {
         nativeCreate(fiber);
-        return false;
       }
+      re = result;
     } else {
       nativeCreate(fiber);
-      return false;
     }
+    fiber.applyRef();
+    fiber.__pendingCreate__ = false;
+    return re;
   }
   return hydrate;
 };

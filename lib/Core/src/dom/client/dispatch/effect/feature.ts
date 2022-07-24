@@ -1,5 +1,3 @@
-import { safeCallWithFiber } from '../../../../share';
-
 import type { MyReactFiberNode } from '../../../../fiber';
 
 export const layoutEffect = (fiber: MyReactFiberNode) => {
@@ -13,12 +11,7 @@ export const layoutEffect = (fiber: MyReactFiberNode) => {
 export const effect = (fiber: MyReactFiberNode) => {
   const allEffect = fiber.effectQueue.slice(0);
 
-  Promise.resolve().then(() => {
-    safeCallWithFiber({
-      fiber,
-      action: () => allEffect.forEach((effect) => effect.call(null)),
-    });
-  });
+  allEffect.forEach((effect) => effect.call(null));
 
   fiber.effectQueue = [];
 };

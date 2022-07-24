@@ -8,12 +8,7 @@ export const getTrackDevLog = (fiber: MyReactFiberNode) => {
   const vdom = fiber.element;
   const source = typeof vdom === 'object' ? vdom?._source : null;
   const owner = typeof vdom === 'object' ? vdom?._owner : null;
-  const displayName =
-    typeof vdom === 'object' && typeof vdom?.type === 'function'
-      ? (vdom?.type as MixinClassComponent | MixinFunctionComponent)
-          .displayName || ''
-      : '';
-  let preString = displayName;
+  let preString = '';
   if (source) {
     const { fileName, lineNumber } = source;
     preString = `${preString} (${fileName}:${lineNumber})`;
@@ -24,9 +19,10 @@ export const getTrackDevLog = (fiber: MyReactFiberNode) => {
     typeof owner.element === 'object' &&
     typeof owner.element?.type === 'function'
   ) {
-    const name =
-      (owner.element.type as MixinClassComponent | MixinFunctionComponent)
-        .displayName || owner.element.type.name;
+    const typedType = owner.element.type as
+      | MixinClassComponent
+      | MixinFunctionComponent;
+    const name = typedType.displayName || owner.element.type.name;
     preString = `${preString} (render dy ${name})`;
   }
   return preString;
@@ -50,11 +46,11 @@ export const getFiberNodeName = (fiber: MyReactFiberNode) => {
       return `<${fiber.element.type} />${getTrackDevLog(fiber)}`;
     }
     if (fiber.__isDynamicNode__ && typeof fiber.element?.type === 'function') {
+      const typedType = fiber.element.type as
+        | MixinClassComponent
+        | MixinFunctionComponent;
       let name =
-        (fiber.element.type as MixinClassComponent | MixinFunctionComponent)
-          .displayName ||
-        fiber.element.type.name ||
-        'anonymous';
+        typedType.displayName || fiber.element.type.name || 'anonymous';
       name = fiber.__root__ ? `${name} (root)` : name;
       return `<${name}* />${getTrackDevLog(fiber)}`;
     }

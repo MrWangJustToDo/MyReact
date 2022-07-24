@@ -51,8 +51,6 @@ export class ClientDispatch implements FiberDispatch {
   ): void {
     context(_fiber);
 
-    safeCallWithFiber({ fiber: _fiber, action: () => unmount(_fiber) });
-
     safeCallWithFiber({
       fiber: _fiber,
       action: () => position(_fiber, _parentFiberWithDom),
@@ -63,8 +61,6 @@ export class ClientDispatch implements FiberDispatch {
       action: () => append(_fiber, _parentFiberWithDom.dom as Element),
     });
 
-    _fiber.applyRef();
-
     if (_fiber.__needReconcile__ && _fiber.child) {
       this.reconcileCommit(
         _fiber.child,
@@ -73,9 +69,13 @@ export class ClientDispatch implements FiberDispatch {
       );
     }
 
+    safeCallWithFiber({ fiber: _fiber, action: () => unmount(_fiber) });
+
     safeCallWithFiber({ fiber: _fiber, action: () => layoutEffect(_fiber) });
 
-    effect(_fiber);
+    Promise.resolve().then(() =>
+      safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) })
+    );
 
     _fiber.__needReconcile__ = false;
 

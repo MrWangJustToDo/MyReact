@@ -59,10 +59,10 @@ export class MyReactComponent<
     return true;
   }
 
-  setState(
+  setState = (
     payLoad: ComponentUpdateQueue['payLoad'],
     callback: ComponentUpdateQueue['callback']
-  ) {
+  ) => {
     const updater: ComponentUpdateQueue = {
       type: 'state',
       payLoad,
@@ -70,18 +70,22 @@ export class MyReactComponent<
       trigger: this,
     };
     this.__fiber__?.compUpdateQueue.push(updater);
-    this.__fiber__?.update();
-  }
+    Promise.resolve().then(() => {
+      this.__fiber__?.update();
+    });
+  };
 
-  forceUpdate() {
+  forceUpdate = () => {
     const updater: ComponentUpdateQueue = {
       type: 'state',
       isForce: true,
       trigger: this,
     };
     this.__fiber__?.compUpdateQueue.push(updater);
-    this.__fiber__?.update();
-  }
+    Promise.resolve().then(() => {
+      this.__fiber__?.update();
+    });
+  };
 }
 
 export class MyReactPureComponent<

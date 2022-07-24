@@ -88,14 +88,18 @@
           setTimeout(r, time);
         });
 
-      const Foo = () => {
+      const Foo = ({ t }) => {
         const time = useTime();
-        return <div>foo render {time}</div>;
+        return (
+          <div>
+            foo render {time} {t}
+          </div>
+        );
       };
 
       const LazyFoo = lazy(async () => {
-        await delay(3000);
-        return <Foo />;
+        await delay(60);
+        return { default: Foo };
       });
 
       const Baz = () => <LazyFoo />;
@@ -113,9 +117,14 @@
         return (
           <div>
             <Suspense fallback={<p>123</p>}>
-              app: {time} {x}
-              <Bar />
-              <Baz />
+              <div>
+                app: {time} {x}
+                <Bar />
+                <div>last render</div>
+                <Baz />
+                <LazyFoo t={time} />
+                <LazyFoo t={x} />
+              </div>
             </Suspense>
           </div>
         );

@@ -187,12 +187,14 @@
 
         return (
           <div>
-            {c % 2 === 0 ? 123 : [1, 2, 3].map((i) => <p>{i}</p>)}
+            {c}
             <button onClick={add}>add</button>
             <button onClick={del}>del</button>
           </div>
         );
       };
+      // {c % 2 === 0 ? 123 : [1, 2, 3].map((i) => <p>{i}</p>)}
+
 
       const container = document.getElementById("root");
       ReactDOM.render(<App />, container);

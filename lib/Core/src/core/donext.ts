@@ -118,9 +118,9 @@ const nextWorkLazy = (fiber: MyReactFiberNode) => {
   const typedType = type as ReturnType<typeof lazy>;
 
   if (typedType._loaded === true) {
-    const render = typedType.render as Children;
+    const render = typedType.render as ClassComponent | FunctionComponent;
 
-    fiber.__dynamicChildren__ = render;
+    fiber.__dynamicChildren__ = createElement(render, fiber.__props__);
 
     return nextWorkCommon(fiber);
   } else if (typedType._loading === false) {
@@ -135,10 +135,7 @@ const nextWorkLazy = (fiber: MyReactFiberNode) => {
               : re;
           typedType._loaded = true;
           typedType._loading = false;
-          typedType.render = createElement(
-            render as ClassComponent | FunctionComponent,
-            fiber.__props__
-          );
+          typedType.render = render as ClassComponent | FunctionComponent;
           fiber.update();
         });
     }

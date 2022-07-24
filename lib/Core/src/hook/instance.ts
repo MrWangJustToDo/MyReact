@@ -172,6 +172,8 @@ export class MyReactHookNode extends MyReactInternalInstance {
     };
 
     this.__fiber__?.hookUpdateQueue.push(updater);
-    this.__fiber__?.update();
+    Promise.resolve().then(() => {
+      this.__fiber__?.update();
+    });
   };
 }

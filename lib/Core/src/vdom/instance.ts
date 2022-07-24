@@ -146,7 +146,7 @@ export function createElement(
     Object.keys(resProps).forEach((key) => (props[key] = resProps[key]));
   }
 
-  if (typeof type === 'function') {
+  if (typeof type === 'function' || typeof type === 'object') {
     const typedType = type as MixinClassComponent | MixinFunctionComponent;
     Object.keys(typedType?.defaultProps || {}).forEach((key) => {
       props[key] =
@@ -200,7 +200,10 @@ export function cloneElement(
         key = _key + '';
       }
       let defaultProps: Record<string, unknown> | undefined = {};
-      if (typeof typedElement.type === 'function') {
+      if (
+        typeof typedElement.type === 'function' ||
+        typeof typedElement.type === 'object'
+      ) {
         const typedType = typedElement.type as
           | MixinClassComponent
           | MixinFunctionComponent;

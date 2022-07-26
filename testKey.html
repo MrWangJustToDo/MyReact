@@ -264,7 +264,7 @@
             </div>
             <p>start</p>
             {state
-              // .slice(0)
+              .slice(0)
               .reverse()
               .map((i) => (
                 <p key={i}>{i}</p>
@@ -279,7 +279,7 @@
       };
 
       const container = document.getElementById("root");
-      ReactDOM.render(<TestContext />, container);
+      ReactDOM.render(<TestF />, container);
     </script>
   </body>
 </html>

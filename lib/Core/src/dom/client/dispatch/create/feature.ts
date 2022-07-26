@@ -19,7 +19,6 @@ export const create = (
     } else {
       nativeCreate(fiber);
     }
-    fiber.applyRef();
     fiber.__pendingCreate__ = false;
     return re;
   }

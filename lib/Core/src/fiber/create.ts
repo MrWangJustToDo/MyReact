@@ -2,7 +2,7 @@ import { globalDispatch } from '../share';
 
 import { MyReactFiberNode } from './instance';
 
-import type { ChildrenNode } from '../vdom';
+import type { Children, ChildrenNode } from '../vdom';
 
 export const createFiberNode = (
   {
@@ -32,6 +32,14 @@ export const createFiberNode = (
     globalDispatch.current.pendingAppend(newFiberNode);
   } else {
     globalDispatch.current.pendingPosition(newFiberNode);
+  }
+
+  if (newFiberNode.__isPlainNode__ || newFiberNode.__isClassComponent__) {
+    if ((VDom as Children).ref) {
+      globalDispatch.current.pendingLayoutEffect(newFiberNode, () =>
+        newFiberNode.applyRef()
+      );
+    }
   }
 
   return newFiberNode;

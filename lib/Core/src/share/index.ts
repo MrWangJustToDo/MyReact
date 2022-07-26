@@ -15,5 +15,6 @@ export * from './shouldPause';
 export * from './mapFiber';
 export * from './cannotUpdate';
 export * from './numberStyle';
+export * from './listTree';
 
 (globalThis as any).__env__ = env;

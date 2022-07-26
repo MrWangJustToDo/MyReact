@@ -86,8 +86,7 @@ export class MyReactHookNode extends MyReactInternalInstance {
     if (this.hookType === HOOK_TYPE.useContext) {
       const ProviderFiber = getContextFiber(this.__fiber__, this.value);
       this.setContext(ProviderFiber);
-      const contextValue = getContextValue(ProviderFiber, this.value);
-      this.result = contextValue;
+      this.result = getContextValue(ProviderFiber, this.value);
       return;
     }
   }
@@ -151,8 +150,7 @@ export class MyReactHookNode extends MyReactInternalInstance {
         this.value = newValue;
         const ProviderFiber = getContextFiber(this.__fiber__, this.value);
         this.setContext(ProviderFiber);
-        const contextValue = getContextValue(ProviderFiber, this.value);
-        this.result = contextValue;
+        this.result = getContextValue(ProviderFiber, this.value);
       } else {
         this.result = getContextValue(this.__context__, this.value);
       }
@@ -171,7 +169,7 @@ export class MyReactHookNode extends MyReactInternalInstance {
       action,
     };
 
-    this.__fiber__?.hookUpdateQueue.push(updater);
+    this.__fiber__?.__hookUpdateQueue__.push(updater);
     Promise.resolve().then(() => {
       this.__fiber__?.update();
     });

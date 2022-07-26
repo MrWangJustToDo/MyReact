@@ -9,7 +9,9 @@ export class MyReactInternalInstance {
     __context__: null,
   };
 
-  __pendingEffect__ = false;
+  __internal_instance_update__ = {
+    __pendingEffect__: false,
+  };
 
   context: null | unknown = null;
 
@@ -27,6 +29,14 @@ export class MyReactInternalInstance {
 
   set __context__(v) {
     this.__internal_instance_state__.__context__ = v;
+  }
+
+  get __pendingEffect__() {
+    return this.__internal_instance_update__.__pendingEffect__;
+  }
+
+  set __pendingEffect__(v) {
+    this.__internal_instance_update__.__pendingEffect__ = v;
   }
 
   setContext(context: MyReactFiberNode | null) {

@@ -1,35 +1,29 @@
 import { safeCall } from '../share';
 
-import { nextWorkAsync } from './donext';
-import { transformAll, transformStart } from './transform';
+import { nextWorkAsync } from './invoke';
 
 import type { MyReactFiberNode } from '../fiber';
 
-export const renderLoopSync = (fiber: MyReactFiberNode) => {
-  transformStart(fiber);
-  transformAll();
-};
-
-export const renderLoopAsync = (
+export const updateLoopAsync = (
   loopController: {
     setYield: (f: MyReactFiberNode | null) => void;
     getNext: () => MyReactFiberNode | null;
+    getUpdateList: (f: MyReactFiberNode) => void;
     hasNext: () => boolean;
     doesPause: () => boolean;
   },
   shouldPause: () => boolean,
-  reconcileCommit: () => void,
-  afterAsyncLoop: () => void
+  reconcileUpdate: () => void
 ) => {
   while (loopController.hasNext() && !shouldPause()) {
     const fiber = loopController.getNext();
     if (fiber) {
       const nextFiber = safeCall(() => nextWorkAsync(fiber));
+      loopController.getUpdateList(fiber);
       loopController.setYield(nextFiber);
     }
   }
   if (!loopController.doesPause()) {
-    reconcileCommit();
+    reconcileUpdate();
   }
-  afterAsyncLoop();
 };

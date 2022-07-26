@@ -108,6 +108,7 @@
         container = createRef();
 
         initChildren = (ele) => {
+          console.log(ele.textContent);
           this.totalHeight += ele.offsetHeight;
           this.totalElement.push(ele);
           const length = this.totalElement.length;
@@ -256,7 +257,7 @@
           const { list } = this.props;
           const { allLength, paddingTop, allHeight } = this.state;
           const currentList = list.slice(0, allLength);
-          // console.log(currentList)
+          // console.log(currentList, this)
           return (
             <>
               <h3>{this.avarageHeight}</h3>

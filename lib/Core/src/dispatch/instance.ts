@@ -1,15 +1,9 @@
 import type { MyReactFiberNode } from '../fiber';
+import type { LinkTreeList } from '../share';
 import type { FiberDispatch } from './interface';
 
 export class EmptyDispatch implements FiberDispatch {
   trigger(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-  reconcileCreate(
-    _fiber: MyReactFiberNode,
-    _hydrate: boolean,
-    _parentFiberWithDom: MyReactFiberNode
-  ): void {
     void 0;
   }
   reconcileCommit(
@@ -17,6 +11,21 @@ export class EmptyDispatch implements FiberDispatch {
     _hydrate: boolean,
     _parentFiberWithDom: MyReactFiberNode
   ): void {
+    void 0;
+  }
+  reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {
+    void 0;
+  }
+  reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
+    void 0;
+  }
+  beginProgressList(): void {
+    void 0;
+  }
+  endProgressList(): void {
+    void 0;
+  }
+  generateUpdateList(_fiber: MyReactFiberNode | MyReactFiberNode[]): void {
     void 0;
   }
   pendingCreate(_fiber: MyReactFiberNode): void {

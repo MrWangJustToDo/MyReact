@@ -25,5 +25,8 @@ export const getInsertBeforeDomFromSiblingAndParent = (
   if (fiber === parentFiber) return null;
   const beforeDom = getInsertBeforeDomFromSibling(fiber);
   if (beforeDom) return beforeDom;
-  return getInsertBeforeDomFromSiblingAndParent(fiber.parent, parentFiber);
+  return getInsertBeforeDomFromSiblingAndParent(
+    fiber.parent,
+    parentFiber
+  ) as MyReactFiberNode | null;
 };

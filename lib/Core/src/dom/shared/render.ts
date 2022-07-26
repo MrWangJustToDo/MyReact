@@ -1,16 +1,16 @@
-import { renderLoopSync } from '../../core';
+import { mountLoopSync } from '../../core';
 import { globalLoop, isAppMounted, safeCall } from '../../share';
 
-import { reconcile } from './reconcile';
+import { reconcileMount } from './reconcileMount';
 
 import type { MyReactFiberNode } from '../../fiber';
 
 export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
   globalLoop.current = true;
 
-  safeCall(() => renderLoopSync(fiber));
+  safeCall(() => mountLoopSync(fiber));
 
-  reconcile(fiber, hydrate);
+  reconcileMount(fiber, hydrate);
 
   isAppMounted.current = true;
 

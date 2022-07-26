@@ -102,6 +102,11 @@
         return { default: Foo };
       });
 
+      const LazyBar = lazy(async () => {
+        await delay(100);
+        return { default: Foo };
+      });
+
       const Baz = () => <LazyFoo />;
 
       const Bar = memo(() => {
@@ -116,12 +121,12 @@
 
         return (
           <div>
-            <Suspense fallback={<p>123</p>}>
+            <Suspense fallback={<>123</>}>
               <div>
                 app: {time} {x}
                 <Bar />
                 <div>last render</div>
-                <Baz />
+                <LazyFoo />
                 <LazyFoo t={time} />
                 <LazyFoo t={x} />
               </div>

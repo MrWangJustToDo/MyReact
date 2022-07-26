@@ -11,11 +11,13 @@ export const _unmount = (fiber: MyReactFiberNode) => {
 };
 
 export const unmount = (fiber: MyReactFiberNode) => {
-  const allUnmountFiber = fiber.unmountQueue.slice(0);
+  const allUnmountFiber = fiber.__unmountQueue__.slice(0);
 
-  mapFiber(allUnmountFiber as MyReactFiberNode | MyReactFiberNode[], (f) =>
-    _unmount(f)
-  );
+  if (allUnmountFiber.length) {
+    mapFiber(allUnmountFiber as MyReactFiberNode | MyReactFiberNode[], (f) =>
+      _unmount(f)
+    );
+  }
 
-  fiber.unmountQueue = [];
+  fiber.__unmountQueue__ = [];
 };

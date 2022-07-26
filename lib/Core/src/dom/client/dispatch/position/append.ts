@@ -9,5 +9,9 @@ export const append = (fiber: MyReactFiberNode, parentDOM: Element) => {
     parentDOM.appendChild(fiber.dom as Element);
     return;
   }
-  fiber.children.forEach((f) => append(f, parentDOM));
+  let child = fiber.child;
+  while (child) {
+    append(child, parentDOM);
+    child = child.sibling;
+  }
 };

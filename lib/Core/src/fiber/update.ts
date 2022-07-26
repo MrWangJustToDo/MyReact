@@ -25,6 +25,8 @@ export const updateFiberNode = (
 
   fiber.checkVDom();
 
+  fiber.updateRenderState();
+
   if (prevVDom !== newVDom) {
     if (fiber.__isMemo__) {
       const typedPrevVDom = prevVDom as Children;
@@ -33,11 +35,7 @@ export const updateFiberNode = (
         !fiber.__needTrigger__ &&
         isNormalEquals(typedPrevVDom.props, typedNewVDom.props)
       ) {
-        if (fiber.__needReconcile__) {
-          fiber.afterUpdate();
-        } else {
-          fiber.stopUpdate();
-        }
+        fiber.afterUpdate();
       } else {
         fiber.prepareUpdate();
       }

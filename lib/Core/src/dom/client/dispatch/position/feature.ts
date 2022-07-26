@@ -9,26 +9,19 @@ export const position = (
   parentFiberWithDom: MyReactFiberNode
 ) => {
   if (fiber.__pendingPosition__) {
-    const parent = fiber.parent as MyReactFiberNode;
-    const children = parent.children;
-    for (let i = children.length - 1; i >= 0; i--) {
-      const childFiber = children[i];
-      if (childFiber.__pendingPosition__) {
-        const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(
-          childFiber,
-          parentFiberWithDom
-        );
-        if (beforeFiberWithDom) {
-          insertBefore(
-            childFiber,
-            beforeFiberWithDom.dom as Element,
-            parentFiberWithDom.dom as Element
-          );
-        } else {
-          append(childFiber, parentFiberWithDom.dom as Element);
-        }
-        childFiber.__pendingPosition__ = false;
-      }
+    const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(
+      fiber,
+      parentFiberWithDom
+    );
+    if (beforeFiberWithDom) {
+      insertBefore(
+        fiber,
+        beforeFiberWithDom.dom as Element,
+        parentFiberWithDom.dom as Element
+      );
+    } else {
+      append(fiber, parentFiberWithDom.dom as Element);
     }
+    fiber.__pendingPosition__ = false;
   }
 };

@@ -69,7 +69,7 @@ export class MyReactComponent<
       callback,
       trigger: this,
     };
-    this.__fiber__?.compUpdateQueue.push(updater);
+    this.__fiber__?.__compUpdateQueue__.push(updater);
     Promise.resolve().then(() => {
       this.__fiber__?.update();
     });
@@ -81,7 +81,7 @@ export class MyReactComponent<
       isForce: true,
       trigger: this,
     };
-    this.__fiber__?.compUpdateQueue.push(updater);
+    this.__fiber__?.__compUpdateQueue__.push(updater);
     Promise.resolve().then(() => {
       this.__fiber__?.update();
     });

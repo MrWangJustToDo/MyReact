@@ -1,33 +1,18 @@
-import { renderLoopAsync, renderLoopSync } from '../../../core';
-import {
-  globalLoop,
-  pendingReconcileFiberArray,
-  pendingSyncModifyFiberArray,
-  safeCall,
-  shouldPauseAsyncUpdate,
-} from '../../../share';
-import { reconcile } from '../../shared';
+import { updateLoopAsync, updateLoopSync } from '../../../core';
+import { globalLoop, shouldPauseAsyncUpdate } from '../../../share';
+import { reconcileUpdate } from '../../shared';
 
-import {
-  getPendingSyncModifyFiberArray,
-  pendingAsyncModifyFiberControl,
-} from './tool';
+import { updateFiberController } from './tool';
 
 export const updateAllSync = () => {
   globalLoop.current = true;
 
-  const allPendingUpdate = getPendingSyncModifyFiberArray();
-
-  if (allPendingUpdate.length) {
-    safeCall(() => allPendingUpdate.forEach(renderLoopSync));
-  }
-
-  allPendingUpdate.forEach((fiber) => reconcile(fiber, false));
+  updateLoopSync(updateFiberController, reconcileUpdate);
 
   globalLoop.current = false;
 
   Promise.resolve().then(() => {
-    if (pendingSyncModifyFiberArray.current.length) {
+    if (updateFiberController.hasNext()) {
       updateAllSync();
     }
   });
@@ -36,21 +21,16 @@ export const updateAllSync = () => {
 export const updateAllAsync = () => {
   globalLoop.current = true;
 
-  renderLoopAsync(
-    pendingAsyncModifyFiberControl,
+  updateLoopAsync(
+    updateFiberController,
     shouldPauseAsyncUpdate,
-    () => {
-      const allUpdate = pendingReconcileFiberArray.current;
-      allUpdate.forEach((fiber) => reconcile(fiber, false));
-      pendingReconcileFiberArray.current = [];
-    },
-    () => {
-      globalLoop.current = false;
-    }
+    reconcileUpdate
   );
 
+  globalLoop.current = false;
+
   Promise.resolve().then(() => {
-    if (pendingAsyncModifyFiberControl.hasNext()) {
+    if (updateFiberController.hasNext()) {
       updateAllAsync();
     }
   });

@@ -5,8 +5,9 @@ import { createRef } from './createRef';
 import type { FiberDispatch } from '../dispatch';
 import type { PlainElement } from '../dom';
 import type { MyReactFiberNode } from '../fiber';
+import type { LinkTreeList } from './listTree';
 
-export const asyncUpdateTimeLimit = 6;
+export const asyncUpdateTimeLimit = 8;
 
 export const globalLoop = createRef(false);
 
@@ -56,13 +57,15 @@ export const cRoundTransformFiberArray = createRef<MyReactFiberNode[]>([]);
 
 // ==== update ==== //
 
-export const pendingSyncModifyFiberArray = createRef<MyReactFiberNode[]>([]);
+export const pendingModifyFiberArray = createRef<MyReactFiberNode[]>([]);
 
-export const pendingAsyncModifyFiberArray = createRef<MyReactFiberNode[]>([]);
+export const pendingModifyTopLevelFiber = createRef<MyReactFiberNode | null>(
+  null
+);
 
-export const pendingAsyncModifyTopLevelFiber =
-  createRef<MyReactFiberNode | null>(null);
+export const pendingUpdateFiberListArray = createRef<
+  LinkTreeList<MyReactFiberNode>[]
+>([]);
 
-export const yieldAsyncModifyFiber = createRef<MyReactFiberNode | null>(null);
-
-export const pendingReconcileFiberArray = createRef<MyReactFiberNode[]>([]);
+export const pendingUpdateFiberList =
+  createRef<LinkTreeList<MyReactFiberNode> | null>(null);

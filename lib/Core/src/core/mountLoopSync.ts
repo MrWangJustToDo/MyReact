@@ -1,14 +1,14 @@
 import { cRoundTransformFiberArray, nRoundTransformFiberArray } from '../share';
 
-import { nextWorkSync } from './donext';
+import { nextWorkSync } from './invoke';
 
 import type { MyReactFiberNode } from '../fiber';
 
-export const transformStart = (fiber: MyReactFiberNode) => {
+const loopStart = (fiber: MyReactFiberNode) => {
   cRoundTransformFiberArray.current.push(...nextWorkSync(fiber));
 };
 
-export const transformCurrent = () => {
+const loopCurrent = () => {
   while (cRoundTransformFiberArray.current.length) {
     const fiber = cRoundTransformFiberArray.current.shift();
     if (fiber) {
@@ -17,7 +17,7 @@ export const transformCurrent = () => {
   }
 };
 
-export const transformNext = () => {
+const loopNext = () => {
   while (nRoundTransformFiberArray.current.length) {
     const fiber = nRoundTransformFiberArray.current.shift();
     if (fiber) {
@@ -26,10 +26,17 @@ export const transformNext = () => {
   }
 };
 
-export const transformAll = () => {
-  transformCurrent();
-  transformNext();
+const loopToEnd = () => {
+  loopCurrent();
+  loopNext();
   if (cRoundTransformFiberArray.current.length) {
-    transformAll();
+    loopToEnd();
   }
 };
+
+const loopAll = (fiber: MyReactFiberNode) => {
+  loopStart(fiber);
+  loopToEnd();
+};
+
+export const mountLoopSync = (fiber: MyReactFiberNode) => loopAll(fiber);

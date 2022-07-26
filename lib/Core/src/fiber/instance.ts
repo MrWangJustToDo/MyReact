@@ -294,29 +294,29 @@ class MyReactFiberInternal extends MyReactInternalType {
     return this.__internal_node_props__.__prevProps__;
   }
 
-  __internal_node_dom__: {
-    dom: Element | Text | null;
-    nameSpace: string | null;
-  } = {
-    dom: null,
-    nameSpace: null,
-  };
+  // __internal_node_dom__: {
+  //   dom: Element | Text | null;
+  //   nameSpace: string | null;
+  // } = {
+  //   dom: null,
+  //   nameSpace: null,
+  // };
 
-  get dom() {
-    return this.__internal_node_dom__.dom;
-  }
+  // get dom() {
+  //   return this.__internal_node_dom__.dom;
+  // }
 
-  set dom(v) {
-    this.__internal_node_dom__.dom = v;
-  }
+  // set dom(v) {
+  //   this.__internal_node_dom__.dom = v;
+  // }
 
-  get nameSpace() {
-    return this.__internal_node_dom__.nameSpace;
-  }
+  // get nameSpace() {
+  //   return this.__internal_node_dom__.nameSpace;
+  // }
 
-  set nameSpace(v) {
-    this.__internal_node_dom__.nameSpace = v;
-  }
+  // set nameSpace(v) {
+  //   this.__internal_node_dom__.nameSpace = v;
+  // }
 
   __internal_node_hook__: {
     hookHead: null | MyReactHookNode;
@@ -356,57 +356,65 @@ class MyReactFiberInternal extends MyReactInternalType {
   }
 
   __internal_node_update__: {
-    compUpdateQueue: Array<ComponentUpdateQueue>;
-    hookUpdateQueue: Array<HookUpdateQueue>;
-    unmountQueue: Array<MyReactFiberNode | MyReactFiberNode[]>;
-    effectQueue: Array<() => void>;
-    layoutEffectQueue: Array<() => void>;
+    __compUpdateQueue__: Array<ComponentUpdateQueue>;
+    __hookUpdateQueue__: Array<HookUpdateQueue>;
   } = {
-    compUpdateQueue: [],
-    hookUpdateQueue: [],
-    unmountQueue: [],
-    effectQueue: [],
-    layoutEffectQueue: [],
+    __compUpdateQueue__: [],
+    __hookUpdateQueue__: [],
   };
 
-  get compUpdateQueue() {
-    return this.__internal_node_update__.compUpdateQueue;
+  __internal_node_effect__: {
+    __effectQueue__: Array<() => void>;
+    __layoutEffectQueue__: Array<() => void>;
+  } = {
+    __effectQueue__: [],
+    __layoutEffectQueue__: [],
+  };
+
+  __internal_node_unmount__: {
+    __unmountQueue__: Array<MyReactFiberNode | MyReactFiberNode[]>;
+  } = {
+    __unmountQueue__: [],
+  };
+
+  get __compUpdateQueue__() {
+    return this.__internal_node_update__.__compUpdateQueue__;
   }
 
-  set compUpdateQueue(v) {
-    this.__internal_node_update__.compUpdateQueue = v;
+  set __compUpdateQueue__(v) {
+    this.__internal_node_update__.__compUpdateQueue__ = v;
   }
 
-  get hookUpdateQueue() {
-    return this.__internal_node_update__.hookUpdateQueue;
+  get __hookUpdateQueue__() {
+    return this.__internal_node_update__.__hookUpdateQueue__;
   }
 
-  set hookUpdateQueue(v) {
-    this.__internal_node_update__.hookUpdateQueue = v;
+  set __hookUpdateQueue__(v) {
+    this.__internal_node_update__.__hookUpdateQueue__ = v;
   }
 
-  get unmountQueue() {
-    return this.__internal_node_update__.unmountQueue;
+  get __unmountQueue__() {
+    return this.__internal_node_unmount__.__unmountQueue__;
   }
 
-  set unmountQueue(v) {
-    this.__internal_node_update__.unmountQueue = v;
+  set __unmountQueue__(v) {
+    this.__internal_node_unmount__.__unmountQueue__ = v;
   }
 
-  get effectQueue() {
-    return this.__internal_node_update__.effectQueue;
+  get __effectQueue__() {
+    return this.__internal_node_effect__.__effectQueue__;
   }
 
-  set effectQueue(v) {
-    this.__internal_node_update__.effectQueue = v;
+  set __effectQueue__(v) {
+    this.__internal_node_effect__.__effectQueue__ = v;
   }
 
-  get layoutEffectQueue() {
-    return this.__internal_node_update__.layoutEffectQueue;
+  get __layoutEffectQueue__() {
+    return this.__internal_node_effect__.__layoutEffectQueue__;
   }
 
-  set layoutEffectQueue(v) {
-    this.__internal_node_update__.layoutEffectQueue = v;
+  set __layoutEffectQueue__(v) {
+    this.__internal_node_effect__.__layoutEffectQueue__ = v;
   }
 }
 
@@ -414,6 +422,10 @@ export class MyReactFiberNode extends MyReactFiberInternal {
   fiberIndex = 0;
 
   mount = true;
+
+  dom: Element | Text | null = null;
+
+  nameSpace: string | null = null;
 
   children: MyReactFiberNode[] = [];
 
@@ -430,8 +442,6 @@ export class MyReactFiberNode extends MyReactFiberInternal {
   __needUpdate__ = true;
 
   __needTrigger__ = false;
-
-  __needReconcile__ = true;
 
   constructor(
     index: number,
@@ -511,27 +521,17 @@ export class MyReactFiberNode extends MyReactFiberInternal {
   triggerUpdate() {
     this.__needUpdate__ = true;
     this.__needTrigger__ = true;
-    this.__needReconcile__ = true;
     this.__isUpdateRender__ = true;
   }
 
   prepareUpdate() {
     this.__needUpdate__ = true;
-    this.__needReconcile__ = true;
     this.__isUpdateRender__ = true;
   }
 
   afterUpdate() {
     this.__needUpdate__ = false;
     this.__needTrigger__ = false;
-    this.__isUpdateRender__ = false;
-    this.__isRenderDynamic__ = false;
-  }
-
-  stopUpdate() {
-    this.__needUpdate__ = false;
-    this.__needTrigger__ = false;
-    this.__needReconcile__ = false;
     this.__isUpdateRender__ = false;
     this.__isRenderDynamic__ = false;
   }

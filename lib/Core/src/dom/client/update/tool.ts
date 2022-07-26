@@ -1,55 +1,44 @@
 import {
   isAppCrash,
-  pendingAsyncModifyFiberArray,
-  pendingAsyncModifyTopLevelFiber,
-  pendingReconcileFiberArray,
-  pendingSyncModifyFiberArray,
-  yieldAsyncModifyFiber,
+  pendingModifyTopLevelFiber,
+  pendingModifyFiberArray,
+  globalDispatch,
 } from '../../../share';
 
 import type { MyReactFiberNode } from '../../../fiber';
 
-export const getPendingSyncModifyFiberArray = () => {
-  if (isAppCrash.current) return [];
+let currentYield: MyReactFiberNode | null = null;
 
-  const pendingUpdate = pendingSyncModifyFiberArray.current
-    .slice(0)
-    .filter((f) => f.__needUpdate__ && f.mount);
-
-  pendingSyncModifyFiberArray.current = [];
-
-  return pendingUpdate;
-};
-
-export const pendingAsyncModifyFiberControl = {
+export const updateFiberController = {
   setYield: (fiber: MyReactFiberNode | null) => {
     if (fiber) {
-      yieldAsyncModifyFiber.current = fiber;
+      currentYield = fiber;
+    } else {
+      currentYield = null;
+      globalDispatch.current.endProgressList();
     }
   },
   getNext: () => {
     if (isAppCrash.current) return null;
-    const fiber = yieldAsyncModifyFiber.current;
-    yieldAsyncModifyFiber.current = null;
-    if (fiber?.mount) {
-      return fiber;
-    }
-    while (pendingAsyncModifyFiberArray.current.length) {
-      const nextFiber = pendingAsyncModifyFiberArray.current.shift();
-      if (nextFiber?.mount) {
-        pendingReconcileFiberArray.current.push(nextFiber);
-        pendingAsyncModifyTopLevelFiber.current = nextFiber;
-        return nextFiber;
+    const yieldFiber = currentYield;
+    currentYield = null;
+    if (yieldFiber) return yieldFiber;
+    while (pendingModifyFiberArray.current.length) {
+      const newProgressFiber = pendingModifyFiberArray.current.shift();
+      if (newProgressFiber?.mount) {
+        globalDispatch.current.beginProgressList();
+        pendingModifyTopLevelFiber.current = newProgressFiber;
+        return newProgressFiber;
       }
     }
     return null;
   },
+  getUpdateList: (fiber: MyReactFiberNode) => {
+    globalDispatch.current.generateUpdateList(fiber);
+  },
   hasNext: () => {
     if (isAppCrash.current) return false;
-    return (
-      yieldAsyncModifyFiber.current !== null ||
-      pendingAsyncModifyFiberArray.current.length > 0
-    );
+    return currentYield !== null || pendingModifyFiberArray.current.length > 0;
   },
-  doesPause: () => yieldAsyncModifyFiber.current !== null,
+  doesPause: () => currentYield !== null,
 };

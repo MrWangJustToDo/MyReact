@@ -9,11 +9,11 @@ import {
   currentHookDeepIndex,
   currentRunningFiber,
   isServerRender,
-  pendingAsyncModifyTopLevelFiber,
+  pendingModifyTopLevelFiber,
 } from '../share';
 import { createElement } from '../vdom';
 
-import { transformChildrenFiber } from './tool';
+import { transformChildrenFiber } from './generate';
 
 import type { createContext, forwardRef, lazy, memo } from '../element';
 import type { MyReactFiberNode } from '../fiber';
@@ -170,19 +170,7 @@ const nextWorkForwardRef = (fiber: MyReactFiberNode) => {
   return nextWorkCommon(fiber);
 };
 
-const nextWorkProvider = (fiber: MyReactFiberNode) => {
-  // if (fiber.__pendingContext__) {
-  //   const allListeners = fiber.__dependence__.map((n) => n.__fiber__);
-
-  //   Promise.resolve().then(() =>
-  //     allListeners.filter((f) => f && f.mount).forEach((f) => f?.update())
-  //   );
-
-  //   fiber.__pendingContext__ = false;
-  // }
-
-  return nextWorkCommon(fiber);
-};
+const nextWorkProvider = (fiber: MyReactFiberNode) => nextWorkCommon(fiber);
 
 const nextWorkConsumer = (fiber: MyReactFiberNode) => {
   const { type, props } = fiber.element as Children;
@@ -266,7 +254,7 @@ export const nextWorkAsync = (fiber: MyReactFiberNode) => {
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
-  while (nextFiber && nextFiber !== pendingAsyncModifyTopLevelFiber.current) {
+  while (nextFiber && nextFiber !== pendingModifyTopLevelFiber.current) {
     if (nextFiber.sibling) {
       return nextFiber.sibling;
     }

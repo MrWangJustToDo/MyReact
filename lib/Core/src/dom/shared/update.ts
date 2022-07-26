@@ -3,11 +3,10 @@ import {
   enableAsyncUpdate,
   globalDispatch,
   globalLoop,
-  pendingAsyncModifyFiberArray,
-  pendingSyncModifyFiberArray,
-} from '../share';
+  pendingModifyFiberArray,
+} from '../../share';
 
-import type { MyReactFiberNode } from '../fiber';
+import type { MyReactFiberNode } from '../../fiber';
 
 const updateEntry = () => {
   if (globalLoop.current) return;
@@ -24,11 +23,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
   const canUpdate = cannotUpdate();
   if (canUpdate) {
     fiber.triggerUpdate();
-    if (enableAsyncUpdate.current) {
-      pendingAsyncModifyFiberArray.current.push(fiber);
-    } else {
-      pendingSyncModifyFiberArray.current.push(fiber);
-    }
+    pendingModifyFiberArray.current.push(fiber);
     asyncUpdate();
   }
 };

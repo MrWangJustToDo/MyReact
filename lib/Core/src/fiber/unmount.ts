@@ -27,7 +27,6 @@ export const unmountFiber = (fiber: MyReactFiberNode) => {
   fiber.mount = false;
   fiber.__needUpdate__ = false;
   fiber.__needTrigger__ = false;
-  fiber.__needReconcile__ = false;
   fiber.__pendingCreate__ = false;
   fiber.__pendingUpdate__ = false;
   fiber.__pendingAppend__ = false;

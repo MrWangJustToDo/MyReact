@@ -13,5 +13,10 @@ export const insertBefore = (
     parentDOM.insertBefore(fiber.dom as Element, beforeDOM);
     return;
   }
+  // let child = fiber.child;
+  // while (child) {
+  //   insertBefore(child, beforeDOM, parentDOM);
+  //   child = child.sibling;
+  // }
   fiber.children.forEach((f) => insertBefore(f, beforeDOM, parentDOM));
 };

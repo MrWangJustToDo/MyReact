@@ -16,6 +16,7 @@
     "test": "tsdx test",
     "lint": "tsdx lint",
     "prepare": "tsdx build",
+    "build:all": "tsdx build --format cjs,esm,umd",
     "size": "size-limit",
     "analyze": "size-limit --why"
   },

@@ -171,7 +171,11 @@ export const transformChildrenFiber = (
 ) => {
   let index = 0;
   const isUpdate = parentFiber.__isUpdateRender__;
-  const newChildren = Array.isArray(children) ? children : [children];
+  const newChildren = Array.isArray(children)
+    ? children
+    : children === undefined
+    ? []
+    : [children];
   const prevFiberChildren = isUpdate ? parentFiber.__renderedChildren__ : [];
   const assignPrevFiberChildren = getKeyMatchedChildren(
     newChildren,

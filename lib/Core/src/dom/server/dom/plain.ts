@@ -114,6 +114,19 @@ export class PlainElement {
           .reduce((p, c) => p + c, '')}</${this.type}>`;
       } else {
         return this.children
+          .reduce<Array<TextElement | string | PlainElement>>((p, c) => {
+            if (
+              p.length &&
+              c instanceof TextElement &&
+              p[p.length - 1] instanceof TextElement
+            ) {
+              p.push('<!-- -->');
+              p.push(c);
+            } else {
+              p.push(c);
+            }
+            return p;
+          }, [])
           .map((dom) => dom.toString())
           .reduce((p, c) => p + c, '');
       }

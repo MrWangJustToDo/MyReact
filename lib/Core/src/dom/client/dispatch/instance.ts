@@ -34,7 +34,6 @@ export class ClientDispatch implements FiberDispatch {
   generateUpdateList(_fiber: MyReactFiberNode): void {
     if (_fiber) {
       if (pendingUpdateFiberList.current) {
-        // root trigger
         if (
           _fiber.__pendingCreate__ ||
           _fiber.__pendingUpdate__ ||

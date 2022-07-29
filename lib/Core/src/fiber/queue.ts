@@ -22,7 +22,7 @@ export const processComponentUpdateQueue = (fiber: MyReactFiberNode) => {
       isForce: p.isForce || c.isForce || false,
       callback: c.callback ? p.callback.concat(c.callback) : p.callback,
     }),
-    { newState: {}, isForce: false, callback: [] }
+    { newState: { ...baseState }, isForce: false, callback: [] }
   );
 };
 

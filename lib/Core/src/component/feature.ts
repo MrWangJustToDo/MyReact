@@ -26,16 +26,19 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
 
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  let statePayload = null;
-
   const props = Object.assign({}, typedElement.props);
   const state = Object.assign({}, typedInstance.state);
 
   if (typeof typedComponent.getDerivedStateFromProps === 'function') {
-    statePayload = typedComponent.getDerivedStateFromProps(props, state);
+    const payloadState = typedComponent.getDerivedStateFromProps(props, state);
+    if (payloadState) {
+      typedInstance.state = Object.assign(
+        {},
+        typedInstance.state,
+        payloadState
+      );
+    }
   }
-
-  return statePayload;
 };
 
 const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
@@ -175,9 +178,7 @@ const processComponentDidUpdateOnUpdate = (
 
 export const classComponentMount = (fiber: MyReactFiberNode) => {
   processComponentInstanceOnMount(fiber);
-  const payloadState = processComponentStateFromProps(fiber);
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
-  typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
+  processComponentStateFromProps(fiber);
   const children = processComponentRenderOnMountAndUpdate(fiber);
   processComponentDidMountOnMount(fiber);
   return children;
@@ -185,13 +186,13 @@ export const classComponentMount = (fiber: MyReactFiberNode) => {
 
 export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
-  const payloadState = processComponentStateFromProps(fiber);
+  processComponentStateFromProps(fiber);
   const { newState, isForce, callback } = processComponentUpdateQueue(fiber);
   const typedInstance = fiber.instance as MixinMyReactComponentType;
   const baseState = typedInstance.state;
   const baseProps = typedInstance.props;
   const baseContext = typedInstance.context;
-  const nextState = Object.assign({}, baseState, newState, payloadState);
+  const nextState = Object.assign({}, baseState, newState);
   const nextProps = Object.assign({}, fiber.__props__);
   const nextContext = processComponentContextOnUpdate(fiber);
   let shouldUpdate = isForce;

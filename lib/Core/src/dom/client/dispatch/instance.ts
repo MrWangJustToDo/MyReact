@@ -55,7 +55,7 @@ export class ClientDispatch implements FiberDispatch {
     _fiber: MyReactFiberNode,
     _hydrate: boolean,
     _parentFiberWithDom: MyReactFiberNode
-  ): void {
+  ): boolean {
     const _result = safeCallWithFiber({
       fiber: _fiber,
       action: () => create(_fiber, _hydrate, _parentFiberWithDom),
@@ -71,8 +71,10 @@ export class ClientDispatch implements FiberDispatch {
       action: () => append(_fiber, _parentFiberWithDom.dom as Element),
     });
 
+    let _final = true;
+
     if (_fiber.child) {
-      this.reconcileCommit(
+      _final = this.reconcileCommit(
         _fiber.child,
         _result,
         _fiber.dom ? _fiber : _parentFiberWithDom
@@ -86,7 +88,17 @@ export class ClientDispatch implements FiberDispatch {
     );
 
     if (_fiber.sibling) {
-      this.reconcileCommit(_fiber.sibling, _result, _parentFiberWithDom);
+      this.reconcileCommit(
+        _fiber.sibling,
+        _fiber.dom ? _result : _final,
+        _parentFiberWithDom
+      );
+    }
+
+    if (_fiber.dom) {
+      return _result;
+    } else {
+      return _final;
     }
   }
   reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {

@@ -10,8 +10,8 @@ export class EmptyDispatch implements FiberDispatch {
     _fiber: MyReactFiberNode,
     _hydrate: boolean,
     _parentFiberWithDom: MyReactFiberNode
-  ): void {
-    void 0;
+  ): boolean {
+    return false;
   }
   reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {
     void 0;

@@ -14,7 +14,7 @@ export class ServerDispatch implements FiberDispatch {
     _fiber: MyReactFiberNode,
     _hydrate: boolean,
     _parentFiberWithDom: MyReactFiberNode
-  ): void {
+  ): boolean {
     safeCallWithFiber({ fiber: _fiber, action: () => create(_fiber) });
     safeCallWithFiber({ fiber: _fiber, action: () => update(_fiber) });
     safeCallWithFiber({
@@ -31,6 +31,7 @@ export class ServerDispatch implements FiberDispatch {
     if (_fiber.sibling) {
       this.reconcileCommit(_fiber.sibling, _hydrate, _parentFiberWithDom);
     }
+    return true;
   }
   reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {
     void 0;

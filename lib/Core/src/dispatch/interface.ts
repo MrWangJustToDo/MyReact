@@ -9,7 +9,7 @@ export interface FiberDispatch {
     _fiber: MyReactFiberNode,
     _hydrate: boolean,
     _parentFiberWithDom: MyReactFiberNode
-  ): void;
+  ): boolean;
 
   // loop to update
   reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void;

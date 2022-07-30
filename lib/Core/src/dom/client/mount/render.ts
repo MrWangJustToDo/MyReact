@@ -1,5 +1,10 @@
 import { createFiberNode, MyReactFiberNode } from '../../../fiber';
-import { globalDispatch, rootContainer, rootFiber } from '../../../share';
+import {
+  globalDispatch,
+  isAppCrash,
+  rootContainer,
+  rootFiber,
+} from '../../../share';
 import { startRender, unmountComponentAtNode } from '../../shared';
 import { ClientDispatch } from '../dispatch';
 
@@ -10,6 +15,8 @@ export const render = (
   container: Element & { __fiber__: MyReactFiberNode }
 ) => {
   globalDispatch.current = new ClientDispatch();
+
+  isAppCrash.current = false;
 
   const containerFiber = container.__fiber__;
   if (containerFiber instanceof MyReactFiberNode) {

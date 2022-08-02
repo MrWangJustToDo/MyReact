@@ -68,7 +68,7 @@ export class ClientDispatch implements FiberDispatch {
 
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => append(_fiber, _parentFiberWithDom.dom as Element),
+      action: () => append(_fiber, _parentFiberWithDom),
     });
 
     let _final = _hydrate;
@@ -142,7 +142,7 @@ export class ClientDispatch implements FiberDispatch {
 
       safeCallWithFiber({
         fiber: _fiber,
-        action: () => append(_fiber, _parentFiberWithDom.dom as Element),
+        action: () => append(_fiber, _parentFiberWithDom),
       });
     });
 

@@ -1,8 +1,8 @@
-import { cloneElement, isValidElement } from '../vdom';
+import { cloneElement, isValidElement } from '../element';
 
 import { mapByJudge } from './tool';
 
-import type { MaybeArrayChildrenNode, Children } from '../vdom';
+import type { MaybeArrayChildrenNode, Children } from '../element';
 
 export const map = (
   arrayLike: MaybeArrayChildrenNode,

@@ -1,7 +1,7 @@
 import { IS_SINGLE_ELEMENT, log } from '../../../../share';
 
+import type { Children } from '../../../../element';
 import type { MyReactFiberNode } from '../../../../fiber';
-import type { Children } from '../../../../vdom';
 
 type HydrateDOM = Element & {
   __hydrate__: boolean;

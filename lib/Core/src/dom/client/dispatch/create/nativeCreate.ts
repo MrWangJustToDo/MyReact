@@ -1,5 +1,5 @@
+import type { Children } from '../../../../element';
 import type { MyReactFiberNode } from '../../../../fiber';
-import type { Children } from '../../../../vdom';
 
 export const nativeCreate = (fiber: MyReactFiberNode) => {
   if (fiber.__isTextNode__) {

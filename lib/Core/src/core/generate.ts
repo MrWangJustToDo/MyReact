@@ -1,19 +1,19 @@
+import { isValidElement } from '../element';
 import { MyReactFiberNode, createFiberNode, updateFiberNode } from '../fiber';
 import {
   enableKeyDiff,
   globalDispatch,
   isAppMounted,
-  isHydrateRender,
   isServerRender,
+  isHydrateRender,
 } from '../share';
-import { isValidElement } from '../vdom';
 
 import type {
-  ArrayChildrenNode,
-  MaybeArrayChildrenNode,
   Children,
   ChildrenNode,
-} from '../vdom';
+  ArrayChildrenNode,
+  MaybeArrayChildrenNode,
+} from '../element';
 
 const getKeyMatchedChildren = (
   newChildren: ArrayChildrenNode,
@@ -30,22 +30,22 @@ const getKeyMatchedChildren = (
   const assignPrevChildren: Array<MyReactFiberNode | MyReactFiberNode[]> =
     Array(tempChildren.length).fill(null);
 
-  newChildren.forEach((vDom, index) => {
+  newChildren.forEach((element, index) => {
     if (tempChildren.length) {
-      if (
-        isValidElement(vDom) &&
-        typeof vDom === 'object' &&
-        typeof vDom?.key === 'string'
-      ) {
-        const targetIndex = tempChildren.findIndex(
-          (fiber) =>
-            fiber instanceof MyReactFiberNode &&
-            typeof fiber.element === 'object' &&
-            fiber.element?.key === vDom.key
-        );
-        if (targetIndex !== -1) {
-          assignPrevChildren[index] = tempChildren[targetIndex];
-          tempChildren.splice(targetIndex, 1);
+      if (isValidElement(element)) {
+        if (typeof element.key === 'string') {
+          const targetIndex = tempChildren.findIndex(
+            (fiber) =>
+              fiber instanceof MyReactFiberNode &&
+              typeof fiber.element === 'object' &&
+              fiber.element?.key === element.key
+          );
+          if (targetIndex !== -1) {
+            assignPrevChildren[index] = tempChildren[targetIndex];
+            tempChildren.splice(targetIndex, 1);
+          }
+        } else {
+          // TODO
         }
       }
     }
@@ -63,20 +63,24 @@ const getIsSameTypeNode = (
 ) => {
   if (!isAppMounted.current) return false;
   const newChildIsArray = Array.isArray(newChild);
-  const prevRenderedChildIsArray = Array.isArray(prevFiberChild);
-  if (newChildIsArray && prevRenderedChildIsArray) return true;
+  const prevElementChildIsArray = Array.isArray(prevFiberChild);
+  if (newChildIsArray && prevElementChildIsArray) return true;
   if (newChildIsArray) return false;
-  if (prevRenderedChildIsArray) return false;
+  if (prevElementChildIsArray) return false;
 
   const typedPrevFiberChild = prevFiberChild as MyReactFiberNode;
   const typedNewChild = newChild as ChildrenNode;
 
-  const prevRenderedChildVDom = typedPrevFiberChild?.element;
+  const prevRenderedChild = typedPrevFiberChild?.element;
   const result = typedPrevFiberChild?.checkIsSameType(typedNewChild);
-  if (result && enableKeyDiff.current && !typedPrevFiberChild.__isTextNode__) {
+  if (
+    result &&
+    enableKeyDiff.current &&
+    !typedPrevFiberChild.__isTextNode__ &&
+    !typedPrevFiberChild.__isNullNode__
+  ) {
     return (
-      (typedNewChild as Children).key ===
-      (prevRenderedChildVDom as Children).key
+      (typedNewChild as Children).key === (prevRenderedChild as Children).key
     );
   } else {
     return result;
@@ -86,50 +90,47 @@ const getIsSameTypeNode = (
 const getNewFiberWithUpdate = (
   newChild: MaybeArrayChildrenNode,
   parentFiber: MyReactFiberNode,
-  prevRenderedChild?: MyReactFiberNode | MyReactFiberNode[],
-  assignPrevRenderedChild?: MyReactFiberNode | MyReactFiberNode[]
+  prevFiberChild?: MyReactFiberNode | MyReactFiberNode[],
+  assignPrevFiberChild?: MyReactFiberNode | MyReactFiberNode[]
 ): MyReactFiberNode | MyReactFiberNode[] => {
-  const isSameType = getIsSameTypeNode(newChild, assignPrevRenderedChild);
+  const isSameType = getIsSameTypeNode(newChild, assignPrevFiberChild);
   if (isSameType) {
     if (
       Array.isArray(newChild) &&
-      Array.isArray(prevRenderedChild) &&
-      Array.isArray(assignPrevRenderedChild)
+      Array.isArray(prevFiberChild) &&
+      Array.isArray(assignPrevFiberChild)
     ) {
-      const assignPrevRenderedChildren = getKeyMatchedChildren(
+      const assignPrevFiberChildren = getKeyMatchedChildren(
         newChild,
-        assignPrevRenderedChild
+        assignPrevFiberChild
       ) as MyReactFiberNode[];
-      if (newChild.length < assignPrevRenderedChildren.length) {
+      if (newChild.length < assignPrevFiberChildren.length) {
         globalDispatch.current.pendingUnmount(
           parentFiber,
-          assignPrevRenderedChildren.slice(newChild.length)
+          assignPrevFiberChildren.slice(newChild.length)
         );
       }
       return newChild.map((v, index) =>
         getNewFiberWithUpdate(
           v,
           parentFiber,
-          prevRenderedChild[index],
-          assignPrevRenderedChildren[index]
+          prevFiberChild[index],
+          assignPrevFiberChildren[index]
         )
       ) as MyReactFiberNode[];
     }
 
     return updateFiberNode(
       {
-        fiber: assignPrevRenderedChild as MyReactFiberNode,
+        fiber: assignPrevFiberChild as MyReactFiberNode,
         parent: parentFiber,
-        prevFiber: prevRenderedChild as MyReactFiberNode,
+        prevFiber: prevFiberChild as MyReactFiberNode,
       },
       newChild as ChildrenNode
     );
   } else {
-    if (assignPrevRenderedChild) {
-      globalDispatch.current.pendingUnmount(
-        parentFiber,
-        assignPrevRenderedChild
-      );
+    if (assignPrevFiberChild) {
+      globalDispatch.current.pendingUnmount(parentFiber, assignPrevFiberChild);
     }
 
     if (Array.isArray(newChild)) {
@@ -170,13 +171,13 @@ export const transformChildrenFiber = (
   children: MaybeArrayChildrenNode | null | undefined
 ) => {
   let index = 0;
+
   const isUpdate = parentFiber.__isUpdateRender__;
-  const newChildren = Array.isArray(children)
-    ? children
-    : children === undefined
-    ? []
-    : [children];
+
+  const newChildren = Array.isArray(children) ? children : [children];
+
   const prevFiberChildren = isUpdate ? parentFiber.__renderedChildren__ : [];
+
   const assignPrevFiberChildren = getKeyMatchedChildren(
     newChildren,
     prevFiberChildren

@@ -71,7 +71,7 @@ export class ClientDispatch implements FiberDispatch {
       action: () => append(_fiber, _parentFiberWithDom.dom as Element),
     });
 
-    let _final = true;
+    let _final = _hydrate;
 
     if (_fiber.child) {
       _final = this.reconcileCommit(

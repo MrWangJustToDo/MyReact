@@ -278,8 +278,24 @@
         );
       };
 
+      const FFF = ({ children }) => {
+        console.log(children);
+        return <div>{children}</div>;
+      };
+
+      const TestKeyError = () => {
+        const [i, add] = useCounter();
+        return (
+          <FFF>
+            {"foo"}
+            {i % 2 === 0 ? null : "ff"}
+            <button onClick={add}>add</button>
+          </FFF>
+        );
+      };
+
       const container = document.getElementById("root");
-      ReactDOM.render(<TestF />, container);
+      ReactDOM.render(<TestKeyError />, container);
     </script>
   </body>
 </html>

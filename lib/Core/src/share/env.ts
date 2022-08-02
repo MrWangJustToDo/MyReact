@@ -56,7 +56,6 @@ export const nRoundTransformFiberArray = createRef<MyReactFiberNode[]>([]);
 export const cRoundTransformFiberArray = createRef<MyReactFiberNode[]>([]);
 
 // ==== update ==== //
-
 export const pendingModifyFiberArray = createRef<MyReactFiberNode[]>([]);
 
 export const pendingModifyTopLevelFiber = createRef<MyReactFiberNode | null>(

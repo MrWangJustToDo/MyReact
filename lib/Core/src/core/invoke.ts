@@ -1,37 +1,36 @@
 import { classComponentMount, classComponentUpdate } from '../component';
+import { createElement } from '../element';
 import {
   getContextFiber,
   getContextValue,
   processHookUpdateQueue,
 } from '../fiber';
 import {
-  currentFunctionFiber,
-  currentHookDeepIndex,
-  currentRunningFiber,
   isServerRender,
+  currentRunningFiber,
+  currentHookDeepIndex,
+  currentFunctionFiber,
   pendingModifyTopLevelFiber,
 } from '../share';
-import { createElement } from '../vdom';
 
 import { transformChildrenFiber } from './generate';
 
-import type { createContext, forwardRef, lazy, memo } from '../element';
-import type { MyReactFiberNode } from '../fiber';
 import type {
+  lazy,
+  memo,
   Children,
+  forwardRef,
+  createContext,
   ClassComponent,
   FunctionComponent,
-  MaybeArrayChildrenNode,
-} from '../vdom';
+} from '../element';
+import type { MyReactFiberNode } from '../fiber';
 
 export const nextWorkCommon = (fiber: MyReactFiberNode) => {
   if (fiber.__isRenderDynamic__) {
     return transformChildrenFiber(fiber, fiber.__dynamicChildren__);
   } else {
-    return transformChildrenFiber(
-      fiber,
-      fiber.__children__ as MaybeArrayChildrenNode
-    );
+    return transformChildrenFiber(fiber, fiber.__children__);
   }
 };
 
@@ -181,7 +180,7 @@ const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   fiber.instance.setFiber(fiber);
 
-  const Context = (typedType as unknown as { Context: any }).Context;
+  const Context = typedType.Context as ReturnType<typeof createContext>;
 
   if (!fiber.instance.__context__ || !fiber.instance.__context__.mount) {
     const ProviderFiber = getContextFiber(fiber, Context);

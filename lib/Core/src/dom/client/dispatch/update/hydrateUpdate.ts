@@ -2,8 +2,8 @@ import { debugWithDOM, IS_UNIT_LESS_NUMBER, log } from '../../../../share';
 import { isEvent, isProperty, isStyle } from '../../../shared';
 import { addEventListener } from '../event';
 
+import type { Children } from '../../../../element';
 import type { MyReactFiberNode } from '../../../../fiber';
-import type { Children } from '../../../../vdom';
 
 const domPropsHydrate = (fiber: MyReactFiberNode, dom: Element) => {
   if (fiber.__isTextNode__) {

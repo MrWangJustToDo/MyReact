@@ -2,11 +2,13 @@ import { NODE_TYPE_KEY } from './nodeType';
 
 export class MyReactInternalType {
   __internal_node_type__ = {
+    __isNullNode__: false,
     __isTextNode__: false,
     __isEmptyNode__: false,
     __isPlainNode__: false,
     __isStrictNode__: false,
     __isFragmentNode__: false,
+    // ====  object node ==== //
     __isObjectNode__: false,
     __isForwardRef__: false,
     __isPortal__: false,
@@ -15,10 +17,15 @@ export class MyReactInternalType {
     __isContextConsumer__: false,
     __isLazy__: false,
     __isSuspense__: false,
+    // ==== dynamic node ==== //
     __isDynamicNode__: false,
     __isClassComponent__: false,
     __isFunctionComponent__: false,
   };
+
+  get __isNullNode__() {
+    return this.__internal_node_type__.__isNullNode__;
+  }
 
   get __isTextNode__() {
     return this.__internal_node_type__.__isTextNode__;

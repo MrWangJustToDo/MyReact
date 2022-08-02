@@ -6,9 +6,8 @@ import {
 } from '../fiber';
 import { globalDispatch } from '../share';
 
-import type { memo } from '../element';
+import type { Children, ClassComponent, memo } from '../element';
 import type { MyReactFiberNode } from '../fiber';
-import type { Children, ClassComponent } from '../vdom';
 import type {
   MixinMyReactComponentType,
   MyReactComponentStaticType,

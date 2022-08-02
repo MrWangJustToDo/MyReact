@@ -2,8 +2,6 @@ export class ListTreeNode<T> {
   value: T;
   prev: ListTreeNode<T> | null = null;
   next: ListTreeNode<T> | null = null;
-  child: ListTreeNode<T> | null = null;
-  sibling: ListTreeNode<T> | null = null;
 
   constructor(value: T) {
     this.value = value;
@@ -110,13 +108,6 @@ export class LinkTreeList<T> {
       action(node.value);
       node = node.prev;
     }
-  }
-
-  reconcileTree(node: ListTreeNode<T> | null, action: (p: T) => void) {
-    if (!node) return;
-    this.reconcileTree(node.child, action);
-    action(node.value);
-    this.reconcileTree(node.sibling, action);
   }
 
   reconcile(action: (p: T) => void) {

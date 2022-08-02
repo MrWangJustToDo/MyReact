@@ -1,13 +1,13 @@
 import { currentRunningFiber, enableAllCheck, isAppCrash } from './env';
 
+import type { MixinClassComponent, MixinFunctionComponent } from '../element';
 import type { MyReactFiberNode } from '../fiber';
-import type { MixinClassComponent, MixinFunctionComponent } from '../vdom';
 
 export const getTrackDevLog = (fiber: MyReactFiberNode) => {
   if (!enableAllCheck.current) return '';
-  const vdom = fiber.element;
-  const source = typeof vdom === 'object' ? vdom?._source : null;
-  const owner = typeof vdom === 'object' ? vdom?._owner : null;
+  const element = fiber.element;
+  const source = typeof element === 'object' ? element?._source : null;
+  const owner = typeof element === 'object' ? element?._owner : null;
   let preString = '';
   if (source) {
     const { fileName, lineNumber } = source;
@@ -32,6 +32,7 @@ export const getFiberNodeName = (fiber: MyReactFiberNode) => {
   if (fiber.__isMemo__) return `<Memo />${getTrackDevLog(fiber)}`;
   if (fiber.__isLazy__) return `<Lazy />${getTrackDevLog(fiber)}`;
   if (fiber.__isPortal__) return `<Portal />${getTrackDevLog(fiber)}`;
+  if (fiber.__isNullNode__) return `<null />${getTrackDevLog(fiber)}`;
   if (fiber.__isEmptyNode__) return `<Empty />${getTrackDevLog(fiber)}`;
   if (fiber.__isStrictNode__) return `<Strict />${getTrackDevLog(fiber)}`;
   if (fiber.__isSuspense__) return `<Suspense />${getTrackDevLog(fiber)}`;
@@ -41,7 +42,7 @@ export const getFiberNodeName = (fiber: MyReactFiberNode) => {
     return `<Provider />${getTrackDevLog(fiber)}`;
   if (fiber.__isContextConsumer__)
     return `<Consumer />${getTrackDevLog(fiber)}`;
-  if (typeof fiber.element === 'object') {
+  if (typeof fiber.element === 'object' && fiber.element !== null) {
     if (fiber.__isPlainNode__ && typeof fiber.element?.type === 'string') {
       return `<${fiber.element.type} />${getTrackDevLog(fiber)}`;
     }
@@ -157,11 +158,11 @@ export const debugWithDOM = (fiber: MyReactFiberNode) => {
   if (fiber.dom) {
     const debugDOM = fiber.dom as Element & {
       __fiber__: MyReactFiberNode;
-      __vdom__: MyReactFiberNode['element'];
+      __element__: MyReactFiberNode['element'];
       __children__: MyReactFiberNode['children'];
     };
     debugDOM['__fiber__'] = fiber;
-    debugDOM['__vdom__'] = fiber.element;
+    debugDOM['__element__'] = fiber.element;
     debugDOM['__children__'] = fiber.children;
   }
 };

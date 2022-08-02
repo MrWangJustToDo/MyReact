@@ -1,8 +1,7 @@
 import { isNormalEquals, MyReactInternalInstance } from '../share';
 
-import type { createContext } from '../element';
+import type { DynamicChildrenNode, createContext } from '../element';
 import type { ComponentUpdateQueue } from '../fiber';
-import type { DynamicChildrenNode } from '../vdom';
 
 interface MyReactComponentType<P, S, C> {
   render(this: MyReactComponent): DynamicChildrenNode;
@@ -69,7 +68,9 @@ export class MyReactComponent<
       callback,
       trigger: this,
     };
+
     this.__fiber__?.__compUpdateQueue__.push(updater);
+
     Promise.resolve().then(() => {
       this.__fiber__?.update();
     });
@@ -81,11 +82,19 @@ export class MyReactComponent<
       isForce: true,
       trigger: this,
     };
+
     this.__fiber__?.__compUpdateQueue__.push(updater);
+
     Promise.resolve().then(() => {
       this.__fiber__?.update();
     });
   };
+
+  unmount() {
+    super.unmount();
+    const instance = this as unknown as MixinMyReactComponentType;
+    instance.componentWillUnmount?.();
+  }
 }
 
 export class MyReactPureComponent<

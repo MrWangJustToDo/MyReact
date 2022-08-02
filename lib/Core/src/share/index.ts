@@ -1,5 +1,3 @@
-import * as env from './env';
-
 export * from './createRef';
 export * from './debug';
 export * from './env';
@@ -16,5 +14,3 @@ export * from './mapFiber';
 export * from './cannotUpdate';
 export * from './numberStyle';
 export * from './listTree';
-
-(globalThis as any).__env__ = env;

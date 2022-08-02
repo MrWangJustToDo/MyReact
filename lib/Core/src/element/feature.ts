@@ -8,7 +8,7 @@ import {
   My_React_Provider,
 } from '../share';
 
-import type { ClassComponent, FunctionComponent } from '../vdom';
+import type { ClassComponent, FunctionComponent } from '.';
 
 let contextId = 0;
 
@@ -23,11 +23,13 @@ export const createContext = <T = any>(value: T) => {
   const Provider = {
     ['$$typeof']: My_React_Provider,
     value,
+    Context: { id: 0 },
   };
 
   const Consumer = {
     ['$$typeof']: My_React_Consumer,
     Internal: MyReactInternalInstance,
+    Context: { id: 0 },
   };
 
   Object.defineProperty(Provider, 'Context', {

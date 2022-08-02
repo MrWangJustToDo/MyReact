@@ -3,18 +3,17 @@ import { MyReactInternalInstance, isArrayEquals } from '../share';
 
 import type { HookUpdateQueue } from '../fiber';
 
-export enum HOOK_TYPE {
-  useRef = 'useRef',
-  useMemo = 'useMemo',
-  useState = 'useState',
-  useEffect = 'useEffect',
-  useContext = 'useContext',
-  useReducer = 'useReducer',
-  useCallback = 'useCallback',
-  useDebugValue = 'useDebugValue',
-  useLayoutEffect = 'useLayoutEffect',
-  useImperativeHandle = 'useImperativeHandle',
-}
+export type HOOK_TYPE =
+  | 'useRef'
+  | 'useMemo'
+  | 'useState'
+  | 'useEffect'
+  | 'useContext'
+  | 'useReducer'
+  | 'useCallback'
+  | 'useDebugValue'
+  | 'useLayoutEffect'
+  | 'useImperativeHandle';
 
 export type Action = (s: any) => any | { type: string; payload: any };
 
@@ -58,32 +57,29 @@ export class MyReactHookNode extends MyReactInternalInstance {
 
   initialResult() {
     if (
-      this.hookType === HOOK_TYPE.useMemo ||
-      this.hookType === HOOK_TYPE.useState ||
-      this.hookType === HOOK_TYPE.useReducer
+      this.hookType === 'useMemo' ||
+      this.hookType === 'useState' ||
+      this.hookType === 'useReducer'
     ) {
       this.result = this.value.call(null);
       return;
     }
 
     if (
-      this.hookType === HOOK_TYPE.useEffect ||
-      this.hookType === HOOK_TYPE.useLayoutEffect ||
-      this.hookType === HOOK_TYPE.useImperativeHandle
+      this.hookType === 'useEffect' ||
+      this.hookType === 'useLayoutEffect' ||
+      this.hookType === 'useImperativeHandle'
     ) {
       this.effect = true;
       return;
     }
 
-    if (
-      this.hookType === HOOK_TYPE.useRef ||
-      this.hookType === HOOK_TYPE.useCallback
-    ) {
+    if (this.hookType === 'useRef' || this.hookType === 'useCallback') {
       this.result = this.value;
       return;
     }
 
-    if (this.hookType === HOOK_TYPE.useContext) {
+    if (this.hookType === 'useContext') {
       const ProviderFiber = getContextFiber(this.__fiber__, this.value);
       this.setContext(ProviderFiber);
       this.result = getContextValue(ProviderFiber, this.value);
@@ -93,11 +89,11 @@ export class MyReactHookNode extends MyReactInternalInstance {
 
   updateResult(newValue: any, newReducer: Reducer, newDeps: any[]) {
     if (
-      this.hookType === HOOK_TYPE.useMemo ||
-      this.hookType === HOOK_TYPE.useEffect ||
-      this.hookType === HOOK_TYPE.useCallback ||
-      this.hookType === HOOK_TYPE.useLayoutEffect ||
-      this.hookType === HOOK_TYPE.useImperativeHandle
+      this.hookType === 'useMemo' ||
+      this.hookType === 'useEffect' ||
+      this.hookType === 'useCallback' ||
+      this.hookType === 'useLayoutEffect' ||
+      this.hookType === 'useImperativeHandle'
     ) {
       if (newDeps && !this.deps) {
         throw new Error('deps state change');
@@ -108,9 +104,9 @@ export class MyReactHookNode extends MyReactInternalInstance {
     }
 
     if (
-      this.hookType === HOOK_TYPE.useEffect ||
-      this.hookType === HOOK_TYPE.useLayoutEffect ||
-      this.hookType === HOOK_TYPE.useImperativeHandle
+      this.hookType === 'useEffect' ||
+      this.hookType === 'useLayoutEffect' ||
+      this.hookType === 'useImperativeHandle'
     ) {
       if (!newDeps) {
         this.value = newValue;
@@ -123,25 +119,28 @@ export class MyReactHookNode extends MyReactInternalInstance {
         this.deps = newDeps;
         this.effect = true;
       }
+      return;
     }
 
-    if (this.hookType === HOOK_TYPE.useCallback) {
+    if (this.hookType === 'useCallback') {
       if (!isArrayEquals(this.deps, newDeps)) {
         this.value = newValue;
         this.result = newValue;
         this.deps = newDeps;
       }
+      return;
     }
 
-    if (this.hookType === HOOK_TYPE.useMemo) {
+    if (this.hookType === 'useMemo') {
       if (!isArrayEquals(this.deps, newDeps)) {
         this.value = newValue;
         this.result = newValue.call(null);
         this.deps = newDeps;
       }
+      return;
     }
 
-    if (this.hookType === HOOK_TYPE.useContext) {
+    if (this.hookType === 'useContext') {
       if (
         !this.__context__ ||
         !this.__context__.mount ||
@@ -154,11 +153,23 @@ export class MyReactHookNode extends MyReactInternalInstance {
       } else {
         this.result = getContextValue(this.__context__, this.value);
       }
+      return;
     }
 
-    if (this.hookType === HOOK_TYPE.useReducer) {
+    if (this.hookType === 'useReducer') {
       this.value = newValue;
       this.reducer = newReducer;
+    }
+  }
+
+  unmount() {
+    if (this.hookType === 'useEffect' || this.hookType === 'useLayoutEffect') {
+      this.effect = false;
+      this.cancel && this.cancel();
+      return;
+    }
+    if (this.hookType === 'useContext') {
+      this.__context__?.removeDependence(this);
     }
   }
 
@@ -170,6 +181,7 @@ export class MyReactHookNode extends MyReactInternalInstance {
     };
 
     this.__fiber__?.__hookUpdateQueue__.push(updater);
+
     Promise.resolve().then(() => {
       this.__fiber__?.update();
     });

@@ -1,8 +1,8 @@
 import { PlainElement } from './plain';
 import { TextElement } from './text';
 
+import type { Children } from '../../../element';
 import type { MyReactFiberNode } from '../../../fiber';
-import type { Children } from '../../../vdom';
 
 export const create = (fiber: MyReactFiberNode) => {
   if (fiber.__pendingCreate__) {

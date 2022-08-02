@@ -8,9 +8,9 @@ import {
 } from './tool';
 
 import type { MyReactComponent } from '../component';
-import type { createContext, forwardRef, lazy, memo } from '../element';
 import type { MyReactFiberNode } from '../fiber';
 import type { createRef, MyReactInternalInstance } from '../share';
+import type { createContext, forwardRef, lazy, memo } from './feature';
 
 export type FunctionComponent<T extends any[] = any[]> = (
   ...args: T
@@ -122,7 +122,6 @@ const createVDom = ({
     _source,
     _store: {} as Record<string, unknown>,
   };
-  // return new MyReactVDom(type, key, ref, props, _self, _source, _owner);
 };
 
 export function createElement(
@@ -182,14 +181,13 @@ export function cloneElement(
   children?: Props['children']
 ) {
   if (isValidElement(element)) {
-    const typedElement = element as Children;
-    const props = Object.assign({}, typedElement.props);
-    let key = typedElement.key;
-    let ref = typedElement.ref;
-    const type = typedElement.type;
-    const self = typedElement._self;
-    const source = typedElement._source;
-    let owner = typedElement._owner;
+    const props = Object.assign({}, element.props);
+    let key = element.key;
+    let ref = element.ref;
+    const type = element.type;
+    const self = element._self;
+    const source = element._source;
+    let owner = element._owner;
     if (config !== null && config !== undefined) {
       const { ref: _ref, key: _key, __self, __source, ...resProps } = config;
       if (_ref !== undefined) {
@@ -201,10 +199,10 @@ export function cloneElement(
       }
       let defaultProps: Record<string, unknown> | undefined = {};
       if (
-        typeof typedElement.type === 'function' ||
-        typeof typedElement.type === 'object'
+        typeof element.type === 'function' ||
+        typeof element.type === 'object'
       ) {
-        const typedType = typedElement.type as
+        const typedType = element.type as
           | MixinClassComponent
           | MixinFunctionComponent;
         defaultProps = typedType?.defaultProps;
@@ -241,7 +239,7 @@ export function cloneElement(
       _owner: owner,
     });
 
-    clonedElement._store['cloned'] = true;
+    clonedElement._store['clonedEle'] = true;
 
     return clonedElement;
   } else {

@@ -2,8 +2,8 @@ import { enableEventSystem } from '../../../../share';
 
 import { getNativeEventName } from './getEventName';
 
+import type { Children } from '../../../../element';
 import type { MyReactFiberNode } from '../../../../fiber';
-import type { Children } from '../../../../vdom';
 
 export const removeEventListener = (
   fiber: MyReactFiberNode,

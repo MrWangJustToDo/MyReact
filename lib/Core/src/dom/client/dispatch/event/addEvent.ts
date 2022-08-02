@@ -2,15 +2,15 @@ import { enableEventSystem, safeCallWithFiber } from '../../../../share';
 
 import { getNativeEventName } from './getEventName';
 
+import type { Children } from '../../../../element';
 import type { MyReactFiberNode } from '../../../../fiber';
-import type { Children } from '../../../../vdom';
 
 export const addEventListener = (
   fiber: MyReactFiberNode,
   dom: Element,
   key: string
 ) => {
-  const typedElement = fiber.__vdom__ as Children;
+  const typedElement = fiber.element as Children;
   const callback = typedElement.props[key] as (...args: any[]) => void;
   const { nativeName, isCapture } = getNativeEventName(
     key.slice(2),

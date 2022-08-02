@@ -8,7 +8,7 @@ import {
 import { startRender, unmountComponentAtNode } from '../../shared';
 import { ClientDispatch } from '../dispatch';
 
-import type { Children } from '../../../vdom';
+import type { Children } from '../../../element';
 
 export const render = (
   element: Children,

@@ -1,4 +1,5 @@
 export const NODE_TYPE_OBJ = {
+  __isNullNode__: false,
   __isTextNode__: false,
   __isEmptyNode__: false,
   __isPlainNode__: false,

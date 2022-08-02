@@ -10,7 +10,7 @@ import { startRender } from '../shared';
 import { ServerDispatch } from './dispatch';
 import { PlainElement } from './dom';
 
-import type { Children } from '../../vdom';
+import type { Children } from '../../element';
 
 // TODO should create global scope for every render
 export const renderToString = (element: Children) => {

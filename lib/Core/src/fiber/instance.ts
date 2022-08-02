@@ -1,17 +1,18 @@
-import { HOOK_TYPE } from '../hook';
+import { getTypeFromVDom, isValidElement } from '../element';
 import { enableAllCheck, globalDispatch, MyReactInternalType } from '../share';
-import { getSafeVDom, getTypeFromVDom, isValidElement } from '../vdom';
 
 import type { MyReactComponent } from '../component';
-import type { forwardRef, memo } from '../element';
-import type { Action, MyReactHookNode } from '../hook';
-import type { MyReactInternalInstance } from '../share';
 import type {
+  createContext,
+  forwardRef,
+  memo,
   Props,
   ChildrenNode,
   Children,
   DynamicChildrenNode,
-} from '../vdom';
+} from '../element';
+import type { Action, MyReactHookNode } from '../hook';
+import type { MyReactInternalInstance } from '../share';
 
 export type ComponentUpdateQueue = {
   type: 'state';
@@ -451,8 +452,8 @@ export class MyReactFiberNode extends MyReactFiberInternal {
     super();
     this.parent = parent;
     this.fiberIndex = index;
-    this.element = getSafeVDom(element);
-    this.__vdom__ = getSafeVDom(element);
+    this.element = element;
+    this.__vdom__ = element;
   }
 
   addChild(child: MyReactFiberNode) {
@@ -488,9 +489,10 @@ export class MyReactFiberNode extends MyReactFiberInternal {
         typeof this.element?.type === 'object' &&
         this.__isContextProvider__
       ) {
-        const contextObj = (this.element?.type as any)['Context'] as {
-          id: string;
-        };
+        const typedElementType = this.element.type as ReturnType<
+          typeof createContext
+        >['Provider'];
+        const contextObj = typedElementType['Context'];
         const contextId = contextObj['id'];
         contextMap[contextId] = this;
       }
@@ -538,9 +540,8 @@ export class MyReactFiberNode extends MyReactFiberInternal {
 
   // when update, install new vdom
   installVDom(vdom: DynamicChildrenNode) {
-    const safeVDom = getSafeVDom(vdom);
-    this.element = safeVDom;
-    this.__vdom__ = safeVDom;
+    this.element = vdom;
+    this.__vdom__ = vdom;
   }
 
   // TODO
@@ -548,7 +549,7 @@ export class MyReactFiberNode extends MyReactFiberInternal {
     if (enableAllCheck.current) {
       const vdom = this.element;
       if (isValidElement(vdom)) {
-        const typedVDom = vdom as Children;
+        const typedVDom = vdom;
         if (!typedVDom._store['validType']) {
           if (this.__isContextConsumer__) {
             if (typeof typedVDom.props.children !== 'function') {
@@ -614,53 +615,35 @@ export class MyReactFiberNode extends MyReactFiberInternal {
 
   initialType() {
     const vdom = this.element;
+    const nodeType = getTypeFromVDom(vdom);
+    this.setNodeType(nodeType);
     if (isValidElement(vdom)) {
-      if ((vdom as Children).type === 'svg') {
-        this.nameSpace = 'http://www.w3.org/2000/svg';
-      }
-      const nodeType = getTypeFromVDom(vdom as Children);
-      this.setNodeType(nodeType);
-      return;
-    }
-
-    if (typeof vdom === 'object') {
-      this.setNodeType({ __isEmptyNode__: true });
-    } else {
-      this.setNodeType({ __isTextNode__: true });
+      if (vdom.type === 'svg') this.nameSpace = 'http://www.w3.org/2000/svg';
     }
   }
 
   checkIsSameType(vdom: ChildrenNode) {
-    const safeVDom = getSafeVDom(vdom);
-    if (isValidElement(safeVDom)) {
-      const typedElement = safeVDom as Children;
-      const currentElement = this.element as Children;
-      const nodeType = getTypeFromVDom(typedElement);
-      const result = this.isSameType(nodeType);
-
-      if (result) {
-        if (this.__isDynamicNode__ || this.__isPlainNode__) {
-          return Object.is(currentElement.type, typedElement.type);
-        }
-        if (
-          this.__isObjectNode__ &&
-          typeof typedElement.type === 'object' &&
-          typeof currentElement.type === 'object'
-        ) {
-          return Object.is(
-            typedElement.type['$$typeof'],
-            currentElement.type['$$typeof']
-          );
-        }
-        return true;
-      } else {
-        return false;
+    const nodeType = getTypeFromVDom(vdom);
+    const result = this.isSameType(nodeType);
+    const element = vdom as Children;
+    const currentElement = this.element as Children;
+    if (result) {
+      if (this.__isDynamicNode__ || this.__isPlainNode__) {
+        return Object.is(currentElement.type, element.type);
       }
-    }
-    if (typeof safeVDom === 'object') {
-      return this.__isEmptyNode__;
+      if (
+        this.__isObjectNode__ &&
+        typeof element.type === 'object' &&
+        typeof currentElement.type === 'object'
+      ) {
+        return Object.is(
+          element.type['$$typeof'],
+          currentElement.type['$$typeof']
+        );
+      }
+      return true;
     } else {
-      return this.__isTextNode__;
+      return false;
     }
   }
 
@@ -680,16 +663,16 @@ export class MyReactFiberNode extends MyReactFiberInternal {
   checkHook(hookNode: MyReactHookNode) {
     if (enableAllCheck.current) {
       if (
-        hookNode.hookType === HOOK_TYPE.useMemo ||
-        hookNode.hookType === HOOK_TYPE.useEffect ||
-        hookNode.hookType === HOOK_TYPE.useCallback ||
-        hookNode.hookType === HOOK_TYPE.useLayoutEffect
+        hookNode.hookType === 'useMemo' ||
+        hookNode.hookType === 'useEffect' ||
+        hookNode.hookType === 'useCallback' ||
+        hookNode.hookType === 'useLayoutEffect'
       ) {
         if (typeof hookNode.value !== 'function') {
           throw new Error(`${hookNode.hookType} initial error`);
         }
       }
-      if (hookNode.hookType === HOOK_TYPE.useContext) {
+      if (hookNode.hookType === 'useContext') {
         if (typeof hookNode.value !== 'object' || hookNode.value === null) {
           throw new Error(`${hookNode.hookType} initial error`);
         }
@@ -710,7 +693,8 @@ export class MyReactFiberNode extends MyReactFiberInternal {
       } else {
         throw new Error('do not have a dom for plain node');
       }
-    } else if (this.__isClassComponent__) {
+    }
+    if (this.__isClassComponent__) {
       const typedElement = this.element as Children;
       if (this.instance) {
         const ref = typedElement.ref;
@@ -735,5 +719,17 @@ export class MyReactFiberNode extends MyReactFiberInternal {
 
   update() {
     globalDispatch.current.trigger(this);
+  }
+
+  unmount() {
+    this.hookList.forEach((hook) => hook.unmount());
+    this.instance && this.instance.unmount();
+    this.mount = false;
+    this.__needUpdate__ = false;
+    this.__needTrigger__ = false;
+    this.__pendingCreate__ = false;
+    this.__pendingUpdate__ = false;
+    this.__pendingAppend__ = false;
+    this.__pendingPosition__ = false;
   }
 }

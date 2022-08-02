@@ -48,6 +48,7 @@ export const getHookNode = (
   if (!fiber) throw new Error('can not use hook out of component');
 
   let currentHook: null | MyReactHookNode = null;
+
   if (fiber.hookList.length > hookIndex) {
     currentHook = fiber.hookList[hookIndex];
 

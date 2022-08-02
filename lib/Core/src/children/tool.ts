@@ -1,11 +1,11 @@
 import { flattenChildren } from '../share';
 
 import type {
+  Children,
   ChildrenNode,
   ArrayChildrenNode,
   MaybeArrayChildrenNode,
-  Children,
-} from '../vdom';
+} from '../element';
 
 export const mapByJudge = <T extends MaybeArrayChildrenNode>(
   arrayLike: T,

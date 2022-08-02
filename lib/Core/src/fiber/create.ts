@@ -2,7 +2,7 @@ import { globalDispatch } from '../share';
 
 import { MyReactFiberNode } from './instance';
 
-import type { Children, ChildrenNode } from '../vdom';
+import type { Children, ChildrenNode } from '../element';
 
 export const createFiberNode = (
   {

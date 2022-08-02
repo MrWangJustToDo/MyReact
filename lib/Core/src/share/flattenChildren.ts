@@ -1,4 +1,4 @@
-import type { MaybeArrayChildrenNode, ArrayChildrenNode } from '../vdom';
+import type { MaybeArrayChildrenNode, ArrayChildrenNode } from '../element';
 
 export const flattenChildren = (
   children: MaybeArrayChildrenNode

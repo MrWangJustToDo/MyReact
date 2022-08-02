@@ -8,8 +8,8 @@ import {
 import { startRender } from '../../shared';
 import { ClientDispatch } from '../dispatch';
 
+import type { Children } from '../../../element';
 import type { MyReactFiberNode } from '../../../fiber';
-import type { Children } from '../../../vdom';
 
 export const hydrate = (
   element: Children,

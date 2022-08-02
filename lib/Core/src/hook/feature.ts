@@ -7,7 +7,6 @@ import {
 } from '../share';
 
 import { getHookNode } from './create';
-import { HOOK_TYPE } from './instance';
 
 import type { createContext } from '../element';
 import type { Reducer } from './instance';
@@ -16,7 +15,7 @@ export const useState = <T = any>(initial: T | (() => T)) => {
   const currentHookNode = getHookNode(
     {
       hookIndex: currentHookDeepIndex.current++,
-      hookType: HOOK_TYPE.useState,
+      hookType: 'useState',
       value: typeof initial === 'function' ? initial : () => initial,
       reducer: null,
       deps: [],
@@ -31,7 +30,7 @@ export const useEffect = (action: () => any, deps: any[]) => {
   getHookNode(
     {
       hookIndex: currentHookDeepIndex.current++,
-      hookType: HOOK_TYPE.useEffect,
+      hookType: 'useEffect',
       value: action,
       reducer: null,
       deps,
@@ -44,7 +43,7 @@ export const useLayoutEffect = (action: () => any, deps: any[]) => {
   getHookNode(
     {
       hookIndex: currentHookDeepIndex.current++,
-      hookType: HOOK_TYPE.useLayoutEffect,
+      hookType: 'useLayoutEffect',
       value: action,
       reducer: null,
       deps,
@@ -62,7 +61,7 @@ export const useCallback = <
   return getHookNode(
     {
       hookIndex: currentHookDeepIndex.current++,
-      hookType: HOOK_TYPE.useCallback,
+      hookType: 'useCallback',
       value: callback,
       reducer: null,
       deps,
@@ -78,7 +77,7 @@ export const useMemo = <T extends () => any = () => any>(
   return getHookNode(
     {
       hookIndex: currentHookDeepIndex.current++,
-      hookType: HOOK_TYPE.useMemo,
+      hookType: 'useMemo',
       value: action,
       reducer: null,
       deps,
@@ -91,7 +90,7 @@ export const useRef = <T = any>(value: T) => {
   return getHookNode(
     {
       hookIndex: currentHookDeepIndex.current++,
-      hookType: HOOK_TYPE.useRef,
+      hookType: 'useRef',
       value: createRef(value),
       reducer: null,
       deps: [],
@@ -104,7 +103,7 @@ export const useContext = (Context: ReturnType<typeof createContext>) => {
   return getHookNode(
     {
       hookIndex: currentHookDeepIndex.current++,
-      hookType: HOOK_TYPE.useContext,
+      hookType: 'useContext',
       value: Context,
       reducer: null,
       deps: [],
@@ -121,7 +120,7 @@ export const useReducer = (
   const currentHookNode = getHookNode(
     {
       hookIndex: currentHookDeepIndex.current++,
-      hookType: HOOK_TYPE.useReducer,
+      hookType: 'useReducer',
       value:
         typeof init === 'function'
           ? () => init(initialArgs)
@@ -143,7 +142,7 @@ export const useImperativeHandle = (
   getHookNode(
     {
       hookIndex: currentHookDeepIndex.current++,
-      hookType: HOOK_TYPE.useImperativeHandle,
+      hookType: 'useImperativeHandle',
       value: ref,
       reducer: createHandle,
       deps,

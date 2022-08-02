@@ -8,7 +8,15 @@ import {
   findDOMNode,
   unmountComponentAtNode,
 } from './dom';
-import { forwardRef, createContext, memo, lazy } from './element';
+import {
+  createElement,
+  cloneElement,
+  isValidElement,
+  forwardRef,
+  createContext,
+  memo,
+  lazy,
+} from './element';
 import {
   useRef,
   useMemo,
@@ -33,7 +41,6 @@ import {
   createRef,
   safeCall,
 } from './share';
-import { createElement, cloneElement, isValidElement } from './vdom';
 
 const unstable_batchedUpdates = safeCall;
 

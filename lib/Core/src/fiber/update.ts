@@ -1,6 +1,6 @@
 import { globalDispatch, isNormalEquals } from '../share';
 
-import type { Children, ChildrenNode } from '../vdom';
+import type { Children, ChildrenNode } from '../element';
 import type { MyReactFiberNode } from './instance';
 
 export const updateFiberNode = (

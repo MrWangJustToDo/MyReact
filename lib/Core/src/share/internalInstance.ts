@@ -48,4 +48,8 @@ export class MyReactInternalInstance {
   setFiber(fiber: MyReactFiberNode) {
     this.__fiber__ = fiber;
   }
+
+  unmount() {
+    this.__context__?.removeDependence(this);
+  }
 }

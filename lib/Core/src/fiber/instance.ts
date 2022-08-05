@@ -623,6 +623,7 @@ export class MyReactFiberNode extends MyReactFiberInternal {
   }
 
   checkIsSameType(vdom: ChildrenNode) {
+    if (this.__needTrigger__) return true;
     const nodeType = getTypeFromVDom(vdom);
     const result = this.isSameType(nodeType);
     const element = vdom as Children;

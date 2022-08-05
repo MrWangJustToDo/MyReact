@@ -136,6 +136,8 @@ const processComponentShouldUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
+  if (fiber.__needTrigger__) return true;
+
   if (typedInstance.shouldComponentUpdate) {
     return typedInstance.shouldComponentUpdate(
       nextProps,

@@ -1,9 +1,19 @@
-import { enableEventSystem, safeCallWithFiber } from '../../../../share';
+import {
+  enableControlComponent,
+  enableEventSystem,
+  safeCallWithFiber,
+} from '../../../../share';
 
 import { getNativeEventName } from './getEventName';
 
 import type { Children } from '../../../../element';
 import type { MyReactFiberNode } from '../../../../fiber';
+
+const controlElementTag: Record<string, boolean> = {
+  input: true,
+  // textarea: true,
+  // select: true,
+};
 
 export const addEventListener = (
   fiber: MyReactFiberNode,
@@ -35,6 +45,17 @@ export const addEventListener = (
             ),
           fiber,
         });
+        if (enableControlComponent) {
+          if (
+            controlElementTag[typedElement.type as string] &&
+            typeof typedElement.props['value'] !== 'undefined'
+          ) {
+            (dom as unknown as HTMLInputElement)['value'] = typedElement.props[
+              'value'
+            ] as string;
+            dom.setAttribute('value', typedElement.props['value'] as string);
+          }
+        }
       };
       handler.cb = [callback];
       eventState[eventName] = handler;

@@ -44,6 +44,6 @@ export const only = (child: MaybeArrayChildrenNode) => {
     return true;
 
   throw new Error(
-    'Children.only expected to receive a single MyReact element child.'
+    'Children.only() expected to receive a single MyReact element child.'
   );
 };

@@ -1,5 +1,6 @@
 import { hydrateCreate } from './hydrateCreate';
 import { nativeCreate } from './nativeCreate';
+import { validDomNesting } from './validDomNesting';
 
 import type { MyReactFiberNode } from '../../../../fiber';
 
@@ -10,6 +11,7 @@ export const create = (
 ): boolean => {
   if (fiber.__pendingCreate__) {
     let re = false;
+    validDomNesting(fiber);
     if (hydrate) {
       const result = hydrateCreate(fiber, parentFiberWithDom);
       if (!result) {

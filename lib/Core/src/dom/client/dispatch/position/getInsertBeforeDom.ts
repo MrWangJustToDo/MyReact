@@ -9,7 +9,7 @@ const getInsertBeforeDomFromSibling = (
   const sibling = fiber.sibling;
   if (sibling) {
     return (
-      getFiberWithDom(sibling, (f) => f.child) ||
+      getFiberWithDom(sibling, (f) => f.children) ||
       getInsertBeforeDomFromSibling(sibling)
     );
   } else {

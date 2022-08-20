@@ -19,7 +19,7 @@ export class ServerDispatch implements FiberDispatch {
     safeCallWithFiber({ fiber: _fiber, action: () => update(_fiber) });
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => append(_fiber, _parentFiberWithDom.dom as Element),
+      action: () => append(_fiber, _parentFiberWithDom),
     });
     if (_fiber.child) {
       this.reconcileCommit(
@@ -51,8 +51,9 @@ export class ServerDispatch implements FiberDispatch {
     void 0;
   }
   pendingCreate(_fiber: MyReactFiberNode): void {
-    if (_fiber.__isPortal__)
+    if (_fiber.__isPortal__) {
       throw new Error('should not use portal element on the server');
+    }
     if (!_fiber.__isTextNode__ && !_fiber.__isPlainNode__) return;
     _fiber.__pendingCreate__ = true;
   }

@@ -139,7 +139,7 @@
         );
       };
 
-      const InvalidDom = () => {
+      const _InvalidDom = () => {
         return (
           <>
             <p style={{ border: "3px solid red" }}>
@@ -150,6 +150,8 @@
           </>
         );
       };
+
+      const InvalidDom = memo(_InvalidDom);
 
       const O = memo((props) => {
         const [val, setVal] = useState("点击");
@@ -294,7 +296,7 @@
         return (
           <div
             ref={(dom) => {
-              // console.log(dom);
+              console.log(dom);
             }}
           >
             <h1>{time}</h1>

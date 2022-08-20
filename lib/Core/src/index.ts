@@ -90,6 +90,8 @@ const React = {
   useImperativeHandle,
 
   Children,
+
+  version: '0.0.1',
 };
 
 const ReactDOM = {
@@ -100,6 +102,8 @@ const ReactDOM = {
   renderToString,
   unmountComponentAtNode,
   unstable_batchedUpdates,
+
+  version: '0.0.1',
 };
 
 const mixin = { ...React, ...ReactDOM };

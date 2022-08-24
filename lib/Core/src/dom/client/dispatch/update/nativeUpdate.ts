@@ -140,8 +140,6 @@ export const nativeUpdate = (fiber: MyReactFiberNode) => {
 
   debugWithDOM(fiber);
 
-  fiber.applyVDom();
-
   if (
     isAppMounted.current &&
     !isHydrateRender.current &&

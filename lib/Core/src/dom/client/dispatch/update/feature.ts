@@ -10,6 +10,9 @@ export const update = (fiber: MyReactFiberNode, hydrate: boolean) => {
     } else {
       nativeUpdate(fiber);
     }
+
+    fiber.applyVDom();
+
     fiber.__pendingUpdate__ = false;
   }
 };

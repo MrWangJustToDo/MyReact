@@ -3,7 +3,7 @@ import { IS_SINGLE_ELEMENT, log } from '../../../../share';
 import type { Children } from '../../../../element';
 import type { MyReactFiberNode } from '../../../../fiber';
 
-type HydrateDOM = Element & {
+export type HydrateDOM = Element & {
   __hydrate__: boolean;
 };
 
@@ -63,17 +63,15 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
 
 export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
   if (
-    Object.prototype.hasOwnProperty.call(
-      IS_SINGLE_ELEMENT,
-      parentDom.tagName.toLowerCase()
-    )
+    IS_SINGLE_ELEMENT[
+      parentDom.tagName.toLowerCase() as keyof typeof IS_SINGLE_ELEMENT
+    ]
   )
     return { result: true };
   const dom = getNextHydrateDom(parentDom);
   const result = checkHydrateDom(fiber, dom);
   if (result) {
     const typedDom = dom as HydrateDOM;
-    typedDom.__hydrate__ = true;
     fiber.dom = typedDom;
     return { dom: typedDom, result };
   } else {

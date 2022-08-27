@@ -11,6 +11,7 @@ import { append } from './append';
 import { context } from './context';
 import { create } from './create';
 import { effect, layoutEffect } from './effect';
+import { fallback } from './fallback';
 import { position } from './position';
 import { unmount } from './unmount';
 import { update } from './update';
@@ -79,6 +80,7 @@ export class ClientDispatch implements FiberDispatch {
         _result,
         _fiber.dom ? _fiber : _parentFiberWithDom
       );
+      fallback(_fiber);
     }
 
     safeCallWithFiber({ fiber: _fiber, action: () => layoutEffect(_fiber) });

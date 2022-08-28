@@ -2,6 +2,7 @@ export class ListTreeNode<T> {
   value: T;
   prev: ListTreeNode<T> | null = null;
   next: ListTreeNode<T> | null = null;
+  children: ListTreeNode<T>[] = [];
 
   constructor(value: T) {
     this.value = value;
@@ -10,24 +11,50 @@ export class ListTreeNode<T> {
 
 export class LinkTreeList<T> {
   rawArray: T[] = [];
-  listArray: ListTreeNode<T>[][] = [];
+
+  scopeRoot = { index: -1, value: new ListTreeNode<any>(false) };
+
+  scopeArray: Array<{ index: number; value: ListTreeNode<T> }> = [];
+  // listArray: ListTreeNode<T>[][] = [];
+
+  scopeLength = 0;
 
   length = 0;
 
   head: ListTreeNode<T> | null = null;
   foot: ListTreeNode<T> | null = null;
 
+  scopePush(scopeItem: { index: number; value: ListTreeNode<T> }) {
+    while (
+      this.scopeLength &&
+      this.scopeArray[this.scopeLength - 1].index >= scopeItem.index
+    ) {
+      this.scopeArray.pop();
+      this.scopeLength--;
+    }
+    if (this.scopeLength) {
+      this.scopeArray[this.scopeLength - 1].value.children.push(
+        scopeItem.value
+      );
+    } else {
+      this.scopeRoot.value.children.push(scopeItem.value);
+    }
+    this.scopeArray.push(scopeItem);
+    this.scopeLength++;
+  }
+
   append(node: T, index: number) {
     this.length++;
     this.rawArray.push(node);
     const listNode = new ListTreeNode(node);
     this.push(listNode);
-    if (this.listArray[index]) {
-      const array = this.listArray[index];
-      array.push(listNode);
-    } else {
-      this.listArray[index] = [listNode];
-    }
+    this.scopePush({ index, value: listNode });
+    // if (this.listArray[index]) {
+    //   const array = this.listArray[index];
+    //   array.push(listNode);
+    // } else {
+    //   this.listArray[index] = [listNode];
+    // }
   }
 
   unshift(node: ListTreeNode<T>) {
@@ -111,12 +138,21 @@ export class LinkTreeList<T> {
   }
 
   reconcile(action: (p: T) => void) {
-    for (let i = this.listArray.length - 1; i >= 0; i--) {
-      const array = this.listArray[i];
-      if (array) {
-        array.forEach((p) => action(p.value));
+    const reconcileScope = (node: ListTreeNode<T>) => {
+      if (node.children) {
+        node.children.forEach(reconcileScope);
       }
+      action(node.value);
+    };
+    if (this.scopeLength) {
+      this.scopeRoot.value.children.forEach(reconcileScope);
     }
+    // for (let i = this.listArray.length - 1; i >= 0; i--) {
+    //   const array = this.listArray[i];
+    //   if (array) {
+    //     array.forEach((p) => action(p.value));
+    //   }
+    // }
   }
 
   has() {

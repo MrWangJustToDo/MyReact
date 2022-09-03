@@ -5,21 +5,14 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: "module",
   },
-  plugins: ["@typescript-eslint/eslint-plugin", "prettier", "import"],
-  extends: [
-    "eslint:recommended",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
-    "prettier",
-  ],
+  plugins: ["@typescript-eslint/eslint-plugin", "prettier"],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended", "prettier"],
   root: true,
   env: {
     node: true,
     jest: true,
   },
-  ignorePatterns: [".eslintrc.js", "dist", "lib", "__tests__", "bundle", "**/*.d.ts", "**/*.js", "**/*.mjs"],
+  ignorePatterns: [".eslintrc.js", "dist", "dev", "lib", "__tests__", "bundle", "**/*.d.ts", "**/*.js"],
   rules: {
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/explicit-function-return-type": "off",
@@ -32,24 +25,6 @@ module.exports = {
         argsIgnorePattern: "^_",
         ignoreRestSiblings: true,
         destructuredArrayIgnorePattern: "^_",
-      },
-    ],
-
-    // import
-    "import/order": [
-      "error",
-      {
-        groups: [["builtin", "external"], "internal", "parent", "sibling", "index", "type"],
-        "newlines-between": "always",
-        alphabetize: { order: "asc", caseInsensitive: true },
-      },
-    ],
-    "import/newline-after-import": ["error", { count: 1 }],
-
-    "import/no-useless-path-segments": [
-      "error",
-      {
-        noUselessIndex: true,
       },
     ],
   },

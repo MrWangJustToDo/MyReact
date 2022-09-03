@@ -1,0 +1,20 @@
+.container {
+  max-width: 1444px;
+  min-height: 100vh;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.header {
+  height: 30px;
+}
+
+.content {
+  min-height: calc(100vh - 300px);
+}
+
+.footer {
+  height: 50px;
+}

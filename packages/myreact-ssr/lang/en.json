@@ -1,0 +1,9 @@
+{
+  "app.title": "Boardaki",
+  "nav.home": "Home",
+  "nav.games": "Games",
+  "home.title": "Find Your Next Game",
+  "home.lead": "Vote with thousands of other players on games and find your favourite!",
+  "home.c2a": "Check out the games!",
+  "games.addedOn": "Added {addedOn, date, medium}"
+}

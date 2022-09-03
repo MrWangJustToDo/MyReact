@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+
+require("dotenv").config();
+const { start } = require("./dev-entry");
+
+process.env.NODE_ENV = "development";
+
+global.isMiddleWareDevelop = process.env.MIDDLEWARE && JSON.parse(process.env.MIDDLEWARE);
+
+start();

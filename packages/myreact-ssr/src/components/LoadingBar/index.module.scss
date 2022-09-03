@@ -1,0 +1,10 @@
+.loadingBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+  transform-origin: 0 0;
+  background-color: red;
+  box-shadow: 0 1px 3px 2px rgba(200, 200, 200, 0.5);
+}

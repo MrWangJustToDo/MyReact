@@ -1,1 +1,0 @@
-{"version":3,"file":"createRef.js","sourceRoot":"","sources":["createRef.ts"],"names":[],"mappings":"AAAA,MAAM,CAAC,IAAM,SAAS,GAAG,UAAU,KAAQ;IACzC,OAAO,EAAE,OAAO,EAAE,KAAK,EAAE,CAAC;AAC5B,CAAC,CAAC","sourcesContent":["export const createRef = <T = any>(value: T) => {\n  return { current: value };\n};\n"]}

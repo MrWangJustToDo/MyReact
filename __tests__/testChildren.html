@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
+
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel" async>
+      const {
+        memo,
+        useState,
+        useCallback,
+        useEffect,
+        useRef,
+        useMemo,
+        forwardRef,
+        Children: { map },
+        cloneElement,
+        createContext,
+      } = React;
+
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+        return [count, i, j];
+      };
+
+      const useTime = () => {
+        const [c, setC] = useState(100);
+        const [currentTime, setCurrentTime] = useState(() =>
+          new Date().toLocaleString()
+        );
+        useEffect(() => {
+          console.log("init");
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, []);
+
+        return currentTime;
+      };
+
+      const usePosition = () => {
+        const [currentPosition, setCurrentPosition] = useState({
+          x: 0,
+          y: 0,
+        });
+
+        useEffect(() => {
+          const action = (e) =>
+            setCurrentPosition({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPosition.x, currentPosition.y];
+      };
+
+      const C = memo(
+        forwardRef((props, ref) => {
+          // console.log(props, ref);
+          // const time = useTime();
+          const time = 100;
+          return (
+            <p ref={ref}>
+              memo {time} {props.children}
+            </p>
+          );
+        })
+      );
+
+      const GG = forwardRef((P, R) => {
+        return <div ref={R}>{P.children}</div>;
+      });
+
+      const B = () => {
+        console.log("run b", "相同的children只会执行一次");
+        return <div>bbb</div>;
+      };
+
+      const _B = <B />;
+
+      const D = ({ children }) => {
+        const time = useTime();
+        return (
+          <>
+            {children} {time}
+          </>
+        );
+      };
+
+      function TestContext() {
+        const time = useTime();
+        // const time = 1000;
+        const ref = useRef();
+        const ref2 = useRef();
+        useEffect(() => {
+          console.log(ref.current);
+          console.log(ref2.current);
+        }, []);
+
+        return (
+          <div>
+            <p>{time}</p>
+            <C ref={ref} foo></C>
+            <D>{_B}</D>
+            <GG ref={ref2}>
+              <p>123</p>
+            </GG>
+          </div>
+        );
+      }
+
+      const container = document.getElementById("root");
+      ReactDOM.render(<TestContext />, container);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const {
+        memo,
+        useState,
+        useCallback,
+        useEffect,
+        useLayoutEffect,
+        useRef,
+        useMemo,
+        map,
+        Component,
+        PureComponent,
+        cloneElement,
+        createContext,
+      } = React;
+
+      const Render = ({ children }) => {
+        const [target, setTarget] = useState(children);
+
+        useEffect(() => {
+          if (!children) {
+            const id = setTimeout(() => {
+              setTarget(null);
+            }, 1000);
+            return () => clearTimeout(id);
+          } else {
+            setTarget(children);
+          }
+        }, [children]);
+
+        return (
+          <div>
+            <h2>render</h2>
+            {target}
+          </div>
+        );
+      };
+
+      const App = ({ text }) => {
+        const [id, setId] = useState(0);
+        return (
+          <div>
+            <Render>{id % 2 === 0 ? <p>12</p> : null}</Render>
+            <button
+              onClick={() =>
+                setId((i) => {
+                  return i + 1;
+                })
+              }
+            >
+              add
+            </button>
+          </div>
+        );
+      };
+
+      const app = document.querySelector("#root");
+      const string = ReactDOM.renderToString(<App text="" />);
+      app.innerHTML = string;
+
+      window.start = () => {
+        ReactDOM.hydrate(<App text="" />, app);
+      };
+    </script>
+  </body>
+</html>

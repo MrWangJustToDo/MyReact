@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <!-- <script
+      src="https://cdn.bootcdn.net/ajax/libs/redux/4.1.2/redux.js"
+      defer
+    ></script> -->
+    <!-- <script
+      src="https://cdn.bootcdn.net/ajax/libs/react-redux/7.2.8/react-redux.js"
+      defer
+    ></script> -->
+    <script src="https://unpkg.com/immer" defer></script>
+    <script src="../bundle/reduxBundle.js" defer></script>
+    <script src="../bundle/reactReduxBundle.js" defer></script>
+    <script src="../bundle/thunkBundle.js" defer></script>
+    <script src="../bundle/reduxToolKitBundle.js" defer></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+
+  <script type="text/babel" defer>
+    const {
+      memo,
+      useState,
+      useCallback,
+      useEffect,
+      useLayoutEffect,
+      useRef,
+      useMemo,
+      map,
+      Component,
+      PureComponent,
+      cloneElement,
+      createContext,
+    } = React;
+
+    const initialState = {
+      value: 0,
+    };
+
+    const useCounter = (init = 1) => {
+      const [count, setCount] = useState(init);
+      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+      return [count, i, j];
+    };
+
+    const counterSlice = ReduxToolKit.createSlice({
+      name: "counter",
+      initialState,
+      reducers: {
+        increment: (state) => {
+          // Redux Toolkit allows us to write "mutating" logic in reducers. It
+          // doesn't actually mutate the state because it uses the Immer library,
+          // which detects changes to a "draft state" and produces a brand new
+          // immutable state based off those changes
+          state.value += 1;
+        },
+        decrement: (state) => {
+          state.value -= 1;
+        },
+        incrementByAmount: (state, action) => {
+          state.value += action.payload;
+        },
+      },
+    });
+
+    const { increment, decrement, incrementByAmount } = counterSlice.actions;
+
+    const store = ReduxToolKit.configureStore({
+      reducer: {
+        counter: counterSlice.reducer,
+      },
+      preloadedState: {
+        counter: {
+          value: 10,
+        },
+      },
+    });
+
+    const { Provider, useSelector, useDispatch, connect } = ReactRedux;
+
+    const Vf = () => {
+      const s = useSelector((s) => s.counter.value);
+
+      return s;
+    };
+
+    const Counter = () => {
+      const selector = React.useCallback((s) => {
+        return s.counter.value;
+      }, []);
+      const value = useSelector(selector);
+
+      const dispatch = useDispatch();
+
+      return (
+        <div>
+          123 redux value: {value}
+          <button onClick={() => dispatch(increment())}>add</button>
+          <button onClick={() => dispatch(decrement())}>del</button>
+        </div>
+      );
+    };
+
+    class G extends React.Component {
+      componentDidUpdate() {
+        console.log("update");
+      }
+
+      render() {
+        return (
+          <div>
+            <h2>class component</h2>
+            <p>counter : {this.props.count}</p>
+            <button onClick={this.props.add}>add</button>
+            <button onClick={this.props.del}>del</button>
+            <button onClick={() => this.props.addAsync(1000)}>addDelay</button>
+          </div>
+        );
+      }
+    }
+
+    const RG = connect(
+      (state) => ({
+        count: state.counter.value,
+      }),
+      {
+        add: increment,
+        del: decrement,
+        addAsync: (time) => (dispatch) => {
+          dispatch(increment());
+          setTimeout(() => {
+            dispatch(incrementByAmount(10));
+          }, time);
+        },
+      }
+    )(G);
+
+    const App = () => {
+      const [val, add, del] = useCounter();
+      return (
+        <div>
+          test redux
+          <Provider store={store}>
+            <Counter />
+            <div>123</div>
+            <button onClick={add}>add</button>
+            <button onClick={del}>del</button>
+            {val % 2 === 0 ? <RG /> : null}
+            <div>
+              <Vf />
+            </div>
+          </Provider>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.querySelector("#root"));
+  </script>
+</html>

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":"AAAA,cAAc,UAAU,CAAC;AACzB,cAAc,WAAW,CAAC","sourcesContent":["export * from \"./render\";\nexport * from \"./hydrate\";\n"]}

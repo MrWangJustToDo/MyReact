@@ -1,0 +1,57 @@
+{
+  "name": "@my-react/react-dom",
+  "description": "@my-react/react-dom",
+  "version": "0.0.1",
+  "main": "cjs.js",
+  "module": "esm.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "cjs.js",
+    "esm.js"
+  ],
+  "exports": {
+    "import": "./esm.js",
+    "require": "./cjs.js"
+  },
+  "buildOptions": {
+    "input": "./src/index.ts",
+    "output": [
+      {
+        "dir": "./dist",
+        "entryFileNames": "cjs/index.js",
+        "format": "cjs",
+        "globals": {
+          "@my-react/react": "React"
+        },
+        "exports": "named",
+        "sourcemap": true
+      },
+      {
+        "dir": "./dist",
+        "entryFileNames": "esm/index.js",
+        "format": "esm",
+        "globals": {
+          "@my-react/react": "React"
+        },
+        "exports": "named",
+        "sourcemap": true
+      },
+      {
+        "dir": "./dist",
+        "entryFileNames": "umd/index.js",
+        "format": "umd",
+        "globals": {
+          "@my-react/react": "React"
+        },
+        "exports": "named",
+        "name": "ReactDOM",
+        "sourcemap": true
+      }
+    ]
+  },
+  "dependencies": {
+    "@my-react/react": "workspace:*",
+    "@my-react/react-reconciler": "workspace:*"
+  }
+}

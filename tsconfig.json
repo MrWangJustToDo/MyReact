@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "skipLibCheck": true,
+    "pretty": true,
+    "types": ["node"],
+    "paths": {
+      "@ReactDOM_shared": ["./packages/myreact-dom/src/shared"],
+      "@ReactDOM_server": ["./packages/myreact-dom/src/server"],
+      "@ReactDOM_client": ["./packages/myreact-dom/src/client"],
+    }
+  },
+  "include": [
+    "scripts",
+    "global.d.ts",
+    "packages/*/src",
+  ]
+}

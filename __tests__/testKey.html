@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
+
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel" async>
+      const {
+        memo,
+        useState,
+        useCallback,
+        useEffect,
+        useRef,
+        useMemo,
+        map,
+        cloneElement,
+        createContext,
+      } = React;
+
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+        return [count, i, j];
+      };
+
+      const useTime = () => {
+        const [c, setC] = useState(100);
+        const [currentTime, setCurrentTime] = useState(() =>
+          new Date().toLocaleString()
+        );
+        useEffect(() => {
+          console.log("init");
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, []);
+
+        return currentTime;
+      };
+
+      const usePosition = () => {
+        const [currentPosition, setCurrentPosition] = useState({
+          x: 0,
+          y: 0,
+        });
+
+        useEffect(() => {
+          const action = (e) =>
+            setCurrentPosition({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPosition.x, currentPosition.y];
+      };
+
+      const B = memo(() => {
+        // const [x, y] = usePosition();
+        console.log("time3");
+        // const time = useTime();
+        // console.log("time3", time);
+        const [val, set] = useState(12);
+        useEffect(() => {
+          console.log("mount b");
+          return () => console.log("unmount b");
+        }, []);
+
+        return (
+          <div className="b" style={{ border: "1px solid red" }}>
+            <strong>B</strong>
+          </div>
+        );
+      });
+
+      const A = memo(({ val }) => {
+        console.log("time2");
+        // const time = useTime();
+        // console.log("time2", time);
+        const [v, a, d] = useCounter();
+        useEffect(() => {
+          console.log("mount a");
+          return () => console.log("unmount a");
+        }, []);
+        return (
+          <div className="A" style={{ border: "1px solid red" }}>
+            <strong>A</strong>
+            <p>
+              {val % 2 === 0 ? (
+                <>
+                  <S key="s" />
+                  <T key="t" />
+                </>
+              ) : (
+                <>
+                  <T key="t" />
+                  <S key="s" />
+                </>
+              )}
+            </p>
+            <p>
+              状态: {v}
+              <button onClick={a}>add</button>
+              <button onClick={d}>del</button>
+            </p>
+          </div>
+        );
+      });
+
+      const AL = memo(({ val }) => {
+        useEffect(() => {
+          console.log("mount a");
+          return () => console.log("unmount a");
+        }, []);
+
+        return (
+          <>
+            {val % 2 === 0 ? (
+              <>
+                <S key="s" />
+                <T key="t" />
+              </>
+            ) : (
+              <>
+                <T key="t" />
+                <S key="s" />
+              </>
+            )}
+          </>
+        );
+      });
+
+      function TestContext() {
+        const [val, add, del] = useCounter();
+        return (
+          <div className="outer">
+            {val % 2 === 0 ? (
+              <>
+                <A key="a" val={val} />
+                <p>123</p>
+                <B key="b" />
+              </>
+            ) : (
+              <>
+                <B key="b" />
+                <p>345</p>
+                <A key="a" val={val} />
+              </>
+            )}
+            <button onClick={add}>diff</button>
+          </div>
+        );
+      }
+
+      const S = () => {
+        useEffect(() => {
+          console.log("mount s");
+          return () => console.log("unmount s");
+        }, []);
+        return <p style={{ border: "1px solid red" }}>S</p>;
+      };
+
+      const T = () => {
+        useEffect(() => {
+          console.log("mount t");
+          return () => console.log("unmount t");
+        }, []);
+        return <p style={{ border: "1px solid red" }}>T</p>;
+      };
+
+      function TetsFre() {
+        const [time, add] = useCounter();
+
+        // need update dom replace
+        return (
+          <div className="foo">
+            {time % 2 === 0 ? (
+              <div>
+                <S />
+                <T />
+              </div>
+            ) : (
+              <>
+                <T />
+                <S />
+              </>
+            )}
+            <button onClick={add}>add</button>
+          </div>
+        );
+      }
+
+      function PO({ children }) {
+        console.log("po", children);
+        return <PB>{[1, 2, 3].map((i) => children)}</PB>;
+      }
+      function PB({ children }) {
+        console.log("pb", children);
+        return <>{children}</>;
+      }
+
+      function TestF() {
+        const [all, setAll] = useState([1, 2, 3]);
+
+        return (
+          <div>
+            <PO>
+              {all.map((i, _i) => (
+                <p>{i}</p>
+              ))}
+            </PO>
+            <button
+              onClick={() => {
+                setAll((last) => [...last, Math.random()]);
+              }}
+            >
+              add
+            </button>
+          </div>
+        );
+      }
+
+      const TestKey = () => {
+        const [state, setState] = useState([]);
+        return (
+          <div>
+            <div>
+              <svg
+                // className="foo"
+                viewBox="64 64 896 896"
+                width="1rem"
+                height="1rem"
+                fill="red"
+              >
+                <path d="M884 256h-75c-5.1 0-9.9 2.5-12.9 6.6L512 654.2 227.9 262.6c-3-4.1-7.8-6.6-12.9-6.6h-75c-6.5 0-10.3 7.4-6.5 12.7l352.6 486.1c12.8 17.6 39 17.6 51.7 0l352.6-486.1c3.9-5.3.1-12.7-6.4-12.7z"></path>
+              </svg>
+              123
+            </div>
+            <p>start</p>
+            {state
+              .slice(0)
+              .reverse()
+              .map((i) => (
+                <p key={i}>{i}</p>
+              ))}
+            <button
+              onClick={() => setState((last) => last.concat(last.length + 1))}
+            >
+              add
+            </button>
+          </div>
+        );
+      };
+
+      const FFF = ({ children }) => {
+        console.log(children);
+        return <div>{children}</div>;
+      };
+
+      const TestKeyError = () => {
+        const [i, add] = useCounter();
+        return (
+          <FFF>
+            {"foo"}
+            {i % 2 === 0 ? null : "ff"}
+            <button onClick={add}>add</button>
+          </FFF>
+        );
+      };
+
+      const container = document.getElementById("root");
+      ReactDOM.render(<TestKeyError />, container);
+    </script>
+  </body>
+</html>

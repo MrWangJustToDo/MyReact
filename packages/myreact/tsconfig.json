@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "target": "ES5"
+  },
+  "include": ["./src"],
+  "exclude": ["node_modules", "**/node_modules"]
+}

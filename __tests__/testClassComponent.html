@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="./lib/react.development.js"></script> -->
+    <!-- <script src="./lib/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
+
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const {
+        memo,
+        useState,
+        useCallback,
+        useEffect,
+        useRef,
+        useMemo,
+        Children: { map },
+        PureComponent,
+        Component,
+        cloneElement,
+        createContext,
+      } = React;
+
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+        return [count, i, j];
+      };
+
+      const useTime = () => {
+        const [c, setC] = useState(100);
+        const [currentTime, setCurrentTime] = useState(() =>
+          new Date().toLocaleString()
+        );
+        useEffect(() => {
+          console.log("init");
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, []);
+
+        return currentTime;
+      };
+
+      const usePosition = () => {
+        const [currentPosition, setCurrentPosition] = useState({
+          x: 0,
+          y: 0,
+        });
+
+        useEffect(() => {
+          const action = (e) =>
+            setCurrentPosition({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPosition.x, currentPosition.y];
+      };
+
+      const Context = createContext({ foo: Math.random() });
+
+      class FRR extends PureComponent {
+        static contextType = Context;
+
+        constructor(props, context) {
+          super(props, context);
+          console.log("初始化", props);
+          this.state = { a: this.props?.foo || "9" };
+        }
+
+        componentDidMount() {
+          console.log("state", this.state);
+          console.log("props", this.props);
+          console.log("context", this.context);
+        }
+
+        add = () => {
+          this.setState((val) => ({ ...val, a: val.a + 1 }));
+        };
+
+        componentDidUpdate(...args) {
+          console.log(args);
+        }
+
+        render() {
+          return (
+            <p>
+              <p>class component</p>
+              <p>state {this.state.a}</p>
+              <p>props {this.props.x}</p>
+              <p>context {this.context}</p>
+              <button onClick={this.add}>state change</button>
+            </p>
+          );
+        }
+      }
+
+      function TestContext() {
+        const [value, add, del] = useCounter();
+        const time = useTime();
+        const [x] = usePosition();
+
+        return (
+          <Context.Provider value={time}>
+            <p>{time}</p>
+            <p>{value}</p>
+
+            <FRR x={x} />
+          </Context.Provider>
+        );
+      }
+
+      class B extends Component {
+        state = { b: 1 };
+
+        shouldComponentUpdate(nextProps) {
+          console.log("b", this.props, nextProps);
+          return false;
+        }
+
+        render() {
+          return (
+            <div>
+              b
+              <button onClick={() => this.props.click()}>
+                add {this.props.bar}
+              </button>
+            </div>
+          );
+        }
+      }
+
+      class A extends Component {
+        state = { a: 1 };
+        shouldComponentUpdate(_, nextState) {
+          console.log("a", nextState, this.state);
+          return true;
+        }
+
+        render() {
+          return (
+            <div>
+              <B
+                click={() =>
+                  this.setState({ a: Math.random() }, () => {
+                    console.log("updated");
+                  })
+                }
+                bar={this.state.a}
+              />
+            </div>
+          );
+        }
+      }
+
+      const container = document.getElementById("root");
+      ReactDOM.render(<A />, container);
+      // ReactDOM.render(<TestContext />, container);
+    </script>
+  </body>
+</html>

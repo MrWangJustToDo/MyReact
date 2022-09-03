@@ -1,0 +1,13 @@
+export var My_React_Element = Symbol.for("react.element");
+export var My_React_Memo = Symbol.for("react.memo");
+export var My_React_ForwardRef = Symbol.for("react.forward_ref");
+export var My_React_Portal = Symbol.for("react.portal");
+export var My_React_Fragment = Symbol.for("react.fragment");
+export var My_React_Context = Symbol.for("react.context");
+export var My_React_Provider = Symbol.for("react.provider");
+export var My_React_Consumer = Symbol.for("react.consumer");
+export var My_React_Lazy = Symbol.for("react.lazy");
+export var My_React_Suspense = Symbol.for("react.suspense");
+export var My_React_Strict = Symbol.for("react.strict");
+export var My_React_KeepLive = Symbol.for("react.keep_live");
+//# sourceMappingURL=symbol.js.map

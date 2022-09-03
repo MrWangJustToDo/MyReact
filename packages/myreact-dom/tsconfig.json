@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "target": "ES5",
+    "paths": {
+      "@ReactDOM_shared": ["./src/shared"],
+      "@ReactDOM_server": ["./src/server"],
+      "@ReactDOM_client": ["./src/client"]
+    }
+  },
+  "include": ["./src"],
+  "exclude": ["node_modules", "**/node_modules"]
+}

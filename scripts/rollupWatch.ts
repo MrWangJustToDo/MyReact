@@ -1,20 +1,18 @@
-import { watch } from "rollup";
+import type { RollupOptions } from "rollup";
+import { watch as rollup } from "rollup";
 
 import { getRollupConfig } from "./rollupConfig";
 
 import type { Mode, packages } from "./type";
 
-const rollupWatch = async (packageName: packages, mode: Mode, isUMD: boolean) => {
-  const rollupOptions = await getRollupConfig(packageName, mode, isUMD);
-
-  // watch options
+const watch = (packageName: string, rollupOptions: RollupOptions, mode: Mode, isUMD: boolean) => {
   rollupOptions.watch = {
     buildDelay: 300,
     exclude: ["node_modules"],
     clearScreen: true,
   };
 
-  const watcher = watch(rollupOptions);
+  const watcher = rollup(rollupOptions);
 
   watcher.on("event", (event) => {
     if (event.code === "BUNDLE_START") {
@@ -33,20 +31,21 @@ const rollupWatch = async (packageName: packages, mode: Mode, isUMD: boolean) =>
   });
 };
 
-rollupWatch("myreact", "development", false);
-rollupWatch("myreact", "production", false);
+const rollupWatch = async (packageName: packages) => {
+  const { allDevBuild } = await getRollupConfig(packageName);
 
-rollupWatch("myreact", "development", true);
-rollupWatch("myreact", "production", true);
+  if (allDevBuild.other) {
+    const option = allDevBuild.other;
+    watch(packageName, option, "development", false);
+  }
+  if (allDevBuild.umd) {
+    const option = allDevBuild.umd;
+    watch(packageName, option, "development", true);
+  }
+};
 
-rollupWatch("myreact-reconciler", "development", false);
-rollupWatch("myreact-reconciler", "production", false);
+rollupWatch("myreact");
 
-rollupWatch("myreact-reconciler", "development", true);
-rollupWatch("myreact-reconciler", "production", true);
+rollupWatch("myreact-reconciler");
 
-rollupWatch("myreact-dom", "development", false);
-rollupWatch("myreact-dom", "production", false);
-
-rollupWatch("myreact-dom", "development", true);
-rollupWatch("myreact-dom", "production", true);
+rollupWatch("myreact-dom");

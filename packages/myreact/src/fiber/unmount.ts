@@ -1,6 +1,6 @@
 import type { MyReactFiberNode } from "./instance";
 
-export const unmountFiber = (fiber: MyReactFiberNode) => {
-  fiber.children.forEach(unmountFiber);
+export const unmountFiberNode = (fiber: MyReactFiberNode) => {
+  fiber.children.forEach(unmountFiberNode);
   fiber.unmount();
 };

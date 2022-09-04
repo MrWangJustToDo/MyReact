@@ -11,6 +11,7 @@
     "node": ">=10"
   },
   "scripts": {
+    "prepare": "pnpm run build",
     "dev:ui": "cd ./packages/myreact-ssr && pnpm run dev",
     "dev": "ts-node ./scripts/rollupWatch.ts",
     "build": "ts-node ./scripts/rollupBuild.ts",

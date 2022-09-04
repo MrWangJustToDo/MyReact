@@ -6,8 +6,8 @@ import { clearFiberDom } from "./clearFiberDom";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
-export const _unmount = (fiber: MyReactFiberNode) => {
-  __myreact_shared__.unmountFiber(fiber);
+export const unmountFiber = (fiber: MyReactFiberNode) => {
+  __myreact_shared__.unmountFiberNode(fiber);
   clearFiberDom(fiber);
 };
 
@@ -15,7 +15,7 @@ export const unmount = (fiber: MyReactFiberNode) => {
   const allUnmountFiber = fiber.__unmountQueue__.slice(0);
 
   if (allUnmountFiber.length) {
-    mapFiber(allUnmountFiber as MyReactFiberNode | MyReactFiberNode[], (f) => _unmount(f));
+    mapFiber(allUnmountFiber as MyReactFiberNode | MyReactFiberNode[], (f) => unmountFiber(f));
   }
 
   fiber.__unmountQueue__ = [];

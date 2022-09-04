@@ -3,7 +3,7 @@ import { MyReactComponent, MyReactPureComponent } from "./component";
 import { createElement, cloneElement, isValidElement, forwardRef, createContext, memo, lazy } from "./element";
 import {
   MyReactFiberNode,
-  unmountFiber,
+  unmountFiberNode,
   createFiberNode,
   updateFiberNode,
   getContextFiber,
@@ -58,7 +58,7 @@ const __myreact_shared__ = {
   log,
   safeCall,
   LinkTreeList,
-  unmountFiber,
+  unmountFiberNode,
   createFiberNode,
   updateFiberNode,
   getContextFiber,

@@ -2,33 +2,41 @@ import { cloneElement, isValidElement } from "../element";
 
 import { mapByJudge } from "./tool";
 
-import type { MaybeArrayElementNode, Element } from "../element";
+import type {
+  MyReactElement,
+  MyReactElementNode,
+  ArrayMyReactElementNode,
+  MaybeArrayMyReactElementNode,
+} from "../element";
 
-export const map = (arrayLike: MaybeArrayElementNode, action: (child: Element, index: number) => Element) =>
-  mapByJudge(arrayLike, (v) => v !== undefined && v !== null, action);
+export const map = (
+  arrayLike: MaybeArrayMyReactElementNode,
+  action: (child: MyReactElement, index: number) => MyReactElement
+) => mapByJudge(arrayLike, (v) => v !== undefined && v !== null, action);
 
-export const toArray = (arrayLike: MaybeArrayElementNode) =>
-  map(arrayLike, (element, index) =>
+export const toArray = (arrayLike: MaybeArrayMyReactElementNode) => {
+  return map(arrayLike, (element, index) =>
     cloneElement(element, {
       key: element?.key !== undefined ? `.$${element.key}` : `.${index}`,
     })
   );
+};
 
 export const forEach = (
-  arrayLike: MaybeArrayElementNode,
-  action: (child: Element, index: number, children: MaybeArrayElementNode) => Element
+  arrayLike: MaybeArrayMyReactElementNode,
+  action: (child: MyReactElement, index: number, children: ArrayMyReactElementNode) => MyReactElement
 ) => {
   mapByJudge(arrayLike, (v) => v !== undefined && v !== null, action);
 };
 
-export const count = (arrayLike: MaybeArrayElementNode): number => {
+export const count = (arrayLike: MaybeArrayMyReactElementNode): number => {
   if (Array.isArray(arrayLike)) {
     return arrayLike.reduce<number>((p, c) => p + count(c), 0);
   }
   return 1;
 };
 
-export const only = (child: MaybeArrayElementNode) => {
+export const only = (child: MyReactElementNode) => {
   if (isValidElement(child)) return child;
   if (typeof child === "string" || typeof child === "number" || typeof child === "boolean") return true;
 

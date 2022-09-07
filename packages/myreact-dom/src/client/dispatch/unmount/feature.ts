@@ -1,4 +1,4 @@
-import { __myreact_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { mapFiber } from "@ReactDOM_shared";
 
@@ -7,16 +7,20 @@ import { clearFiberDom } from "./clearFiberDom";
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const unmountFiber = (fiber: MyReactFiberNode) => {
-  __myreact_shared__.unmountFiberNode(fiber);
+  __my_react_shared__.unmountFiberNode(fiber);
   clearFiberDom(fiber);
 };
 
+const { globalDispatch } = __my_react_internal__;
+
 export const unmount = (fiber: MyReactFiberNode) => {
-  const allUnmountFiber = fiber.__unmountQueue__.slice(0);
+  const unmountMap = globalDispatch.current.unmountMap;
+
+  const allUnmountFiber = unmountMap[fiber.uid] || [];
+
+  unmountMap[fiber.uid] = [];
 
   if (allUnmountFiber.length) {
     mapFiber(allUnmountFiber as MyReactFiberNode | MyReactFiberNode[], (f) => unmountFiber(f));
   }
-
-  fiber.__unmountQueue__ = [];
 };

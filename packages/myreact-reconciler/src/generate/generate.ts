@@ -1,24 +1,77 @@
-import { isValidElement, __myreact_internal__, __myreact_shared__ } from "@my-react/react";
-
-import { enableKeyDiff } from "../share";
+import { isValidElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import type {
-  ArrayElementNode,
+  ArrayMyReactElementNode,
   MyReactElementNode,
   MyReactElement,
-  MaybeArrayElementNode,
+  MaybeArrayMyReactElementNode,
   MyReactFiberNode,
+  MyReactFiberNodeDev,
 } from "@my-react/react";
 
-const { isAppMounted, globalDispatch, MyReactFiberNode: MyReactFiberNodeClass } = __myreact_internal__;
+const { globalDispatch, MyReactFiberNode: MyReactFiberNodeClass, NODE_TYPE, UPDATE_TYPE } = __my_react_internal__;
 
-const { updateFiberNode, createFiberNode } = __myreact_shared__;
+const { updateFiberNode: _updateFiberNode, createFiberNode: _createFiberNode, enableKeyDiff } = __my_react_shared__;
+
+const _updateFiberNodeWithDev = (...props: Parameters<typeof _updateFiberNode>) => {
+  const [{ fiber, parent, prevFiber }, newElement] = props;
+
+  const typedFiber = fiber as MyReactFiberNodeDev;
+
+  const prevState = typedFiber._debugRenderState || {
+    renderCount: 0,
+    mountTimeStep: 0,
+    prevUpdateTimeStep: 0,
+    currentUpdateTimeStep: 0,
+  };
+
+  typedFiber._debugRenderState = {
+    renderCount: prevState.renderCount + 1,
+    mountTimeStep: prevState.mountTimeStep,
+    prevUpdateTimeStep: prevState.currentUpdateTimeStep,
+    currentUpdateTimeStep: Date.now(),
+  };
+
+  const newFiber = _updateFiberNode({ fiber, parent, prevFiber }, newElement);
+
+  return newFiber;
+};
+
+const createFiberNode = (...props: Parameters<typeof _createFiberNode>) => {
+  const fiber = _createFiberNode(...props);
+
+  if (__DEV__) {
+    const typedFiber = fiber as MyReactFiberNodeDev;
+
+    const timeNow = Date.now();
+
+    typedFiber._debugRenderState = {
+      renderCount: 0,
+      mountTimeStep: timeNow,
+      prevUpdateTimeStep: timeNow,
+      currentUpdateTimeStep: timeNow,
+    };
+
+    typedFiber._debugGlobalDispatch = globalDispatch.current;
+  }
+
+  return fiber;
+};
+
+const updateFiberNode = (...props: Parameters<typeof _updateFiberNode>) => {
+  if (__DEV__) {
+    return _updateFiberNodeWithDev(...props);
+  } else {
+    return _updateFiberNode(...props);
+  }
+};
 
 const getKeyMatchedChildren = (
-  newChildren: ArrayElementNode,
+  newChildren: ArrayMyReactElementNode,
   prevFiberChildren: Array<MyReactFiberNode | MyReactFiberNode[]>
 ) => {
-  if (!isAppMounted.current) return prevFiberChildren;
+  const isAppMounted = globalDispatch.current.isAppMounted;
+  if (!isAppMounted) return prevFiberChildren;
   if (!enableKeyDiff.current) return prevFiberChildren;
   if (!prevFiberChildren) return prevFiberChildren;
   if (prevFiberChildren.length === 0) return prevFiberChildren;
@@ -53,8 +106,12 @@ const getKeyMatchedChildren = (
   });
 };
 
-const getIsSameTypeNode = (newChild: MaybeArrayElementNode, prevFiberChild?: MyReactFiberNode | MyReactFiberNode[]) => {
-  if (!isAppMounted.current) return false;
+const getIsSameTypeNode = (
+  newChild: MaybeArrayMyReactElementNode,
+  prevFiberChild?: MyReactFiberNode | MyReactFiberNode[]
+) => {
+  const isAppMounted = globalDispatch.current.isAppMounted;
+  if (!isAppMounted) return false;
   const newChildIsArray = Array.isArray(newChild);
   const prevElementChildIsArray = Array.isArray(prevFiberChild);
   if (newChildIsArray && prevElementChildIsArray) return true;
@@ -66,7 +123,12 @@ const getIsSameTypeNode = (newChild: MaybeArrayElementNode, prevFiberChild?: MyR
 
   const prevRenderedChild = typedPrevFiberChild?.element;
   const result = typedPrevFiberChild?.checkIsSameType(typedNewChild);
-  if (result && enableKeyDiff.current && !typedPrevFiberChild.__isTextNode__ && !typedPrevFiberChild.__isNullNode__) {
+  if (
+    result &&
+    enableKeyDiff.current &&
+    !(typedPrevFiberChild.type & NODE_TYPE.__isTextNode__) &&
+    !(typedPrevFiberChild.type & NODE_TYPE.__isNullNode__)
+  ) {
     return (typedNewChild as MyReactElement).key === (prevRenderedChild as MyReactElement).key;
   } else {
     return result;
@@ -74,7 +136,7 @@ const getIsSameTypeNode = (newChild: MaybeArrayElementNode, prevFiberChild?: MyR
 };
 
 const getNewFiberWithUpdate = (
-  newChild: MaybeArrayElementNode,
+  newChild: MaybeArrayMyReactElementNode,
   parentFiber: MyReactFiberNode,
   prevFiberChild?: MyReactFiberNode | MyReactFiberNode[],
   assignPrevFiberChild?: MyReactFiberNode | MyReactFiberNode[]
@@ -120,7 +182,7 @@ const getNewFiberWithUpdate = (
 };
 
 const getNewFiberWithInitial = (
-  newChild: MaybeArrayElementNode,
+  newChild: MaybeArrayMyReactElementNode,
   parentFiber: MyReactFiberNode
 ): MyReactFiberNode | MyReactFiberNode[] => {
   if (Array.isArray(newChild)) {
@@ -132,19 +194,17 @@ const getNewFiberWithInitial = (
 
 export const transformChildrenFiber = (
   parentFiber: MyReactFiberNode,
-  children: MaybeArrayElementNode | null | undefined
+  children: MaybeArrayMyReactElementNode | null | undefined
 ) => {
   let index = 0;
 
-  const isUpdate = parentFiber.__isUpdateRender__;
+  const isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
 
   const newChildren = Array.isArray(children) ? children : [children];
 
-  const prevFiberChildren = isUpdate ? parentFiber.__renderedChildren__ : [];
+  const prevFiberChildren = isUpdate ? parentFiber.renderedChildren : [];
 
   const assignPrevFiberChildren = getKeyMatchedChildren(newChildren, prevFiberChildren);
-
-  parentFiber.__renderedChildren__ = [];
 
   parentFiber.beforeUpdate();
 
@@ -157,7 +217,7 @@ export const transformChildrenFiber = (
       ? getNewFiberWithUpdate(newChild, parentFiber, prevFiberChild, assignPrevFiberChild)
       : getNewFiberWithInitial(newChild, parentFiber);
 
-    parentFiber.__renderedChildren__.push(newFiber);
+    parentFiber.renderedChildren.push(newFiber);
 
     index++;
   }

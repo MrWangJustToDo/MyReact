@@ -1,4 +1,4 @@
-import { __myreact_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import {
   getFiberWithDom,
@@ -19,16 +19,59 @@ import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
 
-import type { MyReactFiberNode, FiberDispatch } from "@my-react/react";
+import type { MyReactFiberNode, FiberDispatch, MyReactElementNode, MyReactInternalInstance } from "@my-react/react";
 
-const { safeCallWithFiber } = __myreact_shared__;
+const { safeCallWithFiber } = __my_react_shared__;
+
+const { PATCH_TYPE } = __my_react_internal__;
 
 export class ClientDispatch implements FiberDispatch {
+  rootFiber: MyReactFiberNode | null = null;
+
+  rootContainer: Record<string, unknown> = {};
+
+  isAppMounted = false;
+
+  isAppCrash = false;
+
+  effectMap: Record<string, (() => void)[]> = {};
+
+  layoutEffectMap: Record<string, (() => void)[]> = {};
+
+  contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
+
+  unmountMap: Record<string, (MyReactFiberNode | MyReactFiberNode[])[]> = {};
+
+  eventMap: Record<string, Record<string, ((...args: any[]) => void) & { cb?: any[] | undefined }>> = {};
+
   trigger(_fiber: MyReactFiberNode): void {
     triggerUpdate(_fiber);
   }
   resolveLazy(): boolean {
     return true;
+  }
+  resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode {
+    throw new Error("Method not implemented.");
+  }
+  resolveContextMap(_fiber: MyReactFiberNode): void {
+    throw new Error("Method not implemented.");
+  }
+  resolveContextFiber(
+    _fiber: MyReactFiberNode,
+    _contextObject: {
+      $$typeof: symbol;
+      id: number;
+      Provider: { $$typeof: symbol; value: unknown; Context: { id: number } };
+      Consumer: { $$typeof: symbol; Internal: MyReactInternalInstance; Context: { id: number } };
+    } | null
+  ): MyReactFiberNode | null {
+    throw new Error("Method not implemented.");
+  }
+  resolveComponentQueue(_fiber: MyReactFiberNode): void {
+    throw new Error("Method not implemented.");
+  }
+  resolveHookQueue(_fiber: MyReactFiberNode): void {
+    throw new Error("Method not implemented.");
   }
   beginProgressList(): void {
     pendingUpdateFiberList.current = new LinkTreeList();

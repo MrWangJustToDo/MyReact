@@ -1,6 +1,8 @@
 import { globalDispatch, isNormalEquals } from "../share";
 
-import type { Element, ElementNode } from "../element";
+import { NODE_TYPE, UPDATE_TYPE } from "./symbol";
+
+import type { MyReactElement, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "./instance";
 
 export const updateFiberNode = (
@@ -13,25 +15,23 @@ export const updateFiberNode = (
     parent: MyReactFiberNode;
     prevFiber: MyReactFiberNode;
   },
-  newChild: ElementNode
+  nextElement: MyReactElementNode
 ) => {
   fiber.installParent(parent);
 
-  const prevVDom = fiber.__vdom__;
+  const prevElement = fiber.element;
 
-  fiber.installVDom(newChild);
+  fiber.installElement(nextElement);
 
-  const newVDom = fiber.__vdom__;
+  if (__DEV__) {
+    fiber.checkElement();
+  }
 
-  fiber.checkVDom();
-
-  fiber.updateRenderState();
-
-  if (prevVDom !== newVDom) {
-    if (fiber.__isMemo__) {
-      const typedPrevVDom = prevVDom as Element;
-      const typedNewVDom = newVDom as Element;
-      if (!fiber.__needTrigger__ && isNormalEquals(typedPrevVDom.props, typedNewVDom.props)) {
+  if (prevElement !== nextElement) {
+    if (fiber.type & NODE_TYPE.__isMemo__) {
+      const typedPrevElement = prevElement as MyReactElement;
+      const typedNextElement = nextElement as MyReactElement;
+      if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(typedPrevElement.props, typedNextElement.props)) {
         fiber.afterUpdate();
       } else {
         fiber.prepareUpdate();
@@ -39,28 +39,28 @@ export const updateFiberNode = (
     } else {
       fiber.prepareUpdate();
 
-      if (fiber.__isContextProvider__) {
-        const typedPrevVDom = prevVDom as Element;
-        const typedNewVDom = newVDom as Element;
+      if (fiber.type & NODE_TYPE.__isContextProvider__) {
+        const typedPrevElement = prevElement as MyReactElement;
+        const typedNextElement = nextElement as MyReactElement;
         if (
           !isNormalEquals(
-            typedPrevVDom.props.value as Record<string, unknown>,
-            typedNewVDom.props.value as Record<string, unknown>
+            typedPrevElement.props.value as Record<string, unknown>,
+            typedNextElement.props.value as Record<string, unknown>
           )
         ) {
           globalDispatch.current.pendingContext(fiber);
         }
       }
 
-      if (fiber.__isPlainNode__) {
-        const typedPrevVDom = prevVDom as Element;
-        const typedNewVDom = newVDom as Element;
-        if (!isNormalEquals(typedPrevVDom.props, typedNewVDom.props, false)) {
+      if (fiber.type & NODE_TYPE.__isPlainNode__) {
+        const typedPrevElement = prevElement as MyReactElement;
+        const typedNextElement = nextElement as MyReactElement;
+        if (!isNormalEquals(typedPrevElement.props, typedNextElement.props, false)) {
           globalDispatch.current.pendingUpdate(fiber);
         }
       }
 
-      if (fiber.__isTextNode__) {
+      if (fiber.type & NODE_TYPE.__isTextNode__) {
         globalDispatch.current.pendingUpdate(fiber);
       }
     }

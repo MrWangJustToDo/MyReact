@@ -1,3 +1,4 @@
+import { UPDATE_TYPE } from "../fiber";
 import { getHookTree } from "../share";
 
 import { effect } from "./effect";
@@ -24,11 +25,13 @@ export const createHookNode = (
 ) => {
   const newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
 
-  newHookNode.setFiber(fiber);
+  newHookNode.setOwner(fiber);
 
   fiber.addHook(newHookNode);
 
-  fiber.checkHook(newHookNode);
+  if (__DEV__) {
+    fiber.checkHook();
+  }
 
   newHookNode.initialResult();
 
@@ -43,21 +46,22 @@ export const getHookNode = (
 
   let currentHook: null | MyReactHookNode = null;
 
-  if (fiber.hookList.length > hookIndex) {
-    currentHook = fiber.hookList[hookIndex];
+  if (fiber.hookNodeArray.length > hookIndex) {
+    currentHook = fiber.hookNodeArray[hookIndex];
 
     if (currentHook.hookType !== hookType) {
-      const array = fiber.hookType.slice(0, hookIndex);
+      const array = fiber.hookTypeArray.slice(0, hookIndex);
       throw new Error(getHookTree([...array, currentHook.hookType], [...array, hookType]));
     }
 
-    currentHook.setFiber(fiber);
+    currentHook.setOwner(fiber);
 
     currentHook.updateResult(value, reducer || defaultReducer, deps);
-  } else if (!fiber.__isUpdateRender__) {
+  } else if (!(fiber.mode & UPDATE_TYPE.__update__)) {
+    // not a update so it is a initial fiber
     currentHook = createHookNode({ hookIndex, hookType, value, reducer, deps }, fiber);
   } else {
-    throw new Error(getHookTree([...fiber.hookType], [...fiber.hookType, hookType]));
+    throw new Error(getHookTree([...fiber.hookTypeArray], [...fiber.hookTypeArray, hookType]));
   }
 
   effect(fiber, currentHook);

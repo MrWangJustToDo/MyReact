@@ -1,4 +1,4 @@
-import { __myreact_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 
 import {
   debugWithDOM,
@@ -19,18 +19,17 @@ import { HighLight } from "./highlight";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
-const { isAppMounted } = __myreact_internal__;
+const { globalDispatch, NODE_TYPE } = __my_react_internal__;
 
-export const nativeUpdate = (fiber: MyReactFiberNode) => {
-  if (!fiber.dom) throw new Error("update error, dom not exist");
-  if (fiber.__isTextNode__) {
-    if (fiber.__vdom__ !== fiber.__prevVdom__) {
-      fiber.dom.textContent = fiber.element as string;
-    }
+export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
+  if (!fiber.node) throw new Error("update error, dom not exist");
+  if (fiber.type & NODE_TYPE.__isTextNode__) {
+    const typedDom = fiber.node as Text;
+    typedDom.textContent = fiber.element as string;
   } else {
-    const dom = fiber.dom as HTMLElement;
-    const oldProps = fiber.__prevProps__ || {};
-    const newProps = fiber.__props__ || {};
+    const dom = fiber.node as HTMLElement;
+    const oldProps = fiber.memoizedProps || {};
+    const newProps = fiber.pendingProps || {};
     Object.keys(oldProps)
       .filter(isEvent)
       .filter((key) => isGone(newProps)(key) || isNew(oldProps, newProps)(key))
@@ -40,13 +39,13 @@ export const nativeUpdate = (fiber: MyReactFiberNode) => {
       .filter(isGone(newProps))
       .forEach((key) => {
         if (key === "className") {
-          if (fiber.nameSpace) {
+          if (isSVG) {
             dom.removeAttribute("class");
           } else {
             dom[key] = "";
           }
         } else {
-          if (key in dom && !fiber.nameSpace) {
+          if (key in dom && !isSVG) {
             (dom as any)[key] = "";
           } else {
             dom.removeAttribute(key);
@@ -71,13 +70,13 @@ export const nativeUpdate = (fiber: MyReactFiberNode) => {
       .filter(isNew(oldProps, newProps))
       .forEach((key) => {
         if (key === "className") {
-          if (fiber.nameSpace) {
+          if (isSVG) {
             dom.setAttribute("class", (newProps[key] as string) || "");
           } else {
             dom[key] = (newProps[key] as string) || "";
           }
         } else {
-          if (key in dom && !fiber.nameSpace) {
+          if (key in dom && !isSVG) {
             if (newProps[key] !== null && newProps[key] !== false && newProps[key] !== undefined) {
               (dom as any)[key] = newProps[key];
             } else {
@@ -128,8 +127,10 @@ export const nativeUpdate = (fiber: MyReactFiberNode) => {
 
   debugWithDOM(fiber);
 
+  const isAppMounted = globalDispatch.current.isAppMounted;
+
   if (
-    isAppMounted.current &&
+    isAppMounted &&
     !isHydrateRender.current &&
     !isServerRender.current &&
     (enableHighlight.current || (window as any).__highlight__)

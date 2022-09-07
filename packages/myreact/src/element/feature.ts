@@ -1,4 +1,5 @@
 import { MyReactInternalInstance } from "../internal";
+
 import {
   My_React_Consumer,
   My_React_Context,
@@ -6,9 +7,9 @@ import {
   My_React_Lazy,
   My_React_Memo,
   My_React_Provider,
-} from "../share";
+} from "./symbol";
 
-import type { ClassComponent, FunctionComponent } from ".";
+import type { MyReactClassComponent, MyReactFunctionComponent } from "./instance";
 
 let contextId = 0;
 
@@ -54,7 +55,7 @@ export const createContext = <T = any>(value: T) => {
   return ContextObject;
 };
 
-export const forwardRef = (render: FunctionComponent | { ["$$typeof"]: symbol; [p: string]: unknown }) => {
+export const forwardRef = (render: MyReactFunctionComponent | { ["$$typeof"]: symbol; [p: string]: unknown }) => {
   return {
     ["$$typeof"]: My_React_ForwardRef,
     render,
@@ -63,18 +64,18 @@ export const forwardRef = (render: FunctionComponent | { ["$$typeof"]: symbol; [
 
 export const memo = (
   render:
-    | FunctionComponent
-    | ClassComponent
+    | MyReactFunctionComponent
+    | MyReactClassComponent
     | {
         ["$$typeof"]: symbol;
-        render: FunctionComponent | ClassComponent;
+        render: MyReactFunctionComponent | MyReactClassComponent;
         [p: string]: unknown;
       }
 ) => {
   return { ["$$typeof"]: My_React_Memo, render };
 };
 
-export const lazy = (loader: () => Promise<{ default: FunctionComponent | ClassComponent }>) => {
+export const lazy = (loader: () => Promise<{ default: MyReactFunctionComponent | MyReactClassComponent }>) => {
   return {
     ["$$typeof"]: My_React_Lazy,
     loader,
@@ -83,9 +84,11 @@ export const lazy = (loader: () => Promise<{ default: FunctionComponent | ClassC
     render: null,
   } as {
     ["$$typeof"]: typeof My_React_Lazy;
-    loader: () => Promise<{ default: FunctionComponent | ClassComponent } | FunctionComponent | ClassComponent>;
+    loader: () => Promise<
+      { default: MyReactFunctionComponent | MyReactClassComponent } | MyReactFunctionComponent | MyReactClassComponent
+    >;
     _loading: boolean;
     _loaded: boolean;
-    render: null | FunctionComponent | ClassComponent | { ["$$typeof"]: symbol; [p: string]: unknown };
+    render: null | MyReactFunctionComponent | MyReactClassComponent | { ["$$typeof"]: symbol; [p: string]: unknown };
   };
 };

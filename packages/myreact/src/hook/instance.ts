@@ -1,8 +1,8 @@
-import { getContextFiber, getContextValue } from "../fiber";
+import { getContextValue } from "../fiber";
 import { MyReactInternalInstance } from "../internal";
-import { isArrayEquals } from "../share";
+import { globalDispatch, isArrayEquals } from "../share";
 
-import type { HookUpdateQueue } from "../fiber";
+import type { HookUpdateQueue, MyReactFiberNode } from "../fiber";
 
 export type HOOK_TYPE =
   | "useRef"
@@ -27,7 +27,7 @@ export class MyReactHookNode extends MyReactInternalInstance {
 
   hookPrev: MyReactHookNode | null = null;
 
-  hookType: HOOK_TYPE | null = null;
+  hookType: HOOK_TYPE;
 
   cancel: (() => void) | null = null;
 
@@ -71,7 +71,10 @@ export class MyReactHookNode extends MyReactInternalInstance {
     }
 
     if (this.hookType === "useContext") {
-      const ProviderFiber = getContextFiber(this.__fiber__, this.value);
+      const ProviderFiber = globalDispatch.current.resolveContextFiber(
+        this._ownerFiber as MyReactFiberNode,
+        this.value
+      );
       this.setContext(ProviderFiber);
       this.result = getContextValue(ProviderFiber, this.value);
       this.context = this.result;
@@ -133,14 +136,17 @@ export class MyReactHookNode extends MyReactInternalInstance {
     }
 
     if (this.hookType === "useContext") {
-      if (!this.__context__ || !this.__context__.mount || !Object.is(this.value, newValue)) {
+      if (!this._contextFiber || !this._contextFiber.mount || !Object.is(this.value, newValue)) {
         this.value = newValue;
-        const ProviderFiber = getContextFiber(this.__fiber__, this.value);
+        const ProviderFiber = globalDispatch.current.resolveContextFiber(
+          this._ownerFiber as MyReactFiberNode,
+          this.value
+        );
         this.setContext(ProviderFiber);
         this.result = getContextValue(ProviderFiber, this.value);
         this.context = this.result;
       } else {
-        this.result = getContextValue(this.__context__, this.value);
+        this.result = getContextValue(this._contextFiber, this.value);
         this.context = this.result;
       }
       return;
@@ -153,13 +159,11 @@ export class MyReactHookNode extends MyReactInternalInstance {
   }
 
   unmount() {
+    super.unmount();
     if (this.hookType === "useEffect" || this.hookType === "useLayoutEffect") {
       this.effect = false;
       this.cancel && this.cancel();
       return;
-    }
-    if (this.hookType === "useContext") {
-      this.__context__?.removeDependence(this);
     }
   }
 
@@ -167,13 +171,13 @@ export class MyReactHookNode extends MyReactInternalInstance {
     const updater: HookUpdateQueue = {
       type: "hook",
       trigger: this,
-      action,
+      payLoad: action,
     };
 
-    this.__fiber__?.__hookUpdateQueue__.push(updater);
+    this._ownerFiber?.updateQueue.push(updater);
 
     Promise.resolve().then(() => {
-      this.__fiber__?.update();
+      this._ownerFiber?.update();
     });
   };
 }

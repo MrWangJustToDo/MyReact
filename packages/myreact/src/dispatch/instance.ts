@@ -1,13 +1,49 @@
+import type { createContext, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 import type { LinkTreeList } from "../share";
 import type { FiberDispatch } from "./interface";
 
 export class EmptyDispatch implements FiberDispatch {
+  rootFiber: MyReactFiberNode | null = null;
+
+  rootContainer: Record<string, unknown> = {};
+
+  isAppMounted = false;
+
+  isAppCrash = false;
+
+  suspenseMap: Record<string, MyReactElementNode> = {};
+
+  effectMap: Record<string, (() => void)[]> = {};
+
+  layoutEffectMap: Record<string, (() => void)[]> = {};
+
+  contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
+
+  unmountMap: Record<string, (MyReactFiberNode | MyReactFiberNode[])[]> = {};
+
+  eventMap: Record<string, Record<string, ((...args: any[]) => void) & { cb?: any[] | undefined }>> = {};
+
   trigger(_fiber: MyReactFiberNode): void {
     void 0;
   }
   resolveLazy(): boolean {
     return false;
+  }
+  resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode {
+    return null;
+  }
+  resolveContextMap(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext>) {
+    return null;
+  }
+  resolveComponentQueue(_fiber: MyReactFiberNode): void {
+    return void 0;
+  }
+  resolveHookQueue(_fiber: MyReactFiberNode): void {
+    return void 0;
   }
   // TODO this part of logic should not include global dispatch interface
   // start

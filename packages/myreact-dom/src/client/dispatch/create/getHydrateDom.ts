@@ -1,4 +1,4 @@
-import { __myreact_shared__ } from "@my-react/react";
+import { __my_react_shared__, __my_react_internal__ } from "@my-react/react";
 
 import { IS_SINGLE_ELEMENT } from "@ReactDOM_shared";
 
@@ -8,7 +8,9 @@ export type HydrateDOM = Element & {
   __hydrate__: boolean;
 };
 
-const log = __myreact_shared__.log;
+const { NODE_TYPE } = __my_react_internal__;
+
+const log = __my_react_shared__.log;
 
 const getNextHydrateDom = (parentDom: Element) => {
   const children = Array.from(parentDom.childNodes);
@@ -25,7 +27,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     });
     return false;
   }
-  if (fiber.__isTextNode__) {
+  if (fiber.type & NODE_TYPE.__isTextNode__) {
     if (dom.nodeType !== Node.TEXT_NODE) {
       log({
         fiber,
@@ -38,7 +40,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     }
     return true;
   }
-  if (fiber.__isPlainNode__) {
+  if (fiber.type & NODE_TYPE.__isPlainNode__) {
     const typedElement = fiber.element as MyReactElement;
     if (dom.nodeType !== Node.ELEMENT_NODE) {
       log({
@@ -67,7 +69,7 @@ export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
   const result = checkHydrateDom(fiber, dom);
   if (result) {
     const typedDom = dom as HydrateDOM;
-    fiber.dom = typedDom;
+    fiber.node = typedDom;
     return { dom: typedDom, result };
   } else {
     return { dom, result };

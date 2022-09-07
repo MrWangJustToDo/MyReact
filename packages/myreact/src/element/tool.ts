@@ -1,6 +1,7 @@
+import { NODE_TYPE } from "../fiber";
+import { log, once } from "../share";
+
 import {
-  log,
-  once,
   My_React_Consumer,
   My_React_Element,
   My_React_ForwardRef,
@@ -11,83 +12,95 @@ import {
   My_React_Provider,
   My_React_Strict,
   My_React_Suspense,
-} from "../share";
+} from "./symbol";
 
-import type { NODE_TYPE_KEY } from "../internal";
-import type { MaybeArrayElementNode, Element, DynamicElementNode, ElementNode, ArrayElementNode } from "./instance";
+import type {
+  MaybeArrayMyReactElementNode,
+  MyReactElement,
+  MyReactElementNode,
+  ArrayMyReactElementNode,
+  ArrayMyReactElementChildren,
+  MyReactObjectComponent,
+} from "./instance";
 
-export function isValidElement(element?: MaybeArrayElementNode | null): element is Element {
+export function isValidElement(element?: MyReactElementNode): element is MyReactElement {
   return typeof element === "object" && !Array.isArray(element) && element?.$$typeof === My_React_Element;
 }
 
-export function getTypeFromVDom(element: DynamicElementNode) {
-  const nodeType: { [key in typeof NODE_TYPE_KEY[number]]?: boolean } = {};
+export function getTypeFromElement(element: MyReactElementNode) {
+  let nodeTypeSymbol = NODE_TYPE.__initial__;
   if (isValidElement(element)) {
     const rawType = element.type;
+    // object node
     if (typeof rawType === "object") {
-      nodeType.__isObjectNode__ = true;
-      const typedRawType = rawType as { ["$$typeof"]: symbol };
+      const typedRawType = rawType as MyReactObjectComponent;
       switch (typedRawType["$$typeof"]) {
         case My_React_Provider:
-          nodeType.__isContextProvider__ = true;
+          nodeTypeSymbol |= NODE_TYPE.__isContextProvider__;
           break;
         case My_React_Consumer:
-          nodeType.__isContextConsumer__ = true;
+          nodeTypeSymbol |= NODE_TYPE.__isContextConsumer__;
           break;
         case My_React_Portal:
-          nodeType.__isPortal__ = true;
+          nodeTypeSymbol |= NODE_TYPE.__isPortal__;
           break;
         case My_React_Memo:
-          nodeType.__isMemo__ = true;
+          nodeTypeSymbol |= NODE_TYPE.__isMemo__;
           break;
         case My_React_ForwardRef:
-          nodeType.__isForwardRef__ = true;
+          nodeTypeSymbol |= NODE_TYPE.__isForwardRef__;
           break;
         case My_React_Lazy:
-          nodeType.__isLazy__ = true;
+          nodeTypeSymbol |= NODE_TYPE.__isLazy__;
           break;
         default:
           throw new Error(`invalid object element type ${typedRawType["$$typeof"].toString()}`);
       }
     } else if (typeof rawType === "function") {
-      nodeType.__isDynamicNode__ = true;
       if (rawType.prototype?.isMyReactComponent) {
-        nodeType.__isClassComponent__ = true;
+        nodeTypeSymbol |= NODE_TYPE.__isClassComponent__;
       } else {
-        nodeType.__isFunctionComponent__ = true;
+        nodeTypeSymbol |= NODE_TYPE.__isFunctionComponent__;
       }
     } else if (typeof rawType === "symbol") {
       switch (rawType) {
         case My_React_Fragment:
-          nodeType.__isFragmentNode__ = true;
+          nodeTypeSymbol |= NODE_TYPE.__isFragmentNode__;
           break;
         case My_React_Strict:
-          nodeType.__isStrictNode__ = true;
+          nodeTypeSymbol |= NODE_TYPE.__isStrictNode__;
           break;
         case My_React_Suspense:
-          nodeType.__isSuspense__ = true;
+          nodeTypeSymbol |= NODE_TYPE.__isSuspense__;
           break;
         default:
           throw new Error(`invalid symbol element type ${rawType.toString()}`);
       }
     } else if (typeof rawType === "string") {
-      nodeType.__isPlainNode__ = true;
+      nodeTypeSymbol |= NODE_TYPE.__isPlainNode__;
     } else {
-      throw new Error(`invalid element type ${rawType}`);
+      if (__DEV__) {
+        log({ message: `invalid element type ${rawType}`, level: "warn", triggerOnce: true });
+      }
+      nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
     }
   } else {
     if (typeof element === "object" && element !== null) {
-      nodeType.__isEmptyNode__ = true;
+      if (__DEV__) {
+        log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
+      }
+      nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
     } else if (element === null || element === undefined || element === false) {
-      nodeType.__isNullNode__ = true;
+      nodeTypeSymbol |= NODE_TYPE.__isNullNode__;
     } else {
-      nodeType.__isTextNode__ = true;
+      nodeTypeSymbol |= NODE_TYPE.__isTextNode__;
     }
   }
-  return nodeType;
+
+  return nodeTypeSymbol;
 }
 
-export const checkValidKey = (children: ArrayElementNode) => {
+export const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
   const onceWarnDuplicate = once(log);
   const onceWarnUndefined = once(log);
@@ -109,7 +122,7 @@ export const checkValidKey = (children: ArrayElementNode) => {
   });
 };
 
-export const checkArrayChildrenKey = (children: ArrayElementNode) => {
+export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => {
   if (__DEV__) {
     children.forEach((child) => {
       if (Array.isArray(child)) {
@@ -121,7 +134,7 @@ export const checkArrayChildrenKey = (children: ArrayElementNode) => {
   }
 };
 
-export const checkSingleChildrenKey = (children: ElementNode) => {
+export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) => {
   if (__DEV__) {
     if (Array.isArray(children)) {
       checkValidKey(children);

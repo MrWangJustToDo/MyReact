@@ -1,6 +1,7 @@
 /* eslint-disable prefer-rest-params */
-import { currentFunctionFiber, My_React_Element } from "../share";
+import { currentFunctionFiber } from "../share";
 
+import { My_React_Element } from "./symbol";
 import { checkArrayChildrenKey, checkSingleChildrenKey, isValidElement } from "./tool";
 
 import type { MyReactComponent } from "../component";
@@ -9,11 +10,11 @@ import type { MyReactInternalInstance } from "../internal";
 import type { createRef } from "../share";
 import type { createContext, forwardRef, lazy, memo } from "./feature";
 
-export type FunctionComponent<T extends any[] = any[]> = (...args: T) => ElementNode;
+export type MyReactFunctionComponent<T extends any[] = any[]> = (...args: T) => MyReactElementNode;
 
-export type ClassComponent = typeof MyReactComponent;
+export type MyReactClassComponent = typeof MyReactComponent;
 
-export type ObjectComponent =
+export type MyReactObjectComponent =
   | ReturnType<typeof createContext>["Consumer"]
   | ReturnType<typeof createContext>["Provider"]
   | ReturnType<typeof forwardRef>
@@ -21,37 +22,42 @@ export type ObjectComponent =
   | ReturnType<typeof lazy>
   | { ["$$typeof"]: symbol; [p: string]: unknown };
 
-export type MixinClassComponent = ClassComponent & {
+export type MixinMyReactClassComponent = MyReactClassComponent & {
   displayName?: string;
   defaultProps?: Record<string, unknown>;
 };
 
-export type MixinFunctionComponent = FunctionComponent & {
+export type MixinMyReactFunctionComponent = MyReactFunctionComponent & {
   displayName?: string;
   defaultProps?: Record<string, unknown>;
 };
 
-export type ElementType = symbol | string | ObjectComponent | ClassComponent | FunctionComponent;
+export type MyReactElementType =
+  | symbol
+  | string
+  | MyReactObjectComponent
+  | MyReactClassComponent
+  | MyReactFunctionComponent;
 
-export type Element = ReturnType<typeof createVDom>;
+export type MyReactElement = ReturnType<typeof createMyReactElement>;
 
-export type ElementNode = Element | string | number | boolean | null | undefined;
+export type MyReactElementNode = MyReactElement | string | number | boolean | null | undefined;
 
-export type MaybeArrayElementNode = ElementNode | ElementNode[];
+export type MaybeArrayMyReactElementNode = MyReactElementNode | MyReactElementNode[];
 
-export type DynamicElementNode = ElementNode;
+export type ArrayMyReactElementNode = MyReactElementNode[];
 
-export type ArrayElementNode = ElementNode[];
+export type ArrayMyReactElementChildren = MaybeArrayMyReactElementNode[];
 
 export type Props = {
-  children?: MaybeArrayElementNode;
+  children?: MaybeArrayMyReactElementNode;
   [key: string]: unknown;
 };
 
-export type CreateVDomProps = {
-  type: ElementType;
+export type CreateElementProps = {
+  type: MyReactElementType;
   key: string | null;
-  ref: ReturnType<typeof createRef> | ((node?: Node | MyReactInternalInstance) => void) | null;
+  ref: ReturnType<typeof createRef> | ((node?: Record<string, unknown> | MyReactInternalInstance) => void) | null;
   props: Props;
   _self: MyReactInternalInstance | null;
   _source: { fileName: string; lineNumber: string } | null;
@@ -59,30 +65,14 @@ export type CreateVDomProps = {
 };
 
 export type CreateElementConfig = {
-  ref?: CreateVDomProps["ref"];
-  key?: CreateVDomProps["key"];
-  __self?: CreateVDomProps["_self"];
-  __source?: CreateVDomProps["_source"];
+  ref?: CreateElementProps["ref"];
+  key?: CreateElementProps["key"];
+  __self?: CreateElementProps["_self"];
+  __source?: CreateElementProps["_source"];
   [key: string]: unknown;
 };
 
-export class MyReactVDom {
-  ["$$typeof"] = My_React_Element;
-
-  _store: Record<string, unknown> = {};
-
-  constructor(
-    readonly type: CreateVDomProps["type"],
-    readonly key: CreateVDomProps["key"],
-    readonly ref: CreateVDomProps["ref"],
-    readonly props: CreateVDomProps["props"],
-    readonly _self: CreateVDomProps["_self"],
-    readonly _source: CreateVDomProps["_source"],
-    readonly _owner: CreateVDomProps["_owner"]
-  ) {}
-}
-
-const createVDom = ({ type, key, ref, props, _self, _source, _owner }: CreateVDomProps) => {
+const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps) => {
   return {
     ["$$typeof"]: My_React_Element,
     type,
@@ -98,16 +88,16 @@ const createVDom = ({ type, key, ref, props, _self, _source, _owner }: CreateVDo
 };
 
 export function createElement(
-  type: CreateVDomProps["type"],
+  type: CreateElementProps["type"],
   config: CreateElementConfig,
   children?: Props["children"]
 ) {
-  let key: CreateVDomProps["key"] = null;
-  let ref: CreateVDomProps["ref"] = null;
-  let self: CreateVDomProps["_self"] = null;
-  let source: CreateVDomProps["_source"] = null;
+  let key: CreateElementProps["key"] = null;
+  let ref: CreateElementProps["ref"] = null;
+  let self: CreateElementProps["_self"] = null;
+  let source: CreateElementProps["_source"] = null;
 
-  const props: CreateVDomProps["props"] = {};
+  const props: CreateElementProps["props"] = {};
 
   if (config !== null && config !== undefined) {
     const { ref: _ref, key: _key, __self, __source, ...resProps } = config;
@@ -119,7 +109,7 @@ export function createElement(
   }
 
   if (typeof type === "function" || typeof type === "object") {
-    const typedType = type as MixinClassComponent | MixinFunctionComponent;
+    const typedType = type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
     Object.keys(typedType?.defaultProps || {}).forEach((key) => {
       props[key] = props[key] === undefined ? typedType.defaultProps?.[key] : props[key];
     });
@@ -132,11 +122,11 @@ export function createElement(
     checkArrayChildrenKey(children);
     props.children = children;
   } else if (childrenLength === 1) {
-    checkSingleChildrenKey(children as ElementNode);
+    checkSingleChildrenKey(children as MyReactElementNode);
     props.children = children;
   }
 
-  return createVDom({
+  return createMyReactElement({
     type,
     key,
     ref,
@@ -147,7 +137,7 @@ export function createElement(
   });
 }
 
-export function cloneElement(element: ElementNode, config?: CreateElementConfig, children?: Props["children"]) {
+export function cloneElement(element: MyReactElementNode, config?: CreateElementConfig, children?: Props["children"]) {
   if (isValidElement(element)) {
     const props = Object.assign({}, element.props);
     let key = element.key;
@@ -167,7 +157,7 @@ export function cloneElement(element: ElementNode, config?: CreateElementConfig,
       }
       let defaultProps: Record<string, unknown> | undefined = {};
       if (typeof element.type === "function" || typeof element.type === "object") {
-        const typedType = element.type as MixinClassComponent | MixinFunctionComponent;
+        const typedType = element.type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
         defaultProps = typedType?.defaultProps;
       }
       for (const key in resProps) {
@@ -188,11 +178,11 @@ export function cloneElement(element: ElementNode, config?: CreateElementConfig,
       checkArrayChildrenKey(children);
       props.children = children;
     } else if (childrenLength === 1) {
-      checkSingleChildrenKey(children as ElementNode);
+      checkSingleChildrenKey(children as MyReactElementNode);
       props.children = children;
     }
 
-    const clonedElement = createVDom({
+    const clonedElement = createMyReactElement({
       type,
       key,
       ref,

@@ -1,10 +1,10 @@
-import { __myreact_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react";
 
 import { nextWorkAsync } from "../generate";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
-const { safeCall } = __myreact_shared__;
+const { safeCall } = __my_react_shared__;
 
 export const updateLoopSync = (
   loopController: {

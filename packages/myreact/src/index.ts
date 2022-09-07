@@ -1,13 +1,31 @@
 import { count, forEach, map, only, toArray } from "./children";
-import { MyReactComponent, MyReactPureComponent } from "./component";
-import { createElement, cloneElement, isValidElement, forwardRef, createContext, memo, lazy } from "./element";
+import { MyReactComponent, MyReactPureComponent, classComponentMount, classComponentUpdate } from "./component";
+import {
+  My_React_Portal as Portal,
+  My_React_Element as Element,
+  My_React_Strict as StrictMode,
+  My_React_Fragment as Fragment,
+  My_React_Provider as Provider,
+  My_React_Consumer as Consumer,
+  My_React_Suspense as Suspense,
+  My_React_ForwardRef as ForwardRef,
+  createElement,
+  cloneElement,
+  isValidElement,
+  forwardRef,
+  createContext,
+  memo,
+  lazy,
+} from "./element";
 import {
   MyReactFiberNode,
   unmountFiberNode,
   createFiberNode,
   updateFiberNode,
-  getContextFiber,
   getContextValue,
+  NODE_TYPE,
+  PATCH_TYPE,
+  UPDATE_TYPE,
 } from "./fiber";
 import {
   useRef,
@@ -21,16 +39,8 @@ import {
   useLayoutEffect,
   useImperativeHandle,
 } from "./hook";
-import { MyReactInternalInstance } from "./internal";
+import { MyReactInternalInstance, Effect_TYPE } from "./internal";
 import {
-  My_React_Portal as Portal,
-  My_React_Element as Element,
-  My_React_Strict as StrictMode,
-  My_React_Fragment as Fragment,
-  My_React_Provider as Provider,
-  My_React_Consumer as Consumer,
-  My_React_Suspense as Suspense,
-  My_React_ForwardRef as ForwardRef,
   createRef,
   log,
   LinkTreeList,
@@ -38,14 +48,11 @@ import {
   currentRunningFiber,
   currentFunctionFiber,
   currentHookDeepIndex,
-  rootFiber,
   globalLoop,
-  rootContainer,
-  isAppCrash,
-  isAppMounted,
   safeCall,
   safeCallWithFiber,
   enableAsyncUpdate,
+  enableKeyDiff,
 } from "./share";
 
 const Component = MyReactComponent;
@@ -54,20 +61,26 @@ const PureComponent = MyReactPureComponent;
 
 const version = __VERSION__;
 
-const __myreact_shared__ = {
+const __my_react_shared__ = {
   log,
   safeCall,
   LinkTreeList,
   unmountFiberNode,
   createFiberNode,
   updateFiberNode,
-  getContextFiber,
+  classComponentMount,
+  classComponentUpdate,
   getContextValue,
   safeCallWithFiber,
   enableAsyncUpdate,
+  enableKeyDiff,
 };
 
-const __myreact_internal__ = {
+const __my_react_internal__ = {
+  NODE_TYPE,
+  PATCH_TYPE,
+  UPDATE_TYPE,
+  Effect_TYPE,
   MyReactComponent,
   MyReactFiberNode,
   MyReactInternalInstance,
@@ -76,10 +89,6 @@ const __myreact_internal__ = {
   currentRunningFiber,
   currentHookDeepIndex,
   currentFunctionFiber,
-  rootFiber,
-  rootContainer,
-  isAppCrash,
-  isAppMounted,
 };
 
 const Children = {
@@ -126,8 +135,8 @@ const React = {
 
   Children,
 
-  __myreact_internal__,
-  __myreact_shared__,
+  __my_react_internal__,
+  __my_react_shared__,
 
   version,
 };
@@ -162,26 +171,26 @@ export {
   useLayoutEffect,
   useImperativeHandle,
   Children,
-  __myreact_internal__,
-  __myreact_shared__,
+  __my_react_internal__,
+  __my_react_shared__,
   React as default,
 };
 
 export type { FiberDispatch } from "./dispatch";
 
 export type {
-  Element as MyReactElement,
-  ElementNode as MyReactElementNode,
-  ArrayElementNode,
-  MaybeArrayElementNode,
-  ClassComponent,
-  FunctionComponent,
-  MixinClassComponent,
-  MixinFunctionComponent,
+  MyReactElement,
+  MyReactElementNode,
+  ArrayMyReactElementNode,
+  MaybeArrayMyReactElementNode,
+  MyReactClassComponent,
+  MyReactFunctionComponent,
+  MixinMyReactClassComponent,
+  MixinMyReactFunctionComponent,
 } from "./element";
 
-export type { MyReactInternalInstance, MyReactInternalType } from "./internal";
+export type { MyReactInternalInstance } from "./internal";
 
-export type { MyReactFiberNode } from "./fiber";
+export type { MyReactFiberNode, MyReactFiberNodeDev, UpdateQueue } from "./fiber";
 
 export type { MyReactComponent, MyReactComponentStaticType, MixinMyReactComponentType } from "./component";

@@ -1,12 +1,14 @@
-import { __myreact_shared__ } from "@my-react/react";
+import { __my_react_shared__, __my_react_internal__ } from "@my-react/react";
 
 import { enableControlComponent, enableEventSystem } from "@ReactDOM_shared";
 
 import { getNativeEventName } from "./getEventName";
 
-import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
+import type { MyReactElement, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
 
-const { safeCallWithFiber } = __myreact_shared__;
+const { safeCallWithFiber } = __my_react_shared__;
+
+const { globalDispatch } = __my_react_internal__;
 
 const controlElementTag: Record<string, boolean> = {
   input: true,
@@ -19,7 +21,8 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: Element, key: str
   const callback = typedElement.props[key] as (...args: any[]) => void;
   const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElement.type as string, typedElement.props);
   if (enableEventSystem.current) {
-    const eventState = fiber.__internal_node_event__;
+    const eventMap = globalDispatch.current.eventMap;
+    const eventState = eventMap[fiber.uid] || {};
     const eventName = `${nativeName}_${isCapture}`;
     if (eventState[eventName]) {
       eventState[eventName].cb?.push(callback);
@@ -40,6 +43,11 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: Element, key: str
       handler.cb = [callback];
       eventState[eventName] = handler;
       dom.addEventListener(nativeName, handler, isCapture);
+    }
+    if (__DEV__) {
+      const typedFiber = fiber as MyReactFiberNodeDev;
+
+      typedFiber._debugEventMap = eventState;
     }
   } else {
     dom.addEventListener(nativeName, callback, isCapture);

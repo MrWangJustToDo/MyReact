@@ -1,4 +1,4 @@
-import { __myreact_internal__, __myreact_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { isServerRender, startRender } from "../shared";
 
@@ -7,11 +7,10 @@ import { PlainElement } from "./dom";
 
 import type { MyReactElement } from "@my-react/react";
 
-const { globalDispatch, rootFiber, rootContainer } = __myreact_internal__;
+const { globalDispatch } = __my_react_internal__;
 
-const { createFiberNode } = __myreact_shared__;
+const { createFiberNode } = __my_react_shared__;
 
-// TODO should create global scope for every render
 export const renderToString = (element: MyReactElement) => {
   globalDispatch.current = new ServerDispatch();
 
@@ -21,13 +20,11 @@ export const renderToString = (element: MyReactElement) => {
 
   const fiber = createFiberNode({ fiberIndex: 0, parent: null }, element);
 
-  fiber.dom = container as unknown as Element;
+  fiber.node = container;
 
-  fiber.__root__ = true;
+  globalDispatch.current.rootFiber = fiber;
 
-  rootFiber.current = fiber;
-
-  rootContainer.current = container;
+  globalDispatch.current.rootContainer = container;
 
   startRender(fiber, false);
 

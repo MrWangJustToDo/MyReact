@@ -17,11 +17,12 @@ export const updateFiberNode = (
   },
   nextElement: MyReactElementNode
 ) => {
-  fiber.installParent(parent);
-
   const prevElement = fiber.element;
 
+  // make sure invoke `installParent` after `installElement`
   fiber.installElement(nextElement);
+
+  fiber.installParent(parent);
 
   if (__DEV__) {
     fiber.checkElement();

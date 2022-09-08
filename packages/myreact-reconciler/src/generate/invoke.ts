@@ -137,7 +137,7 @@ const nextWorkLazy = (fiber: MyReactFiberNode) => {
     }
   }
 
-  const children = globalDispatch.current.resolveSuspense(fiber);
+  const children = globalDispatch.current.resolveSuspenseElement(fiber);
 
   return nextWorkCommon(fiber, children);
 };
@@ -230,7 +230,7 @@ const nextWorkObject = (fiber: MyReactFiberNode) => {
 export const nextWorkSync = (fiber: MyReactFiberNode) => {
   if (!fiber.mount) return [];
 
-  if (!(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [];
+  if (!(fiber.mode & (UPDATE_TYPE.__run__ | UPDATE_TYPE.__trigger__))) return [];
 
   currentRunningFiber.current = fiber;
 
@@ -248,7 +248,7 @@ export const nextWorkSync = (fiber: MyReactFiberNode) => {
 export const nextWorkAsync = (fiber: MyReactFiberNode, topLevelFiber: MyReactFiberNode | null) => {
   if (!fiber.mount) return null;
 
-  if (fiber.mode & UPDATE_TYPE.__update__ || fiber.mode & UPDATE_TYPE.__trigger__) {
+  if (fiber.mode & UPDATE_TYPE.__run__ || fiber.mode & UPDATE_TYPE.__trigger__) {
     currentRunningFiber.current = fiber;
 
     if (fiber.type & NODE_TYPE.__isDynamicNode__) nextWorkComponent(fiber);

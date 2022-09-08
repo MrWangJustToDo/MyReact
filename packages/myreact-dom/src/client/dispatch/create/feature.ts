@@ -40,7 +40,9 @@ export const create = (
         }
       }
     }
-    fiber.patch ^= PATCH_TYPE.__pendingCreate__;
+    if (fiber.patch & PATCH_TYPE.__pendingCreate__) {
+      fiber.patch ^= PATCH_TYPE.__pendingCreate__;
+    }
     return re;
   }
   return hydrate;

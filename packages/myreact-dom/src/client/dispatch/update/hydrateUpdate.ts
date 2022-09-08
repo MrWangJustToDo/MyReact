@@ -124,11 +124,13 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     debugWithDOM(fiber);
   }
 
-  fiber.patch ^= PATCH_TYPE.__pendingCreate__;
+  fiber.patch = PATCH_TYPE.__initial__;
 
-  fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
+  // fiber.patch ^= PATCH_TYPE.__pendingCreate__;
 
-  fiber.patch ^= PATCH_TYPE.__pendingAppend__;
+  // fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
 
-  fiber.patch ^= PATCH_TYPE.__pendingPosition__;
+  // fiber.patch ^= PATCH_TYPE.__pendingAppend__;
+
+  // fiber.patch ^= PATCH_TYPE.__pendingPosition__;
 };

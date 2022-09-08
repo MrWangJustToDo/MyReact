@@ -44,6 +44,7 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: Element, key: str
       eventState[eventName] = handler;
       dom.addEventListener(nativeName, handler, isCapture);
     }
+    eventMap[fiber.uid] = eventState;
     if (__DEV__) {
       const typedFiber = fiber as MyReactFiberNodeDev;
 

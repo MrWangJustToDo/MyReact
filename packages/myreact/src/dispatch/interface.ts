@@ -5,7 +5,7 @@ import type { LinkTreeList } from "../share";
 export interface FiberDispatch {
   rootFiber: MyReactFiberNode | null;
 
-  rootContainer: Record<string, unknown>;
+  rootContainer: { [p: string]: any };
 
   isAppMounted: boolean;
 
@@ -27,7 +27,9 @@ export interface FiberDispatch {
 
   resolveLazy(): boolean;
 
-  resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode;
+  resolveSuspenseMap(_fiber: MyReactFiberNode): void;
+
+  resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode;
 
   resolveContextMap(_fiber: MyReactFiberNode): void;
 
@@ -69,6 +71,8 @@ export interface FiberDispatch {
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void;
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void;
+
+  removeFiber(_fiber: MyReactFiberNode): void;
 
   updateAllSync(): void;
 

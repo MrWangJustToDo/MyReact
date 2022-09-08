@@ -1,12 +1,19 @@
+import { __my_react_internal__ } from "@my-react/react";
+
 import { isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@ReactDOM_shared";
 
+import { TextElement } from "./text";
+
+import type { PlainElement } from "./plain";
 import type { MyReactFiberNode } from "@my-react/react";
 
+const { PATCH_TYPE, NODE_TYPE } = __my_react_internal__;
+
 export const update = (fiber: MyReactFiberNode) => {
-  if (fiber.__pendingUpdate__) {
-    if (fiber.__isPlainNode__) {
-      const dom = fiber.dom as HTMLElement;
-      const props = fiber.__props__ || {};
+  if (fiber.patch & PATCH_TYPE.__pendingUpdate__) {
+    if (fiber.type & NODE_TYPE.__isPlainNode__) {
+      const dom = fiber.node as PlainElement;
+      const props = fiber.pendingProps || {};
       Object.keys(props)
         .filter(isProperty)
         .forEach((key) => {
@@ -33,9 +40,11 @@ export const update = (fiber: MyReactFiberNode) => {
         });
       if (props["dangerouslySetInnerHTML"]) {
         const typedProps = props["dangerouslySetInnerHTML"] as Record<string, unknown>;
-        dom.append(typedProps.__html as string);
+        dom.append(new TextElement(typedProps.__html as string));
       }
     }
-    fiber.__pendingUpdate__ = false;
+    if (fiber.patch & PATCH_TYPE.__pendingUpdate__) {
+      fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
+    }
   }
 };

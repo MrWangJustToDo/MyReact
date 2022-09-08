@@ -79,7 +79,7 @@ export class MyReactFiberNode {
 
   patch: PATCH_TYPE = PATCH_TYPE.__initial__;
 
-  mode: UPDATE_TYPE = UPDATE_TYPE.__initial__;
+  mode: UPDATE_TYPE = UPDATE_TYPE.__run__;
 
   updateQueue: UpdateQueue[] = [];
 
@@ -111,7 +111,7 @@ export class MyReactFiberNode {
   initialParent() {
     if (this.parent) {
       this.parent._addChild(this);
-      globalDispatch.current.resolveSuspense(this);
+      globalDispatch.current.resolveSuspenseMap(this);
       globalDispatch.current.resolveContextMap(this);
     }
   }
@@ -359,6 +359,8 @@ export class MyReactFiberNodeDev extends MyReactFiberNode {
   _debugReturnNode: MyReactFiberNode[] = [];
 
   _debugGlobalDispatch: FiberDispatch | null = null;
+
+  _debugSuspense: MyReactElementNode;
 
   _debugEventMap: Record<string, ((...args: any[]) => void) & { cb?: any[] }> = {};
 }

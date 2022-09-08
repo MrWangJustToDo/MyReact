@@ -48,4 +48,4 @@ rollupWatch("myreact");
 
 rollupWatch("myreact-reconciler");
 
-// rollupWatch("myreact-dom");
+rollupWatch("myreact-dom");

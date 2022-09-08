@@ -1,10 +1,10 @@
-import { __myreact_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 
 import { pendingModifyFiberArray, pendingModifyTopLevelFiber } from "@ReactDOM_shared";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
-const { globalDispatch, isAppCrash } = __myreact_internal__;
+const { globalDispatch } = __my_react_internal__;
 
 let currentYield: MyReactFiberNode | null = null;
 
@@ -18,7 +18,7 @@ export const updateFiberController = {
     }
   },
   getNext: () => {
-    if (isAppCrash.current) return null;
+    if (globalDispatch.current.isAppCrash) return null;
     const yieldFiber = currentYield;
     currentYield = null;
     if (yieldFiber) return yieldFiber;
@@ -36,7 +36,7 @@ export const updateFiberController = {
     globalDispatch.current.generateUpdateList(fiber);
   },
   hasNext: () => {
-    if (isAppCrash.current) return false;
+    if (globalDispatch.current.isAppCrash) return false;
     return currentYield !== null || pendingModifyFiberArray.current.length > 0;
   },
   doesPause: () => currentYield !== null,

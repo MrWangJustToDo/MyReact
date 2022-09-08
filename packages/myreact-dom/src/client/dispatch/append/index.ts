@@ -14,6 +14,8 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiber
     if (!Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, parentDom.tagName.toLowerCase())) {
       parentDom.appendChild(currentDom);
     }
-    fiber.patch ^= PATCH_TYPE.__pendingAppend__;
+    if (fiber.patch & PATCH_TYPE.__pendingAppend__) {
+      fiber.patch ^= PATCH_TYPE.__pendingAppend__;
+    }
   }
 };

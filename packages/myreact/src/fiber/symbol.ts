@@ -38,7 +38,7 @@ export enum PATCH_TYPE {
   __pendingContext__ = 1 << 4,
   __pendingEffect__ = 1 << 5,
   __pendingLayoutEffect__ = 1 << 6,
-  __pendingUnmount__ = 1 << 5,
+  __pendingUnmount__ = 1 << 7,
 }
 
 export enum UPDATE_TYPE {

@@ -1,14 +1,14 @@
-import { __myreact_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 
 import type { MyReactFiberNode, MyReactInternalInstance } from "@my-react/react";
 
-const { MyReactComponent } = __myreact_internal__;
+const { MyReactComponent } = __my_react_internal__;
 
 const findDOMFromFiber = (fiber: MyReactFiberNode) => {
   const currentArray = [fiber];
   while (currentArray.length) {
     const next = currentArray.shift();
-    if (next?.dom) return next.dom;
+    if (next?.node) return next.node;
     currentArray.push(...(next?.children || []));
   }
   return null;
@@ -16,7 +16,7 @@ const findDOMFromFiber = (fiber: MyReactFiberNode) => {
 
 const findDOMFromComponentFiber = (fiber: MyReactFiberNode) => {
   if (fiber) {
-    if (fiber.dom) return fiber.dom;
+    if (fiber.node) return fiber.node;
     for (let i = 0; i < fiber.children.length; i++) {
       const dom = findDOMFromFiber(fiber.children[i]);
       if (dom) return dom;
@@ -26,8 +26,8 @@ const findDOMFromComponentFiber = (fiber: MyReactFiberNode) => {
 };
 
 export const findDOMNode = (instance: MyReactInternalInstance) => {
-  if (instance instanceof MyReactComponent && instance.__fiber__) {
-    return findDOMFromComponentFiber(instance.__fiber__);
+  if (instance instanceof MyReactComponent && instance._ownerFiber) {
+    return findDOMFromComponentFiber(instance._ownerFiber);
   } else {
     return null;
   }

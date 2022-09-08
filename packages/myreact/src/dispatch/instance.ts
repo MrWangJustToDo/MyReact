@@ -30,13 +30,16 @@ export class EmptyDispatch implements FiberDispatch {
   resolveLazy(): boolean {
     return false;
   }
-  resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode {
+  resolveSuspenseMap(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode {
     return null;
   }
   resolveContextMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext>) {
+  resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null) {
     return null;
   }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {
@@ -88,6 +91,9 @@ export class EmptyDispatch implements FiberDispatch {
     void 0;
   }
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
+    void 0;
+  }
+  removeFiber(_fiber: MyReactFiberNode): void {
     void 0;
   }
   updateAllSync(): void {

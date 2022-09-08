@@ -16,6 +16,8 @@ export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFib
     } else {
       append(fiber, parentFiberWithDom.node as Element);
     }
-    fiber.patch ^= PATCH_TYPE.__pendingPosition__;
+    if (fiber.patch & PATCH_TYPE.__pendingPosition__) {
+      fiber.patch ^= PATCH_TYPE.__pendingPosition__;
+    }
   }
 };

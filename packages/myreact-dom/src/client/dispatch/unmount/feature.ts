@@ -6,12 +6,12 @@ import { clearFiberDom } from "./clearFiberDom";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
+const { globalDispatch } = __my_react_internal__;
+
 export const unmountFiber = (fiber: MyReactFiberNode) => {
   __my_react_shared__.unmountFiberNode(fiber);
   clearFiberDom(fiber);
 };
-
-const { globalDispatch } = __my_react_internal__;
 
 export const unmount = (fiber: MyReactFiberNode) => {
   const unmountMap = globalDispatch.current.unmountMap;

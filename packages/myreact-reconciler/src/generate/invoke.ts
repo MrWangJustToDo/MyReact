@@ -27,8 +27,6 @@ export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyRe
     const typedFiber = fiber as MyReactFiberNodeDev;
 
     typedFiber._debugDynamicChildren = children;
-
-    typedFiber._debugReturnNode = childrenFiber;
   }
 
   return childrenFiber;
@@ -170,13 +168,7 @@ const nextWorkNormal = (fiber: MyReactFiberNode) => {
 
     const { children } = props;
 
-    const typedFiber = fiber as MyReactFiberNodeDev;
-
     const childrenFiber = transformChildrenFiber(fiber, children);
-
-    if (__DEV__) {
-      typedFiber._debugReturnNode = childrenFiber;
-    }
 
     return childrenFiber;
   } else {

@@ -88,7 +88,7 @@ export class MyReactFiberNode {
   memoizedProps: MyReactElement["props"] | null = null;
 
   constructor(fiberIndex: number, parent: MyReactFiberNode | null, element: MyReactElementNode) {
-    this.uid = fiberId++ + "";
+    this.uid = "my_react_" + fiberId++;
     this.fiberIndex = fiberIndex;
     this.parent = parent;
     this.element = element;
@@ -347,16 +347,15 @@ export class MyReactFiberNode {
 export class MyReactFiberNodeDev extends MyReactFiberNode {
   _debugRenderState = {
     renderCount: 0,
-    mountTimeStep: 0,
-    prevUpdateTimeStep: 0,
-    currentUpdateTimeStep: 0,
+    mountTime: 0,
+    prevUpdateTime: 0,
+    updateTimeStep: 0,
+    currentUpdateTime: 0,
   };
 
   _debugContextMap: Record<string, MyReactFiberNode> = {};
 
   _debugDynamicChildren: MaybeArrayMyReactElementNode;
-
-  _debugReturnNode: MyReactFiberNode[] = [];
 
   _debugGlobalDispatch: FiberDispatch | null = null;
 

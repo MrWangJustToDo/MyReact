@@ -10,7 +10,7 @@ export const getIsSVGFromMap = (_fiber: MyReactFiberNode, map: Record<string, bo
     }
   }
 
-  map[_fiber.uid] = _isSVG;
+  map[_fiber.uid] = Boolean(_isSVG);
 
   return _isSVG;
 };

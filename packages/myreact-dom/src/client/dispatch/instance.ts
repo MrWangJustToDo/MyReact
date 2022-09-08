@@ -124,6 +124,7 @@ export class ClientDispatch implements FiberDispatch {
           _fiber.patch & PATCH_TYPE.__pendingCreate__ ||
           _fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
           _fiber.patch & PATCH_TYPE.__pendingAppend__ ||
+          _fiber.patch & PATCH_TYPE.__pendingContext__ ||
           _fiber.patch & PATCH_TYPE.__pendingPosition__
         ) {
           pendingUpdateFiberList.current.append(_fiber, _fiber.fiberIndex);

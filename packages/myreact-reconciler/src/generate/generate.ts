@@ -25,11 +25,14 @@ const _updateFiberNodeWithDev = (...props: Parameters<typeof _updateFiberNode>) 
     currentUpdateTimeStep: 0,
   };
 
+  const timeNow = Date.now();
+
   typedFiber._debugRenderState = {
     renderCount: prevState.renderCount + 1,
-    mountTimeStep: prevState.mountTimeStep,
-    prevUpdateTimeStep: prevState.currentUpdateTimeStep,
-    currentUpdateTimeStep: Date.now(),
+    mountTime: prevState.mountTime,
+    prevUpdateTime: prevState.currentUpdateTime,
+    updateTimeStep: timeNow - prevState.currentUpdateTime,
+    currentUpdateTime: timeNow,
   };
 
   const newFiber = _updateFiberNode({ fiber, parent, prevFiber }, newElement);
@@ -47,9 +50,10 @@ const createFiberNode = (...props: Parameters<typeof _createFiberNode>) => {
 
     typedFiber._debugRenderState = {
       renderCount: 0,
-      mountTimeStep: timeNow,
-      prevUpdateTimeStep: timeNow,
-      currentUpdateTimeStep: timeNow,
+      mountTime: timeNow,
+      prevUpdateTime: timeNow,
+      updateTimeStep: 0,
+      currentUpdateTime: timeNow,
     };
 
     typedFiber._debugGlobalDispatch = globalDispatch.current;

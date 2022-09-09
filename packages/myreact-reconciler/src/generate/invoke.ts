@@ -1,4 +1,6 @@
-import { createElement, isValidElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { createElement, isValidElement, __my_react_internal__ } from "@my-react/react";
+
+import { classComponentMount, classComponentUpdate } from "../component";
 
 import { transformChildrenFiber } from "./generate";
 
@@ -18,8 +20,6 @@ import type {
 const { currentHookDeepIndex, currentFunctionFiber, currentRunningFiber, globalDispatch, NODE_TYPE, UPDATE_TYPE } =
   __my_react_internal__;
 
-const { getContextValue, classComponentMount, classComponentUpdate } = __my_react_shared__;
-
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   const childrenFiber = transformChildrenFiber(fiber, children);
 
@@ -37,12 +37,11 @@ const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
     const children = classComponentMount(fiber);
     return nextWorkCommon(fiber, children);
   } else {
-    const children = classComponentUpdate(fiber);
-    // normally it is memo update
-    if (Array.isArray(children) && children.length === 0) {
-      return children;
-    } else {
+    const { updated, children } = classComponentUpdate(fiber);
+    if (updated) {
       return nextWorkCommon(fiber, children);
+    } else {
+      return [];
     }
   }
 };
@@ -190,13 +189,13 @@ const nextWorkConsumer = (fiber: MyReactFiberNode) => {
   if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.mount) {
     const ProviderFiber = globalDispatch.current.resolveContextFiber(fiber, Context);
 
-    const context = getContextValue(ProviderFiber, Context);
+    const context = globalDispatch.current.resolveContextValue(ProviderFiber, Context);
 
     fiber.instance.context = context;
 
     fiber.instance.setContext(ProviderFiber);
   } else {
-    const context = getContextValue(fiber.instance._contextFiber, Context);
+    const context = globalDispatch.current.resolveContextValue(fiber.instance._contextFiber, Context);
 
     fiber.instance.context = context;
   }

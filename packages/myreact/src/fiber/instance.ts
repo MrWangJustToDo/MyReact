@@ -1,4 +1,5 @@
 import { getTypeFromElement, isValidElement } from "../element";
+import { HOOK_TYPE } from "../hook";
 import { globalDispatch } from "../share";
 
 import { NODE_TYPE, PATCH_TYPE, UPDATE_TYPE } from "./symbol";
@@ -6,7 +7,7 @@ import { NODE_TYPE, PATCH_TYPE, UPDATE_TYPE } from "./symbol";
 import type { MyReactComponent } from "../component";
 import type { FiberDispatch } from "../dispatch";
 import type { memo, forwardRef, MyReactElement, MyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
-import type { Action, HOOK_TYPE, MyReactHookNode } from "../hook";
+import type { Action, MyReactHookNode } from "../hook";
 import type { MyReactInternalInstance } from "../internal";
 
 type RenderNode = { [p: string]: any };
@@ -96,7 +97,7 @@ export class MyReactFiberNode {
     this.initialPops();
   }
 
-  _addChild(child: MyReactFiberNode) {
+  addChild(child: MyReactFiberNode) {
     this.children.push(child);
     if (this.childListFoot) {
       this.childListFoot.sibling = child;
@@ -110,7 +111,7 @@ export class MyReactFiberNode {
 
   initialParent() {
     if (this.parent) {
-      this.parent._addChild(this);
+      this.parent.addChild(this);
       globalDispatch.current.resolveSuspenseMap(this);
       globalDispatch.current.resolveContextMap(this);
     }
@@ -272,16 +273,16 @@ export class MyReactFiberNode {
     if (__DEV__) {
       const hookNode = this.hookListFoot as MyReactHookNode;
       if (
-        hookNode.hookType === "useMemo" ||
-        hookNode.hookType === "useEffect" ||
-        hookNode.hookType === "useCallback" ||
-        hookNode.hookType === "useLayoutEffect"
+        hookNode.hookType === HOOK_TYPE.useMemo ||
+        hookNode.hookType === HOOK_TYPE.useEffect ||
+        hookNode.hookType === HOOK_TYPE.useCallback ||
+        hookNode.hookType === HOOK_TYPE.useLayoutEffect
       ) {
         if (typeof hookNode.value !== "function") {
           throw new Error(`${hookNode.hookType} initial error`);
         }
       }
-      if (hookNode.hookType === "useContext") {
+      if (hookNode.hookType === HOOK_TYPE.useContext) {
         if (typeof hookNode.value !== "object" || hookNode.value === null) {
           throw new Error(`${hookNode.hookType} initial error`);
         }
@@ -319,7 +320,7 @@ export class MyReactFiberNode {
   }
 
   applyElement() {
-    this.memoizedProps = this.pendingProps;
+    this.memoizedProps = Object.assign({}, this.pendingProps);
   }
 
   installInstance(instance: MyReactInternalInstance) {

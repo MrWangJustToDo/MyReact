@@ -1,9 +1,21 @@
 import { __my_react_shared__, __my_react_internal__ } from "@my-react/react";
-import { generateContextMap, getContextMapFromMap } from "@my-react/react-reconciler";
+import {
+  defaultGenerateContextMap,
+  defaultGetContextMapFromMap,
+  defaultGetContextValue,
+  processHookNode,
+} from "@my-react/react-reconciler";
 
 import { append, create, update } from "./dom";
 
-import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext } from "@my-react/react";
+import type {
+  FiberDispatch,
+  MyReactFiberNode,
+  MyReactElementNode,
+  createContext,
+  CreateHookParams,
+  MyReactHookNode,
+} from "@my-react/react";
 import type { LinkTreeList } from "@ReactDOM_shared";
 
 const { safeCallWithFiber } = __my_react_shared__;
@@ -39,31 +51,37 @@ export class ServerDispatch implements FiberDispatch {
   resolveLazy(): boolean {
     return false;
   }
+  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
+    return processHookNode(_fiber, _hookParams);
+  }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
-    // throw new Error("Method not implemented.");
     void 0;
   }
   resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    // throw new Error("Method not implemented.");
     if (__DEV__) {
       console.warn("not support suspense on the server side");
     }
     return null;
   }
   resolveContextMap(_fiber: MyReactFiberNode): void {
-    // throw new Error("Method not implemented.");
-    generateContextMap(_fiber, this.contextMap);
+    defaultGenerateContextMap(_fiber, this.contextMap);
   }
   resolveContextFiber(
     _fiber: MyReactFiberNode,
     _contextObject: ReturnType<typeof createContext> | null
   ): MyReactFiberNode | null {
     if (_contextObject) {
-      const contextMap = getContextMapFromMap(_fiber.parent, this.contextMap);
+      const contextMap = defaultGetContextMapFromMap(_fiber.parent, this.contextMap);
       return contextMap[_contextObject.id] || null;
     } else {
       return null;
     }
+  }
+  resolveContextValue(
+    _fiber: MyReactFiberNode | null,
+    _contextObject: ReturnType<typeof createContext> | null
+  ): Record<string, unknown> | null {
+    return defaultGetContextValue(_fiber, _contextObject);
   }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {
     void 0;

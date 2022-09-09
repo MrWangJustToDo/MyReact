@@ -18,7 +18,8 @@ const controlElementTag: Record<string, boolean> = {
 
 export const addEventListener = (fiber: MyReactFiberNode, dom: Element, key: string) => {
   const typedElement = fiber.element as MyReactElement;
-  const callback = typedElement.props[key] as (...args: any[]) => void;
+  const pendingProps = fiber.pendingProps || {};
+  const callback = pendingProps[key] as (...args: any[]) => void;
   const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElement.type as string, typedElement.props);
   if (enableEventSystem.current) {
     const eventMap = globalDispatch.current.eventMap;

@@ -1,12 +1,18 @@
-import { getContextValue, NODE_TYPE, UPDATE_TYPE } from "../fiber";
-import { Effect_TYPE } from "../internal";
-import { globalDispatch } from "../share";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { DEFAULT_RESULT } from "./instance";
+import type {
+  MyReactElement,
+  MyReactFiberNode,
+  memo,
+  MixinMyReactComponentType,
+  MyReactClassComponent,
+  MyReactComponentStaticType,
+  MyReactFiberNodeDev,
+} from "@my-react/react";
 
-import type { memo, MyReactClassComponent, MyReactElement } from "../element";
-import type { MyReactFiberNode, MyReactFiberNodeDev } from "../fiber";
-import type { MixinMyReactComponentType, MyReactComponentStaticType } from "./instance";
+const { NODE_TYPE, globalDispatch, Effect_TYPE, UPDATE_TYPE } = __my_react_internal__;
+
+const { DEFAULT_RESULT } = __my_react_shared__;
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
@@ -43,7 +49,7 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   const ProviderFiber = globalDispatch.current.resolveContextFiber(fiber, typedComponent.contextType);
 
-  const context = getContextValue(ProviderFiber, typedComponent.contextType);
+  const context = globalDispatch.current.resolveContextValue(ProviderFiber, typedComponent.contextType);
 
   const props = Object.assign({}, typedElement.props);
 
@@ -110,13 +116,13 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   if (!typedInstance?._contextFiber || !typedInstance._contextFiber.mount) {
     const ProviderFiber = globalDispatch.current.resolveContextFiber(fiber, typedComponent.contextType);
 
-    const context = getContextValue(ProviderFiber, typedComponent.contextType);
+    const context = globalDispatch.current.resolveContextValue(ProviderFiber, typedComponent.contextType);
 
     typedInstance?.setContext(ProviderFiber);
 
     return context;
   } else {
-    const context = getContextValue(typedInstance._contextFiber, typedComponent.contextType);
+    const context = globalDispatch.current.resolveContextValue(typedInstance._contextFiber, typedComponent.contextType);
 
     return context;
   }
@@ -207,8 +213,8 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
       baseState,
       callback,
     });
-    return children;
+    return { updated: true, children };
   } else {
-    return [];
+    return { updated: false };
   }
 };

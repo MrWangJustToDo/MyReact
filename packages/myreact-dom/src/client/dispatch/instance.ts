@@ -1,8 +1,10 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { cloneElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import {
-  generateContextMap,
-  getContextMapFromMap,
+  defaultGenerateContextMap,
+  defaultGetContextMapFromMap,
+  defaultGetContextValue,
   processComponentUpdateQueue,
+  processHookNode,
   processHookUpdateQueue,
 } from "@my-react/react-reconciler";
 
@@ -32,6 +34,8 @@ import type {
   MyReactElementNode,
   MyReactFiberNodeDev,
   createContext,
+  CreateHookParams,
+  MyReactHookNode,
 } from "@my-react/react";
 
 const { safeCallWithFiber } = __my_react_shared__;
@@ -67,6 +71,9 @@ export class ClientDispatch implements FiberDispatch {
   resolveLazy(): boolean {
     return true;
   }
+  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
+    return processHookNode(_fiber, _hookParams);
+  }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
     const parent = _fiber.parent;
     const element = _fiber.element;
@@ -86,21 +93,27 @@ export class ClientDispatch implements FiberDispatch {
     }
   }
   resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    return this.suspenseMap[_fiber.uid];
+    return cloneElement(this.suspenseMap[_fiber.uid]);
   }
   resolveContextMap(_fiber: MyReactFiberNode): void {
-    generateContextMap(_fiber, this.contextMap);
+    defaultGenerateContextMap(_fiber, this.contextMap);
   }
   resolveContextFiber(
     _fiber: MyReactFiberNode,
     _contextObject: ReturnType<typeof createContext> | null
   ): MyReactFiberNode | null {
     if (_contextObject) {
-      const contextMap = getContextMapFromMap(_fiber.parent, this.contextMap);
+      const contextMap = defaultGetContextMapFromMap(_fiber.parent, this.contextMap);
       return contextMap[_contextObject.id] || null;
     } else {
       return null;
     }
+  }
+  resolveContextValue(
+    _fiber: MyReactFiberNode | null,
+    _contextObject: ReturnType<typeof createContext> | null
+  ): Record<string, unknown> | null {
+    return defaultGetContextValue(_fiber, _contextObject);
   }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {
     processComponentUpdateQueue(_fiber);

@@ -55,7 +55,7 @@ const getElementName = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)}${getTrackDevLog(fiber)}`;
+const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)}${getTrackDevLog(fiber)}`;
 
 export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   if (fiber) {
@@ -71,10 +71,7 @@ export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   return "";
 };
 
-export const getHookTree = (
-  hookType: MyReactFiberNode["hookTypeArray"],
-  newType: MyReactFiberNode["hookTypeArray"]
-) => {
+const getHookTree = (hookType: MyReactFiberNode["hookTypeArray"], newType: MyReactFiberNode["hookTypeArray"]) => {
   let re = "\n" + "".padEnd(6) + "Prev render:".padEnd(20) + "Next render:".padEnd(10) + "\n";
   for (const key in hookType) {
     const c = hookType[key];
@@ -85,6 +82,9 @@ export const getHookTree = (
 
   return re;
 };
+
+export const logHook = (oldType: MyReactFiberNode["hookTypeArray"], newType: MyReactFiberNode["hookTypeArray"]) =>
+  getHookTree(oldType, newType);
 
 const cache: Record<string, boolean> = {};
 

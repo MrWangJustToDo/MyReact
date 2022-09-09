@@ -125,7 +125,9 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     }
   }
 
-  debugWithDOM(fiber);
+  if (__DEV__) {
+    debugWithDOM(fiber);
+  }
 
   const isAppMounted = globalDispatch.current.isAppMounted;
 

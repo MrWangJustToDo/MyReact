@@ -1,5 +1,6 @@
 import type { createContext, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "../fiber";
+import type { CreateHookParams, MyReactHookNode } from "../hook";
 import type { LinkTreeList } from "../share";
 
 export interface FiberDispatch {
@@ -27,6 +28,8 @@ export interface FiberDispatch {
 
   resolveLazy(): boolean;
 
+  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
+
   resolveSuspenseMap(_fiber: MyReactFiberNode): void;
 
   resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode;
@@ -37,6 +40,11 @@ export interface FiberDispatch {
     _fiber: MyReactFiberNode,
     _contextObject: ReturnType<typeof createContext> | null
   ): null | MyReactFiberNode;
+
+  resolveContextValue(
+    _fiber: MyReactFiberNode | null,
+    _contextObject: ReturnType<typeof createContext> | null
+  ): Record<string, unknown> | null;
 
   resolveComponentQueue(_fiber: MyReactFiberNode): void;
 

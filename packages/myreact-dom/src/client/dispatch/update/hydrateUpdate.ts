@@ -121,7 +121,9 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     domStyleHydrate(fiber, dom);
     domEventHydrate(fiber, dom);
 
-    debugWithDOM(fiber);
+    if (__DEV__) {
+      debugWithDOM(fiber);
+    }
   }
 
   fiber.patch = PATCH_TYPE.__initial__;

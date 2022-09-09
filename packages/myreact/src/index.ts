@@ -1,5 +1,5 @@
 import { count, forEach, map, only, toArray } from "./children";
-import { MyReactComponent, MyReactPureComponent, classComponentMount, classComponentUpdate } from "./component";
+import { MyReactComponent, MyReactPureComponent, DEFAULT_RESULT } from "./component";
 import {
   My_React_Portal as Portal,
   My_React_Element as Element,
@@ -22,12 +22,13 @@ import {
   unmountFiberNode,
   createFiberNode,
   updateFiberNode,
-  getContextValue,
   NODE_TYPE,
   PATCH_TYPE,
   UPDATE_TYPE,
 } from "./fiber";
 import {
+  HOOK_TYPE,
+  createHookNode,
   useRef,
   useMemo,
   useState,
@@ -43,6 +44,7 @@ import { MyReactInternalInstance, Effect_TYPE } from "./internal";
 import {
   createRef,
   log,
+  logHook,
   LinkTreeList,
   globalDispatch,
   currentRunningFiber,
@@ -63,14 +65,14 @@ const version = __VERSION__;
 
 const __my_react_shared__ = {
   log,
+  logHook,
   safeCall,
   LinkTreeList,
+  DEFAULT_RESULT,
   unmountFiberNode,
   createFiberNode,
   updateFiberNode,
-  classComponentMount,
-  classComponentUpdate,
-  getContextValue,
+  createHookNode,
   safeCallWithFiber,
   enableAsyncUpdate,
   enableKeyDiff,
@@ -78,6 +80,7 @@ const __my_react_shared__ = {
 
 const __my_react_internal__ = {
   NODE_TYPE,
+  HOOK_TYPE,
   PATCH_TYPE,
   UPDATE_TYPE,
   Effect_TYPE,
@@ -177,6 +180,8 @@ export {
 };
 
 export type { FiberDispatch } from "./dispatch";
+
+export type { CreateHookParams, MyReactHookNode } from "./hook";
 
 export type {
   MyReactElement,

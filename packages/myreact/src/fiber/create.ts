@@ -1,8 +1,9 @@
 import { globalDispatch } from "../share";
 
 import { MyReactFiberNode } from "./instance";
+import { NODE_TYPE } from "./symbol";
 
-import type { Element, ElementNode } from "../element";
+import type { MyReactElement, MyReactElementNode } from "../element";
 
 export const createFiberNode = (
   {
@@ -14,11 +15,13 @@ export const createFiberNode = (
     parent: MyReactFiberNode | null;
     type?: "append" | "position";
   },
-  VDom: ElementNode
+  element: MyReactElementNode
 ) => {
-  const newFiberNode = new MyReactFiberNode(fiberIndex, parent, VDom);
+  const newFiberNode = new MyReactFiberNode(fiberIndex, parent, element);
 
-  newFiberNode.checkVDom();
+  if (__DEV__) {
+    newFiberNode.checkElement();
+  }
 
   newFiberNode.initialType();
 
@@ -34,8 +37,8 @@ export const createFiberNode = (
     globalDispatch.current.pendingPosition(newFiberNode);
   }
 
-  if (newFiberNode.__isPlainNode__ || newFiberNode.__isClassComponent__) {
-    if ((VDom as Element).ref) {
+  if (newFiberNode.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
+    if ((element as MyReactElement).ref) {
       globalDispatch.current.pendingLayoutEffect(newFiberNode, () => newFiberNode.applyRef());
     }
   }

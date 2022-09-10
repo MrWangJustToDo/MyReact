@@ -1,6 +1,7 @@
 export * from "./env";
 export * from "./tools";
 export * from "./debug";
+export * from "./isSVG";
 export * from "./portal";
 export * from "./render";
 export * from "./update";

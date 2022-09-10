@@ -1,21 +1,10 @@
-import { getHookTree } from "../share";
-
-import { effect } from "./effect";
 import { MyReactHookNode } from "./instance";
 
 import type { MyReactFiberNode } from "../fiber";
-import type { Reducer, Action, HOOK_TYPE } from "./instance";
+import type { Reducer, Action, CreateHookParams } from "./instance";
 
 const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;
-};
-
-type CreateHookParams = {
-  hookIndex: number;
-  hookType: HOOK_TYPE;
-  value: unknown;
-  reducer: Reducer | null;
-  deps: unknown[];
 };
 
 export const createHookNode = (
@@ -24,43 +13,44 @@ export const createHookNode = (
 ) => {
   const newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
 
-  newHookNode.setFiber(fiber);
+  newHookNode.setOwner(fiber);
 
   fiber.addHook(newHookNode);
 
-  fiber.checkHook(newHookNode);
-
-  newHookNode.initialResult();
+  if (__DEV__) {
+    fiber.checkHook();
+  }
 
   return newHookNode;
 };
 
-export const getHookNode = (
-  { hookIndex, hookType, value, reducer, deps }: CreateHookParams,
-  fiber: MyReactFiberNode | null
-) => {
-  if (!fiber) throw new Error("can not use hook out of component");
+// export const getHookNode = (
+//   { hookIndex, hookType, value, reducer, deps }: CreateHookParams,
+//   fiber: MyReactFiberNode | null
+// ) => {
+//   if (!fiber) throw new Error("can not use hook out of component");
 
-  let currentHook: null | MyReactHookNode = null;
+//   let currentHook: null | MyReactHookNode = null;
 
-  if (fiber.hookList.length > hookIndex) {
-    currentHook = fiber.hookList[hookIndex];
+//   if (fiber.hookNodeArray.length > hookIndex) {
+//     currentHook = fiber.hookNodeArray[hookIndex];
 
-    if (currentHook.hookType !== hookType) {
-      const array = fiber.hookType.slice(0, hookIndex);
-      throw new Error(getHookTree([...array, currentHook.hookType], [...array, hookType]));
-    }
+//     if (currentHook.hookType !== hookType) {
+//       const array = fiber.hookTypeArray.slice(0, hookIndex);
+//       throw new Error(getHookTree([...array, currentHook.hookType], [...array, hookType]));
+//     }
 
-    currentHook.setFiber(fiber);
+//     currentHook.setOwner(fiber);
 
-    currentHook.updateResult(value, reducer || defaultReducer, deps);
-  } else if (!fiber.__isUpdateRender__) {
-    currentHook = createHookNode({ hookIndex, hookType, value, reducer, deps }, fiber);
-  } else {
-    throw new Error(getHookTree([...fiber.hookType], [...fiber.hookType, hookType]));
-  }
+//     currentHook.updateResult(value, reducer || defaultReducer, deps);
+//   } else if (!(fiber.mode & UPDATE_TYPE.__update__)) {
+//     // not a update so it is a initial fiber
+//     currentHook = createHookNode({ hookIndex, hookType, value, reducer, deps }, fiber);
+//   } else {
+//     throw new Error(getHookTree([...fiber.hookTypeArray], [...fiber.hookTypeArray, hookType]));
+//   }
 
-  effect(fiber, currentHook);
+//   effect(fiber, currentHook);
 
-  return currentHook;
-};
+//   return currentHook;
+// };

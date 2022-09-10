@@ -1,29 +1,23 @@
-import { __myreact_internal__, __myreact_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { startRender, unmountComponentAtNode } from "../../shared";
 import { ClientDispatch } from "../dispatch";
 
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
-const {
-  globalDispatch,
-  isAppCrash,
-  rootContainer,
-  rootFiber,
-  MyReactFiberNode: MyReactFiberNodeClass,
-} = __myreact_internal__;
+const { globalDispatch, MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
 
-const { createFiberNode } = __myreact_shared__;
+const { createFiberNode } = __my_react_shared__;
 
 export const render = (element: MyReactElement, container: Element & { __fiber__: MyReactFiberNode }) => {
   globalDispatch.current = new ClientDispatch();
 
-  isAppCrash.current = false;
+  globalDispatch.current.isAppCrash = false;
 
   const containerFiber = container.__fiber__;
   if (containerFiber instanceof MyReactFiberNodeClass) {
     if (containerFiber.checkIsSameType(element)) {
-      containerFiber.installVDom(element);
+      containerFiber.installElement(element);
       containerFiber.update();
       return;
     } else {
@@ -34,13 +28,11 @@ export const render = (element: MyReactElement, container: Element & { __fiber__
 
   const fiber = createFiberNode({ fiberIndex: 0, parent: null }, element);
 
-  fiber.dom = container;
+  fiber.node = container;
 
-  fiber.__root__ = true;
+  globalDispatch.current.rootFiber = fiber;
 
-  rootFiber.current = fiber;
-
-  rootContainer.current = container;
+  globalDispatch.current.rootContainer = container;
 
   container.setAttribute?.("render", "MyReact");
 

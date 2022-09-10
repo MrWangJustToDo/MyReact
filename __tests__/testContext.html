@@ -104,7 +104,7 @@
       const C = memo(() => {
         const value = useContext(Context);
         console.log("run Context");
-        return <p>context {value}</p>;
+        return [<p>context {value}</p>];
       });
 
       class Y extends Component {

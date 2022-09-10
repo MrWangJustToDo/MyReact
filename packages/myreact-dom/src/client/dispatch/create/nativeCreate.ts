@@ -1,16 +1,21 @@
+import { __my_react_internal__ } from "@my-react/react";
+
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
-export const nativeCreate = (fiber: MyReactFiberNode) => {
-  if (fiber.__isTextNode__) {
-    fiber.dom = document.createTextNode(fiber.element as string);
-  } else if (fiber.__isPlainNode__) {
+const { NODE_TYPE } = __my_react_internal__;
+
+export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
+  if (fiber.type & NODE_TYPE.__isTextNode__) {
+    fiber.node = document.createTextNode(fiber.element as string);
+  } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
     const typedElement = fiber.element as MyReactElement;
-    if (fiber.nameSpace) {
-      fiber.dom = document.createElementNS(fiber.nameSpace, typedElement.type as string);
+    if (isSVG) {
+      fiber.node = document.createElementNS("http://www.w3.org/2000/svg", typedElement.type as string);
     } else {
-      fiber.dom = document.createElement(typedElement.type as string);
+      fiber.node = document.createElement(typedElement.type as string);
     }
   } else {
-    fiber.dom = fiber.__props__.container as Element;
+    const typedElement = fiber.element as MyReactElement;
+    fiber.node = typedElement.props["container"] as Element;
   }
 };

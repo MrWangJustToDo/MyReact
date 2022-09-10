@@ -1,18 +1,24 @@
+import { __my_react_internal__ } from "@my-react/react";
+
 import { PlainElement } from "./plain";
 import { TextElement } from "./text";
 
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
+const { PATCH_TYPE, NODE_TYPE } = __my_react_internal__;
+
 export const create = (fiber: MyReactFiberNode) => {
-  if (fiber.__pendingCreate__) {
-    if (fiber.__isTextNode__) {
-      fiber.dom = new TextElement(fiber.element as string) as unknown as Element;
-    } else if (fiber.__isPlainNode__) {
+  if (fiber.patch & PATCH_TYPE.__pendingCreate__) {
+    if (fiber.type & NODE_TYPE.__isTextNode__) {
+      fiber.node = new TextElement(fiber.element as string) as unknown as Element;
+    } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
       const typedElement = fiber.element as MyReactElement;
-      fiber.dom = new PlainElement(typedElement.type as string) as unknown as Element;
+      fiber.node = new PlainElement(typedElement.type as string) as unknown as Element;
     } else {
       throw new Error("createPortal() can not call on the server");
     }
-    fiber.__pendingCreate__ = false;
+    if (fiber.patch & PATCH_TYPE.__pendingCreate__) {
+      fiber.patch ^= PATCH_TYPE.__pendingCreate__;
+    }
   }
 };

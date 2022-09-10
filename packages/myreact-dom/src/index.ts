@@ -1,10 +1,10 @@
-import { __myreact_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react";
 
 import { render, hydrate } from "./client";
 import { renderToString } from "./server";
 import { createPortal, findDOMNode, unmountComponentAtNode } from "./shared";
 
-const { safeCall } = __myreact_shared__;
+const { safeCall } = __my_react_shared__;
 
 const version = __VERSION__;
 

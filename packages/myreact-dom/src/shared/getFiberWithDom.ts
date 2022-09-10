@@ -5,7 +5,7 @@ export const getFiberWithDom = (
   transform: (f: MyReactFiberNode) => MyReactFiberNode | null
 ): MyReactFiberNode | null => {
   if (fiber) {
-    if (fiber.dom) return fiber;
+    if (fiber.node) return fiber;
     return getFiberWithDom(transform(fiber), transform);
   }
   return null;

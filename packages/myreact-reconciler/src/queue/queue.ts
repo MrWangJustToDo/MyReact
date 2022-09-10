@@ -1,32 +1,53 @@
-import type { MixinMyReactComponentType, MyReactFiberNode } from "@my-react/react";
+import type { MixinMyReactComponentType, MyReactFiberNode, UpdateQueue } from "@my-react/react";
 
 export const processComponentUpdateQueue = (fiber: MyReactFiberNode) => {
-  const allComponentUpdater = fiber.__compUpdateQueue__.slice(0);
-  fiber.__compUpdateQueue__ = [];
+  const allQueue = fiber.updateQueue.slice(0);
+  const lastQueue: UpdateQueue[] = [];
+  fiber.updateQueue = [];
   const typedInstance = fiber.instance as MixinMyReactComponentType;
   const baseState = Object.assign({}, typedInstance.state);
   const baseProps = Object.assign({}, typedInstance.props);
-  return allComponentUpdater.reduce<{
+  allQueue.reduce<{
     newState: Record<string, unknown>;
     isForce: boolean;
     callback: Array<() => void>;
   }>(
-    (p, c) => ({
-      newState: {
-        ...p.newState,
-        ...(typeof c.payLoad === "function" ? c.payLoad(baseState, baseProps) : c.payLoad),
-      },
-      isForce: p.isForce || c.isForce || false,
-      callback: c.callback ? p.callback.concat(c.callback) : p.callback,
-    }),
+    (p, c) => {
+      if (c.type === "component") {
+        const result = {
+          newState: {
+            ...p.newState,
+            ...(typeof c.payLoad === "function" ? c.payLoad(baseState, baseProps) : c.payLoad),
+          },
+          isForce: p.isForce || c.isForce || false,
+          callback: c.callback ? p.callback.concat(c.callback) : p.callback,
+        };
+        if (__DEV__ && c.trigger !== typedInstance) {
+          throw new Error("current update not valid, look like a bug for MyReact");
+        }
+        typedInstance.result = result;
+        return result;
+      } else {
+        lastQueue.push(c);
+        return p;
+      }
+    },
     { newState: { ...baseState }, isForce: false, callback: [] }
   );
+  fiber.updateQueue = [...lastQueue, ...fiber.updateQueue];
 };
 
 export const processHookUpdateQueue = (fiber: MyReactFiberNode) => {
-  const allHookUpdater = fiber.__hookUpdateQueue__.slice(0);
-  fiber.__hookUpdateQueue__ = [];
-  allHookUpdater.forEach(({ action, trigger }) => {
-    trigger.result = trigger.reducer(trigger.result, action);
+  const allQueue = fiber.updateQueue.slice(0);
+  const lastQueue: UpdateQueue[] = [];
+  fiber.updateQueue = [];
+  allQueue.forEach((updater) => {
+    if (updater.type === "hook") {
+      const { trigger, payLoad } = updater;
+      trigger.result = trigger.reducer(trigger.result, payLoad);
+    } else {
+      lastQueue.push(updater);
+    }
   });
+  fiber.updateQueue = [...lastQueue, ...fiber.updateQueue];
 };

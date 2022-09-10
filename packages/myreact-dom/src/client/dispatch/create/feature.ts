@@ -1,3 +1,5 @@
+import { __my_react_internal__ } from "@my-react/react";
+
 import { enableAllCheck, isHydrateRender } from "@ReactDOM_shared";
 
 import { hydrateCreate } from "./hydrateCreate";
@@ -7,23 +9,30 @@ import { validDomNesting } from "./validDomNesting";
 import type { HydrateDOM } from "./getHydrateDom";
 import type { MyReactFiberNode } from "@my-react/react";
 
-export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWithDom: MyReactFiberNode): boolean => {
-  if (fiber.__pendingCreate__) {
+const { PATCH_TYPE, NODE_TYPE } = __my_react_internal__;
+
+export const create = (
+  fiber: MyReactFiberNode,
+  hydrate: boolean,
+  parentFiberWithDom: MyReactFiberNode,
+  isSVG: boolean
+): boolean => {
+  if (fiber.patch & PATCH_TYPE.__pendingCreate__) {
     let re = false;
     validDomNesting(fiber);
     if (hydrate) {
       const result = hydrateCreate(fiber, parentFiberWithDom);
       if (!result) {
-        nativeCreate(fiber);
+        nativeCreate(fiber, isSVG);
       }
       re = result;
     } else {
-      nativeCreate(fiber);
+      nativeCreate(fiber, isSVG);
     }
     if (isHydrateRender.current) {
-      const typedDom = fiber.dom as HydrateDOM;
+      const typedDom = fiber.node as HydrateDOM;
       typedDom.__hydrate__ = true;
-      if (enableAllCheck.current && fiber.__isPlainNode__) {
+      if (enableAllCheck.current && fiber.type & NODE_TYPE.__isPlainNode__) {
         if (!re) {
           typedDom.setAttribute("debug_hydrate", "fail");
         } else {
@@ -31,7 +40,9 @@ export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWit
         }
       }
     }
-    fiber.__pendingCreate__ = false;
+    if (fiber.patch & PATCH_TYPE.__pendingCreate__) {
+      fiber.patch ^= PATCH_TYPE.__pendingCreate__;
+    }
     return re;
   }
   return hydrate;

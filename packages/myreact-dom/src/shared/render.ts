@@ -1,13 +1,13 @@
-import { __myreact_internal__, __myreact_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { mountLoopSync } from "@my-react/react-reconciler";
 
 import { reconcileMount } from "./reconcileMount";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
-const { globalLoop, isAppMounted } = __myreact_internal__;
+const { globalLoop, globalDispatch } = __my_react_internal__;
 
-const { safeCall } = __myreact_shared__;
+const { safeCall } = __my_react_shared__;
 
 export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
   globalLoop.current = true;
@@ -16,7 +16,7 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
 
   reconcileMount(fiber, hydrate);
 
-  isAppMounted.current = true;
+  globalDispatch.current.isAppMounted = true;
 
   globalLoop.current = false;
 };

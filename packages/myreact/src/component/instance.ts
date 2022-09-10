@@ -1,16 +1,22 @@
 import { MyReactInternalInstance } from "../internal";
 import { isNormalEquals } from "../share";
 
-import type { DynamicElementNode, createContext } from "../element";
+import type { MyReactElementNode, createContext } from "../element";
 import type { ComponentUpdateQueue } from "../fiber";
 
 interface MyReactComponentType<P, S, C> {
-  render(this: MyReactComponent): DynamicElementNode;
+  render(this: MyReactComponent): MyReactElementNode;
   componentDidMount?(this: MyReactComponent): void;
   shouldComponentUpdate?(this: MyReactComponent, nextProps: P, nextState: S, nextContext: C): boolean;
   componentDidUpdate?(this: MyReactComponent, prevProps: P, prevState: S, prevContext: C): void;
   componentWillUnmount?(): void;
 }
+
+export const DEFAULT_RESULT = {
+  newState: null,
+  isForce: false,
+  callback: [],
+};
 
 export type MyReactComponentStaticType<
   P extends Record<string, unknown> = any,
@@ -35,6 +41,9 @@ export class MyReactComponent<
   props: P | null = null;
   context: C | null = null;
 
+  // for queue update
+  result: { newState: unknown; isForce: boolean; callback: Array<() => void> } = DEFAULT_RESULT;
+
   constructor(props?: P, context?: C | null) {
     super();
     this.props = props || null;
@@ -51,30 +60,30 @@ export class MyReactComponent<
 
   setState = (payLoad: ComponentUpdateQueue["payLoad"], callback: ComponentUpdateQueue["callback"]) => {
     const updater: ComponentUpdateQueue = {
-      type: "state",
+      type: "component",
       payLoad,
       callback,
       trigger: this,
     };
 
-    this.__fiber__?.__compUpdateQueue__.push(updater);
+    this._ownerFiber?.updateQueue.push(updater);
 
     Promise.resolve().then(() => {
-      this.__fiber__?.update();
+      this._ownerFiber?.update();
     });
   };
 
   forceUpdate = () => {
     const updater: ComponentUpdateQueue = {
-      type: "state",
+      type: "component",
       isForce: true,
       trigger: this,
     };
 
-    this.__fiber__?.__compUpdateQueue__.push(updater);
+    this._ownerFiber?.updateQueue.push(updater);
 
     Promise.resolve().then(() => {
-      this.__fiber__?.update();
+      this._ownerFiber?.update();
     });
   };
 

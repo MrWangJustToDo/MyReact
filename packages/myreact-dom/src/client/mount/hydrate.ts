@@ -1,13 +1,13 @@
-import { __myreact_internal__, __myreact_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { isHydrateRender, startRender } from "../../shared";
 import { ClientDispatch } from "../dispatch";
 
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
-const { globalDispatch, rootContainer, rootFiber } = __myreact_internal__;
+const { globalDispatch } = __my_react_internal__;
 
-const { createFiberNode } = __myreact_shared__;
+const { createFiberNode } = __my_react_shared__;
 
 export const hydrate = (element: MyReactElement, container: Element & { __fiber__: MyReactFiberNode }) => {
   globalDispatch.current = new ClientDispatch();
@@ -16,13 +16,11 @@ export const hydrate = (element: MyReactElement, container: Element & { __fiber_
 
   const fiber = createFiberNode({ fiberIndex: 0, parent: null }, element);
 
-  fiber.dom = container;
+  fiber.node = container;
 
-  fiber.__root__ = true;
+  globalDispatch.current.rootFiber = fiber;
 
-  rootFiber.current = fiber;
-
-  rootContainer.current = container;
+  globalDispatch.current.rootContainer = container;
 
   container.setAttribute?.("hydrate", "MyReact");
 

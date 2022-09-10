@@ -1,11 +1,11 @@
-import { __myreact_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 import { updateLoopAsync, updateLoopSync } from "@my-react/react-reconciler";
 
 import { reconcileUpdate, shouldPauseAsyncUpdate } from "@ReactDOM_shared";
 
 import { updateFiberController } from "./tool";
 
-const { globalLoop } = __myreact_internal__;
+const { globalLoop } = __my_react_internal__;
 
 export const updateAllSync = () => {
   globalLoop.current = true;

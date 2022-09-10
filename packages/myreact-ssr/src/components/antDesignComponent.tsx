@@ -78,7 +78,7 @@ const AntDesignComponent = () => {
       <h2>Ant Design</h2>
       <Switch />
       <br />
-      {__SERVER__ ? "server" : <p>client</p>}
+      <div>{__SERVER__ ? "server" : <p>client</p>}</div>
       <p>test hydrate</p>
       <Slider />
       <br />

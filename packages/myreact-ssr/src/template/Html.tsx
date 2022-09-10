@@ -38,8 +38,9 @@ export const HTML = ({ lang, children, link = [], script = [], reduxInitialState
         {emotionChunks?.styles.map((style) => (
           <style data-server data-emotion={`${style.key} ${style.ids.join(" ")}`} key={style.key} dangerouslySetInnerHTML={{ __html: style.css }} />
         ))}
-        <script src="./myreact.esm.js" type="module"></script>
-        {/* <script src="./reactBundle.js"></script> */}
+        {/* <script src="./myreact.esm.js" type="module"></script> */}
+        <script src="./myreact.js"></script>
+        <script src="./myreact-dom.js"></script>
         <script
           id="__autoInject__"
           dangerouslySetInnerHTML={{

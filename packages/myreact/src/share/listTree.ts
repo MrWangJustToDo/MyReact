@@ -15,7 +15,6 @@ export class LinkTreeList<T> {
   scopeRoot = { index: -1, value: new ListTreeNode<any>(false) };
 
   scopeArray: Array<{ index: number; value: ListTreeNode<T> }> = [];
-  // listArray: ListTreeNode<T>[][] = [];
 
   scopeLength = 0;
 
@@ -44,12 +43,6 @@ export class LinkTreeList<T> {
     const listNode = new ListTreeNode(node);
     this.push(listNode);
     this.scopePush({ index, value: listNode });
-    // if (this.listArray[index]) {
-    //   const array = this.listArray[index];
-    //   array.push(listNode);
-    // } else {
-    //   this.listArray[index] = [listNode];
-    // }
   }
 
   unshift(node: ListTreeNode<T>) {
@@ -142,12 +135,6 @@ export class LinkTreeList<T> {
     if (this.scopeLength) {
       this.scopeRoot.value.children.forEach(reconcileScope);
     }
-    // for (let i = this.listArray.length - 1; i >= 0; i--) {
-    //   const array = this.listArray[i];
-    //   if (array) {
-    //     array.forEach((p) => action(p.value));
-    //   }
-    // }
   }
 
   has() {

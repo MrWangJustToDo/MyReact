@@ -1,21 +1,22 @@
+import { Effect_TYPE } from "../internal";
 import { globalDispatch } from "../share";
 
 import type { MyReactFiberNode } from "../fiber";
 import type { MyReactHookNode } from "./instance";
 
 export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
-  if (hookNode.effect && !hookNode.__pendingEffect__) {
-    hookNode.__pendingEffect__ = true;
+  if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
+    hookNode.mode |= Effect_TYPE.__pendingEffect__;
 
     if (hookNode.hookType === "useEffect") {
       globalDispatch.current.pendingEffect(fiber, () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (hookNode.__fiber__?.mount) hookNode.cancel = hookNode.value();
+        if (hookNode._ownerFiber?.mount) hookNode.cancel = hookNode.value();
 
         hookNode.effect = false;
 
-        hookNode.__pendingEffect__ = false;
+        hookNode.mode = Effect_TYPE.__initial__;
       });
     }
 
@@ -23,11 +24,11 @@ export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
       globalDispatch.current.pendingLayoutEffect(fiber, () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (hookNode.__fiber__?.mount) hookNode.cancel = hookNode.value();
+        if (hookNode._ownerFiber?.mount) hookNode.cancel = hookNode.value();
 
         hookNode.effect = false;
 
-        hookNode.__pendingEffect__ = false;
+        hookNode.mode = Effect_TYPE.__initial__;
       });
     }
 
@@ -37,7 +38,7 @@ export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
 
         hookNode.effect = false;
 
-        hookNode.__pendingEffect__ = false;
+        hookNode.mode = Effect_TYPE.__initial__;
       });
     }
   }

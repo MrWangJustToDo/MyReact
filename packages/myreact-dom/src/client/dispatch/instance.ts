@@ -1,7 +1,16 @@
-import { __myreact_shared__ } from "@my-react/react";
+import { cloneElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import {
+  defaultGenerateContextMap,
+  defaultGetContextMapFromMap,
+  defaultGetContextValue,
+  processComponentUpdateQueue,
+  processHookNode,
+  processHookUpdateQueue,
+} from "@my-react/react-reconciler";
 
 import {
   getFiberWithDom,
+  getIsSVGFromMap,
   LinkTreeList,
   pendingUpdateFiberList,
   pendingUpdateFiberListArray,
@@ -19,16 +28,98 @@ import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
 
-import type { MyReactFiberNode, FiberDispatch } from "@my-react/react";
+import type {
+  MyReactFiberNode,
+  FiberDispatch,
+  MyReactElementNode,
+  MyReactFiberNodeDev,
+  createContext,
+  CreateHookParams,
+  MyReactHookNode,
+} from "@my-react/react";
 
-const { safeCallWithFiber } = __myreact_shared__;
+const { safeCallWithFiber } = __my_react_shared__;
+
+const { PATCH_TYPE, NODE_TYPE } = __my_react_internal__;
 
 export class ClientDispatch implements FiberDispatch {
+  rootFiber: MyReactFiberNode | null = null;
+
+  rootContainer: { [p: string]: any } = {};
+
+  isAppMounted = false;
+
+  isAppCrash = false;
+
+  effectMap: Record<string, (() => void)[]> = {};
+
+  layoutEffectMap: Record<string, (() => void)[]> = {};
+
+  suspenseMap: Record<string, MyReactElementNode> = {};
+
+  elementTypeMap: Record<string, boolean> = {};
+
+  contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
+
+  unmountMap: Record<string, (MyReactFiberNode | MyReactFiberNode[])[]> = {};
+
+  eventMap: Record<string, Record<string, ((...args: any[]) => void) & { cb?: any[] | undefined }>> = {};
+
   trigger(_fiber: MyReactFiberNode): void {
     triggerUpdate(_fiber);
   }
   resolveLazy(): boolean {
     return true;
+  }
+  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
+    return processHookNode(_fiber, _hookParams);
+  }
+  resolveSuspenseMap(_fiber: MyReactFiberNode): void {
+    const parent = _fiber.parent;
+    const element = _fiber.element;
+    if (typeof element === "object" && _fiber.type & NODE_TYPE.__isSuspense__) {
+      this.suspenseMap[_fiber.uid] = element?.props["fallback"] as MyReactElementNode;
+    } else {
+      if (parent) {
+        this.suspenseMap[_fiber.uid] = this.suspenseMap[parent.uid];
+      } else {
+        this.suspenseMap[_fiber.uid] = null;
+      }
+    }
+    if (__DEV__) {
+      const typedFiber = _fiber as MyReactFiberNodeDev;
+
+      typedFiber._debugSuspense = this.suspenseMap[_fiber.uid];
+    }
+  }
+  resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode {
+    return cloneElement(this.suspenseMap[_fiber.uid]);
+  }
+  resolveContextMap(_fiber: MyReactFiberNode): void {
+    defaultGenerateContextMap(_fiber, this.contextMap);
+  }
+  resolveContextFiber(
+    _fiber: MyReactFiberNode,
+    _contextObject: ReturnType<typeof createContext> | null
+  ): MyReactFiberNode | null {
+    if (_contextObject) {
+      const contextMap = defaultGetContextMapFromMap(_fiber.parent, this.contextMap);
+      return contextMap[_contextObject.id] || null;
+    } else {
+      return null;
+    }
+  }
+  resolveContextValue(
+    _fiber: MyReactFiberNode | null,
+    _contextObject: ReturnType<typeof createContext> | null
+  ): Record<string, unknown> | null {
+    return defaultGetContextValue(_fiber, _contextObject);
+  }
+  resolveComponentQueue(_fiber: MyReactFiberNode): void {
+    processComponentUpdateQueue(_fiber);
+  }
+  resolveHookQueue(_fiber: MyReactFiberNode): void {
+    processHookUpdateQueue(_fiber);
   }
   beginProgressList(): void {
     pendingUpdateFiberList.current = new LinkTreeList();
@@ -43,31 +134,36 @@ export class ClientDispatch implements FiberDispatch {
     if (_fiber) {
       if (pendingUpdateFiberList.current) {
         if (
-          _fiber.__pendingCreate__ ||
-          _fiber.__pendingUpdate__ ||
-          _fiber.__pendingAppend__ ||
-          _fiber.__pendingContext__ ||
-          _fiber.__pendingPosition__ ||
-          _fiber.__effectQueue__.length ||
-          _fiber.__unmountQueue__.length ||
-          _fiber.__layoutEffectQueue__.length
+          _fiber.patch & PATCH_TYPE.__pendingCreate__ ||
+          _fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
+          _fiber.patch & PATCH_TYPE.__pendingAppend__ ||
+          _fiber.patch & PATCH_TYPE.__pendingContext__ ||
+          _fiber.patch & PATCH_TYPE.__pendingPosition__
+        ) {
+          pendingUpdateFiberList.current.append(_fiber, _fiber.fiberIndex);
+        } else if (
+          this.effectMap[_fiber.uid]?.length ||
+          this.unmountMap[_fiber.uid]?.length ||
+          this.layoutEffectMap[_fiber.uid]?.length
         ) {
           pendingUpdateFiberList.current.append(_fiber, _fiber.fiberIndex);
         }
       } else {
-        throw new Error("error");
+        throw new Error("unknown error for running");
       }
     }
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean {
+    const _isSVG = getIsSVGFromMap(_fiber, this.elementTypeMap);
+
     const _result = safeCallWithFiber({
       fiber: _fiber,
-      action: () => create(_fiber, _hydrate, _parentFiberWithDom),
+      action: () => create(_fiber, _hydrate, _parentFiberWithDom, _isSVG),
     });
 
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => update(_fiber, _result),
+      action: () => update(_fiber, _result, _isSVG),
     });
 
     safeCallWithFiber({
@@ -78,7 +174,7 @@ export class ClientDispatch implements FiberDispatch {
     let _final = _hydrate;
 
     if (_fiber.child) {
-      _final = this.reconcileCommit(_fiber.child, _result, _fiber.dom ? _fiber : _parentFiberWithDom);
+      _final = this.reconcileCommit(_fiber.child, _result, _fiber.node ? _fiber : _parentFiberWithDom);
       fallback(_fiber);
     }
 
@@ -87,10 +183,10 @@ export class ClientDispatch implements FiberDispatch {
     Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
 
     if (_fiber.sibling) {
-      this.reconcileCommit(_fiber.sibling, _fiber.dom ? _result : _final, _parentFiberWithDom);
+      this.reconcileCommit(_fiber.sibling, _fiber.node ? _result : _final, _parentFiberWithDom);
     }
 
-    if (_fiber.dom) {
+    if (_fiber.node) {
       return _result;
     } else {
       return _final;
@@ -98,14 +194,15 @@ export class ClientDispatch implements FiberDispatch {
   }
   reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {
     _list.listToFoot((_fiber) => {
+      const _isSVG = getIsSVGFromMap(_fiber, this.elementTypeMap);
       safeCallWithFiber({
         fiber: _fiber,
-        action: () => create(_fiber, false, _fiber),
+        action: () => create(_fiber, false, _fiber, _isSVG),
       });
 
       safeCallWithFiber({
         fiber: _fiber,
-        action: () => update(_fiber, false),
+        action: () => update(_fiber, false, _isSVG),
       });
 
       safeCallWithFiber({
@@ -145,31 +242,45 @@ export class ClientDispatch implements FiberDispatch {
     });
   }
   pendingCreate(_fiber: MyReactFiberNode): void {
-    if (!_fiber.__isTextNode__ && !_fiber.__isPlainNode__ && !_fiber.__isPortal__) return;
-    _fiber.__pendingCreate__ = true;
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__)) {
+      _fiber.patch |= PATCH_TYPE.__pendingCreate__;
+    }
   }
   pendingUpdate(_fiber: MyReactFiberNode): void {
-    if (!_fiber.__isTextNode__ && !_fiber.__isPlainNode__) return;
-    _fiber.__pendingUpdate__ = true;
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__)) {
+      _fiber.patch |= PATCH_TYPE.__pendingUpdate__;
+    }
   }
   pendingAppend(_fiber: MyReactFiberNode): void {
-    if (!_fiber.__isTextNode__ && !_fiber.__isPlainNode__) return;
-    _fiber.__pendingAppend__ = true;
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__)) {
+      _fiber.patch |= PATCH_TYPE.__pendingAppend__;
+    }
   }
   pendingContext(_fiber: MyReactFiberNode): void {
-    _fiber.__pendingContext__ = true;
+    _fiber.patch |= PATCH_TYPE.__pendingContext__;
   }
   pendingPosition(_fiber: MyReactFiberNode): void {
-    _fiber.__pendingPosition__ = true;
+    _fiber.patch |= PATCH_TYPE.__pendingPosition__;
   }
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void {
-    _fiber.__unmountQueue__.push(_pendingUnmount);
+    const exist = this.unmountMap[_fiber.uid] || [];
+    this.unmountMap[_fiber.uid] = [...exist, _pendingUnmount];
   }
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
-    _fiber.__layoutEffectQueue__.push(_layoutEffect);
+    const exist = this.layoutEffectMap[_fiber.uid] || [];
+    this.layoutEffectMap[_fiber.uid] = [...exist, _layoutEffect];
   }
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
-    _fiber.__effectQueue__.push(_effect);
+    const exist = this.effectMap[_fiber.uid] || [];
+    this.effectMap[_fiber.uid] = [...exist, _effect];
+  }
+  removeFiber(_fiber: MyReactFiberNode): void {
+    delete this.suspenseMap[_fiber.uid];
+    delete this.effectMap[_fiber.uid];
+    delete this.layoutEffectMap[_fiber.uid];
+    delete this.contextMap[_fiber.uid];
+    delete this.unmountMap[_fiber.uid];
+    delete this.eventMap[_fiber.uid];
   }
   updateAllSync(): void {
     updateAllSync();

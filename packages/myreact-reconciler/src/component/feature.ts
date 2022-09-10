@@ -1,27 +1,28 @@
-import { __myreact_shared__, __myreact_internal__ } from "@my-react/react";
-
-import { nextWorkCommon } from "../generate/invoke";
-import { processComponentUpdateQueue } from "../queue";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import type {
-  memo,
-  ClassComponent,
-  MyReactComponentStaticType,
-  MixinMyReactComponentType,
   MyReactElement,
   MyReactFiberNode,
+  memo,
+  MixinMyReactComponentType,
+  MyReactClassComponent,
+  MyReactComponentStaticType,
+  MyReactFiberNodeDev,
 } from "@my-react/react";
 
-const { globalDispatch } = __myreact_internal__;
+const { NODE_TYPE, globalDispatch, Effect_TYPE, UPDATE_TYPE } = __my_react_internal__;
 
-const { getContextFiber, getContextValue } = __myreact_shared__;
+const { DEFAULT_RESULT } = __my_react_shared__;
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
 
-  const Component = fiber.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
+  const Component =
+    fiber.type & NODE_TYPE.__isDynamicNode__
+      ? typedElement.type
+      : (typedElement.type as ReturnType<typeof memo>).render;
 
-  const typedComponent = Component as ClassComponent & MyReactComponentStaticType;
+  const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
@@ -39,13 +40,16 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
 const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
 
-  const Component = fiber.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
+  const Component =
+    fiber.type & NODE_TYPE.__isDynamicNode__
+      ? typedElement.type
+      : (typedElement.type as ReturnType<typeof memo>).render;
 
-  const typedComponent = Component as ClassComponent & MyReactComponentStaticType;
+  const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
-  const ProviderFiber = getContextFiber(fiber, typedComponent.contextType);
+  const ProviderFiber = globalDispatch.current.resolveContextFiber(fiber, typedComponent.contextType);
 
-  const context = getContextValue(ProviderFiber, typedComponent.contextType);
+  const context = globalDispatch.current.resolveContextValue(ProviderFiber, typedComponent.contextType);
 
   const props = Object.assign({}, typedElement.props);
 
@@ -57,14 +61,18 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   fiber.installInstance(instance);
 
-  instance.setFiber(fiber);
+  if (__DEV__) {
+    fiber.checkInstance();
+  }
+
+  instance.setOwner(fiber);
 
   instance.setContext(ProviderFiber);
 };
 
 const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
-  typedInstance.setFiber(fiber);
+  typedInstance.setOwner(fiber);
 };
 
 const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
@@ -72,18 +80,22 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
 
   const children = typedInstance.render();
 
-  fiber.__dynamicChildren__ = children;
+  const typeFiber = fiber as MyReactFiberNodeDev;
 
-  return nextWorkCommon(fiber);
+  if (__DEV__) {
+    typeFiber._debugDynamicChildren = children;
+  }
+
+  return children;
 };
 
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  if (typedInstance.componentDidMount && !typedInstance.__pendingEffect__) {
-    typedInstance.__pendingEffect__ = true;
+  if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+    typedInstance.mode = Effect_TYPE.__pendingEffect__;
     globalDispatch.current.pendingLayoutEffect(fiber, () => {
-      typedInstance.__pendingEffect__ = false;
+      typedInstance.mode = Effect_TYPE.__initial__;
       typedInstance.componentDidMount?.();
     });
   }
@@ -92,22 +104,25 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
 const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
 
-  const Component = fiber.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
+  const Component =
+    fiber.type & NODE_TYPE.__isDynamicNode__
+      ? typedElement.type
+      : (typedElement.type as ReturnType<typeof memo>).render;
 
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  const typedComponent = Component as ClassComponent & MyReactComponentStaticType;
+  const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
-  if (!typedInstance?.__context__ || !typedInstance.__context__.mount) {
-    const ProviderFiber = getContextFiber(fiber, typedComponent.contextType);
+  if (!typedInstance?._contextFiber || !typedInstance._contextFiber.mount) {
+    const ProviderFiber = globalDispatch.current.resolveContextFiber(fiber, typedComponent.contextType);
 
-    const context = getContextValue(ProviderFiber, typedComponent.contextType);
+    const context = globalDispatch.current.resolveContextValue(ProviderFiber, typedComponent.contextType);
 
     typedInstance?.setContext(ProviderFiber);
 
     return context;
   } else {
-    const context = getContextValue(typedInstance.__context__, typedComponent.contextType);
+    const context = globalDispatch.current.resolveContextValue(typedInstance._contextFiber, typedComponent.contextType);
 
     return context;
   }
@@ -119,7 +134,7 @@ const processComponentShouldUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  if (fiber.__needTrigger__) return true;
+  if (fiber.mode & UPDATE_TYPE.__trigger__) return true;
 
   if (typedInstance.shouldComponentUpdate) {
     return typedInstance.shouldComponentUpdate(nextProps, nextState, nextContext);
@@ -143,13 +158,13 @@ const processComponentDidUpdateOnUpdate = (
   }
 ) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
+
   const hasEffect = typedInstance.componentDidUpdate || callback.length;
 
-  // TODO it is necessary to use __pendingEffect__ field ?
-  if (hasEffect && !typedInstance.__pendingEffect__) {
-    typedInstance.__pendingEffect__ = true;
+  if (hasEffect && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+    typedInstance.mode = Effect_TYPE.__pendingEffect__;
     globalDispatch.current.pendingLayoutEffect(fiber, () => {
-      typedInstance.__pendingEffect__ = false;
+      typedInstance.mode = Effect_TYPE.__initial__;
       callback.forEach((c) => c.call(null));
       typedInstance.componentDidUpdate?.(baseProps, baseState, baseContext);
     });
@@ -167,13 +182,17 @@ export const classComponentMount = (fiber: MyReactFiberNode) => {
 export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
   processComponentStateFromProps(fiber);
-  const { newState, isForce, callback } = processComponentUpdateQueue(fiber);
+  globalDispatch.current.resolveComponentQueue(fiber);
   const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const newElement = fiber.element;
+  const { newState, isForce, callback } = typedInstance.result;
+  // maybe could improve here
+  typedInstance.result = DEFAULT_RESULT;
   const baseState = typedInstance.state;
   const baseProps = typedInstance.props;
   const baseContext = typedInstance.context;
   const nextState = Object.assign({}, baseState, newState);
-  const nextProps = Object.assign({}, fiber.__props__);
+  const nextProps = Object.assign({}, typeof newElement === "object" ? newElement?.["props"] : {});
   const nextContext = processComponentContextOnUpdate(fiber);
   let shouldUpdate = isForce;
   if (!shouldUpdate) {
@@ -194,8 +213,8 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
       baseState,
       callback,
     });
-    return children;
+    return { updated: true, children };
   } else {
-    return [];
+    return { updated: false };
   }
 };

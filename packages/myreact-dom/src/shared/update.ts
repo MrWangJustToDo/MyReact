@@ -1,12 +1,12 @@
-import { __myreact_internal__, __myreact_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { isHydrateRender, isServerRender, pendingModifyFiberArray } from "./env";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
-const { globalLoop, globalDispatch } = __myreact_internal__;
+const { globalLoop, globalDispatch } = __my_react_internal__;
 
-const { enableAsyncUpdate } = __myreact_shared__;
+const { enableAsyncUpdate } = __my_react_shared__;
 
 const updateEntry = () => {
   if (globalLoop.current) return;

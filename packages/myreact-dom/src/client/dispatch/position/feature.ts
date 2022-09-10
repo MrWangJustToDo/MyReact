@@ -1,17 +1,23 @@
+import { __my_react_internal__ } from "@my-react/react";
+
 import { append } from "./append";
 import { getInsertBeforeDomFromSiblingAndParent } from "./getInsertBeforeDom";
 import { insertBefore } from "./insertBefore";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
+const { PATCH_TYPE } = __my_react_internal__;
+
 export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
-  if (fiber.__pendingPosition__) {
+  if (fiber.patch & PATCH_TYPE.__pendingPosition__) {
     const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithDom);
     if (beforeFiberWithDom) {
-      insertBefore(fiber, beforeFiberWithDom.dom as Element, parentFiberWithDom.dom as Element);
+      insertBefore(fiber, beforeFiberWithDom.node as Element, parentFiberWithDom.node as Element);
     } else {
-      append(fiber, parentFiberWithDom.dom as Element);
+      append(fiber, parentFiberWithDom.node as Element);
     }
-    fiber.__pendingPosition__ = false;
+    if (fiber.patch & PATCH_TYPE.__pendingPosition__) {
+      fiber.patch ^= PATCH_TYPE.__pendingPosition__;
+    }
   }
 };

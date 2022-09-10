@@ -1,9 +1,11 @@
-import { currentRunningFiber, isAppCrash } from "./env";
+import { NODE_TYPE } from "../fiber";
 
-import type { MixinClassComponent, MixinFunctionComponent } from "../element";
+import { currentRunningFiber, globalDispatch } from "./env";
+
+import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 
-export const getTrackDevLog = (fiber: MyReactFiberNode) => {
+const getTrackDevLog = (fiber: MyReactFiberNode) => {
   if (!__DEV__) return "";
   const element = fiber.element;
   const source = typeof element === "object" ? element?._source : null;
@@ -15,44 +17,45 @@ export const getTrackDevLog = (fiber: MyReactFiberNode) => {
   }
   if (
     owner &&
-    !fiber.__isDynamicNode__ &&
+    !(fiber.type & NODE_TYPE.__isDynamicNode__) &&
     typeof owner.element === "object" &&
     typeof owner.element?.type === "function"
   ) {
-    const typedType = owner.element.type as MixinClassComponent | MixinFunctionComponent;
+    const typedType = owner.element.type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
     const name = typedType.displayName || owner.element.type.name;
     preString = `${preString} (render dy ${name})`;
   }
   return preString;
 };
 
-export const getFiberNodeName = (fiber: MyReactFiberNode) => {
-  if (fiber.__isMemo__) return `<Memo />${getTrackDevLog(fiber)}`;
-  if (fiber.__isLazy__) return `<Lazy />${getTrackDevLog(fiber)}`;
-  if (fiber.__isPortal__) return `<Portal />${getTrackDevLog(fiber)}`;
-  if (fiber.__isNullNode__) return `<null />${getTrackDevLog(fiber)}`;
-  if (fiber.__isEmptyNode__) return `<Empty />${getTrackDevLog(fiber)}`;
-  if (fiber.__isStrictNode__) return `<Strict />${getTrackDevLog(fiber)}`;
-  if (fiber.__isSuspense__) return `<Suspense />${getTrackDevLog(fiber)}`;
-  if (fiber.__isForwardRef__) return `<ForwardRef />${getTrackDevLog(fiber)}`;
-  if (fiber.__isFragmentNode__) return `<Fragment />${getTrackDevLog(fiber)}`;
-  if (fiber.__isContextProvider__) return `<Provider />${getTrackDevLog(fiber)}`;
-  if (fiber.__isContextConsumer__) return `<Consumer />${getTrackDevLog(fiber)}`;
+const getElementName = (fiber: MyReactFiberNode) => {
+  if (fiber.type & NODE_TYPE.__isMemo__) return `<Memo />`;
+  if (fiber.type & NODE_TYPE.__isLazy__) return `<Lazy />`;
+  if (fiber.type & NODE_TYPE.__isPortal__) return `<Portal />`;
+  if (fiber.type & NODE_TYPE.__isNullNode__) return `<Null />`;
+  if (fiber.type & NODE_TYPE.__isEmptyNode__) return `<Empty />`;
+  if (fiber.type & NODE_TYPE.__isSuspense__) return `<Suspense />`;
+  if (fiber.type & NODE_TYPE.__isStrictNode__) return `<Strict />`;
+  if (fiber.type & NODE_TYPE.__isForwardRef__) return `<ForwardRef />`;
+  if (fiber.type & NODE_TYPE.__isContextProvider__) return `<Provider />`;
+  if (fiber.type & NODE_TYPE.__isContextConsumer__) return `<Consumer />`;
   if (typeof fiber.element === "object" && fiber.element !== null) {
-    if (fiber.__isPlainNode__ && typeof fiber.element?.type === "string") {
-      return `<${fiber.element.type} />${getTrackDevLog(fiber)}`;
+    if (typeof fiber.element.type === "string") {
+      return `<${fiber.element.type} />`;
     }
-    if (fiber.__isDynamicNode__ && typeof fiber.element?.type === "function") {
-      const typedType = fiber.element.type as MixinClassComponent | MixinFunctionComponent;
+    if (typeof fiber.element.type === "function") {
+      const typedType = fiber.element.type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
       let name = typedType.displayName || fiber.element.type.name || "anonymous";
-      name = fiber.__root__ ? `${name} (root)` : name;
-      return `<${name}* />${getTrackDevLog(fiber)}`;
+      name = fiber.root === fiber ? `${name} (root)` : name;
+      return `<${name}* />`;
     }
-    return `<unknown />${getTrackDevLog(fiber)}`;
+    return `<unknown* />`;
   } else {
-    return `<text - (${fiber.element?.toString()}) />${getTrackDevLog(fiber)}`;
+    return `<text (${fiber.element?.toString()}) />`;
   }
 };
+
+const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)}${getTrackDevLog(fiber)}`;
 
 export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   if (fiber) {
@@ -68,7 +71,7 @@ export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   return "";
 };
 
-export const getHookTree = (hookType: MyReactFiberNode["hookType"], newType: MyReactFiberNode["hookType"]) => {
+const getHookTree = (hookType: MyReactFiberNode["hookTypeArray"], newType: MyReactFiberNode["hookTypeArray"]) => {
   let re = "\n" + "".padEnd(6) + "Prev render:".padEnd(20) + "Next render:".padEnd(10) + "\n";
   for (const key in hookType) {
     const c = hookType[key];
@@ -79,6 +82,9 @@ export const getHookTree = (hookType: MyReactFiberNode["hookType"], newType: MyR
 
   return re;
 };
+
+export const logHook = (oldType: MyReactFiberNode["hookTypeArray"], newType: MyReactFiberNode["hookTypeArray"]) =>
+  getHookTree(oldType, newType);
 
 const cache: Record<string, boolean> = {};
 
@@ -110,7 +116,7 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
     return action.call(null, ...args);
   } catch (e) {
     log({ message: e as Error, level: "error" });
-    isAppCrash.current = true;
+    globalDispatch.current.isAppCrash = true;
     throw new Error((e as Error).message);
   }
 };
@@ -123,7 +129,7 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
     return action.call(null, ...args);
   } catch (e) {
     log({ message: e as Error, level: "error", fiber });
-    isAppCrash.current = true;
+    globalDispatch.current.isAppCrash = true;
     throw new Error((e as Error).message);
   }
 };

@@ -38,7 +38,7 @@ import type {
   MyReactHookNode,
 } from "@my-react/react";
 
-const { safeCallWithFiber } = __my_react_shared__;
+const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
 
 const { PATCH_TYPE, NODE_TYPE } = __my_react_internal__;
 
@@ -50,6 +50,8 @@ export class ClientDispatch implements FiberDispatch {
   isAppMounted = false;
 
   isAppCrash = false;
+
+  strictMap: Record<string, boolean> = {};
 
   effectMap: Record<string, (() => void)[]> = {};
 
@@ -73,6 +75,27 @@ export class ClientDispatch implements FiberDispatch {
   }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return processHookNode(_fiber, _hookParams);
+  }
+  resolveStrictMap(_fiber: MyReactFiberNode): void {
+    const parent = _fiber.parent;
+    const element = _fiber.element;
+    if (typeof element === "object" && _fiber.type & NODE_TYPE.__isStrictNode__) {
+      this.strictMap[_fiber.uid] = true;
+    } else {
+      if (parent) {
+        this.strictMap[_fiber.uid] = Boolean(this.strictMap[parent.uid]);
+      } else {
+        this.strictMap[_fiber.uid] = false;
+      }
+    }
+    if (__DEV__) {
+      const typedFiber = _fiber as MyReactFiberNodeDev;
+
+      typedFiber._debugStrict = this.strictMap[_fiber.uid];
+    }
+  }
+  resolveStrictValue(_fiber: MyReactFiberNode): boolean {
+    return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
     const parent = _fiber.parent;

@@ -92,7 +92,22 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+  const strictMod = globalDispatch.current.resolveStrictValue(fiber);
+
+  if (__DEV__ && strictMod) {
+    if (
+      (typedInstance.componentDidMount || typedInstance.componentWillUnmount) &&
+      !(typedInstance.mode & Effect_TYPE.__pendingEffect__)
+    ) {
+      typedInstance.mode = Effect_TYPE.__pendingEffect__;
+      globalDispatch.current.pendingLayoutEffect(fiber, () => {
+        typedInstance.mode = Effect_TYPE.__initial__;
+        typedInstance.componentDidMount?.();
+        typedInstance.componentWillUnmount?.();
+        typedInstance.componentDidMount?.();
+      });
+    }
+  } else if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
     typedInstance.mode = Effect_TYPE.__pendingEffect__;
     globalDispatch.current.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;

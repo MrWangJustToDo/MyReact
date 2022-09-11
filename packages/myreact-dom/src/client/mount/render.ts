@@ -10,20 +10,23 @@ const { globalDispatch, MyReactFiberNode: MyReactFiberNodeClass } = __my_react_i
 const { createFiberNode } = __my_react_shared__;
 
 export const render = (element: MyReactElement, container: Element & { __fiber__: MyReactFiberNode }) => {
-  globalDispatch.current = new ClientDispatch();
-
   globalDispatch.current.isAppCrash = false;
 
   const containerFiber = container.__fiber__;
+
   if (containerFiber instanceof MyReactFiberNodeClass) {
     if (containerFiber.checkIsSameType(element)) {
       containerFiber.installElement(element);
+
       containerFiber.update();
+
       return;
     } else {
       unmountComponentAtNode(container);
     }
   }
+  globalDispatch.current = new ClientDispatch();
+
   Array.from(container.children).forEach((n) => n.remove?.());
 
   const fiber = createFiberNode({ fiberIndex: 0, parent: null }, element);

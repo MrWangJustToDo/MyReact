@@ -55,6 +55,7 @@ import {
   safeCallWithFiber,
   enableAsyncUpdate,
   enableKeyDiff,
+  enableStrictLifeCycle,
 } from "./share";
 
 const Component = MyReactComponent;
@@ -76,6 +77,7 @@ const __my_react_shared__ = {
   safeCallWithFiber,
   enableAsyncUpdate,
   enableKeyDiff,
+  enableStrictLifeCycle,
 };
 
 const __my_react_internal__ = {

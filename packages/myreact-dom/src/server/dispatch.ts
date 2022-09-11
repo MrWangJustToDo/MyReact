@@ -33,6 +33,8 @@ export class ServerDispatch implements FiberDispatch {
 
   effectMap: Record<string, (() => void)[]> = {};
 
+  strictMap: Record<string, boolean> = {};
+
   layoutEffectMap: Record<string, (() => void)[]> = {};
 
   suspenseMap: Record<string, MyReactElementNode> = {};
@@ -49,6 +51,12 @@ export class ServerDispatch implements FiberDispatch {
     void 0;
   }
   resolveLazy(): boolean {
+    return false;
+  }
+  resolveStrictMap(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveStrictValue(_fiber: MyReactFiberNode): boolean {
     return false;
   }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {

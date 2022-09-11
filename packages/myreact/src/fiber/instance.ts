@@ -1,13 +1,13 @@
 import { getTypeFromElement, isValidElement } from "../element";
-import { HOOK_TYPE } from "../hook";
 import { globalDispatch } from "../share";
 
+import { checkFiberElement, checkFiberHook, checkFiberInstance } from "./check";
 import { NODE_TYPE, PATCH_TYPE, UPDATE_TYPE } from "./symbol";
 
 import type { MyReactComponent } from "../component";
 import type { FiberDispatch } from "../dispatch";
-import type { memo, forwardRef, MyReactElement, MyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
-import type { Action, MyReactHookNode } from "../hook";
+import type { MyReactElement, MyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
+import type { HOOK_TYPE, Action, MyReactHookNode } from "../hook";
 import type { MyReactInternalInstance } from "../internal";
 
 type RenderNode = { [p: string]: any };
@@ -114,6 +114,7 @@ export class MyReactFiberNode {
       this.parent.addChild(this);
       globalDispatch.current.resolveSuspenseMap(this);
       globalDispatch.current.resolveContextMap(this);
+      globalDispatch.current.resolveStrictMap(this);
     }
   }
 
@@ -185,46 +186,7 @@ export class MyReactFiberNode {
   // TODO
   checkElement() {
     if (__DEV__) {
-      const element = this.element;
-      if (isValidElement(element)) {
-        const typedElement = element;
-        if (!typedElement._store["validType"]) {
-          if (this.type & NODE_TYPE.__isContextConsumer__) {
-            if (typeof typedElement.props.children !== "function") {
-              throw new Error(`Consumer need a function children`);
-            }
-          }
-          if (this.type & (NODE_TYPE.__isMemo__ | NODE_TYPE.__isForwardRef__)) {
-            const typedType = typedElement.type as ReturnType<typeof forwardRef> | ReturnType<typeof memo>;
-            if (typeof typedType.render !== "function" && typeof typedType.render !== "object") {
-              throw new Error("invalid render type");
-            }
-            if (this.type & NODE_TYPE.__isForwardRef__ && typeof typedType.render !== "function") {
-              throw new Error("forwardRef() need a function component");
-            }
-          }
-          if (typedElement.ref) {
-            if (typeof typedElement.ref !== "object" && typeof typedElement.ref !== "function") {
-              throw new Error("unSupport ref usage, should be a function or a object like `{current: any}`");
-            }
-          }
-          if (typedElement.key && typeof typedElement.key !== "string") {
-            throw new Error(`invalid key type, ${typedElement.key}`);
-          }
-          if (typedElement.props.children && typedElement.props["dangerouslySetInnerHTML"]) {
-            throw new Error("can not render contain `children` and `dangerouslySetInnerHTML` for current element");
-          }
-          if (typedElement.props["dangerouslySetInnerHTML"]) {
-            if (
-              typeof typedElement.props["dangerouslySetInnerHTML"] !== "object" ||
-              !Object.prototype.hasOwnProperty.call(typedElement.props["dangerouslySetInnerHTML"], "__html")
-            ) {
-              throw new Error("invalid dangerouslySetInnerHTML props, should like {__html: string}");
-            }
-          }
-          typedElement._store["validType"] = true;
-        }
-      }
+      checkFiberElement(this);
     }
   }
 
@@ -271,22 +233,7 @@ export class MyReactFiberNode {
   // TODO
   checkHook() {
     if (__DEV__) {
-      const hookNode = this.hookListFoot as MyReactHookNode;
-      if (
-        hookNode.hookType === HOOK_TYPE.useMemo ||
-        hookNode.hookType === HOOK_TYPE.useEffect ||
-        hookNode.hookType === HOOK_TYPE.useCallback ||
-        hookNode.hookType === HOOK_TYPE.useLayoutEffect
-      ) {
-        if (typeof hookNode.value !== "function") {
-          throw new Error(`${hookNode.hookType} initial error`);
-        }
-      }
-      if (hookNode.hookType === HOOK_TYPE.useContext) {
-        if (typeof hookNode.value !== "object" || hookNode.value === null) {
-          throw new Error(`${hookNode.hookType} initial error`);
-        }
-      }
+      checkFiberHook(this);
     }
   }
 
@@ -329,7 +276,9 @@ export class MyReactFiberNode {
 
   // TODO
   checkInstance() {
-    void 0;
+    if (__DEV__) {
+      checkFiberInstance(this);
+    }
   }
 
   update() {
@@ -361,6 +310,8 @@ export class MyReactFiberNodeDev extends MyReactFiberNode {
   _debugGlobalDispatch: FiberDispatch | null = null;
 
   _debugSuspense: MyReactElementNode;
+
+  _debugStrict = false;
 
   _debugEventMap: Record<string, ((...args: any[]) => void) & { cb?: any[] }> = {};
 }

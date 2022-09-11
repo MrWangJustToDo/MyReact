@@ -14,6 +14,8 @@ export interface FiberDispatch {
 
   suspenseMap: Record<string, MyReactElementNode>;
 
+  strictMap: Record<string, boolean>;
+
   effectMap: Record<string, Array<() => void>>;
 
   layoutEffectMap: Record<string, Array<() => void>>;
@@ -29,6 +31,10 @@ export interface FiberDispatch {
   resolveLazy(): boolean;
 
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
+
+  resolveStrictMap(_fiber: MyReactFiberNode): void;
+
+  resolveStrictValue(_fiber: MyReactFiberNode): boolean;
 
   resolveSuspenseMap(_fiber: MyReactFiberNode): void;
 

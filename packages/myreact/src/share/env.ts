@@ -21,3 +21,5 @@ export const enableDebugLog = createRef(false);
 export const enableAsyncUpdate = createRef(true);
 
 export const enableKeyDiff = createRef(true);
+
+export const enableStrictLifeCycle = createRef(false);

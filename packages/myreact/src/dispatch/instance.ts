@@ -13,6 +13,8 @@ export class EmptyDispatch implements FiberDispatch {
 
   isAppCrash = false;
 
+  strictMap: Record<string, boolean> = {};
+
   suspenseMap: Record<string, MyReactElementNode> = {};
 
   effectMap: Record<string, (() => void)[]> = {};
@@ -33,6 +35,12 @@ export class EmptyDispatch implements FiberDispatch {
   }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return null;
+  }
+  resolveStrictMap(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveStrictValue(_fiber: MyReactFiberNode): boolean {
+    return false;
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
     void 0;

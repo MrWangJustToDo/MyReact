@@ -66,249 +66,6 @@
     return to.concat(ar || Array.prototype.slice.call(from));
   }
 
-  var Effect_TYPE;
-  (function (Effect_TYPE) {
-    Effect_TYPE[(Effect_TYPE["__initial__"] = 0)] = "__initial__";
-    Effect_TYPE[(Effect_TYPE["__pendingEffect__"] = 1)] = "__pendingEffect__";
-  })(Effect_TYPE || (Effect_TYPE = {}));
-
-  var MyReactInternalInstance = /** @class */ (function () {
-    function MyReactInternalInstance() {
-      this.mode = Effect_TYPE.__initial__;
-      this.context = null;
-      this._contextFiber = null;
-      this._ownerFiber = null;
-    }
-    Object.defineProperty(MyReactInternalInstance.prototype, "isMyReactInstance", {
-      get: function () {
-        return true;
-      },
-      enumerable: false,
-      configurable: true,
-    });
-    MyReactInternalInstance.prototype.setContext = function (fiber) {
-      var _a, _b, _c, _d;
-      (_a = this._ownerFiber) === null || _a === void 0 ? void 0 : _a.removeContext(this._contextFiber);
-      (_b = this._contextFiber) === null || _b === void 0 ? void 0 : _b.removeDependence(this);
-      this._contextFiber = fiber;
-      (_c = this._contextFiber) === null || _c === void 0 ? void 0 : _c.addDependence(this);
-      (_d = this._ownerFiber) === null || _d === void 0 ? void 0 : _d.addContext(this._contextFiber);
-    };
-    MyReactInternalInstance.prototype.setOwner = function (fiber) {
-      this._ownerFiber = fiber;
-    };
-    MyReactInternalInstance.prototype.unmount = function () {
-      var _a, _b;
-      this.mode = Effect_TYPE.__initial__;
-      (_a = this._contextFiber) === null || _a === void 0 ? void 0 : _a.removeDependence(this);
-      (_b = this._ownerFiber) === null || _b === void 0 ? void 0 : _b.removeContext(this._contextFiber);
-    };
-    return MyReactInternalInstance;
-  })();
-
-  var HOOK_TYPE;
-  (function (HOOK_TYPE) {
-    HOOK_TYPE["useRef"] = "useRef";
-    HOOK_TYPE["useMemo"] = "useMemo";
-    HOOK_TYPE["useState"] = "useState";
-    HOOK_TYPE["useEffect"] = "useEffect";
-    HOOK_TYPE["useContext"] = "useContext";
-    HOOK_TYPE["useReducer"] = "useReducer";
-    HOOK_TYPE["useCallback"] = "useCallback";
-    HOOK_TYPE["useDebugValue"] = "useDebugValue";
-    HOOK_TYPE["useLayoutEffect"] = "useLayoutEffect";
-    HOOK_TYPE["useImperativeHandle"] = "useImperativeHandle";
-  })(HOOK_TYPE || (HOOK_TYPE = {}));
-
-  var MyReactHookNode = /** @class */ (function (_super) {
-    __extends(MyReactHookNode, _super);
-    function MyReactHookNode(hookIndex, hookType, value, reducer, deps) {
-      var _this = _super.call(this) || this;
-      _this.hookIndex = 0;
-      _this.hookNext = null;
-      _this.hookPrev = null;
-      _this.cancel = null;
-      _this.effect = false;
-      _this.value = null;
-      _this.deps = [];
-      _this.result = null;
-      _this.dispatch = function (action) {
-        var _a;
-        var updater = {
-          type: "hook",
-          trigger: _this,
-          payLoad: action,
-        };
-        (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
-        Promise.resolve().then(function () {
-          var _a;
-          (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update();
-        });
-      };
-      _this.deps = deps;
-      _this.value = value;
-      _this.reducer = reducer;
-      _this.hookType = hookType;
-      _this.hookIndex = hookIndex;
-      return _this;
-    }
-    Object.defineProperty(MyReactHookNode.prototype, "isMyReactHook", {
-      get: function () {
-        return true;
-      },
-      enumerable: false,
-      configurable: true,
-    });
-    // initialResult() {
-    //   if (this.hookType === "useMemo" || this.hookType === "useState" || this.hookType === "useReducer") {
-    //     this.result = this.value.call(null);
-    //     return;
-    //   }
-    //   if (
-    //     this.hookType === "useEffect" ||
-    //     this.hookType === "useLayoutEffect" ||
-    //     this.hookType === "useImperativeHandle"
-    //   ) {
-    //     this.effect = true;
-    //     return;
-    //   }
-    //   if (this.hookType === "useRef" || this.hookType === "useCallback") {
-    //     this.result = this.value;
-    //     return;
-    //   }
-    //   if (this.hookType === "useContext") {
-    //     const ProviderFiber = globalDispatch.current.resolveContextFiber(
-    //       this._ownerFiber as MyReactFiberNode,
-    //       this.value
-    //     );
-    //     this.setContext(ProviderFiber);
-    //     this.result = getContextValue(ProviderFiber, this.value);
-    //     this.context = this.result;
-    //     return;
-    //   }
-    // }
-    // updateResult(newValue: any, newReducer: Reducer, newDeps: any[]) {
-    //   if (
-    //     this.hookType === "useMemo" ||
-    //     this.hookType === "useEffect" ||
-    //     this.hookType === "useCallback" ||
-    //     this.hookType === "useLayoutEffect" ||
-    //     this.hookType === "useImperativeHandle"
-    //   ) {
-    //     if (newDeps && !this.deps) {
-    //       throw new Error("deps state change");
-    //     }
-    //     if (!newDeps && this.deps) {
-    //       throw new Error("deps state change");
-    //     }
-    //   }
-    //   if (
-    //     this.hookType === "useEffect" ||
-    //     this.hookType === "useLayoutEffect" ||
-    //     this.hookType === "useImperativeHandle"
-    //   ) {
-    //     if (!newDeps) {
-    //       this.value = newValue;
-    //       this.reducer = newReducer || this.reducer;
-    //       this.deps = newDeps;
-    //       this.effect = true;
-    //     } else if (!isArrayEquals(this.deps, newDeps)) {
-    //       this.value = newValue;
-    //       this.reducer = newReducer || this.reducer;
-    //       this.deps = newDeps;
-    //       this.effect = true;
-    //     }
-    //     return;
-    //   }
-    //   if (this.hookType === "useCallback") {
-    //     if (!isArrayEquals(this.deps, newDeps)) {
-    //       this.value = newValue;
-    //       this.result = newValue;
-    //       this.deps = newDeps;
-    //     }
-    //     return;
-    //   }
-    //   if (this.hookType === "useMemo") {
-    //     if (!isArrayEquals(this.deps, newDeps)) {
-    //       this.value = newValue;
-    //       this.result = newValue.call(null);
-    //       this.deps = newDeps;
-    //     }
-    //     return;
-    //   }
-    //   if (this.hookType === "useContext") {
-    //     if (!this._contextFiber || !this._contextFiber.mount || !Object.is(this.value, newValue)) {
-    //       this.value = newValue;
-    //       const ProviderFiber = globalDispatch.current.resolveContextFiber(
-    //         this._ownerFiber as MyReactFiberNode,
-    //         this.value
-    //       );
-    //       this.setContext(ProviderFiber);
-    //       this.result = getContextValue(ProviderFiber, this.value);
-    //       this.context = this.result;
-    //     } else {
-    //       this.result = getContextValue(this._contextFiber, this.value);
-    //       this.context = this.result;
-    //     }
-    //     return;
-    //   }
-    //   if (this.hookType === "useReducer") {
-    //     this.value = newValue;
-    //     this.reducer = newReducer;
-    //   }
-    // }
-    MyReactHookNode.prototype.unmount = function () {
-      _super.prototype.unmount.call(this);
-      if (this.hookType === HOOK_TYPE.useEffect || this.hookType === HOOK_TYPE.useLayoutEffect) {
-        this.effect = false;
-        this.cancel && this.cancel();
-        return;
-      }
-    };
-    return MyReactHookNode;
-  })(MyReactInternalInstance);
-
-  var defaultReducer = function (state, action) {
-    return typeof action === "function" ? action(state) : action;
-  };
-  var createHookNode = function (_a, fiber) {
-    var hookIndex = _a.hookIndex,
-      hookType = _a.hookType,
-      value = _a.value,
-      reducer = _a.reducer,
-      deps = _a.deps;
-    var newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
-    newHookNode.setOwner(fiber);
-    fiber.addHook(newHookNode);
-    {
-      fiber.checkHook();
-    }
-    return newHookNode;
-  };
-  // export const getHookNode = (
-  //   { hookIndex, hookType, value, reducer, deps }: CreateHookParams,
-  //   fiber: MyReactFiberNode | null
-  // ) => {
-  //   if (!fiber) throw new Error("can not use hook out of component");
-  //   let currentHook: null | MyReactHookNode = null;
-  //   if (fiber.hookNodeArray.length > hookIndex) {
-  //     currentHook = fiber.hookNodeArray[hookIndex];
-  //     if (currentHook.hookType !== hookType) {
-  //       const array = fiber.hookTypeArray.slice(0, hookIndex);
-  //       throw new Error(getHookTree([...array, currentHook.hookType], [...array, hookType]));
-  //     }
-  //     currentHook.setOwner(fiber);
-  //     currentHook.updateResult(value, reducer || defaultReducer, deps);
-  //   } else if (!(fiber.mode & UPDATE_TYPE.__update__)) {
-  //     // not a update so it is a initial fiber
-  //     currentHook = createHookNode({ hookIndex, hookType, value, reducer, deps }, fiber);
-  //   } else {
-  //     throw new Error(getHookTree([...fiber.hookTypeArray], [...fiber.hookTypeArray, hookType]));
-  //   }
-  //   effect(fiber, currentHook);
-  //   return currentHook;
-  // };
-
   var createRef = function (value) {
     return { current: value };
   };
@@ -319,6 +76,7 @@
       this.rootContainer = {};
       this.isAppMounted = false;
       this.isAppCrash = false;
+      this.strictMap = {};
       this.suspenseMap = {};
       this.effectMap = {};
       this.layoutEffectMap = {};
@@ -332,6 +90,10 @@
     };
     EmptyDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
       return null;
+    };
+    EmptyDispatch.prototype.resolveStrictMap = function (_fiber) {};
+    EmptyDispatch.prototype.resolveStrictValue = function (_fiber) {
+      return false;
     };
     EmptyDispatch.prototype.resolveSuspenseMap = function (_fiber) {};
     EmptyDispatch.prototype.resolveSuspenseElement = function (_fiber) {
@@ -384,6 +146,7 @@
   var enableDebugLog = createRef(false);
   var enableAsyncUpdate = createRef(true);
   var enableKeyDiff = createRef(true);
+  var enableStrictLifeCycle = createRef(false);
 
   var getTrackDevLog = function (fiber) {
     var _a;
@@ -683,6 +446,151 @@
     return LinkTreeList;
   })();
 
+  var Effect_TYPE;
+  (function (Effect_TYPE) {
+    Effect_TYPE[(Effect_TYPE["__initial__"] = 0)] = "__initial__";
+    Effect_TYPE[(Effect_TYPE["__pendingEffect__"] = 1)] = "__pendingEffect__";
+  })(Effect_TYPE || (Effect_TYPE = {}));
+
+  var MyReactInternalInstance = /** @class */ (function () {
+    function MyReactInternalInstance() {
+      this.mode = Effect_TYPE.__initial__;
+      this.context = null;
+      this._contextFiber = null;
+      this._ownerFiber = null;
+    }
+    Object.defineProperty(MyReactInternalInstance.prototype, "isMyReactInstance", {
+      get: function () {
+        return true;
+      },
+      enumerable: false,
+      configurable: true,
+    });
+    MyReactInternalInstance.prototype.setContext = function (fiber) {
+      var _a, _b, _c, _d;
+      (_a = this._ownerFiber) === null || _a === void 0 ? void 0 : _a.removeContext(this._contextFiber);
+      (_b = this._contextFiber) === null || _b === void 0 ? void 0 : _b.removeDependence(this);
+      this._contextFiber = fiber;
+      (_c = this._contextFiber) === null || _c === void 0 ? void 0 : _c.addDependence(this);
+      (_d = this._ownerFiber) === null || _d === void 0 ? void 0 : _d.addContext(this._contextFiber);
+    };
+    MyReactInternalInstance.prototype.setOwner = function (fiber) {
+      this._ownerFiber = fiber;
+    };
+    MyReactInternalInstance.prototype.unmount = function () {
+      var _a, _b;
+      this.mode = Effect_TYPE.__initial__;
+      (_a = this._contextFiber) === null || _a === void 0 ? void 0 : _a.removeDependence(this);
+      (_b = this._ownerFiber) === null || _b === void 0 ? void 0 : _b.removeContext(this._contextFiber);
+    };
+    return MyReactInternalInstance;
+  })();
+
+  var HOOK_TYPE;
+  (function (HOOK_TYPE) {
+    HOOK_TYPE["useRef"] = "useRef";
+    HOOK_TYPE["useMemo"] = "useMemo";
+    HOOK_TYPE["useState"] = "useState";
+    HOOK_TYPE["useEffect"] = "useEffect";
+    HOOK_TYPE["useContext"] = "useContext";
+    HOOK_TYPE["useReducer"] = "useReducer";
+    HOOK_TYPE["useCallback"] = "useCallback";
+    HOOK_TYPE["useDebugValue"] = "useDebugValue";
+    HOOK_TYPE["useLayoutEffect"] = "useLayoutEffect";
+    HOOK_TYPE["useImperativeHandle"] = "useImperativeHandle";
+  })(HOOK_TYPE || (HOOK_TYPE = {}));
+
+  var MyReactHookNode = /** @class */ (function (_super) {
+    __extends(MyReactHookNode, _super);
+    function MyReactHookNode(hookIndex, hookType, value, reducer, deps) {
+      var _this = _super.call(this) || this;
+      _this.hookIndex = 0;
+      _this.hookNext = null;
+      _this.hookPrev = null;
+      _this.cancel = null;
+      _this.effect = false;
+      _this.value = null;
+      _this.deps = [];
+      _this.result = null;
+      _this.dispatch = function (action) {
+        var _a;
+        var updater = {
+          type: "hook",
+          trigger: _this,
+          payLoad: action,
+        };
+        (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
+        Promise.resolve().then(function () {
+          var _a;
+          (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update();
+        });
+      };
+      _this.deps = deps;
+      _this.value = value;
+      _this.reducer = reducer;
+      _this.hookType = hookType;
+      _this.hookIndex = hookIndex;
+      return _this;
+    }
+    Object.defineProperty(MyReactHookNode.prototype, "isMyReactHook", {
+      get: function () {
+        return true;
+      },
+      enumerable: false,
+      configurable: true,
+    });
+    MyReactHookNode.prototype.unmount = function () {
+      _super.prototype.unmount.call(this);
+      if (this.hookType === HOOK_TYPE.useEffect || this.hookType === HOOK_TYPE.useLayoutEffect) {
+        this.effect = false;
+        this.cancel && this.cancel();
+        return;
+      }
+    };
+    return MyReactHookNode;
+  })(MyReactInternalInstance);
+
+  var defaultReducer = function (state, action) {
+    return typeof action === "function" ? action(state) : action;
+  };
+  var createHookNode = function (_a, fiber) {
+    var hookIndex = _a.hookIndex,
+      hookType = _a.hookType,
+      value = _a.value,
+      reducer = _a.reducer,
+      deps = _a.deps;
+    var newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
+    newHookNode.setOwner(fiber);
+    fiber.addHook(newHookNode);
+    {
+      fiber.checkHook();
+    }
+    return newHookNode;
+  };
+  // export const getHookNode = (
+  //   { hookIndex, hookType, value, reducer, deps }: CreateHookParams,
+  //   fiber: MyReactFiberNode | null
+  // ) => {
+  //   if (!fiber) throw new Error("can not use hook out of component");
+  //   let currentHook: null | MyReactHookNode = null;
+  //   if (fiber.hookNodeArray.length > hookIndex) {
+  //     currentHook = fiber.hookNodeArray[hookIndex];
+  //     if (currentHook.hookType !== hookType) {
+  //       const array = fiber.hookTypeArray.slice(0, hookIndex);
+  //       throw new Error(getHookTree([...array, currentHook.hookType], [...array, hookType]));
+  //     }
+  //     currentHook.setOwner(fiber);
+  //     currentHook.updateResult(value, reducer || defaultReducer, deps);
+  //   } else if (!(fiber.mode & UPDATE_TYPE.__update__)) {
+  //     // not a update so it is a initial fiber
+  //     currentHook = createHookNode({ hookIndex, hookType, value, reducer, deps }, fiber);
+  //   } else {
+  //     throw new Error(getHookTree([...fiber.hookTypeArray], [...fiber.hookTypeArray, hookType]));
+  //   }
+  //   effect(fiber, currentHook);
+  //   return currentHook;
+  // };
+
   var useState = function (initial) {
     var currentFiber = currentFunctionFiber.current;
     var currentIndex = currentHookDeepIndex.current++;
@@ -854,6 +762,67 @@
     UPDATE_TYPE[(UPDATE_TYPE["__trigger__"] = 4)] = "__trigger__";
   })(UPDATE_TYPE || (UPDATE_TYPE = {}));
 
+  var checkFiberElement = function (fiber) {
+    var element = fiber.element;
+    if (isValidElement(element)) {
+      var typedElement = element;
+      if (!typedElement._store["validType"]) {
+        if (fiber.type & NODE_TYPE.__isContextConsumer__) {
+          if (typeof typedElement.props.children !== "function") {
+            throw new Error("Consumer need a function children");
+          }
+        }
+        if (fiber.type & (NODE_TYPE.__isMemo__ | NODE_TYPE.__isForwardRef__)) {
+          var typedType = typedElement.type;
+          if (typeof typedType.render !== "function" && typeof typedType.render !== "object") {
+            throw new Error("invalid render type");
+          }
+          if (fiber.type & NODE_TYPE.__isForwardRef__ && typeof typedType.render !== "function") {
+            throw new Error("forwardRef() need a function component");
+          }
+        }
+        if (typedElement.ref) {
+          if (typeof typedElement.ref !== "object" && typeof typedElement.ref !== "function") {
+            throw new Error("unSupport ref usage, should be a function or a object like `{current: any}`");
+          }
+        }
+        if (typedElement.key && typeof typedElement.key !== "string") {
+          throw new Error("invalid key type, ".concat(typedElement.key));
+        }
+        if (typedElement.props.children && typedElement.props["dangerouslySetInnerHTML"]) {
+          throw new Error("can not render contain `children` and `dangerouslySetInnerHTML` for current element");
+        }
+        if (typedElement.props["dangerouslySetInnerHTML"]) {
+          if (
+            typeof typedElement.props["dangerouslySetInnerHTML"] !== "object" ||
+            !Object.prototype.hasOwnProperty.call(typedElement.props["dangerouslySetInnerHTML"], "__html")
+          ) {
+            throw new Error("invalid dangerouslySetInnerHTML props, should like {__html: string}");
+          }
+        }
+        typedElement._store["validType"] = true;
+      }
+    }
+  };
+  var checkFiberHook = function (fiber) {
+    var hookNode = fiber.hookListFoot;
+    if (
+      hookNode.hookType === HOOK_TYPE.useMemo ||
+      hookNode.hookType === HOOK_TYPE.useEffect ||
+      hookNode.hookType === HOOK_TYPE.useCallback ||
+      hookNode.hookType === HOOK_TYPE.useLayoutEffect
+    ) {
+      if (typeof hookNode.value !== "function") {
+        throw new Error("".concat(hookNode.hookType, " initial error"));
+      }
+    }
+    if (hookNode.hookType === HOOK_TYPE.useContext) {
+      if (typeof hookNode.value !== "object" || hookNode.value === null) {
+        throw new Error("".concat(hookNode.hookType, " initial error"));
+      }
+    }
+  };
+
   var fiberId = 0;
   var MyReactFiberNode = /** @class */ (function () {
     function MyReactFiberNode(fiberIndex, parent, element) {
@@ -904,6 +873,7 @@
         this.parent.addChild(this);
         globalDispatch.current.resolveSuspenseMap(this);
         globalDispatch.current.resolveContextMap(this);
+        globalDispatch.current.resolveStrictMap(this);
       }
     };
     MyReactFiberNode.prototype.installParent = function (parent) {
@@ -977,46 +947,7 @@
     // TODO
     MyReactFiberNode.prototype.checkElement = function () {
       {
-        var element = this.element;
-        if (isValidElement(element)) {
-          var typedElement = element;
-          if (!typedElement._store["validType"]) {
-            if (this.type & NODE_TYPE.__isContextConsumer__) {
-              if (typeof typedElement.props.children !== "function") {
-                throw new Error("Consumer need a function children");
-              }
-            }
-            if (this.type & (NODE_TYPE.__isMemo__ | NODE_TYPE.__isForwardRef__)) {
-              var typedType = typedElement.type;
-              if (typeof typedType.render !== "function" && typeof typedType.render !== "object") {
-                throw new Error("invalid render type");
-              }
-              if (this.type & NODE_TYPE.__isForwardRef__ && typeof typedType.render !== "function") {
-                throw new Error("forwardRef() need a function component");
-              }
-            }
-            if (typedElement.ref) {
-              if (typeof typedElement.ref !== "object" && typeof typedElement.ref !== "function") {
-                throw new Error("unSupport ref usage, should be a function or a object like `{current: any}`");
-              }
-            }
-            if (typedElement.key && typeof typedElement.key !== "string") {
-              throw new Error("invalid key type, ".concat(typedElement.key));
-            }
-            if (typedElement.props.children && typedElement.props["dangerouslySetInnerHTML"]) {
-              throw new Error("can not render contain `children` and `dangerouslySetInnerHTML` for current element");
-            }
-            if (typedElement.props["dangerouslySetInnerHTML"]) {
-              if (
-                typeof typedElement.props["dangerouslySetInnerHTML"] !== "object" ||
-                !Object.prototype.hasOwnProperty.call(typedElement.props["dangerouslySetInnerHTML"], "__html")
-              ) {
-                throw new Error("invalid dangerouslySetInnerHTML props, should like {__html: string}");
-              }
-            }
-            typedElement._store["validType"] = true;
-          }
-        }
+        checkFiberElement(this);
       }
     };
     MyReactFiberNode.prototype.initialType = function () {
@@ -1055,22 +986,7 @@
     // TODO
     MyReactFiberNode.prototype.checkHook = function () {
       {
-        var hookNode = this.hookListFoot;
-        if (
-          hookNode.hookType === HOOK_TYPE.useMemo ||
-          hookNode.hookType === HOOK_TYPE.useEffect ||
-          hookNode.hookType === HOOK_TYPE.useCallback ||
-          hookNode.hookType === HOOK_TYPE.useLayoutEffect
-        ) {
-          if (typeof hookNode.value !== "function") {
-            throw new Error("".concat(hookNode.hookType, " initial error"));
-          }
-        }
-        if (hookNode.hookType === HOOK_TYPE.useContext) {
-          if (typeof hookNode.value !== "object" || hookNode.value === null) {
-            throw new Error("".concat(hookNode.hookType, " initial error"));
-          }
-        }
+        checkFiberHook(this);
       }
     };
     MyReactFiberNode.prototype.applyRef = function () {
@@ -1136,6 +1052,7 @@
       };
       _this._debugContextMap = {};
       _this._debugGlobalDispatch = null;
+      _this._debugStrict = false;
       _this._debugEventMap = {};
       return _this;
     }
@@ -1672,6 +1589,7 @@
     safeCallWithFiber: safeCallWithFiber,
     enableAsyncUpdate: enableAsyncUpdate,
     enableKeyDiff: enableKeyDiff,
+    enableStrictLifeCycle: enableStrictLifeCycle,
   };
   var __my_react_internal__ = {
     NODE_TYPE: NODE_TYPE,

@@ -14,19 +14,19 @@
   var require$$0__default = /*#__PURE__*/ _interopDefaultLegacy(require$$0);
 
   /******************************************************************************
-    Copyright (c) Microsoft Corporation.
+  Copyright (c) Microsoft Corporation.
 
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted.
 
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
-    ***************************************************************************** */
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+  AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+  INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+  LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+  OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+  PERFORMANCE OF THIS SOFTWARE.
+  ***************************************************************************** */
   /* global Reflect, Promise */
 
   var extendStatics = function (d, b) {
@@ -758,7 +758,19 @@
     };
     var processComponentDidMountOnMount = function (fiber) {
       var typedInstance = fiber.instance;
-      if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE$1.__pendingEffect__)) {
+      var strictMod = globalDispatch$4.current.resolveStrictValue(fiber);
+      if (strictMod) {
+        if ((typedInstance.componentDidMount || typedInstance.componentWillUnmount) && !(typedInstance.mode & Effect_TYPE$1.__pendingEffect__)) {
+          typedInstance.mode = Effect_TYPE$1.__pendingEffect__;
+          globalDispatch$4.current.pendingLayoutEffect(fiber, function () {
+            var _a, _b, _c;
+            typedInstance.mode = Effect_TYPE$1.__initial__;
+            (_a = typedInstance.componentDidMount) === null || _a === void 0 ? void 0 : _a.call(typedInstance);
+            (_b = typedInstance.componentWillUnmount) === null || _b === void 0 ? void 0 : _b.call(typedInstance);
+            (_c = typedInstance.componentDidMount) === null || _c === void 0 ? void 0 : _c.call(typedInstance);
+          });
+        }
+      } else if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE$1.__pendingEffect__)) {
         typedInstance.mode = Effect_TYPE$1.__pendingEffect__;
         globalDispatch$4.current.pendingLayoutEffect(fiber, function () {
           var _a;
@@ -1140,23 +1152,40 @@
       globalDispatch$1 = react.__my_react_internal__.globalDispatch;
     var effect = function (fiber, hookNode) {
       if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
-        hookNode.mode |= Effect_TYPE.__pendingEffect__;
+        hookNode.mode = Effect_TYPE.__pendingEffect__;
+        var strictMod_1 = globalDispatch$1.current.resolveStrictValue(fiber);
         if (hookNode.hookType === "useEffect") {
-          globalDispatch$1.current.pendingEffect(fiber, function () {
+          var update_1 = function () {
             var _a;
             hookNode.cancel && hookNode.cancel();
             if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mount) hookNode.cancel = hookNode.value();
             hookNode.effect = false;
             hookNode.mode = Effect_TYPE.__initial__;
+          };
+          globalDispatch$1.current.pendingEffect(fiber, function () {
+            if (strictMod_1) {
+              update_1();
+              update_1();
+            } else {
+              update_1();
+            }
           });
         }
         if (hookNode.hookType === "useLayoutEffect") {
-          globalDispatch$1.current.pendingLayoutEffect(fiber, function () {
+          var update_2 = function () {
             var _a;
             hookNode.cancel && hookNode.cancel();
             if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mount) hookNode.cancel = hookNode.value();
             hookNode.effect = false;
             hookNode.mode = Effect_TYPE.__initial__;
+          };
+          globalDispatch$1.current.pendingLayoutEffect(fiber, function () {
+            if (strictMod_1) {
+              update_2();
+              update_2();
+            } else {
+              update_2();
+            }
           });
         }
         if (hookNode.hookType === "useImperativeHandle") {
@@ -2676,7 +2705,8 @@
     }
   };
 
-  var safeCallWithFiber$1 = require$$0.__my_react_shared__.safeCallWithFiber;
+  var safeCallWithFiber$1 = require$$0.__my_react_shared__.safeCallWithFiber,
+    enableStrictLifeCycle = require$$0.__my_react_shared__.enableStrictLifeCycle;
   var PATCH_TYPE$4 = require$$0.__my_react_internal__.PATCH_TYPE,
     NODE_TYPE$3 = require$$0.__my_react_internal__.NODE_TYPE;
   var ClientDispatch = /** @class */ (function () {
@@ -2685,6 +2715,7 @@
       this.rootContainer = {};
       this.isAppMounted = false;
       this.isAppCrash = false;
+      this.strictMap = {};
       this.effectMap = {};
       this.layoutEffectMap = {};
       this.suspenseMap = {};
@@ -2701,6 +2732,26 @@
     };
     ClientDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
       return cjs.exports.processHookNode(_fiber, _hookParams);
+    };
+    ClientDispatch.prototype.resolveStrictMap = function (_fiber) {
+      var parent = _fiber.parent;
+      var element = _fiber.element;
+      if (typeof element === "object" && _fiber.type & NODE_TYPE$3.__isStrictNode__) {
+        this.strictMap[_fiber.uid] = true;
+      } else {
+        if (parent) {
+          this.strictMap[_fiber.uid] = Boolean(this.strictMap[parent.uid]);
+        } else {
+          this.strictMap[_fiber.uid] = false;
+        }
+      }
+      {
+        var typedFiber = _fiber;
+        typedFiber._debugStrict = this.strictMap[_fiber.uid];
+      }
+    };
+    ClientDispatch.prototype.resolveStrictValue = function (_fiber) {
+      return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
     };
     ClientDispatch.prototype.resolveSuspenseMap = function (_fiber) {
       var parent = _fiber.parent;
@@ -2949,7 +3000,6 @@
   var createFiberNode$2 = require$$0.__my_react_shared__.createFiberNode;
   var render = function (element, container) {
     var _a;
-    globalDispatch$2.current = new ClientDispatch();
     globalDispatch$2.current.isAppCrash = false;
     var containerFiber = container.__fiber__;
     if (containerFiber instanceof MyReactFiberNodeClass) {
@@ -2961,6 +3011,7 @@
         unmountComponentAtNode(container);
       }
     }
+    globalDispatch$2.current = new ClientDispatch();
     Array.from(container.children).forEach(function (n) {
       var _a;
       return (_a = n.remove) === null || _a === void 0 ? void 0 : _a.call(n);
@@ -3222,6 +3273,7 @@
       this.isAppMounted = false;
       this.isAppCrash = false;
       this.effectMap = {};
+      this.strictMap = {};
       this.layoutEffectMap = {};
       this.suspenseMap = {};
       this.elementTypeMap = {};
@@ -3231,6 +3283,10 @@
     }
     ServerDispatch.prototype.trigger = function (_fiber) {};
     ServerDispatch.prototype.resolveLazy = function () {
+      return false;
+    };
+    ServerDispatch.prototype.resolveStrictMap = function (_fiber) {};
+    ServerDispatch.prototype.resolveStrictValue = function (_fiber) {
       return false;
     };
     ServerDispatch.prototype.resolveHook = function (_fiber, _hookParams) {

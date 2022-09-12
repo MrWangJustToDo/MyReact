@@ -1,5 +1,6 @@
+import { EmptyDispatch } from "../dispatch";
 import { getTypeFromElement, isValidElement } from "../element";
-import { globalDispatch } from "../share";
+import { EmptyRenderScope } from "../scope";
 
 import { checkFiberElement, checkFiberHook, checkFiberInstance } from "./check";
 import { NODE_TYPE, PATCH_TYPE, UPDATE_TYPE } from "./symbol";
@@ -9,6 +10,7 @@ import type { FiberDispatch } from "../dispatch";
 import type { MyReactElement, MyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
 import type { HOOK_TYPE, Action, MyReactHookNode } from "../hook";
 import type { MyReactInternalInstance } from "../internal";
+import type { RenderScope } from "../scope";
 
 type RenderNode = { [p: string]: any };
 
@@ -53,7 +55,7 @@ export class MyReactFiberNode {
 
   child: MyReactFiberNode | null = null;
 
-  root: MyReactFiberNode;
+  root: MyReactFiberNodeRoot;
 
   parent: MyReactFiberNode | null = null;
 
@@ -93,7 +95,7 @@ export class MyReactFiberNode {
     this.fiberIndex = fiberIndex;
     this.parent = parent;
     this.element = element;
-    this.root = this.parent?.root || this;
+    this.root = this.parent?.root || (this as unknown as MyReactFiberNodeRoot);
     this.initialPops();
   }
 
@@ -112,9 +114,10 @@ export class MyReactFiberNode {
   initialParent() {
     if (this.parent) {
       this.parent.addChild(this);
-      globalDispatch.current.resolveSuspenseMap(this);
-      globalDispatch.current.resolveContextMap(this);
-      globalDispatch.current.resolveStrictMap(this);
+      const globalDispatch = this.root.dispatch;
+      globalDispatch.resolveSuspenseMap(this);
+      globalDispatch.resolveContextMap(this);
+      globalDispatch.resolveStrictMap(this);
     }
   }
 
@@ -282,7 +285,7 @@ export class MyReactFiberNode {
   }
 
   update() {
-    globalDispatch.current.trigger(this);
+    this.root.dispatch.trigger(this);
   }
 
   unmount() {
@@ -292,6 +295,12 @@ export class MyReactFiberNode {
     this.mode = UPDATE_TYPE.__initial__;
     this.patch = PATCH_TYPE.__initial__;
   }
+}
+
+export class MyReactFiberNodeRoot extends MyReactFiberNode {
+  dispatch: FiberDispatch = new EmptyDispatch();
+
+  scope: RenderScope = new EmptyRenderScope();
 }
 
 export class MyReactFiberNodeDev extends MyReactFiberNode {

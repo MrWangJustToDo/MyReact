@@ -1,13 +1,8 @@
-import { EmptyDispatch } from "../dispatch";
-
 import { createRef } from "./createRef";
 
-import type { FiberDispatch } from "../dispatch";
 import type { MyReactFiberNode } from "../fiber";
 
 export const globalLoop = createRef(false);
-
-export const globalDispatch = createRef<FiberDispatch>(new EmptyDispatch());
 
 export const currentRunningFiber = createRef<MyReactFiberNode | null>(null);
 

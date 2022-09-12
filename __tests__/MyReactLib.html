@@ -69,9 +69,7 @@
 
       const useTime = () => {
         const [val, setVal] = useState(100);
-        const [currentTime, setCurrentTime] = useState(() =>
-          new Date().toLocaleString()
-        );
+        const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
         useEffect(() => {
           console.log("init");
           const id = setInterval(() => {
@@ -90,8 +88,7 @@
         });
 
         useEffect(() => {
-          const action = (e) =>
-            setCurrentPosition({ x: e.clientX, y: e.clientY });
+          const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
           window.addEventListener("mousemove", action);
           return () => window.removeEventListener("mousemove", action);
         }, []);
@@ -169,26 +166,11 @@
           <div id="1010" ref={ref}>
             <button onClick={() => setVal(Math.random())}>{val}</button>
             <br />
-            <button
-              onClick={useCallback(
-                () => props.handler(Math.random()),
-                [props.handler]
-              )}
-            >
-              {val}
-            </button>
+            <button onClick={useCallback(() => props.handler(Math.random()), [props.handler])}>{val}</button>
             <br />
             {v > 0.5 ? <div>123</div> : <p>456</p>}
-            <input
-              type="text"
-              value={v}
-              onInput={(e) => setV(e.target.value)}
-            />
-            <input
-              type="text"
-              value={2020}
-              onInput={(e) => setV(e.target.value)}
-            />
+            <input type="text" value={v} onInput={(e) => setV(e.target.value)} />
+            <input type="text" value={2020} onInput={(e) => setV(e.target.value)} />
             <p>{time}</p>
             <p className="green">{val}</p>
             <J {...props} />
@@ -214,16 +196,8 @@
         return (
           <div id="1010" ref={ref}>
             {v > 0.5 ? <div>123</div> : <p>456</p>}
-            <input
-              type="text"
-              value={v}
-              onInput={(e) => setV(e.target.value)}
-            />
-            <input
-              type="text"
-              value={v}
-              onInput={(e) => setV(e.target.value)}
-            />
+            <input type="text" value={v} onInput={(e) => setV(e.target.value)} />
+            <input type="text" value={v} onInput={(e) => setV(e.target.value)} />
           </div>
         );
       });
@@ -393,9 +367,7 @@
             </div>
             <>{123}</>
             <div style={{ border: "1px solid red" }}>123{children}</div>
-            <div style={{ border: "1px solid green" }}>
-              {overWriteChildren}57686
-            </div>
+            <div style={{ border: "1px solid green" }}>{overWriteChildren}57686</div>
             <strong>context {context}</strong>
           </div>
         );

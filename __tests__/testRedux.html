@@ -88,12 +88,8 @@
       return (
         <div>
           123 redux value: {value}
-          <button onClick={() => dispatch({ type: "counter/incremented" })}>
-            add
-          </button>
-          <button onClick={() => dispatch({ type: "counter/decremented" })}>
-            del
-          </button>
+          <button onClick={() => dispatch({ type: "counter/incremented" })}>add</button>
+          <button onClick={() => dispatch({ type: "counter/decremented" })}>del</button>
         </div>
       );
     };

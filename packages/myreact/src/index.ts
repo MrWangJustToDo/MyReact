@@ -9,6 +9,7 @@ import {
   My_React_Consumer as Consumer,
   My_React_Suspense as Suspense,
   My_React_ForwardRef as ForwardRef,
+  My_React_KeepLive as KeepLive,
   createElement,
   cloneElement,
   isValidElement,
@@ -22,6 +23,7 @@ import {
   unmountFiberNode,
   createFiberNode,
   updateFiberNode,
+  initialFiberNode,
   NODE_TYPE,
   PATCH_TYPE,
   UPDATE_TYPE,
@@ -46,7 +48,6 @@ import {
   log,
   logHook,
   LinkTreeList,
-  globalDispatch,
   currentRunningFiber,
   currentFunctionFiber,
   currentHookDeepIndex,
@@ -73,6 +74,7 @@ const __my_react_shared__ = {
   unmountFiberNode,
   createFiberNode,
   updateFiberNode,
+  initialFiberNode,
   createHookNode,
   safeCallWithFiber,
   enableAsyncUpdate,
@@ -90,7 +92,6 @@ const __my_react_internal__ = {
   MyReactFiberNode,
   MyReactInternalInstance,
   globalLoop,
-  globalDispatch,
   currentRunningFiber,
   currentHookDeepIndex,
   currentFunctionFiber,
@@ -126,6 +127,7 @@ const React = {
   Suspense,
   StrictMode,
   ForwardRef,
+  KeepLive,
 
   useRef,
   useMemo,
@@ -163,6 +165,7 @@ export {
   Consumer,
   Fragment,
   Suspense,
+  KeepLive,
   StrictMode,
   ForwardRef,
   useRef,
@@ -183,6 +186,8 @@ export {
 
 export type { FiberDispatch } from "./dispatch";
 
+export type { RenderScope } from "./scope";
+
 export type { CreateHookParams, MyReactHookNode } from "./hook";
 
 export type {
@@ -198,6 +203,6 @@ export type {
 
 export type { MyReactInternalInstance } from "./internal";
 
-export type { MyReactFiberNode, MyReactFiberNodeDev, UpdateQueue } from "./fiber";
+export type { MyReactFiberNode, MyReactFiberNodeDev, MyReactFiberNodeRoot, UpdateQueue } from "./fiber";
 
 export type { MyReactComponent, MyReactComponentStaticType, MixinMyReactComponentType } from "./component";

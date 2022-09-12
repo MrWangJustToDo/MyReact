@@ -123,23 +123,19 @@ export const checkValidKey = (children: ArrayMyReactElementNode) => {
 };
 
 export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => {
-  if (__DEV__) {
-    children.forEach((child) => {
-      if (Array.isArray(child)) {
-        checkValidKey(child);
-      } else {
-        if (isValidElement(child)) child._store["validKey"] = true;
-      }
-    });
-  }
+  children.forEach((child) => {
+    if (Array.isArray(child)) {
+      checkValidKey(child);
+    } else {
+      if (isValidElement(child)) child._store["validKey"] = true;
+    }
+  });
 };
 
 export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) => {
-  if (__DEV__) {
-    if (Array.isArray(children)) {
-      checkValidKey(children);
-    } else {
-      if (isValidElement(children)) children._store["validKey"] = true;
-    }
+  if (Array.isArray(children)) {
+    checkValidKey(children);
+  } else {
+    if (isValidElement(children)) children._store["validKey"] = true;
   }
 };

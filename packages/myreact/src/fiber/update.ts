@@ -1,4 +1,4 @@
-import { globalDispatch, isNormalEquals } from "../share";
+import { isNormalEquals } from "../share";
 
 import { NODE_TYPE, UPDATE_TYPE } from "./symbol";
 
@@ -23,6 +23,8 @@ export const updateFiberNode = (
   fiber.installElement(nextElement);
 
   fiber.installParent(parent);
+
+  const globalDispatch = fiber.root.dispatch;
 
   if (__DEV__) {
     fiber.checkElement();
@@ -49,7 +51,7 @@ export const updateFiberNode = (
             typedNextElement.props.value as Record<string, unknown>
           )
         ) {
-          globalDispatch.current.pendingContext(fiber);
+          globalDispatch.pendingContext(fiber);
         }
       }
 
@@ -57,18 +59,18 @@ export const updateFiberNode = (
         const typedPrevElement = prevElement as MyReactElement;
         const typedNextElement = nextElement as MyReactElement;
         if (!isNormalEquals(typedPrevElement.props, typedNextElement.props, false)) {
-          globalDispatch.current.pendingUpdate(fiber);
+          globalDispatch.pendingUpdate(fiber);
         }
       }
 
       if (fiber.type & NODE_TYPE.__isTextNode__) {
-        globalDispatch.current.pendingUpdate(fiber);
+        globalDispatch.pendingUpdate(fiber);
       }
     }
   }
 
   if (fiber !== prevFiber) {
-    globalDispatch.current.pendingPosition(fiber);
+    globalDispatch.pendingPosition(fiber);
   }
 
   return fiber;

@@ -66,16 +66,8 @@
     return to.concat(ar || Array.prototype.slice.call(from));
   }
 
-  var createRef = function (value) {
-    return { current: value };
-  };
-
   var EmptyDispatch = /** @class */ (function () {
     function EmptyDispatch() {
-      this.rootFiber = null;
-      this.rootContainer = {};
-      this.isAppMounted = false;
-      this.isAppCrash = false;
       this.strictMap = {};
       this.suspenseMap = {};
       this.effectMap = {};
@@ -119,9 +111,9 @@
     };
     EmptyDispatch.prototype.reconcileCreate = function (_list) {};
     EmptyDispatch.prototype.reconcileUpdate = function (_list) {};
-    EmptyDispatch.prototype.beginProgressList = function () {};
-    EmptyDispatch.prototype.endProgressList = function () {};
-    EmptyDispatch.prototype.generateUpdateList = function (_fiber) {};
+    EmptyDispatch.prototype.beginProgressList = function (_scope) {};
+    EmptyDispatch.prototype.endProgressList = function (_scope) {};
+    EmptyDispatch.prototype.generateUpdateList = function (_fiber, _scope) {};
     // end
     EmptyDispatch.prototype.pendingCreate = function (_fiber) {};
     EmptyDispatch.prototype.pendingUpdate = function (_fiber) {};
@@ -132,13 +124,150 @@
     EmptyDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {};
     EmptyDispatch.prototype.pendingEffect = function (_fiber, _effect) {};
     EmptyDispatch.prototype.removeFiber = function (_fiber) {};
-    EmptyDispatch.prototype.updateAllSync = function () {};
-    EmptyDispatch.prototype.updateAllAsync = function () {};
     return EmptyDispatch;
   })();
 
+  var EmptyRenderScope = /** @class */ (function () {
+    function EmptyRenderScope() {
+      this.rootFiber = null;
+      this.rootContainer = {};
+      this.isAppMounted = false;
+      this.isAppCrash = false;
+      this.modifyFiberArray = [];
+      this.modifyFiberRoot = null;
+      this.updateFiberListArray = [];
+      this.updateFiberList = null;
+    }
+    return EmptyRenderScope;
+  })();
+
+  var Effect_TYPE;
+  (function (Effect_TYPE) {
+    Effect_TYPE[(Effect_TYPE["__initial__"] = 0)] = "__initial__";
+    Effect_TYPE[(Effect_TYPE["__pendingEffect__"] = 1)] = "__pendingEffect__";
+  })(Effect_TYPE || (Effect_TYPE = {}));
+
+  var MyReactInternalInstance = /** @class */ (function () {
+    function MyReactInternalInstance() {
+      this.mode = Effect_TYPE.__initial__;
+      this.context = null;
+      this._contextFiber = null;
+      this._ownerFiber = null;
+    }
+    Object.defineProperty(MyReactInternalInstance.prototype, "isMyReactInstance", {
+      get: function () {
+        return true;
+      },
+      enumerable: false,
+      configurable: true,
+    });
+    MyReactInternalInstance.prototype.setContext = function (fiber) {
+      var _a, _b, _c, _d;
+      (_a = this._ownerFiber) === null || _a === void 0 ? void 0 : _a.removeContext(this._contextFiber);
+      (_b = this._contextFiber) === null || _b === void 0 ? void 0 : _b.removeDependence(this);
+      this._contextFiber = fiber;
+      (_c = this._contextFiber) === null || _c === void 0 ? void 0 : _c.addDependence(this);
+      (_d = this._ownerFiber) === null || _d === void 0 ? void 0 : _d.addContext(this._contextFiber);
+    };
+    MyReactInternalInstance.prototype.setOwner = function (fiber) {
+      this._ownerFiber = fiber;
+    };
+    MyReactInternalInstance.prototype.unmount = function () {
+      var _a, _b;
+      this.mode = Effect_TYPE.__initial__;
+      (_a = this._contextFiber) === null || _a === void 0 ? void 0 : _a.removeDependence(this);
+      (_b = this._ownerFiber) === null || _b === void 0 ? void 0 : _b.removeContext(this._contextFiber);
+    };
+    return MyReactInternalInstance;
+  })();
+
+  var HOOK_TYPE;
+  (function (HOOK_TYPE) {
+    HOOK_TYPE["useRef"] = "useRef";
+    HOOK_TYPE["useMemo"] = "useMemo";
+    HOOK_TYPE["useState"] = "useState";
+    HOOK_TYPE["useEffect"] = "useEffect";
+    HOOK_TYPE["useContext"] = "useContext";
+    HOOK_TYPE["useReducer"] = "useReducer";
+    HOOK_TYPE["useCallback"] = "useCallback";
+    HOOK_TYPE["useDebugValue"] = "useDebugValue";
+    HOOK_TYPE["useLayoutEffect"] = "useLayoutEffect";
+    HOOK_TYPE["useImperativeHandle"] = "useImperativeHandle";
+  })(HOOK_TYPE || (HOOK_TYPE = {}));
+
+  var MyReactHookNode = /** @class */ (function (_super) {
+    __extends(MyReactHookNode, _super);
+    function MyReactHookNode(hookIndex, hookType, value, reducer, deps) {
+      var _this = _super.call(this) || this;
+      _this.hookIndex = 0;
+      _this.hookNext = null;
+      _this.hookPrev = null;
+      _this.cancel = null;
+      _this.effect = false;
+      _this.value = null;
+      _this.deps = [];
+      _this.result = null;
+      _this.dispatch = function (action) {
+        var _a;
+        var updater = {
+          type: "hook",
+          trigger: _this,
+          payLoad: action,
+        };
+        (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
+        Promise.resolve().then(function () {
+          var _a;
+          (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update();
+        });
+      };
+      _this.deps = deps;
+      _this.value = value;
+      _this.reducer = reducer;
+      _this.hookType = hookType;
+      _this.hookIndex = hookIndex;
+      return _this;
+    }
+    Object.defineProperty(MyReactHookNode.prototype, "isMyReactHook", {
+      get: function () {
+        return true;
+      },
+      enumerable: false,
+      configurable: true,
+    });
+    MyReactHookNode.prototype.unmount = function () {
+      _super.prototype.unmount.call(this);
+      if (this.hookType === HOOK_TYPE.useEffect || this.hookType === HOOK_TYPE.useLayoutEffect) {
+        this.effect = false;
+        this.cancel && this.cancel();
+        return;
+      }
+    };
+    return MyReactHookNode;
+  })(MyReactInternalInstance);
+
+  var defaultReducer = function (state, action) {
+    return typeof action === "function" ? action(state) : action;
+  };
+  var createHookNode = function (_a, fiber) {
+    var hookIndex = _a.hookIndex,
+      hookType = _a.hookType,
+      value = _a.value,
+      reducer = _a.reducer,
+      deps = _a.deps;
+    var newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
+    newHookNode.setOwner(fiber);
+    fiber.addHook(newHookNode);
+    {
+      fiber.checkHook();
+    }
+    return newHookNode;
+  };
+
+  var createRef = function (value) {
+    return { current: value };
+  };
+
   var globalLoop = createRef(false);
-  var globalDispatch = createRef(new EmptyDispatch());
   var currentRunningFiber = createRef(null);
   var currentFunctionFiber = createRef(null);
   var currentHookDeepIndex = createRef(0);
@@ -180,6 +309,7 @@
     if (fiber.type & NODE_TYPE.__isEmptyNode__) return "<Empty />";
     if (fiber.type & NODE_TYPE.__isSuspense__) return "<Suspense />";
     if (fiber.type & NODE_TYPE.__isStrictNode__) return "<Strict />";
+    if (fiber.type & NODE_TYPE.__isFragmentNode__) return "<Fragment />";
     if (fiber.type & NODE_TYPE.__isForwardRef__) return "<ForwardRef />";
     if (fiber.type & NODE_TYPE.__isContextProvider__) return "<Provider />";
     if (fiber.type & NODE_TYPE.__isContextConsumer__) return "<Consumer />";
@@ -259,7 +389,8 @@
       return action.call.apply(action, __spreadArray([null], args, false));
     } catch (e) {
       log({ message: e, level: "error" });
-      globalDispatch.current.isAppCrash = true;
+      var fiber = currentRunningFiber.current;
+      if (fiber) fiber.root.scope.isAppCrash = true;
       throw new Error(e.message);
     }
   };
@@ -274,7 +405,7 @@
       return action.call.apply(action, __spreadArray([null], args, false));
     } catch (e) {
       log({ message: e, level: "error", fiber: fiber });
-      globalDispatch.current.isAppCrash = true;
+      fiber.root.scope.isAppCrash = true;
       throw new Error(e.message);
     }
   };
@@ -446,155 +577,13 @@
     return LinkTreeList;
   })();
 
-  var Effect_TYPE;
-  (function (Effect_TYPE) {
-    Effect_TYPE[(Effect_TYPE["__initial__"] = 0)] = "__initial__";
-    Effect_TYPE[(Effect_TYPE["__pendingEffect__"] = 1)] = "__pendingEffect__";
-  })(Effect_TYPE || (Effect_TYPE = {}));
-
-  var MyReactInternalInstance = /** @class */ (function () {
-    function MyReactInternalInstance() {
-      this.mode = Effect_TYPE.__initial__;
-      this.context = null;
-      this._contextFiber = null;
-      this._ownerFiber = null;
-    }
-    Object.defineProperty(MyReactInternalInstance.prototype, "isMyReactInstance", {
-      get: function () {
-        return true;
-      },
-      enumerable: false,
-      configurable: true,
-    });
-    MyReactInternalInstance.prototype.setContext = function (fiber) {
-      var _a, _b, _c, _d;
-      (_a = this._ownerFiber) === null || _a === void 0 ? void 0 : _a.removeContext(this._contextFiber);
-      (_b = this._contextFiber) === null || _b === void 0 ? void 0 : _b.removeDependence(this);
-      this._contextFiber = fiber;
-      (_c = this._contextFiber) === null || _c === void 0 ? void 0 : _c.addDependence(this);
-      (_d = this._ownerFiber) === null || _d === void 0 ? void 0 : _d.addContext(this._contextFiber);
-    };
-    MyReactInternalInstance.prototype.setOwner = function (fiber) {
-      this._ownerFiber = fiber;
-    };
-    MyReactInternalInstance.prototype.unmount = function () {
-      var _a, _b;
-      this.mode = Effect_TYPE.__initial__;
-      (_a = this._contextFiber) === null || _a === void 0 ? void 0 : _a.removeDependence(this);
-      (_b = this._ownerFiber) === null || _b === void 0 ? void 0 : _b.removeContext(this._contextFiber);
-    };
-    return MyReactInternalInstance;
-  })();
-
-  var HOOK_TYPE;
-  (function (HOOK_TYPE) {
-    HOOK_TYPE["useRef"] = "useRef";
-    HOOK_TYPE["useMemo"] = "useMemo";
-    HOOK_TYPE["useState"] = "useState";
-    HOOK_TYPE["useEffect"] = "useEffect";
-    HOOK_TYPE["useContext"] = "useContext";
-    HOOK_TYPE["useReducer"] = "useReducer";
-    HOOK_TYPE["useCallback"] = "useCallback";
-    HOOK_TYPE["useDebugValue"] = "useDebugValue";
-    HOOK_TYPE["useLayoutEffect"] = "useLayoutEffect";
-    HOOK_TYPE["useImperativeHandle"] = "useImperativeHandle";
-  })(HOOK_TYPE || (HOOK_TYPE = {}));
-
-  var MyReactHookNode = /** @class */ (function (_super) {
-    __extends(MyReactHookNode, _super);
-    function MyReactHookNode(hookIndex, hookType, value, reducer, deps) {
-      var _this = _super.call(this) || this;
-      _this.hookIndex = 0;
-      _this.hookNext = null;
-      _this.hookPrev = null;
-      _this.cancel = null;
-      _this.effect = false;
-      _this.value = null;
-      _this.deps = [];
-      _this.result = null;
-      _this.dispatch = function (action) {
-        var _a;
-        var updater = {
-          type: "hook",
-          trigger: _this,
-          payLoad: action,
-        };
-        (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
-        Promise.resolve().then(function () {
-          var _a;
-          (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update();
-        });
-      };
-      _this.deps = deps;
-      _this.value = value;
-      _this.reducer = reducer;
-      _this.hookType = hookType;
-      _this.hookIndex = hookIndex;
-      return _this;
-    }
-    Object.defineProperty(MyReactHookNode.prototype, "isMyReactHook", {
-      get: function () {
-        return true;
-      },
-      enumerable: false,
-      configurable: true,
-    });
-    MyReactHookNode.prototype.unmount = function () {
-      _super.prototype.unmount.call(this);
-      if (this.hookType === HOOK_TYPE.useEffect || this.hookType === HOOK_TYPE.useLayoutEffect) {
-        this.effect = false;
-        this.cancel && this.cancel();
-        return;
-      }
-    };
-    return MyReactHookNode;
-  })(MyReactInternalInstance);
-
-  var defaultReducer = function (state, action) {
-    return typeof action === "function" ? action(state) : action;
-  };
-  var createHookNode = function (_a, fiber) {
-    var hookIndex = _a.hookIndex,
-      hookType = _a.hookType,
-      value = _a.value,
-      reducer = _a.reducer,
-      deps = _a.deps;
-    var newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
-    newHookNode.setOwner(fiber);
-    fiber.addHook(newHookNode);
-    {
-      fiber.checkHook();
-    }
-    return newHookNode;
-  };
-  // export const getHookNode = (
-  //   { hookIndex, hookType, value, reducer, deps }: CreateHookParams,
-  //   fiber: MyReactFiberNode | null
-  // ) => {
-  //   if (!fiber) throw new Error("can not use hook out of component");
-  //   let currentHook: null | MyReactHookNode = null;
-  //   if (fiber.hookNodeArray.length > hookIndex) {
-  //     currentHook = fiber.hookNodeArray[hookIndex];
-  //     if (currentHook.hookType !== hookType) {
-  //       const array = fiber.hookTypeArray.slice(0, hookIndex);
-  //       throw new Error(getHookTree([...array, currentHook.hookType], [...array, hookType]));
-  //     }
-  //     currentHook.setOwner(fiber);
-  //     currentHook.updateResult(value, reducer || defaultReducer, deps);
-  //   } else if (!(fiber.mode & UPDATE_TYPE.__update__)) {
-  //     // not a update so it is a initial fiber
-  //     currentHook = createHookNode({ hookIndex, hookType, value, reducer, deps }, fiber);
-  //   } else {
-  //     throw new Error(getHookTree([...fiber.hookTypeArray], [...fiber.hookTypeArray, hookType]));
-  //   }
-  //   effect(fiber, currentHook);
-  //   return currentHook;
-  // };
-
+  var emptyDeps = [];
   var useState = function (initial) {
     var currentFiber = currentFunctionFiber.current;
+    if (!currentFiber) throw new Error("can not use hook outside of component");
+    var globalDispatch = currentFiber.root.dispatch;
     var currentIndex = currentHookDeepIndex.current++;
-    var currentHookNode = globalDispatch.current.resolveHook(currentFiber, {
+    var currentHookNode = globalDispatch.resolveHook(currentFiber, {
       hookIndex: currentIndex,
       hookType: HOOK_TYPE.useState,
       value:
@@ -604,14 +593,16 @@
               return initial;
             },
       reducer: null,
-      deps: [],
+      deps: emptyDeps,
     });
     return [currentHookNode.result, currentHookNode.dispatch];
   };
   var useEffect = function (action, deps) {
     var currentFiber = currentFunctionFiber.current;
+    if (!currentFiber) throw new Error("can not use hook outside of component");
+    var globalDispatch = currentFiber.root.dispatch;
     var currentIndex = currentHookDeepIndex.current++;
-    globalDispatch.current.resolveHook(currentFiber, {
+    globalDispatch.resolveHook(currentFiber, {
       hookIndex: currentIndex,
       hookType: HOOK_TYPE.useEffect,
       value: action,
@@ -621,8 +612,10 @@
   };
   var useLayoutEffect = function (action, deps) {
     var currentFiber = currentFunctionFiber.current;
+    if (!currentFiber) throw new Error("can not use hook outside of component");
+    var globalDispatch = currentFiber.root.dispatch;
     var currentIndex = currentHookDeepIndex.current++;
-    globalDispatch.current.resolveHook(currentFiber, {
+    globalDispatch.resolveHook(currentFiber, {
       hookIndex: currentIndex,
       hookType: HOOK_TYPE.useLayoutEffect,
       value: action,
@@ -632,8 +625,10 @@
   };
   var useCallback = function (callback, deps) {
     var currentFiber = currentFunctionFiber.current;
+    if (!currentFiber) throw new Error("can not use hook outside of component");
+    var globalDispatch = currentFiber.root.dispatch;
     var currentIndex = currentHookDeepIndex.current++;
-    var currentHookNode = globalDispatch.current.resolveHook(currentFiber, {
+    var currentHookNode = globalDispatch.resolveHook(currentFiber, {
       hookIndex: currentIndex,
       hookType: HOOK_TYPE.useCallback,
       value: callback,
@@ -644,8 +639,10 @@
   };
   var useMemo = function (action, deps) {
     var currentFiber = currentFunctionFiber.current;
+    if (!currentFiber) throw new Error("can not use hook outside of component");
+    var globalDispatch = currentFiber.root.dispatch;
     var currentIndex = currentHookDeepIndex.current++;
-    var currentHookNode = globalDispatch.current.resolveHook(currentFiber, {
+    var currentHookNode = globalDispatch.resolveHook(currentFiber, {
       hookIndex: currentIndex,
       hookType: HOOK_TYPE.useMemo,
       value: action,
@@ -656,32 +653,38 @@
   };
   var useRef = function (value) {
     var currentFiber = currentFunctionFiber.current;
+    if (!currentFiber) throw new Error("can not use hook outside of component");
+    var globalDispatch = currentFiber.root.dispatch;
     var currentIndex = currentHookDeepIndex.current++;
-    var currentHookNode = globalDispatch.current.resolveHook(currentFiber, {
+    var currentHookNode = globalDispatch.resolveHook(currentFiber, {
       hookIndex: currentIndex,
       hookType: HOOK_TYPE.useRef,
       value: createRef(value),
       reducer: null,
-      deps: [],
+      deps: emptyDeps,
     });
     return currentHookNode.result;
   };
   var useContext = function (Context) {
     var currentFiber = currentFunctionFiber.current;
+    if (!currentFiber) throw new Error("can not use hook outside of component");
+    var globalDispatch = currentFiber.root.dispatch;
     var currentIndex = currentHookDeepIndex.current++;
-    var currentHookNode = globalDispatch.current.resolveHook(currentFiber, {
+    var currentHookNode = globalDispatch.resolveHook(currentFiber, {
       hookIndex: currentIndex,
       hookType: HOOK_TYPE.useContext,
       value: Context,
       reducer: null,
-      deps: [],
+      deps: emptyDeps,
     });
     return currentHookNode.result;
   };
   var useReducer = function (reducer, initialArgs, init) {
     var currentFiber = currentFunctionFiber.current;
+    if (!currentFiber) throw new Error("can not use hook outside of component");
+    var globalDispatch = currentFiber.root.dispatch;
     var currentIndex = currentHookDeepIndex.current++;
-    var currentHookNode = globalDispatch.current.resolveHook(currentFiber, {
+    var currentHookNode = globalDispatch.resolveHook(currentFiber, {
       hookIndex: currentIndex,
       hookType: HOOK_TYPE.useReducer,
       value:
@@ -693,14 +696,16 @@
               return initialArgs;
             },
       reducer: reducer,
-      deps: [],
+      deps: emptyDeps,
     });
     return [currentHookNode.result, currentHookNode.dispatch];
   };
   var useImperativeHandle = function (ref, createHandle, deps) {
     var currentFiber = currentFunctionFiber.current;
+    if (!currentFiber) throw new Error("can not use hook outside of component");
+    var globalDispatch = currentFiber.root.dispatch;
     var currentIndex = currentHookDeepIndex.current++;
-    globalDispatch.current.resolveHook(currentFiber, {
+    globalDispatch.resolveHook(currentFiber, {
       hookIndex: currentIndex,
       hookType: HOOK_TYPE.useImperativeHandle,
       value: ref,
@@ -871,9 +876,10 @@
     MyReactFiberNode.prototype.initialParent = function () {
       if (this.parent) {
         this.parent.addChild(this);
-        globalDispatch.current.resolveSuspenseMap(this);
-        globalDispatch.current.resolveContextMap(this);
-        globalDispatch.current.resolveStrictMap(this);
+        var globalDispatch = this.root.dispatch;
+        globalDispatch.resolveSuspenseMap(this);
+        globalDispatch.resolveContextMap(this);
+        globalDispatch.resolveStrictMap(this);
       }
     };
     MyReactFiberNode.prototype.installParent = function (parent) {
@@ -1026,7 +1032,7 @@
     // TODO
     MyReactFiberNode.prototype.checkInstance = function () {};
     MyReactFiberNode.prototype.update = function () {
-      globalDispatch.current.trigger(this);
+      this.root.dispatch.trigger(this);
     };
     MyReactFiberNode.prototype.unmount = function () {
       this.hookNodeArray.forEach(function (hook) {
@@ -1039,6 +1045,16 @@
     };
     return MyReactFiberNode;
   })();
+  /** @class */ (function (_super) {
+    __extends(MyReactFiberNodeRoot, _super);
+    function MyReactFiberNodeRoot() {
+      var _this = (_super !== null && _super.apply(this, arguments)) || this;
+      _this.dispatch = new EmptyDispatch();
+      _this.scope = new EmptyRenderScope();
+      return _this;
+    }
+    return MyReactFiberNodeRoot;
+  })(MyReactFiberNode);
   /** @class */ (function (_super) {
     __extends(MyReactFiberNodeDev, _super);
     function MyReactFiberNodeDev() {
@@ -1059,6 +1075,27 @@
     return MyReactFiberNodeDev;
   })(MyReactFiberNode);
 
+  var initialFiberNode = function (fiber) {
+    {
+      fiber.checkElement();
+    }
+    fiber.initialType();
+    fiber.initialParent();
+    var globalDispatch = fiber.root.dispatch;
+    globalDispatch.pendingCreate(fiber);
+    globalDispatch.pendingUpdate(fiber);
+    globalDispatch.pendingAppend(fiber);
+    var element = fiber.element;
+    if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
+      if (typeof element === "object" && element !== null && element.ref) {
+        globalDispatch.pendingLayoutEffect(fiber, function () {
+          return fiber.applyRef();
+        });
+      }
+    }
+    return fiber;
+  };
+
   var createFiberNode = function (_a, element) {
     var fiberIndex = _a.fiberIndex,
       parent = _a.parent,
@@ -1070,16 +1107,17 @@
     }
     newFiberNode.initialType();
     newFiberNode.initialParent();
-    globalDispatch.current.pendingCreate(newFiberNode);
-    globalDispatch.current.pendingUpdate(newFiberNode);
+    var globalDispatch = newFiberNode.root.dispatch;
+    globalDispatch.pendingCreate(newFiberNode);
+    globalDispatch.pendingUpdate(newFiberNode);
     if (type === "append") {
-      globalDispatch.current.pendingAppend(newFiberNode);
+      globalDispatch.pendingAppend(newFiberNode);
     } else {
-      globalDispatch.current.pendingPosition(newFiberNode);
+      globalDispatch.pendingPosition(newFiberNode);
     }
     if (newFiberNode.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
       if (element.ref) {
-        globalDispatch.current.pendingLayoutEffect(newFiberNode, function () {
+        globalDispatch.pendingLayoutEffect(newFiberNode, function () {
           return newFiberNode.applyRef();
         });
       }
@@ -1095,6 +1133,7 @@
     // make sure invoke `installParent` after `installElement`
     fiber.installElement(nextElement);
     fiber.installParent(parent);
+    var globalDispatch = fiber.root.dispatch;
     {
       fiber.checkElement();
     }
@@ -1113,23 +1152,23 @@
           var typedPrevElement = prevElement;
           var typedNextElement = nextElement;
           if (!isNormalEquals(typedPrevElement.props.value, typedNextElement.props.value)) {
-            globalDispatch.current.pendingContext(fiber);
+            globalDispatch.pendingContext(fiber);
           }
         }
         if (fiber.type & NODE_TYPE.__isPlainNode__) {
           var typedPrevElement = prevElement;
           var typedNextElement = nextElement;
           if (!isNormalEquals(typedPrevElement.props, typedNextElement.props, false)) {
-            globalDispatch.current.pendingUpdate(fiber);
+            globalDispatch.pendingUpdate(fiber);
           }
         }
         if (fiber.type & NODE_TYPE.__isTextNode__) {
-          globalDispatch.current.pendingUpdate(fiber);
+          globalDispatch.pendingUpdate(fiber);
         }
       }
     }
     if (fiber !== prevFiber) {
-      globalDispatch.current.pendingPosition(fiber);
+      globalDispatch.pendingPosition(fiber);
     }
     return fiber;
   };
@@ -1137,7 +1176,7 @@
   var unmountFiberNode = function (fiber) {
     fiber.children.forEach(unmountFiberNode);
     fiber.unmount();
-    globalDispatch.current.removeFiber(fiber);
+    fiber.root.dispatch.removeFiber(fiber);
   };
 
   var My_React_Element = Symbol.for("react.element");
@@ -1151,6 +1190,7 @@
   var My_React_Lazy = Symbol.for("react.lazy");
   var My_React_Suspense = Symbol.for("react.suspense");
   var My_React_Strict = Symbol.for("react.strict");
+  var My_React_KeepLive = Symbol.for("react.keep_live");
 
   function isValidElement(element) {
     return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
@@ -1249,23 +1289,19 @@
     });
   };
   var checkArrayChildrenKey = function (children) {
-    {
-      children.forEach(function (child) {
-        if (Array.isArray(child)) {
-          checkValidKey(child);
-        } else {
-          if (isValidElement(child)) child._store["validKey"] = true;
-        }
-      });
-    }
+    children.forEach(function (child) {
+      if (Array.isArray(child)) {
+        checkValidKey(child);
+      } else {
+        if (isValidElement(child)) child._store["validKey"] = true;
+      }
+    });
   };
   var checkSingleChildrenKey = function (children) {
-    {
-      if (Array.isArray(children)) {
-        checkValidKey(children);
-      } else {
-        if (isValidElement(children)) children._store["validKey"] = true;
-      }
+    if (Array.isArray(children)) {
+      checkValidKey(children);
+    } else {
+      if (isValidElement(children)) children._store["validKey"] = true;
     }
   };
 
@@ -1322,10 +1358,14 @@
     var childrenLength = arguments.length - 2;
     if (childrenLength > 1) {
       children = Array.from(arguments).slice(2);
-      checkArrayChildrenKey(children);
+      {
+        checkArrayChildrenKey(children);
+      }
       props.children = children;
     } else if (childrenLength === 1) {
-      checkSingleChildrenKey(children);
+      {
+        checkSingleChildrenKey(children);
+      }
       props.children = children;
     }
     return createMyReactElement({
@@ -1378,10 +1418,14 @@
       var childrenLength = arguments.length - 2;
       if (childrenLength > 1) {
         children = Array.from(arguments).slice(2);
-        checkArrayChildrenKey(children);
+        {
+          checkArrayChildrenKey(children);
+        }
         props.children = children;
       } else if (childrenLength === 1) {
-        checkSingleChildrenKey(children);
+        {
+          checkSingleChildrenKey(children);
+        }
         props.children = children;
       }
       var clonedElement = createMyReactElement({
@@ -1585,6 +1629,7 @@
     unmountFiberNode: unmountFiberNode,
     createFiberNode: createFiberNode,
     updateFiberNode: updateFiberNode,
+    initialFiberNode: initialFiberNode,
     createHookNode: createHookNode,
     safeCallWithFiber: safeCallWithFiber,
     enableAsyncUpdate: enableAsyncUpdate,
@@ -1601,7 +1646,6 @@
     MyReactFiberNode: MyReactFiberNode,
     MyReactInternalInstance: MyReactInternalInstance,
     globalLoop: globalLoop,
-    globalDispatch: globalDispatch,
     currentRunningFiber: currentRunningFiber,
     currentHookDeepIndex: currentHookDeepIndex,
     currentFunctionFiber: currentFunctionFiber,
@@ -1632,6 +1676,7 @@
     Suspense: My_React_Suspense,
     StrictMode: My_React_Strict,
     ForwardRef: My_React_ForwardRef,
+    KeepLive: My_React_KeepLive,
     useRef: useRef,
     useMemo: useMemo,
     useState: useState,
@@ -1654,6 +1699,7 @@
   exports.Element = My_React_Element;
   exports.ForwardRef = My_React_ForwardRef;
   exports.Fragment = My_React_Fragment;
+  exports.KeepLive = My_React_KeepLive;
   exports.Portal = My_React_Portal;
   exports.Provider = My_React_Provider;
   exports.PureComponent = PureComponent;

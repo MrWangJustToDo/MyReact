@@ -17,7 +17,7 @@ import type {
   forwardRef,
 } from "@my-react/react";
 
-const { currentHookDeepIndex, currentFunctionFiber, currentRunningFiber, globalDispatch, NODE_TYPE, UPDATE_TYPE } =
+const { currentHookDeepIndex, currentFunctionFiber, currentRunningFiber, NODE_TYPE, UPDATE_TYPE } =
   __my_react_internal__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
@@ -47,7 +47,9 @@ const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
 };
 
 const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
-  globalDispatch.current.resolveHookQueue(fiber);
+  const globalDispatch = fiber.root.dispatch;
+
+  globalDispatch.resolveHookQueue(fiber);
 
   currentHookDeepIndex.current = 0;
 
@@ -90,7 +92,9 @@ const nextWorkMemo = (fiber: MyReactFiberNode) => {
   if (isClassComponent) {
     return nextWorkClassComponent(fiber);
   } else {
-    globalDispatch.current.resolveHookQueue(fiber);
+    const globalDispatch = fiber.root.dispatch;
+
+    globalDispatch.resolveHookQueue(fiber);
 
     currentHookDeepIndex.current = 0;
 
@@ -111,6 +115,8 @@ const nextWorkMemo = (fiber: MyReactFiberNode) => {
 const nextWorkLazy = (fiber: MyReactFiberNode) => {
   const { type, props } = fiber.element as MyReactElement;
 
+  const globalDispatch = fiber.root.dispatch;
+
   const typedType = type as ReturnType<typeof lazy>;
 
   if (typedType._loaded === true) {
@@ -120,7 +126,7 @@ const nextWorkLazy = (fiber: MyReactFiberNode) => {
 
     return nextWorkCommon(fiber, children);
   } else if (typedType._loading === false) {
-    if (globalDispatch.current.resolveLazy()) {
+    if (globalDispatch.resolveLazy()) {
       typedType._loading = true;
       Promise.resolve()
         .then(() => typedType.loader())
@@ -134,13 +140,15 @@ const nextWorkLazy = (fiber: MyReactFiberNode) => {
     }
   }
 
-  const children = globalDispatch.current.resolveSuspenseElement(fiber);
+  const children = globalDispatch.resolveSuspenseElement(fiber);
 
   return nextWorkCommon(fiber, children);
 };
 
 const nextWorkForwardRef = (fiber: MyReactFiberNode) => {
-  globalDispatch.current.resolveHookQueue(fiber);
+  const globalDispatch = fiber.root.dispatch;
+
+  globalDispatch.resolveHookQueue(fiber);
 
   const { type, ref, props } = fiber.element as MyReactElement;
 
@@ -176,6 +184,8 @@ const nextWorkNormal = (fiber: MyReactFiberNode) => {
 };
 
 const nextWorkConsumer = (fiber: MyReactFiberNode) => {
+  const globalDispatch = fiber.root.dispatch;
+
   const { type, props } = fiber.element as MyReactElement;
 
   const typedType = type as ReturnType<typeof createContext>["Consumer"];
@@ -187,15 +197,15 @@ const nextWorkConsumer = (fiber: MyReactFiberNode) => {
   const Context = typedType.Context as ReturnType<typeof createContext>;
 
   if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.mount) {
-    const ProviderFiber = globalDispatch.current.resolveContextFiber(fiber, Context);
+    const ProviderFiber = globalDispatch.resolveContextFiber(fiber, Context);
 
-    const context = globalDispatch.current.resolveContextValue(ProviderFiber, Context);
+    const context = globalDispatch.resolveContextValue(ProviderFiber, Context);
 
     fiber.instance.context = context;
 
     fiber.instance.setContext(ProviderFiber);
   } else {
-    const context = globalDispatch.current.resolveContextValue(fiber.instance._contextFiber, Context);
+    const context = globalDispatch.resolveContextValue(fiber.instance._contextFiber, Context);
 
     fiber.instance.context = context;
   }

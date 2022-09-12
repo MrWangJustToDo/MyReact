@@ -1,13 +1,11 @@
-import { __my_react_internal__ } from "@my-react/react";
+import type { FiberDispatch, RenderScope } from "@my-react/react";
 
-import { pendingUpdateFiberListArray } from "@ReactDOM_shared";
+export const reconcileUpdate = (globalDispatch: FiberDispatch, globalScope: RenderScope) => {
+  const allPendingList = globalScope.updateFiberListArray.slice(0);
 
-export const reconcileUpdate = () => {
-  const allPendingList = pendingUpdateFiberListArray.current.slice(0);
+  allPendingList.forEach((l) => globalDispatch.reconcileCreate(l));
 
-  allPendingList.forEach((l) => __my_react_internal__.globalDispatch.current.reconcileCreate(l));
+  allPendingList.forEach((l) => globalDispatch.reconcileUpdate(l));
 
-  allPendingList.forEach((l) => __my_react_internal__.globalDispatch.current.reconcileUpdate(l));
-
-  pendingUpdateFiberListArray.current = [];
+  globalScope.updateFiberListArray = [];
 };

@@ -7,9 +7,10 @@ import type {
   MaybeArrayMyReactElementNode,
   MyReactFiberNode,
   MyReactFiberNodeDev,
+  RenderScope,
 } from "@my-react/react";
 
-const { globalDispatch, MyReactFiberNode: MyReactFiberNodeClass, NODE_TYPE, UPDATE_TYPE } = __my_react_internal__;
+const { MyReactFiberNode: MyReactFiberNodeClass, NODE_TYPE, UPDATE_TYPE } = __my_react_internal__;
 
 const { updateFiberNode: _updateFiberNode, createFiberNode: _createFiberNode, enableKeyDiff } = __my_react_shared__;
 
@@ -56,7 +57,7 @@ const createFiberNode = (...props: Parameters<typeof _createFiberNode>) => {
       currentUpdateTime: timeNow,
     };
 
-    typedFiber._debugGlobalDispatch = globalDispatch.current;
+    typedFiber._debugGlobalDispatch = typedFiber.root.dispatch;
   }
 
   return fiber;
@@ -72,9 +73,10 @@ const updateFiberNode = (...props: Parameters<typeof _updateFiberNode>) => {
 
 const getKeyMatchedChildren = (
   newChildren: ArrayMyReactElementNode,
-  prevFiberChildren: Array<MyReactFiberNode | MyReactFiberNode[]>
+  prevFiberChildren: Array<MyReactFiberNode | MyReactFiberNode[]>,
+  renderScope: RenderScope
 ) => {
-  const isAppMounted = globalDispatch.current.isAppMounted;
+  const isAppMounted = renderScope.isAppMounted;
   if (!isAppMounted) return prevFiberChildren;
   if (!enableKeyDiff.current) return prevFiberChildren;
   if (!prevFiberChildren) return prevFiberChildren;
@@ -112,9 +114,10 @@ const getKeyMatchedChildren = (
 
 const getIsSameTypeNode = (
   newChild: MaybeArrayMyReactElementNode,
+  renderScope: RenderScope,
   prevFiberChild?: MyReactFiberNode | MyReactFiberNode[]
 ) => {
-  const isAppMounted = globalDispatch.current.isAppMounted;
+  const isAppMounted = renderScope.isAppMounted;
   if (!isAppMounted) return false;
   const newChildIsArray = Array.isArray(newChild);
   const prevElementChildIsArray = Array.isArray(prevFiberChild);
@@ -145,12 +148,21 @@ const getNewFiberWithUpdate = (
   prevFiberChild?: MyReactFiberNode | MyReactFiberNode[],
   assignPrevFiberChild?: MyReactFiberNode | MyReactFiberNode[]
 ): MyReactFiberNode | MyReactFiberNode[] => {
-  const isSameType = getIsSameTypeNode(newChild, assignPrevFiberChild);
+  const renderScope = parentFiber.root.scope;
+
+  const globalDispatch = parentFiber.root.dispatch;
+
+  const isSameType = getIsSameTypeNode(newChild, renderScope, assignPrevFiberChild);
+
   if (isSameType) {
     if (Array.isArray(newChild) && Array.isArray(prevFiberChild) && Array.isArray(assignPrevFiberChild)) {
-      const assignPrevFiberChildren = getKeyMatchedChildren(newChild, assignPrevFiberChild) as MyReactFiberNode[];
+      const assignPrevFiberChildren = getKeyMatchedChildren(
+        newChild,
+        assignPrevFiberChild,
+        renderScope
+      ) as MyReactFiberNode[];
       if (newChild.length < assignPrevFiberChildren.length) {
-        globalDispatch.current.pendingUnmount(parentFiber, assignPrevFiberChildren.slice(newChild.length));
+        globalDispatch.pendingUnmount(parentFiber, assignPrevFiberChildren.slice(newChild.length));
       }
       return newChild.map((v, index) =>
         getNewFiberWithUpdate(v, parentFiber, prevFiberChild[index], assignPrevFiberChildren[index])
@@ -167,7 +179,7 @@ const getNewFiberWithUpdate = (
     );
   } else {
     if (assignPrevFiberChild) {
-      globalDispatch.current.pendingUnmount(parentFiber, assignPrevFiberChild);
+      globalDispatch.pendingUnmount(parentFiber, assignPrevFiberChild);
     }
 
     if (Array.isArray(newChild)) {
@@ -208,7 +220,9 @@ export const transformChildrenFiber = (
 
   const prevFiberChildren = isUpdate ? parentFiber.renderedChildren : [];
 
-  const assignPrevFiberChildren = getKeyMatchedChildren(newChildren, prevFiberChildren);
+  const renderScope = parentFiber.root.scope;
+
+  const assignPrevFiberChildren = getKeyMatchedChildren(newChildren, prevFiberChildren, renderScope);
 
   parentFiber.beforeUpdate();
 

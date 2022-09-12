@@ -1,17 +1,10 @@
 import type { createContext, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 import type { CreateHookParams, MyReactHookNode } from "../hook";
+import type { RenderScope } from "../scope";
 import type { LinkTreeList } from "../share";
 
 export interface FiberDispatch {
-  rootFiber: MyReactFiberNode | null;
-
-  rootContainer: { [p: string]: any };
-
-  isAppMounted: boolean;
-
-  isAppCrash: boolean;
-
   suspenseMap: Record<string, MyReactElementNode>;
 
   strictMap: Record<string, boolean>;
@@ -64,11 +57,11 @@ export interface FiberDispatch {
 
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void;
 
-  beginProgressList(): void;
+  beginProgressList(_scope: RenderScope): void;
 
-  endProgressList(): void;
+  endProgressList(_scope: RenderScope): void;
 
-  generateUpdateList(_fiber: MyReactFiberNode): void;
+  generateUpdateList(_fiber: MyReactFiberNode, _scope: RenderScope): void;
 
   pendingCreate(_fiber: MyReactFiberNode): void;
 
@@ -87,8 +80,4 @@ export interface FiberDispatch {
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void;
 
   removeFiber(_fiber: MyReactFiberNode): void;
-
-  updateAllSync(): void;
-
-  updateAllAsync(): void;
 }

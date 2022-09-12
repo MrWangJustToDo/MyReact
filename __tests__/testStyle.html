@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <style>
+      .movearea {
+        transition: 0.3s background-color ease;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { memo, useState, useCallback, useEffect, useRef, useMemo, map, cloneElement, createContext } = React;
+
+      const usePosition = () => {
+        const [currentPosition, setCurrentPosition] = useState({
+          x: 0,
+          y: 0,
+        });
+
+        useEffect(() => {
+          const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPosition.x, currentPosition.y];
+      };
+
+      const App = () => {
+        const [x, setX] = useState(0);
+        const [globalX] = usePosition();
+
+        return (
+          <div onMousemove={(e) => setX(e.clientX)} style={{ backgroundColor: `hsl(${x}, 80%, 50%)` }} class="movearea">
+            <p>Move your mouse across this div...</p>
+            <p>x: {x}</p>
+            <p>globalX: {globalX}</p>
+          </div>
+        );
+      };
+
+      ReactDOM.render(<App />, document.querySelector("#root"));
+    </script>
+  </body>
+</html>

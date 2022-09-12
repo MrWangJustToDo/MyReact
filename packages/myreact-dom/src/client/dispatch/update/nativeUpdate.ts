@@ -5,10 +5,8 @@ import {
   enableHighlight,
   isEvent,
   isGone,
-  isHydrateRender,
   isNew,
   isProperty,
-  isServerRender,
   isStyle,
   IS_UNIT_LESS_NUMBER,
 } from "@ReactDOM_shared";
@@ -18,11 +16,15 @@ import { addEventListener, removeEventListener } from "../event";
 import { HighLight } from "./highlight";
 
 import type { MyReactFiberNode } from "@my-react/react";
+import type { DomScope } from "@ReactDOM_shared";
 
-const { globalDispatch, NODE_TYPE } = __my_react_internal__;
+const { NODE_TYPE } = __my_react_internal__;
 
 export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (!fiber.node) throw new Error("update error, dom not exist");
+
+  const scope = fiber.root.scope as DomScope;
+
   if (fiber.type & NODE_TYPE.__isTextNode__) {
     const typedDom = fiber.node as Text;
     typedDom.textContent = fiber.element as string;
@@ -129,12 +131,12 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     debugWithDOM(fiber);
   }
 
-  const isAppMounted = globalDispatch.current.isAppMounted;
+  const isAppMounted = fiber.root.scope.isAppMounted;
 
   if (
     isAppMounted &&
-    !isHydrateRender.current &&
-    !isServerRender.current &&
+    !scope.isHydrateRender &&
+    !scope.isServerRender &&
     (enableHighlight.current || (window as any).__highlight__)
   ) {
     HighLight.getHighLightInstance().highLight(fiber);

@@ -1,11 +1,9 @@
-import { __my_react_internal__ } from "@my-react/react";
-
 import type { MyReactFiberNode } from "@my-react/react";
 
-const { globalDispatch } = __my_react_internal__;
-
 export const layoutEffect = (fiber: MyReactFiberNode) => {
-  const layoutEffectMap = globalDispatch.current.layoutEffectMap;
+  const globalDispatch = fiber.root.dispatch;
+
+  const layoutEffectMap = globalDispatch.layoutEffectMap;
 
   const allLayoutEffect = layoutEffectMap[fiber.uid] || [];
 
@@ -15,7 +13,9 @@ export const layoutEffect = (fiber: MyReactFiberNode) => {
 };
 
 export const effect = (fiber: MyReactFiberNode) => {
-  const effectMap = globalDispatch.current.effectMap;
+  const globalDispatch = fiber.root.dispatch;
+
+  const effectMap = globalDispatch.effectMap;
 
   const allEffect = effectMap[fiber.uid] || [];
 

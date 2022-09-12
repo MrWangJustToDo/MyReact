@@ -119,10 +119,14 @@ export function createElement(
 
   if (childrenLength > 1) {
     children = Array.from(arguments).slice(2);
-    checkArrayChildrenKey(children);
+    if (__DEV__) {
+      checkArrayChildrenKey(children);
+    }
     props.children = children;
   } else if (childrenLength === 1) {
-    checkSingleChildrenKey(children as MyReactElementNode);
+    if (__DEV__) {
+      checkSingleChildrenKey(children as MyReactElementNode);
+    }
     props.children = children;
   }
 
@@ -175,10 +179,14 @@ export function cloneElement(element: MyReactElementNode, config?: CreateElement
 
     if (childrenLength > 1) {
       children = Array.from(arguments).slice(2);
-      checkArrayChildrenKey(children);
+      if (__DEV__) {
+        checkArrayChildrenKey(children);
+      }
       props.children = children;
     } else if (childrenLength === 1) {
-      checkSingleChildrenKey(children as MyReactElementNode);
+      if (__DEV__) {
+        checkSingleChildrenKey(children as MyReactElementNode);
+      }
       props.children = children;
     }
 

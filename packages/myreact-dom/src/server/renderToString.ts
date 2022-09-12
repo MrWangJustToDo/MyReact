@@ -1,34 +1,42 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { isServerRender, startRender } from "../shared";
+import { DomScope, startRender } from "../shared";
 
 import { ServerDispatch } from "./dispatch";
 import { PlainElement } from "./dom";
 
-import type { MyReactElement } from "@my-react/react";
+import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
 
-const { globalDispatch } = __my_react_internal__;
+const { MyReactFiberNode } = __my_react_internal__;
 
-const { createFiberNode } = __my_react_shared__;
+const { initialFiberNode } = __my_react_shared__;
 
 export const renderToString = (element: MyReactElement) => {
-  globalDispatch.current = new ServerDispatch();
+  const globalDispatch = new ServerDispatch();
 
-  isServerRender.current = true;
+  const globalScope = new DomScope();
+
+  globalScope.isServerRender = true;
 
   const container = new PlainElement("");
 
-  const fiber = createFiberNode({ fiberIndex: 0, parent: null }, element);
+  const fiber = new MyReactFiberNode(0, null, element) as MyReactFiberNodeRoot;
 
   fiber.node = container;
 
-  globalDispatch.current.rootFiber = fiber;
+  fiber.scope = globalScope;
 
-  globalDispatch.current.rootContainer = container;
+  fiber.dispatch = globalDispatch;
+
+  globalScope.rootFiber = fiber;
+
+  globalScope.rootContainer = container;
+
+  initialFiberNode(fiber);
 
   startRender(fiber, false);
 
-  isServerRender.current = false;
+  globalScope.isServerRender = false;
 
   return container.toString();
 };

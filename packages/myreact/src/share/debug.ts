@@ -1,6 +1,6 @@
 import { NODE_TYPE } from "../fiber";
 
-import { currentRunningFiber, globalDispatch } from "./env";
+import { currentRunningFiber } from "./env";
 
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "../element";
 import type { MyReactFiberNode } from "../fiber";
@@ -36,6 +36,7 @@ const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isEmptyNode__) return `<Empty />`;
   if (fiber.type & NODE_TYPE.__isSuspense__) return `<Suspense />`;
   if (fiber.type & NODE_TYPE.__isStrictNode__) return `<Strict />`;
+  if (fiber.type & NODE_TYPE.__isFragmentNode__) return `<Fragment />`;
   if (fiber.type & NODE_TYPE.__isForwardRef__) return `<ForwardRef />`;
   if (fiber.type & NODE_TYPE.__isContextProvider__) return `<Provider />`;
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return `<Consumer />`;
@@ -116,7 +117,11 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
     return action.call(null, ...args);
   } catch (e) {
     log({ message: e as Error, level: "error" });
-    globalDispatch.current.isAppCrash = true;
+
+    const fiber = currentRunningFiber.current;
+
+    if (fiber) fiber.root.scope.isAppCrash = true;
+
     throw new Error((e as Error).message);
   }
 };
@@ -129,7 +134,9 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
     return action.call(null, ...args);
   } catch (e) {
     log({ message: e as Error, level: "error", fiber });
-    globalDispatch.current.isAppCrash = true;
+
+    fiber.root.scope.isAppCrash = true;
+
     throw new Error((e as Error).message);
   }
 };

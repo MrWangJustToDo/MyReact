@@ -5,7 +5,7 @@ import { reconcileMount } from "./reconcileMount";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
-const { globalLoop, globalDispatch } = __my_react_internal__;
+const { globalLoop } = __my_react_internal__;
 
 const { safeCall } = __my_react_shared__;
 
@@ -16,7 +16,7 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
 
   reconcileMount(fiber, hydrate);
 
-  globalDispatch.current.isAppMounted = true;
+  fiber.root.scope.isAppMounted = true;
 
   globalLoop.current = false;
 };

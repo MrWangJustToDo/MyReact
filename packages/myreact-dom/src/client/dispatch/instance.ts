@@ -8,16 +8,9 @@ import {
   processHookUpdateQueue,
 } from "@my-react/react-reconciler";
 
-import {
-  getFiberWithDom,
-  getIsSVGFromMap,
-  LinkTreeList,
-  pendingUpdateFiberList,
-  pendingUpdateFiberListArray,
-  triggerUpdate,
-} from "@ReactDOM_shared";
+import { generateStrictMap, generateSuspenseMap, getFiberWithDom, isSVG, LinkTreeList } from "@ReactDOM_shared";
 
-import { updateAllAsync, updateAllSync } from "../update";
+import { triggerUpdate } from "../update";
 
 import { append } from "./append";
 import { context } from "./context";
@@ -32,10 +25,10 @@ import type {
   MyReactFiberNode,
   FiberDispatch,
   MyReactElementNode,
-  MyReactFiberNodeDev,
   createContext,
   CreateHookParams,
   MyReactHookNode,
+  RenderScope,
 } from "@my-react/react";
 
 const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
@@ -43,14 +36,6 @@ const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
 const { PATCH_TYPE, NODE_TYPE } = __my_react_internal__;
 
 export class ClientDispatch implements FiberDispatch {
-  rootFiber: MyReactFiberNode | null = null;
-
-  rootContainer: { [p: string]: any } = {};
-
-  isAppMounted = false;
-
-  isAppCrash = false;
-
   strictMap: Record<string, boolean> = {};
 
   effectMap: Record<string, (() => void)[]> = {};
@@ -77,43 +62,13 @@ export class ClientDispatch implements FiberDispatch {
     return processHookNode(_fiber, _hookParams);
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
-    const parent = _fiber.parent;
-    const element = _fiber.element;
-    if (typeof element === "object" && _fiber.type & NODE_TYPE.__isStrictNode__) {
-      this.strictMap[_fiber.uid] = true;
-    } else {
-      if (parent) {
-        this.strictMap[_fiber.uid] = Boolean(this.strictMap[parent.uid]);
-      } else {
-        this.strictMap[_fiber.uid] = false;
-      }
-    }
-    if (__DEV__) {
-      const typedFiber = _fiber as MyReactFiberNodeDev;
-
-      typedFiber._debugStrict = this.strictMap[_fiber.uid];
-    }
+    generateStrictMap(_fiber, this.strictMap);
   }
   resolveStrictValue(_fiber: MyReactFiberNode): boolean {
     return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
-    const parent = _fiber.parent;
-    const element = _fiber.element;
-    if (typeof element === "object" && _fiber.type & NODE_TYPE.__isSuspense__) {
-      this.suspenseMap[_fiber.uid] = element?.props["fallback"] as MyReactElementNode;
-    } else {
-      if (parent) {
-        this.suspenseMap[_fiber.uid] = this.suspenseMap[parent.uid];
-      } else {
-        this.suspenseMap[_fiber.uid] = null;
-      }
-    }
-    if (__DEV__) {
-      const typedFiber = _fiber as MyReactFiberNodeDev;
-
-      typedFiber._debugSuspense = this.suspenseMap[_fiber.uid];
-    }
+    generateSuspenseMap(_fiber, this.suspenseMap);
   }
   resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode {
     return cloneElement(this.suspenseMap[_fiber.uid]);
@@ -144,18 +99,18 @@ export class ClientDispatch implements FiberDispatch {
   resolveHookQueue(_fiber: MyReactFiberNode): void {
     processHookUpdateQueue(_fiber);
   }
-  beginProgressList(): void {
-    pendingUpdateFiberList.current = new LinkTreeList();
+  beginProgressList(_scope: RenderScope): void {
+    _scope.updateFiberList = new LinkTreeList();
   }
-  endProgressList(): void {
-    if (pendingUpdateFiberList.current?.length) {
-      pendingUpdateFiberListArray.current.push(pendingUpdateFiberList.current);
+  endProgressList(_scope: RenderScope): void {
+    if (_scope.updateFiberList?.length) {
+      _scope.updateFiberListArray.push(_scope.updateFiberList);
     }
-    pendingUpdateFiberList.current = null;
+    _scope.updateFiberList = null;
   }
-  generateUpdateList(_fiber: MyReactFiberNode): void {
+  generateUpdateList(_fiber: MyReactFiberNode, _scope: RenderScope): void {
     if (_fiber) {
-      if (pendingUpdateFiberList.current) {
+      if (_scope.updateFiberList) {
         if (
           _fiber.patch & PATCH_TYPE.__pendingCreate__ ||
           _fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
@@ -163,13 +118,13 @@ export class ClientDispatch implements FiberDispatch {
           _fiber.patch & PATCH_TYPE.__pendingContext__ ||
           _fiber.patch & PATCH_TYPE.__pendingPosition__
         ) {
-          pendingUpdateFiberList.current.append(_fiber, _fiber.fiberIndex);
+          _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
         } else if (
           this.effectMap[_fiber.uid]?.length ||
           this.unmountMap[_fiber.uid]?.length ||
           this.layoutEffectMap[_fiber.uid]?.length
         ) {
-          pendingUpdateFiberList.current.append(_fiber, _fiber.fiberIndex);
+          _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
         }
       } else {
         throw new Error("unknown error for running");
@@ -177,7 +132,7 @@ export class ClientDispatch implements FiberDispatch {
     }
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean {
-    const _isSVG = getIsSVGFromMap(_fiber, this.elementTypeMap);
+    const _isSVG = isSVG(_fiber, this.elementTypeMap);
 
     const _result = safeCallWithFiber({
       fiber: _fiber,
@@ -217,7 +172,7 @@ export class ClientDispatch implements FiberDispatch {
   }
   reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {
     _list.listToFoot((_fiber) => {
-      const _isSVG = getIsSVGFromMap(_fiber, this.elementTypeMap);
+      const _isSVG = isSVG(_fiber, this.elementTypeMap);
       safeCallWithFiber({
         fiber: _fiber,
         action: () => create(_fiber, false, _fiber, _isSVG),
@@ -298,17 +253,13 @@ export class ClientDispatch implements FiberDispatch {
     this.effectMap[_fiber.uid] = [...exist, _effect];
   }
   removeFiber(_fiber: MyReactFiberNode): void {
-    delete this.suspenseMap[_fiber.uid];
+    delete this.eventMap[_fiber.uid];
+    delete this.strictMap[_fiber.uid];
     delete this.effectMap[_fiber.uid];
-    delete this.layoutEffectMap[_fiber.uid];
     delete this.contextMap[_fiber.uid];
     delete this.unmountMap[_fiber.uid];
-    delete this.eventMap[_fiber.uid];
-  }
-  updateAllSync(): void {
-    updateAllSync();
-  }
-  updateAllAsync(): void {
-    updateAllAsync();
+    delete this.suspenseMap[_fiber.uid];
+    delete this.elementTypeMap[_fiber.uid];
+    delete this.layoutEffectMap[_fiber.uid];
   }
 }

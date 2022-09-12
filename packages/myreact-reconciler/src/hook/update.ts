@@ -6,12 +6,14 @@ import type { CreateHookParams, MyReactFiberNode } from "@my-react/react";
 
 const { logHook } = __my_react_shared__;
 
-const { HOOK_TYPE, globalDispatch } = __my_react_internal__;
+const { HOOK_TYPE } = __my_react_internal__;
 
 export const updateHookNode = (
   { hookIndex, hookType, value, reducer, deps }: CreateHookParams,
   fiber: MyReactFiberNode
 ) => {
+  const globalDispatch = fiber.root.dispatch;
+
   const currentHook = fiber.hookNodeArray[hookIndex];
 
   if (hookType !== currentHook.hookType) {
@@ -76,12 +78,12 @@ export const updateHookNode = (
   if (currentHook.hookType === HOOK_TYPE.useContext) {
     if (!currentHook._contextFiber || !currentHook._contextFiber.mount || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
-      const ProviderFiber = globalDispatch.current.resolveContextFiber(
+      const ProviderFiber = globalDispatch.resolveContextFiber(
         currentHook._ownerFiber as MyReactFiberNode,
         currentHook.value
       );
 
-      const context = globalDispatch.current.resolveContextValue(ProviderFiber, currentHook.value);
+      const context = globalDispatch.resolveContextValue(ProviderFiber, currentHook.value);
 
       currentHook.setContext(ProviderFiber);
 
@@ -89,7 +91,7 @@ export const updateHookNode = (
 
       currentHook.context = context;
     } else {
-      const context = globalDispatch.current.resolveContextValue(currentHook._contextFiber, currentHook.value);
+      const context = globalDispatch.resolveContextValue(currentHook._contextFiber, currentHook.value);
 
       currentHook.result = context;
 

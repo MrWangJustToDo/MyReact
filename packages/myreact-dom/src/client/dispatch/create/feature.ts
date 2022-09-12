@@ -1,6 +1,6 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-import { enableAllCheck, isHydrateRender } from "@ReactDOM_shared";
+import { enableAllCheck } from "@ReactDOM_shared";
 
 import { hydrateCreate } from "./hydrateCreate";
 import { nativeCreate } from "./nativeCreate";
@@ -8,6 +8,7 @@ import { validDomNesting } from "./validDomNesting";
 
 import type { HydrateDOM } from "./getHydrateDom";
 import type { MyReactFiberNode } from "@my-react/react";
+import type { DomScope } from "@ReactDOM_shared";
 
 const { PATCH_TYPE, NODE_TYPE } = __my_react_internal__;
 
@@ -29,7 +30,8 @@ export const create = (
     } else {
       nativeCreate(fiber, isSVG);
     }
-    if (isHydrateRender.current) {
+    const scope = fiber.root.scope as DomScope;
+    if (scope.isHydrateRender) {
       const typedDom = fiber.node as HydrateDOM;
       typedDom.__hydrate__ = true;
       if (enableAllCheck.current && fiber.type & NODE_TYPE.__isPlainNode__) {

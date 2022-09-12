@@ -10,7 +10,7 @@ import type {
   MyReactFiberNodeDev,
 } from "@my-react/react";
 
-const { NODE_TYPE, globalDispatch, Effect_TYPE, UPDATE_TYPE } = __my_react_internal__;
+const { NODE_TYPE, Effect_TYPE, UPDATE_TYPE } = __my_react_internal__;
 
 const { DEFAULT_RESULT } = __my_react_shared__;
 
@@ -40,6 +40,8 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
 const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
 
+  const globalDispatch = fiber.root.dispatch;
+
   const Component =
     fiber.type & NODE_TYPE.__isDynamicNode__
       ? typedElement.type
@@ -47,9 +49,9 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
-  const ProviderFiber = globalDispatch.current.resolveContextFiber(fiber, typedComponent.contextType);
+  const ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
-  const context = globalDispatch.current.resolveContextValue(ProviderFiber, typedComponent.contextType);
+  const context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
 
   const props = Object.assign({}, typedElement.props);
 
@@ -92,7 +94,9 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  const strictMod = globalDispatch.current.resolveStrictValue(fiber);
+  const globalDispatch = fiber.root.dispatch;
+
+  const strictMod = globalDispatch.resolveStrictValue(fiber);
 
   if (__DEV__ && strictMod) {
     if (
@@ -100,7 +104,7 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
       !(typedInstance.mode & Effect_TYPE.__pendingEffect__)
     ) {
       typedInstance.mode = Effect_TYPE.__pendingEffect__;
-      globalDispatch.current.pendingLayoutEffect(fiber, () => {
+      globalDispatch.pendingLayoutEffect(fiber, () => {
         typedInstance.mode = Effect_TYPE.__initial__;
         typedInstance.componentDidMount?.();
         typedInstance.componentWillUnmount?.();
@@ -109,7 +113,7 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
     }
   } else if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
     typedInstance.mode = Effect_TYPE.__pendingEffect__;
-    globalDispatch.current.pendingLayoutEffect(fiber, () => {
+    globalDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
       typedInstance.componentDidMount?.();
     });
@@ -118,6 +122,8 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
 
 const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
+
+  const globalDispatch = fiber.root.dispatch;
 
   const Component =
     fiber.type & NODE_TYPE.__isDynamicNode__
@@ -129,15 +135,15 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
   if (!typedInstance?._contextFiber || !typedInstance._contextFiber.mount) {
-    const ProviderFiber = globalDispatch.current.resolveContextFiber(fiber, typedComponent.contextType);
+    const ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
-    const context = globalDispatch.current.resolveContextValue(ProviderFiber, typedComponent.contextType);
+    const context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
 
     typedInstance?.setContext(ProviderFiber);
 
     return context;
   } else {
-    const context = globalDispatch.current.resolveContextValue(typedInstance._contextFiber, typedComponent.contextType);
+    const context = globalDispatch.resolveContextValue(typedInstance._contextFiber, typedComponent.contextType);
 
     return context;
   }
@@ -174,11 +180,13 @@ const processComponentDidUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
+  const globalDispatch = fiber.root.dispatch;
+
   const hasEffect = typedInstance.componentDidUpdate || callback.length;
 
   if (hasEffect && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
     typedInstance.mode = Effect_TYPE.__pendingEffect__;
-    globalDispatch.current.pendingLayoutEffect(fiber, () => {
+    globalDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
       callback.forEach((c) => c.call(null));
       typedInstance.componentDidUpdate?.(baseProps, baseState, baseContext);
@@ -197,7 +205,7 @@ export const classComponentMount = (fiber: MyReactFiberNode) => {
 export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
   processComponentStateFromProps(fiber);
-  globalDispatch.current.resolveComponentQueue(fiber);
+  fiber.root.dispatch.resolveComponentQueue(fiber);
   const typedInstance = fiber.instance as MixinMyReactComponentType;
   const newElement = fiber.element;
   const { newState, isForce, callback } = typedInstance.result;

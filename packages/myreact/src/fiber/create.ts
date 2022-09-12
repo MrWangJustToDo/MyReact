@@ -1,5 +1,3 @@
-import { globalDispatch } from "../share";
-
 import { MyReactFiberNode } from "./instance";
 import { NODE_TYPE } from "./symbol";
 
@@ -27,19 +25,21 @@ export const createFiberNode = (
 
   newFiberNode.initialParent();
 
-  globalDispatch.current.pendingCreate(newFiberNode);
+  const globalDispatch = newFiberNode.root.dispatch;
 
-  globalDispatch.current.pendingUpdate(newFiberNode);
+  globalDispatch.pendingCreate(newFiberNode);
+
+  globalDispatch.pendingUpdate(newFiberNode);
 
   if (type === "append") {
-    globalDispatch.current.pendingAppend(newFiberNode);
+    globalDispatch.pendingAppend(newFiberNode);
   } else {
-    globalDispatch.current.pendingPosition(newFiberNode);
+    globalDispatch.pendingPosition(newFiberNode);
   }
 
   if (newFiberNode.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
     if ((element as MyReactElement).ref) {
-      globalDispatch.current.pendingLayoutEffect(newFiberNode, () => newFiberNode.applyRef());
+      globalDispatch.pendingLayoutEffect(newFiberNode, () => newFiberNode.applyRef());
     }
   }
 

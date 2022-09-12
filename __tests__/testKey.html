@@ -30,17 +30,7 @@
     <div id="root"></div>
 
     <script type="text/babel" async>
-      const {
-        memo,
-        useState,
-        useCallback,
-        useEffect,
-        useRef,
-        useMemo,
-        map,
-        cloneElement,
-        createContext,
-      } = React;
+      const { memo, useState, useCallback, useEffect, useRef, useMemo, map, cloneElement, createContext } = React;
 
       const useCounter = (init = 1) => {
         const [count, setCount] = useState(init);
@@ -52,9 +42,7 @@
 
       const useTime = () => {
         const [c, setC] = useState(100);
-        const [currentTime, setCurrentTime] = useState(() =>
-          new Date().toLocaleString()
-        );
+        const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
         useEffect(() => {
           console.log("init");
           const id = setInterval(() => {
@@ -73,8 +61,7 @@
         });
 
         useEffect(() => {
-          const action = (e) =>
-            setCurrentPosition({ x: e.clientX, y: e.clientY });
+          const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
           window.addEventListener("mousemove", action);
           return () => window.removeEventListener("mousemove", action);
         }, []);
@@ -270,11 +257,7 @@
               .map((i) => (
                 <p key={i}>{i}</p>
               ))}
-            <button
-              onClick={() => setState((last) => last.concat(last.length + 1))}
-            >
-              add
-            </button>
+            <button onClick={() => setState((last) => last.concat(last.length + 1))}>add</button>
           </div>
         );
       };

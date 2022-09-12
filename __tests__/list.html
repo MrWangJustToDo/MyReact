@@ -49,8 +49,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-      const { Component, createRef, useState, useEffect, PureComponent } =
-        React;
+      const { Component, createRef, useState, useEffect, PureComponent } = React;
 
       class Item extends Component {
         static createDiv = (props = {}) =>
@@ -148,10 +147,7 @@
 
         displayRange = (startIndex, endIndex, container) => {
           const [preStartIndex, preEndIndex] = this.displayRangeArr;
-          if (
-            (startIndex >= 0 && startIndex !== preStartIndex) ||
-            endIndex !== preEndIndex
-          ) {
+          if ((startIndex >= 0 && startIndex !== preStartIndex) || endIndex !== preEndIndex) {
             const paddingTop = this.totalHeightObj[startIndex];
             for (let i = preStartIndex; i <= preEndIndex; i++) {
               this.totalElement[i] && this.totalElement[i].remove();
@@ -178,32 +174,16 @@
               this.initAvarage();
               this.initTotal();
               if (length > 4) {
-                this.displayRange(
-                  length - 4,
-                  length + this.displayLength - 4,
-                  this.container.current
-                );
+                this.displayRange(length - 4, length + this.displayLength - 4, this.container.current);
               } else {
-                this.displayRange(
-                  length,
-                  length + this.displayLength,
-                  this.container.current
-                );
+                this.displayRange(length, length + this.displayLength, this.container.current);
               }
             }, 0);
           } else {
             if (length > 4) {
-              this.displayRange(
-                length - 4,
-                length + this.displayLength - 4,
-                this.container.current
-              );
+              this.displayRange(length - 4, length + this.displayLength - 4, this.container.current);
             } else {
-              this.displayRange(
-                length,
-                length + this.displayLength,
-                this.container.current
-              );
+              this.displayRange(length, length + this.displayLength, this.container.current);
             }
           }
         }, 30);
@@ -237,10 +217,7 @@
           if (preProps.list !== this.props.list) {
             this.initAutoUpdate();
           }
-          if (
-            preState.needUpdate !== this.state.needUpdate &&
-            this.state.needUpdate
-          ) {
+          if (preState.needUpdate !== this.state.needUpdate && this.state.needUpdate) {
             requestIdleCallback(this.autoInit);
           }
         }
@@ -262,12 +239,7 @@
           return (
             <>
               <h3>{this.avarageHeight}</h3>
-              <div
-                id="outer"
-                onScroll={this.scrollEve}
-                onMouseEnter={this.mouseIn}
-                onMouseLeave={this.mouseOut}
-              >
+              <div id="outer" onScroll={this.scrollEve} onMouseEnter={this.mouseIn} onMouseLeave={this.mouseOut}>
                 <div
                   id="inner"
                   ref={this.container}

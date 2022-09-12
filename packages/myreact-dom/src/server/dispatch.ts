@@ -23,14 +23,6 @@ const { safeCallWithFiber } = __my_react_shared__;
 const { NODE_TYPE, PATCH_TYPE } = __my_react_internal__;
 
 export class ServerDispatch implements FiberDispatch {
-  rootFiber: MyReactFiberNode | null = null;
-
-  rootContainer: { [p: string]: any } = {};
-
-  isAppMounted = false;
-
-  isAppCrash = false;
-
   effectMap: Record<string, (() => void)[]> = {};
 
   strictMap: Record<string, boolean> = {};
@@ -161,12 +153,6 @@ export class ServerDispatch implements FiberDispatch {
     void 0;
   }
   removeFiber(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-  updateAllSync(): void {
-    void 0;
-  }
-  updateAllAsync(): void {
     void 0;
   }
 }

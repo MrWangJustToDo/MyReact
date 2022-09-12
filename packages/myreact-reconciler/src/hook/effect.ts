@@ -2,13 +2,15 @@ import { __my_react_internal__ } from "@my-react/react";
 
 import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react";
 
-const { Effect_TYPE, globalDispatch } = __my_react_internal__;
+const { Effect_TYPE } = __my_react_internal__;
 
 export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
+  const globalDispatch = fiber.root.dispatch;
+
   if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
     hookNode.mode = Effect_TYPE.__pendingEffect__;
 
-    const strictMod = __DEV__ ? globalDispatch.current.resolveStrictValue(fiber) : false;
+    const strictMod = __DEV__ ? globalDispatch.resolveStrictValue(fiber) : false;
 
     if (hookNode.hookType === "useEffect") {
       const update = () => {
@@ -20,7 +22,7 @@ export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
 
         hookNode.mode = Effect_TYPE.__initial__;
       };
-      globalDispatch.current.pendingEffect(fiber, () => {
+      globalDispatch.pendingEffect(fiber, () => {
         if (__DEV__ && strictMod) {
           update();
           update();
@@ -40,7 +42,7 @@ export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
 
         hookNode.mode = Effect_TYPE.__initial__;
       };
-      globalDispatch.current.pendingLayoutEffect(fiber, () => {
+      globalDispatch.pendingLayoutEffect(fiber, () => {
         if (__DEV__ && strictMod) {
           update();
           update();
@@ -51,7 +53,7 @@ export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
     }
 
     if (hookNode.hookType === "useImperativeHandle") {
-      globalDispatch.current.pendingLayoutEffect(fiber, () => {
+      globalDispatch.pendingLayoutEffect(fiber, () => {
         if (hookNode.value && typeof hookNode.value === "object") hookNode.value.current = hookNode.reducer.call(null);
 
         hookNode.effect = false;

@@ -1,20 +1,32 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { startRender, unmountComponentAtNode } from "../../shared";
+import { DomScope, startRender, unmountComponentAtNode } from "../../shared";
 import { ClientDispatch } from "../dispatch";
 
-import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
+import type {
+  MyReactElement,
+  MyReactFiberNode,
+  FiberDispatch,
+  MyReactFiberNodeRoot,
+  RenderScope,
+} from "@my-react/react";
 
-const { globalDispatch, MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
+export type RenderContainer = Element & {
+  __scope__: RenderScope;
+  __fiber__: MyReactFiberNode;
+  __dispatch__: FiberDispatch;
+};
 
-const { createFiberNode } = __my_react_shared__;
+const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
 
-export const render = (element: MyReactElement, container: Element & { __fiber__: MyReactFiberNode }) => {
-  globalDispatch.current.isAppCrash = false;
+const { initialFiberNode } = __my_react_shared__;
 
+export const render = (element: MyReactElement, container: RenderContainer) => {
   const containerFiber = container.__fiber__;
 
   if (containerFiber instanceof MyReactFiberNodeClass) {
+    containerFiber.root.scope.isAppCrash = false;
+
     if (containerFiber.checkIsSameType(element)) {
       containerFiber.installElement(element);
 
@@ -25,21 +37,33 @@ export const render = (element: MyReactElement, container: Element & { __fiber__
       unmountComponentAtNode(container);
     }
   }
-  globalDispatch.current = new ClientDispatch();
+  const globalDispatch = new ClientDispatch();
+
+  const globalScope = new DomScope();
 
   Array.from(container.children).forEach((n) => n.remove?.());
 
-  const fiber = createFiberNode({ fiberIndex: 0, parent: null }, element);
+  const fiber = new MyReactFiberNodeClass(0, null, element) as MyReactFiberNodeRoot;
 
   fiber.node = container;
 
-  globalDispatch.current.rootFiber = fiber;
+  fiber.scope = globalScope;
 
-  globalDispatch.current.rootContainer = container;
+  fiber.dispatch = globalDispatch;
+
+  globalScope.rootFiber = fiber;
+
+  globalScope.rootContainer = container;
 
   container.setAttribute?.("render", "MyReact");
 
   container.__fiber__ = fiber;
+
+  container.__scope__ = globalScope;
+
+  container.__dispatch__ = globalDispatch;
+
+  initialFiberNode(fiber);
 
   startRender(fiber);
 };

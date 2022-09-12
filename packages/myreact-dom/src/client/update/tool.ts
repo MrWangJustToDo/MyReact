@@ -1,44 +1,53 @@
-import { __my_react_internal__ } from "@my-react/react";
-
-import { pendingModifyFiberArray, pendingModifyTopLevelFiber } from "@ReactDOM_shared";
-
-import type { MyReactFiberNode } from "@my-react/react";
-
-const { globalDispatch } = __my_react_internal__;
+import type { MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
 
 let currentYield: MyReactFiberNode | null = null;
 
-export const updateFiberController = {
+export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispatch, globalScope: RenderScope) => ({
   setYield: (fiber: MyReactFiberNode | null) => {
     if (fiber) {
       currentYield = fiber;
     } else {
       currentYield = null;
-      globalDispatch.current.endProgressList();
+
+      globalDispatch.endProgressList(globalScope);
     }
   },
+
   getNext: () => {
-    if (globalDispatch.current.isAppCrash) return null;
+    if (globalScope.isAppCrash) return null;
+
     const yieldFiber = currentYield;
+
     currentYield = null;
+
     if (yieldFiber) return yieldFiber;
-    while (pendingModifyFiberArray.current.length) {
-      const newProgressFiber = pendingModifyFiberArray.current.shift();
+
+    while (globalScope.modifyFiberArray.length) {
+      const newProgressFiber = globalScope.modifyFiberArray.shift();
+
       if (newProgressFiber?.mount) {
-        globalDispatch.current.beginProgressList();
-        pendingModifyTopLevelFiber.current = newProgressFiber;
+        globalDispatch.beginProgressList(globalScope);
+
+        globalScope.modifyFiberRoot = newProgressFiber;
+
         return newProgressFiber;
       }
     }
+
     return null;
   },
+
   getUpdateList: (fiber: MyReactFiberNode) => {
-    globalDispatch.current.generateUpdateList(fiber);
+    globalDispatch.generateUpdateList(fiber, globalScope);
   },
+
   hasNext: () => {
-    if (globalDispatch.current.isAppCrash) return false;
-    return currentYield !== null || pendingModifyFiberArray.current.length > 0;
+    if (globalScope.isAppCrash) return false;
+
+    return currentYield !== null || globalScope.modifyFiberArray.length > 0;
   },
+
   doesPause: () => currentYield !== null,
-  getTopLevel: () => pendingModifyTopLevelFiber.current,
-};
+
+  getTopLevel: () => globalScope.modifyFiberRoot,
+});

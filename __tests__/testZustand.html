@@ -15,17 +15,7 @@
   <body>
     <div id="root"></div>
     <script type="text/babel">
-      const {
-        memo,
-        useState,
-        useCallback,
-        useEffect,
-        useRef,
-        useMemo,
-        map,
-        cloneElement,
-        createContext,
-      } = React;
+      const { memo, useState, useCallback, useEffect, useRef, useMemo, map, cloneElement, createContext } = React;
       const { createStore, log } = zustand;
       const useCounter = createStore(
         log((set) => ({
@@ -45,10 +35,7 @@
           };
         }, []);
         const equalsFun = useCallback(
-          (newSlice, oldSlice) =>
-            Object.keys(newSlice).every(
-              (key) => newSlice[key] === oldSlice[key]
-            ),
+          (newSlice, oldSlice) => Object.keys(newSlice).every((key) => newSlice[key] === oldSlice[key]),
           []
         );
         const { count, add } = useCounter(selector, equalsFun);

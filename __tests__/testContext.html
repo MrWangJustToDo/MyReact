@@ -56,9 +56,7 @@
       };
 
       const useTime = () => {
-        const [currentTime, setCurrentTime] = useState(() =>
-          new Date().toLocaleString()
-        );
+        const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
         useEffect(() => {
           console.log("init");
           const id = setInterval(() => {
@@ -80,8 +78,7 @@
         });
 
         useEffect(() => {
-          const action = (e) =>
-            setCurrentPosition({ x: e.clientX, y: e.clientY });
+          const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
           window.addEventListener("mousemove", action);
           return () => window.removeEventListener("mousemove", action);
         }, []);
@@ -127,9 +124,7 @@
           <>
             <p>234</p>
             <Context.Consumer key="1">{foo}</Context.Consumer>
-            <Context.Consumer key="2">
-              {(val) => <p style={{ color: "red" }}>{val}</p>}
-            </Context.Consumer>
+            <Context.Consumer key="2">{(val) => <p style={{ color: "red" }}>{val}</p>}</Context.Consumer>
             <p>123</p>
           </>
         );

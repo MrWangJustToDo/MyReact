@@ -114,24 +114,20 @@ export class ClientDispatch implements FiberDispatch {
   generateUpdateList(_fiber: MyReactFiberNode, _scope: RenderScope): void {
     if (_fiber) {
       _scope.updateFiberList = _scope.updateFiberList || new LinkTreeList();
-      if (_scope.updateFiberList) {
-        if (
-          _fiber.patch & PATCH_TYPE.__pendingCreate__ ||
-          _fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
-          _fiber.patch & PATCH_TYPE.__pendingAppend__ ||
-          _fiber.patch & PATCH_TYPE.__pendingContext__ ||
-          _fiber.patch & PATCH_TYPE.__pendingPosition__
-        ) {
-          _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
-        } else if (
-          this.effectMap[_fiber.uid]?.length ||
-          this.unmountMap[_fiber.uid]?.length ||
-          this.layoutEffectMap[_fiber.uid]?.length
-        ) {
-          _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
-        }
-      } else {
-        throw new Error("unknown error for running");
+      if (
+        _fiber.patch & PATCH_TYPE.__pendingCreate__ ||
+        _fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
+        _fiber.patch & PATCH_TYPE.__pendingAppend__ ||
+        _fiber.patch & PATCH_TYPE.__pendingContext__ ||
+        _fiber.patch & PATCH_TYPE.__pendingPosition__
+      ) {
+        _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
+      } else if (
+        this.effectMap[_fiber.uid]?.length ||
+        this.unmountMap[_fiber.uid]?.length ||
+        this.layoutEffectMap[_fiber.uid]?.length
+      ) {
+        _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
       }
     }
   }

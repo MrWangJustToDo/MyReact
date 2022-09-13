@@ -20,20 +20,26 @@ export const create = (
 ): boolean => {
   if (fiber.patch & PATCH_TYPE.__pendingCreate__) {
     let re = false;
+
     validDomNesting(fiber);
+
     if (hydrate) {
       const result = hydrateCreate(fiber, parentFiberWithDom);
-      if (!result) {
-        nativeCreate(fiber, isSVG);
-      }
+
+      if (!result) nativeCreate(fiber, isSVG);
+
       re = result;
     } else {
       nativeCreate(fiber, isSVG);
     }
+
     const scope = fiber.root.scope as DomScope;
+
     if (scope.isHydrateRender) {
       const typedDom = fiber.node as HydrateDOM;
+
       typedDom.__hydrate__ = true;
+
       if (enableAllCheck.current && fiber.type & NODE_TYPE.__isPlainNode__) {
         if (!re) {
           typedDom.setAttribute("debug_hydrate", "fail");
@@ -42,9 +48,9 @@ export const create = (
         }
       }
     }
-    if (fiber.patch & PATCH_TYPE.__pendingCreate__) {
-      fiber.patch ^= PATCH_TYPE.__pendingCreate__;
-    }
+
+    if (fiber.patch & PATCH_TYPE.__pendingCreate__) fiber.patch ^= PATCH_TYPE.__pendingCreate__;
+
     return re;
   }
   return hydrate;

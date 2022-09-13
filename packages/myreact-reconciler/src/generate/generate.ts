@@ -14,33 +14,6 @@ const { MyReactFiberNode: MyReactFiberNodeClass, NODE_TYPE, UPDATE_TYPE } = __my
 
 const { updateFiberNode: _updateFiberNode, createFiberNode: _createFiberNode, enableKeyDiff } = __my_react_shared__;
 
-const _updateFiberNodeWithDev = (...props: Parameters<typeof _updateFiberNode>) => {
-  const [{ fiber, parent, prevFiber }, newElement] = props;
-
-  const typedFiber = fiber as MyReactFiberNodeDev;
-
-  const prevState = typedFiber._debugRenderState || {
-    renderCount: 0,
-    mountTimeStep: 0,
-    prevUpdateTimeStep: 0,
-    currentUpdateTimeStep: 0,
-  };
-
-  const timeNow = Date.now();
-
-  typedFiber._debugRenderState = {
-    renderCount: prevState.renderCount + 1,
-    mountTime: prevState.mountTime,
-    prevUpdateTime: prevState.currentUpdateTime,
-    updateTimeStep: timeNow - prevState.currentUpdateTime,
-    currentUpdateTime: timeNow,
-  };
-
-  const newFiber = _updateFiberNode({ fiber, parent, prevFiber }, newElement);
-
-  return newFiber;
-};
-
 const createFiberNode = (...props: Parameters<typeof _createFiberNode>) => {
   const fiber = _createFiberNode(...props);
 
@@ -64,11 +37,30 @@ const createFiberNode = (...props: Parameters<typeof _createFiberNode>) => {
 };
 
 const updateFiberNode = (...props: Parameters<typeof _updateFiberNode>) => {
+  const fiber = _updateFiberNode(...props);
+
   if (__DEV__) {
-    return _updateFiberNodeWithDev(...props);
-  } else {
-    return _updateFiberNode(...props);
+    const typedFiber = fiber as MyReactFiberNodeDev;
+
+    const prevState = typedFiber._debugRenderState || {
+      renderCount: 0,
+      mountTimeStep: 0,
+      prevUpdateTimeStep: 0,
+      currentUpdateTimeStep: 0,
+    };
+
+    const timeNow = Date.now();
+
+    typedFiber._debugRenderState = {
+      renderCount: prevState.renderCount + 1,
+      mountTime: prevState.mountTime,
+      prevUpdateTime: prevState.currentUpdateTime,
+      updateTimeStep: timeNow - prevState.currentUpdateTime,
+      currentUpdateTime: timeNow,
+    };
   }
+
+  return fiber;
 };
 
 const getKeyMatchedChildren = (

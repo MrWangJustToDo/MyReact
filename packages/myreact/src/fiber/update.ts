@@ -30,6 +30,11 @@ export const updateFiberNode = (
     fiber.checkElement();
   }
 
+  // TODO
+  if (!(fiber.type & NODE_TYPE.__isPlainNode__) && !(fiber.type & NODE_TYPE.__isTextNode__)) {
+    fiber.applyElement();
+  }
+
   if (prevElement !== nextElement) {
     if (fiber.type & NODE_TYPE.__isMemo__) {
       const typedPrevElement = prevElement as MyReactElement;

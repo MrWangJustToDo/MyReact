@@ -9,6 +9,7 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     fiber.node = document.createTextNode(fiber.element as string);
   } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
     const typedElement = fiber.element as MyReactElement;
+
     if (isSVG) {
       fiber.node = document.createElementNS("http://www.w3.org/2000/svg", typedElement.type as string);
     } else {
@@ -16,6 +17,7 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     }
   } else {
     const typedElement = fiber.element as MyReactElement;
+
     fiber.node = typedElement.props["container"] as Element;
   }
 };

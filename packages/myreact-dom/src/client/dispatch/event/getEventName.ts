@@ -1,8 +1,11 @@
 export const getNativeEventName = (eventName: string, tagName: string, props: Record<string, unknown>) => {
   let isCapture = false;
+
   let nativeName = eventName;
+
   if (eventName.endsWith("Capture")) {
     isCapture = true;
+
     nativeName = eventName.split("Capture")[0];
   }
   if (nativeName === "DoubleClick") {

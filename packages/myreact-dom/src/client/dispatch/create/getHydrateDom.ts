@@ -65,11 +65,16 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
 
 export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
   if (IS_SINGLE_ELEMENT[parentDom.tagName.toLowerCase() as keyof typeof IS_SINGLE_ELEMENT]) return { result: true };
+
   const dom = getNextHydrateDom(parentDom);
+
   const result = checkHydrateDom(fiber, dom);
+
   if (result) {
     const typedDom = dom as HydrateDOM;
+
     fiber.node = typedDom;
+
     return { dom: typedDom, result };
   } else {
     return { dom, result };

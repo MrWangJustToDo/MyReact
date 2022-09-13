@@ -16,9 +16,9 @@ export const fallback = (fiber: MyReactFiberNode) => {
 
     children.forEach((node) => {
       const typedNode = node as Partial<HydrateDOM>;
-      if (typedNode.nodeType !== document.COMMENT_NODE && !typedNode.__hydrate__) {
-        node.remove();
-      }
+
+      if (typedNode.nodeType !== document.COMMENT_NODE && !typedNode.__hydrate__) node.remove();
+
       delete typedNode["__hydrate__"];
     });
   }

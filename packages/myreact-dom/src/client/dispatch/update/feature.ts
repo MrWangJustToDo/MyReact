@@ -17,8 +17,6 @@ export const update = (fiber: MyReactFiberNode, hydrate: boolean, isSVG: boolean
 
     fiber.applyElement();
 
-    if (fiber.patch & PATCH_TYPE.__pendingUpdate__) {
-      fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
-    }
+    if (fiber.patch & PATCH_TYPE.__pendingUpdate__) fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
   }
 };

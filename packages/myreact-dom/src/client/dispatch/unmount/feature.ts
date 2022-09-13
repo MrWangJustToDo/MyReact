@@ -6,8 +6,11 @@ import { clearFiberDom } from "./clearFiberDom";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
+const { unmountFiberNode } = __my_react_shared__;
+
 export const unmountFiber = (fiber: MyReactFiberNode) => {
-  __my_react_shared__.unmountFiberNode(fiber);
+  unmountFiberNode(fiber);
+
   clearFiberDom(fiber);
 };
 

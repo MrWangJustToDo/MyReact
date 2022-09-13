@@ -131,10 +131,8 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     debugWithDOM(fiber);
   }
 
-  const isAppMounted = fiber.root.scope.isAppMounted;
-
   if (
-    isAppMounted &&
+    scope.isAppMounted &&
     !scope.isHydrateRender &&
     !scope.isServerRender &&
     (enableHighlight.current || (window as any).__highlight__)

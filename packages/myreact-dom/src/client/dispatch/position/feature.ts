@@ -11,13 +11,13 @@ const { PATCH_TYPE } = __my_react_internal__;
 export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__pendingPosition__) {
     const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithDom);
+
     if (beforeFiberWithDom) {
       insertBefore(fiber, beforeFiberWithDom.node as Element, parentFiberWithDom.node as Element);
     } else {
       append(fiber, parentFiberWithDom.node as Element);
     }
-    if (fiber.patch & PATCH_TYPE.__pendingPosition__) {
-      fiber.patch ^= PATCH_TYPE.__pendingPosition__;
-    }
+
+    if (fiber.patch & PATCH_TYPE.__pendingPosition__) fiber.patch ^= PATCH_TYPE.__pendingPosition__;
   }
 };

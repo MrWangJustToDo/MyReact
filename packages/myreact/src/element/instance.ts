@@ -1,5 +1,5 @@
 /* eslint-disable prefer-rest-params */
-import { currentFunctionFiber } from "../share";
+import { currentComponentFiber } from "../share";
 
 import { My_React_Element } from "./symbol";
 import { checkArrayChildrenKey, checkSingleChildrenKey, isValidElement } from "./tool";
@@ -72,8 +72,8 @@ export type CreateElementConfig = {
   [key: string]: unknown;
 };
 
-const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps) => {
-  return {
+export const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps) => {
+  const element = {
     ["$$typeof"]: My_React_Element,
     type,
     key,
@@ -85,6 +85,13 @@ const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }:
     _source,
     _store: {} as Record<string, unknown>,
   };
+
+  if (__DEV__ && typeof Object.freeze === "function") {
+    Object.freeze(element.props);
+    Object.freeze(element);
+  }
+
+  return element;
 };
 
 export function createElement(
@@ -137,7 +144,7 @@ export function createElement(
     props,
     _self: self,
     _source: source,
-    _owner: currentFunctionFiber.current,
+    _owner: currentComponentFiber.current,
   });
 }
 
@@ -154,7 +161,7 @@ export function cloneElement(element: MyReactElementNode, config?: CreateElement
       const { ref: _ref, key: _key, __self, __source, ...resProps } = config;
       if (_ref !== undefined) {
         ref = _ref;
-        owner = currentFunctionFiber.current;
+        owner = currentComponentFiber.current;
       }
       if (_key !== undefined) {
         key = _key + "";

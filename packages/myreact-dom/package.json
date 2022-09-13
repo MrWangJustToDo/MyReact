@@ -2,17 +2,26 @@
   "name": "@my-react/react-dom",
   "description": "@my-react/react-dom",
   "version": "0.0.1",
-  "main": "cjs.js",
-  "module": "esm.js",
+  "main": "index.js",
+  "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
-    "cjs.js",
-    "esm.js"
+    "index.js"
   ],
   "exports": {
-    "import": "./esm.js",
-    "require": "./cjs.js"
+    ".": {
+      "require": "./index.js",
+      "import": "./dist/esm/index.js"
+    },
+    "./client": {
+      "require": "./index.js",
+      "import": "./dist/esm/index.js"
+    },
+    "./server": {
+      "require": "./index.js",
+      "import": "./dist/esm/index.js"
+    }
   },
   "buildOptions": {
     "input": "./src/index.ts",
@@ -21,10 +30,11 @@
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
         "format": "cjs",
+        "esModule": false,
+        "multiple": true,
         "globals": {
           "@my-react/react": "React"
         },
-        "exports": "named",
         "sourcemap": true
       },
       {
@@ -34,17 +44,17 @@
         "globals": {
           "@my-react/react": "React"
         },
-        "exports": "named",
         "sourcemap": true
       },
       {
         "dir": "./dist",
         "entryFileNames": "umd/index.js",
         "format": "umd",
+        "esModule": false,
+        "multiple": true,
         "globals": {
           "@my-react/react": "React"
         },
-        "exports": "named",
         "name": "ReactDOM",
         "sourcemap": true
       }

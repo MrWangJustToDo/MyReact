@@ -7,7 +7,7 @@ import fs from "fs";
 import { readFile, access } from "fs/promises";
 import { resolve } from "path";
 
-import type { Mode } from "./type";
+import type { Mode, MultipleOutput } from "./type";
 import type { RollupOptions } from "rollup";
 
 const defaultBuildOptions: RollupOptions = {
@@ -35,50 +35,182 @@ const checkFileExist = (path: string) =>
 
 const transformBuildOptions = (
   options: RollupOptions,
+  packageFileObject: Record<string, any>,
   relativePath: string,
   mode: Mode
-): { other?: RollupOptions; umd?: RollupOptions } => {
-  const allOptions: { other?: RollupOptions; umd?: RollupOptions } = {};
+): {
+  singleOther?: RollupOptions;
+  singleUMD?: RollupOptions;
+  multipleOther?: RollupOptions;
+  multipleUMD?: RollupOptions;
+} => {
+  const allOptions: {
+    singleOther?: RollupOptions;
+    singleUMD?: RollupOptions;
+    multipleOther?: RollupOptions;
+    multipleUMD?: RollupOptions;
+  } = {};
   if (typeof options.input === "string" && !options.input.startsWith(relativePath)) {
     options.input = resolve(relativePath, options.input);
   }
   if (options.output) {
     options.output = Array.isArray(options.output) ? options.output : [options.output];
-    const umdConfig = options.output.find((output) => output.format === "umd");
-    const otherConfig = options.output.filter((output) => output.format !== "umd");
-    options.output = options.output.map((output) => {
+    const singleConfig = options.output.filter((output: MultipleOutput) => !output.multiple);
+    const singleOtherConfig = singleConfig.filter((output) => output.format !== "umd");
+    const singleUMDConfig = singleConfig.filter((output) => output.format === "umd");
+    const multipleConfig = options.output.filter((output: MultipleOutput) => output.multiple);
+    const multipleOtherConfig = multipleConfig.filter((output) => output.format !== "umd");
+    const multipleUMDConfig = multipleConfig.filter((output) => output.format === "umd");
+    options.output = options.output.map((output: MultipleOutput) => {
       if (output.dir && !output.dir.startsWith(relativePath)) {
         output.dir = resolve(relativePath, output.dir);
-        output.entryFileNames = output.entryFileNames || `${output.format}/index.js`;
-        const typedEntryFileNames = output.entryFileNames as string;
-        const lastIndexofDote = typedEntryFileNames.lastIndexOf(".");
-        output.entryFileNames = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(
-          lastIndexofDote
-        )}`;
+        if (output.multiple) {
+          const typedEntryFileNames = output.entryFileNames as string;
+          const lastIndexofDote = typedEntryFileNames.lastIndexOf(".");
+          output.entryFileNames = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(
+            lastIndexofDote
+          )}`;
+          delete output.multiple;
+        }
       }
       if (output.file && !output.file.startsWith(relativePath)) {
         output.file = resolve(relativePath, output.file);
-        const typedEntryFileNames = output.file as string;
-        const lastIndexofDote = typedEntryFileNames.lastIndexOf(".");
-        output.file = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(
-          lastIndexofDote
-        )}`;
+        if (output.multiple) {
+          const typedEntryFileNames = output.file as string;
+          const lastIndexofDote = typedEntryFileNames.lastIndexOf(".");
+          output.file = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(
+            lastIndexofDote
+          )}`;
+          delete output.multiple;
+        }
       }
       return output;
     });
 
-    allOptions.other = {
-      input: options.input,
-      output: otherConfig,
+    options.onwarn = (msg, warn) => {
+      if (!/Circular/.test(msg.message)) {
+        warn(msg);
+      }
     };
 
-    if (umdConfig) {
-      allOptions.umd = {
-        input: options.input,
-        output: [umdConfig],
+    if (singleOtherConfig.length) {
+      allOptions.singleOther = {
+        ...options,
+        output: singleOtherConfig,
+        external: (id) => id.includes("node_modules") || id.includes("@my-react/"),
+        plugins: [
+          nodeResolve(),
+          commonjs({ exclude: "node_modules" }),
+          replace({
+            __DEV__: 'process.env.NODE_ENV === "development"',
+            __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
+            preventAssignment: true,
+          }),
+          typescript({
+            composite: true,
+            declaration: true,
+            declarationMap: true,
+            emitDeclarationOnly: true,
+            outputToFilesystem: false,
+            cacheDir: resolve(relativePath, ".cache"),
+            tsconfig: resolve(relativePath, "tsconfig.json"),
+            declarationDir: resolve(relativePath, "dist/types"),
+          }),
+        ],
+      };
+    }
+
+    if (singleUMDConfig.length) {
+      allOptions.singleUMD = {
+        ...options,
+        output: singleUMDConfig,
+        external: (id) => {
+          if (packageFileObject["name"] === "@my-react/react-dom") {
+            return id.endsWith("@my-react/react");
+          }
+        },
+        plugins: [
+          nodeResolve(),
+          commonjs({ exclude: "node_modules" }),
+          replace({
+            __DEV__: 'process.env.NODE_ENV === "development"',
+            __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
+            preventAssignment: true,
+          }),
+          typescript({
+            composite: true,
+            declaration: true,
+            declarationMap: true,
+            emitDeclarationOnly: true,
+            outputToFilesystem: false,
+            cacheDir: resolve(relativePath, ".cache"),
+            tsconfig: resolve(relativePath, "tsconfig.json"),
+            declarationDir: resolve(relativePath, "dist/types"),
+          }),
+        ],
+      };
+    }
+
+    if (multipleOtherConfig.length) {
+      allOptions.multipleOther = {
+        ...options,
+        output: multipleOtherConfig,
+        external: (id) => id.includes("node_modules") || id.includes("@my-react/"),
+        plugins: [
+          nodeResolve(),
+          commonjs({ exclude: "node_modules" }),
+          replace({
+            __DEV__: mode === "development",
+            __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
+            preventAssignment: true,
+          }),
+          typescript({
+            composite: true,
+            declaration: true,
+            declarationMap: true,
+            emitDeclarationOnly: true,
+            outputToFilesystem: false,
+            cacheDir: resolve(relativePath, ".cache"),
+            tsconfig: resolve(relativePath, "tsconfig.json"),
+            declarationDir: resolve(relativePath, "dist/types"),
+          }),
+        ],
+      };
+    }
+
+    if (multipleUMDConfig.length) {
+      allOptions.multipleUMD = {
+        ...options,
+        output: multipleUMDConfig,
+        external: (id) => {
+          if (packageFileObject["name"] === "@my-react/react-dom") {
+            return id.endsWith("@my-react/react");
+          }
+        },
+        plugins: [
+          nodeResolve(),
+          commonjs({ exclude: "node_modules" }),
+          replace({
+            __DEV__: mode === "development",
+            ["process.env.NODE_ENV"]: JSON.stringify(mode),
+            __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
+            preventAssignment: true,
+          }),
+          typescript({
+            composite: true,
+            declaration: true,
+            declarationMap: true,
+            emitDeclarationOnly: true,
+            outputToFilesystem: false,
+            cacheDir: resolve(relativePath, ".cache"),
+            tsconfig: resolve(relativePath, "tsconfig.json"),
+            declarationDir: resolve(relativePath, "dist/types"),
+          }),
+        ],
       };
     }
   }
+
   return allOptions;
 };
 
@@ -99,6 +231,9 @@ export const getRollupConfig = async (packageName: string) => {
     encoding: "utf-8",
   });
 
+  // eslint-disable-next-line no-debugger
+  // debugger;
+
   const packageFileObject = JSON.parse(packageFileContent);
 
   let rollupConfig: RollupOptions = { ...defaultBuildOptions };
@@ -111,130 +246,32 @@ export const getRollupConfig = async (packageName: string) => {
 
   if (!rollupConfig.output) throw new Error(`current package ${packageName} not have a output config`);
 
-  const allRollupOptions = modes.map((mode) => transformBuildOptions(cloneDeep(rollupConfig), relativePath, mode));
+  const allRollupOptions = modes.map((mode) =>
+    transformBuildOptions(cloneDeep(rollupConfig), packageFileObject, relativePath, mode)
+  );
 
   const allDevBuild = allRollupOptions[0];
 
   const allProdBuild = allRollupOptions[1];
 
-  const allUMDBuild = allRollupOptions.map((it) => it.umd);
+  const allSingleOther = allDevBuild["singleOther"];
 
-  const allOtherBuild = allRollupOptions.map((it) => it.other);
+  const allSingleUMD = allDevBuild["singleUMD"];
 
-  allOtherBuild.forEach((option) => {
-    if (option) {
-      option.external = (id) => id.includes("node_modules") || id.includes("@my-react/");
-    }
-  });
+  const allOtherDev = allDevBuild["multipleOther"];
 
-  allUMDBuild.forEach((option) => {
-    if (option && packageName === "myreact-dom") {
-      option.external = (id) => id.endsWith("@my-react/react");
-    }
-  });
+  const allUMDDev = allDevBuild["multipleUMD"];
 
-  if (allDevBuild.other) {
-    allDevBuild.other.plugins = [
-      nodeResolve(),
-      commonjs({ exclude: "node_modules" }),
-      replace({
-        __DEV__: true,
-        __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
-        preventAssignment: true,
-      }),
-      typescript({
-        composite: true,
-        declaration: true,
-        declarationMap: true,
-        emitDeclarationOnly: true,
-        outputToFilesystem: false,
-        cacheDir: resolve(relativePath, ".cache"),
-        tsconfig: resolve(relativePath, "tsconfig.json"),
-        declarationDir: resolve(relativePath, "dist/types"),
-      }),
-    ];
-  }
+  const allOtherProd = allProdBuild["multipleOther"];
 
-  if (allDevBuild.umd) {
-    allDevBuild.umd.plugins = [
-      nodeResolve(),
-      commonjs({ exclude: "node_modules" }),
-      replace({
-        __DEV__: true,
-        ["process.env.NODE_ENV"]: JSON.stringify("development"),
-        __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
-        preventAssignment: true,
-      }),
-      typescript({
-        composite: true,
-        declaration: true,
-        declarationMap: true,
-        emitDeclarationOnly: true,
-        outputToFilesystem: false,
-        cacheDir: resolve(relativePath, ".cache"),
-        tsconfig: resolve(relativePath, "tsconfig.json"),
-        declarationDir: resolve(relativePath, "dist/types"),
-      }),
-    ];
-  }
-
-  if (allProdBuild.other) {
-    allProdBuild.other.plugins = [
-      nodeResolve(),
-      commonjs({ exclude: "node_modules" }),
-      replace({
-        __DEV__: false,
-        __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
-        preventAssignment: true,
-      }),
-      typescript({
-        composite: true,
-        declaration: true,
-        declarationMap: true,
-        emitDeclarationOnly: true,
-        outputToFilesystem: false,
-        cacheDir: resolve(relativePath, ".cache"),
-        tsconfig: resolve(relativePath, "tsconfig.json"),
-        declarationDir: resolve(relativePath, "dist/types"),
-      }),
-    ];
-  }
-
-  if (allProdBuild.umd) {
-    allProdBuild.umd.plugins = [
-      nodeResolve(),
-      commonjs({ exclude: "node_modules" }),
-      replace({
-        __DEV__: false,
-        __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
-        ["process.env.NODE_ENV"]: JSON.stringify("production"),
-        preventAssignment: true,
-      }),
-      typescript({
-        composite: true,
-        declaration: true,
-        declarationMap: true,
-        emitDeclarationOnly: true,
-        outputToFilesystem: false,
-        cacheDir: resolve(relativePath, ".cache"),
-        tsconfig: resolve(relativePath, "tsconfig.json"),
-        declarationDir: resolve(relativePath, "dist/types"),
-      }),
-    ];
-  }
-
-  const allOptions = [...allUMDBuild, ...allOtherBuild].filter(Boolean) as RollupOptions[];
-
-  allOptions.forEach((option) => {
-    option.onwarn = (msg, warn) => {
-      if (!/Circular/.test(msg.message)) {
-        warn(msg);
-      }
-    };
-  });
+  const allUMDProd = allProdBuild["multipleUMD"];
 
   return {
-    allDevBuild,
-    allProdBuild,
+    allSingleOther,
+    allSingleUMD,
+    allOtherDev,
+    allOtherProd,
+    allUMDDev,
+    allUMDProd,
   };
 };

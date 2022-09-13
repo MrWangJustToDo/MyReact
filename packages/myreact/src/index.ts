@@ -20,6 +20,7 @@ import {
 } from "./element";
 import {
   MyReactFiberNode,
+  MyReactFiberNodeRoot,
   unmountFiberNode,
   createFiberNode,
   updateFiberNode,
@@ -43,6 +44,7 @@ import {
   useImperativeHandle,
 } from "./hook";
 import { MyReactInternalInstance, Effect_TYPE } from "./internal";
+import { jsx, jsxs, jsxDEV } from "./jsx";
 import {
   createRef,
   log,
@@ -50,6 +52,7 @@ import {
   LinkTreeList,
   currentRunningFiber,
   currentFunctionFiber,
+  currentComponentFiber,
   currentHookDeepIndex,
   globalLoop,
   safeCall,
@@ -90,11 +93,13 @@ const __my_react_internal__ = {
   Effect_TYPE,
   MyReactComponent,
   MyReactFiberNode,
+  MyReactFiberNodeRoot,
   MyReactInternalInstance,
   globalLoop,
   currentRunningFiber,
   currentHookDeepIndex,
   currentFunctionFiber,
+  currentComponentFiber,
 };
 
 const Children = {
@@ -105,50 +110,10 @@ const Children = {
   forEach,
 };
 
-const React = {
-  Component,
-  PureComponent,
-
-  createElement,
-  cloneElement,
-  isValidElement,
-
-  lazy,
-  memo,
-  createRef,
-  forwardRef,
-  createContext,
-
-  Portal,
-  Element,
-  Provider,
-  Consumer,
-  Fragment,
-  Suspense,
-  StrictMode,
-  ForwardRef,
-  KeepLive,
-
-  useRef,
-  useMemo,
-  useState,
-  useEffect,
-  useReducer,
-  useContext,
-  useCallback,
-  useDebugValue,
-  useLayoutEffect,
-  useImperativeHandle,
-
-  Children,
-
-  __my_react_internal__,
-  __my_react_shared__,
-
-  version,
-};
-
 export {
+  jsx,
+  jsxs,
+  jsxDEV,
   Component,
   PureComponent,
   createElement,
@@ -181,7 +146,7 @@ export {
   Children,
   __my_react_internal__,
   __my_react_shared__,
-  React as default,
+  version,
 };
 
 export type { FiberDispatch } from "./dispatch";

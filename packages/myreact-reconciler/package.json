@@ -2,17 +2,16 @@
   "name": "@my-react/react-reconciler",
   "description": "@my-react/react-reconciler",
   "version": "0.0.1",
-  "main": "cjs.js",
-  "module": "esm.js",
+  "main": "index.js",
+  "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
-    "cjs.js",
-    "esm.js"
+    "index.js"
   ],
   "exports": {
-    "import": "./esm.js",
-    "require": "./cjs.js"
+    "import": "./dist/esm/index.js",
+    "require": "./index.js"
   },
   "buildOptions": {
     "input": "./src/index.ts",
@@ -21,22 +20,13 @@
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
         "format": "cjs",
-        "exports": "named",
+        "multiple": true,
         "sourcemap": true
       },
       {
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
-        "exports": "named",
-        "sourcemap": true
-      },
-      {
-        "dir": "./dist",
-        "entryFileNames": "umd/index.js",
-        "format": "umd",
-        "exports": "named",
-        "name": "ReactReconciler",
         "sourcemap": true
       }
     ]

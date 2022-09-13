@@ -4,9 +4,9 @@ import { DomScope, startRender } from "../../shared";
 import { ClientDispatch } from "../dispatch";
 
 import type { RenderContainer } from "./render";
-import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
+import type { MyReactElement } from "@my-react/react";
 
-const { MyReactFiberNode } = __my_react_internal__;
+const { MyReactFiberNodeRoot } = __my_react_internal__;
 
 const { initialFiberNode } = __my_react_shared__;
 
@@ -17,7 +17,7 @@ export const hydrate = (element: MyReactElement, container: RenderContainer) => 
 
   globalScope.isHydrateRender = true;
 
-  const fiber = new MyReactFiberNode(0, null, element) as MyReactFiberNodeRoot;
+  const fiber = new MyReactFiberNodeRoot(0, null, element);
 
   fiber.node = container;
 

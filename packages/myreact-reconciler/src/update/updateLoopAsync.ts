@@ -6,15 +6,17 @@ import type { MyReactFiberNode } from "@my-react/react";
 
 const { safeCall } = __my_react_shared__;
 
+export type ReconcilerLoopController = {
+  setYield: (f: MyReactFiberNode | null) => void;
+  getNext: () => MyReactFiberNode | null;
+  getUpdateList: (f: MyReactFiberNode) => void;
+  hasNext: () => boolean;
+  doesPause: () => boolean;
+  getTopLevel: () => MyReactFiberNode | null;
+};
+
 export const updateLoopAsync = (
-  loopController: {
-    setYield: (f: MyReactFiberNode | null) => void;
-    getNext: () => MyReactFiberNode | null;
-    getUpdateList: (f: MyReactFiberNode) => void;
-    hasNext: () => boolean;
-    doesPause: () => boolean;
-    getTopLevel: () => MyReactFiberNode | null;
-  },
+  loopController: ReconcilerLoopController,
   shouldPause: () => boolean,
   reconcileUpdate: () => void
 ) => {

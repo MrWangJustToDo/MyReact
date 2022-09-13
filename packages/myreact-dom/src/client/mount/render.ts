@@ -3,13 +3,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { DomScope, startRender, unmountComponentAtNode } from "../../shared";
 import { ClientDispatch } from "../dispatch";
 
-import type {
-  MyReactElement,
-  MyReactFiberNode,
-  FiberDispatch,
-  MyReactFiberNodeRoot,
-  RenderScope,
-} from "@my-react/react";
+import type { MyReactElement, MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
 
 export type RenderContainer = Element & {
   __scope__: RenderScope;
@@ -17,7 +11,7 @@ export type RenderContainer = Element & {
   __dispatch__: FiberDispatch;
 };
 
-const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
+const { MyReactFiberNode: MyReactFiberNodeClass, MyReactFiberNodeRoot } = __my_react_internal__;
 
 const { initialFiberNode } = __my_react_shared__;
 
@@ -43,7 +37,7 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   Array.from(container.children).forEach((n) => n.remove?.());
 
-  const fiber = new MyReactFiberNodeClass(0, null, element) as MyReactFiberNodeRoot;
+  const fiber = new MyReactFiberNodeRoot(0, null, element);
 
   fiber.node = container;
 

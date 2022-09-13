@@ -4,6 +4,9 @@ const resolveConfig = () => {
   const basePath = path.resolve(process.cwd());
   return {
     alias: {
+      // not work for some reason
+      // react: "@my-react/react",
+      // "react-dom": "@my-react/react-dom",
       server: path.resolve(basePath, "src", "server"),
       client: path.resolve(basePath, "src", "client"),
       hooks: path.resolve(basePath, "src", "hooks"),

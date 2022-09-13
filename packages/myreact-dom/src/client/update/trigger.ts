@@ -1,9 +1,12 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
+import { generateReconcileUpdate } from "@ReactDOM_shared";
+
+import { generateUpdateControllerWithDispatch } from "./tool";
 import { updateAllAsync, updateAllSync } from "./update";
 
-import type { DomScope } from "../../shared/scope";
 import type { MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
+import type { DomScope } from "@ReactDOM_shared";
 
 const { globalLoop } = __my_react_internal__;
 
@@ -11,10 +14,12 @@ const { enableAsyncUpdate } = __my_react_shared__;
 
 const updateEntry = (globalDispatch: FiberDispatch, globalScope: RenderScope) => {
   if (globalLoop.current) return;
+  const updateFiberController = generateUpdateControllerWithDispatch(globalDispatch, globalScope);
+  const reconcileUpdate = generateReconcileUpdate(globalDispatch, globalScope);
   if (enableAsyncUpdate.current) {
-    updateAllAsync(globalDispatch, globalScope);
+    updateAllAsync(updateFiberController, reconcileUpdate);
   } else {
-    updateAllSync(globalDispatch, globalScope);
+    updateAllSync(updateFiberController, reconcileUpdate);
   }
 };
 

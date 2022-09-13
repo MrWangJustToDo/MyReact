@@ -2,10 +2,10 @@ import { rollup } from "rollup";
 
 import { getRollupConfig } from "./rollupConfig";
 
-import type { Mode, packages } from "./type";
+import type { packages } from "./type";
 import type { OutputOptions, RollupOptions } from "rollup";
 
-const build = async (packageName: string, rollupOptions: RollupOptions, mode: Mode, isUMD: boolean) => {
+const build = async (packageName: string, rollupOptions: RollupOptions, mode: string, isUMD: boolean) => {
   console.log(`[build] start build package ${packageName} with ${mode} mode ${isUMD ? "in umd format" : ""}`);
   try {
     const { output, ...options } = rollupOptions;
@@ -23,26 +23,36 @@ const build = async (packageName: string, rollupOptions: RollupOptions, mode: Mo
 };
 
 const rollupBuild = async (packageName: packages) => {
-  const { allDevBuild, allProdBuild } = await getRollupConfig(packageName);
+  const { allOtherDev, allOtherProd, allSingleOther, allSingleUMD, allUMDDev, allUMDProd } = await getRollupConfig(
+    packageName
+  );
 
   const all = [];
 
-  if (allDevBuild.other) {
-    const option = allDevBuild.other;
-    all.push(() => build(packageName, option, "development", false));
+  if (allOtherDev) {
+    all.push(() => build(packageName, allOtherDev, "development", false));
   }
-  if (allDevBuild.umd) {
-    const option = allDevBuild.umd;
-    all.push(() => build(packageName, option, "development", true));
+
+  if (allOtherProd) {
+    all.push(() => build(packageName, allOtherProd, "production", false));
   }
-  if (allProdBuild.other) {
-    const option = allProdBuild.other;
-    all.push(() => build(packageName, option, "production", false));
+
+  if (allSingleOther) {
+    all.push(() => build(packageName, allSingleOther, "process.nev", false));
   }
-  if (allProdBuild.umd) {
-    const option = allProdBuild.umd;
-    all.push(() => build(packageName, option, "production", true));
+
+  if (allSingleUMD) {
+    all.push(() => build(packageName, allSingleUMD, "process.env", true));
   }
+
+  if (allUMDDev) {
+    all.push(() => build(packageName, allUMDDev, "development", true));
+  }
+
+  if (allUMDProd) {
+    all.push(() => build(packageName, allUMDProd, "production", true));
+  }
+
   await Promise.all(all.map((f) => f()));
 };
 

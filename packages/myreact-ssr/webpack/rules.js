@@ -49,7 +49,7 @@ const jsRules = (env, isDev = true) => {
                       style: "css", // 样式按需加载
                     },
                   ],
-                  isDev && "react-refresh/babel",
+                  // isDev && "react-refresh/babel",
                 ].filter(Boolean)
               : ["@babel/transform-modules-commonjs"],
         },

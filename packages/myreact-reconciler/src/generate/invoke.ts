@@ -41,6 +41,7 @@ const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
     if (updated) {
       return nextWorkCommon(fiber, children);
     } else {
+      fiber.afterUpdate();
       return [];
     }
   }
@@ -179,6 +180,8 @@ const nextWorkNormal = (fiber: MyReactFiberNode) => {
 
     return childrenFiber;
   } else {
+    fiber.afterUpdate();
+
     return [];
   }
 };
@@ -241,6 +244,8 @@ export const nextWorkSync = (fiber: MyReactFiberNode) => {
   else if (fiber.type & NODE_TYPE.__isObjectNode__) children = nextWorkObject(fiber);
   else children = nextWorkNormal(fiber);
 
+  fiber.invoked = true;
+
   currentRunningFiber.current = null;
 
   return children;
@@ -257,6 +262,8 @@ export const nextWorkAsync = (fiber: MyReactFiberNode, topLevelFiber: MyReactFib
     else nextWorkNormal(fiber);
 
     currentRunningFiber.current = null;
+
+    fiber.invoked = true;
 
     if (fiber.children.length) {
       return fiber.child;

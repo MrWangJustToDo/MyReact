@@ -1,38 +1,32 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { updateLoopAsync, updateLoopSync } from "@my-react/react-reconciler";
 
-import { reconcileUpdate, shouldPauseAsyncUpdate } from "@ReactDOM_shared";
+import { shouldPauseAsyncUpdate } from "@ReactDOM_shared";
 
-import { generateUpdateControllerWithDispatch } from "./tool";
-
-import type { FiberDispatch, RenderScope } from "@my-react/react";
+import type { ReconcilerLoopController } from "@my-react/react-reconciler";
 
 const { globalLoop } = __my_react_internal__;
 
-export const updateAllSync = (globalDispatch: FiberDispatch, globalScope: RenderScope) => {
+export const updateAllSync = (updateFiberController: ReconcilerLoopController, reconcileUpdate: () => void) => {
   globalLoop.current = true;
 
-  const updateFiberController = generateUpdateControllerWithDispatch(globalDispatch, globalScope);
-
-  updateLoopSync(updateFiberController, () => reconcileUpdate(globalDispatch, globalScope));
+  updateLoopSync(updateFiberController, reconcileUpdate);
 
   globalLoop.current = false;
 
   Promise.resolve().then(() => {
-    if (updateFiberController.hasNext()) updateAllSync(globalDispatch, globalScope);
+    if (updateFiberController.hasNext()) updateAllSync(updateFiberController, reconcileUpdate);
   });
 };
 
-export const updateAllAsync = (globalDispatch: FiberDispatch, globalScope: RenderScope) => {
+export const updateAllAsync = (updateFiberController: ReconcilerLoopController, reconcileUpdate: () => void) => {
   globalLoop.current = true;
 
-  const updateFiberController = generateUpdateControllerWithDispatch(globalDispatch, globalScope);
-
-  updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate, () => reconcileUpdate(globalDispatch, globalScope));
+  updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate, reconcileUpdate);
 
   globalLoop.current = false;
 
   Promise.resolve().then(() => {
-    if (updateFiberController.hasNext()) updateAllAsync(globalDispatch, globalScope);
+    if (updateFiberController.hasNext()) updateAllAsync(updateFiberController, reconcileUpdate);
   });
 };

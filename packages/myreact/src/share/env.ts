@@ -6,6 +6,8 @@ export const globalLoop = createRef(false);
 
 export const currentRunningFiber = createRef<MyReactFiberNode | null>(null);
 
+export const currentComponentFiber = createRef<MyReactFiberNode | null>(null);
+
 export const currentFunctionFiber = createRef<MyReactFiberNode | null>(null);
 
 export const currentHookDeepIndex = createRef(0);

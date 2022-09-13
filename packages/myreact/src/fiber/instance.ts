@@ -43,6 +43,8 @@ export class MyReactFiberNode {
 
   mount = true;
 
+  invoked = false;
+
   node: RenderNode | null = null;
 
   children: MyReactFiberNode[] = [];

@@ -32,15 +32,14 @@ const watch = (packageName: string, rollupOptions: RollupOptions, mode: Mode, is
 };
 
 const rollupWatch = async (packageName: packages) => {
-  const { allDevBuild } = await getRollupConfig(packageName);
+  const { allOtherDev, allUMDDev } = await getRollupConfig(packageName);
 
-  if (allDevBuild.other) {
-    const option = allDevBuild.other;
-    watch(packageName, option, "development", false);
+  if (allOtherDev) {
+    watch(packageName, allOtherDev, "development", false);
   }
-  if (allDevBuild.umd) {
-    const option = allDevBuild.umd;
-    watch(packageName, option, "development", true);
+
+  if (allUMDDev) {
+    watch(packageName, allUMDDev, "development", true);
   }
 };
 

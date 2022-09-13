@@ -1,53 +1,66 @@
 import type { MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
+import type { ReconcilerLoopController } from "@my-react/react-reconciler";
 
-let currentYield: MyReactFiberNode | null = null;
+type ReconcilerLoopControllerWithCache = ReconcilerLoopController & { currentYield: MyReactFiberNode | null };
 
-export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispatch, globalScope: RenderScope) => ({
-  setYield: (fiber: MyReactFiberNode | null) => {
-    if (fiber) {
-      currentYield = fiber;
-    } else {
-      currentYield = null;
+export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispatch, globalScope: RenderScope) => {
+  // const runningCache: Record<string, boolean> = {};
 
-      globalDispatch.endProgressList(globalScope);
-    }
-  },
+  const controller: ReconcilerLoopControllerWithCache = {
+    currentYield: null,
 
-  getNext: () => {
-    if (globalScope.isAppCrash) return null;
+    setYield: (fiber: MyReactFiberNode | null) => {
+      if (fiber) {
+        controller.currentYield = fiber;
+      } else {
+        controller.currentYield = null;
 
-    const yieldFiber = currentYield;
-
-    currentYield = null;
-
-    if (yieldFiber) return yieldFiber;
-
-    while (globalScope.modifyFiberArray.length) {
-      const newProgressFiber = globalScope.modifyFiberArray.shift();
-
-      if (newProgressFiber?.mount) {
-        globalDispatch.beginProgressList(globalScope);
-
-        globalScope.modifyFiberRoot = newProgressFiber;
-
-        return newProgressFiber;
+        globalDispatch.endProgressList(globalScope);
       }
-    }
+    },
 
-    return null;
-  },
+    getNext: () => {
+      if (globalScope.isAppCrash) return null;
 
-  getUpdateList: (fiber: MyReactFiberNode) => {
-    globalDispatch.generateUpdateList(fiber, globalScope);
-  },
+      const yieldFiber = controller.currentYield;
 
-  hasNext: () => {
-    if (globalScope.isAppCrash) return false;
+      controller.currentYield = null;
 
-    return currentYield !== null || globalScope.modifyFiberArray.length > 0;
-  },
+      if (yieldFiber) return yieldFiber;
 
-  doesPause: () => currentYield !== null,
+      globalScope.modifyFiberRoot = null;
 
-  getTopLevel: () => globalScope.modifyFiberRoot,
-});
+      while (globalScope.modifyFiberArray.length) {
+        const newProgressFiber = globalScope.modifyFiberArray.shift();
+
+        if (newProgressFiber?.mount /* && !runningCache[newProgressFiber.uid] */) {
+          // runningCache[newProgressFiber.uid] = true;
+
+          globalDispatch.beginProgressList(globalScope);
+
+          globalScope.modifyFiberRoot = newProgressFiber;
+
+          return newProgressFiber;
+        }
+      }
+
+      return null;
+    },
+
+    getUpdateList: (fiber: MyReactFiberNode) => {
+      globalDispatch.generateUpdateList(fiber, globalScope);
+    },
+
+    hasNext: () => {
+      if (globalScope.isAppCrash) return false;
+
+      return controller.currentYield !== null || globalScope.modifyFiberArray.length > 0;
+    },
+
+    doesPause: () => controller.currentYield !== null,
+
+    getTopLevel: () => globalScope.modifyFiberRoot,
+  };
+
+  return controller;
+};

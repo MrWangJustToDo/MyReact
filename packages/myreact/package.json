@@ -2,17 +2,22 @@
   "name": "@my-react/react",
   "description": "@my-react/react",
   "version": "0.0.1",
-  "main": "cjs.js",
-  "module": "esm.js",
+  "main": "index.js",
+  "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
-    "cjs.js",
-    "esm.js"
+    "index.js"
   ],
   "exports": {
-    "import": "./esm.js",
-    "require": "./cjs.js"
+    ".": {
+      "require": "./index.js",
+      "import": "./dist/esm/index.js",
+      "default": "./index.js"
+    },
+    "./jsx-runtime": "./index.js",
+    "./jsx-dev-runtime": "./index.js",
+    "./package.json": "./package.json"
   },
   "buildOptions": {
     "input": "./src/index.ts",
@@ -20,27 +25,33 @@
       {
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
+        "esModule": false,
         "format": "cjs",
-        "exports": "named",
+        "multiple": true,
         "sourcemap": true
       },
       {
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
-        "exports": "named",
+        "sourcemap": true
+      },
+      {
+        "dir": "./dist",
+        "entryFileNames": "browser/index.js",
+        "format": "esm",
+        "multiple": true,
         "sourcemap": true
       },
       {
         "dir": "./dist",
         "entryFileNames": "umd/index.js",
         "format": "umd",
-        "exports": "named",
+        "esModule": false,
+        "multiple": true,
         "name": "React",
         "sourcemap": true
       }
     ]
-  },
-  "dependencies": {
   }
 }

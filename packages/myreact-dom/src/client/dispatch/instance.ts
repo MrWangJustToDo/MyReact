@@ -100,6 +100,9 @@ export class ClientDispatch implements FiberDispatch {
     processHookUpdateQueue(_fiber);
   }
   beginProgressList(_scope: RenderScope): void {
+    if (_scope.updateFiberList?.length) {
+      _scope.updateFiberListArray.push(_scope.updateFiberList);
+    }
     _scope.updateFiberList = new LinkTreeList();
   }
   endProgressList(_scope: RenderScope): void {
@@ -110,6 +113,7 @@ export class ClientDispatch implements FiberDispatch {
   }
   generateUpdateList(_fiber: MyReactFiberNode, _scope: RenderScope): void {
     if (_fiber) {
+      _scope.updateFiberList = _scope.updateFiberList || new LinkTreeList();
       if (_scope.updateFiberList) {
         if (
           _fiber.patch & PATCH_TYPE.__pendingCreate__ ||
@@ -172,51 +176,59 @@ export class ClientDispatch implements FiberDispatch {
   }
   reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {
     _list.listToFoot((_fiber) => {
-      const _isSVG = isSVG(_fiber, this.elementTypeMap);
-      safeCallWithFiber({
-        fiber: _fiber,
-        action: () => create(_fiber, false, _fiber, _isSVG),
-      });
+      if (_fiber.mount) {
+        const _isSVG = isSVG(_fiber, this.elementTypeMap);
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => create(_fiber, false, _fiber, _isSVG),
+        });
 
-      safeCallWithFiber({
-        fiber: _fiber,
-        action: () => update(_fiber, false, _isSVG),
-      });
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => update(_fiber, false, _isSVG),
+        });
 
-      safeCallWithFiber({
-        fiber: _fiber,
-        action: () => unmount(_fiber),
-      });
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => unmount(_fiber),
+        });
 
-      safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
+        safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
+      }
     });
   }
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
     _list.listToHead((_fiber) => {
-      const _parentFiberWithDom = getFiberWithDom(_fiber.parent, (f) => f.parent) as MyReactFiberNode;
+      if (_fiber.mount) {
+        const _parentFiberWithDom = getFiberWithDom(_fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
-      safeCallWithFiber({
-        fiber: _fiber,
-        action: () => position(_fiber, _parentFiberWithDom),
-      });
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => position(_fiber, _parentFiberWithDom),
+        });
+      }
     });
 
     _list.listToFoot((_fiber) => {
-      const _parentFiberWithDom = getFiberWithDom(_fiber.parent, (f) => f.parent) as MyReactFiberNode;
+      if (_fiber.mount) {
+        const _parentFiberWithDom = getFiberWithDom(_fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
-      safeCallWithFiber({
-        fiber: _fiber,
-        action: () => append(_fiber, _parentFiberWithDom),
-      });
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => append(_fiber, _parentFiberWithDom),
+        });
+      }
     });
 
     _list.reconcile((_fiber) => {
-      safeCallWithFiber({
-        fiber: _fiber,
-        action: () => layoutEffect(_fiber),
-      });
+      if (_fiber.mount) {
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => layoutEffect(_fiber),
+        });
 
-      Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+        Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+      }
     });
   }
   pendingCreate(_fiber: MyReactFiberNode): void {

@@ -2,20 +2,12 @@ import { __my_react_shared__ } from "@my-react/react";
 
 import { nextWorkAsync } from "../generate";
 
+import type { ReconcilerLoopController } from "./updateLoopAsync";
 import type { MyReactFiberNode } from "@my-react/react";
 
 const { safeCall } = __my_react_shared__;
 
-export const updateLoopSync = (
-  loopController: {
-    hasNext: () => boolean;
-    getNext: () => MyReactFiberNode | null;
-    getUpdateList: (f: MyReactFiberNode) => void;
-    setYield: (f: MyReactFiberNode | null) => void;
-    getTopLevel: () => MyReactFiberNode | null;
-  },
-  reconcileUpdate: () => void
-) => {
+export const updateLoopSync = (loopController: ReconcilerLoopController, reconcileUpdate: () => void) => {
   if (loopController.hasNext()) {
     let fiber = loopController.getNext();
     while (fiber) {

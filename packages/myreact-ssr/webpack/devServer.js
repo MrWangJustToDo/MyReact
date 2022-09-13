@@ -25,7 +25,7 @@ const devServerConfig = ({ publicPath }) => {
     },
     devMiddleware: {
       publicPath,
-      writeToDisk: (filepath) => filepath.includes("manifest-loadable.json") || filepath.includes("manifest-dev.json"),
+      writeToDisk: (filepath) => filepath.includes("manifest-loadable.json") || filepath.includes("manifest-dev.json") || filepath.endsWith('js'),
     },
   };
 };

@@ -10,20 +10,7 @@ const version = __VERSION__;
 
 const unstable_batchedUpdates = safeCall;
 
-const ReactDOM = {
-  render,
-  hydrate,
-  findDOMNode,
-  createPortal,
-  renderToString,
-  unmountComponentAtNode,
-  unstable_batchedUpdates,
-
-  version,
-};
-
 export {
-  ReactDOM as default,
   render,
   hydrate,
   findDOMNode,
@@ -31,4 +18,5 @@ export {
   renderToString,
   unmountComponentAtNode,
   unstable_batchedUpdates,
+  version,
 };

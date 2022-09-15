@@ -2,30 +2,35 @@ import { NODE_TYPE } from "../fiber";
 
 import { currentRunningFiber } from "./env";
 
-import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "../element";
+import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 
 const getTrackDevLog = (fiber: MyReactFiberNode) => {
-  if (!__DEV__) return "";
-  const element = fiber.element;
-  const source = typeof element === "object" ? element?._source : null;
-  const owner = typeof element === "object" ? element?._owner : null;
-  let preString = "";
-  if (source) {
-    const { fileName, lineNumber } = source;
-    preString = `${preString} (${fileName}:${lineNumber})`;
+  if (__DEV__) {
+    const element = fiber.element;
+    const source = typeof element === "object" ? (element as MyReactElement)?.["_source"] : null;
+    const owner = typeof element === "object" ? (element as MyReactElement)?.["_owner"] : null;
+    let preString = "";
+    if (source) {
+      const { fileName, lineNumber } = source || {};
+      preString = `${preString} (${fileName}:${lineNumber})`;
+    }
+    if (
+      !(fiber.type & NODE_TYPE.__isDynamicNode__) &&
+      typeof owner?.element === "object" &&
+      typeof (owner?.element as MyReactElement)?.type === "function"
+    ) {
+      const typedType = (owner?.element as MyReactElement)?.type as
+        | MixinMyReactClassComponent
+        | MixinMyReactFunctionComponent;
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      const name = typedType.displayName || ((owner?.element as MyReactElement)?.type as Function)?.name;
+      preString = `${preString} (render dy ${name})`;
+    }
+    return preString;
+  } else {
+    return "";
   }
-  if (
-    owner &&
-    !(fiber.type & NODE_TYPE.__isDynamicNode__) &&
-    typeof owner.element === "object" &&
-    typeof owner.element?.type === "function"
-  ) {
-    const typedType = owner.element.type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
-    const name = typedType.displayName || owner.element.type.name;
-    preString = `${preString} (render dy ${name})`;
-  }
-  return preString;
 };
 
 const getElementName = (fiber: MyReactFiberNode) => {

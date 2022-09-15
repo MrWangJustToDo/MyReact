@@ -31,10 +31,5 @@
       "webpackConfig/*": ["./packages/myreact-ssr/webpack/*"],
       "script/*": ["./packages/myreact-ssr/script/*"],
     }
-  },
-  "include": [
-    "scripts",
-    "global.d.ts",
-    "packages/*/src",
-  ]
+  }
 }

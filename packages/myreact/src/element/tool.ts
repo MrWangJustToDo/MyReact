@@ -80,7 +80,7 @@ export function getTypeFromElement(element: MyReactElementNode) {
       nodeTypeSymbol |= NODE_TYPE.__isPlainNode__;
     } else {
       if (__DEV__) {
-        log({ message: `invalid element type ${rawType}`, level: "warn", triggerOnce: true });
+        log({ message: `invalid element type ${String(rawType)}`, level: "warn", triggerOnce: true });
       }
       nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
     }

@@ -127,7 +127,7 @@ export function createElement(
   if (childrenLength > 1) {
     children = Array.from(arguments).slice(2);
     if (__DEV__) {
-      checkArrayChildrenKey(children);
+      checkArrayChildrenKey(children as ArrayMyReactElementNode);
     }
     props.children = children;
   } else if (childrenLength === 1) {
@@ -187,7 +187,7 @@ export function cloneElement(element: MyReactElementNode, config?: CreateElement
     if (childrenLength > 1) {
       children = Array.from(arguments).slice(2);
       if (__DEV__) {
-        checkArrayChildrenKey(children);
+        checkArrayChildrenKey(children as ArrayMyReactElementNode);
       }
       props.children = children;
     } else if (childrenLength === 1) {

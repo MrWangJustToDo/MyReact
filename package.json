@@ -3,10 +3,6 @@
   "license": "MIT",
   "name": "myreact",
   "author": "MrWangJustToDo",
-  "files": [
-    "dist",
-    "src"
-  ],
   "engines": {
     "node": ">=10"
   },
@@ -16,7 +12,9 @@
     "dev": "ts-node ./scripts/rollupWatch.ts",
     "build": "ts-node ./scripts/rollupBuild.ts",
     "lint": "eslint --cache --ext ts,tsx .",
-    "lint:fix": "pnpm run lint --fix"
+    "lint:fix": "pnpm run lint --fix",
+    "clean": "pnpm -p -r -c exec rm -rf dist",
+    "purge": "pnpm -p -r -c exec rm -rf node_modules"
   },
   "husky": {
     "hooks": {
@@ -43,6 +41,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rollup": "^2.79.0",
+    "rollup-plugin-typescript2": "^0.34.0",
     "ts-node": "^10.9.1",
     "tslib": "^2.4.0",
     "typescript": "^4.7.4",

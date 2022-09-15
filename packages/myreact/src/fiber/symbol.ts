@@ -43,7 +43,6 @@ export enum PATCH_TYPE {
 
 export enum UPDATE_TYPE {
   __initial__ = 0,
-  __run__ = 1,
-  __update__ = 1 << 1,
-  __trigger__ = 1 << 2,
+  __update__ = 1,
+  __trigger__ = 1 << 1,
 }

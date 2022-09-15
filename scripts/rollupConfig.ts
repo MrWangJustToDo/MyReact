@@ -1,11 +1,11 @@
 import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
-import typescript from "@rollup/plugin-typescript";
 import cloneDeep from "lodash/cloneDeep";
 import fs from "fs";
 import { readFile, access } from "fs/promises";
 import { resolve } from "path";
+import typescript from "rollup-plugin-typescript2";
 
 import type { Mode, MultipleOutput } from "./type";
 import type { RollupOptions } from "rollup";
@@ -32,6 +32,21 @@ const checkFileExist = (path: string) =>
   access(path, fs.constants.F_OK)
     .then(() => true)
     .catch(() => false);
+
+const tsConfig = (relativePath: string) =>
+  typescript({
+    clean: true,
+    tsconfig: resolve(relativePath, "tsconfig.json"),
+    useTsconfigDeclarationDir: true,
+    tsconfigOverride: {
+      compilerOptions: {
+        composite: true,
+        declaration: true,
+        declarationMap: true,
+        declarationDir: "dist/types",
+      },
+    },
+  });
 
 const transformBuildOptions = (
   options: RollupOptions,
@@ -106,16 +121,7 @@ const transformBuildOptions = (
             __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
             preventAssignment: true,
           }),
-          typescript({
-            composite: true,
-            declaration: true,
-            declarationMap: true,
-            emitDeclarationOnly: true,
-            outputToFilesystem: false,
-            cacheDir: resolve(relativePath, ".cache"),
-            tsconfig: resolve(relativePath, "tsconfig.json"),
-            declarationDir: resolve(relativePath, "dist/types"),
-          }),
+          tsConfig(relativePath),
         ],
       };
     }
@@ -137,16 +143,7 @@ const transformBuildOptions = (
             __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
             preventAssignment: true,
           }),
-          typescript({
-            composite: true,
-            declaration: true,
-            declarationMap: true,
-            emitDeclarationOnly: true,
-            outputToFilesystem: false,
-            cacheDir: resolve(relativePath, ".cache"),
-            tsconfig: resolve(relativePath, "tsconfig.json"),
-            declarationDir: resolve(relativePath, "dist/types"),
-          }),
+          tsConfig(relativePath),
         ],
       };
     }
@@ -164,16 +161,7 @@ const transformBuildOptions = (
             __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
             preventAssignment: true,
           }),
-          typescript({
-            composite: true,
-            declaration: true,
-            declarationMap: true,
-            emitDeclarationOnly: true,
-            outputToFilesystem: false,
-            cacheDir: resolve(relativePath, ".cache"),
-            tsconfig: resolve(relativePath, "tsconfig.json"),
-            declarationDir: resolve(relativePath, "dist/types"),
-          }),
+          tsConfig(relativePath),
         ],
       };
     }
@@ -196,16 +184,7 @@ const transformBuildOptions = (
             __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
             preventAssignment: true,
           }),
-          typescript({
-            composite: true,
-            declaration: true,
-            declarationMap: true,
-            emitDeclarationOnly: true,
-            outputToFilesystem: false,
-            cacheDir: resolve(relativePath, ".cache"),
-            tsconfig: resolve(relativePath, "tsconfig.json"),
-            declarationDir: resolve(relativePath, "dist/types"),
-          }),
+          tsConfig(relativePath),
         ],
       };
     }
@@ -230,9 +209,6 @@ export const getRollupConfig = async (packageName: string) => {
   const packageFileContent = await readFile(packageFilePath, {
     encoding: "utf-8",
   });
-
-  // eslint-disable-next-line no-debugger
-  // debugger;
 
   const packageFileObject = JSON.parse(packageFileContent);
 

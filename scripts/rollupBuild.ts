@@ -13,7 +13,7 @@ const build = async (packageName: string, rollupOptions: RollupOptions, mode: st
     await Promise.all((output as OutputOptions[]).map((output) => bundle.write(output)));
   } catch (e) {
     console.error(
-      `[build] build package ${packageName} with ${mode} mode ${isUMD ? "in umd format error" : "error"}, ${
+      `[build] build package ${packageName} with ${mode} mode ${isUMD ? "in umd format error" : "error"} \n ${
         (e as Error).message
       }`
     );

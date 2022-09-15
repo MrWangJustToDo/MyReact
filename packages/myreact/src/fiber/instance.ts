@@ -84,7 +84,7 @@ export class MyReactFiberNode {
 
   patch: PATCH_TYPE = PATCH_TYPE.__initial__;
 
-  mode: UPDATE_TYPE = UPDATE_TYPE.__run__;
+  mode: UPDATE_TYPE = UPDATE_TYPE.__initial__;
 
   updateQueue: UpdateQueue[] = [];
 
@@ -157,7 +157,6 @@ export class MyReactFiberNode {
 
   triggerUpdate() {
     let updateSymbol = UPDATE_TYPE.__initial__;
-    updateSymbol |= UPDATE_TYPE.__run__;
     updateSymbol |= UPDATE_TYPE.__update__;
     updateSymbol |= UPDATE_TYPE.__trigger__;
     this.mode = updateSymbol;
@@ -165,7 +164,6 @@ export class MyReactFiberNode {
 
   prepareUpdate() {
     let updateSymbol = UPDATE_TYPE.__initial__;
-    updateSymbol |= UPDATE_TYPE.__run__;
     updateSymbol |= UPDATE_TYPE.__update__;
     this.mode = updateSymbol;
   }

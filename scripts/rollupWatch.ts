@@ -23,7 +23,7 @@ const watch = (packageName: string, rollupOptions: RollupOptions, mode: Mode, is
     }
     if (event.code === "ERROR") {
       console.log(
-        `[watch] package ${packageName} with ${mode} mode ${isUMD ? "in umd format" : ""} build error, ${
+        `[watch] package ${packageName} with ${mode} mode ${isUMD ? "in umd format" : ""} build error \n ${
           event.error.stack
         }`
       );

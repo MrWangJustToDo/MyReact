@@ -3,11 +3,11 @@ import { NODE_TYPE } from "./symbol";
 import type { MyReactFiberNode } from "./instance";
 
 export const initialFiberNode = (fiber: MyReactFiberNode) => {
+  fiber.initialType();
+
   if (__DEV__) {
     fiber.checkElement();
   }
-
-  fiber.initialType();
 
   fiber.initialParent();
 

@@ -17,11 +17,11 @@ export const createFiberNode = (
 ) => {
   const newFiberNode = new MyReactFiberNode(fiberIndex, parent, element);
 
+  newFiberNode.initialType();
+
   if (__DEV__) {
     newFiberNode.checkElement();
   }
-
-  newFiberNode.initialType();
 
   newFiberNode.initialParent();
 

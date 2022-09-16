@@ -41,7 +41,7 @@
         const [globalX] = usePosition();
 
         return (
-          <div onMousemove={(e) => setX(e.clientX)} style={{ backgroundColor: `hsl(${x}, 80%, 50%)` }} class="movearea">
+          <div onMouseMove={(e) => setX(e.clientX)} style={{ backgroundColor: `hsl(${x}, 80%, 50%)` }} className="movearea">
             <p>Move your mouse across this div...</p>
             <p>x: {x}</p>
             <p>globalX: {globalX}</p>

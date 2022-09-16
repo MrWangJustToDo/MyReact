@@ -44,9 +44,10 @@ const updateFiberNode = (...props: Parameters<typeof _updateFiberNode>) => {
 
     const prevState = typedFiber._debugRenderState || {
       renderCount: 0,
-      mountTimeStep: 0,
-      prevUpdateTimeStep: 0,
-      currentUpdateTimeStep: 0,
+      mountTime: 0,
+      prevUpdateTime: 0,
+      updateTimeStep: 0,
+      currentUpdateTime: 0,
     };
 
     const timeNow = Date.now();

@@ -274,6 +274,7 @@
 
     var globalLoop = createRef(false);
     var currentRunningFiber = createRef(null);
+    var currentComponentFiber = createRef(null);
     var currentFunctionFiber = createRef(null);
     var currentHookDeepIndex = createRef(0);
     // ==== feature ==== //
@@ -283,24 +284,26 @@
     var enableStrictLifeCycle = createRef(false);
 
     var getTrackDevLog = function (fiber) {
-        var _a;
-        var element = fiber.element;
-        var source = typeof element === "object" ? element === null || element === void 0 ? void 0 : element._source : null;
-        var owner = typeof element === "object" ? element === null || element === void 0 ? void 0 : element._owner : null;
-        var preString = "";
-        if (source) {
-            var fileName = source.fileName, lineNumber = source.lineNumber;
-            preString = "".concat(preString, " (").concat(fileName, ":").concat(lineNumber, ")");
+        var _a, _b, _c, _d;
+        {
+            var element = fiber.element;
+            var source = typeof element === "object" ? element === null || element === void 0 ? void 0 : element["_source"] : null;
+            var owner = typeof element === "object" ? element === null || element === void 0 ? void 0 : element["_owner"] : null;
+            var preString = "";
+            if (source) {
+                var _e = source || {}, fileName = _e.fileName, lineNumber = _e.lineNumber;
+                preString = "".concat(preString, " (").concat(fileName, ":").concat(lineNumber, ")");
+            }
+            if (!(fiber.type & NODE_TYPE.__isDynamicNode__) &&
+                typeof (owner === null || owner === void 0 ? void 0 : owner.element) === "object" &&
+                typeof ((_a = owner === null || owner === void 0 ? void 0 : owner.element) === null || _a === void 0 ? void 0 : _a.type) === "function") {
+                var typedType = (_b = owner === null || owner === void 0 ? void 0 : owner.element) === null || _b === void 0 ? void 0 : _b.type;
+                // eslint-disable-next-line @typescript-eslint/ban-types
+                var name_1 = typedType.displayName || ((_d = (_c = owner === null || owner === void 0 ? void 0 : owner.element) === null || _c === void 0 ? void 0 : _c.type) === null || _d === void 0 ? void 0 : _d.name);
+                preString = "".concat(preString, " (render dy ").concat(name_1, ")");
+            }
+            return preString;
         }
-        if (owner &&
-            !(fiber.type & NODE_TYPE.__isDynamicNode__) &&
-            typeof owner.element === "object" &&
-            typeof ((_a = owner.element) === null || _a === void 0 ? void 0 : _a.type) === "function") {
-            var typedType = owner.element.type;
-            var name_1 = typedType.displayName || owner.element.type.name;
-            preString = "".concat(preString, " (render dy ").concat(name_1, ")");
-        }
-        return preString;
     };
     var getElementName = function (fiber) {
         var _a;
@@ -771,9 +774,8 @@
     var UPDATE_TYPE;
     (function (UPDATE_TYPE) {
         UPDATE_TYPE[UPDATE_TYPE["__initial__"] = 0] = "__initial__";
-        UPDATE_TYPE[UPDATE_TYPE["__run__"] = 1] = "__run__";
-        UPDATE_TYPE[UPDATE_TYPE["__update__"] = 2] = "__update__";
-        UPDATE_TYPE[UPDATE_TYPE["__trigger__"] = 4] = "__trigger__";
+        UPDATE_TYPE[UPDATE_TYPE["__update__"] = 1] = "__update__";
+        UPDATE_TYPE[UPDATE_TYPE["__trigger__"] = 2] = "__trigger__";
     })(UPDATE_TYPE || (UPDATE_TYPE = {}));
 
     var checkFiberElement = function (fiber) {
@@ -838,6 +840,7 @@
         function MyReactFiberNode(fiberIndex, parent, element) {
             var _a;
             this.mount = true;
+            this.invoked = false;
             this.node = null;
             this.children = [];
             this.renderedChildren = [];
@@ -856,7 +859,7 @@
             this.hookListFoot = null;
             this.type = NODE_TYPE.__initial__;
             this.patch = PATCH_TYPE.__initial__;
-            this.mode = UPDATE_TYPE.__run__;
+            this.mode = UPDATE_TYPE.__initial__;
             this.updateQueue = [];
             this.pendingProps = {};
             this.memoizedProps = null;
@@ -920,14 +923,12 @@
         };
         MyReactFiberNode.prototype.triggerUpdate = function () {
             var updateSymbol = UPDATE_TYPE.__initial__;
-            updateSymbol |= UPDATE_TYPE.__run__;
             updateSymbol |= UPDATE_TYPE.__update__;
             updateSymbol |= UPDATE_TYPE.__trigger__;
             this.mode = updateSymbol;
         };
         MyReactFiberNode.prototype.prepareUpdate = function () {
             var updateSymbol = UPDATE_TYPE.__initial__;
-            updateSymbol |= UPDATE_TYPE.__run__;
             updateSymbol |= UPDATE_TYPE.__update__;
             this.mode = updateSymbol;
         };
@@ -1080,10 +1081,10 @@
     })(MyReactFiberNode));
 
     var initialFiberNode = function (fiber) {
+        fiber.initialType();
         {
             fiber.checkElement();
         }
-        fiber.initialType();
         fiber.initialParent();
         var globalDispatch = fiber.root.dispatch;
         globalDispatch.pendingCreate(fiber);
@@ -1101,10 +1102,10 @@
     var createFiberNode = function (_a, element) {
         var fiberIndex = _a.fiberIndex, parent = _a.parent, _b = _a.type, type = _b === void 0 ? "append" : _b;
         var newFiberNode = new MyReactFiberNode(fiberIndex, parent, element);
+        newFiberNode.initialType();
         {
             newFiberNode.checkElement();
         }
-        newFiberNode.initialType();
         newFiberNode.initialParent();
         var globalDispatch = newFiberNode.root.dispatch;
         globalDispatch.pendingCreate(newFiberNode);
@@ -1132,6 +1133,10 @@
         var globalDispatch = fiber.root.dispatch;
         {
             fiber.checkElement();
+        }
+        // TODO
+        if (!(fiber.type & NODE_TYPE.__isPlainNode__) && !(fiber.type & NODE_TYPE.__isTextNode__)) {
+            fiber.applyElement();
         }
         if (prevElement !== nextElement) {
             if (fiber.type & NODE_TYPE.__isMemo__) {
@@ -1252,7 +1257,7 @@
             }
             else {
                 {
-                    log({ message: "invalid element type ".concat(rawType), level: "warn", triggerOnce: true });
+                    log({ message: "invalid element type ".concat(String(rawType)), level: "warn", triggerOnce: true });
                 }
                 nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
             }
@@ -1378,7 +1383,7 @@
             props: props,
             _self: self,
             _source: source,
-            _owner: currentFunctionFiber.current,
+            _owner: currentComponentFiber.current,
         });
     }
     function cloneElement(element, config, children) {
@@ -1394,7 +1399,7 @@
                 var _ref = config.ref, _key = config.key; config.__self; config.__source; var resProps = __rest(config, ["ref", "key", "__self", "__source"]);
                 if (_ref !== undefined) {
                     ref = _ref;
-                    owner = currentFunctionFiber.current;
+                    owner = currentComponentFiber.current;
                 }
                 if (_key !== undefined) {
                     key = _key + "";
@@ -1668,8 +1673,7 @@
             props: props,
             _self: self,
             _source: source,
-            // todo should use another field which contain classComponentFiber
-            _owner: currentFunctionFiber.current,
+            _owner: currentComponentFiber.current,
         });
     };
     var jsxDEV = function (type, config, key, isStaticChildren, source, self) {
@@ -1725,6 +1729,7 @@
         currentRunningFiber: currentRunningFiber,
         currentHookDeepIndex: currentHookDeepIndex,
         currentFunctionFiber: currentFunctionFiber,
+        currentComponentFiber: currentComponentFiber,
     };
     var Children = {
         map: map,

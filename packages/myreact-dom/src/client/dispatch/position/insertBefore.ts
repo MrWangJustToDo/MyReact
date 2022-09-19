@@ -15,8 +15,6 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReac
   if (fiber.type & NODE_TYPE.__isPortal__) return;
 
   if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__)) {
-    if (!fiber.node) console.log("insert error", fiber);
-    if (!beforeFiberWithDom.node) console.log("before error", beforeFiberWithDom);
     let inserted = false;
     const action = () => {
       const { element: parentDOM } = (parentFiberWithDom.node || {}) as DomFiberNode;

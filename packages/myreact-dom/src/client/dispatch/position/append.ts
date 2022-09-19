@@ -15,7 +15,6 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiber
   if (fiber.type & NODE_TYPE.__isPortal__) return;
 
   if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__)) {
-    if (!fiber.node) console.log("append error", fiber);
     let appended = false;
     const action = () => {
       const { element: parentDOM } = parentFiberWithDom.node as DomFiberNode;

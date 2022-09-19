@@ -1,7 +1,8 @@
-import { Carousel, Slider, Switch, Calendar, Tree, Image, Space, TimePicker, TreeSelect } from "antd";
+import { Carousel, Slider, Switch, Calendar, Tree, Space, TimePicker, TreeSelect, Button, Dropdown, Tooltip, Menu, message } from "antd";
 import moment from "moment";
-import { useState } from "react";
+import React, { useState } from "react";
 
+import type { MenuProps } from "antd/lib/menu";
 import type { DataNode, TreeProps } from "antd/lib/tree";
 import type { Moment } from "moment";
 
@@ -55,8 +56,41 @@ const onChange = (time: Moment | null, timeString: string) => {
   console.log(time, timeString);
 };
 
+
+const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  message.info("Click on left button.");
+  console.log("click left button", e);
+};
+
+const handleMenuClick: MenuProps["onClick"] = (e) => {
+  message.info("Click on menu item.");
+  console.log("click", e);
+};
+
+const menu = (
+  <Menu
+    onClick={handleMenuClick}
+    items={[
+      {
+        label: "1st menu item",
+        key: "1",
+        icon: <>1</>,
+      },
+      {
+        label: "2nd menu item",
+        key: "2",
+        icon: <>1</>,
+      },
+      {
+        label: "3rd menu item",
+        key: "3",
+        icon: <>1</>,
+      },
+    ]}
+  />
+);
+
 const AntDesignComponent = () => {
-  const [visible, setVisible] = useState(false);
   const [treeLine, setTreeLine] = useState(true);
   const [showLeafIcon, setShowLeafIcon] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(["0-0-0", "0-0-1"]);
@@ -112,19 +146,37 @@ const AntDesignComponent = () => {
         <TimePicker onChange={onChange} defaultOpenValue={moment("00:00:00", "HH:mm:ss")} />
       </Space>
       <br />
-      <Image
-        preview={{ visible: false }}
-        width={200}
-        src="https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp"
-        onClick={() => setVisible(true)}
-      />
-      <div style={{ display: "none" }}>
-        <Image.PreviewGroup preview={{ visible, onVisibleChange: (vis) => setVisible(vis) }}>
-          <Image src="https://gw.alipayobjects.com/zos/antfincdn/LlvErxo8H9/photo-1503185912284-5271ff81b9a8.webp" />
-          <Image src="https://gw.alipayobjects.com/zos/antfincdn/cV16ZqzMjW/photo-1473091540282-9b846e7965e3.webp" />
-          <Image src="https://gw.alipayobjects.com/zos/antfincdn/x43I27A55%26/photo-1438109491414-7198515b166b.webp" />
-        </Image.PreviewGroup>
-      </div>
+      <Space wrap>
+        <Dropdown.Button onClick={handleButtonClick} overlay={menu}>
+          Dropdown
+        </Dropdown.Button>
+        <Dropdown.Button overlay={menu} placement="bottom" icon={<>2</>}>
+          Dropdown
+        </Dropdown.Button>
+        <Dropdown.Button onClick={handleButtonClick} overlay={menu} disabled>
+          Dropdown
+        </Dropdown.Button>
+        <Dropdown.Button
+          overlay={menu}
+          buttonsRender={([leftButton, rightButton]) => [
+            <Tooltip title="tooltip" key="leftButton">
+              {leftButton}
+            </Tooltip>,
+            React.cloneElement(rightButton as React.ReactElement<any, string>, { loading: true }),
+          ]}
+        >
+          With Tooltip
+        </Dropdown.Button>
+        <Dropdown overlay={menu}>
+          <Button>
+            <Space>Button</Space>
+          </Button>
+        </Dropdown>
+        <Dropdown.Button onClick={handleButtonClick} overlay={menu}>
+          Danger
+        </Dropdown.Button>
+      </Space>
+      <br />
       <Slider />
       <br />
       <Calendar style={{ width: "400px" }} />

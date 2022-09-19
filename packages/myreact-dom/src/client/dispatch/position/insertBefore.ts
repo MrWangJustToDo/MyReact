@@ -5,7 +5,7 @@ import type { MyReactFiberNode } from "@my-react/react";
 
 const { PATCH_TYPE, NODE_TYPE } = __my_react_internal__;
 
-export const insertBefore = (fiber: MyReactFiberNode, beforeNode: DomFiberNode, parentNode: DomFiberNode) => {
+export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
   if (!fiber) throw new Error("position error, look like a bug");
 
   if (fiber.patch & PATCH_TYPE.__pendingAppend__) fiber.patch ^= PATCH_TYPE.__pendingAppend__;
@@ -15,19 +15,27 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeNode: DomFiberNode, 
   if (fiber.type & NODE_TYPE.__isPortal__) return;
 
   if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__)) {
-    if (!fiber.node) console.log('insert error', fiber);
-    const { element: parentDOM } = parentNode;
-    const { element: beforeDOM } = beforeNode;
-    const { element: childDOM } = fiber.node as DomFiberNode;
-    parentDOM.insertBefore(childDOM, beforeDOM);
+    if (!fiber.node) console.log("insert error", fiber);
+    if (!beforeFiberWithDom.node) console.log("before error", beforeFiberWithDom);
+    let inserted = false;
+    const action = () => {
+      const { element: parentDOM } = (parentFiberWithDom.node || {}) as DomFiberNode;
+      const { element: beforeDOM } = (beforeFiberWithDom.node || {}) as DomFiberNode;
+      const { element: childDOM } = (fiber.node || {}) as DomFiberNode;
+      if (!inserted && beforeDOM && childDOM) {
+        inserted = true;
+        parentDOM.insertBefore(childDOM, beforeDOM);
+      }
+      return Promise.resolve(inserted);
+    };
+    action().then((s) => !s && action());
     return;
   }
 
   let child = fiber.child;
 
   while (child) {
-    insertBefore(child, beforeNode, parentNode);
+    insertBefore(child, beforeFiberWithDom, parentFiberWithDom);
     child = child.sibling;
   }
-  // fiber.children.forEach((f) => insertBefore(f, beforeDOM, parentDOM));
 };

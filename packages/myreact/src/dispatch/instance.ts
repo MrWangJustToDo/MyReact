@@ -67,9 +67,6 @@ export class EmptyDispatch implements FiberDispatch {
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean {
     return false;
   }
-  reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {
-    void 0;
-  }
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
     void 0;
   }

@@ -1,14 +1,16 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-import { IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
+import { getFiberWithDom, IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
-import type { DomFiberNode, DomElement} from "@my-react-dom-shared";
+import type { DomFiberNode, DomElement } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
 
 const { PATCH_TYPE } = __my_react_internal__;
 
-export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
+export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__pendingAppend__) {
+    parentFiberWithDom = parentFiberWithDom || (getFiberWithDom(fiber.parent, (f) => f.parent) as MyReactFiberNode);
+
     if (!fiber.node || !parentFiberWithDom.node) throw new Error("append error, dom not exist");
 
     const { element } = parentFiberWithDom.node as DomFiberNode;

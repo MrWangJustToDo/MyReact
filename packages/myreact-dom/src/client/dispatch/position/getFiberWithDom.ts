@@ -12,7 +12,7 @@ export const getFiberWithDom = (
 
   if (fiber.type & NODE_TYPE.__isPortal__) return null;
 
-  if (fiber.node) return fiber;
+  if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__)) return fiber;
 
   const nextFibers = transform(fiber);
 

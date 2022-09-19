@@ -88,9 +88,6 @@ export class ServerDispatch implements FiberDispatch {
     }
     return true;
   }
-  reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {
-    void 0;
-  }
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
     void 0;
   }

@@ -1,7 +1,7 @@
 import type { LinkTreeList } from "./listTree";
 import type { MyReactFiberNode, RenderScope } from "@my-react/react";
 
-export class DomScope implements RenderScope<{ isHydrateRender: boolean; isServerRender: boolean }> {
+export class DomScope implements RenderScope<{ isHydrateRender: boolean; isServerRender: boolean; currentYield: MyReactFiberNode | null }> {
   rootFiber: MyReactFiberNode | null = null;
 
   rootContainer: { [p: string]: any } = {};
@@ -17,6 +17,8 @@ export class DomScope implements RenderScope<{ isHydrateRender: boolean; isServe
   updateFiberListArray: LinkTreeList<MyReactFiberNode>[] = [];
 
   updateFiberList: LinkTreeList<MyReactFiberNode> | null = null;
+
+  currentYield: MyReactFiberNode | null = null;
 
   isHydrateRender = false;
 

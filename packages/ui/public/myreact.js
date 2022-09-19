@@ -106,8 +106,6 @@
         EmptyDispatch.prototype.reconcileCommit = function (_fiber, _hydrate, _parentFiberWithDom) {
             return false;
         };
-        EmptyDispatch.prototype.reconcileCreate = function (_list) {
-        };
         EmptyDispatch.prototype.reconcileUpdate = function (_list) {
         };
         EmptyDispatch.prototype.beginProgressList = function (_scope) {

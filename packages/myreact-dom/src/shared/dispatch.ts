@@ -1,6 +1,8 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-import type { MyReactFiberNode, MyReactFiberNodeDev, MyReactElementNode } from "@my-react/react";
+import type { DomFiberNode } from "./dom";
+import type { MyReactFiberNode, MyReactFiberNodeDev, MyReactElementNode , MyReactElement} from "@my-react/react";
+
 
 const { NODE_TYPE } = __my_react_internal__;
 
@@ -56,5 +58,35 @@ export const generateSuspenseMap = (_fiber: MyReactFiberNode, map: Record<string
     const typedFiber = _fiber as MyReactFiberNodeDev;
 
     typedFiber._debugSuspense = map[_fiber.uid];
+  }
+};
+
+export const setRef = (_fiber: MyReactFiberNode) => {
+  if (_fiber.type & NODE_TYPE.__isPlainNode__) {
+    const typedElement = _fiber.element as MyReactElement;
+    if (_fiber.node) {
+      const typedNode = _fiber.node as DomFiberNode;
+      const ref = typedElement.ref;
+      if (typeof ref === "object" && ref !== null) {
+        ref.current = typedNode.element;
+      } else if (typeof ref === "function") {
+        ref(typedNode.element);
+      }
+    } else {
+      throw new Error("plain element do not have a native node");
+    }
+  }
+  if (_fiber.type & NODE_TYPE.__isClassComponent__) {
+    const typedElement = _fiber.element as MyReactElement;
+    if (_fiber.instance) {
+      const ref = typedElement.ref;
+      if (typeof ref === "object" && ref !== null) {
+        ref.current = _fiber.instance;
+      } else if (typeof ref === "function") {
+        ref(_fiber.instance);
+      }
+    } else {
+      throw new Error("class component do not have a instance");
+    }
   }
 };

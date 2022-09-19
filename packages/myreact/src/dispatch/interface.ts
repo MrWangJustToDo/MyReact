@@ -49,8 +49,6 @@ export interface FiberDispatch {
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean;
 
   // loop to update
-  reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void;
-
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void;
 
   beginProgressList(_scope: RenderScope): void;

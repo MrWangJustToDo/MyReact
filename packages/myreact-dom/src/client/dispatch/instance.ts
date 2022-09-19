@@ -8,7 +8,7 @@ import {
   processHookUpdateQueue,
 } from "@my-react/react-reconciler";
 
-import { generateStrictMap, generateSuspenseMap, getFiberWithDom, isSVG, LinkTreeList } from "@ReactDOM_shared";
+import { generateStrictMap, generateSuspenseMap, getFiberWithDom, isSVG, LinkTreeList } from "@my-react-dom-shared";
 
 import { triggerUpdate } from "../update";
 
@@ -21,6 +21,7 @@ import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
 
+import type { DomFiberNode } from "@my-react-dom-shared";
 import type {
   MyReactFiberNode,
   FiberDispatch,
@@ -29,6 +30,7 @@ import type {
   CreateHookParams,
   MyReactHookNode,
   RenderScope,
+  MyReactElement,
 } from "@my-react/react";
 
 const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
@@ -58,6 +60,35 @@ export class ClientDispatch implements FiberDispatch {
   resolveLazy(): boolean {
     return true;
   }
+  resolveRef(_fiber: MyReactFiberNode): void {
+    if (_fiber.type & NODE_TYPE.__isPlainNode__) {
+      const typedElement = _fiber.element as MyReactElement;
+      if (_fiber.node) {
+        const typedNode = _fiber.node as DomFiberNode;
+        const ref = typedElement.ref;
+        if (typeof ref === "object" && ref !== null) {
+          ref.current = typedNode.element;
+        } else if (typeof ref === "function") {
+          ref(typedNode.element);
+        }
+      } else {
+        throw new Error("plain element do not have a native node");
+      }
+    }
+    if (_fiber.type & NODE_TYPE.__isClassComponent__) {
+      const typedElement = _fiber.element as MyReactElement;
+      if (_fiber.instance) {
+        const ref = typedElement.ref;
+        if (typeof ref === "object" && ref !== null) {
+          ref.current = _fiber.instance;
+        } else if (typeof ref === "function") {
+          ref(_fiber.instance);
+        }
+      } else {
+        throw new Error("class component do not have a instance");
+      }
+    }
+  }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return processHookNode(_fiber, _hookParams);
   }
@@ -76,10 +107,7 @@ export class ClientDispatch implements FiberDispatch {
   resolveContextMap(_fiber: MyReactFiberNode): void {
     defaultGenerateContextMap(_fiber, this.contextMap);
   }
-  resolveContextFiber(
-    _fiber: MyReactFiberNode,
-    _contextObject: ReturnType<typeof createContext> | null
-  ): MyReactFiberNode | null {
+  resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): MyReactFiberNode | null {
     if (_contextObject) {
       const contextMap = defaultGetContextMapFromMap(_fiber.parent, this.contextMap);
       return contextMap[_contextObject.id] || null;
@@ -87,10 +115,7 @@ export class ClientDispatch implements FiberDispatch {
       return null;
     }
   }
-  resolveContextValue(
-    _fiber: MyReactFiberNode | null,
-    _contextObject: ReturnType<typeof createContext> | null
-  ): Record<string, unknown> | null {
+  resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {
@@ -122,11 +147,7 @@ export class ClientDispatch implements FiberDispatch {
         _fiber.patch & PATCH_TYPE.__pendingPosition__
       ) {
         _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
-      } else if (
-        this.effectMap[_fiber.uid]?.length ||
-        this.unmountMap[_fiber.uid]?.length ||
-        this.layoutEffectMap[_fiber.uid]?.length
-      ) {
+      } else if (this.effectMap[_fiber.uid]?.length || this.unmountMap[_fiber.uid]?.length || this.layoutEffectMap[_fiber.uid]?.length) {
         _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
       }
     }

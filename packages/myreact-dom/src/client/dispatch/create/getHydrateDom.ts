@@ -1,6 +1,6 @@
 import { __my_react_shared__, __my_react_internal__ } from "@my-react/react";
 
-import { IS_SINGLE_ELEMENT } from "@ReactDOM_shared";
+import { createDomNode, IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
@@ -10,7 +10,7 @@ export type HydrateDOM = Element & {
 
 const { NODE_TYPE } = __my_react_internal__;
 
-const log = __my_react_shared__.log;
+const { log } = __my_react_shared__;
 
 const getNextHydrateDom = (parentDom: Element) => {
   const children = Array.from(parentDom.childNodes);
@@ -32,9 +32,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
       log({
         fiber,
         level: "error",
-        message: `hydrate error, dom not match from server. server: ${dom.nodeName.toLowerCase()}, client: ${
-          fiber.element
-        }`,
+        message: `hydrate error, dom not match from server. server: ${dom.nodeName.toLowerCase()}, client: ${fiber.element}`,
       });
       return false;
     }
@@ -73,7 +71,7 @@ export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
   if (result) {
     const typedDom = dom as HydrateDOM;
 
-    fiber.node = typedDom;
+    fiber.node = createDomNode(typedDom);
 
     return { dom: typedDom, result };
   } else {

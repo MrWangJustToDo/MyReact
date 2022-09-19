@@ -1,12 +1,13 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { generateReconcileUpdate } from "@ReactDOM_shared";
+
+import { generateReconcileUpdate } from "@my-react-dom-shared";
 
 import { generateUpdateControllerWithDispatch } from "./tool";
 import { updateAllAsync, updateAllSync } from "./update";
 
+import type { DomScope} from "@my-react-dom-shared";
 import type { MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
-import type { DomScope } from "@ReactDOM_shared";
 
 const { globalLoop } = __my_react_internal__;
 

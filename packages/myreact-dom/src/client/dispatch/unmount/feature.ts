@@ -1,6 +1,6 @@
 import { __my_react_shared__ } from "@my-react/react";
 
-import { mapFiber } from "@ReactDOM_shared";
+import { mapFiber } from "@my-react-dom-shared";
 
 import { clearFiberDom } from "./clearFiberDom";
 

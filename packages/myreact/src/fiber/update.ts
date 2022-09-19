@@ -19,6 +19,8 @@ export const updateFiberNode = (
 ) => {
   const prevElement = fiber.element;
 
+  fiber.applyElement();
+
   // make sure invoke `installParent` after `installElement`
   fiber.installElement(nextElement);
 
@@ -28,11 +30,6 @@ export const updateFiberNode = (
 
   if (__DEV__) {
     fiber.checkElement();
-  }
-
-  // TODO
-  if (!(fiber.type & NODE_TYPE.__isPlainNode__) && !(fiber.type & NODE_TYPE.__isTextNode__)) {
-    fiber.applyElement();
   }
 
   if (prevElement !== nextElement) {
@@ -50,12 +47,7 @@ export const updateFiberNode = (
       if (fiber.type & NODE_TYPE.__isContextProvider__) {
         const typedPrevElement = prevElement as MyReactElement;
         const typedNextElement = nextElement as MyReactElement;
-        if (
-          !isNormalEquals(
-            typedPrevElement.props.value as Record<string, unknown>,
-            typedNextElement.props.value as Record<string, unknown>
-          )
-        ) {
+        if (!isNormalEquals(typedPrevElement.props.value as Record<string, unknown>, typedNextElement.props.value as Record<string, unknown>)) {
           globalDispatch.pendingContext(fiber);
         }
       }

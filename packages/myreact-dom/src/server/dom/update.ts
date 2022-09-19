@@ -1,6 +1,6 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-import { isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@ReactDOM_shared";
+import { isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
 
 import { TextElement } from "./text";
 
@@ -28,14 +28,11 @@ export const update = (fiber: MyReactFiberNode) => {
         .forEach((styleKey) => {
           const typedProps = (props[styleKey] as Record<string, unknown>) || {};
           Object.keys(typedProps).forEach((styleName) => {
-            if (
-              !Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) &&
-              typeof typedProps[styleName] === "number"
-            ) {
-              (dom as any)[styleKey][styleName] = `${typedProps[styleName]}px`;
+            if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedProps[styleName] === "number") {
+              dom[styleKey][styleName] = `${typedProps[styleName]}px`;
               return;
             }
-            (dom as any)[styleKey][styleName] = typedProps[styleName];
+            dom[styleKey][styleName] = typedProps[styleName];
           });
         });
       if (props["dangerouslySetInnerHTML"]) {
@@ -43,8 +40,7 @@ export const update = (fiber: MyReactFiberNode) => {
         dom.append(new TextElement(typedProps.__html as string));
       }
     }
-    if (fiber.patch & PATCH_TYPE.__pendingUpdate__) {
-      fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
-    }
+
+    if (fiber.patch & PATCH_TYPE.__pendingUpdate__) fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
   }
 };

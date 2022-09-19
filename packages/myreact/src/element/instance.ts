@@ -32,12 +32,7 @@ export type MixinMyReactFunctionComponent = MyReactFunctionComponent & {
   defaultProps?: Record<string, unknown>;
 };
 
-export type MyReactElementType =
-  | symbol
-  | string
-  | MyReactObjectComponent
-  | MyReactClassComponent
-  | MyReactFunctionComponent;
+export type MyReactElementType = symbol | string | MyReactObjectComponent | MyReactClassComponent | MyReactFunctionComponent;
 
 export type MyReactElement = ReturnType<typeof createMyReactElement>;
 
@@ -57,7 +52,7 @@ export type Props = {
 export type CreateElementProps = {
   type: MyReactElementType;
   key: string | null;
-  ref: ReturnType<typeof createRef> | ((node?: Record<string, unknown> | MyReactInternalInstance) => void) | null;
+  ref: ReturnType<typeof createRef> | ((node?: { [p: string]: any } | MyReactInternalInstance) => void) | null;
   props: Props;
   _self: MyReactInternalInstance | null;
   _source: { fileName: string; lineNumber: string } | null;
@@ -94,11 +89,7 @@ export const createMyReactElement = ({ type, key, ref, props, _self, _source, _o
   return element;
 };
 
-export function createElement(
-  type: CreateElementProps["type"],
-  config: CreateElementConfig,
-  children?: Props["children"]
-) {
+export function createElement(type: CreateElementProps["type"], config: CreateElementConfig, children?: Props["children"]) {
   let key: CreateElementProps["key"] = null;
   let ref: CreateElementProps["ref"] = null;
   let self: CreateElementProps["_self"] = null;

@@ -1,22 +1,13 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-import {
-  debugWithDOM,
-  enableHighlight,
-  isEvent,
-  isGone,
-  isNew,
-  isProperty,
-  isStyle,
-  IS_UNIT_LESS_NUMBER,
-} from "@ReactDOM_shared";
+import { debugWithDOM, enableHighlight, isEvent, isGone, isNew, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
 
 import { addEventListener, removeEventListener } from "../event";
 
 import { HighLight } from "./highlight";
 
+import type { DomScope, DomFiberNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
-import type { DomScope } from "@ReactDOM_shared";
 
 const { NODE_TYPE } = __my_react_internal__;
 
@@ -25,17 +16,19 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
 
   const scope = fiber.root.scope as DomScope;
 
+  const node = fiber.node as DomFiberNode;
+
   if (fiber.type & NODE_TYPE.__isTextNode__) {
-    const typedDom = fiber.node as Text;
+    const { element: typedDom } = node;
     typedDom.textContent = fiber.element as string;
   } else {
-    const dom = fiber.node as HTMLElement;
-    const oldProps = fiber.memoizedProps || {};
+    const dom = node.element as HTMLElement;
+    const oldProps = node.memoizedProps || {};
     const newProps = fiber.pendingProps || {};
     Object.keys(oldProps)
       .filter(isEvent)
       .filter((key) => isGone(newProps)(key) || isNew(oldProps, newProps)(key))
-      .forEach((key) => removeEventListener(fiber, dom, key));
+      .forEach((key) => removeEventListener(fiber, node, key));
     Object.keys(oldProps)
       .filter(isProperty)
       .filter(isGone(newProps))
@@ -48,7 +41,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
           }
         } else {
           if (key in dom && !isSVG) {
-            (dom as any)[key] = "";
+            dom[key] = "";
           } else {
             dom.removeAttribute(key);
           }
@@ -60,13 +53,13 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
         Object.keys((oldProps[styleKey] as Record<string, unknown>) || {})
           .filter(isGone((newProps[styleKey] as Record<string, unknown>) || {}))
           .forEach((styleName) => {
-            (dom.style as any)[styleName] = "";
+            dom.style[styleName] = "";
           });
       });
     Object.keys(newProps)
       .filter(isEvent)
       .filter(isNew(oldProps, newProps))
-      .forEach((key) => addEventListener(fiber, dom, key));
+      .forEach((key) => addEventListener(fiber, node, key));
     Object.keys(newProps)
       .filter(isProperty)
       .filter(isNew(oldProps, newProps))
@@ -80,9 +73,9 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
         } else {
           if (key in dom && !isSVG) {
             if (newProps[key] !== null && newProps[key] !== false && newProps[key] !== undefined) {
-              (dom as any)[key] = newProps[key];
+              dom[key] = newProps[key];
             } else {
-              (dom as any)[key] = "";
+              dom[key] = "";
             }
           } else {
             if (newProps[key] !== null && newProps[key] !== false && newProps[key] !== undefined) {
@@ -104,24 +97,18 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
         Object.keys(typedNewProps || {})
           .filter(isNew(typedOldProps || {}, typedNewProps))
           .forEach((styleName) => {
-            if (
-              !Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) &&
-              typeof typedNewProps[styleName] === "number"
-            ) {
-              (dom as any)[styleKey][styleName] = `${typedNewProps[styleName]}px`;
+            if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedNewProps[styleName] === "number") {
+              dom[styleKey][styleName] = `${typedNewProps[styleName]}px`;
               return;
             }
             if (typedNewProps[styleName] !== null && typedNewProps[styleName] !== undefined) {
-              (dom as any)[styleKey][styleName] = typedNewProps[styleName];
+              dom[styleKey][styleName] = typedNewProps[styleName];
             } else {
-              (dom as any)[styleKey][styleName] = "";
+              dom[styleKey][styleName] = "";
             }
           });
       });
-    if (
-      newProps["dangerouslySetInnerHTML"] &&
-      newProps["dangerouslySetInnerHTML"] !== oldProps["dangerouslySetInnerHTML"]
-    ) {
+    if (newProps["dangerouslySetInnerHTML"] && newProps["dangerouslySetInnerHTML"] !== oldProps["dangerouslySetInnerHTML"]) {
       const typedProps = newProps["dangerouslySetInnerHTML"] as Record<string, unknown>;
       dom.innerHTML = typedProps.__html as string;
     }
@@ -131,12 +118,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     debugWithDOM(fiber);
   }
 
-  if (
-    scope.isAppMounted &&
-    !scope.isHydrateRender &&
-    !scope.isServerRender &&
-    (enableHighlight.current || (window as any).__highlight__)
-  ) {
+  if (scope.isAppMounted && !scope.isHydrateRender && !scope.isServerRender && (enableHighlight.current || (window as any).__highlight__)) {
     HighLight.getHighLightInstance().highLight(fiber);
   }
 };

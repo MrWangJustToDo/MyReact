@@ -4,10 +4,7 @@ import type { MyReactFiberNode, createContext, MyReactFiberNodeDev, MyReactEleme
 
 const { NODE_TYPE } = __my_react_internal__;
 
-export const defaultGetContextMapFromMap = (
-  fiber: MyReactFiberNode | null,
-  map: Record<string, Record<string, MyReactFiberNode>>
-) => {
+export const defaultGetContextMapFromMap = (fiber: MyReactFiberNode | null, map: Record<string, Record<string, MyReactFiberNode>>) => {
   if (fiber) {
     return map[fiber.uid];
   } else {
@@ -15,10 +12,7 @@ export const defaultGetContextMapFromMap = (
   }
 };
 
-export const defaultGenerateContextMap = (
-  fiber: MyReactFiberNode,
-  map: Record<string, Record<string, MyReactFiberNode>>
-) => {
+export const defaultGenerateContextMap = (fiber: MyReactFiberNode, map: Record<string, Record<string, MyReactFiberNode>>) => {
   const parentMap = defaultGetContextMapFromMap(fiber.parent, map);
   const currentMap = defaultGetContextMapFromMap(fiber, map);
   const contextMap = Object.assign({}, parentMap, currentMap);
@@ -38,10 +32,7 @@ export const defaultGenerateContextMap = (
   }
 };
 
-export const defaultGetContextValue = (
-  fiber: MyReactFiberNode | null,
-  ContextObject?: ReturnType<typeof createContext> | null
-) => {
+export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextObject?: ReturnType<typeof createContext> | null) => {
   if (fiber) {
     const typedElement = fiber.element as MyReactElement;
     return (typedElement.props["value"] as Record<string, unknown>) || null;

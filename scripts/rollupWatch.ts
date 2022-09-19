@@ -1,9 +1,9 @@
-import type { RollupOptions } from "rollup";
 import { watch as rollup } from "rollup";
 
 import { getRollupConfig } from "./rollupConfig";
 
 import type { Mode, packages } from "./type";
+import type { RollupOptions } from "rollup";
 
 const watch = (packageName: string, rollupOptions: RollupOptions, mode: Mode, isUMD: boolean) => {
   rollupOptions.watch = {

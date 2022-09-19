@@ -12,15 +12,21 @@
   "exports": {
     ".": {
       "require": "./index.js",
-      "import": "./dist/esm/index.js"
+      "node": "./index.js",
+      "import": "./dist/esm/index.js",
+      "default": "./index.js"
     },
     "./client": {
       "require": "./index.js",
-      "import": "./dist/esm/index.js"
+      "node": "./index.js",
+      "import": "./dist/esm/index.js",
+      "default": "./index.js"
     },
     "./server": {
       "require": "./index.js",
-      "import": "./dist/esm/index.js"
+      "node": "./index.js",
+      "import": "./dist/esm/index.js",
+      "default": "./index.js"
     }
   },
   "buildOptions": {
@@ -30,6 +36,7 @@
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
         "format": "cjs",
+        "exports": "named",
         "esModule": false,
         "multiple": true,
         "globals": {
@@ -41,6 +48,7 @@
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
+        "exports": "named",
         "globals": {
           "@my-react/react": "React"
         },
@@ -50,6 +58,7 @@
         "dir": "./dist",
         "entryFileNames": "umd/index.js",
         "format": "umd",
+        "exports": "named",
         "esModule": false,
         "multiple": true,
         "globals": {
@@ -60,7 +69,7 @@
       }
     ]
   },
-  "dependencies": {
+  "peerDependencies": {
     "@my-react/react": "workspace:*",
     "@my-react/react-reconciler": "workspace:*"
   }

@@ -1,4 +1,5 @@
-import { IS_SINGLE_ELEMENT } from "@ReactDOM_shared";
+
+import { IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
 import { TextElement } from "./text";
 

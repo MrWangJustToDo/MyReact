@@ -1,11 +1,11 @@
 // for invalid dom structure
 import { __my_react_shared__, __my_react_internal__ } from "@my-react/react";
 
-import { enableAllCheck } from "@ReactDOM_shared";
+import { enableAllCheck } from "@my-react-dom-shared";
 
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
-const log = __my_react_shared__.log;
+const { log } = __my_react_shared__;
 
 const { NODE_TYPE } = __my_react_internal__;
 

@@ -1,17 +1,19 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { debugWithDOM, isEvent, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@ReactDOM_shared";
+import { debugWithDOM, isEvent, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
 
 import { addEventListener } from "../event";
 
-import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
+import type { DomFiberNode } from "@my-react-dom-shared";
+import type { MyReactFiberNode } from "@my-react/react";
 
 const log = __my_react_shared__.log;
 
 const { NODE_TYPE, PATCH_TYPE } = __my_react_internal__;
 
-const domPropsHydrate = (fiber: MyReactFiberNode, dom: Element, isSVG: boolean) => {
+const domPropsHydrate = (fiber: MyReactFiberNode, node: DomFiberNode, isSVG: boolean) => {
   if (fiber.type & NODE_TYPE.__isTextNode__) {
+    const { element: dom } = node;
     if (dom.textContent !== String(fiber.element)) {
       if (dom.textContent === " " && fiber.element === "") {
         dom.textContent = "";
@@ -24,8 +26,8 @@ const domPropsHydrate = (fiber: MyReactFiberNode, dom: Element, isSVG: boolean) 
       }
     }
   } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
-    const typedElement = fiber.element as MyReactElement;
-    const props = typedElement.props;
+    const dom = node.element as Element;
+    const props = fiber.pendingProps;
     Object.keys(props)
       .filter(isProperty)
       .forEach((key) => {
@@ -51,14 +53,12 @@ const domPropsHydrate = (fiber: MyReactFiberNode, dom: Element, isSVG: boolean) 
             }
           } else {
             if (key in dom && !isSVG) {
-              if ((dom as any)[key].toString() !== String(props[key])) {
+              if (dom[key].toString() !== String(props[key])) {
                 log({
                   fiber,
-                  message: `hydrate warning, dom ${key} props not match from server. server: ${
-                    (dom as any)[key]
-                  }, client: ${props[key]}`,
+                  message: `hydrate warning, dom ${key} props not match from server. server: ${dom[key]}, client: ${props[key]}`,
                 });
-                (dom as any)[key] = props[key] as string;
+                dom[key] = props[key] as string;
               }
             } else {
               const v = dom.getAttribute(key);
@@ -76,50 +76,46 @@ const domPropsHydrate = (fiber: MyReactFiberNode, dom: Element, isSVG: boolean) 
   }
 };
 
-const domStyleHydrate = (fiber: MyReactFiberNode, dom: Element) => {
+const domStyleHydrate = (fiber: MyReactFiberNode, node: DomFiberNode) => {
   if (fiber.type & NODE_TYPE.__isPlainNode__) {
-    const typedElement = fiber.element as MyReactElement;
-    const props = typedElement.props;
+    const dom = node.element;
+    const props = fiber.pendingProps;
     Object.keys(props)
       .filter(isStyle)
       .forEach((styleKey) => {
         const typedProps = (props[styleKey] as Record<string, unknown>) || {};
         Object.keys(typedProps).forEach((styleName) => {
-          if (
-            Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) &&
-            typeof typedProps[styleName] === "number"
-          ) {
-            (dom as any)[styleKey][styleName] = `${typedProps[styleName]}px`;
+          if (Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedProps[styleName] === "number") {
+            dom[styleKey][styleName] = `${typedProps[styleName]}px`;
             return;
           }
           if (typedProps[styleName] !== null && typedProps[styleName] !== undefined) {
-            (dom as any)[styleKey][styleName] = typedProps[styleName];
+            dom[styleKey][styleName] = typedProps[styleName];
           }
         });
       });
   }
 };
 
-const domEventHydrate = (fiber: MyReactFiberNode, dom: Element) => {
+const domEventHydrate = (fiber: MyReactFiberNode, node: DomFiberNode) => {
   if (fiber.type & NODE_TYPE.__isPlainNode__) {
-    const typedElement = fiber.element as MyReactElement;
-    const props = typedElement.props;
+    const props = fiber.pendingProps;
     Object.keys(props)
       .filter(isEvent)
       .forEach((key) => {
-        addEventListener(fiber, dom, key);
+        addEventListener(fiber, node, key);
       });
   }
 };
 
 export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
-  const dom = fiber.node as Element;
+  const node = fiber.node as DomFiberNode;
 
   // for now it is necessary to judge
-  if (dom) {
-    domPropsHydrate(fiber, dom, isSVG);
-    domStyleHydrate(fiber, dom);
-    domEventHydrate(fiber, dom);
+  if (node) {
+    domPropsHydrate(fiber, node, isSVG);
+    domStyleHydrate(fiber, node);
+    domEventHydrate(fiber, node);
 
     if (__DEV__) {
       debugWithDOM(fiber);
@@ -127,12 +123,4 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   }
 
   fiber.patch = PATCH_TYPE.__initial__;
-
-  // fiber.patch ^= PATCH_TYPE.__pendingCreate__;
-
-  // fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
-
-  // fiber.patch ^= PATCH_TYPE.__pendingAppend__;
-
-  // fiber.patch ^= PATCH_TYPE.__pendingPosition__;
 };

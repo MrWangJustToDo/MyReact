@@ -1,12 +1,10 @@
+import type { DomElement, DomFiberNode } from "./dom";
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const debugWithDOM = (fiber: MyReactFiberNode) => {
   if (fiber.node) {
-    const debugDOM = fiber.node as Element & {
-      __fiber__: MyReactFiberNode;
-      __element__: MyReactFiberNode["element"];
-      __children__: MyReactFiberNode["children"];
-    };
+    const { element } = fiber.node as DomFiberNode;
+    const debugDOM = element as DomElement;
     debugDOM["__fiber__"] = fiber;
     debugDOM["__element__"] = fiber.element;
     debugDOM["__children__"] = fiber.children;

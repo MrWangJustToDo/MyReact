@@ -240,35 +240,6 @@ export class MyReactFiberNode {
     }
   }
 
-  applyRef() {
-    if (this.type & NODE_TYPE.__isPlainNode__) {
-      const typedElement = this.element as MyReactElement;
-      if (this.node) {
-        const ref = typedElement.ref;
-        if (typeof ref === "object" && ref !== null) {
-          ref.current = this.node;
-        } else if (typeof ref === "function") {
-          ref(this.node);
-        }
-      } else {
-        throw new Error("plain element do not have a native node");
-      }
-    }
-    if (this.type & NODE_TYPE.__isClassComponent__) {
-      const typedElement = this.element as MyReactElement;
-      if (this.instance) {
-        const ref = typedElement.ref;
-        if (typeof ref === "object" && ref !== null) {
-          ref.current = this.instance;
-        } else if (typeof ref === "function") {
-          ref(this.instance);
-        }
-      } else {
-        throw new Error("class component do not have a instance");
-      }
-    }
-  }
-
   applyElement() {
     this.memoizedProps = Object.assign({}, this.pendingProps);
   }

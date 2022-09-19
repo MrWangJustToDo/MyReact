@@ -1,14 +1,15 @@
 import { __my_react_internal__ } from "@my-react/react";
 
+import type { DomFiberNode } from "./dom";
 import type { MyReactFiberNode, MyReactInternalInstance } from "@my-react/react";
 
 const { MyReactComponent } = __my_react_internal__;
 
-const findDOMFromFiber = (fiber: MyReactFiberNode) => {
+const findDOMFromFiber = (fiber: MyReactFiberNode): DomFiberNode | null => {
   const currentArray = [fiber];
   while (currentArray.length) {
     const next = currentArray.shift();
-    if (next?.node) return next.node;
+    if (next?.node) return next.node as DomFiberNode;
     currentArray.push(...(next?.children || []));
   }
   return null;
@@ -16,10 +17,10 @@ const findDOMFromFiber = (fiber: MyReactFiberNode) => {
 
 const findDOMFromComponentFiber = (fiber: MyReactFiberNode) => {
   if (fiber) {
-    if (fiber.node) return fiber.node;
+    if (fiber.node) return (fiber.node as DomFiberNode).element;
     for (let i = 0; i < fiber.children.length; i++) {
       const dom = findDOMFromFiber(fiber.children[i]);
-      if (dom) return dom;
+      if (dom) return dom.element;
     }
   }
   return null;

@@ -1,22 +1,12 @@
-import { __my_react_shared__, __my_react_internal__ } from "@my-react/react";
-import {
-  defaultGenerateContextMap,
-  defaultGetContextMapFromMap,
-  defaultGetContextValue,
-  processHookNode,
-} from "@my-react/react-reconciler";
+import { __my_react_shared__, __my_react_internal__, cloneElement } from "@my-react/react";
+import { defaultGenerateContextMap, defaultGetContextMapFromMap, defaultGetContextValue, processHookNode } from "@my-react/react-reconciler";
+
+import { generateSuspenseMap } from "@my-react-dom-shared";
 
 import { append, create, update } from "./dom";
 
-import type {
-  FiberDispatch,
-  MyReactFiberNode,
-  MyReactElementNode,
-  createContext,
-  CreateHookParams,
-  MyReactHookNode,
-} from "@my-react/react";
-import type { LinkTreeList } from "@ReactDOM_shared";
+import type { LinkTreeList } from "@my-react-dom-shared";
+import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode } from "@my-react/react";
 
 const { safeCallWithFiber } = __my_react_shared__;
 
@@ -45,6 +35,9 @@ export class ServerDispatch implements FiberDispatch {
   resolveLazy(): boolean {
     return false;
   }
+  resolveRef(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
@@ -55,21 +48,15 @@ export class ServerDispatch implements FiberDispatch {
     return processHookNode(_fiber, _hookParams);
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
-    void 0;
+    generateSuspenseMap(_fiber, this.suspenseMap);
   }
   resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    if (__DEV__) {
-      console.warn("not support suspense on the server side");
-    }
-    return null;
+    return cloneElement(this.suspenseMap[_fiber.uid]);
   }
   resolveContextMap(_fiber: MyReactFiberNode): void {
     defaultGenerateContextMap(_fiber, this.contextMap);
   }
-  resolveContextFiber(
-    _fiber: MyReactFiberNode,
-    _contextObject: ReturnType<typeof createContext> | null
-  ): MyReactFiberNode | null {
+  resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): MyReactFiberNode | null {
     if (_contextObject) {
       const contextMap = defaultGetContextMapFromMap(_fiber.parent, this.contextMap);
       return contextMap[_contextObject.id] || null;
@@ -77,10 +64,7 @@ export class ServerDispatch implements FiberDispatch {
       return null;
     }
   }
-  resolveContextValue(
-    _fiber: MyReactFiberNode | null,
-    _contextObject: ReturnType<typeof createContext> | null
-  ): Record<string, unknown> | null {
+  resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {

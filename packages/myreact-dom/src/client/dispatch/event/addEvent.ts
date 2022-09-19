@@ -1,9 +1,10 @@
 import { __my_react_shared__ } from "@my-react/react";
 
-import { enableControlComponent, enableEventSystem } from "@ReactDOM_shared";
+import { enableControlComponent, enableEventSystem } from "@my-react-dom-shared";
 
 import { getNativeEventName } from "./getEventName";
 
+import type { DomFiberNode } from "@my-react-dom-shared";
 import type { MyReactElement, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
 
 const { safeCallWithFiber } = __my_react_shared__;
@@ -14,14 +15,16 @@ const controlElementTag: Record<string, boolean> = {
   // select: true,
 };
 
-export const addEventListener = (fiber: MyReactFiberNode, dom: Element, key: string) => {
+export const addEventListener = (fiber: MyReactFiberNode, node: DomFiberNode, key: string) => {
   const globalDispatch = fiber.root.dispatch;
 
   const typedElement = fiber.element as MyReactElement;
 
-  const pendingProps = fiber.pendingProps || {};
+  const pendingProps = fiber.pendingProps;
 
   const callback = pendingProps[key] as (...args: any[]) => void;
+
+  const { element: dom } = node;
 
   const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElement.type as string, typedElement.props);
 
@@ -47,7 +50,7 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: Element, key: str
 
         if (enableControlComponent.current) {
           if (controlElementTag[typedElement.type as string] && typeof typedElement.props["value"] !== "undefined") {
-            (dom as unknown as HTMLInputElement)["value"] = typedElement.props["value"] as string;
+            (dom as HTMLInputElement)["value"] = typedElement.props["value"] as string;
           }
         }
       };

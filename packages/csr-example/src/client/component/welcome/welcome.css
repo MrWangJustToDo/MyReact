@@ -1,0 +1,158 @@
+.login {
+  width: 100%;
+  height: 100%;
+  min-width: 1000px;
+  font-size: 0;
+  font-family: "roboto";
+  color: rgba(9, 191, 236, 0.7);
+}
+
+.login-form,
+.register-form {
+  font-size: 0.268657rem;
+  background-color: rgb(255, 255, 255);
+  border-radius: 0.059701rem;
+  padding: 0.298507rem 0.447761rem;
+  width: 6.268657rem;
+  top: 2.089552rem;
+  left: calc(50% + 3.880597rem);
+}
+
+.login-form:hover,
+.register-form:hover {
+  box-shadow: 0 0 0.059701rem 0.014925rem rgba(100, 100, 100, 0.6);
+}
+
+.login-form .login-form-head,
+.register-form .register-form-head {
+  font-size: 0.328358rem;
+  font-weight: 600;
+  color: #555;
+  padding: 0.447761rem 0;
+  justify-content: space-between;
+  align-items: baseline;
+  user-select: none;
+}
+
+.login-form .login-form-head span,
+.register-form .register-form-head span {
+  text-shadow: 0.014925rem 0.014925rem 0.014925rem #aaa;
+}
+
+.login-form .login-form-head .head-msg,
+.register-form .register-form-head .head-msg {
+  left: 50%;
+  color: red;
+  transform: translateX(-50%);
+  bottom: 0.149254rem;
+  font-size: 0.208955rem;
+  text-shadow: none;
+}
+
+.login-form .login-form-head .goto-register,
+.register-form .register-form-head .goto-login {
+  font-size: 0.223881rem;
+  color: #09aaff;
+  text-decoration: underline;
+}
+
+.login-form .login-input,
+.register-form .register-input {
+  border: 0.014925rem solid #ccc;
+  border-radius: 0.074627rem;
+}
+
+.login-form .login-input label:not(:last-of-type),
+.register-form .register-input label:not(:last-of-type) {
+  border-bottom: 0.014925rem solid #ccc;
+}
+
+.login-form .login-input input,
+.register-form .register-input input {
+  width: 100%;
+  padding: 0.149254rem 0.238806rem;
+  border-radius: 0.074627rem;
+  color: rgb(102, 102, 102);
+  border: none;
+  outline: none;
+  text-indent: 0.208955rem;
+}
+
+.login-form .login-input .login-input-icon,
+.register-form .register-input .register-input-icon {
+  color: #666;
+  top: 50%;
+  font-size: 0.179104rem;
+  left: 0.089552rem;
+  transform: translateY(-50%);
+}
+
+.password-check {
+  cursor: pointer;
+}
+
+.password-check:hover {
+  color: #333;
+}
+
+::placeholder {
+  font-size: 0.208955rem;
+}
+
+.login-form .login-input .checkcode-img {
+  min-width: 40%;
+}
+
+.login-form .login-input .login-input-checkcode {
+  border-left: 0.014925rem solid #ccc;
+  margin-left: -0.014925rem;
+  border-radius: 0 0.074627rem 0.074627rem 0;
+}
+
+.login-form .form-checkcode {
+  height: 0;
+}
+
+.login-submit .login-submit-btn,
+.register-submit .register-submit-btn {
+  width: 100%;
+  background-color: #09aaff;
+  border-radius: 0.044776rem;
+  margin: 0.447761rem 0;
+  padding: 0.149254rem 0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  color: white;
+  outline: none;
+}
+
+.login-submit .login-submit-btn:disabled,
+.register-submit .register-submit-btn:disabled {
+  cursor: not-allowed;
+  background-color: rgba(10, 169, 255, 0.7);
+}
+
+.login-submit .login-submit-btn:not([disabled]):hover,
+.register-submit .register-submit-btn:not([disabled]):hover {
+  opacity: 0.8;
+}
+
+.login-check-msg,
+.register-check-msg {
+  user-select: none;
+  font-size: 0.179104rem;
+  position: absolute;
+  transform: translateY(-50%);
+  right: 0.149254rem;
+  top: 50%;
+}
+
+.login-check-success .login-check-msg,
+.register-check-success .register-check-msg {
+  color: green;
+}
+
+.login-check-fail .login-check-msg,
+.register-check-fail .register-check-msg {
+  color: red;
+}

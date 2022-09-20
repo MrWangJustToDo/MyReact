@@ -1,0 +1,38 @@
+.zoom_img_parent {
+  position: relative;
+  display: inline-block;
+  cursor: move;
+}
+
+.zoom_img_cover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0;
+}
+
+.zoom_img_target {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-repeat: no-repeat;
+  filter: drop-shadow(0 0 0 2px red);
+  /* nbox-shadow: 0 0 0 2px red inset; */
+  z-index: 99999;
+}
+
+.zoom_img_target_border {
+  border: 0.029851rem solid #555;
+  position: absolute;
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.zoom_hide {
+  display: none;
+}

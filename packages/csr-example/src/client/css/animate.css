@@ -1,0 +1,127 @@
+.header-nav .head-select .head-select-item {
+  transition-property: background, color;
+  transition-duration: 0.3s;
+}
+
+.nav .nav-select li {
+  transition-property: background, color;
+  transition-duration: 0.3s;
+}
+
+.header-nav .head-user-msg {
+  transition-property: background, box-shadow;
+  transition-duration: 0.3s;
+}
+
+.header-nav .head-user-out {
+  transition-property: box-shadow, background;
+  transition-duration: 0.25s;
+}
+
+.fm-container .image-container .close-image {
+  transition-property: background, box-shadow;
+  transition-duration: 0.3s;
+}
+
+.msg-container .msg-container-btn {
+  transition-property: background, box-shadow;
+  transition-duration: 0.3s;
+}
+
+.fm-table-header-leftBtns > label {
+  transition-property: background, color;
+  transition-duration: 0.3s;
+}
+
+.fm-table-header-rightTools .fm-table-search-btn,
+.fm-table-header-rightTools .fm-table-header-sort,
+.fm-table-header-rightTools .fm-table-header-big {
+  transition-property: background, color;
+  transition-duration: 0.3s;
+}
+
+.fm-table-header-rightTools .fm-table-header-search .fm-table-ul {
+  transition-property: box-shadow;
+  transition-duration: 0.2s;
+}
+
+.fm-table-header-rightTools
+  .fm-table-header-search
+  .fm-table-ul
+  .fm-table-list {
+  transition-property: background;
+  transition-duration: 0.3s;
+}
+
+.fm-table .fm-table-show {
+  transition-property: background, color;
+  transition-duration: 0.3s;
+}
+
+.fm-table .fm-table-show tbody tr td:first-child .fm-table-submit input {
+  transition-property: background, box-shadow;
+  transition-duration: 0.3s;
+}
+
+.fm-table-big .fm-file-item,
+.fm-table-big .fm-folder-item {
+  transition-property: box-shadow, background;
+  transition-duration: 0.12s;
+}
+
+.fm-table-big .fm-file-item::before {
+  transition-property: opacity;
+  transition-duration: 0.2s;
+}
+
+.fm-echarts-header .fm-data-path .fm-path-item {
+  transition-property: color;
+  transition-duration: 0.12s;
+}
+
+.fm-echarts-header .fm-data-module > div {
+  transition-property: box-shadow, background;
+  transition-duration: 0.25s;
+}
+
+.fm-contextmenu {
+  transition-property: box-shadow;
+  transition-duration: 0.25s;
+}
+
+.fm-context-ul .fm-context-item {
+  transition-property: color, background;
+  transition-duration: 0.12s;
+}
+
+.fm-file-checkBox .fm-file-checkItem {
+  transition-property: box-shadow, border;
+  transition-duration: 0.2s;
+}
+
+.fm-file-checkBox .fm-file-checkItem::before {
+  transition-property: left, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.61, -0.13, 0.34, 1.19);
+}
+
+.fm-file-checkBox .fm-file-checkItem::after {
+  transition-property: width;
+  transition-duration: 0.2s;
+  transition-timing-function: cubic-bezier(0.61, -0.13, 0.34, 1.19);
+}
+
+.login-form {
+  transition-property: box-shadow;
+  transition-duration: 0.3s;
+}
+
+.login-form .login-input .login-input-clear {
+  transition-property: color;
+  transition-duration: 0.3s;
+}
+
+.login-form .form-checkcode {
+  transition-property: height;
+  transition-duration: 0.3s;
+}

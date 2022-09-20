@@ -1,0 +1,193 @@
+html,
+body {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  font-family: "Microsoft jhenghei";
+}
+
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+code,
+form,
+fieldset,
+legend,
+input,
+button,
+textarea,
+p,
+blockquote,
+table,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  padding-inline-start: 0px;
+}
+
+* {
+  box-sizing: inherit;
+  font-size: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  font-size: inherit;
+}
+
+h1 {
+  margin: 0;
+}
+
+i {
+  font-style: normal;
+}
+
+.border {
+  box-shadow: 0 0 0 2px red inset;
+}
+
+.float-left.float-left.float-left {
+  float: left;
+}
+
+.float-right.float-right.float-right {
+  float: right;
+}
+
+.son-float-left > * {
+  float: left;
+}
+
+.son-float-right > * {
+  float: right;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.box-center {
+  margin: 0 auto;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.clear::after {
+  content: "";
+  font-size: 0;
+  display: block;
+  clear: both;
+}
+
+.overflow {
+  overflow: hidden;
+}
+
+.height-inherit {
+  height: inherit;
+}
+
+.width-inherit {
+  width: inherit;
+}
+
+.son-input-hidden > input {
+  display: none;
+}
+
+.son-input-allHidden input {
+  display: none;
+}
+
+.son-inline-block,
+.son-inline-block-nowrap {
+  font-size: 0;
+}
+
+.son-inline-block-nowrap {
+  white-space: nowrap;
+}
+
+.son-inline-block-nowrap > *,
+.son-inline-block > * {
+  display: inline-block;
+  font-size: initial;
+}
+
+.son-inline-block-center {
+  font-size: 0;
+}
+
+.son-inline-block-center::before {
+  content: "";
+  height: 100%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.son-inline-block-center > * {
+  font-size: initial;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.none {
+  display: none !important;
+}
+
+.hidden {
+  visibility: hidden !important;
+}
+
+.flex {
+  display: flex !important;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.inline-flex,
+.inline-flex-center {
+  display: inline-flex;
+}
+
+.inline-flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.block {
+  display: block !important;
+}

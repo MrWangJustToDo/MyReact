@@ -1,0 +1,210 @@
+/* image preview */
+.image-container {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #eee;
+  z-index: 1000;
+}
+
+.image-container .image {
+  height: 5.223881rem;
+  left: 50%;
+  top: 50%;
+  display: block;
+  transform: translate(-50%, -50%);
+  box-shadow: 0.029851rem 0.029851rem 0.089552rem rgba(102, 102, 102, 0.5);
+}
+
+.image-container .close-image,
+.image-container .zoom-image {
+  font-size: 0.238806rem;
+  top: calc(0% - 1.119403rem);
+  padding: 0.119403rem 0.238806rem;
+  border: 0.029851rem solid #aaa;
+  border-radius: 0.044776rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.image-container .close-image {
+  right: 0;
+}
+
+.image-container .zoom-image {
+  left: 0;
+}
+
+.image-container .close-image:hover,
+.image-container .zoom-image:hover {
+  box-shadow: 0.029851rem 0.029851rem 0.059701rem rgba(102, 102, 102, 0.5);
+  background-color: #bbb;
+  border-color: #bbb;
+}
+
+/* image preview */
+
+/* editor */
+
+.editor-cover {
+  background-color: rgba(102, 102, 102, 0.3);
+}
+
+.editor-cover .editor {
+  width: calc(100% - 2.985075rem);
+  height: calc(100% - 2.985075rem);
+  left: 50%;
+  top: calc(50% - 0.298507rem);
+  transform: translate(-50%, -50%);
+  font-size: 0.238806rem;
+  background-color: #fff;
+}
+
+.editor-cover .btns {
+  font-size: 0.238806rem;
+  bottom: 0.597015rem;
+  right: 1.19403rem;
+}
+
+.editor-cover .btns button {
+  margin: 0 0.298507rem;
+  padding: 0.119403rem 0.238806rem;
+  border: 0.029851rem solid #aaa;
+  border-radius: 0.044776rem;
+}
+
+.editor-cover .btns button:hover {
+  box-shadow: 0.029851rem 0.029851rem 0.059701rem rgba(102, 102, 102, 0.5);
+  background-color: #bbb;
+  border-color: #bbb;
+}
+
+.code {
+  opacity: 0;
+}
+
+/* editor */
+
+/* video preview */
+.video-container {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #eee;
+  z-index: 1000;
+}
+
+.video-container .video {
+  height: 8.955224rem;
+  left: 50%;
+  top: 50%;
+  display: block;
+  transform: translate(-50%, -50%);
+  box-shadow: 0.029851rem 0.029851rem 0.089552rem rgba(102, 102, 102, 0.5);
+}
+
+.video-container .close-video {
+  font-size: 0.238806rem;
+  top: calc(0% - 0.746269rem);
+  right: 0;
+  padding: 0.119403rem 0.238806rem;
+  border: 0.029851rem solid #aaa;
+  border-radius: 0.044776rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.video-container .close-video:hover {
+  box-shadow: 0.029851rem 0.029851rem 0.059701rem rgba(102, 102, 102, 0.5);
+  background-color: #bbb;
+  border-color: #bbb;
+}
+/* video preview */
+
+/* audio preview */
+.audio-container {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #eee;
+  z-index: 1000;
+}
+
+.audio-container .audio {
+  left: 50%;
+  top: 50%;
+  display: block;
+  transform: translate(-50%, -50%);
+  box-shadow: 0.029851rem 0.029851rem 0.089552rem rgba(102, 102, 102, 0.5);
+}
+
+.audio-container .audio audio {
+  outline: none;
+}
+
+.audio-container .close-audio {
+  font-size: 0.238806rem;
+  top: calc(50% - 1.492537rem);
+  right: 0;
+  padding: 0.119403rem 0.238806rem;
+  border: 0.029851rem solid #aaa;
+  border-radius: 0.044776rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.audio-container .close-audio:hover {
+  box-shadow: 0.029851rem 0.029851rem 0.059701rem rgba(102, 102, 102, 0.5);
+  background-color: #bbb;
+  border-color: #bbb;
+}
+/* audio preview */
+
+/* iframe preview */
+
+.iframe-container {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  z-index: 1000;
+}
+
+.iframe-container .iframe {
+  left: 50%;
+  top: 50%;
+  width: 80%;
+  height: 80%;
+  display: block;
+  transform: translate(-50%, -50%);
+  box-shadow: 0.029851rem 0.029851rem 0.089552rem rgba(102, 102, 102, 0.5);
+}
+
+.iframe-container .iframe iframe {
+  width: 100%;
+  min-height: 100%;
+  background-color: #fff;
+}
+
+.iframe-container .close-iframe {
+  font-size: 0.238806rem;
+  top: 2%;
+  right: 10%;
+  padding: 0.119403rem 0.238806rem;
+  border: 0.029851rem solid #aaa;
+  border-radius: 0.044776rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.iframe-container .close-iframe:hover {
+  box-shadow: 0.029851rem 0.029851rem 0.059701rem rgba(102, 102, 102, 0.5);
+  background-color: #bbb;
+  border-color: #bbb;
+}
+
+/* iframe preview */

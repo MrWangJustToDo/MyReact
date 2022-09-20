@@ -50,10 +50,7 @@ export class EmptyDispatch implements FiberDispatch {
   resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null) {
     return null;
   }
-  resolveContextValue(
-    _fiber: MyReactFiberNode | null,
-    _contextObject: ReturnType<typeof createContext> | null
-  ): Record<string, unknown> | null {
+  resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return null;
   }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {

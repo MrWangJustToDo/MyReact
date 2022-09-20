@@ -2,17 +2,10 @@ import { cloneElement, isValidElement } from "../element";
 
 import { mapByJudge } from "./tool";
 
-import type {
-  MyReactElement,
-  MyReactElementNode,
-  ArrayMyReactElementNode,
-  MaybeArrayMyReactElementNode,
-} from "../element";
+import type { MyReactElement, MyReactElementNode, ArrayMyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
 
-export const map = (
-  arrayLike: MaybeArrayMyReactElementNode,
-  action: (child: MyReactElement, index: number) => MyReactElement
-) => mapByJudge(arrayLike, (v) => v !== undefined && v !== null, action);
+export const map = (arrayLike: MaybeArrayMyReactElementNode, action: (child: MyReactElement, index: number) => MyReactElement) =>
+  mapByJudge(arrayLike, (v) => v !== undefined && v !== null, action);
 
 export const toArray = (arrayLike: MaybeArrayMyReactElementNode) => {
   return map(arrayLike, (element, index) =>

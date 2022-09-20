@@ -47,10 +47,7 @@ async function sendRootFolderSize(ws, req) {
 // 请求指定文件夹
 getCurrentFolder.use(async (req, res, next) => {
   try {
-    let currentPath = path.join(
-      req.rootFolder,
-      req.body.requestPath.split("/all")[1] || ""
-    );
+    let currentPath = path.join(req.rootFolder, req.body.requestPath.split("/all")[1] || "");
     let data = await getFolder(req.rootFolder, currentPath);
     res.json({ code: 0, state: data });
   } catch (e) {
@@ -128,12 +125,7 @@ submitFile.use(async (req, res, next) => {
     highWaterMark: 512,
     read() {
       if (index < content.length) {
-        this.push(
-          content.slice(
-            index,
-            index + 100 < content.length ? index + 100 : content.length
-          )
-        );
+        this.push(content.slice(index, index + 100 < content.length ? index + 100 : content.length));
         index += 100;
       } else {
         this.push(null);
@@ -172,17 +164,9 @@ uploadFile.use(async (req, res, next) => {
       throw new Error("空间超出限制");
     }
     // 移动文件
-    await moveItemByPath(
-      req.file.filename,
-      req.file.destination,
-      req.body.uploadFolder
-    );
+    await moveItemByPath(req.file.filename, req.file.destination, req.body.uploadFolder);
     // 重命名
-    await renameItemByPath(
-      req.body.uploadFolder,
-      req.file.filename,
-      req.file.originalname
-    );
+    await renameItemByPath(req.body.uploadFolder, req.file.filename, req.file.originalname);
     res.json({ code: 0, state: "success" });
   } catch (e) {
     console.log(e);
@@ -211,9 +195,7 @@ deleteItem.use(async (req, res, next) => {
   let currentFiles = req.body.files;
   console.log("删除文件: ", currentFiles);
   try {
-    await Promise.all(
-      currentFiles.map((it) => deleteItemByPath(req.rootFolder, it))
-    );
+    await Promise.all(currentFiles.map((it) => deleteItemByPath(req.rootFolder, it)));
     res.json({ code: 0, state: "success" });
   } catch (e) {
     console.log(e);
@@ -229,14 +211,7 @@ renameItem.use(async (req, res, next) => {
   let srcResolvePath = path.resolve(req.rootFolder, req.body.relativePath);
   let originName = req.body.originName;
   let newName = req.body.newName;
-  console.log(
-    "在",
-    srcResolvePath,
-    "文件夹中重命名文件: ",
-    originName,
-    " -> ",
-    newName
-  );
+  console.log("在", srcResolvePath, "文件夹中重命名文件: ", originName, " -> ", newName);
   try {
     await renameItemByPath(srcResolvePath, originName, newName);
     res.json({ code: 0, state: "success" });
@@ -251,13 +226,7 @@ recoverItem.use(async (req, res, next) => {
   let shortName = req.body.shortName;
   let srcResolveDir = path.resolve(req.rootFolder, req.body.srcRelativePath);
   let targetResolveDir = path.resolve(req.rootFolder, req.recoverFolder);
-  console.log(
-    "在文件夹",
-    req.body.srcRelativePath,
-    "中,将: ",
-    shortName,
-    "移动到回收站中"
-  );
+  console.log("在文件夹", req.body.srcRelativePath, "中,将: ", shortName, "移动到回收站中");
   try {
     await moveItemByPath(shortName, srcResolveDir, targetResolveDir);
     res.json({ code: 0, state: "success" });
@@ -272,11 +241,7 @@ recoverItem.use(async (req, res, next) => {
 
 // 新建文件
 createFile.use(async (req, res, next) => {
-  let currentPath = path.resolve(
-    req.rootFolder,
-    req.body.relativePath || "",
-    req.body.fileName
-  );
+  let currentPath = path.resolve(req.rootFolder, req.body.relativePath || "", req.body.fileName);
   console.log("将要创建文件: ", currentPath);
   try {
     await createFileByPath(currentPath);
@@ -294,17 +259,8 @@ createFile.use(async (req, res, next) => {
 copyFile.use(async (req, res, next) => {
   let fileName = req.body.fileName;
   let srcResolvePath = path.resolve(req.rootFolder, req.body.srcRelativePath);
-  let targetResolvePath = path.resolve(
-    req.rootFolder,
-    req.body.targetRelativePath
-  );
-  console.log(
-    fileName,
-    "将要复制,从 ",
-    srcResolvePath,
-    "到",
-    targetResolvePath
-  );
+  let targetResolvePath = path.resolve(req.rootFolder, req.body.targetRelativePath);
+  console.log(fileName, "将要复制,从 ", srcResolvePath, "到", targetResolvePath);
   let re;
   try {
     await copyFileByPath(fileName, srcResolvePath, targetResolvePath);
@@ -332,11 +288,7 @@ copyFile.use(async (req, res, next) => {
 
 // 创建文件夹
 createFolder.use(async (req, res, next) => {
-  let currentPath = path.resolve(
-    req.rootFolder,
-    req.body.relativePath || "",
-    req.body.folderName
-  );
+  let currentPath = path.resolve(req.rootFolder, req.body.relativePath || "", req.body.folderName);
   console.log("将要创建文件夹: ", currentPath);
   try {
     await createFolderByPath(currentPath);

@@ -4,9 +4,7 @@ import { useHistory } from "react-router";
 function NavFile() {
   let history = useHistory();
   let dispatch = useDispatch();
-  let { fileModel, filterName, recoverModel, preRequestPath } = useSelector(
-    (store) => store
-  );
+  let { fileModel, filterName, recoverModel, preRequestPath } = useSelector((store) => store);
   let fileHandler = useCallback(
     (e) => {
       if (recoverModel) {
@@ -21,55 +19,23 @@ function NavFile() {
 
   return (
     <>
-      <li
-        className={
-          fileModel && filterName === "filterDefault"
-            ? "relative check"
-            : "relative"
-        }
-        onClick={fileHandler}
-      >
-        {fileModel ? (
-          <i className="absolute fas fa-folder-open"></i>
-        ) : (
-          <i className="absolute fas fa-folder"></i>
-        )}
+      <li className={fileModel && filterName === "filterDefault" ? "relative check" : "relative"} onClick={fileHandler}>
+        {fileModel ? <i className="absolute fas fa-folder-open"></i> : <i className="absolute fas fa-folder"></i>}
         <span className="block nav-select-item" data-name="filterDefault">
           全部文件
         </span>
       </li>
-      <li
-        className={
-          fileModel && filterName === "filterText"
-            ? "relative check"
-            : "relative"
-        }
-        onClick={fileHandler}
-      >
+      <li className={fileModel && filterName === "filterText" ? "relative check" : "relative"} onClick={fileHandler}>
         <span className="block nav-select-item" data-name="filterText">
           文档
         </span>
       </li>
-      <li
-        className={
-          fileModel && filterName === "filterImg"
-            ? "relative check"
-            : "relative"
-        }
-        onClick={fileHandler}
-      >
+      <li className={fileModel && filterName === "filterImg" ? "relative check" : "relative"} onClick={fileHandler}>
         <span className="block nav-select-item" data-name="filterImg">
           图片
         </span>
       </li>
-      <li
-        className={
-          fileModel && filterName === "filterVideo"
-            ? "relative check"
-            : "relative"
-        }
-        onClick={fileHandler}
-      >
+      <li className={fileModel && filterName === "filterVideo" ? "relative check" : "relative"} onClick={fileHandler}>
         <span className="block nav-select-item" data-name="filterVideo">
           视频
         </span>

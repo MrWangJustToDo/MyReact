@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2018",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -20,46 +16,18 @@
     "jsx": "react-jsx",
     "incremental": true,
     "baseUrl": ".",
-    "types": [
-      "node",
-      "jest",
-      "webpack-env"
-    ],
+    "types": ["node", "jest", "webpack-env"],
     "paths": {
-      "@build": [
-        "build"
-      ],
-      "@build/*": [
-        "build/*"
-      ],
-      "@server": [
-        "src/server"
-      ],
-      "@server/*": [
-        "src/server/*"
-      ],
-      "@client": [
-        "src/client"
-      ],
-      "@client/*": [
-        "src/client/*"
-      ],
-      "@shared": [
-        "src/shared"
-      ],
-      "@shared/*": [
-        "src/shared/*"
-      ]
+      "@build": ["build"],
+      "@build/*": ["build/*"],
+      "@server": ["src/server"],
+      "@server/*": ["src/server/*"],
+      "@client": ["src/client"],
+      "@client/*": ["src/client/*"],
+      "@shared": ["src/shared"],
+      "@shared/*": ["src/shared/*"]
     }
   },
-  "exclude": [
-    "dist",
-    "dev",
-    "lang",
-    "node_modules"
-  ],
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ]
+  "exclude": ["dist", "dev", "lang", "node_modules"],
+  "include": ["**/*.ts", "**/*.tsx"]
 }

@@ -17,18 +17,12 @@ function FileBlockFileItem(props) {
   );
 
   return (
-    <div
-      className={"fm-file-item relative " + (props.checked ? "check" : "")}
-      title={props.readAbleLength}
-      onMouseDown={checkHandler}
-    >
+    <div className={"fm-file-item relative " + (props.checked ? "check" : "")} title={props.readAbleLength} onMouseDown={checkHandler}>
       <Link className="block" to={props.linkTarget}>
         <i className="fas fa-file"></i>
         <span className="fm-file-name block">{props.shortPath}</span>
       </Link>
-      {props.relativePath in editorItems && (
-        <FileBlockFileSubmitItem {...props} />
-      )}
+      {props.relativePath in editorItems && <FileBlockFileSubmitItem {...props} />}
     </div>
   );
 }

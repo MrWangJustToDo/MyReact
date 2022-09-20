@@ -1,9 +1,5 @@
 const path = require("path");
-const {
-  commonJSModuleLoader,
-  moduleContentCache,
-  moduleNameCache,
-} = require("./getAllDeps");
+const { commonJSModuleLoader, moduleContentCache, moduleNameCache } = require("./getAllDeps");
 const { writeFileContent } = require("./writeFileContent");
 
 const stringify = (obj) => {
@@ -25,12 +21,8 @@ const commonJSBootStrap = async (entry, output) => {
   const fullPath = path.resolve(context, entry);
   await commonJSModuleLoader({ entry, fullPath }).then(() => {
     const content = `
-var allModuleName = {...allModuleName, ...${stringify(
-      moduleNameCache.current
-    )}};
-var allModuleContent = {...allModuleContent, ...${stringify(
-      moduleContentCache.current
-    )}};
+var allModuleName = {...allModuleName, ...${stringify(moduleNameCache.current)}};
+var allModuleContent = {...allModuleContent, ...${stringify(moduleContentCache.current)}};
 var cache = cache || {};
 function require(entry) {
   const fullModulePath = allModuleName[entry] || entry;

@@ -1,8 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 
 import type { DomFiberNode } from "./dom";
-import type { MyReactFiberNode, MyReactFiberNodeDev, MyReactElementNode , MyReactElement} from "@my-react/react";
-
+import type { MyReactFiberNode, MyReactFiberNodeDev, MyReactElementNode, MyReactElement } from "@my-react/react";
 
 const { NODE_TYPE } = __my_react_internal__;
 

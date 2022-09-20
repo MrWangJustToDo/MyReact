@@ -15,14 +15,8 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
       const { fileName, lineNumber } = source || {};
       preString = `${preString} (${fileName}:${lineNumber})`;
     }
-    if (
-      !(fiber.type & NODE_TYPE.__isDynamicNode__) &&
-      typeof owner?.element === "object" &&
-      typeof (owner?.element as MyReactElement)?.type === "function"
-    ) {
-      const typedType = (owner?.element as MyReactElement)?.type as
-        | MixinMyReactClassComponent
-        | MixinMyReactFunctionComponent;
+    if (!(fiber.type & NODE_TYPE.__isDynamicNode__) && typeof owner?.element === "object" && typeof (owner?.element as MyReactElement)?.type === "function") {
+      const typedType = (owner?.element as MyReactElement)?.type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
       // eslint-disable-next-line @typescript-eslint/ban-types
       const name = typedType.displayName || ((owner?.element as MyReactElement)?.type as Function)?.name;
       preString = `${preString} (render dy ${name})`;
@@ -89,8 +83,7 @@ const getHookTree = (hookType: MyReactFiberNode["hookTypeArray"], newType: MyRea
   return re;
 };
 
-export const logHook = (oldType: MyReactFiberNode["hookTypeArray"], newType: MyReactFiberNode["hookTypeArray"]) =>
-  getHookTree(oldType, newType);
+export const logHook = (oldType: MyReactFiberNode["hookTypeArray"], newType: MyReactFiberNode["hookTypeArray"]) => getHookTree(oldType, newType);
 
 const cache: Record<string, boolean> = {};
 
@@ -131,10 +124,7 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
   }
 };
 
-export const safeCallWithFiber = <T extends any[] = any[], K = any>(
-  { action, fiber }: { action: (...args: T) => K; fiber: MyReactFiberNode },
-  ...args: T
-) => {
+export const safeCallWithFiber = <T extends any[] = any[], K = any>({ action, fiber }: { action: (...args: T) => K; fiber: MyReactFiberNode }, ...args: T) => {
   try {
     return action.call(null, ...args);
   } catch (e) {

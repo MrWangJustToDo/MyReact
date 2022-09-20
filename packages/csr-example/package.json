@@ -24,6 +24,7 @@
     "echarts": "^4.9.0",
     "express": "4.18.1",
     "express-session": "^1.17.1",
+    "fast-folder-size": "^1.7.1",
     "immer": "^9.0.15",
     "jquery": "^3.6.0",
     "mime-types": "^2.1.35",

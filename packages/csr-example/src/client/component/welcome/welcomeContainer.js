@@ -33,14 +33,7 @@ function LoginContainer() {
   // 检测是否为手机端登录
   useEffect(() => {
     let userAgentInfo = navigator.userAgent;
-    let Agents = Array.of(
-      "Android",
-      "iPhone",
-      "SymbianOS",
-      "Windows Phone",
-      "iPad",
-      "iPod"
-    );
+    let Agents = Array.of("Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod");
     if (Agents.some((it) => userAgentInfo.indexOf(it) !== -1)) {
       alert("手机端页面可能显示不正常☹,请使用PC端访问");
     }

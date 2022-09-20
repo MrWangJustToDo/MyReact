@@ -9,18 +9,8 @@ function LoginContainerPassword() {
 
   return (
     <label className="block relative">
-      <i
-        className={
-          "fas register-input-icon password-check absolute " +
-          (passwordCheck ? "fa-eye" : "fa-eye-slash")
-        }
-        onClick={passwordHandler}
-      ></i>
-      <input
-        type={passwordCheck ? "text" : "password"}
-        placeholder="请输入密码"
-        name="password"
-      />
+      <i className={"fas register-input-icon password-check absolute " + (passwordCheck ? "fa-eye" : "fa-eye-slash")} onClick={passwordHandler}></i>
+      <input type={passwordCheck ? "text" : "password"} placeholder="请输入密码" name="password" />
     </label>
   );
 }

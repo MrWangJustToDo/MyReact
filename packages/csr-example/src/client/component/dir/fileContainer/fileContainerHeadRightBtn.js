@@ -17,27 +17,11 @@ function FileContainerHeadRightBtn() {
   return (
     <div className="fm-table-header-rightTools">
       <FileContainerHeadSearchItem />
-      <span
-        className={
-          fileModelType === "table" ? "inline-flex check" : "inline-flex"
-        }
-        onClick={clickHandler}
-      >
-        <i
-          data-name="table"
-          className="fas fa-list-ul fm-table-header-sort inline-flex"
-        ></i>
+      <span className={fileModelType === "table" ? "inline-flex check" : "inline-flex"} onClick={clickHandler}>
+        <i data-name="table" className="fas fa-list-ul fm-table-header-sort inline-flex"></i>
       </span>
-      <span
-        className={
-          fileModelType === "block" ? "inline-flex check" : "inline-flex"
-        }
-        onClick={clickHandler}
-      >
-        <i
-          data-name="block"
-          className="fas fa-th-large fm-table-header-big inline-flex"
-        ></i>
+      <span className={fileModelType === "block" ? "inline-flex check" : "inline-flex"} onClick={clickHandler}>
+        <i data-name="block" className="fas fa-th-large fm-table-header-big inline-flex"></i>
       </span>
     </div>
   );

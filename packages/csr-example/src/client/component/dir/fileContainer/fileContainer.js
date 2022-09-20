@@ -1,4 +1,4 @@
-import  { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import jquery from "jquery";
 import FileContainerHead from "./fileContainerHead";
@@ -18,10 +18,7 @@ function FileContainer() {
   }, []);
 
   return (
-    <div
-      className="fm-table-container relative animate__animated animate__fadeIn animate__faster"
-      ref={ref}
-    >
+    <div className="fm-table-container relative animate__animated animate__fadeIn animate__faster" ref={ref}>
       <FileContainerHead />
       {menuState && <FileMenu />}
       {fileModelType === "table" ? <FileTable /> : <FileBlock />}

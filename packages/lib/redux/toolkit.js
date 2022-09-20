@@ -1,6 +1,6 @@
 // redux toolkit api
 
-const { log } = require('./log.js');
+const { log } = require("./log.js");
 
 const Redux = window.Redux;
 
@@ -13,20 +13,14 @@ const { produce } = immer;
 const { createStore, applyMiddleware, combineReducers } = Redux;
 
 const configureStore = ({ reducer, middleware = [], preloadedState }) => {
-  const allMiddleware = Array.isArray(middleware)
-    ? [log, thunk].concat(middleware)
-    : middleware(() => [log, thunk]);
-  return createStore(
-    combineReducers(reducer),
-    preloadedState,
-    applyMiddleware(...allMiddleware)
-  );
+  const allMiddleware = Array.isArray(middleware) ? [log, thunk].concat(middleware) : middleware(() => [log, thunk]);
+  return createStore(combineReducers(reducer), preloadedState, applyMiddleware(...allMiddleware));
 };
 
 const createAction = (key, prepare) => {
   const action = (payload) => ({
     type: key,
-    payload: typeof prepare === 'function' ? prepare(payload).payload : payload,
+    payload: typeof prepare === "function" ? prepare(payload).payload : payload,
   });
   action.type = key;
   action.toString = () => key;
@@ -38,22 +32,19 @@ const createReducer = (initialState, builderFunction) => {
 
   const builder = {
     addCase: (action, reducer) => {
-      reducerMap[typeof action === 'string' ? action : action.type] = reducer;
+      reducerMap[typeof action === "string" ? action : action.type] = reducer;
       return builder;
     },
   };
 
-  if (typeof builderFunction === 'function') {
+  if (typeof builderFunction === "function") {
     // generate reducer map
     builderFunction(builder);
   } else {
     reducerMap = builderFunction;
   }
 
-  const reducer = (
-    state = typeof initialState === 'function' ? initialState() : initialState,
-    action
-  ) => {
+  const reducer = (state = typeof initialState === "function" ? initialState() : initialState, action) => {
     if (reducerMap[action.type]) {
       const reducer = reducerMap[action.type];
       return produce(state, (proxy) => reducer(proxy, action));
@@ -75,7 +66,7 @@ const createSlice = ({ name, initialState, reducers }) => {
   const generateAction = () => {
     return keyArray
       .map(({ key, type, reducer }) => {
-        if (typeof reducer === 'object') {
+        if (typeof reducer === "object") {
           return { [key]: createAction(type, reducer.prepare) };
         } else {
           return { [key]: createAction(type) };
@@ -89,7 +80,7 @@ const createSlice = ({ name, initialState, reducers }) => {
       initialState,
       keyArray
         .map(({ type, reducer }) => ({
-          [type]: typeof reducer === 'object' ? reducer.reducer : reducer,
+          [type]: typeof reducer === "object" ? reducer.reducer : reducer,
         }))
         .reduce((p, c) => ({ ...p, ...c }), {})
     );

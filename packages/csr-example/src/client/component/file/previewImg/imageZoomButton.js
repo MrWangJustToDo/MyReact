@@ -15,12 +15,7 @@ function ImageZoomButton() {
     }
   }, [currentZoomObj]);
   return (
-    <button
-      className="zoom-image absolute"
-      type="button"
-      ref={ref}
-      onClick={handlerZoom}
-    >
+    <button className="zoom-image absolute" type="button" ref={ref} onClick={handlerZoom}>
       {!currentZoomObj ? "放大" : "取消"}
     </button>
   );

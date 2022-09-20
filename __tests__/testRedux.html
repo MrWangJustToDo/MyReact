@@ -49,11 +49,7 @@
 
     // Create a Redux store holding the state of your app.
     // Its API is { subscribe, dispatch, getState }.
-    let store = Redux.createStore(
-      Redux.combineReducers({ counterReducer, timer }),
-      { counterReducer: { value: 100 } },
-      Redux.applyMiddleware(thunk)
-    );
+    let store = Redux.createStore(Redux.combineReducers({ counterReducer, timer }), { counterReducer: { value: 100 } }, Redux.applyMiddleware(thunk));
 
     const { Provider, useSelector, useDispatch, connect } = ReactRedux;
 

@@ -1,4 +1,3 @@
-
 function RegisterContainerInviteCode() {
   return (
     <label className="block relative">

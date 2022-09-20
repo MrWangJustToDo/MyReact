@@ -1,60 +1,81 @@
-const fs = require("fs").promises;
-const du = require("./du").du;
-const { getLengthByNumber, getShortName, getRelativePath } = require("./tools");
+const { promises } = require("fs");
+const fastFolderSize = require("fast-folder-size");
+const { resolve } = require("path");
+const { getLengthByNumber, getRelativePath } = require("./tools");
 
-// 获取文件夹信息
-function getFolder(baseDir, resolvePath) {
+async function fileState(filePath) {
+  return await promises.stat(filePath).then(({ size, mtime }) => ({
+    size,
+    mtime,
+  }));
+}
+
+async function dirSize(dirPath) {
+  return new Promise((r) => fastFolderSize(dirPath, (_, byte) => r(byte || 0)));
+}
+
+async function dirState(dirPath) {
+  return Promise.all([dirSize(dirPath), fileState(dirPath)]).then(([size, { mtime }]) => ({ size, mtime }));
+}
+
+async function du(baseDir, resolvePath) {
   if (resolvePath.startsWith(baseDir)) {
-    return du(resolvePath)
-      .then((data) => {
-        // 获取当前文件夹的信息
-        let total = data.pop();
-        let re = {
-          length: total[0],
-          resolvePath: total[1],
-          relativePath: getRelativePath(baseDir, total[1]),
-          fileType: "dir",
-          files: [],
-        };
-        data.forEach((it, id) => {
-          let [length, resolvePath] = it;
-          re.files.push({ id, length, resolvePath });
-        });
-        return re;
-      })
-      .then((data) => getFiles(baseDir, data));
-  } else {
-    return Promise.reject("permission denied");
+    let total = 0;
+    const children = await promises.readdir(resolvePath, { withFileTypes: true }).then((itemArr) => {
+      return Promise.all(
+        itemArr.map((item) => {
+          const absolutePath = resolve(resolvePath, item.name);
+          if (item.isFile()) {
+            return fileState(absolutePath).then(({ size, mtime }) => {
+              total += size;
+              return {
+                type: "file",
+                relativePath: item.name,
+                absolutePath,
+                size,
+                ["fileType"]: "file",
+                ["modifyTime"]: mtime,
+                ["readAbleLength"]: getLengthByNumber(size),
+                ["shortPath"]: item.name,
+                ["relativePath"]: getRelativePath(baseDir, absolutePath),
+              };
+            });
+          } else if (item.isDirectory()) {
+            return dirState(absolutePath).then(({ size, mtime }) => {
+              total += size;
+              return {
+                type: "dir",
+                relativePath: item.name,
+                absolutePath,
+                size,
+                ["fileType"]: "dir",
+                ["modifyTime"]: mtime,
+                ["readAbleLength"]: getLengthByNumber(size),
+                ["shortPath"]: item.name,
+                ["relativePath"]: getRelativePath(baseDir, absolutePath),
+              };
+            });
+          }
+        })
+      ).then((arr) => arr.filter(Boolean));
+    });
+
+    return {
+      length: total,
+      resolvePath,
+      relativePath: getRelativePath(baseDir, resolvePath),
+      fileType: "dir",
+      files: children,
+    };
   }
 }
 
-// 获取其中每一项
-function getFiles(baseDir, data) {
-  return Promise.all(
-    data.files.map((item) => {
-      // 文件大小
-      item["readAbleLength"] = getLengthByNumber(item.length);
-      // 文件名
-      item["shortPath"] = getShortName(item.resolvePath);
-      // 文件相对路径
-      item["relativePath"] = getRelativePath(baseDir, item.resolvePath);
-      // 文件类型
-      return fs.stat(item.resolvePath).then((file) => {
-        if (file.isFile()) {
-          item["fileType"] = "file";
-        } else {
-          item["fileType"] = "dir";
-        }
-        // 文件修改日期
-        item["modifyTime"] = file.mtime.toLocaleString();
-      });
-    })
-  ).then(() => data);
+function getFolder(baseDir, resolvePath) {
+  return du(baseDir, resolvePath);
 }
 
-// 获取文件夹大小
 function getFolderSize(resolvePath) {
-  return du(resolvePath).then((data) => data.pop()[0]);
+  return dirSize(resolvePath);
 }
 
 exports.getFolder = getFolder;

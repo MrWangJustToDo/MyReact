@@ -45,10 +45,7 @@
   transition-duration: 0.2s;
 }
 
-.fm-table-header-rightTools
-  .fm-table-header-search
-  .fm-table-ul
-  .fm-table-list {
+.fm-table-header-rightTools .fm-table-header-search .fm-table-ul .fm-table-list {
   transition-property: background;
   transition-duration: 0.3s;
 }

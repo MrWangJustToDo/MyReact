@@ -8,9 +8,7 @@ function RecoverContainerHeadDeleteFile() {
   let link = useRef();
   let dispatch = useDispatch();
   let location = useLocation();
-  let { data, currentRequestPath, msgState, msgType } = useSelector(
-    (state) => state
-  );
+  let { data, currentRequestPath, msgState, msgType } = useSelector((state) => state);
 
   let deleteFilesHandler = useCallback(() => {
     let dfiles = data.files
@@ -55,11 +53,7 @@ function RecoverContainerHeadDeleteFile() {
 
   return (
     <>
-      <Link
-        className="none"
-        to={{ pathname: "/msg", state: { background: location } }}
-        ref={link}
-      ></Link>
+      <Link className="none" to={{ pathname: "/msg", state: { background: location } }} ref={link}></Link>
       <label className="inline-flex-center" onClick={deleteFilesHandler}>
         <span className="block">
           <i className="fas fa-trash-alt"></i>

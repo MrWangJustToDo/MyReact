@@ -85,7 +85,7 @@ const resourceRules = ({ env, isDEV }: SafeGenerateActionProps): RuleSetRule => 
     // 是否生成文件
     emitFile: env === "client" ? true : false,
   },
-  type: 'javascript/auto'
+  type: "javascript/auto",
 });
 
 export const rulesConfig = (props: SafeGenerateActionProps): RuleSetRule[] => {

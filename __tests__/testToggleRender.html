@@ -14,20 +14,7 @@
   <body>
     <div id="root"></div>
     <script type="text/babel">
-      const {
-        memo,
-        useState,
-        useCallback,
-        useEffect,
-        useLayoutEffect,
-        useRef,
-        useMemo,
-        map,
-        Component,
-        PureComponent,
-        cloneElement,
-        createContext,
-      } = React;
+      const { memo, useState, useCallback, useEffect, useLayoutEffect, useRef, useMemo, map, Component, PureComponent, cloneElement, createContext } = React;
 
       const Render = ({ children }) => {
         const [target, setTarget] = useState(children);

@@ -9,9 +9,7 @@ function FileTableBody() {
     <tbody>
       {data.files.map((it) => {
         return it.fileType === "file" ? (
-          Allfilter[filterName](it.shortPath) && (
-            <FileTableFileItem key={it.id} {...it} />
-          )
+          Allfilter[filterName](it.shortPath) && <FileTableFileItem key={it.id} {...it} />
         ) : (
           <FileTableDirItem key={it.id} {...it} />
         );

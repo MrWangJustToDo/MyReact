@@ -17,14 +17,7 @@ import type {
   forwardRef,
 } from "@my-react/react";
 
-const {
-  currentHookDeepIndex,
-  currentFunctionFiber,
-  currentRunningFiber,
-  currentComponentFiber,
-  NODE_TYPE,
-  UPDATE_TYPE,
-} = __my_react_internal__;
+const { currentHookDeepIndex, currentFunctionFiber, currentRunningFiber, currentComponentFiber, NODE_TYPE, UPDATE_TYPE } = __my_react_internal__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   const childrenFiber = transformChildrenFiber(fiber, children);

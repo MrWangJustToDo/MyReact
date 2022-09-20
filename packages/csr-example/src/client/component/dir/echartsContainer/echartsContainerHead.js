@@ -19,24 +19,10 @@ function EchartsContainerHead() {
   return (
     <nav className="fm-echarts-header flex-center">
       <div className="fm-data-module inline-flex">
-        <div
-          className={
-            "fm-data-pie inline-flex-center " +
-            (echartsModelType === "pie" ? "check" : "")
-          }
-          onClick={clickHandler}
-          data-name="pie"
-        >
+        <div className={"fm-data-pie inline-flex-center " + (echartsModelType === "pie" ? "check" : "")} onClick={clickHandler} data-name="pie">
           饼形图
         </div>
-        <div
-          className={
-            "fm-data-bar inline-flex-center " +
-            (echartsModelType === "bar" ? "check" : "")
-          }
-          onClick={clickHandler}
-          data-name="bar"
-        >
+        <div className={"fm-data-bar inline-flex-center " + (echartsModelType === "bar" ? "check" : "")} onClick={clickHandler} data-name="bar">
           柱状图
         </div>
       </div>

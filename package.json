@@ -8,11 +8,12 @@
   },
   "scripts": {
     "prepare": "pnpm run build",
-    "dev:ui": "cd ./packages/ui && pnpm run dev",
+    "dev:ssr": "cd ./packages/ssr-example && pnpm run dev",
     "dev": "ts-node ./scripts/rollupWatch.ts",
     "build": "ts-node ./scripts/rollupBuild.ts",
     "lint": "eslint --cache --ext ts,tsx .",
     "lint:fix": "pnpm run lint --fix",
+    "prettier": "prettier --ignore-path .prettierignore --write .",
     "clean": "pnpm -p -r -c exec rm -rf dist .cache",
     "purge": "pnpm -p -r -c exec rm -rf node_modules"
   },

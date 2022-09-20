@@ -5,7 +5,7 @@ import type { SafeGenerateActionProps } from "../type";
 import type { RuleSetRule, RuleSetUseItem } from "webpack";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const threadLoader = require('thread-loader');
+const threadLoader = require("thread-loader");
 
 const cssRules = ({ env, isDEV }: SafeGenerateActionProps): RuleSetRule => ({
   test: /\.s?css$/,
@@ -99,7 +99,7 @@ const resourceRules = ({ env, isDEV }: SafeGenerateActionProps): RuleSetRule => 
     // 是否生成文件
     emitFile: env === "client" ? true : false,
   },
-  type: 'javascript/auto'
+  type: "javascript/auto",
 });
 
 export const rulesConfig = (props: SafeGenerateActionProps): RuleSetRule[] => {

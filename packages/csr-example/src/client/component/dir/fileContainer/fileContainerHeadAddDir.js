@@ -9,9 +9,7 @@ function FileContainerHeadAddDir() {
   let link = useRef();
   let location = useLocation();
   let dispatch = useDispatch();
-  let { msgState, msgType, data, currentRequestPath } = useSelector(
-    (state) => state
-  );
+  let { msgState, msgType, data, currentRequestPath } = useSelector((state) => state);
 
   // 添加文件夹
   let addDirHandler = useCallback(() => {
@@ -39,13 +37,7 @@ function FileContainerHeadAddDir() {
 
   return (
     <>
-      {msgState && (
-        <Link
-          className="none"
-          to={{ pathname: "/msg", state: { background: location } }}
-          ref={link}
-        ></Link>
-      )}
+      {msgState && <Link className="none" to={{ pathname: "/msg", state: { background: location } }} ref={link}></Link>}
       <label className="inline-flex-center" onClick={addDirHandler}>
         <span className="block">
           <i className="fas fa-file-medical"></i>

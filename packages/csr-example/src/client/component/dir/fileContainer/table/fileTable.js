@@ -1,12 +1,11 @@
-import { useCallback } from "react";
+import { useCallback, memo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import FileTableBody from "./fileTableBody";
 
 function FileTable() {
+  console.log('table');
   let dispatch = useDispatch();
-  let { menuState, isLoaded, copyFileState } = useSelector(
-    (state) => state
-  );
+  let { menuState, isLoaded, copyFileState } = useSelector((state) => state);
   let bodyMenuHandler = useCallback(
     (e) => {
       e.stopPropagation();
@@ -44,4 +43,4 @@ function FileTable() {
   );
 }
 
-export default FileTable;
+export default memo(FileTable);

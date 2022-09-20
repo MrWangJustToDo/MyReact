@@ -18,11 +18,7 @@ class Store {
       if (!action.type) {
         throw new Error("redux action must have a type field");
       }
-      const newState = runReducers(
-        this.reducers,
-        this.state || this.initialState,
-        action
-      );
+      const newState = runReducers(this.reducers, this.state || this.initialState, action);
       if (newState === null || newState === undefined) {
         throw new Error("get a invalid state");
       }
@@ -67,11 +63,7 @@ const runReducers = (reducers, previousState, action) => {
   let re = {};
   if (typeof reducers === "object") {
     for (let key in reducers) {
-      re[key] = runReducers(
-        reducers[key],
-        previousState ? previousState[key] : undefined,
-        action
-      );
+      re[key] = runReducers(reducers[key], previousState ? previousState[key] : undefined, action);
     }
   } else {
     re = reducers(previousState, action);
@@ -88,11 +80,9 @@ const applyMiddleware =
     middleware.map((m) => m(store));
 
 const createStore = (reducers, initialState, middleware) => {
-  let targetInitialState =
-    typeof initialState !== "function" ? initialState : null;
+  let targetInitialState = typeof initialState !== "function" ? initialState : null;
 
-  let targetMiddleware =
-    typeof initialState === "function" ? initialState : middleware;
+  let targetMiddleware = typeof initialState === "function" ? initialState : middleware;
 
   const store = new Store(targetInitialState, reducers);
 
@@ -107,9 +97,7 @@ const createStore = (reducers, initialState, middleware) => {
 
   const originalDispatch = store.dispatch;
 
-  dispatch = targetMiddleware.length
-    ? targetMiddleware.reduce((p, c) => c(p), originalDispatch)
-    : originalDispatch;
+  dispatch = targetMiddleware.length ? targetMiddleware.reduce((p, c) => c(p), originalDispatch) : originalDispatch;
 
   store.dispatch = dispatch;
 
@@ -128,10 +116,7 @@ const bindActionCreators = (actionCreator, dispatch) => {
   } else {
     let assignActionCreator = { ...actionCreator };
     for (let key in assignActionCreator) {
-      assignActionCreator[key] = bindActionCreators(
-        assignActionCreator[key],
-        dispatch
-      );
+      assignActionCreator[key] = bindActionCreators(assignActionCreator[key], dispatch);
     }
     return assignActionCreator;
   }

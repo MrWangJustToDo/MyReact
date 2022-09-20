@@ -23,13 +23,9 @@ const sortFunc = {
   // 按修改时间排序
   byTime(flag, a, b) {
     if (flag) {
-      return (
-        new Date(b.modifyTime).getTime() - new Date(a.modifyTime).getTime()
-      );
+      return new Date(b.modifyTime).getTime() - new Date(a.modifyTime).getTime();
     } else {
-      return (
-        new Date(a.modifyTime).getTime() - new Date(b.modifyTime).getTime()
-      );
+      return new Date(a.modifyTime).getTime() - new Date(b.modifyTime).getTime();
     }
   },
 
@@ -158,10 +154,7 @@ const reducerFunction = {
       proxy.data = action.data;
       // 排序
       try {
-        dataSort(
-          action.data,
-          sortFunc[state.sortMethod].bind(null, state.sortFlag)
-        );
+        dataSort(action.data, sortFunc[state.sortMethod].bind(null, state.sortFlag));
         // 加载完成
         proxy.isLoaded = true;
       } catch (e) {
@@ -176,8 +169,7 @@ const reducerFunction = {
       proxy.data.files.forEach((it, index) => {
         it.id = proxy.data.files.length - 1 - index;
         if (it.fileType === "file") {
-          it.linkTarget =
-            it.linkTarget.slice(0, it.linkTarget.lastIndexOf("/") + 1) + it.id;
+          it.linkTarget = it.linkTarget.slice(0, it.linkTarget.lastIndexOf("/") + 1) + it.id;
         }
       });
     });
@@ -186,13 +178,10 @@ const reducerFunction = {
   // 上传文件
   uploadFileSuccess(state, action) {
     return produce(state, (proxy) => {
-      let [targetFile] = action.data.files.filter(
-        (it) => it.relativePath === action.relativePath
-      );
+      let [targetFile] = action.data.files.filter((it) => it.relativePath === action.relativePath);
       targetFile.id = state.data.files.length;
       let linkTarget = targetFile.linkTarget;
-      targetFile.linkTarget =
-        linkTarget.slice(0, linkTarget.lastIndexOf("/") + 1) + targetFile.id;
+      targetFile.linkTarget = linkTarget.slice(0, linkTarget.lastIndexOf("/") + 1) + targetFile.id;
       proxy.data.files.unshift(targetFile);
     });
   },
@@ -214,12 +203,8 @@ const reducerFunction = {
   // 提交更改成功
   submitFileSucess(state, action) {
     return produce(state, (proxy) => {
-      let [targetFile] = action.data.files.filter(
-        (it) => it.relativePath === action.relativePath
-      );
-      let [srcFile] = proxy.data.files.filter(
-        (it) => it.relativePath === action.relativePath
-      );
+      let [targetFile] = action.data.files.filter((it) => it.relativePath === action.relativePath);
+      let [srcFile] = proxy.data.files.filter((it) => it.relativePath === action.relativePath);
       srcFile.length = targetFile.length;
       srcFile.readAbleLength = targetFile.readAbleLength;
       srcFile.modifyTime = targetFile.modifyTime;
@@ -284,11 +269,9 @@ const reducerFunction = {
       proxy.data.files
         .filter((it) => it.id === action.id)
         .forEach((it) => {
-          let relativePath =
-            it.relativePath.slice(0, -originName.length) + action.newName;
+          let relativePath = it.relativePath.slice(0, -originName.length) + action.newName;
           it.relativePath = relativePath;
-          it.resolvePath =
-            it.resolvePath.slice(0, -originName.length) + action.newName;
+          it.resolvePath = it.resolvePath.slice(0, -originName.length) + action.newName;
           it.shortPath = action.newName;
           it.modifyTime = new Date().toLocaleString();
           if (it.fileType === "file") {
@@ -301,10 +284,7 @@ const reducerFunction = {
               it.preview = false;
               it.linkPreview = "";
             }
-            let extention = fileTypeExtention.slice(
-              0,
-              fileTypeExtention.lastIndexOf("/")
-            );
+            let extention = fileTypeExtention.slice(0, fileTypeExtention.lastIndexOf("/"));
             it.linkTarget = `/file/${relativePath}/${extention}/${it.id}`;
           } else {
             it.linkTarget = `/all/${relativePath}`;
@@ -319,9 +299,7 @@ const reducerFunction = {
       ...state,
       data: {
         ...state.data,
-        files: state.data.files.filter(
-          (it) => it.shortPath !== action.shortPath
-        ),
+        files: state.data.files.filter((it) => it.shortPath !== action.shortPath),
       },
     };
   },
@@ -353,22 +331,17 @@ const reducerFunction = {
   // 复制文件成功
   copyFileSuccess(state, action) {
     return produce(state, (proxy) => {
-      let [targetFile] = action.data.files.filter(
-        (it) => it.shortPath === action.shortPath
-      );
+      let [targetFile] = action.data.files.filter((it) => it.shortPath === action.shortPath);
       targetFile.id = state.data.files.length;
       let linkTarget = targetFile.linkTarget;
-      targetFile.linkTarget =
-        linkTarget.slice(0, linkTarget.lastIndexOf("/") + 1) + targetFile.id;
+      targetFile.linkTarget = linkTarget.slice(0, linkTarget.lastIndexOf("/") + 1) + targetFile.id;
       proxy.data.files.unshift(targetFile);
     });
   },
 
   // 新建文件成功
   createFileSuccess(state) {
-    let relativePath = state.data.relativePath
-      ? state.data.relativePath + "/newFile"
-      : "newFile";
+    let relativePath = state.data.relativePath ? state.data.relativePath + "/newFile" : "newFile";
     return produce(state, (proxy) => {
       proxy.data.files.unshift({
         id: state.data.files.length,
@@ -393,9 +366,7 @@ const reducerFunction = {
 
   // 创建文件夹成功
   createFolderSuccess(state) {
-    let relativePath = state.data.relativePath
-      ? state.data.relativePath + "/newDir"
-      : "newDir";
+    let relativePath = state.data.relativePath ? state.data.relativePath + "/newDir" : "newDir";
     return produce(state, (proxy) => {
       proxy.data.files.unshift({
         id: state.data.files.length,

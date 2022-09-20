@@ -9,9 +9,7 @@ function FileContainerHeadAddFile() {
   let link = useRef();
   let location = useLocation();
   let dispatch = useDispatch();
-  let { msgState, msgType, data, currentRequestPath } = useSelector(
-    (state) => state
-  );
+  let { msgState, msgType, data, currentRequestPath } = useSelector((state) => state);
 
   // 添加文件
   let addFileHandler = useCallback(() => {
@@ -38,13 +36,7 @@ function FileContainerHeadAddFile() {
 
   return (
     <>
-      {msgState && (
-        <Link
-          className="none"
-          to={{ pathname: "/msg", state: { background: location } }}
-          ref={link}
-        ></Link>
-      )}
+      {msgState && <Link className="none" to={{ pathname: "/msg", state: { background: location } }} ref={link}></Link>}
       <label className="inline-flex-center" onClick={addFileHandler}>
         <span className="block">
           <i className="fas fa-file-medical"></i>

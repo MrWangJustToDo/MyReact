@@ -29,8 +29,7 @@ class Store {
   subscribe = (listener) => {
     this.listeners.push(listener);
     // 返回一个取消监听的函数
-    return () =>
-      (this.listeners = this.listeners.filter((it) => it != listener));
+    return () => (this.listeners = this.listeners.filter((it) => it != listener));
   };
 }
 
@@ -43,9 +42,7 @@ let StoreContext = createContext();
 
 // 实现react-redux的Provider组件, 用法<Provider store={store}></Provider>
 function Provider({ store, children }) {
-  return (
-    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
-  );
+  return <StoreContext.Provider value={store}>{children}</StoreContext.Provider>;
 }
 
 // 实现react-redux的useSelector() hook函数, 从store存储的数据中提取数据

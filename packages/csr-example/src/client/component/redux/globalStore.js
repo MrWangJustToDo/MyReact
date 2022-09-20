@@ -159,10 +159,7 @@ export default createStore(
           let newFiles = action.data.files.map((it) => {
             let linkTarget;
             if (it.fileType === "file") {
-              let extention = it.fileTypeExtention.slice(
-                0,
-                it.fileTypeExtention.lastIndexOf("/")
-              );
+              let extention = it.fileTypeExtention.slice(0, it.fileTypeExtention.lastIndexOf("/"));
               if (it.fileTypeExtention === "text/html") {
                 it["preview"] = true;
                 it["linkPreview"] = `/file/${it.relativePath}/html/${it.id}`;

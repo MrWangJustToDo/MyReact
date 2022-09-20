@@ -17,8 +17,7 @@
       "default": "./index.js"
     },
     "./jsx-runtime": "./jsx-runtime.js",
-    "./jsx-dev-runtime": "./jsx-runtime.js",
-    "./package.json": "./package.json"
+    "./jsx-dev-runtime": "./jsx-runtime.js"
   },
   "buildOptions": {
     "input": "./src/index.ts",
@@ -28,7 +27,6 @@
         "entryFileNames": "cjs/index.js",
         "esModule": false,
         "format": "cjs",
-        "exports": "named",
         "multiple": true,
         "sourcemap": true
       },
@@ -36,14 +34,12 @@
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
-        "exports": "named",
         "sourcemap": true
       },
       {
         "dir": "./dist",
         "entryFileNames": "browser/index.js",
         "format": "esm",
-        "exports": "named",
         "multiple": true,
         "sourcemap": true
       },
@@ -52,11 +48,11 @@
         "entryFileNames": "umd/index.js",
         "format": "umd",
         "esModule": false,
-        "exports": "named",
         "multiple": true,
         "name": "React",
         "sourcemap": true
       }
     ]
-  }
+  },
+  "peerDependencies": {}
 }

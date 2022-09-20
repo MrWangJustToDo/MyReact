@@ -10,12 +10,8 @@ function FileTbaleFileCheck(props) {
   }, [props, dispatch]);
 
   return (
-    <div
-      className={props.checked ? "fm-file-checkBox check" : "fm-file-checkBox"}
-      onClick={checkHandler}
-    >
-      <label className="fm-file-checkItem block relative check">
-      </label>
+    <div className={props.checked ? "fm-file-checkBox check" : "fm-file-checkBox"} onClick={checkHandler}>
+      <label className="fm-file-checkItem block relative check"></label>
     </div>
   );
 }

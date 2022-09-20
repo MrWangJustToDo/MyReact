@@ -28,10 +28,7 @@ function MsgContainer() {
   }, [msgState, history, dispatch, preRequestPath]);
 
   return (
-    <div
-      className="msg-container absolute flex-center animate__animated animate__zoomIn animate__faster"
-      ref={ref}
-    >
+    <div className="msg-container absolute flex-center animate__animated animate__zoomIn animate__faster" ref={ref}>
       <div className="flex-center msg-container-body relative">
         <span className="msg-container-content">{msgContent}</span>
         <MsgContainerBtn />

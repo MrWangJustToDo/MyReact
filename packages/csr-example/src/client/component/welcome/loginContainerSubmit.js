@@ -6,11 +6,7 @@ export default React.forwardRef((props, ref) => {
   function Submit(props) {
     return (
       <div className="login-submit">
-        <button
-          className="login-submit-btn flex-center"
-          disabled
-          ref={props.forwardRef}
-        >
+        <button className="login-submit-btn flex-center" disabled ref={props.forwardRef}>
           登录
         </button>
       </div>

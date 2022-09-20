@@ -10,11 +10,7 @@ const path = require("path");
 function copyFileByPath(fileName, srcResolveDir, targetResolveDir) {
   let srcResolvePath = path.resolve(srcResolveDir, fileName);
   let targetResolvePath = path.resolve(targetResolveDir, fileName);
-  return fs.promises.copyFile(
-    srcResolvePath,
-    targetResolvePath,
-    fs.constants.COPYFILE_EXCL
-  );
+  return fs.promises.copyFile(srcResolvePath, targetResolvePath, fs.constants.COPYFILE_EXCL);
 }
 
 exports.copyFileByPath = copyFileByPath;

@@ -15,11 +15,7 @@ export type ReconcilerLoopController = {
   getTopLevel: () => MyReactFiberNode | null;
 };
 
-export const updateLoopAsync = (
-  loopController: ReconcilerLoopController,
-  shouldPause: () => boolean,
-  reconcileUpdate: () => void
-) => {
+export const updateLoopAsync = (loopController: ReconcilerLoopController, shouldPause: () => boolean, reconcileUpdate: () => void) => {
   while (loopController.hasNext() && !shouldPause()) {
     const fiber = loopController.getNext();
     if (fiber) {

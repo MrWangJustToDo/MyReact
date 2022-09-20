@@ -19,12 +19,7 @@ function ImageCloseButton() {
   }, [history]);
 
   return (
-    <button
-      className="close-audio absolute"
-      type="button"
-      ref={ref}
-      onClick={handlerBack}
-    >
+    <button className="close-audio absolute" type="button" ref={ref} onClick={handlerBack}>
       返回
     </button>
   );

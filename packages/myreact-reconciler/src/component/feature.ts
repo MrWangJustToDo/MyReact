@@ -17,10 +17,7 @@ const { DEFAULT_RESULT } = __my_react_shared__;
 const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
 
-  const Component =
-    fiber.type & NODE_TYPE.__isDynamicNode__
-      ? typedElement.type
-      : (typedElement.type as ReturnType<typeof memo>).render;
+  const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
 
   const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
@@ -42,10 +39,7 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   const globalDispatch = fiber.root.dispatch;
 
-  const Component =
-    fiber.type & NODE_TYPE.__isDynamicNode__
-      ? typedElement.type
-      : (typedElement.type as ReturnType<typeof memo>).render;
+  const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
 
   const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
@@ -99,10 +93,7 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   const strictMod = globalDispatch.resolveStrictValue(fiber);
 
   if (__DEV__ && strictMod) {
-    if (
-      (typedInstance.componentDidMount || typedInstance.componentWillUnmount) &&
-      !(typedInstance.mode & Effect_TYPE.__pendingEffect__)
-    ) {
+    if ((typedInstance.componentDidMount || typedInstance.componentWillUnmount) && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
       typedInstance.mode = Effect_TYPE.__pendingEffect__;
       globalDispatch.pendingLayoutEffect(fiber, () => {
         typedInstance.mode = Effect_TYPE.__initial__;
@@ -125,10 +116,7 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
 
   const globalDispatch = fiber.root.dispatch;
 
-  const Component =
-    fiber.type & NODE_TYPE.__isDynamicNode__
-      ? typedElement.type
-      : (typedElement.type as ReturnType<typeof memo>).render;
+  const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
 
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 

@@ -1,4 +1,4 @@
-const { Readable } = require('stream');
+const { Readable } = require("stream");
 
 class MyReadable extends Readable {
   constructor(options) {

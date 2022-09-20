@@ -9,9 +9,7 @@ function FileBlockBody() {
     <>
       {data.files.map((it) => {
         return it.fileType === "file" ? (
-          Allfilter[filterName](it.shortPath) && (
-            <FileBlockFileItem key={it.id} {...it} />
-          )
+          Allfilter[filterName](it.shortPath) && <FileBlockFileItem key={it.id} {...it} />
         ) : (
           <FileBlockDirItem key={it.id} {...it} />
         );

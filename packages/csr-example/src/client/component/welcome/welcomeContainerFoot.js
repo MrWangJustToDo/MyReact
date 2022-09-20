@@ -1,4 +1,3 @@
-
 function WelcomeContainerFoot() {
   return (
     <div className="bg-foot width-inherit absolute flex-center bg-foot-mask overflow">

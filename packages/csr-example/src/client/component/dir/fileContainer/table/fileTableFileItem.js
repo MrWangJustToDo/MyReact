@@ -7,13 +7,7 @@ import FileTableFileItemSubmit from "./fileTableFileItemSubmit";
 
 function FileTableFileItem(props) {
   let dispatch = useDispatch();
-  let {
-    editorItems,
-    menuState,
-    menuRelativePath,
-    renameState,
-    renameRelativePath,
-  } = useSelector((state) => state);
+  let { editorItems, menuState, menuRelativePath, renameState, renameRelativePath } = useSelector((state) => state);
 
   // 右键菜单
   let fileMenuHandler = useCallback(
@@ -48,16 +42,11 @@ function FileTableFileItem(props) {
         {renameState && renameRelativePath === props.relativePath ? (
           <FileTableFileItemRename {...props} />
         ) : (
-          <Link
-            to={props.preview ? props.linkPreview : props.linkTarget}
-            onClick={() => dispatch({ type: "menuHide" })}
-          >
+          <Link to={props.preview ? props.linkPreview : props.linkTarget} onClick={() => dispatch({ type: "menuHide" })}>
             {props.shortPath}
           </Link>
         )}
-        {props.relativePath in editorItems && (
-          <FileTableFileItemSubmit {...props} />
-        )}
+        {props.relativePath in editorItems && <FileTableFileItemSubmit {...props} />}
       </td>
       <td>
         <span>{props.readAbleLength}</span>

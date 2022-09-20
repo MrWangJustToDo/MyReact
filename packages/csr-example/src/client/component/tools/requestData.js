@@ -14,9 +14,7 @@ function axiosPost(path, data) {
 
 // 文件提交
 function submitFile(relativePath, newContent) {
-  return axios
-    .post(`/api/submit`, { relativePath, newContent })
-    .then((res) => res.data);
+  return axios.post(`/api/submit`, { relativePath, newContent }).then((res) => res.data);
 }
 
 // 文件删除数组
@@ -26,23 +24,17 @@ function deleteFiles(files) {
 
 // 文件重命名
 function renameFile(relativePath, originName, newName) {
-  return axios
-    .post(`/api/rename`, { relativePath, originName, newName })
-    .then((res) => res.data);
+  return axios.post(`/api/rename`, { relativePath, originName, newName }).then((res) => res.data);
 }
 
 // 文件创建
 function addFile(relativePath, fileName) {
-  return axios
-    .post(`/api/createFile`, { relativePath, fileName })
-    .then((res) => res.data);
+  return axios.post(`/api/createFile`, { relativePath, fileName }).then((res) => res.data);
 }
 
 // 文件移到回收站
 function moveFile(shortName, srcRelativePath) {
-  return axios
-    .post(`/api/recoverItem`, { shortName, srcRelativePath })
-    .then((res) => res.data);
+  return axios.post(`/api/recoverItem`, { shortName, srcRelativePath }).then((res) => res.data);
 }
 
 // 文件下载
@@ -83,9 +75,7 @@ function uploadFile(progress, formData) {
       //如果lengthComputable为false，就获取不到e.total和e.loaded
       if (e.lengthComputable) {
         var rate = e.loaded / e.total; //已上传的比例
-        progress.style.backgroundImage = `linear-gradient(to right, rgba(9, 170, 255, .5) ${(
-          rate * 100
-        ).toFixed(2)}%, white 0, white 100%)`;
+        progress.style.backgroundImage = `linear-gradient(to right, rgba(9, 170, 255, .5) ${(rate * 100).toFixed(2)}%, white 0, white 100%)`;
       }
     },
   };
@@ -94,16 +84,12 @@ function uploadFile(progress, formData) {
 
 // 文件复制
 function copyFile(fileName, srcRelativePath, targetRelativePath) {
-  return axios
-    .post("/api/copyFile", { fileName, srcRelativePath, targetRelativePath })
-    .then((res) => res.data);
+  return axios.post("/api/copyFile", { fileName, srcRelativePath, targetRelativePath }).then((res) => res.data);
 }
 
 // 文件夹创建
 function addDir(relativePath, folderName) {
-  return axios
-    .post(`/api/createFolder`, { relativePath, folderName })
-    .then((res) => res.data);
+  return axios.post(`/api/createFolder`, { relativePath, folderName }).then((res) => res.data);
 }
 
 // 降频

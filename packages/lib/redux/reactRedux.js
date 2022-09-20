@@ -3,12 +3,7 @@ const { Redux } = require("./redux.js");
 const React = window.React;
 
 function isNormalEqual(src, target) {
-  if (
-    typeof src === "object" &&
-    typeof target === "object" &&
-    src !== null &&
-    target !== null
-  ) {
+  if (typeof src === "object" && typeof target === "object" && src !== null && target !== null) {
     let flag = true;
     flag = flag && Object.keys(src).length === Object.keys(target).length;
     for (let key in src) {
@@ -25,11 +20,7 @@ function isNormalEqual(src, target) {
 const ReactReduxContext = React.createContext();
 
 const Provider = ({ store, children }) => {
-  return React.createElement(
-    ReactReduxContext.Provider,
-    { value: store },
-    children
-  );
+  return React.createElement(ReactReduxContext.Provider, { value: store }, children);
 };
 
 const useStore = () => React.useContext(ReactReduxContext);
@@ -81,9 +72,7 @@ const connect = (mapStateToProps, mapDispatchToProps) => (Component) => {
       }
 
       _mapStateToProps = () => {
-        return mapStateToProps
-          ? mapStateToProps(this.context.getState(), this.props)
-          : null;
+        return mapStateToProps ? mapStateToProps(this.context.getState(), this.props) : null;
       };
 
       _mapDispatchToProps = () => {

@@ -1,9 +1,4 @@
-import type {
-  MyReactElement,
-  MyReactElementNode,
-  ArrayMyReactElementNode,
-  MaybeArrayMyReactElementNode,
-} from "../element";
+import type { MyReactElement, MyReactElementNode, ArrayMyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
 
 export const flatten = (children: MaybeArrayMyReactElementNode): ArrayMyReactElementNode => {
   if (Array.isArray(children)) {

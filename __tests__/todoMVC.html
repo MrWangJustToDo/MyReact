@@ -469,13 +469,7 @@
                     ❯
                   </span>
                 )}
-                <input
-                  autofocus
-                  type="text"
-                  className="input"
-                  placeholder="What needs to be done?"
-                  onKeyUp={this.addItem}
-                />
+                <input autofocus type="text" className="input" placeholder="What needs to be done?" onKeyUp={this.addItem} />
                 {this.state.list.length > 0 && (
                   <div className="listItems">
                     {this.currentShowList().map((it, index) => {
@@ -507,25 +501,13 @@
                     })}
                     <div className="msg" data-msg={this.itemLast()}>
                       <span className="toolBtns">
-                        <a
-                          className={this.state.tagShow == "all" ? "btn checked" : "btn"}
-                          name="all"
-                          onClick={this.tagShowChange}
-                        >
+                        <a className={this.state.tagShow == "all" ? "btn checked" : "btn"} name="all" onClick={this.tagShowChange}>
                           All
                         </a>
-                        <a
-                          className={this.state.tagShow == "active" ? "btn checked" : "btn"}
-                          name="active"
-                          onClick={this.tagShowChange}
-                        >
+                        <a className={this.state.tagShow == "active" ? "btn checked" : "btn"} name="active" onClick={this.tagShowChange}>
                           Active
                         </a>
-                        <a
-                          className={this.state.tagShow == "complated" ? "btn checked" : "btn"}
-                          name="complated"
-                          onClick={this.tagShowChange}
-                        >
+                        <a className={this.state.tagShow == "complated" ? "btn checked" : "btn"} name="complated" onClick={this.tagShowChange}>
                           Completed
                         </a>
                       </span>

@@ -11,9 +11,7 @@ function FileContainerHeadSearchItem() {
     (e) => {
       let value = e.target.value;
       if (value) {
-        let lastList = data.files.filter((it) =>
-          it.shortPath.startsWith(value)
-        );
+        let lastList = data.files.filter((it) => it.shortPath.startsWith(value));
         setList(lastList);
       } else {
         setList([]);
@@ -24,20 +22,9 @@ function FileContainerHeadSearchItem() {
 
   return (
     <label className="fm-table-header-search inline-flex relative">
-      <input
-        type="text"
-        className="fm-table-header-search-input"
-        placeholder="搜索你的文件"
-        autoFocus
-        onInput={inputHandler}
-        ref={input}
-      />
+      <input type="text" className="fm-table-header-search-input" placeholder="搜索你的文件" autoFocus onInput={inputHandler} ref={input} />
       <i className="fm-table-search-btn relative fas fa-search"></i>
-      <FileContainerHeadSearchUl
-        list={list}
-        setList={setList}
-        input={input.current}
-      />
+      <FileContainerHeadSearchUl list={list} setList={setList} input={input.current} />
     </label>
   );
 }

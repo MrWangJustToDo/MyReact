@@ -1,6 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-
 import { hydrateUpdate } from "./hydrateUpdate";
 import { nativeUpdate } from "./nativeUpdate";
 

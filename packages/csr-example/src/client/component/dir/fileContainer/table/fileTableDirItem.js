@@ -5,12 +5,7 @@ import FileTableDirItemRename from "./fileTableDirItemRename";
 
 function FileTableDirItem(props) {
   let dispatch = useDispatch();
-  let {
-    menuState,
-    menuRelativePath,
-    renameState,
-    renameRelativePath,
-  } = useSelector((state) => state);
+  let { menuState, menuRelativePath, renameState, renameRelativePath } = useSelector((state) => state);
 
   // 右键菜单
   let folderMenuHandler = useCallback(
@@ -35,7 +30,7 @@ function FileTableDirItem(props) {
     },
     [dispatch, menuState, menuRelativePath, props]
   );
-  
+
   return (
     <tr className="fm-table-folder" onMouseDown={folderMenuHandler}>
       <td className="son-inline-block-center relative">
@@ -48,10 +43,7 @@ function FileTableDirItem(props) {
         {renameState && renameRelativePath === props.relativePath ? (
           <FileTableDirItemRename {...props} />
         ) : (
-          <Link
-            to={props.linkTarget}
-            onClick={() => dispatch({ type: "menuHide" })}
-          >
+          <Link to={props.linkTarget} onClick={() => dispatch({ type: "menuHide" })}>
             {props.shortPath}
           </Link>
         )}

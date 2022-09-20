@@ -29,20 +29,13 @@ function Home() {
     }
   });
 
-  
-
   return (
     <div className="absolute height-inherit width-inherit animate__animated animate__fadeIn animate__faster">
       <Head />
       <Nav />
       <Switch>
         <Route path="/all" children={<DirContainer />} />
-        <Route
-          path="/recover"
-          children={
-            recoverModel ? <RecoverContainer /> : <Redirect to="/all" />
-          }
-        />
+        <Route path="/recover" children={recoverModel ? <RecoverContainer /> : <Redirect to="/all" />} />
       </Switch>
     </div>
   );

@@ -5,7 +5,6 @@ import type { Express } from "express";
 let handlerRender = generateRender;
 
 const startApp = (app: Express) => {
-
   app.use((req, res) => {
     handlerRender()(req, res);
   });

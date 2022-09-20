@@ -2,7 +2,6 @@ import { webpack } from "webpack";
 
 import { definedWebpackConfig } from "@build/webpack";
 
-
 import { compilerPromise } from "./compiler";
 import { freePort } from "./free-post";
 import { logger } from "./log";

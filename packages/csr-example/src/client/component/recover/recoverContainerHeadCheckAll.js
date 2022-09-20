@@ -9,9 +9,7 @@ function RecoverContainerHeadDeleteFile() {
   let dispatch = useDispatch();
   let location = useLocation();
 
-  let { data, currentRequestPath, msgState, msgType } = useSelector(
-    (state) => state
-  );
+  let { data, currentRequestPath, msgState, msgType } = useSelector((state) => state);
 
   let checkAllHandler = useCallback(() => {
     if (data.files.length) {
@@ -39,11 +37,7 @@ function RecoverContainerHeadDeleteFile() {
 
   return (
     <>
-      <Link
-        className="none"
-        to={{ pathname: "/msg", state: { background: location } }}
-        ref={link}
-      ></Link>
+      <Link className="none" to={{ pathname: "/msg", state: { background: location } }} ref={link}></Link>
       <label className="inline-flex-center" onClick={checkAllHandler}>
         <span className="block">
           <i className="fas fa-check-double"></i>

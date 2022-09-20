@@ -19,12 +19,7 @@ function IframeCloseButton() {
   }, [history]);
 
   return (
-    <button
-      className="close-iframe absolute"
-      type="button"
-      ref={ref}
-      onClick={handlerBack}
-    >
+    <button className="close-iframe absolute" type="button" ref={ref} onClick={handlerBack}>
       返回
     </button>
   );

@@ -13,10 +13,7 @@ function NavRecover() {
   }, [dispatch, currentRequestPath]);
 
   return (
-    <li
-      className={recoverModel ? "relative check" : "relative"}
-      onClick={recoverHandler}
-    >
+    <li className={recoverModel ? "relative check" : "relative"} onClick={recoverHandler}>
       <i className="absolute fas fa-archive"></i>
       <Link className="block nav-archive-item" to="/recover">
         回收站

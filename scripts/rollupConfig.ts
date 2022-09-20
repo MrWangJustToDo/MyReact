@@ -82,9 +82,7 @@ const transformBuildOptions = (
         if (output.multiple) {
           const typedEntryFileNames = output.entryFileNames as string;
           const lastIndexofDote = typedEntryFileNames.lastIndexOf(".");
-          output.entryFileNames = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(
-            lastIndexofDote
-          )}`;
+          output.entryFileNames = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(lastIndexofDote)}`;
           delete output.multiple;
         }
       }
@@ -93,9 +91,7 @@ const transformBuildOptions = (
         if (output.multiple) {
           const typedEntryFileNames = output.file as string;
           const lastIndexofDote = typedEntryFileNames.lastIndexOf(".");
-          output.file = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(
-            lastIndexofDote
-          )}`;
+          output.file = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(lastIndexofDote)}`;
           delete output.multiple;
         }
       }
@@ -112,7 +108,7 @@ const transformBuildOptions = (
       allOptions.singleOther = {
         ...options,
         output: singleOtherConfig,
-        external: (id) => id.includes("node_modules") || id.includes("@my-react/"),
+        // external: (id) => id.includes("node_modules") || id.includes("@my-react/"),
         plugins: [
           nodeResolve(),
           commonjs({ exclude: "node_modules" }),
@@ -130,11 +126,9 @@ const transformBuildOptions = (
       allOptions.singleUMD = {
         ...options,
         output: singleUMDConfig,
-        external: (id) => {
-          if (packageFileObject["name"] === "@my-react/react-dom") {
-            return id.endsWith("@my-react/react");
-          }
-        },
+        // external: (id) => {
+        //   if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react");
+        // },
         plugins: [
           nodeResolve(),
           commonjs({ exclude: "node_modules" }),
@@ -152,7 +146,7 @@ const transformBuildOptions = (
       allOptions.multipleOther = {
         ...options,
         output: multipleOtherConfig,
-        external: (id) => id.includes("node_modules") || id.includes("@my-react/"),
+        // external: (id) => id.includes("node_modules") || id.includes("@my-react/"),
         plugins: [
           nodeResolve(),
           commonjs({ exclude: "node_modules" }),
@@ -170,11 +164,9 @@ const transformBuildOptions = (
       allOptions.multipleUMD = {
         ...options,
         output: multipleUMDConfig,
-        external: (id) => {
-          if (packageFileObject["name"] === "@my-react/react-dom") {
-            return id.endsWith("@my-react/react");
-          }
-        },
+        // external: (id) => {
+        //   if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react");
+        // },
         plugins: [
           nodeResolve(),
           commonjs({ exclude: "node_modules" }),
@@ -222,9 +214,7 @@ export const getRollupConfig = async (packageName: string) => {
 
   if (!rollupConfig.output) throw new Error(`current package ${packageName} not have a output config`);
 
-  const allRollupOptions = modes.map((mode) =>
-    transformBuildOptions(cloneDeep(rollupConfig), packageFileObject, relativePath, mode)
-  );
+  const allRollupOptions = modes.map((mode) => transformBuildOptions(cloneDeep(rollupConfig), packageFileObject, relativePath, mode));
 
   const allDevBuild = allRollupOptions[0];
 

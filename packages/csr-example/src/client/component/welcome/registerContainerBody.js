@@ -95,11 +95,7 @@ function RegisterContainerBody() {
   );
 
   return (
-    <form
-      className="register-form absolute text-center"
-      ref={body}
-      onSubmit={registerHandler}
-    >
+    <form className="register-form absolute text-center" ref={body} onSubmit={registerHandler}>
       <div className="register-form-head relative flex">
         <span>新用户注册</span>
         <Link className="goto-login" to="/login">

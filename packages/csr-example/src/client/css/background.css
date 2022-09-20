@@ -14,7 +14,8 @@
 .bg-content-bg {
   background-image: url("./loginBackground.jpg");
   background-attachment: fixed;
-  background-size: 110%;
+  background-size: cover;
+  /* background-size: 110%; */
   background-repeat: no-repeat;
   background-position: 50%;
   transition-property: background;
@@ -28,13 +29,11 @@
 }
 
 .bg-head-mask {
-  text-shadow: 0.029851rem 0.029851rem 0.029851rem #444,
-    -0.029851rem -0.029851rem 0.029851rem #eee;
+  text-shadow: 0.029851rem 0.029851rem 0.029851rem #444, -0.029851rem -0.029851rem 0.029851rem #eee;
 }
 
 .bg-foot-mask {
-  text-shadow: 0.00597rem 0.00597rem 0.00597rem #444,
-    -0.00597rem -0.00597rem 0.00597rem #aaa;
+  text-shadow: 0.00597rem 0.00597rem 0.00597rem #444, -0.00597rem -0.00597rem 0.00597rem #aaa;
 }
 
 .bg-head-mask::before,

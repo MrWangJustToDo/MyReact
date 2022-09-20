@@ -54,7 +54,7 @@ function zoom(src, scrollAble = window, zoomIndex = 4, index = 1.4) {
   //     z-index: 10;
   //     box-sizing: border-box;
   //   }
-    
+
   //   .zoom_hide {
   //     display: none;
   //   }
@@ -100,12 +100,8 @@ function zoom(src, scrollAble = window, zoomIndex = 4, index = 1.4) {
     }
 
     _initCover() {
-      this.cover.style.width = `${
-        this.imageItem.offsetWidth / this.zoomIndex
-      }px`;
-      this.cover.style.height = `${
-        this.imageItem.offsetHeight / this.zoomIndex
-      }px`;
+      this.cover.style.width = `${this.imageItem.offsetWidth / this.zoomIndex}px`;
+      this.cover.style.height = `${this.imageItem.offsetHeight / this.zoomIndex}px`;
       this.cover.classList.add("zoom_hide");
       this.parentItem.append(this.cover);
     }
@@ -123,18 +119,12 @@ function zoom(src, scrollAble = window, zoomIndex = 4, index = 1.4) {
       this.target.style.width = `${tempWidth}px`;
       this.target.style.height = `${tempHeight}px`;
 
-      this.target.baseSize = `${
-        tempWidth > tempHeight ? tempHeight : tempWidth
-      }`;
+      this.target.baseSize = `${tempWidth > tempHeight ? tempHeight : tempWidth}`;
 
-      this.target.style.clipPath = `circle(${
-        this.target.baseSize / this.targetIndex / 2
-      }px at 50% 50%)`;
+      this.target.style.clipPath = `circle(${this.target.baseSize / this.targetIndex / 2}px at 50% 50%)`;
       this.target.classList.add("zoom_hide");
       this.target.style.backgroundImage = "url(" + imgSrc + ")";
-      this.target.style.backgroundSize = `${
-        (this.imageItem.offsetWidth * this.zoomIndex) / this.targetIndex
-      }px ${
+      this.target.style.backgroundSize = `${(this.imageItem.offsetWidth * this.zoomIndex) / this.targetIndex}px ${
         (this.imageItem.offsetHeight * this.zoomIndex) / this.targetIndex
       }px`;
       this.cover.append(this.target);
@@ -147,12 +137,8 @@ function zoom(src, scrollAble = window, zoomIndex = 4, index = 1.4) {
     }
 
     _initTargetBorder() {
-      this.targetBorder.style.width = `${
-        this.target.baseSize / this.targetIndex
-      }px`;
-      this.targetBorder.style.height = `${
-        this.target.baseSize / this.targetIndex
-      }px`;
+      this.targetBorder.style.width = `${this.target.baseSize / this.targetIndex}px`;
+      this.targetBorder.style.height = `${this.target.baseSize / this.targetIndex}px`;
       this.target.append(this.targetBorder);
     }
 
@@ -177,17 +163,12 @@ function zoom(src, scrollAble = window, zoomIndex = 4, index = 1.4) {
       this.top = top;
       this.cover.style.left = `${left}px`;
       this.cover.style.top = `${top}px`;
-      this.target.style.backgroundPosition = `${
-        (-left * this.zoomIndex) / this.targetIndex
-      }px ${(-top * this.zoomIndex) / this.targetIndex}px`;
+      this.target.style.backgroundPosition = `${(-left * this.zoomIndex) / this.targetIndex}px ${(-top * this.zoomIndex) / this.targetIndex}px`;
     }
 
     _initParent() {
       let width = parseFloat(getComputedStyle(this.imageItem)["width"]);
-      this.imageItem.parentElement.replaceChild(
-        this.parentItem,
-        this.imageItem
-      );
+      this.imageItem.parentElement.replaceChild(this.parentItem, this.imageItem);
       this.parentItem.append(this.imageItem);
       this.parentItem.style.width = `${width}px`;
       this.imageItem.style.width = `${width}px`;
@@ -220,10 +201,7 @@ function zoom(src, scrollAble = window, zoomIndex = 4, index = 1.4) {
           this.parentItem.removeEventListener("mousemove", functionChange);
         }
       });
-      scrollAble.addEventListener(
-        "scroll",
-        (this.scrollFunc = () => void img._reInit())
-      );
+      scrollAble.addEventListener("scroll", (this.scrollFunc = () => void img._reInit()));
     }
 
     _reInit() {
@@ -245,9 +223,7 @@ function zoom(src, scrollAble = window, zoomIndex = 4, index = 1.4) {
       }
       this.cover.style.left = `${left}px`;
       this.cover.style.top = `${top}px`;
-      this.target.style.backgroundPosition = `${
-        (-left * this.zoomIndex) / this.targetIndex
-      }px ${(-top * this.zoomIndex) / this.targetIndex}px`;
+      this.target.style.backgroundPosition = `${(-left * this.zoomIndex) / this.targetIndex}px ${(-top * this.zoomIndex) / this.targetIndex}px`;
     }
 
     destory() {

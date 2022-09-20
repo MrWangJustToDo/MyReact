@@ -12,9 +12,7 @@ function renameItemByPath(resolveDir, originName, newName) {
   newName = newName.split(/\s+/).join("");
   let srcResolvePath = path.resolve(resolveDir, originName);
   let targetResolvePath = path.resolve(resolveDir, newName);
-  return getFileExist(targetResolvePath).then(() =>
-    fs.rename(srcResolvePath, targetResolvePath)
-  );
+  return getFileExist(targetResolvePath).then(() => fs.rename(srcResolvePath, targetResolvePath));
 }
 
 exports.renameItemByPath = renameItemByPath;

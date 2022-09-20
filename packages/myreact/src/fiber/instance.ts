@@ -18,9 +18,7 @@ export type ComponentUpdateQueue = {
   type: "component";
   trigger: MyReactComponent;
   isForce?: boolean;
-  payLoad?:
-    | Record<string, unknown>
-    | ((state: Record<string, unknown>, props: Record<string, unknown>) => Record<string, unknown>);
+  payLoad?: Record<string, unknown> | ((state: Record<string, unknown>, props: Record<string, unknown>) => Record<string, unknown>);
   callback?: () => void;
 };
 
@@ -200,7 +198,8 @@ export class MyReactFiberNode {
   }
 
   checkIsSameType(element: MyReactElementNode) {
-    if (this.mode & UPDATE_TYPE.__trigger__) return true;
+    // if (this.mode & UPDATE_TYPE.__trigger__) return true;
+    console.log('fff, why it is not work')
     const type = getTypeFromElement(element);
     const result = type === this.type;
     const typedIncomingElement = element as MyReactElement;
@@ -209,11 +208,7 @@ export class MyReactFiberNode {
       if (this.type & (NODE_TYPE.__isDynamicNode__ | NODE_TYPE.__isPlainNode__)) {
         return Object.is(typedExistElement.type, typedIncomingElement.type);
       }
-      if (
-        this.type & NODE_TYPE.__isObjectNode__ &&
-        typeof typedIncomingElement.type === "object" &&
-        typeof typedExistElement.type === "object"
-      ) {
+      if (this.type & NODE_TYPE.__isObjectNode__ && typeof typedIncomingElement.type === "object" && typeof typedExistElement.type === "object") {
         return Object.is(typedExistElement.type["$$typeof"], typedIncomingElement.type["$$typeof"]);
       }
     }

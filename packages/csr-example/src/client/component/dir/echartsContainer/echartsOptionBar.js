@@ -37,8 +37,7 @@ function getEchartsBarOption(data) {
           color: "rgba(200, 200, 200, .2)",
         },
       },
-      formatter: (params) =>
-        `${params[0].name}<br/>占用: ${temp[params[0].name]}`,
+      formatter: (params) => `${params[0].name}<br/>占用: ${temp[params[0].name]}`,
       backgroundColor: "rgba(100, 100, 100, .45)",
       textStyle: {
         color: "#fff",

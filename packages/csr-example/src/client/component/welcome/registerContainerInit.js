@@ -9,13 +9,7 @@ function judgeInput(inputEle, regExp) {
   return regExp.test(inputEle.val());
 }
 
-function registerEle(
-  checkUrl,
-  eleList,
-  optList,
-  successCallback,
-  failCallback
-) {
+function registerEle(checkUrl, eleList, optList, successCallback, failCallback) {
   eleList.forEach((it, index) => {
     let check = delay((e) => {
       let val = e.target.value;
@@ -62,10 +56,7 @@ function successEle(element, msg, callBack) {
   msg = msg || "正确";
   if (!element.prop("status")) {
     element.parent().children("span").remove();
-    element
-      .parent()
-      .removeClass("register-check-fail")
-      .addClass("register-check-success");
+    element.parent().removeClass("register-check-fail").addClass("register-check-success");
     element.prop("status", true);
     let span = document.createElement("span");
     span = jquery(span);
@@ -82,10 +73,7 @@ function failEle(element, msg, callBack) {
   msg = msg || "错误";
   if (element.prop("status") || element.prop("status") === undefined) {
     element.parent().children("span").remove();
-    element
-      .parent()
-      .removeClass("register-check-success")
-      .addClass("register-check-fail");
+    element.parent().removeClass("register-check-success").addClass("register-check-fail");
     element.prop("status", false);
     let span = document.createElement("span");
     span = jquery(span);

@@ -1,6 +1,6 @@
 {
-  "name": "@my-react/react",
-  "description": "@my-react/react",
+  "name": "@my-react/react-shared",
+  "description": "@my-react/react-shared",
   "version": "0.0.1",
   "main": "index.js",
   "module": "./dist/esm/index.js",
@@ -10,14 +10,10 @@
     "index.js"
   ],
   "exports": {
-    ".": {
-      "require": "./index.js",
-      "node": "./index.js",
-      "import": "./dist/esm/index.js",
-      "default": "./index.js"
-    },
-    "./jsx-runtime": "./jsx-runtime.js",
-    "./jsx-dev-runtime": "./jsx-runtime.js"
+    "node": "./index.js",
+    "import": "./dist/esm/index.js",
+    "require": "./index.js",
+    "default": "./index.js"
   },
   "buildOptions": {
     "input": "./src/index.ts",
@@ -35,19 +31,8 @@
         "entryFileNames": "esm/index.js",
         "format": "esm",
         "sourcemap": true
-      },
-      {
-        "dir": "./dist",
-        "entryFileNames": "umd/index.js",
-        "format": "umd",
-        "esModule": false,
-        "multiple": true,
-        "name": "React",
-        "sourcemap": true
       }
     ]
   },
-  "peerDependencies": {
-    "@my-react/react-shared": "workspace:*"
-  }
+  "peerDependencies": {}
 }

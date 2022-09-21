@@ -25,7 +25,7 @@ const watch = (packageName: string, rollupOptions: RollupOptions, mode: string, 
 
       // give ten seconds to exit rollup watch process,
       obj[watchKey] = setTimeout(() => {
-        console.error('[watch] rebuild process not complete for a long time, look like a rollup bug, will exit rollup watch process!')
+        console.error("[watch] rebuild process not complete for a long time, look like a rollup bug, will exit rollup watch process!");
         process.exit(0);
       }, 10000);
 
@@ -64,6 +64,8 @@ const rollupWatch = async (packageName: packages) => {
     watch(packageName, allUMDDev, "development", true);
   }
 };
+
+rollupWatch("myreact-shared");
 
 rollupWatch("myreact");
 

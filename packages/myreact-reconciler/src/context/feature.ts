@@ -1,8 +1,7 @@
-import { isValidElement, __my_react_internal__ } from "@my-react/react";
+import { isValidElement } from "@my-react/react";
+import { NODE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode, createContext, MyReactFiberNodeDev, MyReactElement } from "@my-react/react";
-
-const { NODE_TYPE } = __my_react_internal__;
 
 export const defaultGetContextMapFromMap = (fiber: MyReactFiberNode | null, map: Record<string, Record<string, MyReactFiberNode>>) => {
   if (fiber) {

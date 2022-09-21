@@ -1,13 +1,12 @@
 // for invalid dom structure
-import { __my_react_shared__, __my_react_internal__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react";
+import { NODE_TYPE } from "@my-react/react-shared";
 
 import { enableAllCheck } from "@my-react-dom-shared";
 
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
 const { log } = __my_react_shared__;
-
-const { NODE_TYPE } = __my_react_internal__;
 
 // TODO
 export const validDomNesting = (fiber: MyReactFiberNode) => {

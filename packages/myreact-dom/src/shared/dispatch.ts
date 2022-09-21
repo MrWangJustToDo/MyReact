@@ -1,9 +1,7 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { NODE_TYPE } from "@my-react/react-shared";
 
 import type { DomFiberNode } from "./dom";
 import type { MyReactFiberNode, MyReactFiberNodeDev, MyReactElementNode, MyReactElement } from "@my-react/react";
-
-const { NODE_TYPE } = __my_react_internal__;
 
 export const isSVG = (_fiber: MyReactFiberNode, map: Record<string, boolean>) => {
   let _isSVG = _fiber.parent ? map[_fiber.parent.uid] : false;

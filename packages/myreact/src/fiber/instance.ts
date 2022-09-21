@@ -1,16 +1,18 @@
+import { NODE_TYPE, PATCH_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
+
 import { EmptyDispatch } from "../dispatch";
 import { getTypeFromElement, isValidElement } from "../element";
 import { EmptyRenderScope } from "../scope";
 
 import { checkFiberElement, checkFiberHook, checkFiberInstance } from "./check";
-import { NODE_TYPE, PATCH_TYPE, UPDATE_TYPE } from "./symbol";
 
 import type { MyReactComponent } from "../component";
 import type { FiberDispatch } from "../dispatch";
 import type { MyReactElement, MyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
-import type { HOOK_TYPE, Action, MyReactHookNode } from "../hook";
+import type { Action, MyReactHookNode } from "../hook";
 import type { MyReactInternalInstance } from "../internal";
 import type { RenderScope } from "../scope";
+import type { HOOK_TYPE } from "@my-react/react-shared";
 
 type RenderNode = { [p: string]: any };
 

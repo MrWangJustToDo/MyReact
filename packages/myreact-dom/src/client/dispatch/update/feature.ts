@@ -1,12 +1,10 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { hydrateUpdate } from "./hydrateUpdate";
 import { nativeUpdate } from "./nativeUpdate";
 
 import type { DomFiberNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
-
-const { PATCH_TYPE } = __my_react_internal__;
 
 export const update = (fiber: MyReactFiberNode, hydrate: boolean, isSVG: boolean) => {
   if (fiber.patch & PATCH_TYPE.__pendingUpdate__) {

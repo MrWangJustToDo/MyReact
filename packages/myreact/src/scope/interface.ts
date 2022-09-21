@@ -1,5 +1,5 @@
 import type { MyReactFiberNode } from "../fiber";
-import type { LinkTreeList } from "../share";
+import type { LinkTreeList } from "@my-react/react-shared";
 
 export interface DefaultRenderScope {
   rootFiber: MyReactFiberNode | null;

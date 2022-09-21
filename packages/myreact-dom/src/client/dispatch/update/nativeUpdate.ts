@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { NODE_TYPE } from "@my-react/react-shared";
 
 import { debugWithDOM, enableHighlight, isEvent, isGone, isNew, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
 
@@ -8,8 +8,6 @@ import { HighLight } from "./highlight";
 
 import type { DomScope, DomFiberNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
-
-const { NODE_TYPE } = __my_react_internal__;
 
 export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (!fiber.node) throw new Error("update error, dom not exist");

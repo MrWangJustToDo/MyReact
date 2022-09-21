@@ -1,11 +1,9 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { getFiberWithDom, IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
 import type { DomFiberNode, DomElement } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
-
-const { PATCH_TYPE } = __my_react_internal__;
 
 export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__pendingAppend__) {

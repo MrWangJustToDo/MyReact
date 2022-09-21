@@ -1,5 +1,5 @@
-import type { LinkTreeList } from "./listTree";
 import type { MyReactFiberNode, RenderScope } from "@my-react/react";
+import type { LinkTreeList } from "@my-react/react-shared";
 
 export class DomScope implements RenderScope<{ isHydrateRender: boolean; isServerRender: boolean; currentYield: MyReactFiberNode | null }> {
   rootFiber: MyReactFiberNode | null = null;

@@ -1,5 +1,6 @@
+import { NODE_TYPE } from "@my-react/react-shared";
+
 import { MyReactFiberNode } from "./instance";
-import { NODE_TYPE } from "./symbol";
 
 import type { MyReactElement, MyReactElementNode } from "../element";
 

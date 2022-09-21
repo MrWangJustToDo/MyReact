@@ -4,6 +4,141 @@
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.React = {}));
 })(this, (function (exports) { 'use strict';
 
+    var PATCH_TYPE;
+    (function (PATCH_TYPE) {
+        PATCH_TYPE[PATCH_TYPE["__initial__"] = 0] = "__initial__";
+        PATCH_TYPE[PATCH_TYPE["__pendingCreate__"] = 1] = "__pendingCreate__";
+        PATCH_TYPE[PATCH_TYPE["__pendingUpdate__"] = 2] = "__pendingUpdate__";
+        PATCH_TYPE[PATCH_TYPE["__pendingAppend__"] = 4] = "__pendingAppend__";
+        PATCH_TYPE[PATCH_TYPE["__pendingPosition__"] = 8] = "__pendingPosition__";
+        PATCH_TYPE[PATCH_TYPE["__pendingContext__"] = 16] = "__pendingContext__";
+        PATCH_TYPE[PATCH_TYPE["__pendingEffect__"] = 32] = "__pendingEffect__";
+        PATCH_TYPE[PATCH_TYPE["__pendingLayoutEffect__"] = 64] = "__pendingLayoutEffect__";
+        PATCH_TYPE[PATCH_TYPE["__pendingUnmount__"] = 128] = "__pendingUnmount__";
+    })(PATCH_TYPE || (PATCH_TYPE = {}));
+
+    var NODE_TYPE;
+    (function (NODE_TYPE) {
+        NODE_TYPE[NODE_TYPE["__initial__"] = 0] = "__initial__";
+        // ==== component node ==== //
+        NODE_TYPE[NODE_TYPE["__isClassComponent__"] = 1] = "__isClassComponent__";
+        NODE_TYPE[NODE_TYPE["__isFunctionComponent__"] = 2] = "__isFunctionComponent__";
+        NODE_TYPE[NODE_TYPE["__isDynamicNode__"] = 3] = "__isDynamicNode__";
+        // ==== object node, use create function to define node ==== //
+        NODE_TYPE[NODE_TYPE["__isLazy__"] = 4] = "__isLazy__";
+        NODE_TYPE[NODE_TYPE["__isMemo__"] = 8] = "__isMemo__";
+        NODE_TYPE[NODE_TYPE["__isPortal__"] = 16] = "__isPortal__";
+        NODE_TYPE[NODE_TYPE["__isSuspense__"] = 32] = "__isSuspense__";
+        NODE_TYPE[NODE_TYPE["__isForwardRef__"] = 64] = "__isForwardRef__";
+        NODE_TYPE[NODE_TYPE["__isContextProvider__"] = 128] = "__isContextProvider__";
+        NODE_TYPE[NODE_TYPE["__isContextConsumer__"] = 256] = "__isContextConsumer__";
+        NODE_TYPE[NODE_TYPE["__isObjectNode__"] = 508] = "__isObjectNode__";
+        NODE_TYPE[NODE_TYPE["__isNullNode__"] = 512] = "__isNullNode__";
+        NODE_TYPE[NODE_TYPE["__isTextNode__"] = 1024] = "__isTextNode__";
+        NODE_TYPE[NODE_TYPE["__isEmptyNode__"] = 2048] = "__isEmptyNode__";
+        NODE_TYPE[NODE_TYPE["__isPlainNode__"] = 4096] = "__isPlainNode__";
+        NODE_TYPE[NODE_TYPE["__isStrictNode__"] = 8192] = "__isStrictNode__";
+        NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 16384] = "__isFragmentNode__";
+    })(NODE_TYPE || (NODE_TYPE = {}));
+
+    var UPDATE_TYPE;
+    (function (UPDATE_TYPE) {
+        UPDATE_TYPE[UPDATE_TYPE["__initial__"] = 0] = "__initial__";
+        UPDATE_TYPE[UPDATE_TYPE["__update__"] = 1] = "__update__";
+        UPDATE_TYPE[UPDATE_TYPE["__trigger__"] = 2] = "__trigger__";
+    })(UPDATE_TYPE || (UPDATE_TYPE = {}));
+
+    var HOOK_TYPE;
+    (function (HOOK_TYPE) {
+        HOOK_TYPE["useRef"] = "useRef";
+        HOOK_TYPE["useMemo"] = "useMemo";
+        HOOK_TYPE["useState"] = "useState";
+        HOOK_TYPE["useEffect"] = "useEffect";
+        HOOK_TYPE["useContext"] = "useContext";
+        HOOK_TYPE["useReducer"] = "useReducer";
+        HOOK_TYPE["useCallback"] = "useCallback";
+        HOOK_TYPE["useDebugValue"] = "useDebugValue";
+        HOOK_TYPE["useLayoutEffect"] = "useLayoutEffect";
+        HOOK_TYPE["useImperativeHandle"] = "useImperativeHandle";
+    })(HOOK_TYPE || (HOOK_TYPE = {}));
+
+    var Effect_TYPE;
+    (function (Effect_TYPE) {
+        Effect_TYPE[Effect_TYPE["__initial__"] = 0] = "__initial__";
+        Effect_TYPE[Effect_TYPE["__pendingEffect__"] = 1] = "__pendingEffect__";
+    })(Effect_TYPE || (Effect_TYPE = {}));
+
+    var isNormalEquals = function (src, target, children) {
+        if (children === void 0) { children = true; }
+        if (typeof src === "object" && typeof target === "object" && src !== null && target !== null) {
+            var srcKeys = Object.keys(src);
+            var targetKeys = Object.keys(target);
+            if (srcKeys.length !== targetKeys.length)
+                return false;
+            var res = true;
+            for (var key in src) {
+                if (key === "children") {
+                    if (children) {
+                        res = res && Object.is(src[key], target[key]);
+                    }
+                    else {
+                        continue;
+                    }
+                }
+                else {
+                    res = res && Object.is(src[key], target[key]);
+                }
+                if (!res)
+                    return res;
+            }
+            return res;
+        }
+        return Object.is(src, target);
+    };
+
+    /******************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+
+    function __spreadArray$1(to, from, pack) {
+        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+            if (ar || !(i in from)) {
+                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+                ar[i] = from[i];
+            }
+        }
+        return to.concat(ar || Array.prototype.slice.call(from));
+    }
+
+    var once = function (action) {
+        var called = false;
+        return function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            if (called)
+                return;
+            called = true;
+            action.call.apply(action, __spreadArray$1([null], args, false));
+        };
+    };
+
+    var createRef = function (value) {
+        return { current: value };
+    };
+
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
 
@@ -56,221 +191,6 @@
         }
         return to.concat(ar || Array.prototype.slice.call(from));
     }
-
-    var EmptyDispatch = /** @class */ (function () {
-        function EmptyDispatch() {
-            this.strictMap = {};
-            this.suspenseMap = {};
-            this.effectMap = {};
-            this.layoutEffectMap = {};
-            this.contextMap = {};
-            this.unmountMap = {};
-            this.eventMap = {};
-        }
-        EmptyDispatch.prototype.trigger = function (_fiber) {
-        };
-        EmptyDispatch.prototype.resolveLazy = function () {
-            return false;
-        };
-        EmptyDispatch.prototype.resolveRef = function (_fiber) {
-        };
-        EmptyDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
-            return null;
-        };
-        EmptyDispatch.prototype.resolveStrictMap = function (_fiber) {
-        };
-        EmptyDispatch.prototype.resolveStrictValue = function (_fiber) {
-            return false;
-        };
-        EmptyDispatch.prototype.resolveSuspenseMap = function (_fiber) {
-        };
-        EmptyDispatch.prototype.resolveSuspenseElement = function (_fiber) {
-            return null;
-        };
-        EmptyDispatch.prototype.resolveContextMap = function (_fiber) {
-        };
-        EmptyDispatch.prototype.resolveContextFiber = function (_fiber, _contextObject) {
-            return null;
-        };
-        EmptyDispatch.prototype.resolveContextValue = function (_fiber, _contextObject) {
-            return null;
-        };
-        EmptyDispatch.prototype.resolveComponentQueue = function (_fiber) {
-            return void 0;
-        };
-        EmptyDispatch.prototype.resolveHookQueue = function (_fiber) {
-            return void 0;
-        };
-        // TODO this part of logic should not include global dispatch interface
-        // start
-        EmptyDispatch.prototype.reconcileCommit = function (_fiber, _hydrate, _parentFiberWithDom) {
-            return false;
-        };
-        EmptyDispatch.prototype.reconcileUpdate = function (_list) {
-        };
-        EmptyDispatch.prototype.beginProgressList = function (_scope) {
-        };
-        EmptyDispatch.prototype.endProgressList = function (_scope) {
-        };
-        EmptyDispatch.prototype.generateUpdateList = function (_fiber, _scope) {
-        };
-        // end
-        EmptyDispatch.prototype.pendingCreate = function (_fiber) {
-        };
-        EmptyDispatch.prototype.pendingUpdate = function (_fiber) {
-        };
-        EmptyDispatch.prototype.pendingAppend = function (_fiber) {
-        };
-        EmptyDispatch.prototype.pendingContext = function (_fiber) {
-        };
-        EmptyDispatch.prototype.pendingPosition = function (_fiber) {
-        };
-        EmptyDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
-        };
-        EmptyDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {
-        };
-        EmptyDispatch.prototype.pendingEffect = function (_fiber, _effect) {
-        };
-        EmptyDispatch.prototype.removeFiber = function (_fiber) {
-        };
-        return EmptyDispatch;
-    }());
-
-    var EmptyRenderScope = /** @class */ (function () {
-        function EmptyRenderScope() {
-            this.rootFiber = null;
-            this.rootContainer = {};
-            this.isAppMounted = false;
-            this.isAppCrash = false;
-            this.modifyFiberArray = [];
-            this.modifyFiberRoot = null;
-            this.updateFiberListArray = [];
-            this.updateFiberList = null;
-        }
-        return EmptyRenderScope;
-    }());
-
-    var Effect_TYPE;
-    (function (Effect_TYPE) {
-        Effect_TYPE[Effect_TYPE["__initial__"] = 0] = "__initial__";
-        Effect_TYPE[Effect_TYPE["__pendingEffect__"] = 1] = "__pendingEffect__";
-    })(Effect_TYPE || (Effect_TYPE = {}));
-
-    var MyReactInternalInstance = /** @class */ (function () {
-        function MyReactInternalInstance() {
-            this.mode = Effect_TYPE.__initial__;
-            this.context = null;
-            this._contextFiber = null;
-            this._ownerFiber = null;
-        }
-        Object.defineProperty(MyReactInternalInstance.prototype, "isMyReactInstance", {
-            get: function () {
-                return true;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        MyReactInternalInstance.prototype.setContext = function (fiber) {
-            var _a, _b, _c, _d;
-            (_a = this._ownerFiber) === null || _a === void 0 ? void 0 : _a.removeContext(this._contextFiber);
-            (_b = this._contextFiber) === null || _b === void 0 ? void 0 : _b.removeDependence(this);
-            this._contextFiber = fiber;
-            (_c = this._contextFiber) === null || _c === void 0 ? void 0 : _c.addDependence(this);
-            (_d = this._ownerFiber) === null || _d === void 0 ? void 0 : _d.addContext(this._contextFiber);
-        };
-        MyReactInternalInstance.prototype.setOwner = function (fiber) {
-            this._ownerFiber = fiber;
-        };
-        MyReactInternalInstance.prototype.unmount = function () {
-            var _a, _b;
-            this.mode = Effect_TYPE.__initial__;
-            (_a = this._contextFiber) === null || _a === void 0 ? void 0 : _a.removeDependence(this);
-            (_b = this._ownerFiber) === null || _b === void 0 ? void 0 : _b.removeContext(this._contextFiber);
-        };
-        return MyReactInternalInstance;
-    }());
-
-    var HOOK_TYPE;
-    (function (HOOK_TYPE) {
-        HOOK_TYPE["useRef"] = "useRef";
-        HOOK_TYPE["useMemo"] = "useMemo";
-        HOOK_TYPE["useState"] = "useState";
-        HOOK_TYPE["useEffect"] = "useEffect";
-        HOOK_TYPE["useContext"] = "useContext";
-        HOOK_TYPE["useReducer"] = "useReducer";
-        HOOK_TYPE["useCallback"] = "useCallback";
-        HOOK_TYPE["useDebugValue"] = "useDebugValue";
-        HOOK_TYPE["useLayoutEffect"] = "useLayoutEffect";
-        HOOK_TYPE["useImperativeHandle"] = "useImperativeHandle";
-    })(HOOK_TYPE || (HOOK_TYPE = {}));
-
-    var MyReactHookNode = /** @class */ (function (_super) {
-        __extends(MyReactHookNode, _super);
-        function MyReactHookNode(hookIndex, hookType, value, reducer, deps) {
-            var _this = _super.call(this) || this;
-            _this.hookIndex = 0;
-            _this.hookNext = null;
-            _this.hookPrev = null;
-            _this.cancel = null;
-            _this.effect = false;
-            _this.value = null;
-            _this.deps = [];
-            _this.result = null;
-            _this.dispatch = function (action) {
-                var _a;
-                var updater = {
-                    type: "hook",
-                    trigger: _this,
-                    payLoad: action,
-                };
-                (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
-                Promise.resolve().then(function () {
-                    var _a;
-                    (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update();
-                });
-            };
-            _this.deps = deps;
-            _this.value = value;
-            _this.reducer = reducer;
-            _this.hookType = hookType;
-            _this.hookIndex = hookIndex;
-            return _this;
-        }
-        Object.defineProperty(MyReactHookNode.prototype, "isMyReactHook", {
-            get: function () {
-                return true;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        MyReactHookNode.prototype.unmount = function () {
-            _super.prototype.unmount.call(this);
-            if (this.hookType === HOOK_TYPE.useEffect || this.hookType === HOOK_TYPE.useLayoutEffect) {
-                this.effect = false;
-                this.cancel && this.cancel();
-                return;
-            }
-        };
-        return MyReactHookNode;
-    }(MyReactInternalInstance));
-
-    var defaultReducer = function (state, action) {
-        return typeof action === "function" ? action(state) : action;
-    };
-    var createHookNode = function (_a, fiber) {
-        var hookIndex = _a.hookIndex, hookType = _a.hookType, value = _a.value, reducer = _a.reducer, deps = _a.deps;
-        var newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
-        newHookNode.setOwner(fiber);
-        fiber.addHook(newHookNode);
-        {
-            fiber.checkHook();
-        }
-        return newHookNode;
-    };
-
-    var createRef = function (value) {
-        return { current: value };
-    };
 
     var globalLoop = createRef(false);
     var currentRunningFiber = createRef(null);
@@ -411,368 +331,577 @@
         }
     };
 
-    var isNormalEquals = function (src, target, children) {
-        if (children === void 0) { children = true; }
-        if (typeof src === "object" && typeof target === "object" && src !== null && target !== null) {
-            var srcKeys = Object.keys(src);
-            var targetKeys = Object.keys(target);
-            if (srcKeys.length !== targetKeys.length)
-                return false;
-            var res = true;
-            for (var key in src) {
-                if (key === "children") {
-                    if (children) {
-                        res = res && Object.is(src[key], target[key]);
-                    }
-                    else {
-                        continue;
-                    }
+    var My_React_Element = Symbol.for("react.element");
+    var My_React_Memo = Symbol.for("react.memo");
+    var My_React_ForwardRef = Symbol.for("react.forward_ref");
+    var My_React_Portal = Symbol.for("react.portal");
+    var My_React_Fragment = Symbol.for("react.fragment");
+    var My_React_Context = Symbol.for("react.context");
+    var My_React_Provider = Symbol.for("react.provider");
+    var My_React_Consumer = Symbol.for("react.consumer");
+    var My_React_Lazy = Symbol.for("react.lazy");
+    var My_React_Suspense = Symbol.for("react.suspense");
+    var My_React_Strict = Symbol.for("react.strict");
+    var My_React_KeepLive = Symbol.for("react.keep_live");
+
+    function isValidElement(element) {
+        return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
+    }
+    function getTypeFromElement(element) {
+        var _a;
+        var nodeTypeSymbol = NODE_TYPE.__initial__;
+        if (isValidElement(element)) {
+            var rawType = element.type;
+            // object node
+            if (typeof rawType === "object") {
+                var typedRawType = rawType;
+                switch (typedRawType["$$typeof"]) {
+                    case My_React_Provider:
+                        nodeTypeSymbol |= NODE_TYPE.__isContextProvider__;
+                        break;
+                    case My_React_Consumer:
+                        nodeTypeSymbol |= NODE_TYPE.__isContextConsumer__;
+                        break;
+                    case My_React_Portal:
+                        nodeTypeSymbol |= NODE_TYPE.__isPortal__;
+                        break;
+                    case My_React_Memo:
+                        nodeTypeSymbol |= NODE_TYPE.__isMemo__;
+                        break;
+                    case My_React_ForwardRef:
+                        nodeTypeSymbol |= NODE_TYPE.__isForwardRef__;
+                        break;
+                    case My_React_Lazy:
+                        nodeTypeSymbol |= NODE_TYPE.__isLazy__;
+                        break;
+                    default:
+                        throw new Error("invalid object element type ".concat(typedRawType["$$typeof"].toString()));
+                }
+            }
+            else if (typeof rawType === "function") {
+                if ((_a = rawType.prototype) === null || _a === void 0 ? void 0 : _a.isMyReactComponent) {
+                    nodeTypeSymbol |= NODE_TYPE.__isClassComponent__;
                 }
                 else {
-                    res = res && Object.is(src[key], target[key]);
+                    nodeTypeSymbol |= NODE_TYPE.__isFunctionComponent__;
                 }
-                if (!res)
-                    return res;
             }
-            return res;
+            else if (typeof rawType === "symbol") {
+                switch (rawType) {
+                    case My_React_Fragment:
+                        nodeTypeSymbol |= NODE_TYPE.__isFragmentNode__;
+                        break;
+                    case My_React_Strict:
+                        nodeTypeSymbol |= NODE_TYPE.__isStrictNode__;
+                        break;
+                    case My_React_Suspense:
+                        nodeTypeSymbol |= NODE_TYPE.__isSuspense__;
+                        break;
+                    default:
+                        throw new Error("invalid symbol element type ".concat(rawType.toString()));
+                }
+            }
+            else if (typeof rawType === "string") {
+                nodeTypeSymbol |= NODE_TYPE.__isPlainNode__;
+            }
+            else {
+                {
+                    log({ message: "invalid element type ".concat(String(rawType)), level: "warn", triggerOnce: true });
+                }
+                nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
+            }
         }
-        return Object.is(src, target);
+        else {
+            if (typeof element === "object" && element !== null) {
+                {
+                    log({ message: "invalid object element type ".concat(JSON.stringify(element)), level: "warn", triggerOnce: true });
+                }
+                nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
+            }
+            else if (element === null || element === undefined || element === false) {
+                nodeTypeSymbol |= NODE_TYPE.__isNullNode__;
+            }
+            else {
+                nodeTypeSymbol |= NODE_TYPE.__isTextNode__;
+            }
+        }
+        return nodeTypeSymbol;
+    }
+    var checkValidKey = function (children) {
+        var obj = {};
+        var onceWarnDuplicate = once(log);
+        var onceWarnUndefined = once(log);
+        children.forEach(function (c) {
+            if (isValidElement(c) && !c._store["validKey"]) {
+                if (typeof c.key === "string") {
+                    if (obj[c.key]) {
+                        onceWarnDuplicate({ message: "array child have duplicate key" });
+                    }
+                    obj[c.key] = true;
+                }
+                else {
+                    onceWarnUndefined({
+                        message: "each array child must have a unique key props",
+                        triggerOnce: true,
+                    });
+                }
+                c._store["validKey"] = true;
+            }
+        });
+    };
+    var checkArrayChildrenKey = function (children) {
+        children.forEach(function (child) {
+            if (Array.isArray(child)) {
+                checkValidKey(child);
+            }
+            else {
+                if (isValidElement(child))
+                    child._store["validKey"] = true;
+            }
+        });
+    };
+    var checkSingleChildrenKey = function (children) {
+        if (Array.isArray(children)) {
+            checkValidKey(children);
+        }
+        else {
+            if (isValidElement(children))
+                children._store["validKey"] = true;
+        }
     };
 
-    var once = function (action) {
-        var called = false;
-        return function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
+    var createMyReactElement = function (_a) {
+        var _b;
+        var type = _a.type, key = _a.key, ref = _a.ref, props = _a.props, _self = _a._self, _source = _a._source, _owner = _a._owner;
+        var element = (_b = {},
+            _b["$$typeof"] = My_React_Element,
+            _b.type = type,
+            _b.key = key,
+            _b.ref = ref,
+            _b.props = props,
+            _b._owner = _owner,
+            _b._self = _self,
+            _b._source = _source,
+            _b._store = {},
+            _b);
+        if (typeof Object.freeze === "function") {
+            Object.freeze(element.props);
+            Object.freeze(element);
+        }
+        return element;
+    };
+    function createElement(type, config, children) {
+        var key = null;
+        var ref = null;
+        var self = null;
+        var source = null;
+        var props = {};
+        if (config !== null && config !== undefined) {
+            var _ref = config.ref, _key = config.key, __self = config.__self, __source = config.__source, resProps_1 = __rest(config, ["ref", "key", "__self", "__source"]);
+            ref = _ref === undefined ? null : _ref;
+            key = _key === undefined ? null : _key + "";
+            self = __self === undefined ? null : __self;
+            source = __source === undefined ? null : __source;
+            Object.keys(resProps_1).forEach(function (key) { return (props[key] = resProps_1[key]); });
+        }
+        if (typeof type === "function" || typeof type === "object") {
+            var typedType_1 = type;
+            Object.keys((typedType_1 === null || typedType_1 === void 0 ? void 0 : typedType_1.defaultProps) || {}).forEach(function (key) {
+                var _a;
+                props[key] = props[key] === undefined ? (_a = typedType_1.defaultProps) === null || _a === void 0 ? void 0 : _a[key] : props[key];
+            });
+        }
+        var childrenLength = arguments.length - 2;
+        if (childrenLength > 1) {
+            children = Array.from(arguments).slice(2);
+            {
+                checkArrayChildrenKey(children);
             }
-            if (called)
-                return;
-            called = true;
-            action.call.apply(action, __spreadArray([null], args, false));
+            props.children = children;
+        }
+        else if (childrenLength === 1) {
+            {
+                checkSingleChildrenKey(children);
+            }
+            props.children = children;
+        }
+        return createMyReactElement({
+            type: type,
+            key: key,
+            ref: ref,
+            props: props,
+            _self: self,
+            _source: source,
+            _owner: currentComponentFiber.current,
+        });
+    }
+    function cloneElement(element, config, children) {
+        if (isValidElement(element)) {
+            var props = Object.assign({}, element.props);
+            var key = element.key;
+            var ref = element.ref;
+            var type = element.type;
+            var self_1 = element._self;
+            var source = element._source;
+            var owner = element._owner;
+            if (config !== null && config !== undefined) {
+                var _ref = config.ref, _key = config.key; config.__self; config.__source; var resProps = __rest(config, ["ref", "key", "__self", "__source"]);
+                if (_ref !== undefined) {
+                    ref = _ref;
+                    owner = currentComponentFiber.current;
+                }
+                if (_key !== undefined) {
+                    key = _key + "";
+                }
+                var defaultProps = {};
+                if (typeof element.type === "function" || typeof element.type === "object") {
+                    var typedType = element.type;
+                    defaultProps = typedType === null || typedType === void 0 ? void 0 : typedType.defaultProps;
+                }
+                for (var key_1 in resProps) {
+                    if (Object.prototype.hasOwnProperty.call(resProps, key_1)) {
+                        if (resProps[key_1] === undefined && defaultProps) {
+                            props[key_1] = defaultProps[key_1];
+                        }
+                        else {
+                            props[key_1] = resProps[key_1];
+                        }
+                    }
+                }
+            }
+            var childrenLength = arguments.length - 2;
+            if (childrenLength > 1) {
+                children = Array.from(arguments).slice(2);
+                {
+                    checkArrayChildrenKey(children);
+                }
+                props.children = children;
+            }
+            else if (childrenLength === 1) {
+                {
+                    checkSingleChildrenKey(children);
+                }
+                props.children = children;
+            }
+            var clonedElement = createMyReactElement({
+                type: type,
+                key: key,
+                ref: ref,
+                props: props,
+                _self: self_1,
+                _source: source,
+                _owner: owner,
+            });
+            clonedElement._store["clonedEle"] = true;
+            return clonedElement;
+        }
+        else {
+            throw new Error("cloneElement() need valid element as args");
+        }
+    }
+
+    var MyReactInternalInstance = /** @class */ (function () {
+        function MyReactInternalInstance() {
+            this.mode = Effect_TYPE.__initial__;
+            this.context = null;
+            this._contextFiber = null;
+            this._ownerFiber = null;
+        }
+        Object.defineProperty(MyReactInternalInstance.prototype, "isMyReactInstance", {
+            get: function () {
+                return true;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        MyReactInternalInstance.prototype.setContext = function (fiber) {
+            var _a, _b, _c, _d;
+            (_a = this._ownerFiber) === null || _a === void 0 ? void 0 : _a.removeContext(this._contextFiber);
+            (_b = this._contextFiber) === null || _b === void 0 ? void 0 : _b.removeDependence(this);
+            this._contextFiber = fiber;
+            (_c = this._contextFiber) === null || _c === void 0 ? void 0 : _c.addDependence(this);
+            (_d = this._ownerFiber) === null || _d === void 0 ? void 0 : _d.addContext(this._contextFiber);
         };
-    };
-
-    var ListTreeNode = /** @class */ (function () {
-        function ListTreeNode(value) {
-            this.prev = null;
-            this.next = null;
-            this.children = [];
-            this.value = value;
-        }
-        return ListTreeNode;
+        MyReactInternalInstance.prototype.setOwner = function (fiber) {
+            this._ownerFiber = fiber;
+        };
+        MyReactInternalInstance.prototype.unmount = function () {
+            var _a, _b;
+            this.mode = Effect_TYPE.__initial__;
+            (_a = this._contextFiber) === null || _a === void 0 ? void 0 : _a.removeDependence(this);
+            (_b = this._ownerFiber) === null || _b === void 0 ? void 0 : _b.removeContext(this._contextFiber);
+        };
+        return MyReactInternalInstance;
     }());
-    var LinkTreeList = /** @class */ (function () {
-        function LinkTreeList() {
-            this.rawArray = [];
-            this.scopeRoot = { index: -1, value: new ListTreeNode(false) };
-            this.scopeArray = [];
-            this.scopeLength = 0;
-            this.length = 0;
-            this.head = null;
-            this.foot = null;
+
+    var contextId = 0;
+    var createContext = function (value) {
+        var _a, _b, _c;
+        var ContextObject = (_a = {},
+            _a["$$typeof"] = My_React_Context,
+            _a.id = contextId++,
+            _a.Provider = {},
+            _a.Consumer = {},
+            _a);
+        var Provider = (_b = {},
+            _b["$$typeof"] = My_React_Provider,
+            _b.value = value,
+            _b.Context = { id: 0 },
+            _b);
+        var Consumer = (_c = {},
+            _c["$$typeof"] = My_React_Consumer,
+            _c.Internal = MyReactInternalInstance,
+            _c.Context = { id: 0 },
+            _c);
+        Object.defineProperty(Provider, "Context", {
+            get: function () {
+                return ContextObject;
+            },
+            enumerable: false,
+            configurable: false,
+        });
+        Object.defineProperty(Consumer, "Context", {
+            get: function () {
+                return ContextObject;
+            },
+            enumerable: false,
+            configurable: false,
+        });
+        ContextObject.Provider = Provider;
+        ContextObject.Consumer = Consumer;
+        return ContextObject;
+    };
+    var forwardRef = function (render) {
+        var _a;
+        return _a = {},
+            _a["$$typeof"] = My_React_ForwardRef,
+            _a.render = render,
+            _a;
+    };
+    var memo = function (render) {
+        var _a;
+        return _a = {}, _a["$$typeof"] = My_React_Memo, _a.render = render, _a;
+    };
+    var lazy = function (loader) {
+        var _a;
+        return _a = {},
+            _a["$$typeof"] = My_React_Lazy,
+            _a.loader = loader,
+            _a._loading = false,
+            _a._loaded = false,
+            _a.render = null,
+            _a;
+    };
+
+    var flatten = function (children) {
+        if (Array.isArray(children)) {
+            return children.reduce(function (p, c) { return p.concat(flatten(c)); }, []);
         }
-        LinkTreeList.prototype.scopePush = function (scopeItem) {
-            while (this.scopeLength && this.scopeArray[this.scopeLength - 1].index >= scopeItem.index) {
-                this.scopeArray.pop();
-                this.scopeLength--;
-            }
-            if (this.scopeLength) {
-                this.scopeArray[this.scopeLength - 1].value.children.push(scopeItem.value);
-            }
-            else {
-                this.scopeRoot.value.children.push(scopeItem.value);
-            }
-            this.scopeArray.push(scopeItem);
-            this.scopeLength++;
-        };
-        LinkTreeList.prototype.append = function (node, index) {
-            this.length++;
-            this.rawArray.push(node);
-            var listNode = new ListTreeNode(node);
-            this.push(listNode);
-            this.scopePush({ index: index, value: listNode });
-        };
-        LinkTreeList.prototype.unshift = function (node) {
-            if (!this.head) {
-                this.head = node;
-                this.foot = node;
+        return [children];
+    };
+    var mapByJudge = function (arrayLike, judge, action) {
+        var arrayChildren = flatten(arrayLike);
+        return arrayChildren.map(function (v, index) {
+            if (judge(v)) {
+                return action.call(null, v, index, arrayChildren);
             }
             else {
-                this.head.prev = node;
-                node.next = this.head;
-                this.head = node;
+                return v;
             }
-        };
-        LinkTreeList.prototype.shift = function () {
-            if (this.head) {
-                var re = this.head;
-                if (this.head.next) {
-                    this.head = this.head.next;
-                    re.next = null;
-                    this.head.prev = null;
-                }
-                else {
-                    this.head = null;
-                    this.foot = null;
-                }
-                return re;
-            }
-            else {
-                return null;
-            }
-        };
-        LinkTreeList.prototype.push = function (node) {
-            if (!this.foot) {
-                this.head = node;
-                this.foot = node;
-            }
-            else {
-                this.foot.next = node;
-                node.prev = this.foot;
-                this.foot = node;
-            }
-        };
-        LinkTreeList.prototype.pop = function () {
-            if (this.foot) {
-                var re = this.foot;
-                if (this.foot.prev) {
-                    this.foot = this.foot.prev;
-                    re.prev = null;
-                    this.foot.next = null;
-                }
-                else {
-                    this.head = null;
-                    this.foot = null;
-                }
-                return re;
-            }
-            else {
-                return null;
-            }
-        };
-        LinkTreeList.prototype.pickHead = function () {
-            return this.head;
-        };
-        LinkTreeList.prototype.pickFoot = function () {
-            return this.foot;
-        };
-        LinkTreeList.prototype.listToFoot = function (action) {
-            var node = this.head;
-            while (node) {
-                action(node.value);
-                node = node.next;
-            }
-        };
-        LinkTreeList.prototype.listToHead = function (action) {
-            var node = this.foot;
-            while (node) {
-                action(node.value);
-                node = node.prev;
-            }
-        };
-        LinkTreeList.prototype.reconcile = function (action) {
-            var reconcileScope = function (node) {
-                if (node.children) {
-                    node.children.forEach(reconcileScope);
-                }
-                action(node.value);
+        });
+    };
+
+    var map = function (arrayLike, action) {
+        return mapByJudge(arrayLike, function (v) { return v !== undefined && v !== null; }, action);
+    };
+    var toArray = function (arrayLike) {
+        return map(arrayLike, function (element, index) {
+            return cloneElement(element, {
+                key: (element === null || element === void 0 ? void 0 : element.key) !== undefined ? ".$".concat(element.key) : ".".concat(index),
+            });
+        });
+    };
+    var forEach = function (arrayLike, action) {
+        mapByJudge(arrayLike, function (v) { return v !== undefined && v !== null; }, action);
+    };
+    var count = function (arrayLike) {
+        if (Array.isArray(arrayLike)) {
+            return arrayLike.reduce(function (p, c) { return p + count(c); }, 0);
+        }
+        return 1;
+    };
+    var only = function (child) {
+        if (isValidElement(child))
+            return child;
+        if (typeof child === "string" || typeof child === "number" || typeof child === "boolean")
+            return true;
+        throw new Error("Children.only() expected to receive a single MyReact element child.");
+    };
+
+    var DEFAULT_RESULT = {
+        newState: null,
+        isForce: false,
+        callback: [],
+    };
+    var MyReactComponent = /** @class */ (function (_super) {
+        __extends(MyReactComponent, _super);
+        function MyReactComponent(props, context) {
+            var _this = _super.call(this) || this;
+            _this.state = null;
+            _this.props = null;
+            _this.context = null;
+            // for queue update
+            _this.result = DEFAULT_RESULT;
+            _this.setState = function (payLoad, callback) {
+                var _a;
+                var updater = {
+                    type: "component",
+                    payLoad: payLoad,
+                    callback: callback,
+                    trigger: _this,
+                };
+                (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
+                Promise.resolve().then(function () { var _a; return (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update(); });
             };
-            if (this.scopeLength) {
-                this.scopeRoot.value.children.forEach(reconcileScope);
-            }
+            _this.forceUpdate = function () {
+                var _a;
+                var updater = {
+                    type: "component",
+                    isForce: true,
+                    trigger: _this,
+                };
+                (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
+                Promise.resolve().then(function () { var _a; return (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update(); });
+            };
+            _this.props = props || null;
+            _this.context = context || null;
+            return _this;
+        }
+        Object.defineProperty(MyReactComponent.prototype, "isReactComponent", {
+            get: function () {
+                return true;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(MyReactComponent.prototype, "isMyReactComponent", {
+            get: function () {
+                return true;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        MyReactComponent.prototype.unmount = function () {
+            var _a;
+            _super.prototype.unmount.call(this);
+            var instance = this;
+            (_a = instance.componentWillUnmount) === null || _a === void 0 ? void 0 : _a.call(instance);
         };
-        LinkTreeList.prototype.has = function () {
-            return this.head !== null;
+        return MyReactComponent;
+    }(MyReactInternalInstance));
+    var MyReactPureComponent = /** @class */ (function (_super) {
+        __extends(MyReactPureComponent, _super);
+        function MyReactPureComponent() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        MyReactPureComponent.prototype.shouldComponentUpdate = function (nextProps, nextState, nextContext) {
+            return !isNormalEquals(nextProps, this.props) || !isNormalEquals(nextState, this.state) || !isNormalEquals(nextContext, this.context);
         };
-        return LinkTreeList;
+        return MyReactPureComponent;
+    }(MyReactComponent));
+
+    var EmptyDispatch = /** @class */ (function () {
+        function EmptyDispatch() {
+            this.strictMap = {};
+            this.suspenseMap = {};
+            this.effectMap = {};
+            this.layoutEffectMap = {};
+            this.contextMap = {};
+            this.unmountMap = {};
+            this.eventMap = {};
+        }
+        EmptyDispatch.prototype.trigger = function (_fiber) {
+        };
+        EmptyDispatch.prototype.resolveLazy = function () {
+            return false;
+        };
+        EmptyDispatch.prototype.resolveRef = function (_fiber) {
+        };
+        EmptyDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
+            return null;
+        };
+        EmptyDispatch.prototype.resolveStrictMap = function (_fiber) {
+        };
+        EmptyDispatch.prototype.resolveStrictValue = function (_fiber) {
+            return false;
+        };
+        EmptyDispatch.prototype.resolveSuspenseMap = function (_fiber) {
+        };
+        EmptyDispatch.prototype.resolveSuspenseElement = function (_fiber) {
+            return null;
+        };
+        EmptyDispatch.prototype.resolveContextMap = function (_fiber) {
+        };
+        EmptyDispatch.prototype.resolveContextFiber = function (_fiber, _contextObject) {
+            return null;
+        };
+        EmptyDispatch.prototype.resolveContextValue = function (_fiber, _contextObject) {
+            return null;
+        };
+        EmptyDispatch.prototype.resolveComponentQueue = function (_fiber) {
+            return void 0;
+        };
+        EmptyDispatch.prototype.resolveHookQueue = function (_fiber) {
+            return void 0;
+        };
+        // TODO this part of logic should not include global dispatch interface
+        // start
+        EmptyDispatch.prototype.reconcileCommit = function (_fiber, _hydrate, _parentFiberWithDom) {
+            return false;
+        };
+        EmptyDispatch.prototype.reconcileUpdate = function (_list) {
+        };
+        EmptyDispatch.prototype.beginProgressList = function (_scope) {
+        };
+        EmptyDispatch.prototype.endProgressList = function (_scope) {
+        };
+        EmptyDispatch.prototype.generateUpdateList = function (_fiber, _scope) {
+        };
+        // end
+        EmptyDispatch.prototype.pendingCreate = function (_fiber) {
+        };
+        EmptyDispatch.prototype.pendingUpdate = function (_fiber) {
+        };
+        EmptyDispatch.prototype.pendingAppend = function (_fiber) {
+        };
+        EmptyDispatch.prototype.pendingContext = function (_fiber) {
+        };
+        EmptyDispatch.prototype.pendingPosition = function (_fiber) {
+        };
+        EmptyDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
+        };
+        EmptyDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {
+        };
+        EmptyDispatch.prototype.pendingEffect = function (_fiber, _effect) {
+        };
+        EmptyDispatch.prototype.removeFiber = function (_fiber) {
+        };
+        return EmptyDispatch;
     }());
 
-    var emptyDeps = [];
-    var useState = function (initial) {
-        var currentFiber = currentFunctionFiber.current;
-        if (!currentFiber)
-            throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
-        var currentIndex = currentHookDeepIndex.current++;
-        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
-            hookIndex: currentIndex,
-            hookType: HOOK_TYPE.useState,
-            value: typeof initial === "function" ? initial : function () { return initial; },
-            reducer: null,
-            deps: emptyDeps,
-        });
-        return [currentHookNode.result, currentHookNode.dispatch];
-    };
-    var useEffect = function (action, deps) {
-        var currentFiber = currentFunctionFiber.current;
-        if (!currentFiber)
-            throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
-        var currentIndex = currentHookDeepIndex.current++;
-        globalDispatch.resolveHook(currentFiber, {
-            hookIndex: currentIndex,
-            hookType: HOOK_TYPE.useEffect,
-            value: action,
-            reducer: null,
-            deps: deps,
-        });
-    };
-    var useLayoutEffect = function (action, deps) {
-        var currentFiber = currentFunctionFiber.current;
-        if (!currentFiber)
-            throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
-        var currentIndex = currentHookDeepIndex.current++;
-        globalDispatch.resolveHook(currentFiber, {
-            hookIndex: currentIndex,
-            hookType: HOOK_TYPE.useLayoutEffect,
-            value: action,
-            reducer: null,
-            deps: deps,
-        });
-    };
-    var useCallback = function (callback, deps) {
-        var currentFiber = currentFunctionFiber.current;
-        if (!currentFiber)
-            throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
-        var currentIndex = currentHookDeepIndex.current++;
-        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
-            hookIndex: currentIndex,
-            hookType: HOOK_TYPE.useCallback,
-            value: callback,
-            reducer: null,
-            deps: deps,
-        });
-        return currentHookNode.result;
-    };
-    var useMemo = function (action, deps) {
-        var currentFiber = currentFunctionFiber.current;
-        if (!currentFiber)
-            throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
-        var currentIndex = currentHookDeepIndex.current++;
-        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
-            hookIndex: currentIndex,
-            hookType: HOOK_TYPE.useMemo,
-            value: action,
-            reducer: null,
-            deps: deps,
-        });
-        return currentHookNode.result;
-    };
-    var useRef = function (value) {
-        var currentFiber = currentFunctionFiber.current;
-        if (!currentFiber)
-            throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
-        var currentIndex = currentHookDeepIndex.current++;
-        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
-            hookIndex: currentIndex,
-            hookType: HOOK_TYPE.useRef,
-            value: createRef(value),
-            reducer: null,
-            deps: emptyDeps,
-        });
-        return currentHookNode.result;
-    };
-    var useContext = function (Context) {
-        var currentFiber = currentFunctionFiber.current;
-        if (!currentFiber)
-            throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
-        var currentIndex = currentHookDeepIndex.current++;
-        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
-            hookIndex: currentIndex,
-            hookType: HOOK_TYPE.useContext,
-            value: Context,
-            reducer: null,
-            deps: emptyDeps,
-        });
-        return currentHookNode.result;
-    };
-    var useReducer = function (reducer, initialArgs, init) {
-        var currentFiber = currentFunctionFiber.current;
-        if (!currentFiber)
-            throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
-        var currentIndex = currentHookDeepIndex.current++;
-        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
-            hookIndex: currentIndex,
-            hookType: HOOK_TYPE.useReducer,
-            value: typeof init === "function" ? function () { return init(initialArgs); } : function () { return initialArgs; },
-            reducer: reducer,
-            deps: emptyDeps,
-        });
-        return [currentHookNode.result, currentHookNode.dispatch];
-    };
-    var useImperativeHandle = function (ref, createHandle, deps) {
-        var currentFiber = currentFunctionFiber.current;
-        if (!currentFiber)
-            throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
-        var currentIndex = currentHookDeepIndex.current++;
-        globalDispatch.resolveHook(currentFiber, {
-            hookIndex: currentIndex,
-            hookType: HOOK_TYPE.useImperativeHandle,
-            value: ref,
-            reducer: createHandle,
-            deps: deps,
-        });
-    };
-    var useDebugValue = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
+    var EmptyRenderScope = /** @class */ (function () {
+        function EmptyRenderScope() {
+            this.rootFiber = null;
+            this.rootContainer = {};
+            this.isAppMounted = false;
+            this.isAppCrash = false;
+            this.modifyFiberArray = [];
+            this.modifyFiberRoot = null;
+            this.updateFiberListArray = [];
+            this.updateFiberList = null;
         }
-        if (enableDebugLog.current) {
-            console.log.apply(console, __spreadArray(__spreadArray(["[debug]: "], args, false), [getFiberTree(currentFunctionFiber.current)], false));
-        }
-    };
-
-    // use bit flag to define element type and state
-    var NODE_TYPE;
-    (function (NODE_TYPE) {
-        NODE_TYPE[NODE_TYPE["__initial__"] = 0] = "__initial__";
-        NODE_TYPE[NODE_TYPE["__isNullNode__"] = 1] = "__isNullNode__";
-        NODE_TYPE[NODE_TYPE["__isTextNode__"] = 2] = "__isTextNode__";
-        NODE_TYPE[NODE_TYPE["__isEmptyNode__"] = 4] = "__isEmptyNode__";
-        NODE_TYPE[NODE_TYPE["__isPlainNode__"] = 8] = "__isPlainNode__";
-        NODE_TYPE[NODE_TYPE["__isStrictNode__"] = 16] = "__isStrictNode__";
-        NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 32] = "__isFragmentNode__";
-        // ====  object node ==== //
-        NODE_TYPE[NODE_TYPE["__isMemo__"] = 64] = "__isMemo__";
-        NODE_TYPE[NODE_TYPE["__isPortal__"] = 128] = "__isPortal__";
-        NODE_TYPE[NODE_TYPE["__isForwardRef__"] = 256] = "__isForwardRef__";
-        NODE_TYPE[NODE_TYPE["__isContextProvider__"] = 512] = "__isContextProvider__";
-        NODE_TYPE[NODE_TYPE["__isContextConsumer__"] = 1024] = "__isContextConsumer__";
-        NODE_TYPE[NODE_TYPE["__isLazy__"] = 2048] = "__isLazy__";
-        NODE_TYPE[NODE_TYPE["__isSuspense__"] = 4096] = "__isSuspense__";
-        NODE_TYPE[NODE_TYPE["__isObjectNode__"] = 8128] = "__isObjectNode__";
-        // ==== dynamic node ==== //
-        NODE_TYPE[NODE_TYPE["__isClassComponent__"] = 16384] = "__isClassComponent__";
-        NODE_TYPE[NODE_TYPE["__isFunctionComponent__"] = 32768] = "__isFunctionComponent__";
-        NODE_TYPE[NODE_TYPE["__isDynamicNode__"] = 49152] = "__isDynamicNode__";
-    })(NODE_TYPE || (NODE_TYPE = {}));
-    var PATCH_TYPE;
-    (function (PATCH_TYPE) {
-        PATCH_TYPE[PATCH_TYPE["__initial__"] = 0] = "__initial__";
-        PATCH_TYPE[PATCH_TYPE["__pendingCreate__"] = 1] = "__pendingCreate__";
-        PATCH_TYPE[PATCH_TYPE["__pendingUpdate__"] = 2] = "__pendingUpdate__";
-        PATCH_TYPE[PATCH_TYPE["__pendingAppend__"] = 4] = "__pendingAppend__";
-        PATCH_TYPE[PATCH_TYPE["__pendingPosition__"] = 8] = "__pendingPosition__";
-        PATCH_TYPE[PATCH_TYPE["__pendingContext__"] = 16] = "__pendingContext__";
-        PATCH_TYPE[PATCH_TYPE["__pendingEffect__"] = 32] = "__pendingEffect__";
-        PATCH_TYPE[PATCH_TYPE["__pendingLayoutEffect__"] = 64] = "__pendingLayoutEffect__";
-        PATCH_TYPE[PATCH_TYPE["__pendingUnmount__"] = 128] = "__pendingUnmount__";
-    })(PATCH_TYPE || (PATCH_TYPE = {}));
-    var UPDATE_TYPE;
-    (function (UPDATE_TYPE) {
-        UPDATE_TYPE[UPDATE_TYPE["__initial__"] = 0] = "__initial__";
-        UPDATE_TYPE[UPDATE_TYPE["__update__"] = 1] = "__update__";
-        UPDATE_TYPE[UPDATE_TYPE["__trigger__"] = 2] = "__trigger__";
-    })(UPDATE_TYPE || (UPDATE_TYPE = {}));
+        return EmptyRenderScope;
+    }());
 
     var checkFiberElement = function (fiber) {
         var element = fiber.element;
@@ -1140,400 +1269,24 @@
         fiber.root.dispatch.removeFiber(fiber);
     };
 
-    var My_React_Element = Symbol.for("react.element");
-    var My_React_Memo = Symbol.for("react.memo");
-    var My_React_ForwardRef = Symbol.for("react.forward_ref");
-    var My_React_Portal = Symbol.for("react.portal");
-    var My_React_Fragment = Symbol.for("react.fragment");
-    var My_React_Context = Symbol.for("react.context");
-    var My_React_Provider = Symbol.for("react.provider");
-    var My_React_Consumer = Symbol.for("react.consumer");
-    var My_React_Lazy = Symbol.for("react.lazy");
-    var My_React_Suspense = Symbol.for("react.suspense");
-    var My_React_Strict = Symbol.for("react.strict");
-    var My_React_KeepLive = Symbol.for("react.keep_live");
-
-    function isValidElement(element) {
-        return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
-    }
-    function getTypeFromElement(element) {
-        var _a;
-        var nodeTypeSymbol = NODE_TYPE.__initial__;
-        if (isValidElement(element)) {
-            var rawType = element.type;
-            // object node
-            if (typeof rawType === "object") {
-                var typedRawType = rawType;
-                switch (typedRawType["$$typeof"]) {
-                    case My_React_Provider:
-                        nodeTypeSymbol |= NODE_TYPE.__isContextProvider__;
-                        break;
-                    case My_React_Consumer:
-                        nodeTypeSymbol |= NODE_TYPE.__isContextConsumer__;
-                        break;
-                    case My_React_Portal:
-                        nodeTypeSymbol |= NODE_TYPE.__isPortal__;
-                        break;
-                    case My_React_Memo:
-                        nodeTypeSymbol |= NODE_TYPE.__isMemo__;
-                        break;
-                    case My_React_ForwardRef:
-                        nodeTypeSymbol |= NODE_TYPE.__isForwardRef__;
-                        break;
-                    case My_React_Lazy:
-                        nodeTypeSymbol |= NODE_TYPE.__isLazy__;
-                        break;
-                    default:
-                        throw new Error("invalid object element type ".concat(typedRawType["$$typeof"].toString()));
-                }
-            }
-            else if (typeof rawType === "function") {
-                if ((_a = rawType.prototype) === null || _a === void 0 ? void 0 : _a.isMyReactComponent) {
-                    nodeTypeSymbol |= NODE_TYPE.__isClassComponent__;
-                }
-                else {
-                    nodeTypeSymbol |= NODE_TYPE.__isFunctionComponent__;
-                }
-            }
-            else if (typeof rawType === "symbol") {
-                switch (rawType) {
-                    case My_React_Fragment:
-                        nodeTypeSymbol |= NODE_TYPE.__isFragmentNode__;
-                        break;
-                    case My_React_Strict:
-                        nodeTypeSymbol |= NODE_TYPE.__isStrictNode__;
-                        break;
-                    case My_React_Suspense:
-                        nodeTypeSymbol |= NODE_TYPE.__isSuspense__;
-                        break;
-                    default:
-                        throw new Error("invalid symbol element type ".concat(rawType.toString()));
-                }
-            }
-            else if (typeof rawType === "string") {
-                nodeTypeSymbol |= NODE_TYPE.__isPlainNode__;
-            }
-            else {
-                {
-                    log({ message: "invalid element type ".concat(String(rawType)), level: "warn", triggerOnce: true });
-                }
-                nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
-            }
-        }
-        else {
-            if (typeof element === "object" && element !== null) {
-                {
-                    log({ message: "invalid object element type ".concat(JSON.stringify(element)), level: "warn", triggerOnce: true });
-                }
-                nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
-            }
-            else if (element === null || element === undefined || element === false) {
-                nodeTypeSymbol |= NODE_TYPE.__isNullNode__;
-            }
-            else {
-                nodeTypeSymbol |= NODE_TYPE.__isTextNode__;
-            }
-        }
-        return nodeTypeSymbol;
-    }
-    var checkValidKey = function (children) {
-        var obj = {};
-        var onceWarnDuplicate = once(log);
-        var onceWarnUndefined = once(log);
-        children.forEach(function (c) {
-            if (isValidElement(c) && !c._store["validKey"]) {
-                if (typeof c.key === "string") {
-                    if (obj[c.key]) {
-                        onceWarnDuplicate({ message: "array child have duplicate key" });
-                    }
-                    obj[c.key] = true;
-                }
-                else {
-                    onceWarnUndefined({
-                        message: "each array child must have a unique key props",
-                        triggerOnce: true,
-                    });
-                }
-                c._store["validKey"] = true;
-            }
-        });
-    };
-    var checkArrayChildrenKey = function (children) {
-        children.forEach(function (child) {
-            if (Array.isArray(child)) {
-                checkValidKey(child);
-            }
-            else {
-                if (isValidElement(child))
-                    child._store["validKey"] = true;
-            }
-        });
-    };
-    var checkSingleChildrenKey = function (children) {
-        if (Array.isArray(children)) {
-            checkValidKey(children);
-        }
-        else {
-            if (isValidElement(children))
-                children._store["validKey"] = true;
-        }
-    };
-
-    var createMyReactElement = function (_a) {
-        var _b;
-        var type = _a.type, key = _a.key, ref = _a.ref, props = _a.props, _self = _a._self, _source = _a._source, _owner = _a._owner;
-        var element = (_b = {},
-            _b["$$typeof"] = My_React_Element,
-            _b.type = type,
-            _b.key = key,
-            _b.ref = ref,
-            _b.props = props,
-            _b._owner = _owner,
-            _b._self = _self,
-            _b._source = _source,
-            _b._store = {},
-            _b);
-        if (typeof Object.freeze === "function") {
-            Object.freeze(element.props);
-            Object.freeze(element);
-        }
-        return element;
-    };
-    function createElement(type, config, children) {
-        var key = null;
-        var ref = null;
-        var self = null;
-        var source = null;
-        var props = {};
-        if (config !== null && config !== undefined) {
-            var _ref = config.ref, _key = config.key, __self = config.__self, __source = config.__source, resProps_1 = __rest(config, ["ref", "key", "__self", "__source"]);
-            ref = _ref === undefined ? null : _ref;
-            key = _key === undefined ? null : _key + "";
-            self = __self === undefined ? null : __self;
-            source = __source === undefined ? null : __source;
-            Object.keys(resProps_1).forEach(function (key) { return (props[key] = resProps_1[key]); });
-        }
-        if (typeof type === "function" || typeof type === "object") {
-            var typedType_1 = type;
-            Object.keys((typedType_1 === null || typedType_1 === void 0 ? void 0 : typedType_1.defaultProps) || {}).forEach(function (key) {
-                var _a;
-                props[key] = props[key] === undefined ? (_a = typedType_1.defaultProps) === null || _a === void 0 ? void 0 : _a[key] : props[key];
-            });
-        }
-        var childrenLength = arguments.length - 2;
-        if (childrenLength > 1) {
-            children = Array.from(arguments).slice(2);
-            {
-                checkArrayChildrenKey(children);
-            }
-            props.children = children;
-        }
-        else if (childrenLength === 1) {
-            {
-                checkSingleChildrenKey(children);
-            }
-            props.children = children;
-        }
-        return createMyReactElement({
-            type: type,
-            key: key,
-            ref: ref,
-            props: props,
-            _self: self,
-            _source: source,
-            _owner: currentComponentFiber.current,
-        });
-    }
-    function cloneElement(element, config, children) {
-        if (isValidElement(element)) {
-            var props = Object.assign({}, element.props);
-            var key = element.key;
-            var ref = element.ref;
-            var type = element.type;
-            var self_1 = element._self;
-            var source = element._source;
-            var owner = element._owner;
-            if (config !== null && config !== undefined) {
-                var _ref = config.ref, _key = config.key; config.__self; config.__source; var resProps = __rest(config, ["ref", "key", "__self", "__source"]);
-                if (_ref !== undefined) {
-                    ref = _ref;
-                    owner = currentComponentFiber.current;
-                }
-                if (_key !== undefined) {
-                    key = _key + "";
-                }
-                var defaultProps = {};
-                if (typeof element.type === "function" || typeof element.type === "object") {
-                    var typedType = element.type;
-                    defaultProps = typedType === null || typedType === void 0 ? void 0 : typedType.defaultProps;
-                }
-                for (var key_1 in resProps) {
-                    if (Object.prototype.hasOwnProperty.call(resProps, key_1)) {
-                        if (resProps[key_1] === undefined && defaultProps) {
-                            props[key_1] = defaultProps[key_1];
-                        }
-                        else {
-                            props[key_1] = resProps[key_1];
-                        }
-                    }
-                }
-            }
-            var childrenLength = arguments.length - 2;
-            if (childrenLength > 1) {
-                children = Array.from(arguments).slice(2);
-                {
-                    checkArrayChildrenKey(children);
-                }
-                props.children = children;
-            }
-            else if (childrenLength === 1) {
-                {
-                    checkSingleChildrenKey(children);
-                }
-                props.children = children;
-            }
-            var clonedElement = createMyReactElement({
-                type: type,
-                key: key,
-                ref: ref,
-                props: props,
-                _self: self_1,
-                _source: source,
-                _owner: owner,
-            });
-            clonedElement._store["clonedEle"] = true;
-            return clonedElement;
-        }
-        else {
-            throw new Error("cloneElement() need valid element as args");
-        }
-    }
-
-    var contextId = 0;
-    var createContext = function (value) {
-        var _a, _b, _c;
-        var ContextObject = (_a = {},
-            _a["$$typeof"] = My_React_Context,
-            _a.id = contextId++,
-            _a.Provider = {},
-            _a.Consumer = {},
-            _a);
-        var Provider = (_b = {},
-            _b["$$typeof"] = My_React_Provider,
-            _b.value = value,
-            _b.Context = { id: 0 },
-            _b);
-        var Consumer = (_c = {},
-            _c["$$typeof"] = My_React_Consumer,
-            _c.Internal = MyReactInternalInstance,
-            _c.Context = { id: 0 },
-            _c);
-        Object.defineProperty(Provider, "Context", {
-            get: function () {
-                return ContextObject;
-            },
-            enumerable: false,
-            configurable: false,
-        });
-        Object.defineProperty(Consumer, "Context", {
-            get: function () {
-                return ContextObject;
-            },
-            enumerable: false,
-            configurable: false,
-        });
-        ContextObject.Provider = Provider;
-        ContextObject.Consumer = Consumer;
-        return ContextObject;
-    };
-    var forwardRef = function (render) {
-        var _a;
-        return _a = {},
-            _a["$$typeof"] = My_React_ForwardRef,
-            _a.render = render,
-            _a;
-    };
-    var memo = function (render) {
-        var _a;
-        return _a = {}, _a["$$typeof"] = My_React_Memo, _a.render = render, _a;
-    };
-    var lazy = function (loader) {
-        var _a;
-        return _a = {},
-            _a["$$typeof"] = My_React_Lazy,
-            _a.loader = loader,
-            _a._loading = false,
-            _a._loaded = false,
-            _a.render = null,
-            _a;
-    };
-
-    var flatten = function (children) {
-        if (Array.isArray(children)) {
-            return children.reduce(function (p, c) { return p.concat(flatten(c)); }, []);
-        }
-        return [children];
-    };
-    var mapByJudge = function (arrayLike, judge, action) {
-        var arrayChildren = flatten(arrayLike);
-        return arrayChildren.map(function (v, index) {
-            if (judge(v)) {
-                return action.call(null, v, index, arrayChildren);
-            }
-            else {
-                return v;
-            }
-        });
-    };
-
-    var map = function (arrayLike, action) {
-        return mapByJudge(arrayLike, function (v) { return v !== undefined && v !== null; }, action);
-    };
-    var toArray = function (arrayLike) {
-        return map(arrayLike, function (element, index) {
-            return cloneElement(element, {
-                key: (element === null || element === void 0 ? void 0 : element.key) !== undefined ? ".$".concat(element.key) : ".".concat(index),
-            });
-        });
-    };
-    var forEach = function (arrayLike, action) {
-        mapByJudge(arrayLike, function (v) { return v !== undefined && v !== null; }, action);
-    };
-    var count = function (arrayLike) {
-        if (Array.isArray(arrayLike)) {
-            return arrayLike.reduce(function (p, c) { return p + count(c); }, 0);
-        }
-        return 1;
-    };
-    var only = function (child) {
-        if (isValidElement(child))
-            return child;
-        if (typeof child === "string" || typeof child === "number" || typeof child === "boolean")
-            return true;
-        throw new Error("Children.only() expected to receive a single MyReact element child.");
-    };
-
-    var DEFAULT_RESULT = {
-        newState: null,
-        isForce: false,
-        callback: [],
-    };
-    var MyReactComponent = /** @class */ (function (_super) {
-        __extends(MyReactComponent, _super);
-        function MyReactComponent(props, context) {
+    var MyReactHookNode = /** @class */ (function (_super) {
+        __extends(MyReactHookNode, _super);
+        function MyReactHookNode(hookIndex, hookType, value, reducer, deps) {
             var _this = _super.call(this) || this;
-            _this.state = null;
-            _this.props = null;
-            _this.context = null;
-            // for queue update
-            _this.result = DEFAULT_RESULT;
-            _this.setState = function (payLoad, callback) {
+            _this.hookIndex = 0;
+            _this.hookNext = null;
+            _this.hookPrev = null;
+            _this.cancel = null;
+            _this.effect = false;
+            _this.value = null;
+            _this.deps = [];
+            _this.result = null;
+            _this.dispatch = function (action) {
                 var _a;
                 var updater = {
-                    type: "component",
-                    payLoad: payLoad,
-                    callback: callback,
+                    type: "hook",
                     trigger: _this,
+                    payLoad: action,
                 };
                 (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
                 Promise.resolve().then(function () {
@@ -1541,55 +1294,187 @@
                     (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update();
                 });
             };
-            _this.forceUpdate = function () {
-                var _a;
-                var updater = {
-                    type: "component",
-                    isForce: true,
-                    trigger: _this,
-                };
-                (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
-                Promise.resolve().then(function () {
-                    var _a;
-                    (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update();
-                });
-            };
-            _this.props = props || null;
-            _this.context = context || null;
+            _this.deps = deps;
+            _this.value = value;
+            _this.reducer = reducer;
+            _this.hookType = hookType;
+            _this.hookIndex = hookIndex;
             return _this;
         }
-        Object.defineProperty(MyReactComponent.prototype, "isReactComponent", {
+        Object.defineProperty(MyReactHookNode.prototype, "isMyReactHook", {
             get: function () {
                 return true;
             },
             enumerable: false,
             configurable: true
         });
-        Object.defineProperty(MyReactComponent.prototype, "isMyReactComponent", {
-            get: function () {
-                return true;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        MyReactComponent.prototype.unmount = function () {
-            var _a;
+        MyReactHookNode.prototype.unmount = function () {
             _super.prototype.unmount.call(this);
-            var instance = this;
-            (_a = instance.componentWillUnmount) === null || _a === void 0 ? void 0 : _a.call(instance);
+            if (this.hookType === HOOK_TYPE.useEffect || this.hookType === HOOK_TYPE.useLayoutEffect) {
+                this.effect = false;
+                this.cancel && this.cancel();
+                return;
+            }
         };
-        return MyReactComponent;
+        return MyReactHookNode;
     }(MyReactInternalInstance));
-    var MyReactPureComponent = /** @class */ (function (_super) {
-        __extends(MyReactPureComponent, _super);
-        function MyReactPureComponent() {
-            return _super !== null && _super.apply(this, arguments) || this;
+
+    var defaultReducer = function (state, action) {
+        return typeof action === "function" ? action(state) : action;
+    };
+    var createHookNode = function (_a, fiber) {
+        var hookIndex = _a.hookIndex, hookType = _a.hookType, value = _a.value, reducer = _a.reducer, deps = _a.deps;
+        var newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
+        newHookNode.setOwner(fiber);
+        fiber.addHook(newHookNode);
+        {
+            fiber.checkHook();
         }
-        MyReactPureComponent.prototype.shouldComponentUpdate = function (nextProps, nextState, nextContext) {
-            return !isNormalEquals(nextProps, this.props) || !isNormalEquals(nextState, this.state) || !isNormalEquals(nextContext, this.context);
-        };
-        return MyReactPureComponent;
-    }(MyReactComponent));
+        return newHookNode;
+    };
+
+    var emptyDeps = [];
+    var useState = function (initial) {
+        var currentFiber = currentFunctionFiber.current;
+        if (!currentFiber)
+            throw new Error("can not use hook outside of component");
+        var globalDispatch = currentFiber.root.dispatch;
+        var currentIndex = currentHookDeepIndex.current++;
+        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
+            hookIndex: currentIndex,
+            hookType: HOOK_TYPE.useState,
+            value: typeof initial === "function" ? initial : function () { return initial; },
+            reducer: null,
+            deps: emptyDeps,
+        });
+        return [currentHookNode.result, currentHookNode.dispatch];
+    };
+    var useEffect = function (action, deps) {
+        var currentFiber = currentFunctionFiber.current;
+        if (!currentFiber)
+            throw new Error("can not use hook outside of component");
+        var globalDispatch = currentFiber.root.dispatch;
+        var currentIndex = currentHookDeepIndex.current++;
+        globalDispatch.resolveHook(currentFiber, {
+            hookIndex: currentIndex,
+            hookType: HOOK_TYPE.useEffect,
+            value: action,
+            reducer: null,
+            deps: deps,
+        });
+    };
+    var useLayoutEffect = function (action, deps) {
+        var currentFiber = currentFunctionFiber.current;
+        if (!currentFiber)
+            throw new Error("can not use hook outside of component");
+        var globalDispatch = currentFiber.root.dispatch;
+        var currentIndex = currentHookDeepIndex.current++;
+        globalDispatch.resolveHook(currentFiber, {
+            hookIndex: currentIndex,
+            hookType: HOOK_TYPE.useLayoutEffect,
+            value: action,
+            reducer: null,
+            deps: deps,
+        });
+    };
+    var useCallback = function (callback, deps) {
+        var currentFiber = currentFunctionFiber.current;
+        if (!currentFiber)
+            throw new Error("can not use hook outside of component");
+        var globalDispatch = currentFiber.root.dispatch;
+        var currentIndex = currentHookDeepIndex.current++;
+        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
+            hookIndex: currentIndex,
+            hookType: HOOK_TYPE.useCallback,
+            value: callback,
+            reducer: null,
+            deps: deps,
+        });
+        return currentHookNode.result;
+    };
+    var useMemo = function (action, deps) {
+        var currentFiber = currentFunctionFiber.current;
+        if (!currentFiber)
+            throw new Error("can not use hook outside of component");
+        var globalDispatch = currentFiber.root.dispatch;
+        var currentIndex = currentHookDeepIndex.current++;
+        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
+            hookIndex: currentIndex,
+            hookType: HOOK_TYPE.useMemo,
+            value: action,
+            reducer: null,
+            deps: deps,
+        });
+        return currentHookNode.result;
+    };
+    var useRef = function (value) {
+        var currentFiber = currentFunctionFiber.current;
+        if (!currentFiber)
+            throw new Error("can not use hook outside of component");
+        var globalDispatch = currentFiber.root.dispatch;
+        var currentIndex = currentHookDeepIndex.current++;
+        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
+            hookIndex: currentIndex,
+            hookType: HOOK_TYPE.useRef,
+            value: createRef(value),
+            reducer: null,
+            deps: emptyDeps,
+        });
+        return currentHookNode.result;
+    };
+    var useContext = function (Context) {
+        var currentFiber = currentFunctionFiber.current;
+        if (!currentFiber)
+            throw new Error("can not use hook outside of component");
+        var globalDispatch = currentFiber.root.dispatch;
+        var currentIndex = currentHookDeepIndex.current++;
+        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
+            hookIndex: currentIndex,
+            hookType: HOOK_TYPE.useContext,
+            value: Context,
+            reducer: null,
+            deps: emptyDeps,
+        });
+        return currentHookNode.result;
+    };
+    var useReducer = function (reducer, initialArgs, init) {
+        var currentFiber = currentFunctionFiber.current;
+        if (!currentFiber)
+            throw new Error("can not use hook outside of component");
+        var globalDispatch = currentFiber.root.dispatch;
+        var currentIndex = currentHookDeepIndex.current++;
+        var currentHookNode = globalDispatch.resolveHook(currentFiber, {
+            hookIndex: currentIndex,
+            hookType: HOOK_TYPE.useReducer,
+            value: typeof init === "function" ? function () { return init(initialArgs); } : function () { return initialArgs; },
+            reducer: reducer,
+            deps: emptyDeps,
+        });
+        return [currentHookNode.result, currentHookNode.dispatch];
+    };
+    var useImperativeHandle = function (ref, createHandle, deps) {
+        var currentFiber = currentFunctionFiber.current;
+        if (!currentFiber)
+            throw new Error("can not use hook outside of component");
+        var globalDispatch = currentFiber.root.dispatch;
+        var currentIndex = currentHookDeepIndex.current++;
+        globalDispatch.resolveHook(currentFiber, {
+            hookIndex: currentIndex,
+            hookType: HOOK_TYPE.useImperativeHandle,
+            value: ref,
+            reducer: createHandle,
+            deps: deps,
+        });
+    };
+    var useDebugValue = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        if (enableDebugLog.current) {
+            console.log.apply(console, __spreadArray(__spreadArray(["[debug]: "], args, false), [getFiberTree(currentFunctionFiber.current)], false));
+        }
+    };
 
     var RESERVED_PROPS = {
         key: true,
@@ -1660,8 +1545,6 @@
         log: log,
         logHook: logHook,
         safeCall: safeCall,
-        LinkTreeList: LinkTreeList,
-        DEFAULT_RESULT: DEFAULT_RESULT,
         unmountFiberNode: unmountFiberNode,
         createFiberNode: createFiberNode,
         updateFiberNode: updateFiberNode,
@@ -1674,11 +1557,6 @@
         enableStrictLifeCycle: enableStrictLifeCycle,
     };
     var __my_react_internal__ = {
-        NODE_TYPE: NODE_TYPE,
-        HOOK_TYPE: HOOK_TYPE,
-        PATCH_TYPE: PATCH_TYPE,
-        UPDATE_TYPE: UPDATE_TYPE,
-        Effect_TYPE: Effect_TYPE,
         MyReactComponent: MyReactComponent,
         MyReactFiberNode: MyReactFiberNode,
         MyReactFiberNodeRoot: MyReactFiberNodeRoot,

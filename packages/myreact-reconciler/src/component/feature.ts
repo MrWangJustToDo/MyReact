@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { Effect_TYPE, NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import type {
   MyReactElement,
@@ -10,9 +10,11 @@ import type {
   MyReactFiberNodeDev,
 } from "@my-react/react";
 
-const { NODE_TYPE, Effect_TYPE, UPDATE_TYPE } = __my_react_internal__;
-
-const { DEFAULT_RESULT } = __my_react_shared__;
+const DEFAULT_RESULT = {
+  newState: null,
+  isForce: false,
+  callback: [],
+};
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;

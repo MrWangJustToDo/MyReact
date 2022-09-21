@@ -1,8 +1,7 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react";
+import { HOOK_TYPE } from "@my-react/react-shared";
 
 import type { CreateHookParams, MyReactFiberNode } from "@my-react/react";
-
-const { HOOK_TYPE } = __my_react_internal__;
 
 const { createHookNode: _createHookNode } = __my_react_shared__;
 

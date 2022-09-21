@@ -1,7 +1,6 @@
-import { isValidElement } from "../element";
-import { HOOK_TYPE } from "../hook";
+import { HOOK_TYPE, NODE_TYPE } from "@my-react/react-shared";
 
-import { NODE_TYPE } from "./symbol";
+import { isValidElement } from "../element";
 
 import type { forwardRef, memo } from "../element";
 import type { MyReactHookNode } from "../hook";

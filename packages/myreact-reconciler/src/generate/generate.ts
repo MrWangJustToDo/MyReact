@@ -1,4 +1,5 @@
 import { isValidElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import type {
   ArrayMyReactElementNode,
@@ -10,7 +11,7 @@ import type {
   RenderScope,
 } from "@my-react/react";
 
-const { MyReactFiberNode: MyReactFiberNodeClass, NODE_TYPE, UPDATE_TYPE } = __my_react_internal__;
+const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
 
 const { updateFiberNode: _updateFiberNode, createFiberNode: _createFiberNode, enableKeyDiff } = __my_react_shared__;
 

@@ -1,4 +1,5 @@
 import { createElement, isValidElement, __my_react_internal__ } from "@my-react/react";
+import { NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../component";
 
@@ -17,7 +18,7 @@ import type {
   forwardRef,
 } from "@my-react/react";
 
-const { currentHookDeepIndex, currentFunctionFiber, currentRunningFiber, currentComponentFiber, NODE_TYPE, UPDATE_TYPE } = __my_react_internal__;
+const { currentHookDeepIndex, currentFunctionFiber, currentRunningFiber, currentComponentFiber } = __my_react_internal__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   const childrenFiber = transformChildrenFiber(fiber, children);

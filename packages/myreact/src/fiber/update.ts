@@ -1,6 +1,4 @@
-import { isNormalEquals } from "../share";
-
-import { NODE_TYPE, UPDATE_TYPE } from "./symbol";
+import { isNormalEquals, NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactElement, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "./instance";

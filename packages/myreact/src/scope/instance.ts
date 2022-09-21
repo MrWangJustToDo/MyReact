@@ -1,6 +1,6 @@
 import type { MyReactFiberNode } from "../fiber";
-import type { LinkTreeList } from "../share";
 import type { RenderScope } from "./interface";
+import type { LinkTreeList } from "@my-react/react-shared";
 
 export class EmptyRenderScope implements RenderScope {
   rootFiber: MyReactFiberNode | null = null;

@@ -1,6 +1,6 @@
-import { MyReactInternalInstance } from "../internal";
+import { HOOK_TYPE } from "@my-react/react-shared";
 
-import { HOOK_TYPE } from "./symbol";
+import { MyReactInternalInstance } from "../internal";
 
 import type { HookUpdateQueue } from "../fiber";
 

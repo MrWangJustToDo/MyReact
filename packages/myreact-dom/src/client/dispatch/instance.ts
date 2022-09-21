@@ -1,4 +1,4 @@
-import { cloneElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { cloneElement, __my_react_shared__ } from "@my-react/react";
 import {
   defaultGenerateContextMap,
   defaultGetContextMapFromMap,
@@ -7,8 +7,9 @@ import {
   processHookNode,
   processHookUpdateQueue,
 } from "@my-react/react-reconciler";
+import { LinkTreeList, NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { enableFastLoop, generateStrictMap, generateSuspenseMap, isSVG, LinkTreeList, setRef } from "@my-react-dom-shared";
+import { enableFastLoop, generateStrictMap, generateSuspenseMap, isSVG, setRef } from "@my-react-dom-shared";
 
 import { triggerUpdate } from "../update";
 
@@ -24,8 +25,6 @@ import { update } from "./update";
 import type { MyReactFiberNode, FiberDispatch, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode, RenderScope } from "@my-react/react";
 
 const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
-
-const { PATCH_TYPE, NODE_TYPE } = __my_react_internal__;
 
 export class ClientDispatch implements FiberDispatch {
   strictMap: Record<string, boolean> = {};

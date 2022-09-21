@@ -1,8 +1,6 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { Effect_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react";
-
-const { Effect_TYPE } = __my_react_internal__;
 
 export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
   const globalDispatch = fiber.root.dispatch;

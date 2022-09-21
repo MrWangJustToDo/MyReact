@@ -2,7 +2,7 @@ import type { createContext, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 import type { CreateHookParams, MyReactHookNode } from "../hook";
 import type { RenderScope } from "../scope";
-import type { LinkTreeList } from "../share";
+import type { LinkTreeList } from "@my-react/react-shared";
 
 export interface FiberDispatch {
   suspenseMap: Record<string, MyReactElementNode>;

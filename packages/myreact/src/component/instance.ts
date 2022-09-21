@@ -1,5 +1,6 @@
+import { isNormalEquals } from "@my-react/react-shared";
+
 import { MyReactInternalInstance } from "../internal";
-import { isNormalEquals } from "../share";
 
 import type { MyReactElementNode, createContext } from "../element";
 import type { ComponentUpdateQueue } from "../fiber";
@@ -65,9 +66,7 @@ export class MyReactComponent<
 
     this._ownerFiber?.updateQueue.push(updater);
 
-    Promise.resolve().then(() => {
-      this._ownerFiber?.update();
-    });
+    Promise.resolve().then(() => this._ownerFiber?.update());
   };
 
   forceUpdate = () => {
@@ -79,9 +78,7 @@ export class MyReactComponent<
 
     this._ownerFiber?.updateQueue.push(updater);
 
-    Promise.resolve().then(() => {
-      this._ownerFiber?.update();
-    });
+    Promise.resolve().then(() => this._ownerFiber?.update());
   };
 
   unmount() {

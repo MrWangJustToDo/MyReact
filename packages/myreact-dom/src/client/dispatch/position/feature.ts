@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { getFiberWithDom } from "@my-react-dom-shared";
 
@@ -7,8 +7,6 @@ import { getInsertBeforeDomFromSiblingAndParent } from "./getInsertBeforeDom";
 import { insertBefore } from "./insertBefore";
 
 import type { MyReactFiberNode } from "@my-react/react";
-
-const { PATCH_TYPE } = __my_react_internal__;
 
 export const position = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__pendingPosition__) {

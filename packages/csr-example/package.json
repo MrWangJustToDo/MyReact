@@ -14,6 +14,7 @@
     "@loadable/server": "^5.15.2",
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
+    "@my-react/react-shared": "workspace:*",
     "@my-react/react-reconciler": "workspace:*",
     "animate.css": "^4.1.1",
     "axios": "^0.27.2",

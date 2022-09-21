@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { NODE_TYPE } from "@my-react/react-shared";
 
 import type { DomFiberNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
@@ -6,8 +6,6 @@ import type { MyReactFiberNode } from "@my-react/react";
 type HighlightDOM = HTMLElement & {
   __pendingHighLight__: boolean;
 };
-
-const { NODE_TYPE } = __my_react_internal__;
 
 export class HighLight {
   /**

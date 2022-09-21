@@ -7,16 +7,16 @@ import type { packages } from "./type";
 import type { OutputOptions, RollupOptions } from "rollup";
 
 const build = async (packageName: string, rollupOptions: RollupOptions, mode: string, isUMD: boolean) => {
-  console.log(`[build] start build package ${packageName} with ${mode} mode ${isUMD ? "in umd format" : ""}`);
+  console.log(`[build] start build package '${packageName}' with ${mode} mode ${isUMD ? "in umd format" : ""}`);
   try {
     const { output, ...options } = rollupOptions;
     const bundle = await rollup(options);
     await Promise.all((output as OutputOptions[]).map((output) => bundle.write(output)));
   } catch (e) {
-    console.error(`[build] build package ${packageName} with ${mode} mode ${isUMD ? "in umd format error" : "error"} \n ${(e as Error).message}`);
+    console.error(`[build] build package '${packageName}' with ${mode} mode ${isUMD ? "in umd format error" : "error"} \n ${(e as Error).message}`);
     throw e;
   }
-  console.log(`[build] build package ${packageName} with ${mode} mode ${isUMD ? "in umd format success" : "success"}`);
+  console.log(`[build] build package '${packageName}' with ${mode} mode ${isUMD ? "in umd format success" : "success"}`);
 };
 
 const rollupBuild = async (packageName: packages) => {
@@ -52,6 +52,7 @@ const rollupBuild = async (packageName: packages) => {
 };
 
 const start = async () => {
+  await rollupBuild("myreact-shared");
   await rollupBuild("myreact");
   await rollupBuild("myreact-reconciler");
   await rollupBuild("myreact-dom");

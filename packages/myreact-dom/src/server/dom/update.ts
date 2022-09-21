@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
 import { isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
 
@@ -6,8 +6,6 @@ import { TextElement } from "./text";
 
 import type { PlainElement } from "./plain";
 import type { MyReactFiberNode } from "@my-react/react";
-
-const { PATCH_TYPE, NODE_TYPE } = __my_react_internal__;
 
 export const update = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__pendingUpdate__) {

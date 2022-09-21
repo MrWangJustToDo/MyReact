@@ -1,4 +1,5 @@
-import { __my_react_shared__, __my_react_internal__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react";
+import { NODE_TYPE } from "@my-react/react-shared";
 
 import { createDomNode, IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
@@ -7,8 +8,6 @@ import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 export type HydrateDOM = Element & {
   __hydrate__: boolean;
 };
-
-const { NODE_TYPE } = __my_react_internal__;
 
 const { log } = __my_react_shared__;
 

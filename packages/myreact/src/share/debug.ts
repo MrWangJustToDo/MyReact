@@ -1,4 +1,4 @@
-import { NODE_TYPE } from "../fiber";
+import { NODE_TYPE } from "@my-react/react-shared";
 
 import { currentRunningFiber } from "./env";
 

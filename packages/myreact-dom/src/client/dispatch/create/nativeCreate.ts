@@ -1,10 +1,8 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { NODE_TYPE } from "@my-react/react-shared";
 
 import { createDomNode } from "@my-react-dom-shared";
 
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
-
-const { NODE_TYPE } = __my_react_internal__;
 
 export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (fiber.type & NODE_TYPE.__isTextNode__) {

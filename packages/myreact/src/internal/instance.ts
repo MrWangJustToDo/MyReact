@@ -1,4 +1,4 @@
-import { Effect_TYPE } from "./symbol";
+import { Effect_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "../fiber";
 

@@ -1,5 +1,6 @@
-import { NODE_TYPE } from "../fiber";
-import { log, once } from "../share";
+import { NODE_TYPE, once } from "@my-react/react-shared";
+
+import { log } from "../share";
 
 import {
   My_React_Consumer,

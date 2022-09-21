@@ -36,7 +36,6 @@
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
         "format": "cjs",
-        "exports": "named",
         "esModule": false,
         "multiple": true,
         "globals": {
@@ -48,7 +47,6 @@
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
-        "exports": "named",
         "globals": {
           "@my-react/react": "React"
         },
@@ -58,7 +56,6 @@
         "dir": "./dist",
         "entryFileNames": "umd/index.js",
         "format": "umd",
-        "exports": "named",
         "esModule": false,
         "multiple": true,
         "globals": {
@@ -71,6 +68,7 @@
   },
   "peerDependencies": {
     "@my-react/react": "workspace:*",
+    "@my-react/react-shared": "workspace:*",
     "@my-react/react-reconciler": "workspace:*"
   }
 }

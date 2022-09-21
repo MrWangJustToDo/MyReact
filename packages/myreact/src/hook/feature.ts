@@ -1,6 +1,6 @@
-import { createRef, currentFunctionFiber, currentHookDeepIndex, enableDebugLog, getFiberTree } from "../share";
+import { HOOK_TYPE } from "@my-react/react-shared";
 
-import { HOOK_TYPE } from "./symbol";
+import { createRef, currentFunctionFiber, currentHookDeepIndex, enableDebugLog, getFiberTree } from "../share";
 
 import type { createContext } from "../element";
 import type { MyReactHookNode, Reducer } from "./instance";

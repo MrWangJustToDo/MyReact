@@ -1,12 +1,11 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react";
+import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { isArrayEquals } from "../share";
 
 import type { CreateHookParams, MyReactFiberNode } from "@my-react/react";
 
 const { logHook } = __my_react_shared__;
-
-const { HOOK_TYPE } = __my_react_internal__;
 
 export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: CreateHookParams, fiber: MyReactFiberNode) => {
   const globalDispatch = fiber.root.dispatch;

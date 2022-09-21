@@ -1,5 +1,5 @@
 import { count, forEach, map, only, toArray } from "./children";
-import { MyReactComponent, MyReactPureComponent, DEFAULT_RESULT } from "./component";
+import { MyReactComponent, MyReactPureComponent } from "./component";
 import {
   My_React_Portal as Portal,
   My_React_Element as Element,
@@ -19,19 +19,8 @@ import {
   memo,
   lazy,
 } from "./element";
+import { MyReactFiberNode, MyReactFiberNodeRoot, unmountFiberNode, createFiberNode, updateFiberNode, initialFiberNode } from "./fiber";
 import {
-  MyReactFiberNode,
-  MyReactFiberNodeRoot,
-  unmountFiberNode,
-  createFiberNode,
-  updateFiberNode,
-  initialFiberNode,
-  NODE_TYPE,
-  PATCH_TYPE,
-  UPDATE_TYPE,
-} from "./fiber";
-import {
-  HOOK_TYPE,
   createHookNode,
   useRef,
   useMemo,
@@ -44,13 +33,12 @@ import {
   useLayoutEffect,
   useImperativeHandle,
 } from "./hook";
-import { MyReactInternalInstance, Effect_TYPE } from "./internal";
+import { MyReactInternalInstance } from "./internal";
 import { jsx, jsxs, jsxDEV } from "./jsx";
 import {
-  createRef,
   log,
   logHook,
-  LinkTreeList,
+  createRef,
   currentRunningFiber,
   currentFunctionFiber,
   currentComponentFiber,
@@ -73,8 +61,6 @@ const __my_react_shared__ = {
   log,
   logHook,
   safeCall,
-  LinkTreeList,
-  DEFAULT_RESULT,
   unmountFiberNode,
   createFiberNode,
   updateFiberNode,
@@ -88,11 +74,6 @@ const __my_react_shared__ = {
 };
 
 const __my_react_internal__ = {
-  NODE_TYPE,
-  HOOK_TYPE,
-  PATCH_TYPE,
-  UPDATE_TYPE,
-  Effect_TYPE,
   MyReactComponent,
   MyReactFiberNode,
   MyReactFiberNodeRoot,

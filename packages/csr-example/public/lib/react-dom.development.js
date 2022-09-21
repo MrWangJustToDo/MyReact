@@ -10975,8 +10975,9 @@
           EventConstructor = SyntheticPointerEvent;
           break;
 
-        default: // HTML Events
+        default:
           {
+            // HTML Events
             if (knownHTMLTopLevelTypes.indexOf(topLevelType) === -1) {
               error("SimpleEventPlugin: Unhandled event type, `%s`. This warning " + "is likely caused by a bug in React. Please file an issue.", topLevelType);
             }

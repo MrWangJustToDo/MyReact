@@ -1,4 +1,4 @@
-import { NODE_TYPE } from "./symbol";
+import { NODE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "./instance";
 

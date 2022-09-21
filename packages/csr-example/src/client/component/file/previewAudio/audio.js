@@ -8,7 +8,7 @@ function Audio() {
     <div className="audio-container absolute animate__animated animate__zoomIn animate__faster">
       <div className="audio absolute">
         <BackButton />
-        <audio src={`/src/${src}`} controls height="100%" />
+        <audio src={`/api/src/${src}`} controls height="100%" />
       </div>
     </div>
   );

@@ -257,7 +257,6 @@
     var defaultReducer = function (state, action) {
         return typeof action === "function" ? action(state) : action;
     };
-    console.log('vvvvvv bbbbbbbb vvvvvv');
     var createHookNode = function (_a, fiber) {
         var hookIndex = _a.hookIndex, hookType = _a.hookType, value = _a.value, reducer = _a.reducer, deps = _a.deps;
         var newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
@@ -958,7 +957,6 @@
         };
         MyReactFiberNode.prototype.checkIsSameType = function (element) {
             // if (this.mode & UPDATE_TYPE.__trigger__) return true;
-            console.log('fff, why it is not work');
             var type = getTypeFromElement(element);
             var result = type === this.type;
             var typedIncomingElement = element;
@@ -1698,38 +1696,6 @@
         toArray: toArray,
         forEach: forEach,
     };
-    var React = {
-        Component: Component,
-        PureComponent: PureComponent,
-        createElement: createElement,
-        cloneElement: cloneElement,
-        isValidElement: isValidElement,
-        lazy: lazy,
-        memo: memo,
-        createRef: createRef,
-        forwardRef: forwardRef,
-        createContext: createContext,
-        Portal: My_React_Portal,
-        Element: My_React_Element,
-        Provider: My_React_Provider,
-        Consumer: My_React_Consumer,
-        Fragment: My_React_Fragment,
-        Suspense: My_React_Suspense,
-        KeepLive: My_React_KeepLive,
-        StrictMode: My_React_Strict,
-        ForwardRef: My_React_ForwardRef,
-        useRef: useRef,
-        useMemo: useMemo,
-        useState: useState,
-        useEffect: useEffect,
-        useReducer: useReducer,
-        useContext: useContext,
-        useCallback: useCallback,
-        useDebugValue: useDebugValue,
-        useLayoutEffect: useLayoutEffect,
-        useImperativeHandle: useImperativeHandle,
-        Children: Children,
-    };
 
     exports.Children = Children;
     exports.Component = Component;
@@ -1749,7 +1715,6 @@
     exports.createContext = createContext;
     exports.createElement = createElement;
     exports.createRef = createRef;
-    exports["default"] = React;
     exports.forwardRef = forwardRef;
     exports.isValidElement = isValidElement;
     exports.jsx = jsx;

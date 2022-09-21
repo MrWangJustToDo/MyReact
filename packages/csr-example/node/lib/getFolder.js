@@ -23,20 +23,23 @@ async function du(baseDir, resolvePath) {
     let total = 0;
     const children = await promises.readdir(resolvePath, { withFileTypes: true }).then((itemArr) => {
       return Promise.all(
-        itemArr.map((item) => {
+        itemArr.map((item, id) => {
           const absolutePath = resolve(resolvePath, item.name);
           if (item.isFile()) {
             return fileState(absolutePath).then(({ size, mtime }) => {
               total += size;
               return {
+                id,
                 type: "file",
                 relativePath: item.name,
                 absolutePath,
                 size,
+                ["length"]: size,
                 ["fileType"]: "file",
                 ["modifyTime"]: mtime,
                 ["readAbleLength"]: getLengthByNumber(size),
                 ["shortPath"]: item.name,
+                ["resolvePath"]: absolutePath,
                 ["relativePath"]: getRelativePath(baseDir, absolutePath),
               };
             });
@@ -44,14 +47,17 @@ async function du(baseDir, resolvePath) {
             return dirState(absolutePath).then(({ size, mtime }) => {
               total += size;
               return {
+                id,
                 type: "dir",
                 relativePath: item.name,
                 absolutePath,
                 size,
+                ["length"]: size,
                 ["fileType"]: "dir",
                 ["modifyTime"]: mtime,
                 ["readAbleLength"]: getLengthByNumber(size),
                 ["shortPath"]: item.name,
+                ["resolvePath"]: absolutePath,
                 ["relativePath"]: getRelativePath(baseDir, absolutePath),
               };
             });

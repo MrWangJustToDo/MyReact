@@ -16,7 +16,7 @@ function RenameInput(props) {
       if (value !== props.shortPath) {
         renameFile(data.relativePath, props.shortPath, value).then((res) => {
           let item = jquery(ref.current.parentElement);
-          dispatch({ type: "renameComplated" });
+          dispatch({ type: "renameCompleted" });
           if (res.code === -1) {
             promiseNext(0, () => {
               item.addClass("failed-submit");
@@ -42,7 +42,7 @@ function RenameInput(props) {
           }
         });
       } else {
-        dispatch({ type: "renameComplated" });
+        dispatch({ type: "renameCompleted" });
       }
     },
     [props, dispatch, data]

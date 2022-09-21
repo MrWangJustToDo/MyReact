@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import FileTableBody from "./fileTableBody";
 
 function FileTable() {
-  console.log('table');
   let dispatch = useDispatch();
   let { menuState, isLoaded, copyFileState } = useSelector((state) => state);
   let bodyMenuHandler = useCallback(

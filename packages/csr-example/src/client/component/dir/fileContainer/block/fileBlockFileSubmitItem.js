@@ -26,7 +26,7 @@ function FileBlockFileSubmitItem(props) {
         });
         // 获取提交成功后文件信息
         dispatch({
-          type: "submitFileSucess",
+          type: "submitFileSuccess",
           isSamePath: false,
           currentRequestPath,
           relativePath: props.relativePath,

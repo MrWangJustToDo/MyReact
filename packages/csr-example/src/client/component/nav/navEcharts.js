@@ -11,8 +11,8 @@ function NavEcharts() {
 
   let echartsHandler = useCallback(() => {
     if (recoverModel) {
-      dispatch({ type: "changeisLoadedToFalse" });
-      history.push(preRequestPath);
+      dispatch({ type: "changeIsLoadedToFalse" });
+      history.push(preRequestPath.replace('/api', ''));
     }
     dispatch({ type: "enableEchartsModel" });
   }, [recoverModel, dispatch, preRequestPath, history]);

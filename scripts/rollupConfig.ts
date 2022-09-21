@@ -108,7 +108,7 @@ const transformBuildOptions = (
       allOptions.singleOther = {
         ...options,
         output: singleOtherConfig,
-        // external: (id) => id.includes("node_modules") || id.includes("@my-react/"),
+        external: (id) => id.includes("node_modules") || id.includes("@my-react/"),
         plugins: [
           nodeResolve(),
           commonjs({ exclude: "node_modules" }),
@@ -126,9 +126,9 @@ const transformBuildOptions = (
       allOptions.singleUMD = {
         ...options,
         output: singleUMDConfig,
-        // external: (id) => {
-        //   if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react");
-        // },
+        external: (id) => {
+          if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react");
+        },
         plugins: [
           nodeResolve(),
           commonjs({ exclude: "node_modules" }),
@@ -146,7 +146,7 @@ const transformBuildOptions = (
       allOptions.multipleOther = {
         ...options,
         output: multipleOtherConfig,
-        // external: (id) => id.includes("node_modules") || id.includes("@my-react/"),
+        external: (id) => id.includes("node_modules") || id.includes("@my-react/"),
         plugins: [
           nodeResolve(),
           commonjs({ exclude: "node_modules" }),
@@ -164,9 +164,9 @@ const transformBuildOptions = (
       allOptions.multipleUMD = {
         ...options,
         output: multipleUMDConfig,
-        // external: (id) => {
-        //   if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react");
-        // },
+        external: (id) => {
+          if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react");
+        },
         plugins: [
           nodeResolve(),
           commonjs({ exclude: "node_modules" }),

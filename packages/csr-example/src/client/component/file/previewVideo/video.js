@@ -8,7 +8,7 @@ function Video() {
     <div className="video-container absolute animate__animated animate__zoomIn animate__faster">
       <div className="video absolute">
         <BackButton />
-        <video src={`/src/${src}`} controls height="100%" />
+        <video src={`/api/src/${src}`} controls height="100%" />
       </div>
     </div>
   );

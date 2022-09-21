@@ -12,10 +12,10 @@ export default () => {
 
   // 加载资源
   useEffect(() => {
-    if (isLogin && (currentRequestPath !== location.pathname || !data)) {
-      dispatch({ type: "refresh", currentRequestPath: location.pathname });
+    if (isLogin && (currentRequestPath !== "/api" + location.pathname || !data)) {
+      dispatch({ type: "refresh", currentRequestPath: "/api" + location.pathname });
     }
-  });
+  }, [isLogin, currentRequestPath, data, location.pathname]);
 
   return (
     <div className="fm-container relative overflow">

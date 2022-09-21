@@ -15,7 +15,6 @@ export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: Cr
 
   if (hookType !== currentHook.hookType) {
     const array = fiber.hookTypeArray.slice(0, hookIndex);
-    console.log("test: 33 444", fiber, hookIndex, value, reducer, deps);
     throw new Error(logHook([...array, currentHook.hookType], [...array, hookType]));
   }
 

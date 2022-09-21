@@ -14,7 +14,7 @@ function Image() {
       <div className="image absolute">
         {load && <ZoomButton />}
         <BackButton />
-        <img src={`/src/${src}`} height="100%" width="auto" alt="图片" onLoad={() => setLoad(true)} />
+        <img src={`/api/src/${src}`} alt="图片" style={{ width: "auto", height: "100%" }} onLoad={() => setLoad(true)} />
       </div>
     </div>
   );

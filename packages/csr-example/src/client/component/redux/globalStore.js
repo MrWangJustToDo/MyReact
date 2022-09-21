@@ -1,5 +1,5 @@
-import { createStore, applyMiddleware } from "redux";
-import mime from "mime-types";
+import { legacy_createStore as createStore, applyMiddleware, compose } from "redux";
+import mime from "mime";
 import { reducerFunction } from "./actionFunc";
 import { axiosPost } from "../tools/requestData";
 
@@ -17,6 +17,11 @@ function listFilterReducer(state, action) {
     return state;
   }
 }
+
+const devTools =
+  __CLIENT__ && typeof window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ === "function" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({ actionsDenylist: [] });
+
+const composeEnhancers = devTools || compose;
 
 // 使用自定义中间件获取异步请求
 export default createStore(
@@ -91,96 +96,98 @@ export default createStore(
     // 排序依据
     sortMethod: "byId",
   },
-  applyMiddleware(
-    (store) => (next) => (action) => {
-      // 判断路径的中间件
-      if ("isSamePath" in action) {
-        next(action);
-      } else {
-        if (action.currentRequestPath === store.getState().currentRequestPath) {
-          return next({ ...action, isSamePath: true });
+  composeEnhancers(
+    applyMiddleware(
+      (store) => (next) => (action) => {
+        // 判断路径的中间件
+        if ("isSamePath" in action) {
+          next(action);
         } else {
-          if (action.currentRequestPath) {
-            return next({ ...action, isSamePath: false });
-          } else {
+          if (action.currentRequestPath === store.getState().currentRequestPath) {
             return next({ ...action, isSamePath: true });
+          } else {
+            if (action.currentRequestPath) {
+              return next({ ...action, isSamePath: false });
+            } else {
+              return next({ ...action, isSamePath: true });
+            }
           }
         }
-      }
-    },
-    (store) => (next) => (action) => {
-      // 执行请求的中间件
-      if (!action.isSamePath) {
-        if (action.currentRequestPath.startsWith("/all")) {
-          axiosPost("/api/all", { requestPath: action.currentRequestPath })
-            .then((data) => {
-              next({ ...action, data: data.state });
-            })
-            .catch((e) => {
-              next({ ...action, data: {} });
-            });
+      },
+      (store) => (next) => (action) => {
+        // 执行请求的中间件
+        if (!action.isSamePath) {
+          if (action.currentRequestPath.startsWith("/api/all")) {
+            axiosPost("/api/all", { requestPath: action.currentRequestPath })
+              .then((data) => {
+                next({ ...action, data: data.state });
+              })
+              .catch((e) => {
+                next({ ...action, data: {} });
+              });
+          } else {
+            axiosPost("/api/recover", { requestPath: action.currentRequestPath })
+              .then((data) => {
+                next({ ...action, data: data.state });
+              })
+              .catch((e) => {
+                next({ ...action, data: {} });
+              });
+          }
         } else {
-          axiosPost("/api/recover", { requestPath: action.currentRequestPath })
-            .then((data) => {
-              next({ ...action, data: data.state });
-            })
-            .catch((e) => {
-              next({ ...action, data: {} });
+          next(action);
+        }
+      },
+      (store) => (next) => (action) => {
+        // 获取文件mime-type的中间件
+        if (!action.isSamePath) {
+          try {
+            let newFiles = action.data.files.map((it) => {
+              let fileTypeExtention = mime.getType(it.shortPath) || "text/plain";
+              return {
+                ...it,
+                fileTypeExtention,
+              };
             });
-        }
-      } else {
-        next(action);
-      }
-    },
-    (store) => (next) => (action) => {
-      // 获取文件mime-type的中间件
-      if (!action.isSamePath) {
-        try {
-          let newFiles = action.data.files.map((it) => {
-            let fileTypeExtention = mime.lookup(it.shortPath) || "undefined";
-            return {
-              ...it,
-              fileTypeExtention,
-            };
-          });
-          action.data.files = newFiles;
-          next(action);
-        } catch (e) {
+            action.data.files = newFiles;
+            next(action);
+          } catch (e) {
+            next(action);
+          }
+        } else {
           next(action);
         }
-      } else {
-        next(action);
-      }
-    },
-    (store) => (next) => (action) => {
-      // 生成linkTarget
-      if (!action.isSamePath) {
-        try {
-          let newFiles = action.data.files.map((it) => {
-            let linkTarget;
-            if (it.fileType === "file") {
-              let extention = it.fileTypeExtention.slice(0, it.fileTypeExtention.lastIndexOf("/"));
-              if (it.fileTypeExtention === "text/html") {
-                it["preview"] = true;
-                it["linkPreview"] = `/file/${it.relativePath}/html/${it.id}`;
+      },
+      (store) => (next) => (action) => {
+        // 生成linkTarget
+        if (!action.isSamePath) {
+          try {
+            let newFiles = action.data.files.map((it) => {
+              let linkTarget;
+              if (it.fileType === "file") {
+                let extention = it.fileTypeExtention.slice(0, it.fileTypeExtention.lastIndexOf("/"));
+                if (it.fileTypeExtention === "text/html") {
+                  it["preview"] = true;
+                  it["linkPreview"] = `/file/${it.relativePath}/html/${it.id}`;
+                }
+                linkTarget = `/file/${it.relativePath}/${extention}/${it.id}`;
+              } else {
+                linkTarget = `/all/${it.relativePath}`;
               }
-              linkTarget = `/file/${it.relativePath}/${extention}/${it.id}`;
-            } else {
-              linkTarget = `/all/${it.relativePath}`;
-            }
-            return {
-              ...it,
-              linkTarget,
-            };
-          });
-          action.data.files = newFiles;
-          next(action);
-        } catch (e) {
+              return {
+                ...it,
+                linkTarget,
+              };
+            });
+            action.data.files = newFiles;
+            next(action);
+          } catch (e) {
+            next(action);
+          }
+        } else {
           next(action);
         }
-      } else {
-        next(action);
       }
-    }
+    )
   )
 );

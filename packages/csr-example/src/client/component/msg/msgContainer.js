@@ -21,7 +21,7 @@ function MsgContainer() {
       }).then(() =>
         promiseNext(400, () => {
           dispatch({ type: "disableMsg" });
-          history.push(preRequestPath);
+          history.push(preRequestPath.replace("/api", ""));
         })
       );
     }

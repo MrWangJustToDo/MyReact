@@ -1,5 +1,5 @@
 import { produce } from "immer";
-import mime from "mime-types";
+import mime from "mime";
 // 解析请求路径转换成为数组
 function pathParse(path) {
   return path.split(/(?=\/[^/]?)/);
@@ -111,7 +111,7 @@ const reducerFunction = {
   },
 
   // 更改isLoaded状态,避免旧数据
-  changeisLoadedToFalse(state) {
+  changeIsLoadedToFalse(state) {
     return produce(state, (proxy) => {
       proxy.isLoaded = false;
     });
@@ -149,7 +149,7 @@ const reducerFunction = {
     return produce(state, (proxy) => {
       // 更新路径
       proxy.currentRequestPath = action.currentRequestPath;
-      proxy.currentRequestPathArr = pathParse(action.currentRequestPath);
+      proxy.currentRequestPathArr = pathParse(action.currentRequestPath).filter((p) => p !== "/api");
       // 更新资源
       proxy.data = action.data;
       // 排序
@@ -201,7 +201,7 @@ const reducerFunction = {
   },
 
   // 提交更改成功
-  submitFileSucess(state, action) {
+  submitFileSuccess(state, action) {
     return produce(state, (proxy) => {
       let [targetFile] = action.data.files.filter((it) => it.relativePath === action.relativePath);
       let [srcFile] = proxy.data.files.filter((it) => it.relativePath === action.relativePath);
@@ -255,7 +255,7 @@ const reducerFunction = {
   },
 
   // 重命名完成
-  renameComplated(state) {
+  renameCompleted(state) {
     return produce(state, (proxy) => {
       proxy.renameState = false;
       proxy.renameRelativePath = "";
@@ -275,7 +275,7 @@ const reducerFunction = {
           it.shortPath = action.newName;
           it.modifyTime = new Date().toLocaleString();
           if (it.fileType === "file") {
-            let fileTypeExtention = mime.lookup(action.newName) || "undefined";
+            let fileTypeExtention = mime.getType(action.newName) || "text/plain";
             it.fileTypeExtention = fileTypeExtention;
             if (fileTypeExtention === "text/html") {
               it.preview = true;
@@ -319,7 +319,7 @@ const reducerFunction = {
   },
 
   // 复制完成
-  copyFileComplated(state) {
+  copyFileCompleted(state) {
     return produce(state, (proxy) => {
       proxy.copyFileState = false;
       proxy.copyFileSize = 0;
@@ -389,7 +389,7 @@ const reducerFunction = {
   },
 
   // 更新根文件夹大小
-  updataRootFolderSize(state, action) {
+  updateRootFolderSize(state, action) {
     return produce(state, (proxy) => {
       proxy.totalSize = action.rootFolderSize;
     });

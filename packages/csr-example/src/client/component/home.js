@@ -27,7 +27,7 @@ function Home() {
         }
       });
     }
-  });
+  }, [isLogin]);
 
   return (
     <div className="absolute height-inherit width-inherit animate__animated animate__fadeIn animate__faster">

@@ -8,8 +8,8 @@ function NavFile() {
   let fileHandler = useCallback(
     (e) => {
       if (recoverModel) {
-        dispatch({ type: "changeisLoadedToFalse" });
-        history.push(preRequestPath);
+        dispatch({ type: "changeIsLoadedToFalse" });
+        history.push(preRequestPath.replace("/api", ""));
       }
       dispatch({ type: "enableFileModel" });
       dispatch({ type: "changeFilter", filterName: e.target.dataset.name });

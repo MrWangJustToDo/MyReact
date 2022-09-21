@@ -18,9 +18,9 @@ export default () => {
     if (isLogin) {
       let a = document.createElement("a");
       a.href = `/${loginUsername}`;
-      ws = new WebSocket(`wss://${a.host}/${loginUsername}`);
+      ws = new WebSocket(`ws://${a.host}/${loginUsername}`);
       ws.onmessage = (e) => {
-        dispatch({ type: "updataRootFolderSize", rootFolderSize: e.data });
+        dispatch({ type: "updateRootFolderSize", rootFolderSize: e.data });
       };
     }
     return () => ws && ws.close();

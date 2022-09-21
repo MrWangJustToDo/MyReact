@@ -1,11 +1,11 @@
-import mime from "mime-types";
+import mime from "mime";
 function filterDefault(path) {
   return true;
 }
 // 文件过滤
 function filterText(item) {
   try {
-    return mime.contentType(item).startsWith("text");
+    return mime.getType(item).startsWith("text");
   } catch (e) {
     return true;
   }
@@ -13,7 +13,7 @@ function filterText(item) {
 // 图片过滤
 function filterImg(item) {
   try {
-    return mime.contentType(item).startsWith("image");
+    return mime.getType(item).startsWith("image");
   } catch (e) {
     return true;
   }
@@ -21,7 +21,7 @@ function filterImg(item) {
 // 视频过滤
 function filterVideo(item) {
   try {
-    return mime.contentType(item).startsWith("video");
+    return mime.getType(item).startsWith("video");
   } catch (e) {
     return true;
   }

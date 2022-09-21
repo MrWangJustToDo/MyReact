@@ -38,7 +38,7 @@ function FileMenuCopyItem() {
           dispatch({ type: "enableMsg" });
           dispatch({ type: "menuHide" });
         }
-        dispatch({ type: "copyFileComplated" });
+        dispatch({ type: "copyFileCompleted" });
       });
     }
   }, [data, dispatch, copyFileState, copyShortName, currentRequestPath, copyFileAtDirRelativePath]);

@@ -17,8 +17,8 @@ function FileContainer() {
   let location = useLocation();
   let dispatch = useDispatch();
 
-  if (currentRequestPath !== location.pathname) {
-    dispatch({ type: "refresh", currentRequestPath: location.pathname });
+  if (currentRequestPath !== "/api" + location.pathname) {
+    dispatch({ type: "refresh", currentRequestPath: "/api" + location.pathname });
   }
 
   return (

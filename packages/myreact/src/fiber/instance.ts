@@ -199,7 +199,6 @@ export class MyReactFiberNode {
 
   checkIsSameType(element: MyReactElementNode) {
     // if (this.mode & UPDATE_TYPE.__trigger__) return true;
-    console.log('fff, why it is not work')
     const type = getTypeFromElement(element);
     const result = type === this.type;
     const typedIncomingElement = element as MyReactElement;

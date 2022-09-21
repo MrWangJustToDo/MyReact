@@ -8,7 +8,7 @@ import {
   processHookUpdateQueue,
 } from "@my-react/react-reconciler";
 
-import { generateStrictMap, generateSuspenseMap, getFiberWithDom, isSVG, LinkTreeList } from "@ReactDOM_shared";
+import { enableFastLoop, generateStrictMap, generateSuspenseMap, isSVG, LinkTreeList, setRef } from "@my-react-dom-shared";
 
 import { triggerUpdate } from "../update";
 
@@ -21,15 +21,7 @@ import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
 
-import type {
-  MyReactFiberNode,
-  FiberDispatch,
-  MyReactElementNode,
-  createContext,
-  CreateHookParams,
-  MyReactHookNode,
-  RenderScope,
-} from "@my-react/react";
+import type { MyReactFiberNode, FiberDispatch, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode, RenderScope } from "@my-react/react";
 
 const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
 
@@ -58,6 +50,9 @@ export class ClientDispatch implements FiberDispatch {
   resolveLazy(): boolean {
     return true;
   }
+  resolveRef(_fiber: MyReactFiberNode): void {
+    setRef(_fiber);
+  }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return processHookNode(_fiber, _hookParams);
   }
@@ -76,10 +71,7 @@ export class ClientDispatch implements FiberDispatch {
   resolveContextMap(_fiber: MyReactFiberNode): void {
     defaultGenerateContextMap(_fiber, this.contextMap);
   }
-  resolveContextFiber(
-    _fiber: MyReactFiberNode,
-    _contextObject: ReturnType<typeof createContext> | null
-  ): MyReactFiberNode | null {
+  resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): MyReactFiberNode | null {
     if (_contextObject) {
       const contextMap = defaultGetContextMapFromMap(_fiber.parent, this.contextMap);
       return contextMap[_contextObject.id] || null;
@@ -87,10 +79,7 @@ export class ClientDispatch implements FiberDispatch {
       return null;
     }
   }
-  resolveContextValue(
-    _fiber: MyReactFiberNode | null,
-    _contextObject: ReturnType<typeof createContext> | null
-  ): Record<string, unknown> | null {
+  resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {
@@ -122,11 +111,7 @@ export class ClientDispatch implements FiberDispatch {
         _fiber.patch & PATCH_TYPE.__pendingPosition__
       ) {
         _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
-      } else if (
-        this.effectMap[_fiber.uid]?.length ||
-        this.unmountMap[_fiber.uid]?.length ||
-        this.layoutEffectMap[_fiber.uid]?.length
-      ) {
+      } else if (this.effectMap[_fiber.uid]?.length || this.unmountMap[_fiber.uid]?.length || this.layoutEffectMap[_fiber.uid]?.length) {
         _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
       }
     }
@@ -170,51 +155,84 @@ export class ClientDispatch implements FiberDispatch {
       return _final;
     }
   }
-  reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {
-    _list.listToFoot((_fiber) => {
-      if (_fiber.mount) {
-        const _isSVG = isSVG(_fiber, this.elementTypeMap);
-        safeCallWithFiber({
-          fiber: _fiber,
-          action: () => create(_fiber, false, _fiber, _isSVG),
-        });
-
-        safeCallWithFiber({
-          fiber: _fiber,
-          action: () => update(_fiber, false, _isSVG),
-        });
-
-        safeCallWithFiber({
-          fiber: _fiber,
-          action: () => unmount(_fiber),
-        });
-
-        safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
-      }
-    });
-  }
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
-    _list.listToHead((_fiber) => {
-      if (_fiber.mount) {
-        const _parentFiberWithDom = getFiberWithDom(_fiber.parent, (f) => f.parent) as MyReactFiberNode;
+    if (enableFastLoop.current) {
+      _list.listToHead((_fiber) => {
+        if (_fiber.mount) {
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => position(_fiber),
+          });
+        }
+      });
 
-        safeCallWithFiber({
-          fiber: _fiber,
-          action: () => position(_fiber, _parentFiberWithDom),
-        });
-      }
-    });
+      _list.listToFoot((_fiber) => {
+        if (_fiber.mount) {
+          const _isSVG = isSVG(_fiber, this.elementTypeMap);
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => create(_fiber, false, _fiber, _isSVG),
+          });
 
-    _list.listToFoot((_fiber) => {
-      if (_fiber.mount) {
-        const _parentFiberWithDom = getFiberWithDom(_fiber.parent, (f) => f.parent) as MyReactFiberNode;
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => update(_fiber, false, _isSVG),
+          });
 
-        safeCallWithFiber({
-          fiber: _fiber,
-          action: () => append(_fiber, _parentFiberWithDom),
-        });
-      }
-    });
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => unmount(_fiber),
+          });
+
+          safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
+
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => append(_fiber),
+          });
+        }
+      });
+    } else {
+      _list.listToFoot((_fiber) => {
+        if (_fiber.mount) {
+          const _isSVG = isSVG(_fiber, this.elementTypeMap);
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => create(_fiber, false, _fiber, _isSVG),
+          });
+
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => update(_fiber, false, _isSVG),
+          });
+
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => unmount(_fiber),
+          });
+
+          safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
+        }
+      });
+
+      _list.listToHead((_fiber) => {
+        if (_fiber.mount) {
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => position(_fiber),
+          });
+        }
+      });
+
+      _list.listToFoot((_fiber) => {
+        if (_fiber.mount) {
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => append(_fiber),
+          });
+        }
+      });
+    }
 
     _list.reconcile((_fiber) => {
       if (_fiber.mount) {

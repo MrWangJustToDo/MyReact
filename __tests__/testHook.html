@@ -30,8 +30,7 @@
     <div id="root"></div>
 
     <script type="text/babel" async>
-      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext } =
-        React;
+      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext } = React;
 
       const useCounter = (init = 1) => {
         const [count, setCount] = useState(init);
@@ -101,12 +100,25 @@
         );
       }
 
+      const TFoo = () => {
+        const [] = useState();
+        return <div>12</div>
+      }
+
+      const TFb = memo(() => {
+        useRef()
+        return <div>234</div>
+      })
+
       function App() {
         const [val, add] = useCounter();
+
+        console.log(val);
 
         return (
           <div>
             <Counter initialCount={val} />
+            {val % 2 === 0 ? <TFb /> : <TFoo />}
             <button onClick={add}>add</button>
           </div>
         );

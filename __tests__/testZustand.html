@@ -34,10 +34,7 @@
             add: state.add,
           };
         }, []);
-        const equalsFun = useCallback(
-          (newSlice, oldSlice) => Object.keys(newSlice).every((key) => newSlice[key] === oldSlice[key]),
-          []
-        );
+        const equalsFun = useCallback((newSlice, oldSlice) => Object.keys(newSlice).every((key) => newSlice[key] === oldSlice[key]), []);
         const { count, add } = useCounter(selector, equalsFun);
         console.log("运行了");
         return (

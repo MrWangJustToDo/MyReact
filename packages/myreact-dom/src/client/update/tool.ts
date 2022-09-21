@@ -1,19 +1,16 @@
-import type { MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
+import type { DomScope } from "@my-react-dom-shared";
+import type { FiberDispatch, MyReactFiberNode } from "@my-react/react";
 import type { ReconcilerLoopController } from "@my-react/react-reconciler";
 
-type ReconcilerLoopControllerWithCache = ReconcilerLoopController & { currentYield: MyReactFiberNode | null };
+type ReconcilerLoopControllerWithCache = ReconcilerLoopController;
 
-export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispatch, globalScope: RenderScope) => {
-  // const runningCache: Record<string, boolean> = {};
-
+export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispatch, globalScope: DomScope) => {
   const controller: ReconcilerLoopControllerWithCache = {
-    currentYield: null,
-
     setYield: (fiber: MyReactFiberNode | null) => {
       if (fiber) {
-        controller.currentYield = fiber;
+        globalScope.currentYield = fiber;
       } else {
-        controller.currentYield = null;
+        globalScope.currentYield = null;
 
         globalDispatch.endProgressList(globalScope);
       }
@@ -22,9 +19,9 @@ export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispat
     getNext: () => {
       if (globalScope.isAppCrash) return null;
 
-      const yieldFiber = controller.currentYield;
+      const yieldFiber = globalScope.currentYield;
 
-      controller.currentYield = null;
+      globalScope.currentYield = null;
 
       if (yieldFiber) return yieldFiber;
 
@@ -33,9 +30,7 @@ export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispat
       while (globalScope.modifyFiberArray.length) {
         const newProgressFiber = globalScope.modifyFiberArray.shift();
 
-        if (newProgressFiber?.mount /* && !runningCache[newProgressFiber.uid] */) {
-          // runningCache[newProgressFiber.uid] = true;
-
+        if (newProgressFiber?.mount) {
           globalDispatch.beginProgressList(globalScope);
 
           globalScope.modifyFiberRoot = newProgressFiber;
@@ -54,10 +49,10 @@ export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispat
     hasNext: () => {
       if (globalScope.isAppCrash) return false;
 
-      return controller.currentYield !== null || globalScope.modifyFiberArray.length > 0;
+      return globalScope.currentYield !== null || globalScope.modifyFiberArray.length > 0;
     },
 
-    doesPause: () => controller.currentYield !== null,
+    doesPause: () => globalScope.currentYield !== null,
 
     getTopLevel: () => globalScope.modifyFiberRoot,
   };

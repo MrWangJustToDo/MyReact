@@ -8,10 +8,7 @@ const { logHook } = __my_react_shared__;
 
 const { HOOK_TYPE } = __my_react_internal__;
 
-export const updateHookNode = (
-  { hookIndex, hookType, value, reducer, deps }: CreateHookParams,
-  fiber: MyReactFiberNode
-) => {
+export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: CreateHookParams, fiber: MyReactFiberNode) => {
   const globalDispatch = fiber.root.dispatch;
 
   const currentHook = fiber.hookNodeArray[hookIndex];
@@ -78,10 +75,7 @@ export const updateHookNode = (
   if (currentHook.hookType === HOOK_TYPE.useContext) {
     if (!currentHook._contextFiber || !currentHook._contextFiber.mount || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
-      const ProviderFiber = globalDispatch.resolveContextFiber(
-        currentHook._ownerFiber as MyReactFiberNode,
-        currentHook.value
-      );
+      const ProviderFiber = globalDispatch.resolveContextFiber(currentHook._ownerFiber as MyReactFiberNode, currentHook.value);
 
       const context = globalDispatch.resolveContextValue(ProviderFiber, currentHook.value);
 

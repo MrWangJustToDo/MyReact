@@ -18,11 +18,7 @@ const createStore = (action) => {
     let newSlice = undefined;
     let hasSliceChanged = false;
 
-    if (
-      stateRef.current !== state ||
-      selectorRef.current !== selector ||
-      equalFunctionRef.current !== equalFunction
-    ) {
+    if (stateRef.current !== state || selectorRef.current !== selector || equalFunctionRef.current !== equalFunction) {
       newSlice = selector(state);
       hasSliceChanged = !equalFunction(newSlice, sliceRef.current);
     }
@@ -37,10 +33,7 @@ const createStore = (action) => {
     useLayoutEffect(() => {
       const listener = () => {
         const newSlice = selectorRef.current(store.getState());
-        const hasSliceChanged = !equalFunctionRef.current(
-          newSlice,
-          sliceRef.current
-        );
+        const hasSliceChanged = !equalFunctionRef.current(newSlice, sliceRef.current);
         if (hasSliceChanged) {
           sliceRef.current = newSlice;
           forceUpdate();

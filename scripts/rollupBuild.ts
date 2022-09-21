@@ -1,5 +1,6 @@
 import { rollup } from "rollup";
 
+import { copyMyReact, copyMyReactDOM } from "./cope";
 import { getRollupConfig } from "./rollupConfig";
 
 import type { packages } from "./type";
@@ -12,20 +13,14 @@ const build = async (packageName: string, rollupOptions: RollupOptions, mode: st
     const bundle = await rollup(options);
     await Promise.all((output as OutputOptions[]).map((output) => bundle.write(output)));
   } catch (e) {
-    console.error(
-      `[build] build package ${packageName} with ${mode} mode ${isUMD ? "in umd format error" : "error"} \n ${
-        (e as Error).message
-      }`
-    );
+    console.error(`[build] build package ${packageName} with ${mode} mode ${isUMD ? "in umd format error" : "error"} \n ${(e as Error).message}`);
     throw e;
   }
   console.log(`[build] build package ${packageName} with ${mode} mode ${isUMD ? "in umd format success" : "success"}`);
 };
 
 const rollupBuild = async (packageName: packages) => {
-  const { allOtherDev, allOtherProd, allSingleOther, allSingleUMD, allUMDDev, allUMDProd } = await getRollupConfig(
-    packageName
-  );
+  const { allOtherDev, allOtherProd, allSingleOther, allSingleUMD, allUMDDev, allUMDProd } = await getRollupConfig(packageName);
 
   const all = [];
 
@@ -60,6 +55,8 @@ const start = async () => {
   await rollupBuild("myreact");
   await rollupBuild("myreact-reconciler");
   await rollupBuild("myreact-dom");
+  await copyMyReact();
+  await copyMyReactDOM();
   process.exit(0);
 };
 

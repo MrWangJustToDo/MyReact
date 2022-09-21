@@ -1,4 +1,5 @@
 export * from "./env";
+export * from "./dom";
 export * from "./tools";
 export * from "./scope";
 export * from "./debug";

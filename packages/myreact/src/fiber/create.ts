@@ -39,7 +39,7 @@ export const createFiberNode = (
 
   if (newFiberNode.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
     if ((element as MyReactElement).ref) {
-      globalDispatch.pendingLayoutEffect(newFiberNode, () => newFiberNode.applyRef());
+      globalDispatch.pendingLayoutEffect(newFiberNode, () => globalDispatch.resolveRef(newFiberNode));
     }
   }
 

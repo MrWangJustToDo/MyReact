@@ -10,8 +10,10 @@
     "index.js"
   ],
   "exports": {
+    "node": "./index.js",
     "import": "./dist/esm/index.js",
-    "require": "./index.js"
+    "require": "./index.js",
+    "default": "./index.js"
   },
   "buildOptions": {
     "input": "./src/index.ts",
@@ -19,6 +21,7 @@
       {
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
+        "esModule": false,
         "format": "cjs",
         "multiple": true,
         "sourcemap": true
@@ -31,7 +34,7 @@
       }
     ]
   },
-  "dependencies": {
+  "peerDependencies": {
     "@my-react/react": "workspace:*"
   }
 }

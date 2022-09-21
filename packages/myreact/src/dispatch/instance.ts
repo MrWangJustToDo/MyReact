@@ -26,6 +26,9 @@ export class EmptyDispatch implements FiberDispatch {
   resolveLazy(): boolean {
     return false;
   }
+  resolveRef(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return null;
   }
@@ -47,10 +50,7 @@ export class EmptyDispatch implements FiberDispatch {
   resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null) {
     return null;
   }
-  resolveContextValue(
-    _fiber: MyReactFiberNode | null,
-    _contextObject: ReturnType<typeof createContext> | null
-  ): Record<string, unknown> | null {
+  resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return null;
   }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {
@@ -63,9 +63,6 @@ export class EmptyDispatch implements FiberDispatch {
   // start
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean {
     return false;
-  }
-  reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void {
-    void 0;
   }
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
     void 0;

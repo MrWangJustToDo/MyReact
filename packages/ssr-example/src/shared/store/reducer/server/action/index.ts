@@ -1,0 +1,1 @@
+export { serverLangReducer } from "./serverLang";

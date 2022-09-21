@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { updateLoopAsync, updateLoopSync } from "@my-react/react-reconciler";
 
-import { shouldPauseAsyncUpdate } from "@ReactDOM_shared";
+import { shouldPauseAsyncUpdate } from "@my-react-dom-shared";
 
 import type { ReconcilerLoopController } from "@my-react/react-reconciler";
 
@@ -27,6 +27,8 @@ export const updateAllAsync = (updateFiberController: ReconcilerLoopController, 
   globalLoop.current = false;
 
   Promise.resolve().then(() => {
-    if (updateFiberController.hasNext()) updateAllAsync(updateFiberController, reconcileUpdate);
+    if (updateFiberController.hasNext()) {
+      updateAllAsync(updateFiberController, reconcileUpdate);
+    }
   });
 };

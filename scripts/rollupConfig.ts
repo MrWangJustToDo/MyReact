@@ -1,9 +1,9 @@
 import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
-import cloneDeep from "lodash/cloneDeep";
 import fs from "fs";
 import { readFile, access } from "fs/promises";
+import cloneDeep from "lodash/cloneDeep";
 import { resolve } from "path";
 import typescript from "rollup-plugin-typescript2";
 
@@ -82,9 +82,7 @@ const transformBuildOptions = (
         if (output.multiple) {
           const typedEntryFileNames = output.entryFileNames as string;
           const lastIndexofDote = typedEntryFileNames.lastIndexOf(".");
-          output.entryFileNames = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(
-            lastIndexofDote
-          )}`;
+          output.entryFileNames = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(lastIndexofDote)}`;
           delete output.multiple;
         }
       }
@@ -93,9 +91,7 @@ const transformBuildOptions = (
         if (output.multiple) {
           const typedEntryFileNames = output.file as string;
           const lastIndexofDote = typedEntryFileNames.lastIndexOf(".");
-          output.file = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(
-            lastIndexofDote
-          )}`;
+          output.file = `${typedEntryFileNames.slice(0, lastIndexofDote)}.${mode}${typedEntryFileNames.slice(lastIndexofDote)}`;
           delete output.multiple;
         }
       }
@@ -131,9 +127,7 @@ const transformBuildOptions = (
         ...options,
         output: singleUMDConfig,
         external: (id) => {
-          if (packageFileObject["name"] === "@my-react/react-dom") {
-            return id.endsWith("@my-react/react");
-          }
+          if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react");
         },
         plugins: [
           nodeResolve(),
@@ -171,9 +165,7 @@ const transformBuildOptions = (
         ...options,
         output: multipleUMDConfig,
         external: (id) => {
-          if (packageFileObject["name"] === "@my-react/react-dom") {
-            return id.endsWith("@my-react/react");
-          }
+          if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react");
         },
         plugins: [
           nodeResolve(),
@@ -222,9 +214,7 @@ export const getRollupConfig = async (packageName: string) => {
 
   if (!rollupConfig.output) throw new Error(`current package ${packageName} not have a output config`);
 
-  const allRollupOptions = modes.map((mode) =>
-    transformBuildOptions(cloneDeep(rollupConfig), packageFileObject, relativePath, mode)
-  );
+  const allRollupOptions = modes.map((mode) => transformBuildOptions(cloneDeep(rollupConfig), packageFileObject, relativePath, mode));
 
   const allDevBuild = allRollupOptions[0];
 

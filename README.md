@@ -1,6 +1,8 @@
 # MyReact
 
-学习 react 框架 了解 fiber 架构 函数组件 hook 异步更新 等 react 的基础功能
+a tiny react like library, you can see the example to learn more about it
+
+api just like react
 
 ## createElement
 
@@ -67,4 +69,3 @@
 ## more
 
 ## TODO add KeepLive internal component --> auto KeepLive
-

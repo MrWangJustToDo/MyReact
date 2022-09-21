@@ -1,13 +1,7 @@
 import { checkSingleChildrenKey, createMyReactElement } from "../element";
 import { currentComponentFiber, log } from "../share";
 
-import type {
-  CreateElementProps,
-  MixinMyReactClassComponent,
-  MixinMyReactFunctionComponent,
-  MyReactElementType,
-  Props,
-} from "../element";
+import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType, Props } from "../element";
 
 const RESERVED_PROPS = {
   key: true,
@@ -42,10 +36,7 @@ export const jsx = (
   }
 
   for (const propsName in config) {
-    if (
-      Object.prototype.hasOwnProperty.call(config, propsName) &&
-      !Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName)
-    ) {
+    if (Object.prototype.hasOwnProperty.call(config, propsName) && !Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName)) {
       props[propsName] = config[propsName];
     }
   }
@@ -93,12 +84,6 @@ export const jsxDEV = (
   return element;
 };
 
-export const jsxs = (
-  type: MyReactElementType,
-  config: Props,
-  key: string | null,
-  source: CreateElementProps["_source"],
-  self: CreateElementProps["_self"]
-) => {
+export const jsxs = (type: MyReactElementType, config: Props, key: string | null, source: CreateElementProps["_source"], self: CreateElementProps["_self"]) => {
   return jsxDEV(type, config, key, true, source, self);
 };

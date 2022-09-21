@@ -14,6 +14,7 @@
         color: red;
         font-size: 20px;
       }
+
       .box {
         width: 100px;
         height: 100px;
@@ -26,6 +27,7 @@
       }
     </style>
   </head>
+
   <body>
     <div id="root"></div>
 
@@ -125,6 +127,9 @@
 
         return (
           <div>
+            <div style={{ width: "100px", height: "200px", border: "1px solid red" }}>
+              <img src="" alt="" />
+            </div>
             <p>{time}</p>
             <C ref={ref} foo></C>
             <D>{_B}</D>

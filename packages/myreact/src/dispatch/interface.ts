@@ -23,6 +23,8 @@ export interface FiberDispatch {
 
   resolveLazy(): boolean;
 
+  resolveRef(_fiber: MyReactFiberNode): void;
+
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
 
   resolveStrictMap(_fiber: MyReactFiberNode): void;
@@ -35,15 +37,9 @@ export interface FiberDispatch {
 
   resolveContextMap(_fiber: MyReactFiberNode): void;
 
-  resolveContextFiber(
-    _fiber: MyReactFiberNode,
-    _contextObject: ReturnType<typeof createContext> | null
-  ): null | MyReactFiberNode;
+  resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): null | MyReactFiberNode;
 
-  resolveContextValue(
-    _fiber: MyReactFiberNode | null,
-    _contextObject: ReturnType<typeof createContext> | null
-  ): Record<string, unknown> | null;
+  resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null;
 
   resolveComponentQueue(_fiber: MyReactFiberNode): void;
 
@@ -53,8 +49,6 @@ export interface FiberDispatch {
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean;
 
   // loop to update
-  reconcileCreate(_list: LinkTreeList<MyReactFiberNode>): void;
-
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void;
 
   beginProgressList(_scope: RenderScope): void;

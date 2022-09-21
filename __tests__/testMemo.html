@@ -30,20 +30,7 @@
     <div id="root"></div>
 
     <script type="text/babel" async>
-      const {
-        memo,
-        useState,
-        useCallback,
-        useEffect,
-        useLayoutEffect,
-        useRef,
-        useMemo,
-        map,
-        Component,
-        PureComponent,
-        cloneElement,
-        createContext,
-      } = React;
+      const { memo, useState, useCallback, useEffect, useLayoutEffect, useRef, useMemo, map, Component, PureComponent, cloneElement, createContext } = React;
 
       const useCounter = (init = 1) => {
         const [count, setCount] = useState(init);

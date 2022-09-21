@@ -1,18 +1,18 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { generateReconcileUpdate } from "@ReactDOM_shared";
+import { generateReconcileUpdate } from "@my-react-dom-shared";
 
 import { generateUpdateControllerWithDispatch } from "./tool";
 import { updateAllAsync, updateAllSync } from "./update";
 
-import type { MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
-import type { DomScope } from "@ReactDOM_shared";
+import type { DomScope } from "@my-react-dom-shared";
+import type { MyReactFiberNode, FiberDispatch } from "@my-react/react";
 
 const { globalLoop } = __my_react_internal__;
 
 const { enableAsyncUpdate } = __my_react_shared__;
 
-const updateEntry = (globalDispatch: FiberDispatch, globalScope: RenderScope) => {
+const updateEntry = (globalDispatch: FiberDispatch, globalScope: DomScope) => {
   if (globalLoop.current) return;
   const updateFiberController = generateUpdateControllerWithDispatch(globalDispatch, globalScope);
   const reconcileUpdate = generateReconcileUpdate(globalDispatch, globalScope);
@@ -23,8 +23,7 @@ const updateEntry = (globalDispatch: FiberDispatch, globalScope: RenderScope) =>
   }
 };
 
-const asyncUpdate = (globalDispatch: FiberDispatch, globalScope: RenderScope) =>
-  Promise.resolve().then(() => updateEntry(globalDispatch, globalScope));
+const asyncUpdate = (globalDispatch: FiberDispatch, globalScope: DomScope) => Promise.resolve().then(() => updateEntry(globalDispatch, globalScope));
 
 export const triggerUpdate = (fiber: MyReactFiberNode) => {
   const globalScope = fiber.root.scope as DomScope;

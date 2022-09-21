@@ -23,7 +23,7 @@ export const initialFiberNode = (fiber: MyReactFiberNode) => {
 
   if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
     if (typeof element === "object" && element !== null && element.ref) {
-      globalDispatch.pendingLayoutEffect(fiber, () => fiber.applyRef());
+      globalDispatch.pendingLayoutEffect(fiber, () => globalDispatch.resolveRef(fiber));
     }
   }
 

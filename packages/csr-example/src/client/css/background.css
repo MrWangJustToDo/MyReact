@@ -1,0 +1,70 @@
+.bg .bg-head {
+  font-size: 0.522388rem;
+  padding: 0.149254rem 0.298507rem;
+  user-select: none;
+}
+
+.bg .bg-foot {
+  height: 0.895522rem;
+  font-size: 0.208955rem;
+  user-select: none;
+  bottom: 0;
+}
+
+.bg-content-bg {
+  background-image: url("./loginBackground.jpg");
+  background-attachment: fixed;
+  background-size: cover;
+  /* background-size: 110%; */
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transition-property: background;
+  transition-duration: 0.4s;
+}
+
+.bg-head-mask,
+.bg-foot-mask {
+  z-index: 2;
+  background: inherit;
+}
+
+.bg-head-mask {
+  text-shadow: 0.029851rem 0.029851rem 0.029851rem #444, -0.029851rem -0.029851rem 0.029851rem #eee;
+}
+
+.bg-foot-mask {
+  text-shadow: 0.00597rem 0.00597rem 0.00597rem #444, -0.00597rem -0.00597rem 0.00597rem #aaa;
+}
+
+.bg-head-mask::before,
+.bg-foot-mask::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: inherit;
+  filter: blur(0.059701rem);
+  z-index: -1;
+}
+
+.bg-head-mask::after,
+.bg-foot-mask::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  z-index: -1;
+}
+
+.bg-head-mask::after {
+  border-bottom: 0.014925rem solid rgba(10, 10, 10, 0.2);
+}
+
+.bg-foot-mask::after {
+  border-top: 0.014925rem solid rgba(10, 10, 10, 0.2);
+  box-shadow: 0 -0.014925rem 0.029851rem 0.014925rem rgba(20, 20, 20, 0.3);
+}

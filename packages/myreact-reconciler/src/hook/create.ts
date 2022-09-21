@@ -10,20 +10,12 @@ export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode)
   const globalDispatch = fiber.root.dispatch;
 
   const hookNode = _createHookNode(props, fiber);
-  if (
-    hookNode.hookType === HOOK_TYPE.useMemo ||
-    hookNode.hookType === HOOK_TYPE.useState ||
-    hookNode.hookType === HOOK_TYPE.useReducer
-  ) {
+  if (hookNode.hookType === HOOK_TYPE.useMemo || hookNode.hookType === HOOK_TYPE.useState || hookNode.hookType === HOOK_TYPE.useReducer) {
     hookNode.result = hookNode.value.call(null);
     return hookNode;
   }
 
-  if (
-    hookNode.hookType === HOOK_TYPE.useEffect ||
-    hookNode.hookType === HOOK_TYPE.useLayoutEffect ||
-    hookNode.hookType === HOOK_TYPE.useImperativeHandle
-  ) {
+  if (hookNode.hookType === HOOK_TYPE.useEffect || hookNode.hookType === HOOK_TYPE.useLayoutEffect || hookNode.hookType === HOOK_TYPE.useImperativeHandle) {
     hookNode.effect = true;
     return hookNode;
   }
@@ -43,6 +35,7 @@ export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode)
     hookNode.result = context;
 
     hookNode.context = context;
+
     return hookNode;
   }
 

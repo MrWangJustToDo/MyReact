@@ -8,10 +8,7 @@ import type { CreateHookParams, MyReactFiberNode, MyReactHookNode } from "@my-re
 
 const { logHook } = __my_react_shared__;
 
-export const processHookNode = (
-  fiber: MyReactFiberNode | null,
-  { hookIndex, hookType, reducer, value, deps }: CreateHookParams
-) => {
+export const processHookNode = (fiber: MyReactFiberNode | null, { hookIndex, hookType, reducer, value, deps }: CreateHookParams) => {
   if (!fiber) throw new Error("can not use hook outside of component");
 
   let currentHook: MyReactHookNode | null = null;

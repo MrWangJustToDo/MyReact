@@ -1,0 +1,42 @@
+.msg-container {
+  width: 100%;
+  height: 100%;
+  font-size: 0.238806rem;
+  user-select: none;
+  background-color: rgba(100, 100, 100, 0.3);
+}
+
+.msg-container .msg-container-body {
+  width: 5.671642rem;
+  height: 3.58209rem;
+  border-radius: 0.074627rem;
+  box-shadow: 0 0 0.149254rem 0.029851rem rgba(100, 100, 100, 0.12);
+  background-color: #fff;
+}
+
+.msg-container .msg-container-btn {
+  bottom: 0.447761rem;
+  right: 0.41791rem;
+  padding: 0.119403rem 0.238806rem;
+  border: 0.029851rem solid #aaa;
+  border-radius: 0.089552rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.msg-container .msg-container-btn:hover {
+  box-shadow: 0.029851rem 0.029851rem 0.059701rem rgba(102, 102, 102, 0.5);
+  background-color: #bbb;
+  border-color: #bbb;
+}
+
+.msg-container .msg-container-content {
+  max-width: 85%;
+  text-align: center;
+  word-spacing: 0.029851rem;
+  font-size: 0.268657rem;
+  background-color: rgba(200, 200, 200, 0.6);
+  color: rgb(85, 22, 22);
+  padding: 0.179104rem 0.059701rem;
+  border-radius: 0.059701rem;
+}

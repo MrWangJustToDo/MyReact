@@ -18,10 +18,7 @@ export const DEFAULT_RESULT = {
   callback: [],
 };
 
-export type MyReactComponentStaticType<
-  P extends Record<string, unknown> = any,
-  S extends Record<string, unknown> = any
-> = {
+export type MyReactComponentStaticType<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any> = {
   contextType: null | ReturnType<typeof createContext>;
   getDerivedStateFromProps(props: P, state: S): S;
 };
@@ -100,10 +97,6 @@ export class MyReactPureComponent<
   C extends Record<string, unknown> = any
 > extends MyReactComponent<P, S, C> {
   shouldComponentUpdate(nextProps: P, nextState: S, nextContext: C) {
-    return (
-      !isNormalEquals(nextProps, this.props) ||
-      !isNormalEquals(nextState, this.state) ||
-      !isNormalEquals(nextContext, this.context)
-    );
+    return !isNormalEquals(nextProps, this.props) || !isNormalEquals(nextState, this.state) || !isNormalEquals(nextContext, this.context);
   }
 }

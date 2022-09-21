@@ -1,5 +1,6 @@
 import { __my_react_internal__ } from "@my-react/react";
 
+import type { DomFiberNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
 
 type HighlightDOM = HTMLElement & {
@@ -60,7 +61,7 @@ export class HighLight {
 
   highLight = (fiber: MyReactFiberNode) => {
     if (fiber.node) {
-      const typedDom = fiber.node as HighlightDOM;
+      const typedDom = (fiber.node as DomFiberNode).element as HighlightDOM;
       if (!typedDom.__pendingHighLight__) {
         typedDom.__pendingHighLight__ = true;
         this.startHighLight(fiber);
@@ -82,8 +83,8 @@ export class HighLight {
         const wrapperDom = this.getHighLight();
         allWrapper.push(wrapperDom);
         f.type & NODE_TYPE.__isTextNode__
-          ? this.range.selectNodeContents(f.node as Text)
-          : this.range.selectNode(f.node as HTMLElement);
+          ? this.range.selectNodeContents((f.node as DomFiberNode).element as Node)
+          : this.range.selectNode((f.node as DomFiberNode).element as Element);
         const rect = this.range.getBoundingClientRect();
         const left = rect.left + (document.scrollingElement?.scrollLeft || 0);
         const top = rect.top + (document.scrollingElement?.scrollTop || 0);
@@ -106,7 +107,7 @@ export class HighLight {
           wrapperDom.style.boxShadow = "none";
           this.map.push(wrapperDom);
         });
-        allFiber.forEach((f) => ((f.node as HighlightDOM).__pendingHighLight__ = false));
+        allFiber.forEach((f) => (((f.node as DomFiberNode).element as HighlightDOM).__pendingHighLight__ = false));
       }, 100);
     });
   };

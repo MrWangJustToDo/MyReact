@@ -3,9 +3,11 @@
     "rootDir": "src",
     "target": "ES5",
     "paths": {
-      "@ReactDOM_shared": ["./src/shared"],
-      "@ReactDOM_server": ["./src/server"],
-      "@ReactDOM_client": ["./src/client"]
+      "@my-react-dom-shared": ["./src/shared"],
+      "@my-react-dom-server": ["./src/server"],
+      "@my-react-dom-server/*": ["./src/server/*"],
+      "@my-react-dom-client": ["./src/client"],
+      "@my-react-dom-client/*": ["./src/client/*"]
     }
   },
   "include": ["./src"],

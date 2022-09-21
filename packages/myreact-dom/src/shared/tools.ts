@@ -8,7 +8,6 @@ export const isStyle = (key: string) => key === "style";
 
 export const isProperty = (key: string) => !isChildren(key) && !isEvent(key) && !isStyle(key) && !isInternal(key);
 
-export const isNew = (oldProps: Record<string, unknown>, newProps: Record<string, unknown>) => (key: string) =>
-  oldProps[key] !== newProps[key];
+export const isNew = (oldProps: Record<string, unknown>, newProps: Record<string, unknown>) => (key: string) => oldProps[key] !== newProps[key];
 
 export const isGone = (newProps: Record<string, unknown>) => (key: string) => !(key in newProps);

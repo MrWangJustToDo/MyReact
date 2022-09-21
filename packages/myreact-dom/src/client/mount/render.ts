@@ -1,6 +1,6 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { DomScope, startRender, unmountComponentAtNode } from "../../shared";
+import { createDomNode, DomScope, startRender, unmountComponentAtNode } from "../../shared";
 import { ClientDispatch } from "../dispatch";
 
 import type { MyReactElement, MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
@@ -39,7 +39,7 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   const fiber = new MyReactFiberNodeRoot(0, null, element);
 
-  fiber.node = container;
+  fiber.node = createDomNode(container);
 
   fiber.scope = globalScope;
 

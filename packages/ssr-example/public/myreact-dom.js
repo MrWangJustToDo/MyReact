@@ -748,7 +748,6 @@
         var currentHook = fiber.hookNodeArray[hookIndex];
         if (hookType !== currentHook.hookType) {
             var array = fiber.hookTypeArray.slice(0, hookIndex);
-            console.log("test: 33 444", fiber, hookIndex, value, reducer, deps);
             throw new Error(logHook$1(__spreadArray(__spreadArray([], array, true), [currentHook.hookType], false), __spreadArray(__spreadArray([], array, true), [hookType], false)));
         }
         currentHook.setOwner(fiber);

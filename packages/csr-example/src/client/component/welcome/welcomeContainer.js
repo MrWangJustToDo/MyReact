@@ -37,7 +37,7 @@ function LoginContainer() {
     if (Agents.some((it) => userAgentInfo.indexOf(it) !== -1)) {
       alert("手机端页面可能显示不正常☹,请使用PC端访问");
     }
-  });
+  }, []);
 
   return (
     <div className="login relative bg bg-content-bg" ref={ref}>

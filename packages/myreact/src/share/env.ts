@@ -19,4 +19,5 @@ export const enableAsyncUpdate = createRef(true);
 
 export const enableKeyDiff = createRef(true);
 
-export const enableStrictLifeCycle = createRef(false);
+// enable react-18 strict lifecycle method
+export const enableStrictLifeCycle = createRef(true);

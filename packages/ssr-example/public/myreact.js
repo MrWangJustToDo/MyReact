@@ -201,7 +201,7 @@
     var enableDebugLog = createRef(false);
     var enableAsyncUpdate = createRef(true);
     var enableKeyDiff = createRef(true);
-    var enableStrictLifeCycle = createRef(false);
+    var enableStrictLifeCycle = createRef(true);
 
     var getTrackDevLog = function (fiber) {
         var _a, _b, _c, _d;

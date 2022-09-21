@@ -6,7 +6,6 @@ import Nav from "./nav/nav";
 import DirContainer from "./dir/dirContainer";
 import RecoverContainer from "./recover/recoverContainer";
 import { autoLogin } from "./tools/requestData";
-import "animate.css";
 
 function Home() {
   let history = useHistory();

@@ -241,7 +241,9 @@ app.post("/api/recover", wrapper(getRecoverFolder));
 app.post("/api/file", wrapper(getCurrentFileByPost));
 app.use("/api/src", wrapper(getCurrentFileByGet));
 
-const { startApp } = require("../dev/server/app");
+const isDevelopment = process.env.NODE_ENV === "development";
+
+const { startApp } = require(`../${isDevelopment ? "dev" : "dist"}/server/app`);
 
 startApp(app);
 
@@ -262,7 +264,7 @@ wss.on("connection", (ws, req) => {
   } catch (e) {}
 });
 
-const port = process.env.NODE_ENV === "development" ? process.env.DEV_PORT : process.env.PROD_PORT;
+const port = isDevelopment ? process.env.DEV_PORT : process.env.PROD_PORT;
 
 server.listen(port, () => {
   console.log(`listening on port: ${port}`);

@@ -2,6 +2,7 @@ import "./css/basic.css";
 import "./css/all.css";
 import "./css/background.css";
 import "./css/animate.css";
+import "animate.css";
 import RouteApp from "./component/routeApp";
 import store from "./component/redux/globalStore";
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";

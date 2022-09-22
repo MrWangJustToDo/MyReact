@@ -6,19 +6,18 @@ module.exports = {
     "plugin:jsx-a11y/recommended", // Accessibility rules
     "plugin:react/jsx-runtime", // new JSX runtime for react,
   ],
-  root: true,
   env: {
     browser: true,
     es2021: true,
   },
-  ignorePatterns: ["node_modules/*", "dist/*", "dev/*"], // We don't want to lint generated files nor node_modules, but we want to lint .prettierrc.js (ignored by default by eslint)
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
     sourceType: "module",
-    project: "./tsconfig.json",
+    tsconfigRootDir: __dirname,
+    project: "tsconfig.json",
   },
   plugins: ["react", "react-hooks"],
   settings: {

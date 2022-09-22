@@ -5,14 +5,10 @@ import type { DefineWebpackConfigProps } from "./type";
 import type { Configuration } from "webpack";
 
 const generateErrorMessage = (side: "server" | "client") => {
-  if (__DEVELOPMENT__) {
-    return `current config should have a "${side} side code entry", make sure you have define it! you can define it by:
+  return `current config should have a "${side} side code entry", make sure you have define it! you can define it by:
     1. pass to 'definedWebpackConfig({ serverEntry, clientEntry })' function
     2. define in .env file, and import it
     `;
-  } else {
-    return `${side} entry not exist!`;
-  }
 };
 
 export const definedWebpackConfig = ({

@@ -1,11 +1,16 @@
-require("module-alias/register");
+const dotenv = require("dotenv");
+const path = require("path");
 
-const React = require("@my-react/react");
+dotenv.config();
 
-global.React = React;
+if (process.env.REACT === "myreact") {
+  require("module-alias/register");
+  const React = require("@my-react/react");
+  global.React = React;
+}
 
 if (process.env.NODE_ENV === "development") {
-  require("../../dev/server/app");
+  require(path.resolve(process.cwd(), "dev", "server", "app.js"));
 } else {
-  require("../../dist/server/app");
+  require(path.resolve(process.cwd(), "dist", "server", "app.js"));
 }

@@ -6,8 +6,6 @@ import { generateHandler } from "./app";
 import { develop } from "./middleware/develop";
 import { serverLog } from "./util/serverLog";
 
-require("module-alias/register");
-
 let handlerRender = generateHandler;
 
 dotenv.config();

@@ -7,7 +7,7 @@
     "dev": "cross-env NODE_ENV=development ts-node --project build/tsconfig.json build/scripts/start-dev",
     "dev:inspect": "cross-env NODE_ENV=development TS_NODE_PROJECT=build/tsconfig.json node --inspect -r ts-node/register build/scripts/start-dev",
     "build": "cross-env NODE_ENV=production ts-node --project build/tsconfig.json build/scripts/build-prod",
-    "start": "cross-env NODE_ENV=production node build/scripts/start-app.js"
+    "start": "cross-env NODE_ENV=production node node/server.js"
   },
   "dependencies": {
     "@loadable/component": "^5.15.2",

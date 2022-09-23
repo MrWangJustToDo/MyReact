@@ -11,7 +11,7 @@ import { MANIFEST } from "../utils";
 import type { SafeGenerateActionProps } from "../type";
 import type { Configuration } from "webpack";
 
-export const pluginsConfig = ({ env, isDEV, isSSR, isCSR, isMIDDLEWARE, ui }: SafeGenerateActionProps): Configuration["plugins"] =>
+export const pluginsConfig = ({ env, isDEV, isSSR, isCSR, isMIDDLEWARE }: SafeGenerateActionProps): Configuration["plugins"] =>
   [
     env === "client" &&
       new WebpackManifestPlugin({
@@ -19,7 +19,6 @@ export const pluginsConfig = ({ env, isDEV, isSSR, isCSR, isMIDDLEWARE, ui }: Sa
       }),
     env === "client" && new LoadablePlugin({ filename: MANIFEST.manifest_loadable }),
     new DefinePlugin({
-      __UI__: JSON.stringify(ui),
       __SSR__: isSSR,
       __CSR__: isCSR,
       __CLIENT__: env === "client",

@@ -11,9 +11,17 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     <script id="__preload_env__" type="application/json" dangerouslySetInnerHTML={{ __html: `${env}` }} />
     <script id="__preload_state__" type="application/json" dangerouslySetInnerHTML={{ __html: `${preloadedState}` }} />
     <script src="/lib/flexible.js"></script>
-    <script src="/lib/myreact.js"></script>
-    {/* <script src="/lib/react.development.js"></script> */}
-    {/* <script src="/lib/react-dom.development.js"></script> */}
-    <script src="/lib/myreact-dom.js"></script>
+    {process.env.REACT === "myreact" && (
+      <>
+        <script src="./lib/myreact.js"></script>
+        <script src="./lib/myreact-dom.js"></script>
+      </>
+    )}
+    {process.env.REACT === "react" && (
+      <>
+        <script src="./lib/react.development.js"></script>
+        <script src="./lib/react-dom.development.js"></script>
+      </>
+    )}
   </head>
 );

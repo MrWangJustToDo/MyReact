@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development ts-node -r tsconfig-paths/register --project build/tsconfig.json build/scripts/start-dev",
     "dev:inspect": "cross-env NODE_ENV=development TS_NODE_PROJECT=build/tsconfig.json node --inspect -r ts-node/register -r tsconfig-paths/register build/scripts/start-dev",
-    "build": "cross-env NODE_ENV=production ts-node -r tsconfig-paths/register --project build/tsconfig.json build/scripts/start-prod",
+    "build": "cross-env NODE_ENV=production ts-node -r tsconfig-paths/register --project build/tsconfig.json build/scripts/build-prod",
     "start": "cross-env NODE_ENV=production node build/scripts/start-app.js"
   },
   "dependencies": {

@@ -29,8 +29,6 @@ export const config = ({
 
   const isMIDDLEWARE = Boolean(safeParse<boolean>(process.env.MIDDLEWARE || "false"));
 
-  const ui = process.env.UI === "chakra" ? "chakra" : "antd";
-
   WDS_PORT = process.env.WDS_PORT || "9001";
 
   DEV_HOST = process.env.DEV_HOST || "localhost";
@@ -41,14 +39,13 @@ export const config = ({
 
   PROD_PORT = process.env.PROD_PORT || "localhost";
 
-  const externalClientConfig = webpackClient?.({ isCSR, isDEV, isSSR, isMIDDLEWARE, entry: clientEntry, ui });
+  const externalClientConfig = webpackClient?.({ isCSR, isDEV, isSSR, isMIDDLEWARE, entry: clientEntry });
 
-  const externalServerConfig = webpackServer?.({ isCSR, isDEV, isSSR, isMIDDLEWARE, entry: serverEntry, ui });
+  const externalServerConfig = webpackServer?.({ isCSR, isDEV, isSSR, isMIDDLEWARE, entry: serverEntry });
 
   return [
     merge(
       ClientConfig({
-        ui,
         env: "client",
         entry: clientEntry,
         isDEV,
@@ -66,7 +63,6 @@ export const config = ({
     ),
     merge(
       ServerConfig({
-        ui,
         env: "server",
         entry: serverEntry,
         isDEV,

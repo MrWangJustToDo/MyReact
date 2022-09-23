@@ -243,6 +243,14 @@ app.use("/api/src", wrapper(getCurrentFileByGet));
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
+if (process.env.REACT === "myreact") {
+  require("module-alias/register");
+
+  const React = require("@my-react/react");
+
+  global.React = React;
+}
+
 const { startApp } = require(`../${isDevelopment ? "dev" : "dist"}/server/app`);
 
 startApp(app);
@@ -266,6 +274,8 @@ wss.on("connection", (ws, req) => {
 
 const port = isDevelopment ? process.env.DEV_PORT : process.env.PROD_PORT;
 
+const host = isDevelopment ? process.env.DEV_HOST : process.env.PROD_HOST;
+
 server.listen(port, () => {
-  console.log(`listening on port: ${port}`);
+  console.log(`listening on port: http://${host}:${port}`);
 });

@@ -1,7 +1,6 @@
 declare global {
   const __CLIENT__: boolean;
   const __SERVER__: boolean;
-  const __UI__: "antd" | "chakra";
   const __CSR__: boolean;
   const __SSR__: boolean;
   const __DEVELOPMENT__: boolean;
@@ -16,12 +15,12 @@ declare global {
     __ENV__: {
       LANG: string;
       isSSR: boolean;
-      isSTATIC: boolean;
       isPURE_CSR: boolean;
       isMIDDLEWARE: boolean;
       isDEVELOPMENT: boolean;
       isANIMATE_ROUTER: boolean;
       PUBLIC_API_HOST: string;
+      FORMWORK: "react" | "myreact";
     };
   }
 
@@ -32,9 +31,9 @@ declare global {
       DEV_PORT: string;
       WDS_PORT: string;
       PROD_PORT: string;
-      UI: "antd" | "chakra";
       SSR: string;
       CSR: string;
+      REACT: "react" | "myreact";
       STATIC_GENERATE: "true" | "false";
       PUBLIC_DEV_API_HOST: string;
       PUBLIC_PROD_API_HOST: string;

@@ -9,7 +9,6 @@ export type ENV = {
 };
 
 export type BaseGenerateActionProps = {
-  ui: "antd" | "chakra";
   env: "client" | "server";
   entry: string;
   isDEV?: boolean;

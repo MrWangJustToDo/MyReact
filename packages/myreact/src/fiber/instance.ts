@@ -139,12 +139,13 @@ export class MyReactFiberNode {
 
   addContext(fiber: MyReactFiberNode | null) {
     if (!fiber) return;
-    if (this.context.every((f) => f !== fiber)) this.context.push(fiber);
+    this.context.push(fiber);
   }
 
   removeContext(fiber: MyReactFiberNode | null) {
     if (!fiber) return;
-    this.context = this.context.filter((f) => f !== fiber);
+    const index = this.context.indexOf(fiber);
+    if (index !== -1) this.context.splice(index, 1);
   }
 
   beforeUpdate() {

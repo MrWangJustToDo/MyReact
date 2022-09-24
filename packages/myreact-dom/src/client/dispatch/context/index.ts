@@ -7,7 +7,10 @@ export const context = (fiber: MyReactFiberNode) => {
     const allListeners = fiber.dependence.slice(0);
 
     Promise.resolve().then(() => {
-      allListeners.map((i) => i._ownerFiber).forEach((f) => f?.mount && f.update());
+      new Set(allListeners).forEach((i) => {
+        const fiber = i._ownerFiber;
+        if (fiber?.mount) fiber.update();
+      });
     });
 
     if (fiber.patch & PATCH_TYPE.__pendingContext__) fiber.patch ^= PATCH_TYPE.__pendingContext__;

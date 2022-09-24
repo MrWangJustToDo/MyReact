@@ -91,7 +91,7 @@ export function getTypeFromElement(element: MyReactElementNode) {
         log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
       }
       nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
-    } else if (element === null || element === undefined || element === false) {
+    } else if (element === null || element === undefined || typeof element === "boolean") {
       nodeTypeSymbol |= NODE_TYPE.__isNullNode__;
     } else {
       nodeTypeSymbol |= NODE_TYPE.__isTextNode__;

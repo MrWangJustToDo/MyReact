@@ -87,15 +87,13 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   let devInstance: null | MyReactComponent = null;
 
   if (__DEV__ && strictMod) {
+    const props = Object.assign({}, typedElement.props);
+
     devInstance = new typedComponent(props, context);
 
     devInstance.props = props;
 
     devInstance.context = context;
-
-    devInstance.setOwner(fiber);
-
-    devInstance.setContext(ProviderFiber);
   }
 
   return devInstance;
@@ -109,21 +107,30 @@ const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
 const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  const children = typedInstance.render();
-
   const typeFiber = fiber as MyReactFiberNodeDev;
 
-  if (__DEV__) {
-    typeFiber._debugDynamicChildren = children;
-  }
-
   if (devInstance) {
-    const typedDevInstance = devInstance as MixinMyReactComponentType;
+    const cached = Object.assign({}, typedInstance);
 
-    typedDevInstance.render();
+    const children = typedInstance.render();
+
+    typeFiber._debugDynamicChildren = children;
+
+    // reset
+    Object.assign(typedInstance, cached);
+
+    typedInstance.render();
+
+    return children;
+  } else {
+    const children = typedInstance.render();
+
+    if (__DEV__) {
+      typeFiber._debugDynamicChildren = children;
+    }
+
+    return children;
   }
-
-  return children;
 };
 
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
@@ -132,13 +139,12 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: 
   const globalDispatch = fiber.root.dispatch;
 
   if (devInstance) {
-    const typedDevInstance = devInstance as MixinMyReactComponentType;
     if (!(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
       typedInstance.mode = Effect_TYPE.__pendingEffect__;
       globalDispatch.pendingLayoutEffect(fiber, () => {
         typedInstance.mode = Effect_TYPE.__initial__;
-        typedDevInstance.componentDidMount?.();
-        typedDevInstance.componentWillUnmount?.();
+        typedInstance.componentDidMount?.();
+        typedInstance.componentWillUnmount?.();
         typedInstance.componentDidMount?.();
       });
     }

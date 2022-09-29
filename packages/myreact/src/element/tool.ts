@@ -4,6 +4,7 @@ import { log } from "../share";
 
 import {
   My_React_Consumer,
+  My_React_Context,
   My_React_Element,
   My_React_ForwardRef,
   My_React_Fragment,
@@ -25,7 +26,18 @@ import type {
 } from "./instance";
 
 export function isValidElement(element?: MyReactElementNode): element is MyReactElement {
-  return typeof element === "object" && !Array.isArray(element) && element?.$$typeof === My_React_Element;
+  return (
+    typeof element === "object" &&
+    !Array.isArray(element) &&
+    (element?.$$typeof === My_React_Element ||
+      element?.$$typeof === My_React_Context ||
+      element?.$$typeof === My_React_Consumer ||
+      element?.$$typeof === My_React_Provider ||
+      element?.$$typeof === My_React_ForwardRef ||
+      element?.$$typeof === My_React_Memo ||
+      element?.$$typeof === My_React_Lazy ||
+      element?.$$typeof === My_React_Portal)
+  );
 }
 
 export function getTypeFromElement(element: MyReactElementNode) {

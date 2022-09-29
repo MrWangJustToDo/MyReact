@@ -202,7 +202,7 @@
     var enableAsyncUpdate = createRef(true);
     var enableKeyDiff = createRef(true);
     // enable react-18 strict lifecycle method
-    var enableStrictLifeCycle = createRef(false);
+    var enableStrictLifeCycle = createRef(true);
 
     var getTrackDevLog = function (fiber) {
         var _a, _b, _c, _d;
@@ -346,7 +346,16 @@
     var My_React_KeepLive = Symbol.for("react.keep_live");
 
     function isValidElement(element) {
-        return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
+        return (typeof element === "object" &&
+            !Array.isArray(element) &&
+            ((element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element ||
+                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Context ||
+                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Consumer ||
+                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Provider ||
+                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_ForwardRef ||
+                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Memo ||
+                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Lazy ||
+                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Portal));
     }
     function getTypeFromElement(element) {
         var _a;

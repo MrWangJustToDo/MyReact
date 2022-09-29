@@ -440,11 +440,10 @@
         instance.setContext(ProviderFiber);
         var devInstance = null;
         if (strictMod) {
-            devInstance = new typedComponent(props, context);
-            devInstance.props = props;
+            var props_2 = Object.assign({}, typedElement.props);
+            devInstance = new typedComponent(props_2, context);
+            devInstance.props = props_2;
             devInstance.context = context;
-            devInstance.setOwner(fiber);
-            devInstance.setContext(ProviderFiber);
         }
         return devInstance;
     };
@@ -454,29 +453,35 @@
     };
     var processComponentRenderOnMountAndUpdate = function (fiber, devInstance) {
         var typedInstance = fiber.instance;
-        var children = typedInstance.render();
         var typeFiber = fiber;
-        {
-            typeFiber._debugDynamicChildren = children;
-        }
         if (devInstance) {
-            var typedDevInstance = devInstance;
-            typedDevInstance.render();
+            var cached = Object.assign({}, typedInstance);
+            var children = typedInstance.render();
+            typeFiber._debugDynamicChildren = children;
+            // reset
+            Object.assign(typedInstance, cached);
+            typedInstance.render();
+            return children;
         }
-        return children;
+        else {
+            var children = typedInstance.render();
+            {
+                typeFiber._debugDynamicChildren = children;
+            }
+            return children;
+        }
     };
     var processComponentDidMountOnMount = function (fiber, devInstance) {
         var typedInstance = fiber.instance;
         var globalDispatch = fiber.root.dispatch;
         if (devInstance) {
-            var typedDevInstance_1 = devInstance;
             if (!(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
                 typedInstance.mode = Effect_TYPE.__pendingEffect__;
                 globalDispatch.pendingLayoutEffect(fiber, function () {
                     var _a, _b, _c;
                     typedInstance.mode = Effect_TYPE.__initial__;
-                    (_a = typedDevInstance_1.componentDidMount) === null || _a === void 0 ? void 0 : _a.call(typedDevInstance_1);
-                    (_b = typedDevInstance_1.componentWillUnmount) === null || _b === void 0 ? void 0 : _b.call(typedDevInstance_1);
+                    (_a = typedInstance.componentDidMount) === null || _a === void 0 ? void 0 : _a.call(typedInstance);
+                    (_b = typedInstance.componentWillUnmount) === null || _b === void 0 ? void 0 : _b.call(typedInstance);
                     (_c = typedInstance.componentDidMount) === null || _c === void 0 ? void 0 : _c.call(typedInstance);
                 });
             }

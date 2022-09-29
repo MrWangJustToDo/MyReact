@@ -395,7 +395,7 @@
         isForce: false,
         callback: [],
     };
-    var processComponentStateFromProps = function (fiber) {
+    var processComponentStateFromProps = function (fiber, devInstance) {
         var typedElement = fiber.element;
         var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
         var typedComponent = Component;
@@ -408,10 +408,22 @@
                 typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
             }
         }
+        if (devInstance) {
+            var typedDevInstance = devInstance;
+            var props_1 = Object.assign({}, typedElement.props);
+            var state_1 = Object.assign({}, typedInstance.state);
+            if (typeof typedComponent.getDerivedStateFromProps === "function") {
+                var payloadState = typedComponent.getDerivedStateFromProps(props_1, state_1);
+                if (payloadState) {
+                    typedDevInstance.state = Object.assign({}, typedInstance.state, payloadState);
+                }
+            }
+        }
     };
     var processComponentInstanceOnMount = function (fiber) {
         var typedElement = fiber.element;
         var globalDispatch = fiber.root.dispatch;
+        var strictMod = globalDispatch.resolveStrictValue(fiber);
         var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
         var typedComponent = Component;
         var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
@@ -426,32 +438,45 @@
         }
         instance.setOwner(fiber);
         instance.setContext(ProviderFiber);
+        var devInstance = null;
+        if (strictMod) {
+            devInstance = new typedComponent(props, context);
+            devInstance.props = props;
+            devInstance.context = context;
+            devInstance.setOwner(fiber);
+            devInstance.setContext(ProviderFiber);
+        }
+        return devInstance;
     };
     var processComponentFiberOnUpdate = function (fiber) {
         var typedInstance = fiber.instance;
         typedInstance.setOwner(fiber);
     };
-    var processComponentRenderOnMountAndUpdate = function (fiber) {
+    var processComponentRenderOnMountAndUpdate = function (fiber, devInstance) {
         var typedInstance = fiber.instance;
         var children = typedInstance.render();
         var typeFiber = fiber;
         {
             typeFiber._debugDynamicChildren = children;
         }
+        if (devInstance) {
+            var typedDevInstance = devInstance;
+            typedDevInstance.render();
+        }
         return children;
     };
-    var processComponentDidMountOnMount = function (fiber) {
+    var processComponentDidMountOnMount = function (fiber, devInstance) {
         var typedInstance = fiber.instance;
         var globalDispatch = fiber.root.dispatch;
-        var strictMod = globalDispatch.resolveStrictValue(fiber);
-        if (strictMod) {
-            if ((typedInstance.componentDidMount || typedInstance.componentWillUnmount) && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+        if (devInstance) {
+            var typedDevInstance_1 = devInstance;
+            if (!(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
                 typedInstance.mode = Effect_TYPE.__pendingEffect__;
                 globalDispatch.pendingLayoutEffect(fiber, function () {
                     var _a, _b, _c;
                     typedInstance.mode = Effect_TYPE.__initial__;
-                    (_a = typedInstance.componentDidMount) === null || _a === void 0 ? void 0 : _a.call(typedInstance);
-                    (_b = typedInstance.componentWillUnmount) === null || _b === void 0 ? void 0 : _b.call(typedInstance);
+                    (_a = typedDevInstance_1.componentDidMount) === null || _a === void 0 ? void 0 : _a.call(typedDevInstance_1);
+                    (_b = typedDevInstance_1.componentWillUnmount) === null || _b === void 0 ? void 0 : _b.call(typedDevInstance_1);
                     (_c = typedInstance.componentDidMount) === null || _c === void 0 ? void 0 : _c.call(typedInstance);
                 });
             }
@@ -508,10 +533,10 @@
         }
     };
     var classComponentMount = function (fiber) {
-        processComponentInstanceOnMount(fiber);
-        processComponentStateFromProps(fiber);
-        var children = processComponentRenderOnMountAndUpdate(fiber);
-        processComponentDidMountOnMount(fiber);
+        var devInstance = processComponentInstanceOnMount(fiber);
+        processComponentStateFromProps(fiber, devInstance);
+        var children = processComponentRenderOnMountAndUpdate(fiber, devInstance);
+        processComponentDidMountOnMount(fiber, devInstance);
         return children;
     };
     var classComponentUpdate = function (fiber) {

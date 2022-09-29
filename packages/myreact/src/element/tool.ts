@@ -105,22 +105,25 @@ export const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
   const onceWarnDuplicate = once(log);
   const onceWarnUndefined = once(log);
-  children.forEach((c) => {
-    if (isValidElement(c) && !c._store["validKey"]) {
-      if (typeof c.key === "string") {
-        if (obj[c.key]) {
-          onceWarnDuplicate({ message: "array child have duplicate key" });
+  const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
+  if (validElement.length > 1) {
+    validElement.forEach((c) => {
+      if (!c._store["validKey"]) {
+        if (typeof c.key === "string") {
+          if (obj[c.key]) {
+            onceWarnDuplicate({ message: `array child have duplicate key` });
+          }
+          obj[c.key] = true;
+        } else {
+          onceWarnUndefined({
+            message: "each array child must have a unique key props",
+            triggerOnce: true,
+          });
         }
-        obj[c.key] = true;
-      } else {
-        onceWarnUndefined({
-          message: "each array child must have a unique key props",
-          triggerOnce: true,
-        });
+        c._store["validKey"] = true;
       }
-      c._store["validKey"] = true;
-    }
-  });
+    });
+  }
 };
 
 export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => {

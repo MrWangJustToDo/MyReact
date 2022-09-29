@@ -8,6 +8,7 @@ import type {
   MyReactClassComponent,
   MyReactComponentStaticType,
   MyReactFiberNodeDev,
+  MyReactComponent,
 } from "@my-react/react";
 
 const DEFAULT_RESULT = {
@@ -16,7 +17,7 @@ const DEFAULT_RESULT = {
   callback: [],
 };
 
-const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
+const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
   const typedElement = fiber.element as MyReactElement;
 
   const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
@@ -34,12 +35,28 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
       typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
     }
   }
+
+  if (devInstance) {
+    const typedDevInstance = devInstance as MixinMyReactComponentType;
+
+    const props = Object.assign({}, typedElement.props);
+    const state = Object.assign({}, typedInstance.state);
+
+    if (typeof typedComponent.getDerivedStateFromProps === "function") {
+      const payloadState = typedComponent.getDerivedStateFromProps(props, state);
+      if (payloadState) {
+        typedDevInstance.state = Object.assign({}, typedInstance.state, payloadState);
+      }
+    }
+  }
 };
 
 const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
 
   const globalDispatch = fiber.root.dispatch;
+
+  const strictMod = globalDispatch.resolveStrictValue(fiber);
 
   const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
 
@@ -66,6 +83,22 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   instance.setOwner(fiber);
 
   instance.setContext(ProviderFiber);
+
+  let devInstance: null | MyReactComponent = null;
+
+  if (__DEV__ && strictMod) {
+    devInstance = new typedComponent(props, context);
+
+    devInstance.props = props;
+
+    devInstance.context = context;
+
+    devInstance.setOwner(fiber);
+
+    devInstance.setContext(ProviderFiber);
+  }
+
+  return devInstance;
 };
 
 const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
@@ -73,7 +106,7 @@ const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
   typedInstance.setOwner(fiber);
 };
 
-const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
+const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
   const children = typedInstance.render();
@@ -84,23 +117,28 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
     typeFiber._debugDynamicChildren = children;
   }
 
+  if (devInstance) {
+    const typedDevInstance = devInstance as MixinMyReactComponentType;
+
+    typedDevInstance.render();
+  }
+
   return children;
 };
 
-const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
+const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
   const globalDispatch = fiber.root.dispatch;
 
-  const strictMod = globalDispatch.resolveStrictValue(fiber);
-
-  if (__DEV__ && strictMod) {
-    if ((typedInstance.componentDidMount || typedInstance.componentWillUnmount) && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+  if (devInstance) {
+    const typedDevInstance = devInstance as MixinMyReactComponentType;
+    if (!(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
       typedInstance.mode = Effect_TYPE.__pendingEffect__;
       globalDispatch.pendingLayoutEffect(fiber, () => {
         typedInstance.mode = Effect_TYPE.__initial__;
-        typedInstance.componentDidMount?.();
-        typedInstance.componentWillUnmount?.();
+        typedDevInstance.componentDidMount?.();
+        typedDevInstance.componentWillUnmount?.();
         typedInstance.componentDidMount?.();
       });
     }
@@ -185,10 +223,10 @@ const processComponentDidUpdateOnUpdate = (
 };
 
 export const classComponentMount = (fiber: MyReactFiberNode) => {
-  processComponentInstanceOnMount(fiber);
-  processComponentStateFromProps(fiber);
-  const children = processComponentRenderOnMountAndUpdate(fiber);
-  processComponentDidMountOnMount(fiber);
+  const devInstance = processComponentInstanceOnMount(fiber);
+  processComponentStateFromProps(fiber, devInstance);
+  const children = processComponentRenderOnMountAndUpdate(fiber, devInstance);
+  processComponentDidMountOnMount(fiber, devInstance);
   return children;
 };
 

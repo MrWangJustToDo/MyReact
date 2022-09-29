@@ -202,7 +202,7 @@
     var enableAsyncUpdate = createRef(true);
     var enableKeyDiff = createRef(true);
     // enable react-18 strict lifecycle method
-    var enableStrictLifeCycle = createRef(true);
+    var enableStrictLifeCycle = createRef(false);
 
     var getTrackDevLog = function (fiber) {
         var _a, _b, _c, _d;
@@ -432,23 +432,26 @@
         var obj = {};
         var onceWarnDuplicate = once(log);
         var onceWarnUndefined = once(log);
-        children.forEach(function (c) {
-            if (isValidElement(c) && !c._store["validKey"]) {
-                if (typeof c.key === "string") {
-                    if (obj[c.key]) {
-                        onceWarnDuplicate({ message: "array child have duplicate key" });
+        var validElement = children.filter(function (c) { return isValidElement(c); });
+        if (validElement.length > 1) {
+            validElement.forEach(function (c) {
+                if (!c._store["validKey"]) {
+                    if (typeof c.key === "string") {
+                        if (obj[c.key]) {
+                            onceWarnDuplicate({ message: "array child have duplicate key" });
+                        }
+                        obj[c.key] = true;
                     }
-                    obj[c.key] = true;
+                    else {
+                        onceWarnUndefined({
+                            message: "each array child must have a unique key props",
+                            triggerOnce: true,
+                        });
+                    }
+                    c._store["validKey"] = true;
                 }
-                else {
-                    onceWarnUndefined({
-                        message: "each array child must have a unique key props",
-                        triggerOnce: true,
-                    });
-                }
-                c._store["validKey"] = true;
-            }
-        });
+            });
+        }
     };
     var checkArrayChildrenKey = function (children) {
         children.forEach(function (child) {

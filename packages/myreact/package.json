@@ -7,7 +7,9 @@
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
-    "index.js"
+    "index.js",
+    "jsx-runtime.d.ts",
+    "jsx-dev-runtime.d.ts"
   ],
   "exports": {
     ".": {
@@ -16,8 +18,18 @@
       "import": "./dist/esm/index.js",
       "default": "./index.js"
     },
-    "./jsx-runtime": "./jsx-runtime.js",
-    "./jsx-dev-runtime": "./jsx-runtime.js"
+    "./jsx-runtime": {
+      "types": "./jsx-runtime.d.ts",
+      "node": "./jsx-runtime.js",
+      "import": "./dist/esm/index.js",
+      "default": "./jsx-runtime.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./jsx-dev-runtime.d.ts",
+      "node": "./jsx-runtime.js",
+      "import": "./dist/esm/index.js",
+      "default": "./jsx-runtime.js"
+    }
   },
   "buildOptions": {
     "input": "./src/index.ts",
@@ -27,6 +39,7 @@
         "entryFileNames": "cjs/index.js",
         "esModule": false,
         "format": "cjs",
+        "exports": "named",
         "multiple": true,
         "sourcemap": true
       },
@@ -34,6 +47,7 @@
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
+        "exports": "named",
         "sourcemap": true
       },
       {
@@ -41,6 +55,7 @@
         "entryFileNames": "umd/index.js",
         "format": "umd",
         "esModule": false,
+        "exports": "named",
         "multiple": true,
         "name": "React",
         "sourcemap": true

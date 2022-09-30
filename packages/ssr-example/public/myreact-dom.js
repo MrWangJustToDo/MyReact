@@ -2980,8 +2980,18 @@
     var safeCall = react.__my_react_shared__.safeCall;
     var version = "0.0.1";
     var unstable_batchedUpdates = safeCall;
+    var ReactDOM = {
+        render: render,
+        hydrate: hydrate,
+        findDOMNode: findDOMNode,
+        createPortal: createPortal,
+        renderToString: renderToString,
+        unmountComponentAtNode: unmountComponentAtNode,
+        unstable_batchedUpdates: unstable_batchedUpdates,
+    };
 
     exports.createPortal = createPortal;
+    exports["default"] = ReactDOM;
     exports.findDOMNode = findDOMNode;
     exports.hydrate = hydrate;
     exports.render = render;

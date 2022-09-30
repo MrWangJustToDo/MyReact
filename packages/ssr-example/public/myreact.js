@@ -170,6 +170,17 @@
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
 
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
     function __rest(s, e) {
         var t = {};
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -1496,6 +1507,7 @@
         __self: true,
         __source: true,
     };
+    // todo
     var jsx = function (type, config, maybeKey, source, self) {
         var props = {};
         var key = null;
@@ -1522,7 +1534,7 @@
                 props[key] = props[key] === undefined ? (_a = typedType_1.defaultProps) === null || _a === void 0 ? void 0 : _a[key] : props[key];
             });
         }
-        return createMyReactElement({
+        var element = createMyReactElement({
             type: type,
             key: key,
             ref: ref,
@@ -1531,6 +1543,11 @@
             _source: source,
             _owner: currentComponentFiber.current,
         });
+        {
+            element = __assign({}, element);
+            element.__jsx__ = true;
+        }
+        return element;
     };
     var jsxDEV = function (type, config, key, isStaticChildren, source, self) {
         var element = jsx(type, config, key, source, self);
@@ -1588,6 +1605,38 @@
         toArray: toArray,
         forEach: forEach,
     };
+    var React = {
+        Component: Component,
+        PureComponent: PureComponent,
+        createElement: createElement,
+        cloneElement: cloneElement,
+        isValidElement: isValidElement,
+        lazy: lazy,
+        memo: memo,
+        createRef: createRef,
+        forwardRef: forwardRef,
+        createContext: createContext,
+        Portal: My_React_Portal,
+        Element: My_React_Element,
+        Provider: My_React_Provider,
+        Consumer: My_React_Consumer,
+        Fragment: My_React_Fragment,
+        Suspense: My_React_Suspense,
+        KeepLive: My_React_KeepLive,
+        StrictMode: My_React_Strict,
+        ForwardRef: My_React_ForwardRef,
+        useRef: useRef,
+        useMemo: useMemo,
+        useState: useState,
+        useEffect: useEffect,
+        useReducer: useReducer,
+        useContext: useContext,
+        useCallback: useCallback,
+        useDebugValue: useDebugValue,
+        useLayoutEffect: useLayoutEffect,
+        useImperativeHandle: useImperativeHandle,
+        Children: Children,
+    };
 
     exports.Children = Children;
     exports.Component = Component;
@@ -1607,6 +1656,7 @@
     exports.createContext = createContext;
     exports.createElement = createElement;
     exports.createRef = createRef;
+    exports["default"] = React;
     exports.forwardRef = forwardRef;
     exports.isValidElement = isValidElement;
     exports.jsx = jsx;

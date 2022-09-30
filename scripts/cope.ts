@@ -6,6 +6,7 @@ const copyContent = (sourceFile: string, targetFile: string) => {
     const readStream = createReadStream(sourceFile);
     const writeStream = createWriteStream(targetFile);
     readStream.pipe(writeStream);
+    readStream.on("close", () => r());
     readStream.on("end", () => r());
     readStream.on("error", () => r());
   });

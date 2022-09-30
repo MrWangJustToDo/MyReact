@@ -93,6 +93,39 @@ const Children = {
   forEach,
 };
 
+const React = {
+  Component,
+  PureComponent,
+  createElement,
+  cloneElement,
+  isValidElement,
+  lazy,
+  memo,
+  createRef,
+  forwardRef,
+  createContext,
+  Portal,
+  Element,
+  Provider,
+  Consumer,
+  Fragment,
+  Suspense,
+  KeepLive,
+  StrictMode,
+  ForwardRef,
+  useRef,
+  useMemo,
+  useState,
+  useEffect,
+  useReducer,
+  useContext,
+  useCallback,
+  useDebugValue,
+  useLayoutEffect,
+  useImperativeHandle,
+  Children,
+};
+
 export {
   jsx,
   jsxs,
@@ -130,6 +163,7 @@ export {
   __my_react_internal__,
   __my_react_shared__,
   version,
+  React as default,
 };
 
 export type { FiberDispatch } from "./dispatch";

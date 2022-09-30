@@ -1,9 +1,7 @@
 "use strict";
 
 if (process.env.NODE_ENV === "production") {
-  const { Fragment, jsx, jsxs } = require("./dist/cjs/index.production");
-  module.exports = { Fragment, jsx, jsxs };
+  module.exports = require("./dist/cjs/index.production");
 } else {
-  const { Fragment, jsxDEV } = require("./dist/cjs/index.development");
-  module.exports = { Fragment, jsxDEV };
+  module.exports = require("./dist/cjs/index.development");
 }

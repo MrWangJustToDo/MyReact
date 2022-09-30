@@ -5,8 +5,9 @@ import type { Configuration } from "webpack";
 
 export const resolveConfig = ({ env }: SafeGenerateActionProps): Configuration["resolve"] => ({
   alias: {
+    // react: env === "server" ? "react" : "@my-react/react",
+    // "react-dom": env === "server" ? "react-dom" : "@my-react/react-dom",
     lodash: env === "client" ? "lodash-es" : "lodash",
-    // not work for server, why?
     "lodash-es": env === "server" ? "lodash" : "lodash-es",
     "@build": resolve(process.cwd(), "build"),
     "@server": resolve(process.cwd(), "src", "server"),

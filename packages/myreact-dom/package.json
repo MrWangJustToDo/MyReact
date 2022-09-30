@@ -38,6 +38,7 @@
         "format": "cjs",
         "esModule": false,
         "multiple": true,
+        "exports": "named",
         "globals": {
           "@my-react/react": "React"
         },
@@ -47,6 +48,7 @@
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
+        "exports": "named",
         "globals": {
           "@my-react/react": "React"
         },
@@ -57,6 +59,7 @@
         "entryFileNames": "umd/index.js",
         "format": "umd",
         "esModule": false,
+        "exports": "named",
         "multiple": true,
         "globals": {
           "@my-react/react": "React"

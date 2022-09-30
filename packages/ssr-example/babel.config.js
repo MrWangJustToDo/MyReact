@@ -26,7 +26,11 @@ module.exports = (api) => {
   ]);
   presets.push("@babel/preset-typescript");
   // new react jsx runtime support. SEE https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html#removing-unused-react-imports
-  presets.push(["@babel/preset-react", { development: !api.env("production"), runtime: process.env.REACT === "react" ? "automatic" : "classic" }]);
+  // presets.push(["@babel/preset-react", { development: !api.env("production"), runtime: process.env.REACT === "react" ? "automatic" : "classic" }]);
+  presets.push([
+    "@babel/preset-react",
+    { development: !api.env("production"), runtime: "automatic", importSource: process.env.REACT === "react" ? "react" : "@my-react/react" },
+  ]);
 
   plugins.push(["@babel/plugin-proposal-decorators", { legacy: true }]);
   plugins.push(["@babel/plugin-proposal-class-properties", { loose: true }]);

@@ -1,7 +1,7 @@
-import { checkSingleChildrenKey, createMyReactElement } from "../element";
+import { checkSingleChildrenKey, My_React_Element } from "../element";
 import { currentComponentFiber, log } from "../share";
 
-import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType, Props } from "../element";
+import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType, Props, MyReactElement } from "../element";
 
 const RESERVED_PROPS = {
   key: true,
@@ -10,6 +10,11 @@ const RESERVED_PROPS = {
   __source: true,
 };
 
+type JSXMyReactElement = MyReactElement & {
+  _jsx: boolean;
+};
+
+// todo
 export const jsx = (
   type: MyReactElementType,
   config: Props,
@@ -48,15 +53,25 @@ export const jsx = (
     });
   }
 
-  return createMyReactElement({
+  const element: JSXMyReactElement = {
+    ["$$typeof"]: My_React_Element,
     type,
     key,
     ref,
     props,
+    _jsx: true,
     _self: self,
     _source: source,
     _owner: currentComponentFiber.current,
-  });
+    _store: {} as Record<string, unknown>,
+  };
+
+  if (__DEV__ && typeof Object.freeze === "function") {
+    Object.freeze(element.props);
+    Object.freeze(element);
+  }
+
+  return element;
 };
 
 export const jsxDEV = (

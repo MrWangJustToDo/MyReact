@@ -126,12 +126,12 @@
             this.scopeArray.push(scopeItem);
             this.scopeLength++;
         };
-        LinkTreeList.prototype.append = function (node, index) {
+        LinkTreeList.prototype.append = function (node, _index) {
             this.length++;
             this.rawArray.push(node);
             var listNode = new ListTreeNode(node);
             this.push(listNode);
-            this.scopePush({ index: index, value: listNode });
+            // this.scopePush({ index: _index, value: listNode });
         };
         LinkTreeList.prototype.unshift = function (node) {
             if (!this.head) {
@@ -221,6 +221,12 @@
             if (this.scopeLength) {
                 this.scopeRoot.value.children.forEach(reconcileScope);
             }
+        };
+        LinkTreeList.prototype.reconcileList = function (_a) {
+            var toFoot = _a.toFoot, toHead = _a.toHead;
+            // loop
+            toFoot && this.listToFoot(toFoot);
+            toHead && this.listToHead(toHead);
         };
         LinkTreeList.prototype.has = function () {
             return this.head !== null;
@@ -1103,6 +1109,36 @@
         }
     };
 
+    var getNext = function (fiber, root) {
+        if (fiber.child)
+            return fiber.child;
+        var nextFiber = fiber;
+        while (nextFiber && nextFiber !== root) {
+            if (nextFiber.sibling)
+                return nextFiber.sibling;
+            nextFiber = nextFiber.parent;
+        }
+    };
+    var unmountFiberNode = function (fiber) {
+        if (!fiber)
+            return;
+        // unmountFiberNode(fiber.child);
+        // fiber.unmount();
+        // fiber.root.dispatch.removeFiber(fiber);
+        // unmountFiberNode(fiber.sibling);
+        // loop
+        var dispatch = fiber.root.dispatch;
+        var listTree = new LinkTreeList();
+        var temp = fiber;
+        listTree.append(temp, temp.fiberIndex);
+        while ((temp = getNext(temp, fiber)))
+            listTree.append(temp, temp.fiberIndex);
+        listTree.listToHead(function (f) {
+            f.unmount();
+            dispatch.removeFiber(f);
+        });
+    };
+
     var processComponentUpdateQueue = function (fiber) {
         var allQueue = fiber.updateQueue.slice(0);
         var lastQueue = [];
@@ -1189,8 +1225,9 @@
     var enableControlComponent = react.createRef(true);
     var enableEventSystem = react.createRef(true);
     var enableHighlight = react.createRef(false);
-    // ==== todo ==== //
-    var enableFastLoop = react.createRef(false);
+    // ==== 实验性 ==== //
+    // 如果禁用，请同时启用 LinkTreeList 的 scopePush
+    var enableFastLoop = react.createRef(true);
 
     var createDomNode = function (element) { return ({
         memoizedProps: {},
@@ -1299,7 +1336,6 @@
         }
     };
 
-    var unmountFiberNode = react.__my_react_shared__.unmountFiberNode;
     var unmountFiber = function (fiber) {
         unmountFiberNode(fiber);
         clearFiberDom(fiber);
@@ -2482,35 +2518,53 @@
         ClientDispatch.prototype.reconcileUpdate = function (_list) {
             var _this = this;
             if (enableFastLoop.current) {
-                _list.listToHead(function (_fiber) {
-                    if (_fiber.mount) {
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return position(_fiber); },
-                        });
-                    }
-                });
-                _list.listToFoot(function (_fiber) {
-                    if (_fiber.mount) {
-                        var _isSVG_1 = isSVG(_fiber, _this.elementTypeMap);
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return create$1(_fiber, false, _fiber, _isSVG_1); },
-                        });
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return update$1(_fiber, false, _isSVG_1); },
-                        });
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return unmount(_fiber); },
-                        });
-                        safeCallWithFiber$1({ fiber: _fiber, action: function () { return context(_fiber); } });
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return append$2(_fiber); },
-                        });
-                    }
+                _list.reconcileList({
+                    toFoot: function (_fiber) {
+                        if (_fiber.mount) {
+                            var _isSVG_1 = isSVG(_fiber, _this.elementTypeMap);
+                            safeCallWithFiber$1({
+                                fiber: _fiber,
+                                action: function () { return create$1(_fiber, false, _fiber, _isSVG_1); },
+                            });
+                            // safeCallWithFiber({
+                            //   fiber: _fiber,
+                            //   action: () => update(_fiber, false, _isSVG),
+                            // });
+                            // safeCallWithFiber({
+                            //   fiber: _fiber,
+                            //   action: () => unmount(_fiber),
+                            // });
+                            Promise.resolve().then(function () {
+                                return safeCallWithFiber$1({
+                                    fiber: _fiber,
+                                    action: function () {
+                                        unmount(_fiber);
+                                        update$1(_fiber, false, _isSVG_1);
+                                        append$2(_fiber);
+                                    },
+                                });
+                            });
+                            safeCallWithFiber$1({ fiber: _fiber, action: function () { return context(_fiber); } });
+                            // safeCallWithFiber({
+                            //   fiber: _fiber,
+                            //   action: () => append(_fiber),
+                            // });
+                        }
+                    },
+                    toHead: function (_fiber) {
+                        if (_fiber.mount) {
+                            safeCallWithFiber$1({
+                                fiber: _fiber,
+                                action: function () { return position(_fiber); },
+                            });
+                            safeCallWithFiber$1({
+                                fiber: _fiber,
+                                action: function () { return layoutEffect(_fiber); },
+                            });
+                            setTimeout(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
+                            // Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+                        }
+                    },
                 });
             }
             else {
@@ -2548,16 +2602,16 @@
                         });
                     }
                 });
+                _list.reconcile(function (_fiber) {
+                    if (_fiber.mount) {
+                        safeCallWithFiber$1({
+                            fiber: _fiber,
+                            action: function () { return layoutEffect(_fiber); },
+                        });
+                        Promise.resolve().then(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
+                    }
+                });
             }
-            _list.reconcile(function (_fiber) {
-                if (_fiber.mount) {
-                    safeCallWithFiber$1({
-                        fiber: _fiber,
-                        action: function () { return layoutEffect(_fiber); },
-                    });
-                    Promise.resolve().then(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
-                }
-            });
         };
         ClientDispatch.prototype.pendingCreate = function (_fiber) {
             if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__)) {

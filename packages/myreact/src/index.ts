@@ -19,7 +19,7 @@ import {
   memo,
   lazy,
 } from "./element";
-import { MyReactFiberNode, MyReactFiberNodeRoot, unmountFiberNode, createFiberNode, updateFiberNode, initialFiberNode } from "./fiber";
+import { MyReactFiberNode, MyReactFiberNodeRoot, createFiberNode, updateFiberNode, initialFiberNode } from "./fiber";
 import {
   createHookNode,
   useRef,
@@ -61,7 +61,6 @@ const __my_react_shared__ = {
   log,
   logHook,
   safeCall,
-  unmountFiberNode,
   createFiberNode,
   updateFiberNode,
   initialFiberNode,

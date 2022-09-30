@@ -29,6 +29,7 @@
     "immer": "^9.0.15",
     "jquery": "^3.6.0",
     "mime": "^3.0.0",
+    "module-alias": "^2.2.2",
     "multer": "^1.4.5-lts.1",
     "pino": "^8.6.0",
     "pino-pretty": "^9.1.0",

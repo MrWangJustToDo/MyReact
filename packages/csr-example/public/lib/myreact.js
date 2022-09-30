@@ -170,17 +170,6 @@
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
 
-    var __assign = function() {
-        __assign = Object.assign || function __assign(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign.apply(this, arguments);
-    };
-
     function __rest(s, e) {
         var t = {};
         for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
@@ -1288,12 +1277,6 @@
         return fiber;
     };
 
-    var unmountFiberNode = function (fiber) {
-        fiber.children.forEach(unmountFiberNode);
-        fiber.unmount();
-        fiber.root.dispatch.removeFiber(fiber);
-    };
-
     var MyReactHookNode = /** @class */ (function (_super) {
         __extends(MyReactHookNode, _super);
         function MyReactHookNode(hookIndex, hookType, value, reducer, deps) {
@@ -1509,6 +1492,7 @@
     };
     // todo
     var jsx = function (type, config, maybeKey, source, self) {
+        var _a;
         var props = {};
         var key = null;
         var ref = null;
@@ -1534,18 +1518,21 @@
                 props[key] = props[key] === undefined ? (_a = typedType_1.defaultProps) === null || _a === void 0 ? void 0 : _a[key] : props[key];
             });
         }
-        var element = createMyReactElement({
-            type: type,
-            key: key,
-            ref: ref,
-            props: props,
-            _self: self,
-            _source: source,
-            _owner: currentComponentFiber.current,
-        });
-        {
-            element = __assign({}, element);
-            element.__jsx__ = true;
+        var element = (_a = {},
+            _a["$$typeof"] = My_React_Element,
+            _a.type = type,
+            _a.key = key,
+            _a.ref = ref,
+            _a.props = props,
+            _a._jsx = true,
+            _a._self = self,
+            _a._source = source,
+            _a._owner = currentComponentFiber.current,
+            _a._store = {},
+            _a);
+        if (typeof Object.freeze === "function") {
+            Object.freeze(element.props);
+            Object.freeze(element);
         }
         return element;
     };
@@ -1576,7 +1563,6 @@
         log: log,
         logHook: logHook,
         safeCall: safeCall,
-        unmountFiberNode: unmountFiberNode,
         createFiberNode: createFiberNode,
         updateFiberNode: updateFiberNode,
         initialFiberNode: initialFiberNode,

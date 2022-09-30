@@ -1,12 +1,10 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { unmountFiberNode } from "@my-react/react-reconciler";
 
 import { mapFiber } from "@my-react-dom-shared";
 
 import { clearFiberDom } from "./clearFiberDom";
 
 import type { MyReactFiberNode } from "@my-react/react";
-
-const { unmountFiberNode } = __my_react_shared__;
 
 export const unmountFiber = (fiber: MyReactFiberNode) => {
   unmountFiberNode(fiber);

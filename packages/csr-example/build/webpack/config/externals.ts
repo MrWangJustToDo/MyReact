@@ -7,7 +7,7 @@ export const externalsConfig = ({ env }: SafeGenerateActionProps) =>
     ? [
         nodeExternals({
           // load non-javascript files with extensions, presumably via loaders
-          allowlist: [/\.(?!(?:jsx?|json)$).{1,5}$/i, "webpack/hot/poll?1000"],
+          allowlist: [/\.(?!(?:jsx?|json)$).{1,5}$/i, "webpack/hot/poll?1000", "lodash-es"],
         }),
       ]
     : [{ react: "React" }, { "react-dom": "ReactDOM" }];

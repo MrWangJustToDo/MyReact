@@ -36,10 +36,10 @@ dotenv.config();
 const InviteCode = ["mrwang"];
 
 // 存储所有用户文件夹的文件
-const BaseDir = path.resolve(process.cwd(), "base");
+const BaseDir = path.resolve(process.cwd(), "._root");
 
 // 缓存地址
-const tempFolder = path.resolve(process.cwd(), "cache");
+const tempFolder = path.resolve(process.cwd(), "._cache");
 
 // 上传文件缓存
 let upload = multer({ dest: tempFolder });
@@ -246,9 +246,9 @@ const isDevelopment = process.env.NODE_ENV === "development";
 if (process.env.REACT === "myreact") {
   require("module-alias/register");
 
-  const React = require("@my-react/react");
-
-  global.React = React;
+  // use `jsx` transform react element
+  // const React = require("@my-react/react");
+  // global.React = React;
 }
 
 const { startApp } = require(`../${isDevelopment ? "dev" : "dist"}/server/app`);

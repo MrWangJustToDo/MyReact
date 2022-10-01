@@ -15,7 +15,7 @@ export type HTMLProps = {
 
 export const HTML = (props: HTMLProps) => {
   return (
-    <html lang={props.lang || ""}>
+    <html lang={props.lang || ""} style={{ fontSize: "66px" }}>
       <Head {...props} />
       <Body {...props} />
     </html>

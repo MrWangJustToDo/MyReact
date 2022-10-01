@@ -1,3 +1,5 @@
+import { kebabCase } from "lodash";
+
 import { IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
 import { TextElement } from "./text";
@@ -50,7 +52,7 @@ export class PlainElement {
 
   serializeStyle() {
     const styleKeys = Object.keys(this.style).filter((key) => this.style[key] !== null && this.style[key] !== undefined);
-    if (styleKeys.length) return `style="${styleKeys.map((key) => `${key}: ${this.style[key]?.toString()};`).reduce((p, c) => p + c)}"`;
+    if (styleKeys.length) return `style="${styleKeys.map((key) => `${kebabCase(key)}: ${this.style[key]?.toString()};`).reduce((p, c) => p + c)}"`;
     return "";
   }
 

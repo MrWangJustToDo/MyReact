@@ -50,39 +50,36 @@ export class PlainElement {
 
   serializeStyle() {
     const styleKeys = Object.keys(this.style).filter((key) => this.style[key] !== null && this.style[key] !== undefined);
-    if (styleKeys.length) {
-      return `style="${styleKeys.map((key) => `${key}: ${this.style[key]?.toString()};`).reduce((p, c) => p + c, "")}"`;
-    }
+    if (styleKeys.length) return `style="${styleKeys.map((key) => `${key}: ${this.style[key]?.toString()};`).reduce((p, c) => p + c)}"`;
     return "";
   }
 
   serializeAttrs() {
     const attrsKeys = Object.keys(this.attrs);
     if (attrsKeys.length) {
-      return attrsKeys.map((key) => `${key}='${this.attrs[key]?.toString()}'`).reduce((p, c) => `${p} ${c}`, "");
+      return attrsKeys.map((key) => `${key}='${this.attrs[key]?.toString()}'`).reduce((p, c) => `${p} ${c}`);
     } else {
       return "";
     }
   }
 
   serializeProps() {
-    let props = "";
-    if (this.className !== undefined && this.className !== null) {
-      props += ` class="${this.className}"`;
-    }
-    return props;
+    if (this.className !== undefined && this.className !== null) return `class="${this.className}"`;
+    return "";
   }
 
   serialize() {
-    return `${this.serializeProps()} ${this.serializeStyle()} ${this.serializeAttrs()}`;
+    const arr = [this.serializeProps(), this.serializeStyle(), this.serializeAttrs()].filter((i) => i.length);
+    if (arr.length) return " " + arr.reduce((p, c) => `${p} ${c}`) + " ";
+    return "";
   }
 
   toString(): string {
     if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type)) {
-      return `<${this.type} ${this.serialize()} />`;
+      return `<${this.type}${this.serialize()}/>`;
     } else {
       if (this.type) {
-        return `<${this.type} ${this.serialize()} >${this.children
+        return `<${this.type}${this.serialize()}>${this.children
           .reduce<Array<TextElement | string | PlainElement>>((p, c) => {
             if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
               p.push("<!-- -->");

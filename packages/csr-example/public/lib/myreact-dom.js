@@ -2785,38 +2785,38 @@
         PlainElement.prototype.serializeStyle = function () {
             var _this = this;
             var styleKeys = Object.keys(this.style).filter(function (key) { return _this.style[key] !== null && _this.style[key] !== undefined; });
-            if (styleKeys.length) {
-                return "style=\"".concat(styleKeys.map(function (key) { var _a; return "".concat(key, ": ").concat((_a = _this.style[key]) === null || _a === void 0 ? void 0 : _a.toString(), ";"); }).reduce(function (p, c) { return p + c; }, ""), "\"");
-            }
+            if (styleKeys.length)
+                return "style=\"".concat(styleKeys.map(function (key) { var _a; return "".concat(key, ": ").concat((_a = _this.style[key]) === null || _a === void 0 ? void 0 : _a.toString(), ";"); }).reduce(function (p, c) { return p + c; }), "\"");
             return "";
         };
         PlainElement.prototype.serializeAttrs = function () {
             var _this = this;
             var attrsKeys = Object.keys(this.attrs);
             if (attrsKeys.length) {
-                return attrsKeys.map(function (key) { var _a; return "".concat(key, "='").concat((_a = _this.attrs[key]) === null || _a === void 0 ? void 0 : _a.toString(), "'"); }).reduce(function (p, c) { return "".concat(p, " ").concat(c); }, "");
+                return attrsKeys.map(function (key) { var _a; return "".concat(key, "='").concat((_a = _this.attrs[key]) === null || _a === void 0 ? void 0 : _a.toString(), "'"); }).reduce(function (p, c) { return "".concat(p, " ").concat(c); });
             }
             else {
                 return "";
             }
         };
         PlainElement.prototype.serializeProps = function () {
-            var props = "";
-            if (this.className !== undefined && this.className !== null) {
-                props += " class=\"".concat(this.className, "\"");
-            }
-            return props;
+            if (this.className !== undefined && this.className !== null)
+                return "class=\"".concat(this.className, "\"");
+            return "";
         };
         PlainElement.prototype.serialize = function () {
-            return "".concat(this.serializeProps(), " ").concat(this.serializeStyle(), " ").concat(this.serializeAttrs());
+            var arr = [this.serializeProps(), this.serializeStyle(), this.serializeAttrs()].filter(function (i) { return i.length; });
+            if (arr.length)
+                return " " + arr.reduce(function (p, c) { return "".concat(p, " ").concat(c); }) + " ";
+            return "";
         };
         PlainElement.prototype.toString = function () {
             if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type)) {
-                return "<".concat(this.type, " ").concat(this.serialize(), " />");
+                return "<".concat(this.type).concat(this.serialize(), "/>");
             }
             else {
                 if (this.type) {
-                    return "<".concat(this.type, " ").concat(this.serialize(), " >").concat(this.children
+                    return "<".concat(this.type).concat(this.serialize(), ">").concat(this.children
                         .reduce(function (p, c) {
                         if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
                             p.push("<!-- -->");
@@ -2896,7 +2896,9 @@
                 });
                 if (props_1["dangerouslySetInnerHTML"]) {
                     var typedProps = props_1["dangerouslySetInnerHTML"];
-                    dom_1.append(new TextElement(typedProps.__html));
+                    if (typedProps.__html) {
+                        dom_1.append(new TextElement(typedProps.__html));
+                    }
                 }
             }
             if (fiber.patch & PATCH_TYPE.__pendingUpdate__)

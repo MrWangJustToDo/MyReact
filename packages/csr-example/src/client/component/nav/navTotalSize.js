@@ -24,7 +24,7 @@ function NavTotalSize() {
   return (
     <div className="nav-size relative">
       <div className="nav-size-header flex-center">空间占用（总: 1 GB）</div>
-      <div className="nav-size-body" ref={ref}></div>
+      <div className="nav-size-body" ref={ref}/>
     </div>
   );
 }

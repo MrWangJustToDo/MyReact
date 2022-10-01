@@ -35,7 +35,9 @@ export const update = (fiber: MyReactFiberNode) => {
         });
       if (props["dangerouslySetInnerHTML"]) {
         const typedProps = props["dangerouslySetInnerHTML"] as Record<string, unknown>;
-        dom.append(new TextElement(typedProps.__html as string));
+        if (typedProps.__html) {
+          dom.append(new TextElement(typedProps.__html as string));
+        }
       }
     }
 

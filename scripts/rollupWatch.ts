@@ -28,7 +28,7 @@ const watch = (packageName: string, rollupOptions: RollupOptions, mode: string, 
         obj[watchKey].timer = setTimeout(() => {
           console.error("[watch] rebuild process not complete for a long time, look like a rollup bug, will exit rollup watch process!");
           process.exit(0);
-        }, 10000);
+        }, 60000);
       } else {
         obj[watchKey] = {
           start: true,

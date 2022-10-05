@@ -215,3 +215,47 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
   return parentFiber.children;
 };
+
+export const transformKeepLiveChildrenFiber = (parentFiber: MyReactFiberNode, children: MyReactElementNode) => {
+  const isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
+
+  if (!isUpdate) return transformChildrenFiber(parentFiber, children);
+
+  const globalDispatch = parentFiber.root.dispatch;
+
+  const prevFiber = parentFiber.child;
+
+  const cachedFiber = globalDispatch.resolveKeepLive(parentFiber, children);
+
+  if (cachedFiber) {
+    parentFiber.beforeUpdate();
+
+    const newChildFiber = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
+
+    parentFiber.renderedChildren.push(newChildFiber);
+
+    parentFiber.afterUpdate();
+
+    // it is a cachedFiber, so should deactivate prevFiber
+    if (prevFiber !== cachedFiber) {
+      globalDispatch.pendingDeactivate(parentFiber);
+    }
+
+    // reset fiber.mount = true;
+    if (!cachedFiber.mount) {
+      const temp = cachedFiber;
+
+      const setMount = (fiber: MyReactFiberNode) => {
+        fiber.mount = true;
+        fiber.children.forEach(setMount);
+      };
+
+      setMount(temp);
+    }
+
+    return parentFiber.children;
+  } else {
+    // not have cachedFiber, maybe it is a first time to run
+    return transformChildrenFiber(parentFiber, children);
+  }
+};

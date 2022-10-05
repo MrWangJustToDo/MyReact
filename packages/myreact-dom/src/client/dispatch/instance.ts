@@ -9,13 +9,14 @@ import {
 } from "@my-react/react-reconciler";
 import { LinkTreeList, NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { enableFastLoop, generateStrictMap, generateSuspenseMap, isSVG, setRef } from "@my-react-dom-shared";
+import { enableFastLoop, generateKeepLiveMap, generateStrictMap, generateSuspenseMap, getKeepLiveFiber, isSVG, setRef } from "@my-react-dom-shared";
 
 import { triggerUpdate } from "../update";
 
 import { append } from "./append";
 import { context } from "./context";
 import { create } from "./create";
+import { deactivate } from "./deactivate";
 import { effect, layoutEffect } from "./effect";
 import { fallback } from "./fallback";
 import { position } from "./position";
@@ -28,6 +29,8 @@ const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
 
 export class ClientDispatch implements FiberDispatch {
   strictMap: Record<string, boolean> = {};
+
+  keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
   effectMap: Record<string, (() => void)[]> = {};
 
@@ -54,6 +57,12 @@ export class ClientDispatch implements FiberDispatch {
   }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return processHookNode(_fiber, _hookParams);
+  }
+  resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null {
+    return getKeepLiveFiber(_fiber, this.keepLiveMap, _element);
+  }
+  resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
+    generateKeepLiveMap(_fiber, this.keepLiveMap);
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
     generateStrictMap(_fiber, this.strictMap);
@@ -107,7 +116,8 @@ export class ClientDispatch implements FiberDispatch {
         _fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
         _fiber.patch & PATCH_TYPE.__pendingAppend__ ||
         _fiber.patch & PATCH_TYPE.__pendingContext__ ||
-        _fiber.patch & PATCH_TYPE.__pendingPosition__
+        _fiber.patch & PATCH_TYPE.__pendingPosition__ ||
+        _fiber.patch & PATCH_TYPE.__pendingDeactivate__
       ) {
         _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
       } else if (this.effectMap[_fiber.uid]?.length || this.unmountMap[_fiber.uid]?.length || this.layoutEffectMap[_fiber.uid]?.length) {
@@ -165,33 +175,35 @@ export class ClientDispatch implements FiberDispatch {
               action: () => create(_fiber, false, _fiber, _isSVG),
             });
 
-            // safeCallWithFiber({
-            //   fiber: _fiber,
-            //   action: () => update(_fiber, false, _isSVG),
-            // });
+            safeCallWithFiber({
+              fiber: _fiber,
+              action: () => update(_fiber, false, _isSVG),
+            });
 
-            // safeCallWithFiber({
-            //   fiber: _fiber,
-            //   action: () => unmount(_fiber),
-            // });
+            safeCallWithFiber({
+              fiber: _fiber,
+              action: () => unmount(_fiber),
+            });
 
-            Promise.resolve().then(() =>
-              safeCallWithFiber({
-                fiber: _fiber,
-                action: () => {
-                  unmount(_fiber);
-                  update(_fiber, false, _isSVG);
-                  append(_fiber);
-                },
-              })
-            );
+            safeCallWithFiber({ fiber: _fiber, action: () => deactivate(_fiber) });
+
+            // Promise.resolve().then(() =>
+            //   safeCallWithFiber({
+            //     fiber: _fiber,
+            //     action: () => {
+            //       unmount(_fiber);
+            //       update(_fiber, false, _isSVG);
+            //       append(_fiber);
+            //     },
+            //   })
+            // );
 
             safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
 
-            // safeCallWithFiber({
-            //   fiber: _fiber,
-            //   action: () => append(_fiber),
-            // });
+            safeCallWithFiber({
+              fiber: _fiber,
+              action: () => append(_fiber),
+            });
           }
         },
         toHead: (_fiber) => {
@@ -206,9 +218,11 @@ export class ClientDispatch implements FiberDispatch {
               action: () => layoutEffect(_fiber),
             });
 
-            setTimeout(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+            // requestAnimationFrame(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
 
-            // Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+            // setTimeout(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+
+            Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
           }
         },
       });
@@ -230,6 +244,8 @@ export class ClientDispatch implements FiberDispatch {
             fiber: _fiber,
             action: () => unmount(_fiber),
           });
+
+          safeCallWithFiber({ fiber: _fiber, action: () => deactivate(_fiber) });
 
           safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
         }
@@ -286,6 +302,9 @@ export class ClientDispatch implements FiberDispatch {
   pendingPosition(_fiber: MyReactFiberNode): void {
     _fiber.patch |= PATCH_TYPE.__pendingPosition__;
   }
+  pendingDeactivate(_fiber: MyReactFiberNode): void {
+    _fiber.patch |= PATCH_TYPE.__pendingDeactivate__;
+  }
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void {
     const exist = this.unmountMap[_fiber.uid] || [];
     this.unmountMap[_fiber.uid] = [...exist, _pendingUnmount];
@@ -304,6 +323,7 @@ export class ClientDispatch implements FiberDispatch {
     delete this.effectMap[_fiber.uid];
     delete this.contextMap[_fiber.uid];
     delete this.unmountMap[_fiber.uid];
+    delete this.keepLiveMap[_fiber.uid];
     delete this.suspenseMap[_fiber.uid];
     delete this.elementTypeMap[_fiber.uid];
     delete this.layoutEffectMap[_fiber.uid];

@@ -291,4 +291,6 @@ export class MyReactFiberNodeDev extends MyReactFiberNode {
   _debugStrict = false;
 
   _debugEventMap: Record<string, ((...args: any[]) => void) & { cb?: any[] }> = {};
+
+  _debugKeepLiveCache: MyReactFiberNode[];
 }

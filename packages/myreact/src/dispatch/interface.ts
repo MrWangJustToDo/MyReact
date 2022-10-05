@@ -9,6 +9,8 @@ export interface FiberDispatch {
 
   strictMap: Record<string, boolean>;
 
+  keepLiveMap: Record<string, MyReactFiberNode[]>;
+
   effectMap: Record<string, Array<() => void>>;
 
   layoutEffectMap: Record<string, Array<() => void>>;
@@ -24,6 +26,10 @@ export interface FiberDispatch {
   resolveLazy(): boolean;
 
   resolveRef(_fiber: MyReactFiberNode): void;
+
+  resolveKeepLiveMap(_fiber: MyReactFiberNode): void;
+
+  resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null;
 
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
 
@@ -66,6 +72,8 @@ export interface FiberDispatch {
   pendingContext(_fiber: MyReactFiberNode): void;
 
   pendingPosition(_fiber: MyReactFiberNode): void;
+
+  pendingDeactivate(_fiber: MyReactFiberNode): void;
 
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void;
 

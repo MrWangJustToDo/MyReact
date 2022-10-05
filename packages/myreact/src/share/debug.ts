@@ -2,7 +2,7 @@ import { NODE_TYPE } from "@my-react/react-shared";
 
 import { currentRunningFiber } from "./env";
 
-import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "../element";
+import type { forwardRef, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 
 const getTrackDevLog = (fiber: MyReactFiberNode) => {
@@ -36,9 +36,17 @@ const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isSuspense__) return `<Suspense />`;
   if (fiber.type & NODE_TYPE.__isStrictNode__) return `<Strict />`;
   if (fiber.type & NODE_TYPE.__isFragmentNode__) return `<Fragment />`;
-  if (fiber.type & NODE_TYPE.__isForwardRef__) return `<ForwardRef />`;
+  if (fiber.type & NODE_TYPE.__isKeepLiveNode__) return `<KeepAlive />`;
   if (fiber.type & NODE_TYPE.__isContextProvider__) return `<Provider />`;
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return `<Consumer />`;
+  if (fiber.type & NODE_TYPE.__isForwardRef__) {
+    const typedType = (fiber.element as MyReactElement).type as ReturnType<typeof forwardRef>;
+    if (typedType.render.name) {
+      return `<ForwardRef - (${typedType.render.name}) />`;
+    } else {
+      return `<ForwardRef />`;
+    }
+  }
   if (typeof fiber.element === "object" && fiber.element !== null) {
     if (typeof fiber.element.type === "string") {
       return `<${fiber.element.type} />`;

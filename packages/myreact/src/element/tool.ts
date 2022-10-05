@@ -8,6 +8,7 @@ import {
   My_React_Element,
   My_React_ForwardRef,
   My_React_Fragment,
+  My_React_KeepLive,
   My_React_Lazy,
   My_React_Memo,
   My_React_Portal,
@@ -77,6 +78,9 @@ export function getTypeFromElement(element: MyReactElementNode) {
       }
     } else if (typeof rawType === "symbol") {
       switch (rawType) {
+        case My_React_KeepLive:
+          nodeTypeSymbol |= NODE_TYPE.__isKeepLiveNode__;
+          break;
         case My_React_Fragment:
           nodeTypeSymbol |= NODE_TYPE.__isFragmentNode__;
           break;

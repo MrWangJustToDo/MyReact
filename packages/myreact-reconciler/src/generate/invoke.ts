@@ -3,7 +3,7 @@ import { NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../component";
 
-import { transformChildrenFiber } from "./generate";
+import { transformChildrenFiber, transformKeepLiveChildrenFiber } from "./generate";
 
 import type {
   MyReactElement,
@@ -16,6 +16,7 @@ import type {
   lazy,
   createContext,
   forwardRef,
+  MyReactElementNode,
 } from "@my-react/react";
 
 const { currentHookDeepIndex, currentFunctionFiber, currentRunningFiber, currentComponentFiber } = __my_react_internal__;
@@ -261,6 +262,18 @@ const nextWorkObject = (fiber: MyReactFiberNode) => {
   throw new Error(`unknown element ${fiber.element}`);
 };
 
+const nextWorkKeepLive = (fiber: MyReactFiberNode) => {
+  const globalDispatch = fiber.root.dispatch;
+
+  globalDispatch.resolveKeepLiveMap(fiber);
+
+  const typedElement = fiber.element as MyReactElement;
+
+  const children = typedElement.props.children as MyReactElementNode;
+
+  return transformKeepLiveChildrenFiber(fiber, children);
+};
+
 export const nextWorkSync = (fiber: MyReactFiberNode) => {
   if (!fiber.mount) return [];
 
@@ -272,6 +285,7 @@ export const nextWorkSync = (fiber: MyReactFiberNode) => {
 
   if (fiber.type & NODE_TYPE.__isDynamicNode__) children = nextWorkComponent(fiber);
   else if (fiber.type & NODE_TYPE.__isObjectNode__) children = nextWorkObject(fiber);
+  else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) children = nextWorkKeepLive(fiber);
   else children = nextWorkNormal(fiber);
 
   fiber.invoked = true;
@@ -289,6 +303,7 @@ export const nextWorkAsync = (fiber: MyReactFiberNode, topLevelFiber: MyReactFib
 
     if (fiber.type & NODE_TYPE.__isDynamicNode__) nextWorkComponent(fiber);
     else if (fiber.type & NODE_TYPE.__isObjectNode__) nextWorkObject(fiber);
+    else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) nextWorkKeepLive(fiber);
     else nextWorkNormal(fiber);
 
     currentRunningFiber.current = null;

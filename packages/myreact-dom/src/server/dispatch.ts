@@ -12,9 +12,12 @@ import type { LinkTreeList } from "@my-react/react-shared";
 const { safeCallWithFiber } = __my_react_shared__;
 
 export class ServerDispatch implements FiberDispatch {
+  
   effectMap: Record<string, (() => void)[]> = {};
 
   strictMap: Record<string, boolean> = {};
+
+  keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
   layoutEffectMap: Record<string, (() => void)[]> = {};
 
@@ -35,6 +38,12 @@ export class ServerDispatch implements FiberDispatch {
     return false;
   }
   resolveRef(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null {
+    return null;
+  }
+  resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
@@ -121,6 +130,9 @@ export class ServerDispatch implements FiberDispatch {
     void 0;
   }
   pendingPosition(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  pendingDeactivate(_fiber: MyReactFiberNode): void {
     void 0;
   }
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void {

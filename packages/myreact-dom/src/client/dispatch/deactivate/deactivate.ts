@@ -1,19 +1,15 @@
-import { PATCH_TYPE } from "@my-react/react-shared";
+import { generateFiberToList } from "@my-react/react-reconciler";
 
-import { unmountFiber } from "../unmount";
+import { clearFiberDom } from "../unmount/clearFiberDom";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
-export const deactivate = (fiber: MyReactFiberNode) => {
-  if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) {
-    const globalDispatch = fiber.root.dispatch;
+export const deactivateFiber = (fiber: MyReactFiberNode) => {
+  const listTree = generateFiberToList(fiber);
 
-    const allDeactivateFibers = globalDispatch.keepLiveMap[fiber.uid];
+  clearFiberDom(fiber);
 
-    allDeactivateFibers?.forEach((fiber) => {
-      if (fiber.mount) unmountFiber(fiber);
-    });
-
-    if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) fiber.type ^= PATCH_TYPE.__pendingDeactivate__;
-  }
+  listTree.listToHead((f) => {
+    f.deactivate();
+  });
 };

@@ -9,6 +9,7 @@ export const AutoInjectProps = (Component: ComponentType<unknown>, path = "/") =
 
   const RouterComponentWithProps = () => {
     const props = useGetInitialProps(path);
+
     return <MemoComponent {...props} />;
   };
 

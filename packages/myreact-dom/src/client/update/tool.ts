@@ -30,7 +30,7 @@ export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispat
       while (globalScope.modifyFiberArray.length) {
         const newProgressFiber = globalScope.modifyFiberArray.shift();
 
-        if (newProgressFiber?.mount) {
+        if (newProgressFiber?.mounted) {
           globalDispatch.beginProgressList(globalScope);
 
           globalScope.modifyFiberRoot = newProgressFiber;

@@ -1,7 +1,7 @@
 import { NODE_TYPE } from "@my-react/react-shared";
 
 import type { DomFiberNode } from "./dom";
-import type { MyReactFiberNode, MyReactFiberNodeDev, MyReactElementNode, MyReactElement } from "@my-react/react";
+import type { MyReactFiberNode, MyReactElement } from "@my-react/react";
 
 export const isSVG = (_fiber: MyReactFiberNode, map: Record<string, boolean>) => {
   let _isSVG = _fiber.parent ? map[_fiber.parent.uid] : false;
@@ -18,56 +18,6 @@ export const isSVG = (_fiber: MyReactFiberNode, map: Record<string, boolean>) =>
   map[_fiber.uid] = _isSVG;
 
   return _isSVG;
-};
-
-export const generateStrictMap = (_fiber: MyReactFiberNode, map: Record<string, boolean>) => {
-  const parent = _fiber.parent;
-  const element = _fiber.element;
-  if (typeof element === "object" && _fiber.type & NODE_TYPE.__isStrictNode__) {
-    map[_fiber.uid] = true;
-  } else {
-    if (parent) {
-      map[_fiber.uid] = Boolean(map[parent.uid]);
-    } else {
-      map[_fiber.uid] = false;
-    }
-  }
-  if (__DEV__) {
-    const typedFiber = _fiber as MyReactFiberNodeDev;
-
-    typedFiber._debugStrict = map[_fiber.uid];
-  }
-};
-
-export const generateKeepLiveMap = (_fiber: MyReactFiberNode, map: Record<string, MyReactFiberNode[]>) => {
-  const cacheArray = map[_fiber.uid] || [];
-
-  map[_fiber.uid] = cacheArray;
-
-  if (__DEV__) {
-    const typedFiber = _fiber as MyReactFiberNodeDev;
-
-    typedFiber._debugKeepLiveCache = cacheArray;
-  }
-};
-
-export const generateSuspenseMap = (_fiber: MyReactFiberNode, map: Record<string, MyReactElementNode>) => {
-  const parent = _fiber.parent;
-  const element = _fiber.element;
-  if (typeof element === "object" && _fiber.type & NODE_TYPE.__isSuspense__) {
-    map[_fiber.uid] = element?.props["fallback"] as MyReactElementNode;
-  } else {
-    if (parent) {
-      map[_fiber.uid] = map[parent.uid];
-    } else {
-      map[_fiber.uid] = null;
-    }
-  }
-  if (__DEV__) {
-    const typedFiber = _fiber as MyReactFiberNodeDev;
-
-    typedFiber._debugSuspense = map[_fiber.uid];
-  }
 };
 
 export const setRef = (_fiber: MyReactFiberNode) => {
@@ -98,30 +48,4 @@ export const setRef = (_fiber: MyReactFiberNode) => {
       throw new Error("class component do not have a instance");
     }
   }
-};
-
-export const getKeepLiveFiber = (_fiber: MyReactFiberNode, map: Record<string, MyReactFiberNode[]>, element: MyReactElementNode) => {
-  const cacheArray = map[_fiber.uid] || [];
-  // <KeepLive> component only have one child;
-  const currentChild = _fiber.child;
-  // set cache map
-  map[_fiber.uid] = cacheArray;
-  // just a normal update
-  if (currentChild.checkIsSameType(element)) {
-    return currentChild;
-  }
-  if (cacheArray.every((f) => f.uid !== currentChild.uid)) {
-    cacheArray.push(currentChild);
-  }
-  const cachedFiber = cacheArray.find((f) => f.checkIsSameType(element));
-
-  map[_fiber.uid] = cacheArray.filter((f) => f !== cachedFiber);
-
-  if (__DEV__) {
-    const typedFiber = _fiber as MyReactFiberNodeDev;
-
-    typedFiber._debugKeepLiveCache = map[_fiber.uid];
-  }
-
-  return cachedFiber || null;
 };

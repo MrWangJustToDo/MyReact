@@ -1,33 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="text/babel" async>
-      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, KeepLive } = React;
 
-      const App = () => {
-        const [i, setI] = useState(0);
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+</head>
 
-        return (
-          <>
-            <KeepLive>{i % 2 === 0 ? <input /> : <div>hello keepLive</div>}</KeepLive>
-            <button onClick={() => setI((i) => i + 1)}>toggle</button>
-          </>
-        );
-      };
+<body>
+  <div id="root"></div>
+  <script type="text/babel" async>
+    const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, KeepLive, Component, StrictMode } = React;
 
-      ReactDOM.render(<App />, document.querySelector("#root"));
-    </script>
-  </body>
+    class Foo extends Component {
+      state = { a: 1 }
+
+      componentDidMount() {
+        console.log('mount')
+      }
+
+      componentWillUnmount() {
+        console.log('unmount')
+      }
+
+      render() {
+        return <>
+          <p>class component</p>
+          <p>state.a: {this.state.a}</p>
+          <button onClick={() => this.setState(({ a }) => ({ a: ++a }))}>add</button>
+        </>
+      }
+    }
+
+    const Bar = () => {
+      const [count, setCount] = useState(0);
+      const [c, setC] = useState(0);
+
+      return <>
+        <p>Bar: {c}</p>
+        <input type="text" value={'hhhh'} onChange={(e) => setCount(e.target.value)} />
+        <button onClick={() => setC(i => i + 1)}>add</button>
+        <Foo />
+      </>
+    }
+
+    const App = () => {
+      const [i, setI] = useState(0);
+
+      return (
+        <>
+          <p>kkk: {i}</p>
+          <KeepLive>{i % 2 === 0 ? <input /> : <Bar />}</KeepLive>
+          <button onClick={() => setI((i) => i + 1)}>toggle</button>
+        </>
+      );
+    };
+
+    ReactDOM.render(<StrictMode><App /></StrictMode>, document.querySelector("#root"));
+  </script>
+</body>
+
 </html>

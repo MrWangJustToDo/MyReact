@@ -15,6 +15,10 @@ const controlElementTag: Record<string, boolean> = {
   // select: true,
 };
 
+type ControlledElement = HTMLInputElement & {
+  __isControlled__: boolean;
+};
+
 export const addEventListener = (fiber: MyReactFiberNode, node: DomFiberNode, key: string) => {
   const globalDispatch = fiber.root.dispatch;
 
@@ -49,8 +53,11 @@ export const addEventListener = (fiber: MyReactFiberNode, node: DomFiberNode, ke
         });
 
         if (enableControlComponent.current) {
-          if (controlElementTag[typedElement.type as string] && typeof typedElement.props["value"] !== "undefined") {
-            (dom as HTMLInputElement)["value"] = typedElement.props["value"] as string;
+          const pendingProps = fiber.pendingProps;
+          if (controlElementTag[typedElement.type as string] && typeof pendingProps["value"] !== "undefined") {
+            const typedDom = dom as ControlledElement;
+            typedDom.__isControlled__ = true;
+            typedDom["value"] = pendingProps["value"] as string;
           }
         }
       };

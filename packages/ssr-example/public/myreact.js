@@ -865,6 +865,9 @@
         EmptyDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
             return null;
         };
+        EmptyDispatch.prototype.resolveMemorizeProps = function (_fiber) {
+            return {};
+        };
         EmptyDispatch.prototype.resolveStrictValue = function (_fiber) {
             return false;
         };
@@ -1003,7 +1006,8 @@
     var MyReactFiberNode = /** @class */ (function () {
         function MyReactFiberNode(fiberIndex, parent, element) {
             var _a;
-            this.mount = true;
+            this.mounted = true;
+            this.activated = true;
             this.invoked = false;
             this.node = null;
             this.children = [];
@@ -1049,11 +1053,11 @@
         MyReactFiberNode.prototype.initialParent = function () {
             if (this.parent) {
                 this.parent.addChild(this);
-                var globalDispatch = this.root.dispatch;
-                globalDispatch.resolveSuspenseMap(this);
-                globalDispatch.resolveContextMap(this);
-                globalDispatch.resolveStrictMap(this);
             }
+            var globalDispatch = this.root.dispatch;
+            globalDispatch.resolveSuspenseMap(this);
+            globalDispatch.resolveContextMap(this);
+            globalDispatch.resolveStrictMap(this);
         };
         MyReactFiberNode.prototype.installParent = function (parent) {
             this.parent = parent;
@@ -1174,7 +1178,14 @@
         MyReactFiberNode.prototype.unmount = function () {
             this.hookNodeArray.forEach(function (hook) { return hook.unmount(); });
             this.instance && this.instance.unmount();
-            this.mount = false;
+            this.mounted = false;
+            this.mode = UPDATE_TYPE.__initial__;
+            this.patch = PATCH_TYPE.__initial__;
+        };
+        MyReactFiberNode.prototype.deactivate = function () {
+            this.hookNodeArray.forEach(function (hook) { return hook.unmount(); });
+            this.instance && this.instance.unmount();
+            this.activated = false;
             this.mode = UPDATE_TYPE.__initial__;
             this.patch = PATCH_TYPE.__initial__;
         };

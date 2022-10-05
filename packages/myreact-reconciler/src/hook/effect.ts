@@ -14,7 +14,7 @@ export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
       const update = () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (hookNode._ownerFiber?.mount) hookNode.cancel = hookNode.value();
+        if (hookNode._ownerFiber?.mounted) hookNode.cancel = hookNode.value();
 
         hookNode.effect = false;
 
@@ -34,7 +34,7 @@ export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
       const update = () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (hookNode._ownerFiber?.mount) hookNode.cancel = hookNode.value();
+        if (hookNode._ownerFiber?.mounted) hookNode.cancel = hookNode.value();
 
         hookNode.effect = false;
 

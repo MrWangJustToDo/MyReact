@@ -41,7 +41,9 @@ export class MyReactFiberNode {
 
   fiberIndex: number;
 
-  mount = true;
+  mounted = true;
+
+  activated = true;
 
   invoked = false;
 
@@ -116,11 +118,11 @@ export class MyReactFiberNode {
   initialParent() {
     if (this.parent) {
       this.parent.addChild(this);
-      const globalDispatch = this.root.dispatch;
-      globalDispatch.resolveSuspenseMap(this);
-      globalDispatch.resolveContextMap(this);
-      globalDispatch.resolveStrictMap(this);
     }
+    const globalDispatch = this.root.dispatch;
+    globalDispatch.resolveSuspenseMap(this);
+    globalDispatch.resolveContextMap(this);
+    globalDispatch.resolveStrictMap(this);
   }
 
   installParent(parent: MyReactFiberNode) {
@@ -259,7 +261,15 @@ export class MyReactFiberNode {
   unmount() {
     this.hookNodeArray.forEach((hook) => hook.unmount());
     this.instance && this.instance.unmount();
-    this.mount = false;
+    this.mounted = false;
+    this.mode = UPDATE_TYPE.__initial__;
+    this.patch = PATCH_TYPE.__initial__;
+  }
+
+  deactivate() {
+    this.hookNodeArray.forEach((hook) => hook.unmount());
+    this.instance && this.instance.unmount();
+    this.activated = false;
     this.mode = UPDATE_TYPE.__initial__;
     this.patch = PATCH_TYPE.__initial__;
   }

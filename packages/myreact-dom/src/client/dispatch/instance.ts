@@ -1,15 +1,19 @@
 import { cloneElement, __my_react_shared__ } from "@my-react/react";
 import {
   defaultGenerateContextMap,
+  defaultGenerateKeepLiveMap,
+  defaultGenerateStrictMap,
+  defaultGenerateSuspenseMap,
   defaultGetContextMapFromMap,
   defaultGetContextValue,
+  defaultGetKeepLiveFiber,
   processComponentUpdateQueue,
   processHookNode,
   processHookUpdateQueue,
 } from "@my-react/react-reconciler";
 import { LinkTreeList, NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { enableFastLoop, generateKeepLiveMap, generateStrictMap, generateSuspenseMap, getKeepLiveFiber, isSVG, setRef } from "@my-react-dom-shared";
+import { enableFastLoop, getMemoizedProps, isSVG, setRef } from "@my-react-dom-shared";
 
 import { triggerUpdate } from "../update";
 
@@ -23,7 +27,16 @@ import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
 
-import type { MyReactFiberNode, FiberDispatch, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode, RenderScope } from "@my-react/react";
+import type {
+  MyReactFiberNode,
+  FiberDispatch,
+  MyReactElementNode,
+  createContext,
+  CreateHookParams,
+  MyReactHookNode,
+  RenderScope,
+  MyReactElement,
+} from "@my-react/react";
 
 const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
 
@@ -59,19 +72,22 @@ export class ClientDispatch implements FiberDispatch {
     return processHookNode(_fiber, _hookParams);
   }
   resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null {
-    return getKeepLiveFiber(_fiber, this.keepLiveMap, _element);
+    return defaultGetKeepLiveFiber(_fiber, this.keepLiveMap, _element);
   }
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
-    generateKeepLiveMap(_fiber, this.keepLiveMap);
+    defaultGenerateKeepLiveMap(_fiber, this.keepLiveMap);
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
-    generateStrictMap(_fiber, this.strictMap);
+    defaultGenerateStrictMap(_fiber, this.strictMap);
   }
   resolveStrictValue(_fiber: MyReactFiberNode): boolean {
     return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
   }
+  resolveMemorizeProps(_fiber: MyReactFiberNode): MyReactElement["props"] {
+    return getMemoizedProps(_fiber);
+  }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
-    generateSuspenseMap(_fiber, this.suspenseMap);
+    defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
   }
   resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode {
     return cloneElement(this.suspenseMap[_fiber.uid]);
@@ -168,7 +184,7 @@ export class ClientDispatch implements FiberDispatch {
     if (enableFastLoop.current) {
       _list.reconcileList({
         toFoot: (_fiber) => {
-          if (_fiber.mount) {
+          if (_fiber.mounted) {
             const _isSVG = isSVG(_fiber, this.elementTypeMap);
             safeCallWithFiber({
               fiber: _fiber,
@@ -207,7 +223,7 @@ export class ClientDispatch implements FiberDispatch {
           }
         },
         toHead: (_fiber) => {
-          if (_fiber.mount) {
+          if (_fiber.mounted) {
             safeCallWithFiber({
               fiber: _fiber,
               action: () => position(_fiber),
@@ -226,9 +242,16 @@ export class ClientDispatch implements FiberDispatch {
           }
         },
       });
+      // requestAnimationFrame(() =>
+      //   _list.listToHead((_fiber) => {
+      //     if (_fiber.mounted) {
+      //       safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) });
+      //     }
+      //   })
+      // );
     } else {
       _list.listToFoot((_fiber) => {
-        if (_fiber.mount) {
+        if (_fiber.mounted) {
           const _isSVG = isSVG(_fiber, this.elementTypeMap);
           safeCallWithFiber({
             fiber: _fiber,
@@ -252,7 +275,7 @@ export class ClientDispatch implements FiberDispatch {
       });
 
       _list.listToHead((_fiber) => {
-        if (_fiber.mount) {
+        if (_fiber.mounted) {
           safeCallWithFiber({
             fiber: _fiber,
             action: () => position(_fiber),
@@ -261,7 +284,7 @@ export class ClientDispatch implements FiberDispatch {
       });
 
       _list.listToFoot((_fiber) => {
-        if (_fiber.mount) {
+        if (_fiber.mounted) {
           safeCallWithFiber({
             fiber: _fiber,
             action: () => append(_fiber),
@@ -270,7 +293,7 @@ export class ClientDispatch implements FiberDispatch {
       });
 
       _list.reconcile((_fiber) => {
-        if (_fiber.mount) {
+        if (_fiber.mounted) {
           safeCallWithFiber({
             fiber: _fiber,
             action: () => layoutEffect(_fiber),

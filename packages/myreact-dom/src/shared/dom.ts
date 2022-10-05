@@ -17,3 +17,9 @@ export const createDomNode = (element: DomElement | DomNode): { memoizedProps: M
   memoizedProps: {},
   element,
 });
+
+export const getMemoizedProps = (fiber: MyReactFiberNode): MyReactElement["props"] => {
+  const element = fiber.node as DomFiberNode;
+
+  return element.memoizedProps;
+};

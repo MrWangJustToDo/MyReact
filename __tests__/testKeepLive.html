@@ -46,7 +46,9 @@
         <p>Bar: {c}</p>
         <input type="text" value={'hhhh'} onChange={(e) => setCount(e.target.value)} />
         <button onClick={() => setC(i => i + 1)}>add</button>
-        <Foo />
+        <KeepLive>
+          {c % 2 === 0 ? <Foo /> : 12}
+        </KeepLive>
       </>
     }
 

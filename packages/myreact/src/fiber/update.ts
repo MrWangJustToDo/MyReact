@@ -30,11 +30,11 @@ export const updateFiberNode = (
     fiber.checkElement();
   }
 
-  if (prevElement !== nextElement) {
+  if (prevElement !== nextElement || !fiber.activated) {
     if (fiber.type & NODE_TYPE.__isMemo__) {
       const typedPrevElement = prevElement as MyReactElement;
       const typedNextElement = nextElement as MyReactElement;
-      if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(typedPrevElement.props, typedNextElement.props)) {
+      if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(typedPrevElement.props, typedNextElement.props) && fiber.activated) {
         fiber.afterUpdate();
       } else {
         fiber.prepareUpdate();

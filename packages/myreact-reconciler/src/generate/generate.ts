@@ -182,24 +182,6 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
   return createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber }, newChild);
 };
 
-const transformDeactivateChildrenFiber = (parentFiber: MyReactFiberNode, children: MyReactElementNode) => {
-  const globalDispatch = parentFiber.root.dispatch;
-
-  parentFiber.beforeUpdate();
-
-  const newFiber = getNewFiberWithInitial(children, parentFiber);
-
-  parentFiber.renderedChildren.push(newFiber);
-
-  parentFiber.afterUpdate();
-
-  globalDispatch.pendingDeactivate(parentFiber);
-
-  globalDispatch.pendingPosition(newFiber as MyReactFiberNode);
-
-  return parentFiber.children;
-};
-
 export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   let index = 0;
 
@@ -261,6 +243,16 @@ export const transformKeepLiveChildrenFiber = (parentFiber: MyReactFiberNode, ch
     return parentFiber.children;
   } else {
     // not have cachedFiber, maybe it is a first time to run
-    return transformDeactivateChildrenFiber(parentFiber, children);
+    parentFiber.beforeUpdate();
+
+    const newChildFiber = createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber, type: "position" }, children);
+
+    parentFiber.renderedChildren.push(newChildFiber);
+
+    parentFiber.afterUpdate();
+
+    globalDispatch.pendingDeactivate(parentFiber);
+
+    return parentFiber.children;
   }
 };

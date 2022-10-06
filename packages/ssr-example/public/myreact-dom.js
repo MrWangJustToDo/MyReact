@@ -376,16 +376,6 @@
         }
         return createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber }, newChild);
     };
-    var transformDeactivateChildrenFiber = function (parentFiber, children) {
-        var globalDispatch = parentFiber.root.dispatch;
-        parentFiber.beforeUpdate();
-        var newFiber = getNewFiberWithInitial(children, parentFiber);
-        parentFiber.renderedChildren.push(newFiber);
-        parentFiber.afterUpdate();
-        globalDispatch.pendingDeactivate(parentFiber);
-        globalDispatch.pendingPosition(newFiber);
-        return parentFiber.children;
-    };
     var transformChildrenFiber = function (parentFiber, children) {
         var index = 0;
         var isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
@@ -427,7 +417,12 @@
         }
         else {
             // not have cachedFiber, maybe it is a first time to run
-            return transformDeactivateChildrenFiber(parentFiber, children);
+            parentFiber.beforeUpdate();
+            var newChildFiber = createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber, type: "position" }, children);
+            parentFiber.renderedChildren.push(newChildFiber);
+            parentFiber.afterUpdate();
+            globalDispatch.pendingDeactivate(parentFiber);
+            return parentFiber.children;
         }
     };
 

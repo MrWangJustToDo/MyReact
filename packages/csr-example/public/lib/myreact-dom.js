@@ -133,7 +133,7 @@
             this.rawArray.push(node);
             var listNode = new ListTreeNode(node);
             this.push(listNode);
-            // this.scopePush({ index: _index, value: listNode });
+            this.scopePush({ index: _index, value: listNode });
         };
         LinkTreeList.prototype.unshift = function (node) {
             if (!this.head) {
@@ -223,12 +223,6 @@
             if (this.scopeLength) {
                 this.scopeRoot.value.children.forEach(reconcileScope);
             }
-        };
-        LinkTreeList.prototype.reconcileList = function (_a) {
-            var toFoot = _a.toFoot, toHead = _a.toHead;
-            // loop
-            toFoot && this.listToFoot(toFoot);
-            toHead && this.listToHead(toHead);
         };
         LinkTreeList.prototype.has = function () {
             return this.head !== null;
@@ -1352,9 +1346,8 @@
     var enableControlComponent = react.createRef(true);
     var enableEventSystem = react.createRef(true);
     var enableHighlight = react.createRef(false);
-    // ==== 实验性 ==== //
-    // 如果禁用，请同时启用 LinkTreeList 的 scopePush
-    var enableFastLoop = react.createRef(true);
+    // TODO
+    react.createRef(false);
 
     var createDomNode = function (element) { return ({
         memoizedProps: {},
@@ -2645,111 +2638,51 @@
         };
         ClientDispatch.prototype.reconcileUpdate = function (_list) {
             var _this = this;
-            if (enableFastLoop.current) {
-                _list.reconcileList({
-                    toFoot: function (_fiber) {
-                        if (_fiber.mounted) {
-                            var _isSVG_1 = isSVG(_fiber, _this.elementTypeMap);
-                            safeCallWithFiber$1({
-                                fiber: _fiber,
-                                action: function () { return create$1(_fiber, false, _fiber, _isSVG_1); },
-                            });
-                            safeCallWithFiber$1({
-                                fiber: _fiber,
-                                action: function () { return update$1(_fiber, false, _isSVG_1); },
-                            });
-                            safeCallWithFiber$1({
-                                fiber: _fiber,
-                                action: function () { return unmount(_fiber); },
-                            });
-                            safeCallWithFiber$1({ fiber: _fiber, action: function () { return deactivate(_fiber); } });
-                            // Promise.resolve().then(() =>
-                            //   safeCallWithFiber({
-                            //     fiber: _fiber,
-                            //     action: () => {
-                            //       unmount(_fiber);
-                            //       update(_fiber, false, _isSVG);
-                            //       append(_fiber);
-                            //     },
-                            //   })
-                            // );
-                            safeCallWithFiber$1({ fiber: _fiber, action: function () { return context(_fiber); } });
-                            safeCallWithFiber$1({
-                                fiber: _fiber,
-                                action: function () { return append$2(_fiber); },
-                            });
-                        }
-                    },
-                    toHead: function (_fiber) {
-                        if (_fiber.mounted) {
-                            safeCallWithFiber$1({
-                                fiber: _fiber,
-                                action: function () { return position(_fiber); },
-                            });
-                            safeCallWithFiber$1({
-                                fiber: _fiber,
-                                action: function () { return layoutEffect(_fiber); },
-                            });
-                            // requestAnimationFrame(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
-                            // setTimeout(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
-                            Promise.resolve().then(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
-                        }
-                    },
-                });
-                // requestAnimationFrame(() =>
-                //   _list.listToHead((_fiber) => {
-                //     if (_fiber.mounted) {
-                //       safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) });
-                //     }
-                //   })
-                // );
-            }
-            else {
-                _list.listToFoot(function (_fiber) {
-                    if (_fiber.mounted) {
-                        var _isSVG_2 = isSVG(_fiber, _this.elementTypeMap);
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return create$1(_fiber, false, _fiber, _isSVG_2); },
-                        });
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return update$1(_fiber, false, _isSVG_2); },
-                        });
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return unmount(_fiber); },
-                        });
-                        safeCallWithFiber$1({ fiber: _fiber, action: function () { return deactivate(_fiber); } });
-                        safeCallWithFiber$1({ fiber: _fiber, action: function () { return context(_fiber); } });
-                    }
-                });
-                _list.listToHead(function (_fiber) {
-                    if (_fiber.mounted) {
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return position(_fiber); },
-                        });
-                    }
-                });
-                _list.listToFoot(function (_fiber) {
-                    if (_fiber.mounted) {
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return append$2(_fiber); },
-                        });
-                    }
-                });
-                _list.reconcile(function (_fiber) {
-                    if (_fiber.mounted) {
-                        safeCallWithFiber$1({
-                            fiber: _fiber,
-                            action: function () { return layoutEffect(_fiber); },
-                        });
-                        Promise.resolve().then(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
-                    }
-                });
-            }
+            _list.listToFoot(function (_fiber) {
+                if (_fiber.mounted) {
+                    var _isSVG_1 = isSVG(_fiber, _this.elementTypeMap);
+                    safeCallWithFiber$1({
+                        fiber: _fiber,
+                        action: function () { return create$1(_fiber, false, _fiber, _isSVG_1); },
+                    });
+                    safeCallWithFiber$1({
+                        fiber: _fiber,
+                        action: function () { return update$1(_fiber, false, _isSVG_1); },
+                    });
+                    safeCallWithFiber$1({
+                        fiber: _fiber,
+                        action: function () { return unmount(_fiber); },
+                    });
+                    safeCallWithFiber$1({ fiber: _fiber, action: function () { return deactivate(_fiber); } });
+                    safeCallWithFiber$1({ fiber: _fiber, action: function () { return context(_fiber); } });
+                }
+            });
+            _list.listToHead(function (_fiber) {
+                if (_fiber.mounted) {
+                    safeCallWithFiber$1({
+                        fiber: _fiber,
+                        action: function () { return position(_fiber); },
+                    });
+                }
+            });
+            _list.listToFoot(function (_fiber) {
+                if (_fiber.mounted) {
+                    safeCallWithFiber$1({
+                        fiber: _fiber,
+                        action: function () { return append$2(_fiber); },
+                    });
+                }
+            });
+            _list.reconcile(function (_fiber) {
+                if (_fiber.mounted) {
+                    safeCallWithFiber$1({
+                        fiber: _fiber,
+                        action: function () { return layoutEffect(_fiber); },
+                    });
+                    // requestAnimationFrame(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }))
+                    Promise.resolve().then(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
+                }
+            });
         };
         ClientDispatch.prototype.pendingCreate = function (_fiber) {
             if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__)) {

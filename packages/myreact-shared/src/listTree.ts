@@ -42,7 +42,7 @@ export class LinkTreeList<T> {
     this.rawArray.push(node);
     const listNode = new ListTreeNode(node);
     this.push(listNode);
-    // this.scopePush({ index: _index, value: listNode });
+    this.scopePush({ index: _index, value: listNode });
   }
 
   unshift(node: ListTreeNode<T>) {
@@ -135,12 +135,6 @@ export class LinkTreeList<T> {
     if (this.scopeLength) {
       this.scopeRoot.value.children.forEach(reconcileScope);
     }
-  }
-
-  reconcileList({ toFoot, toHead }: { toFoot?: (p: T) => void; toHead?: (p: T) => void }) {
-    // loop
-    toFoot && this.listToFoot(toFoot);
-    toHead && this.listToHead(toHead);
   }
 
   has() {

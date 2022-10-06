@@ -53,7 +53,7 @@ export const updateFiberNode = (
       if (fiber.type & NODE_TYPE.__isPlainNode__) {
         const typedPrevElement = prevElement as MyReactElement;
         const typedNextElement = nextElement as MyReactElement;
-        if (!isNormalEquals(typedPrevElement.props, typedNextElement.props, false)) {
+        if (!isNormalEquals(typedPrevElement.props, typedNextElement.props, (key: string) => key === "children")) {
           globalDispatch.pendingUpdate(fiber);
         }
       }

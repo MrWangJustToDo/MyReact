@@ -2,7 +2,7 @@ import { NODE_TYPE } from "@my-react/react-shared";
 
 import { currentRunningFiber } from "./env";
 
-import type { forwardRef, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "../element";
+import type { forwardRef, lazy, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 
 const getTrackDevLog = (fiber: MyReactFiberNode) => {
@@ -28,8 +28,20 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
 };
 
 const getElementName = (fiber: MyReactFiberNode) => {
-  if (fiber.type & NODE_TYPE.__isMemo__) return `<Memo />`;
-  if (fiber.type & NODE_TYPE.__isLazy__) return `<Lazy />`;
+  if (fiber.type & NODE_TYPE.__isMemo__) {
+    const typedElement = fiber.element as MyReactElement;
+    const typedType = typedElement.type as ReturnType<typeof memo>;
+    if (typedType.render.name) return `<Memo - (${typedType.render.name}) />`;
+    if (typedType.render.displayName) return `<Memo -(${typedType.render.displayName}) />`;
+    return `<Memo />`;
+  }
+  if (fiber.type & NODE_TYPE.__isLazy__) {
+    const typedElement = fiber.element as MyReactElement;
+    const typedType = typedElement.type as ReturnType<typeof lazy>;
+    if (typedType.render.name) return `<Lazy - (${typedType.render.name}) />`;
+    if (typedType.render.displayName) return `<Lazy -(${typedType.render.displayName}) />`;
+    return `<Lazy />`;
+  }
   if (fiber.type & NODE_TYPE.__isPortal__) return `<Portal />`;
   if (fiber.type & NODE_TYPE.__isNullNode__) return `<Null />`;
   if (fiber.type & NODE_TYPE.__isEmptyNode__) return `<Empty />`;
@@ -40,12 +52,11 @@ const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isContextProvider__) return `<Provider />`;
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return `<Consumer />`;
   if (fiber.type & NODE_TYPE.__isForwardRef__) {
-    const typedType = (fiber.element as MyReactElement).type as ReturnType<typeof forwardRef>;
-    if (typedType.render.name) {
-      return `<ForwardRef - (${typedType.render.name}) />`;
-    } else {
-      return `<ForwardRef />`;
-    }
+    const typedElement = fiber.element as MyReactElement;
+    const typedType = typedElement.type as ReturnType<typeof forwardRef>;
+    if (typedType.render.name) return `<ForwardRef - (${typedType.render.name}) />`;
+    if (typedType.render.displayName) return `<ForwardRef -(${typedType.render.displayName}) />`;
+    return `<ForwardRef />`;
   }
   if (typeof fiber.element === "object" && fiber.element !== null) {
     if (typeof fiber.element.type === "string") {

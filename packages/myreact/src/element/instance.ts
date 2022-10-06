@@ -32,7 +32,14 @@ export type MixinMyReactFunctionComponent = MyReactFunctionComponent & {
   defaultProps?: Record<string, unknown>;
 };
 
-export type MyReactElementType = symbol | string | MyReactObjectComponent | MyReactClassComponent | MyReactFunctionComponent;
+export type MyReactElementType =
+  | symbol
+  | string
+  | MyReactObjectComponent
+  | MyReactClassComponent
+  | MyReactFunctionComponent
+  | MixinMyReactClassComponent
+  | MixinMyReactFunctionComponent;
 
 export type MyReactElement = ReturnType<typeof createMyReactElement>;
 

@@ -70,8 +70,8 @@
         Effect_TYPE[Effect_TYPE["__pendingEffect__"] = 1] = "__pendingEffect__";
     })(Effect_TYPE || (Effect_TYPE = {}));
 
-    var isNormalEquals = function (src, target, children) {
-        if (children === void 0) { children = true; }
+    var isNormalEquals = function (src, target, isSkipKey) {
+        if (isSkipKey === void 0) { isSkipKey = function () { return false; }; }
         if (typeof src === "object" && typeof target === "object" && src !== null && target !== null) {
             var srcKeys = Object.keys(src);
             var targetKeys = Object.keys(target);
@@ -79,13 +79,8 @@
                 return false;
             var res = true;
             for (var key in src) {
-                if (key === "children") {
-                    if (children) {
-                        res = res && Object.is(src[key], target[key]);
-                    }
-                    else {
-                        continue;
-                    }
+                if (isSkipKey(key)) {
+                    continue;
                 }
                 else {
                     res = res && Object.is(src[key], target[key]);
@@ -228,10 +223,24 @@
     };
     var getElementName = function (fiber) {
         var _a;
-        if (fiber.type & NODE_TYPE.__isMemo__)
+        if (fiber.type & NODE_TYPE.__isMemo__) {
+            var typedElement = fiber.element;
+            var typedType = typedElement.type;
+            if (typedType.render.name)
+                return "<Memo - (".concat(typedType.render.name, ") />");
+            if (typedType.render.displayName)
+                return "<Memo -(".concat(typedType.render.displayName, ") />");
             return "<Memo />";
-        if (fiber.type & NODE_TYPE.__isLazy__)
+        }
+        if (fiber.type & NODE_TYPE.__isLazy__) {
+            var typedElement = fiber.element;
+            var typedType = typedElement.type;
+            if (typedType.render.name)
+                return "<Lazy - (".concat(typedType.render.name, ") />");
+            if (typedType.render.displayName)
+                return "<Lazy -(".concat(typedType.render.displayName, ") />");
             return "<Lazy />";
+        }
         if (fiber.type & NODE_TYPE.__isPortal__)
             return "<Portal />";
         if (fiber.type & NODE_TYPE.__isNullNode__)
@@ -251,13 +260,13 @@
         if (fiber.type & NODE_TYPE.__isContextConsumer__)
             return "<Consumer />";
         if (fiber.type & NODE_TYPE.__isForwardRef__) {
-            var typedType = fiber.element.type;
-            if (typedType.render.name) {
+            var typedElement = fiber.element;
+            var typedType = typedElement.type;
+            if (typedType.render.name)
                 return "<ForwardRef - (".concat(typedType.render.name, ") />");
-            }
-            else {
-                return "<ForwardRef />";
-            }
+            if (typedType.render.displayName)
+                return "<ForwardRef -(".concat(typedType.render.displayName, ") />");
+            return "<ForwardRef />";
         }
         if (typeof fiber.element === "object" && fiber.element !== null) {
             if (typeof fiber.element.type === "string") {
@@ -662,6 +671,7 @@
     }());
 
     var contextId = 0;
+    var defaultObject = { id: 0 };
     var createContext = function (value) {
         var _a, _b, _c;
         var ContextObject = (_a = {},
@@ -673,12 +683,12 @@
         var Provider = (_b = {},
             _b["$$typeof"] = My_React_Provider,
             _b.value = value,
-            _b.Context = { id: 0 },
+            _b.Context = defaultObject,
             _b);
         var Consumer = (_c = {},
             _c["$$typeof"] = My_React_Consumer,
             _c.Internal = MyReactInternalInstance,
-            _c.Context = { id: 0 },
+            _c.Context = defaultObject,
             _c);
         Object.defineProperty(Provider, "Context", {
             get: function () {
@@ -1299,7 +1309,7 @@
                 if (fiber.type & NODE_TYPE.__isPlainNode__) {
                     var typedPrevElement = prevElement;
                     var typedNextElement = nextElement;
-                    if (!isNormalEquals(typedPrevElement.props, typedNextElement.props, false)) {
+                    if (!isNormalEquals(typedPrevElement.props, typedNextElement.props, function (key) { return key === "children"; })) {
                         globalDispatch.pendingUpdate(fiber);
                     }
                 }

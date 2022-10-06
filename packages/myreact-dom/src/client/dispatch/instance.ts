@@ -13,7 +13,7 @@ import {
 } from "@my-react/react-reconciler";
 import { LinkTreeList, NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { enableFastLoop, getMemoizedProps, isSVG, setRef } from "@my-react-dom-shared";
+import { getMemoizedProps, isSVG, setRef } from "@my-react-dom-shared";
 
 import { triggerUpdate } from "../update";
 
@@ -181,128 +181,60 @@ export class ClientDispatch implements FiberDispatch {
     }
   }
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
-    if (enableFastLoop.current) {
-      _list.reconcileList({
-        toFoot: (_fiber) => {
-          if (_fiber.mounted) {
-            const _isSVG = isSVG(_fiber, this.elementTypeMap);
-            safeCallWithFiber({
-              fiber: _fiber,
-              action: () => create(_fiber, false, _fiber, _isSVG),
-            });
+    _list.listToFoot((_fiber) => {
+      if (_fiber.mounted) {
+        const _isSVG = isSVG(_fiber, this.elementTypeMap);
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => create(_fiber, false, _fiber, _isSVG),
+        });
 
-            safeCallWithFiber({
-              fiber: _fiber,
-              action: () => update(_fiber, false, _isSVG),
-            });
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => update(_fiber, false, _isSVG),
+        });
 
-            safeCallWithFiber({
-              fiber: _fiber,
-              action: () => unmount(_fiber),
-            });
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => unmount(_fiber),
+        });
 
-            safeCallWithFiber({ fiber: _fiber, action: () => deactivate(_fiber) });
+        safeCallWithFiber({ fiber: _fiber, action: () => deactivate(_fiber) });
 
-            // Promise.resolve().then(() =>
-            //   safeCallWithFiber({
-            //     fiber: _fiber,
-            //     action: () => {
-            //       unmount(_fiber);
-            //       update(_fiber, false, _isSVG);
-            //       append(_fiber);
-            //     },
-            //   })
-            // );
+        safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
+      }
+    });
 
-            safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
+    _list.listToHead((_fiber) => {
+      if (_fiber.mounted) {
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => position(_fiber),
+        });
+      }
+    });
 
-            safeCallWithFiber({
-              fiber: _fiber,
-              action: () => append(_fiber),
-            });
-          }
-        },
-        toHead: (_fiber) => {
-          if (_fiber.mounted) {
-            safeCallWithFiber({
-              fiber: _fiber,
-              action: () => position(_fiber),
-            });
+    _list.listToFoot((_fiber) => {
+      if (_fiber.mounted) {
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => append(_fiber),
+        });
+      }
+    });
 
-            safeCallWithFiber({
-              fiber: _fiber,
-              action: () => layoutEffect(_fiber),
-            });
+    _list.reconcile((_fiber) => {
+      if (_fiber.mounted) {
+        safeCallWithFiber({
+          fiber: _fiber,
+          action: () => layoutEffect(_fiber),
+        });
 
-            // requestAnimationFrame(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+        // requestAnimationFrame(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }))
 
-            // setTimeout(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
-
-            Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
-          }
-        },
-      });
-      // requestAnimationFrame(() =>
-      //   _list.listToHead((_fiber) => {
-      //     if (_fiber.mounted) {
-      //       safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) });
-      //     }
-      //   })
-      // );
-    } else {
-      _list.listToFoot((_fiber) => {
-        if (_fiber.mounted) {
-          const _isSVG = isSVG(_fiber, this.elementTypeMap);
-          safeCallWithFiber({
-            fiber: _fiber,
-            action: () => create(_fiber, false, _fiber, _isSVG),
-          });
-
-          safeCallWithFiber({
-            fiber: _fiber,
-            action: () => update(_fiber, false, _isSVG),
-          });
-
-          safeCallWithFiber({
-            fiber: _fiber,
-            action: () => unmount(_fiber),
-          });
-
-          safeCallWithFiber({ fiber: _fiber, action: () => deactivate(_fiber) });
-
-          safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
-        }
-      });
-
-      _list.listToHead((_fiber) => {
-        if (_fiber.mounted) {
-          safeCallWithFiber({
-            fiber: _fiber,
-            action: () => position(_fiber),
-          });
-        }
-      });
-
-      _list.listToFoot((_fiber) => {
-        if (_fiber.mounted) {
-          safeCallWithFiber({
-            fiber: _fiber,
-            action: () => append(_fiber),
-          });
-        }
-      });
-
-      _list.reconcile((_fiber) => {
-        if (_fiber.mounted) {
-          safeCallWithFiber({
-            fiber: _fiber,
-            action: () => layoutEffect(_fiber),
-          });
-
-          Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
-        }
-      });
-    }
+        Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+      }
+    });
   }
   pendingCreate(_fiber: MyReactFiberNode): void {
     if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__)) {

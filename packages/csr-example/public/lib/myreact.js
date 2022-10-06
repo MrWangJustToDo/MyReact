@@ -15,6 +15,7 @@
         PATCH_TYPE[PATCH_TYPE["__pendingEffect__"] = 32] = "__pendingEffect__";
         PATCH_TYPE[PATCH_TYPE["__pendingLayoutEffect__"] = 64] = "__pendingLayoutEffect__";
         PATCH_TYPE[PATCH_TYPE["__pendingUnmount__"] = 128] = "__pendingUnmount__";
+        PATCH_TYPE[PATCH_TYPE["__pendingDeactivate__"] = 256] = "__pendingDeactivate__";
     })(PATCH_TYPE || (PATCH_TYPE = {}));
 
     var NODE_TYPE;
@@ -39,6 +40,7 @@
         NODE_TYPE[NODE_TYPE["__isPlainNode__"] = 4096] = "__isPlainNode__";
         NODE_TYPE[NODE_TYPE["__isStrictNode__"] = 8192] = "__isStrictNode__";
         NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 16384] = "__isFragmentNode__";
+        NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 32768] = "__isKeepLiveNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -242,12 +244,21 @@
             return "<Strict />";
         if (fiber.type & NODE_TYPE.__isFragmentNode__)
             return "<Fragment />";
-        if (fiber.type & NODE_TYPE.__isForwardRef__)
-            return "<ForwardRef />";
+        if (fiber.type & NODE_TYPE.__isKeepLiveNode__)
+            return "<KeepAlive />";
         if (fiber.type & NODE_TYPE.__isContextProvider__)
             return "<Provider />";
         if (fiber.type & NODE_TYPE.__isContextConsumer__)
             return "<Consumer />";
+        if (fiber.type & NODE_TYPE.__isForwardRef__) {
+            var typedType = fiber.element.type;
+            if (typedType.render.name) {
+                return "<ForwardRef - (".concat(typedType.render.name, ") />");
+            }
+            else {
+                return "<ForwardRef />";
+            }
+        }
         if (typeof fiber.element === "object" && fiber.element !== null) {
             if (typeof fiber.element.type === "string") {
                 return "<".concat(fiber.element.type, " />");
@@ -398,6 +409,9 @@
             }
             else if (typeof rawType === "symbol") {
                 switch (rawType) {
+                    case My_React_KeepLive:
+                        nodeTypeSymbol |= NODE_TYPE.__isKeepLiveNode__;
+                        break;
                     case My_React_Fragment:
                         nodeTypeSymbol |= NODE_TYPE.__isFragmentNode__;
                         break;
@@ -826,6 +840,7 @@
     var EmptyDispatch = /** @class */ (function () {
         function EmptyDispatch() {
             this.strictMap = {};
+            this.keepLiveMap = {};
             this.suspenseMap = {};
             this.effectMap = {};
             this.layoutEffectMap = {};
@@ -844,6 +859,14 @@
             return null;
         };
         EmptyDispatch.prototype.resolveStrictMap = function (_fiber) {
+        };
+        EmptyDispatch.prototype.resolveKeepLiveMap = function (_fiber) {
+        };
+        EmptyDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
+            return null;
+        };
+        EmptyDispatch.prototype.resolveMemorizeProps = function (_fiber) {
+            return {};
         };
         EmptyDispatch.prototype.resolveStrictValue = function (_fiber) {
             return false;
@@ -893,6 +916,8 @@
         };
         EmptyDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
         };
+        EmptyDispatch.prototype.pendingDeactivate = function (_fiber) {
+        };
         EmptyDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {
         };
         EmptyDispatch.prototype.pendingEffect = function (_fiber, _effect) {
@@ -934,6 +959,10 @@
                     if (fiber.type & NODE_TYPE.__isForwardRef__ && typeof typedType.render !== "function") {
                         throw new Error("forwardRef() need a function component");
                     }
+                }
+                if (fiber.type & NODE_TYPE.__isKeepLiveNode__) {
+                    if (Array.isArray(element.props.children))
+                        throw new Error("<KeepLive /> expected to receive a single MyReact element child");
                 }
                 if (typedElement.ref) {
                     if (typeof typedElement.ref !== "object" && typeof typedElement.ref !== "function") {
@@ -977,7 +1006,8 @@
     var MyReactFiberNode = /** @class */ (function () {
         function MyReactFiberNode(fiberIndex, parent, element) {
             var _a;
-            this.mount = true;
+            this.mounted = true;
+            this.activated = true;
             this.invoked = false;
             this.node = null;
             this.children = [];
@@ -1023,11 +1053,11 @@
         MyReactFiberNode.prototype.initialParent = function () {
             if (this.parent) {
                 this.parent.addChild(this);
-                var globalDispatch = this.root.dispatch;
-                globalDispatch.resolveSuspenseMap(this);
-                globalDispatch.resolveContextMap(this);
-                globalDispatch.resolveStrictMap(this);
             }
+            var globalDispatch = this.root.dispatch;
+            globalDispatch.resolveSuspenseMap(this);
+            globalDispatch.resolveContextMap(this);
+            globalDispatch.resolveStrictMap(this);
         };
         MyReactFiberNode.prototype.installParent = function (parent) {
             this.parent = parent;
@@ -1148,7 +1178,14 @@
         MyReactFiberNode.prototype.unmount = function () {
             this.hookNodeArray.forEach(function (hook) { return hook.unmount(); });
             this.instance && this.instance.unmount();
-            this.mount = false;
+            this.mounted = false;
+            this.mode = UPDATE_TYPE.__initial__;
+            this.patch = PATCH_TYPE.__initial__;
+        };
+        MyReactFiberNode.prototype.deactivate = function () {
+            this.hookNodeArray.forEach(function (hook) { return hook.unmount(); });
+            this.instance && this.instance.unmount();
+            this.activated = false;
             this.mode = UPDATE_TYPE.__initial__;
             this.patch = PATCH_TYPE.__initial__;
         };
@@ -1239,11 +1276,11 @@
         {
             fiber.checkElement();
         }
-        if (prevElement !== nextElement) {
+        if (prevElement !== nextElement || !fiber.activated) {
             if (fiber.type & NODE_TYPE.__isMemo__) {
                 var typedPrevElement = prevElement;
                 var typedNextElement = nextElement;
-                if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(typedPrevElement.props, typedNextElement.props)) {
+                if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(typedPrevElement.props, typedNextElement.props) && fiber.activated) {
                     fiber.afterUpdate();
                 }
                 else {

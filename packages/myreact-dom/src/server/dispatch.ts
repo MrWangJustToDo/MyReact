@@ -1,12 +1,16 @@
 import { __my_react_shared__, cloneElement } from "@my-react/react";
-import { defaultGenerateContextMap, defaultGetContextMapFromMap, defaultGetContextValue, processHookNode } from "@my-react/react-reconciler";
+import {
+  defaultGenerateContextMap,
+  defaultGenerateSuspenseMap,
+  defaultGetContextMapFromMap,
+  defaultGetContextValue,
+  processHookNode,
+} from "@my-react/react-reconciler";
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
-
-import { generateSuspenseMap } from "@my-react-dom-shared";
 
 import { append, create, update } from "./dom";
 
-import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode } from "@my-react/react";
+import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode, MyReactElement } from "@my-react/react";
 import type { LinkTreeList } from "@my-react/react-shared";
 
 const { safeCallWithFiber } = __my_react_shared__;
@@ -15,6 +19,8 @@ export class ServerDispatch implements FiberDispatch {
   effectMap: Record<string, (() => void)[]> = {};
 
   strictMap: Record<string, boolean> = {};
+
+  keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
   layoutEffectMap: Record<string, (() => void)[]> = {};
 
@@ -37,6 +43,15 @@ export class ServerDispatch implements FiberDispatch {
   resolveRef(_fiber: MyReactFiberNode): void {
     void 0;
   }
+  resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null {
+    return null;
+  }
+  resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveMemorizeProps(_fiber: MyReactFiberNode): MyReactElement['props'] {
+    return {};
+  }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
@@ -47,7 +62,7 @@ export class ServerDispatch implements FiberDispatch {
     return processHookNode(_fiber, _hookParams);
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
-    generateSuspenseMap(_fiber, this.suspenseMap);
+    defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
   }
   resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode {
     return cloneElement(this.suspenseMap[_fiber.uid]);
@@ -121,6 +136,9 @@ export class ServerDispatch implements FiberDispatch {
     void 0;
   }
   pendingPosition(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  pendingDeactivate(_fiber: MyReactFiberNode): void {
     void 0;
   }
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void {

@@ -72,7 +72,7 @@ export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: Cr
   }
 
   if (currentHook.hookType === HOOK_TYPE.useContext) {
-    if (!currentHook._contextFiber || !currentHook._contextFiber.mount || !Object.is(currentHook.value, value)) {
+    if (!currentHook._contextFiber || !currentHook._contextFiber.mounted || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
       const ProviderFiber = globalDispatch.resolveContextFiber(currentHook._ownerFiber as MyReactFiberNode, currentHook.value);
 

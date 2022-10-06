@@ -168,7 +168,7 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
 
   const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
-  if (!typedInstance?._contextFiber || !typedInstance._contextFiber.mount) {
+  if (!typedInstance?._contextFiber || !typedInstance._contextFiber.mounted) {
     const ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
     const context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
@@ -233,6 +233,12 @@ export const classComponentMount = (fiber: MyReactFiberNode) => {
   processComponentStateFromProps(fiber, devInstance);
   const children = processComponentRenderOnMountAndUpdate(fiber, devInstance);
   processComponentDidMountOnMount(fiber, devInstance);
+  return children;
+};
+
+export const classComponentActive = (fiber: MyReactFiberNode) => {
+  const children = processComponentRenderOnMountAndUpdate(fiber);
+  processComponentDidMountOnMount(fiber);
   return children;
 };
 

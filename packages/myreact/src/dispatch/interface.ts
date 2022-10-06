@@ -1,4 +1,4 @@
-import type { createContext, MyReactElementNode } from "../element";
+import type { createContext, MyReactElementNode, Props } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 import type { CreateHookParams, MyReactHookNode } from "../hook";
 import type { RenderScope } from "../scope";
@@ -8,6 +8,8 @@ export interface FiberDispatch {
   suspenseMap: Record<string, MyReactElementNode>;
 
   strictMap: Record<string, boolean>;
+
+  keepLiveMap: Record<string, MyReactFiberNode[]>;
 
   effectMap: Record<string, Array<() => void>>;
 
@@ -25,11 +27,17 @@ export interface FiberDispatch {
 
   resolveRef(_fiber: MyReactFiberNode): void;
 
+  resolveKeepLiveMap(_fiber: MyReactFiberNode): void;
+
+  resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null;
+
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
 
   resolveStrictMap(_fiber: MyReactFiberNode): void;
 
   resolveStrictValue(_fiber: MyReactFiberNode): boolean;
+
+  resolveMemorizeProps(_fiber: MyReactFiberNode): Props;
 
   resolveSuspenseMap(_fiber: MyReactFiberNode): void;
 
@@ -66,6 +74,8 @@ export interface FiberDispatch {
   pendingContext(_fiber: MyReactFiberNode): void;
 
   pendingPosition(_fiber: MyReactFiberNode): void;
+
+  pendingDeactivate(_fiber: MyReactFiberNode): void;
 
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void;
 

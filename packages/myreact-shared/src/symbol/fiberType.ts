@@ -25,4 +25,5 @@ export enum NODE_TYPE {
   __isPlainNode__ = 1 << 12,
   __isStrictNode__ = 1 << 13,
   __isFragmentNode__ = 1 << 14,
+  __isKeepLiveNode__ = 1 << 15,
 }

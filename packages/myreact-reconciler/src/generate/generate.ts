@@ -182,7 +182,7 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
   return createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber }, newChild);
 };
 
-export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode | null | undefined) => {
+export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   let index = 0;
 
   const isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
@@ -214,4 +214,45 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
   parentFiber.afterUpdate();
 
   return parentFiber.children;
+};
+
+export const transformKeepLiveChildrenFiber = (parentFiber: MyReactFiberNode, children: MyReactElementNode) => {
+  const isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
+
+  if (!isUpdate) return transformChildrenFiber(parentFiber, children);
+
+  const globalDispatch = parentFiber.root.dispatch;
+
+  const prevFiber = parentFiber.child;
+
+  const cachedFiber = globalDispatch.resolveKeepLive(parentFiber, children);
+
+  if (cachedFiber) {
+    parentFiber.beforeUpdate();
+
+    const newChildFiber = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
+
+    parentFiber.renderedChildren.push(newChildFiber);
+
+    parentFiber.afterUpdate();
+
+    // it is a cachedFiber, so should deactivate prevFiber
+    if (prevFiber !== cachedFiber) {
+      globalDispatch.pendingDeactivate(parentFiber);
+    }
+    return parentFiber.children;
+  } else {
+    // not have cachedFiber, maybe it is a first time to run
+    parentFiber.beforeUpdate();
+
+    const newChildFiber = createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber, type: "position" }, children);
+
+    parentFiber.renderedChildren.push(newChildFiber);
+
+    parentFiber.afterUpdate();
+
+    globalDispatch.pendingDeactivate(parentFiber);
+
+    return parentFiber.children;
+  }
 };

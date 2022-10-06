@@ -40,6 +40,7 @@
         PATCH_TYPE[PATCH_TYPE["__pendingEffect__"] = 32] = "__pendingEffect__";
         PATCH_TYPE[PATCH_TYPE["__pendingLayoutEffect__"] = 64] = "__pendingLayoutEffect__";
         PATCH_TYPE[PATCH_TYPE["__pendingUnmount__"] = 128] = "__pendingUnmount__";
+        PATCH_TYPE[PATCH_TYPE["__pendingDeactivate__"] = 256] = "__pendingDeactivate__";
     })(PATCH_TYPE || (PATCH_TYPE = {}));
 
     var NODE_TYPE;
@@ -64,6 +65,7 @@
         NODE_TYPE[NODE_TYPE["__isPlainNode__"] = 4096] = "__isPlainNode__";
         NODE_TYPE[NODE_TYPE["__isStrictNode__"] = 8192] = "__isStrictNode__";
         NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 16384] = "__isFragmentNode__";
+        NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 32768] = "__isKeepLiveNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -395,6 +397,34 @@
         parentFiber.afterUpdate();
         return parentFiber.children;
     };
+    var transformKeepLiveChildrenFiber = function (parentFiber, children) {
+        var isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
+        if (!isUpdate)
+            return transformChildrenFiber(parentFiber, children);
+        var globalDispatch = parentFiber.root.dispatch;
+        var prevFiber = parentFiber.child;
+        var cachedFiber = globalDispatch.resolveKeepLive(parentFiber, children);
+        if (cachedFiber) {
+            parentFiber.beforeUpdate();
+            var newChildFiber = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
+            parentFiber.renderedChildren.push(newChildFiber);
+            parentFiber.afterUpdate();
+            // it is a cachedFiber, so should deactivate prevFiber
+            if (prevFiber !== cachedFiber) {
+                globalDispatch.pendingDeactivate(parentFiber);
+            }
+            return parentFiber.children;
+        }
+        else {
+            // not have cachedFiber, maybe it is a first time to run
+            parentFiber.beforeUpdate();
+            var newChildFiber = createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber, type: "position" }, children);
+            parentFiber.renderedChildren.push(newChildFiber);
+            parentFiber.afterUpdate();
+            globalDispatch.pendingDeactivate(parentFiber);
+            return parentFiber.children;
+        }
+    };
 
     var DEFAULT_RESULT = {
         newState: null,
@@ -507,7 +537,7 @@
         var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
         var typedInstance = fiber.instance;
         var typedComponent = Component;
-        if (!(typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance._contextFiber) || !typedInstance._contextFiber.mount) {
+        if (!(typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance._contextFiber) || !typedInstance._contextFiber.mounted) {
             var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
             var context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
             typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance.setContext(ProviderFiber);
@@ -548,6 +578,11 @@
         processComponentStateFromProps(fiber, devInstance);
         var children = processComponentRenderOnMountAndUpdate(fiber, devInstance);
         processComponentDidMountOnMount(fiber, devInstance);
+        return children;
+    };
+    var classComponentActive = function (fiber) {
+        var children = processComponentRenderOnMountAndUpdate(fiber);
+        processComponentDidMountOnMount(fiber);
         return children;
     };
     var classComponentUpdate = function (fiber) {
@@ -603,6 +638,10 @@
     var nextWorkClassComponent = function (fiber) {
         if (!fiber.instance) {
             var children = classComponentMount(fiber);
+            return nextWorkCommon(fiber, children);
+        }
+        else if (!fiber.activated) {
+            var children = classComponentActive(fiber);
             return nextWorkCommon(fiber, children);
         }
         else {
@@ -731,7 +770,7 @@
         fiber.instance.setOwner(fiber);
         var Context = typedType.Context;
         currentComponentFiber.current = fiber;
-        if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.mount) {
+        if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.mounted) {
             var ProviderFiber = globalDispatch.resolveContextFiber(fiber, Context);
             var context = globalDispatch.resolveContextValue(ProviderFiber, Context);
             fiber.instance.context = context;
@@ -763,8 +802,15 @@
             return nextWorkConsumer(fiber);
         throw new Error("unknown element ".concat(fiber.element));
     };
+    var nextWorkKeepLive = function (fiber) {
+        var globalDispatch = fiber.root.dispatch;
+        globalDispatch.resolveKeepLiveMap(fiber);
+        var typedElement = fiber.element;
+        var children = typedElement.props.children;
+        return transformKeepLiveChildrenFiber(fiber, children);
+    };
     var nextWorkSync = function (fiber) {
-        if (!fiber.mount)
+        if (!fiber.mounted)
             return [];
         if (fiber.invoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)))
             return [];
@@ -774,14 +820,17 @@
             children = nextWorkComponent(fiber);
         else if (fiber.type & NODE_TYPE.__isObjectNode__)
             children = nextWorkObject(fiber);
+        else if (fiber.type & NODE_TYPE.__isKeepLiveNode__)
+            children = nextWorkKeepLive(fiber);
         else
             children = nextWorkNormal(fiber);
         fiber.invoked = true;
+        fiber.activated = true;
         currentRunningFiber.current = null;
         return children;
     };
     var nextWorkAsync = function (fiber, topLevelFiber) {
-        if (!fiber.mount)
+        if (!fiber.mounted)
             return null;
         if (!fiber.invoked || fiber.mode & UPDATE_TYPE.__update__ || fiber.mode & UPDATE_TYPE.__trigger__) {
             currentRunningFiber.current = fiber;
@@ -789,10 +838,13 @@
                 nextWorkComponent(fiber);
             else if (fiber.type & NODE_TYPE.__isObjectNode__)
                 nextWorkObject(fiber);
+            else if (fiber.type & NODE_TYPE.__isKeepLiveNode__)
+                nextWorkKeepLive(fiber);
             else
                 nextWorkNormal(fiber);
-            currentRunningFiber.current = null;
             fiber.invoked = true;
+            fiber.activated = true;
+            currentRunningFiber.current = null;
             if (fiber.children.length) {
                 return fiber.child;
             }
@@ -811,6 +863,26 @@
     var nRoundTransformFiberArray = react.createRef([]);
     var cRoundTransformFiberArray = react.createRef([]);
 
+    var defaultGenerateStrictMap = function (fiber, map) {
+        var parent = fiber.parent;
+        var element = fiber.element;
+        if (typeof element === "object" && fiber.type & NODE_TYPE.__isStrictNode__) {
+            map[fiber.uid] = true;
+        }
+        else {
+            if (parent) {
+                map[fiber.uid] = Boolean(map[parent.uid]);
+            }
+            else {
+                map[fiber.uid] = false;
+            }
+        }
+        {
+            var typedFiber = fiber;
+            typedFiber._debugStrict = map[fiber.uid];
+        }
+    };
+
     var isArrayEquals = function (src, target) {
         if (Array.isArray(src) && Array.isArray(target) && src.length === target.length) {
             var re = true;
@@ -822,6 +894,45 @@
             return re;
         }
         return false;
+    };
+
+    var defaultGenerateSuspenseMap = function (fiber, map) {
+        var parent = fiber.parent;
+        var element = fiber.element;
+        if (typeof element === "object" && fiber.type & NODE_TYPE.__isSuspense__) {
+            map[fiber.uid] = element === null || element === void 0 ? void 0 : element.props["fallback"];
+        }
+        else {
+            if (parent) {
+                map[fiber.uid] = map[parent.uid];
+            }
+            else {
+                map[fiber.uid] = null;
+            }
+        }
+        {
+            var typedFiber = fiber;
+            typedFiber._debugSuspense = map[fiber.uid];
+        }
+    };
+
+    var getNext = function (fiber, root) {
+        if (fiber.child)
+            return fiber.child;
+        var nextFiber = fiber;
+        while (nextFiber && nextFiber !== root) {
+            if (nextFiber.sibling)
+                return nextFiber.sibling;
+            nextFiber = nextFiber.parent;
+        }
+    };
+    var generateFiberToList = function (fiber) {
+        var listTree = new LinkTreeList();
+        var temp = fiber;
+        listTree.append(temp, temp.fiberIndex);
+        while ((temp = getNext(temp, fiber)))
+            listTree.append(temp, temp.fiberIndex);
+        return listTree;
     };
 
     var loopStart = function (fiber) {
@@ -858,6 +969,36 @@
         loopToEnd();
     };
     var mountLoopSync = function (fiber) { return loopAll(fiber); };
+
+    var defaultGenerateKeepLiveMap = function (fiber, map) {
+        var cacheArray = map[fiber.uid] || [];
+        map[fiber.uid] = cacheArray;
+        {
+            var typedFiber = fiber;
+            typedFiber._debugKeepLiveCache = cacheArray;
+        }
+    };
+    var defaultGetKeepLiveFiber = function (fiber, map, element) {
+        var cacheArray = map[fiber.uid] || [];
+        // <KeepLive> component only have one child;
+        var currentChild = fiber.child;
+        // set cache map
+        map[fiber.uid] = cacheArray;
+        // just a normal update
+        if (currentChild.checkIsSameType(element)) {
+            return currentChild;
+        }
+        if (cacheArray.every(function (f) { return f.uid !== currentChild.uid; })) {
+            cacheArray.push(currentChild);
+        }
+        var cachedFiber = cacheArray.find(function (f) { return f.checkIsSameType(element); });
+        map[fiber.uid] = cacheArray.filter(function (f) { return f !== cachedFiber; });
+        {
+            var typedFiber = fiber;
+            typedFiber._debugKeepLiveCache = map[fiber.uid];
+        }
+        return cachedFiber || null;
+    };
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -931,7 +1072,7 @@
                 var update_1 = function () {
                     var _a;
                     hookNode.cancel && hookNode.cancel();
-                    if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mount)
+                    if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mounted)
                         hookNode.cancel = hookNode.value();
                     hookNode.effect = false;
                     hookNode.mode = Effect_TYPE.__initial__;
@@ -950,7 +1091,7 @@
                 var update_2 = function () {
                     var _a;
                     hookNode.cancel && hookNode.cancel();
-                    if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mount)
+                    if ((_a = hookNode._ownerFiber) === null || _a === void 0 ? void 0 : _a.mounted)
                         hookNode.cancel = hookNode.value();
                     hookNode.effect = false;
                     hookNode.mode = Effect_TYPE.__initial__;
@@ -1032,7 +1173,7 @@
             return currentHook;
         }
         if (currentHook.hookType === HOOK_TYPE.useContext) {
-            if (!currentHook._contextFiber || !currentHook._contextFiber.mount || !Object.is(currentHook.value, value)) {
+            if (!currentHook._contextFiber || !currentHook._contextFiber.mounted || !Object.is(currentHook.value, value)) {
                 currentHook.value = value;
                 var ProviderFiber = globalDispatch.resolveContextFiber(currentHook._ownerFiber, currentHook.value);
                 var context = globalDispatch.resolveContextValue(ProviderFiber, currentHook.value);
@@ -1109,16 +1250,6 @@
         }
     };
 
-    var getNext = function (fiber, root) {
-        if (fiber.child)
-            return fiber.child;
-        var nextFiber = fiber;
-        while (nextFiber && nextFiber !== root) {
-            if (nextFiber.sibling)
-                return nextFiber.sibling;
-            nextFiber = nextFiber.parent;
-        }
-    };
     var unmountFiberNode = function (fiber) {
         if (!fiber)
             return;
@@ -1128,11 +1259,7 @@
         // unmountFiberNode(fiber.sibling);
         // loop
         var dispatch = fiber.root.dispatch;
-        var listTree = new LinkTreeList();
-        var temp = fiber;
-        listTree.append(temp, temp.fiberIndex);
-        while ((temp = getNext(temp, fiber)))
-            listTree.append(temp, temp.fiberIndex);
+        var listTree = generateFiberToList(fiber);
         listTree.listToHead(function (f) {
             f.unmount();
             dispatch.removeFiber(f);
@@ -1233,6 +1360,10 @@
         memoizedProps: {},
         element: element,
     }); };
+    var getMemoizedProps = function (fiber) {
+        var element = fiber.node;
+        return element.memoizedProps;
+    };
 
     var isInternal = function (key) { return key.startsWith("_"); };
     var isChildren = function (key) { return key === "children" || key === "dangerouslySetInnerHTML"; };
@@ -1369,44 +1500,6 @@
         _isSVG = Boolean(_isSVG);
         map[_fiber.uid] = _isSVG;
         return _isSVG;
-    };
-    var generateStrictMap = function (_fiber, map) {
-        var parent = _fiber.parent;
-        var element = _fiber.element;
-        if (typeof element === "object" && _fiber.type & NODE_TYPE.__isStrictNode__) {
-            map[_fiber.uid] = true;
-        }
-        else {
-            if (parent) {
-                map[_fiber.uid] = Boolean(map[parent.uid]);
-            }
-            else {
-                map[_fiber.uid] = false;
-            }
-        }
-        {
-            var typedFiber = _fiber;
-            typedFiber._debugStrict = map[_fiber.uid];
-        }
-    };
-    var generateSuspenseMap = function (_fiber, map) {
-        var parent = _fiber.parent;
-        var element = _fiber.element;
-        if (typeof element === "object" && _fiber.type & NODE_TYPE.__isSuspense__) {
-            map[_fiber.uid] = element === null || element === void 0 ? void 0 : element.props["fallback"];
-        }
-        else {
-            if (parent) {
-                map[_fiber.uid] = map[parent.uid];
-            }
-            else {
-                map[_fiber.uid] = null;
-            }
-        }
-        {
-            var typedFiber = _fiber;
-            typedFiber._debugSuspense = map[_fiber.uid];
-        }
     };
     var setRef = function (_fiber) {
         if (_fiber.type & NODE_TYPE.__isPlainNode__) {
@@ -1580,7 +1673,7 @@
                 globalScope.modifyFiberRoot = null;
                 while (globalScope.modifyFiberArray.length) {
                     var newProgressFiber = globalScope.modifyFiberArray.shift();
-                    if (newProgressFiber === null || newProgressFiber === void 0 ? void 0 : newProgressFiber.mount) {
+                    if (newProgressFiber === null || newProgressFiber === void 0 ? void 0 : newProgressFiber.mounted) {
                         globalDispatch.beginProgressList(globalScope);
                         globalScope.modifyFiberRoot = newProgressFiber;
                         return newProgressFiber;
@@ -1653,7 +1746,7 @@
             Promise.resolve().then(function () {
                 new Set(allListeners_1).forEach(function (i) {
                     var fiber = i._ownerFiber;
-                    if (fiber === null || fiber === void 0 ? void 0 : fiber.mount)
+                    if (fiber === null || fiber === void 0 ? void 0 : fiber.mounted)
                         fiber.update();
                 });
             });
@@ -1810,6 +1903,27 @@
             return re;
         }
         return hydrate;
+    };
+
+    var deactivateFiber = function (fiber) {
+        var listTree = generateFiberToList(fiber);
+        clearFiberDom(fiber);
+        listTree.listToHead(function (f) {
+            f.deactivate();
+        });
+    };
+
+    var deactivate = function (fiber) {
+        if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) {
+            var globalDispatch = fiber.root.dispatch;
+            var allDeactivateFibers = globalDispatch.keepLiveMap[fiber.uid];
+            allDeactivateFibers === null || allDeactivateFibers === void 0 ? void 0 : allDeactivateFibers.forEach(function (fiber) {
+                if (fiber.activated)
+                    deactivateFiber(fiber);
+            });
+            if (fiber.patch & PATCH_TYPE.__pendingDeactivate__)
+                fiber.patch ^= PATCH_TYPE.__pendingDeactivate__;
+        }
     };
 
     var layoutEffect = function (fiber) {
@@ -2026,8 +2140,11 @@
                         fiber: fiber,
                     });
                     if (enableControlComponent.current) {
-                        if (controlElementTag[typedElement.type] && typeof typedElement.props["value"] !== "undefined") {
-                            dom["value"] = typedElement.props["value"];
+                        var pendingProps_1 = fiber.pendingProps;
+                        if (controlElementTag[typedElement.type] && typeof pendingProps_1["value"] !== "undefined") {
+                            var typedDom = dom;
+                            typedDom.__isControlled__ = true;
+                            typedDom["value"] = pendingProps_1["value"];
                         }
                     }
                 };
@@ -2401,6 +2518,7 @@
     var ClientDispatch = /** @class */ (function () {
         function ClientDispatch() {
             this.strictMap = {};
+            this.keepLiveMap = {};
             this.effectMap = {};
             this.layoutEffectMap = {};
             this.suspenseMap = {};
@@ -2421,14 +2539,23 @@
         ClientDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
             return processHookNode(_fiber, _hookParams);
         };
+        ClientDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
+            return defaultGetKeepLiveFiber(_fiber, this.keepLiveMap, _element);
+        };
+        ClientDispatch.prototype.resolveKeepLiveMap = function (_fiber) {
+            defaultGenerateKeepLiveMap(_fiber, this.keepLiveMap);
+        };
         ClientDispatch.prototype.resolveStrictMap = function (_fiber) {
-            generateStrictMap(_fiber, this.strictMap);
+            defaultGenerateStrictMap(_fiber, this.strictMap);
         };
         ClientDispatch.prototype.resolveStrictValue = function (_fiber) {
             return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
         };
+        ClientDispatch.prototype.resolveMemorizeProps = function (_fiber) {
+            return getMemoizedProps(_fiber);
+        };
         ClientDispatch.prototype.resolveSuspenseMap = function (_fiber) {
-            generateSuspenseMap(_fiber, this.suspenseMap);
+            defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
         };
         ClientDispatch.prototype.resolveSuspenseElement = function (_fiber) {
             return react.cloneElement(this.suspenseMap[_fiber.uid]);
@@ -2476,7 +2603,8 @@
                     _fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
                     _fiber.patch & PATCH_TYPE.__pendingAppend__ ||
                     _fiber.patch & PATCH_TYPE.__pendingContext__ ||
-                    _fiber.patch & PATCH_TYPE.__pendingPosition__) {
+                    _fiber.patch & PATCH_TYPE.__pendingPosition__ ||
+                    _fiber.patch & PATCH_TYPE.__pendingDeactivate__) {
                     _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
                 }
                 else if (((_a = this.effectMap[_fiber.uid]) === null || _a === void 0 ? void 0 : _a.length) || ((_b = this.unmountMap[_fiber.uid]) === null || _b === void 0 ? void 0 : _b.length) || ((_c = this.layoutEffectMap[_fiber.uid]) === null || _c === void 0 ? void 0 : _c.length)) {
@@ -2520,39 +2648,40 @@
             if (enableFastLoop.current) {
                 _list.reconcileList({
                     toFoot: function (_fiber) {
-                        if (_fiber.mount) {
+                        if (_fiber.mounted) {
                             var _isSVG_1 = isSVG(_fiber, _this.elementTypeMap);
                             safeCallWithFiber$1({
                                 fiber: _fiber,
                                 action: function () { return create$1(_fiber, false, _fiber, _isSVG_1); },
                             });
-                            // safeCallWithFiber({
-                            //   fiber: _fiber,
-                            //   action: () => update(_fiber, false, _isSVG),
-                            // });
-                            // safeCallWithFiber({
-                            //   fiber: _fiber,
-                            //   action: () => unmount(_fiber),
-                            // });
-                            Promise.resolve().then(function () {
-                                return safeCallWithFiber$1({
-                                    fiber: _fiber,
-                                    action: function () {
-                                        unmount(_fiber);
-                                        update$1(_fiber, false, _isSVG_1);
-                                        append$2(_fiber);
-                                    },
-                                });
+                            safeCallWithFiber$1({
+                                fiber: _fiber,
+                                action: function () { return update$1(_fiber, false, _isSVG_1); },
                             });
+                            safeCallWithFiber$1({
+                                fiber: _fiber,
+                                action: function () { return unmount(_fiber); },
+                            });
+                            safeCallWithFiber$1({ fiber: _fiber, action: function () { return deactivate(_fiber); } });
+                            // Promise.resolve().then(() =>
+                            //   safeCallWithFiber({
+                            //     fiber: _fiber,
+                            //     action: () => {
+                            //       unmount(_fiber);
+                            //       update(_fiber, false, _isSVG);
+                            //       append(_fiber);
+                            //     },
+                            //   })
+                            // );
                             safeCallWithFiber$1({ fiber: _fiber, action: function () { return context(_fiber); } });
-                            // safeCallWithFiber({
-                            //   fiber: _fiber,
-                            //   action: () => append(_fiber),
-                            // });
+                            safeCallWithFiber$1({
+                                fiber: _fiber,
+                                action: function () { return append$2(_fiber); },
+                            });
                         }
                     },
                     toHead: function (_fiber) {
-                        if (_fiber.mount) {
+                        if (_fiber.mounted) {
                             safeCallWithFiber$1({
                                 fiber: _fiber,
                                 action: function () { return position(_fiber); },
@@ -2561,15 +2690,23 @@
                                 fiber: _fiber,
                                 action: function () { return layoutEffect(_fiber); },
                             });
-                            setTimeout(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
-                            // Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+                            // requestAnimationFrame(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+                            // setTimeout(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
+                            Promise.resolve().then(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
                         }
                     },
                 });
+                // requestAnimationFrame(() =>
+                //   _list.listToHead((_fiber) => {
+                //     if (_fiber.mounted) {
+                //       safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) });
+                //     }
+                //   })
+                // );
             }
             else {
                 _list.listToFoot(function (_fiber) {
-                    if (_fiber.mount) {
+                    if (_fiber.mounted) {
                         var _isSVG_2 = isSVG(_fiber, _this.elementTypeMap);
                         safeCallWithFiber$1({
                             fiber: _fiber,
@@ -2583,11 +2720,12 @@
                             fiber: _fiber,
                             action: function () { return unmount(_fiber); },
                         });
+                        safeCallWithFiber$1({ fiber: _fiber, action: function () { return deactivate(_fiber); } });
                         safeCallWithFiber$1({ fiber: _fiber, action: function () { return context(_fiber); } });
                     }
                 });
                 _list.listToHead(function (_fiber) {
-                    if (_fiber.mount) {
+                    if (_fiber.mounted) {
                         safeCallWithFiber$1({
                             fiber: _fiber,
                             action: function () { return position(_fiber); },
@@ -2595,7 +2733,7 @@
                     }
                 });
                 _list.listToFoot(function (_fiber) {
-                    if (_fiber.mount) {
+                    if (_fiber.mounted) {
                         safeCallWithFiber$1({
                             fiber: _fiber,
                             action: function () { return append$2(_fiber); },
@@ -2603,7 +2741,7 @@
                     }
                 });
                 _list.reconcile(function (_fiber) {
-                    if (_fiber.mount) {
+                    if (_fiber.mounted) {
                         safeCallWithFiber$1({
                             fiber: _fiber,
                             action: function () { return layoutEffect(_fiber); },
@@ -2634,6 +2772,9 @@
         ClientDispatch.prototype.pendingPosition = function (_fiber) {
             _fiber.patch |= PATCH_TYPE.__pendingPosition__;
         };
+        ClientDispatch.prototype.pendingDeactivate = function (_fiber) {
+            _fiber.patch |= PATCH_TYPE.__pendingDeactivate__;
+        };
         ClientDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
             var exist = this.unmountMap[_fiber.uid] || [];
             this.unmountMap[_fiber.uid] = __spreadArray$1(__spreadArray$1([], exist, true), [_pendingUnmount], false);
@@ -2652,6 +2793,7 @@
             delete this.effectMap[_fiber.uid];
             delete this.contextMap[_fiber.uid];
             delete this.unmountMap[_fiber.uid];
+            delete this.keepLiveMap[_fiber.uid];
             delete this.suspenseMap[_fiber.uid];
             delete this.elementTypeMap[_fiber.uid];
             delete this.layoutEffectMap[_fiber.uid];
@@ -20114,6 +20256,7 @@
         function ServerDispatch() {
             this.effectMap = {};
             this.strictMap = {};
+            this.keepLiveMap = {};
             this.layoutEffectMap = {};
             this.suspenseMap = {};
             this.elementTypeMap = {};
@@ -20128,6 +20271,14 @@
         };
         ServerDispatch.prototype.resolveRef = function (_fiber) {
         };
+        ServerDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
+            return null;
+        };
+        ServerDispatch.prototype.resolveKeepLiveMap = function (_fiber) {
+        };
+        ServerDispatch.prototype.resolveMemorizeProps = function (_fiber) {
+            return {};
+        };
         ServerDispatch.prototype.resolveStrictMap = function (_fiber) {
         };
         ServerDispatch.prototype.resolveStrictValue = function (_fiber) {
@@ -20137,7 +20288,7 @@
             return processHookNode(_fiber, _hookParams);
         };
         ServerDispatch.prototype.resolveSuspenseMap = function (_fiber) {
-            generateSuspenseMap(_fiber, this.suspenseMap);
+            defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
         };
         ServerDispatch.prototype.resolveSuspenseElement = function (_fiber) {
             return react.cloneElement(this.suspenseMap[_fiber.uid]);
@@ -20205,6 +20356,8 @@
         ServerDispatch.prototype.pendingContext = function (_fiber) {
         };
         ServerDispatch.prototype.pendingPosition = function (_fiber) {
+        };
+        ServerDispatch.prototype.pendingDeactivate = function (_fiber) {
         };
         ServerDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
         };

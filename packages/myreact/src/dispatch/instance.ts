@@ -1,4 +1,4 @@
-import type { createContext, MyReactElementNode } from "../element";
+import type { createContext, MyReactElementNode, Props } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 import type { CreateHookParams, MyReactHookNode } from "../hook";
 import type { RenderScope } from "../scope";
@@ -7,6 +7,8 @@ import type { LinkTreeList } from "@my-react/react-shared";
 
 export class EmptyDispatch implements FiberDispatch {
   strictMap: Record<string, boolean> = {};
+
+  keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
   suspenseMap: Record<string, MyReactElementNode> = {};
 
@@ -34,6 +36,15 @@ export class EmptyDispatch implements FiberDispatch {
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
     void 0;
+  }
+  resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null {
+    return null;
+  }
+  resolveMemorizeProps(_fiber: MyReactFiberNode): Props {
+    return {};
   }
   resolveStrictValue(_fiber: MyReactFiberNode): boolean {
     return false;
@@ -93,6 +104,9 @@ export class EmptyDispatch implements FiberDispatch {
     void 0;
   }
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void {
+    void 0;
+  }
+  pendingDeactivate(_fiber: MyReactFiberNode): void {
     void 0;
   }
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {

@@ -25,6 +25,9 @@ export const checkFiberElement = (fiber: MyReactFiberNode) => {
           throw new Error("forwardRef() need a function component");
         }
       }
+      if (fiber.type & NODE_TYPE.__isKeepLiveNode__) {
+        if (Array.isArray(element.props.children)) throw new Error("<KeepLive /> expected to receive a single MyReact element child");
+      }
       if (typedElement.ref) {
         if (typeof typedElement.ref !== "object" && typeof typedElement.ref !== "function") {
           throw new Error("unSupport ref usage, should be a function or a object like `{current: any}`");

@@ -12,6 +12,9 @@ import type { ReactNode } from "react";
   return { props: { bar: "foo" } };
 })
 export default class Bar extends Component<{ bar: string }> {
+  constructor(p) {
+    super(p);
+  }
   render(): ReactNode {
     return (
       <>

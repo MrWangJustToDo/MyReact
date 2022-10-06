@@ -1,4 +1,4 @@
-import { kebabCase } from "lodash";
+import kebabCase from "lodash/kebabCase";
 
 import { IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 

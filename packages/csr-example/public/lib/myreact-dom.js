@@ -585,9 +585,9 @@
         fiber.root.dispatch.resolveComponentQueue(fiber);
         var typedInstance = fiber.instance;
         var newElement = fiber.element;
-        var _a = typedInstance.result, newState = _a.newState, isForce = _a.isForce, callback = _a.callback;
+        var _a = typedInstance._result, newState = _a.newState, isForce = _a.isForce, callback = _a.callback;
         // maybe could improve here
-        typedInstance.result = DEFAULT_RESULT;
+        typedInstance._result = DEFAULT_RESULT;
         var baseState = typedInstance.state;
         var baseProps = typedInstance.props;
         var baseContext = typedInstance.context;
@@ -1277,7 +1277,7 @@
                 if (c.trigger !== typedInstance) {
                     throw new Error("current update not valid, look like a bug for MyReact");
                 }
-                typedInstance.result = result;
+                typedInstance._result = result;
                 return result;
             }
             else {

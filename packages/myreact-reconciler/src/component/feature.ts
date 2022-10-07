@@ -248,9 +248,9 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   fiber.root.dispatch.resolveComponentQueue(fiber);
   const typedInstance = fiber.instance as MixinMyReactComponentType;
   const newElement = fiber.element;
-  const { newState, isForce, callback } = typedInstance.result;
+  const { newState, isForce, callback } = typedInstance._result;
   // maybe could improve here
-  typedInstance.result = DEFAULT_RESULT;
+  typedInstance._result = DEFAULT_RESULT;
   const baseState = typedInstance.state;
   const baseProps = typedInstance.props;
   const baseContext = typedInstance.context;

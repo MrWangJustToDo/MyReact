@@ -788,7 +788,7 @@
             _this.props = null;
             _this.context = null;
             // for queue update
-            _this.result = DEFAULT_RESULT;
+            _this._result = DEFAULT_RESULT;
             _this.setState = function (payLoad, callback) {
                 var _a;
                 var updater = {

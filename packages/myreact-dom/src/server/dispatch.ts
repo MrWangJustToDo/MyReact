@@ -49,7 +49,7 @@ export class ServerDispatch implements FiberDispatch {
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  resolveMemorizeProps(_fiber: MyReactFiberNode): MyReactElement['props'] {
+  resolveMemorizeProps(_fiber: MyReactFiberNode): MyReactElement["props"] {
     return {};
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {

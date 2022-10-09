@@ -13,6 +13,7 @@ import {
   My_React_Memo,
   My_React_Portal,
   My_React_Provider,
+  My_React_Reactive,
   My_React_Strict,
   My_React_Suspense,
 } from "./symbol";
@@ -34,6 +35,7 @@ export function isValidElement(element?: MyReactElementNode): element is MyReact
       element?.$$typeof === My_React_Context ||
       element?.$$typeof === My_React_Consumer ||
       element?.$$typeof === My_React_Provider ||
+      element?.$$typeof === My_React_Reactive ||
       element?.$$typeof === My_React_ForwardRef ||
       element?.$$typeof === My_React_Memo ||
       element?.$$typeof === My_React_Lazy ||
@@ -67,6 +69,9 @@ export function getTypeFromElement(element: MyReactElementNode) {
         case My_React_Lazy:
           nodeTypeSymbol |= NODE_TYPE.__isLazy__;
           break;
+        case My_React_Reactive:
+          nodeTypeSymbol |= NODE_TYPE.__isReactive__;
+          break;
         default:
           throw new Error(`invalid object element type ${typedRawType["$$typeof"].toString()}`);
       }
@@ -88,7 +93,7 @@ export function getTypeFromElement(element: MyReactElementNode) {
           nodeTypeSymbol |= NODE_TYPE.__isStrictNode__;
           break;
         case My_React_Suspense:
-          nodeTypeSymbol |= NODE_TYPE.__isSuspense__;
+          nodeTypeSymbol |= NODE_TYPE.__isSuspenseNode__;
           break;
         default:
           throw new Error(`invalid symbol element type ${rawType.toString()}`);

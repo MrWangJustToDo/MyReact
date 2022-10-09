@@ -1,3 +1,5 @@
+import * as reactiveApi from "@my-react/react-reactive";
+
 import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
 import {
@@ -35,6 +37,7 @@ import {
 } from "./hook";
 import { MyReactInternalInstance } from "./internal";
 import { jsx, jsxs, jsxDEV } from "./jsx";
+import { createReactive, MyReactReactiveInstance } from "./reactive";
 import {
   log,
   logHook,
@@ -84,6 +87,11 @@ const __my_react_internal__ = {
   currentComponentFiber,
 };
 
+const __my_react_reactive__ = {
+  MyReactReactiveInstance,
+  reactiveApi,
+};
+
 const Children = {
   map,
   only,
@@ -103,6 +111,7 @@ const React = {
   createRef,
   forwardRef,
   createContext,
+  createReactive,
   Portal,
   Element,
   Provider,
@@ -139,6 +148,7 @@ export {
   createRef,
   forwardRef,
   createContext,
+  createReactive,
   Portal,
   Element,
   Provider,
@@ -161,6 +171,7 @@ export {
   Children,
   __my_react_internal__,
   __my_react_shared__,
+  __my_react_reactive__,
   version,
   React as default,
 };

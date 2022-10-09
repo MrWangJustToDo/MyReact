@@ -7,6 +7,7 @@ import { checkArrayChildrenKey, checkSingleChildrenKey, isValidElement } from ".
 import type { MyReactComponent } from "../component";
 import type { MyReactFiberNode } from "../fiber";
 import type { MyReactInternalInstance } from "../internal";
+import type { createReactive } from "../reactive";
 import type { createRef } from "../share";
 import type { createContext, forwardRef, lazy, memo } from "./feature";
 
@@ -17,6 +18,7 @@ export type MyReactClassComponent = typeof MyReactComponent;
 export type MyReactObjectComponent =
   | ReturnType<typeof createContext>["Consumer"]
   | ReturnType<typeof createContext>["Provider"]
+  | ReturnType<typeof createReactive>
   | ReturnType<typeof forwardRef>
   | ReturnType<typeof memo>
   | ReturnType<typeof lazy>

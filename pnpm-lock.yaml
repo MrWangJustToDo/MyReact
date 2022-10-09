@@ -8,6 +8,7 @@ importers:
       '@babel/runtime': ^7.19.0
       '@my-react/react': workspace:*
       '@my-react/react-dom': workspace:*
+      '@my-react/react-reactive': workspace:*
       '@my-react/react-reconciler': workspace:*
       '@my-react/react-shared': workspace:*
       '@rollup/plugin-commonjs': ^22.0.2
@@ -38,6 +39,7 @@ importers:
       '@babel/runtime': 7.19.0
       '@my-react/react': link:packages/myreact
       '@my-react/react-dom': link:packages/myreact-dom
+      '@my-react/react-reactive': link:packages/myreact-reactivity
       '@my-react/react-reconciler': link:packages/myreact-reconciler
       '@my-react/react-shared': link:packages/myreact-shared
       '@rollup/plugin-commonjs': 22.0.2_rollup@2.79.1
@@ -263,6 +265,9 @@ importers:
       lodash: ^4.17.21
     dependencies:
       lodash: 4.17.21
+
+  packages/myreact-reactivity:
+    specifiers: {}
 
   packages/myreact-reconciler:
     specifiers: {}
@@ -4915,7 +4920,7 @@ packages:
   /axios/0.21.4_debug@4.3.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.1
+      follow-redirects: 1.15.1_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: true
@@ -4923,7 +4928,7 @@ packages:
   /axios/0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.1
+      follow-redirects: 1.15.1_debug@4.3.4
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -6883,7 +6888,7 @@ packages:
       tslib: 2.4.0
     dev: false
 
-  /follow-redirects/1.15.1:
+  /follow-redirects/1.15.1_debug@4.3.4:
     resolution: {integrity: sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==}
     engines: {node: '>=4.0'}
     peerDependencies:
@@ -6891,6 +6896,8 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
+    dependencies:
+      debug: 4.3.4
 
   /fork-ts-checker-webpack-plugin/7.2.13_frxmcuunqqqeqipt45cd6rjuvu:
     resolution: {integrity: sha512-fR3WRkOb4bQdWB/y7ssDUlVdrclvwtyCUIHCfivAoYxq9dF7XfrDKbMdZIfwJ7hxIAqkYSGeU7lLJE6xrxIBdg==}
@@ -7430,7 +7437,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.1
+      follow-redirects: 1.15.1_debug@4.3.4
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug

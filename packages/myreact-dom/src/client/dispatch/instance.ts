@@ -51,7 +51,7 @@ export class ClientDispatch implements FiberDispatch {
 
   suspenseMap: Record<string, MyReactElementNode> = {};
 
-  elementTypeMap: Record<string, boolean> = {};
+  svgTypeMap: Record<string, boolean> = {};
 
   contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
 
@@ -142,7 +142,7 @@ export class ClientDispatch implements FiberDispatch {
     }
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean {
-    const _isSVG = isSVG(_fiber, this.elementTypeMap);
+    const _isSVG = isSVG(_fiber, this.svgTypeMap);
 
     const _result = safeCallWithFiber({
       fiber: _fiber,
@@ -183,7 +183,7 @@ export class ClientDispatch implements FiberDispatch {
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
     _list.listToFoot((_fiber) => {
       if (_fiber.mounted) {
-        const _isSVG = isSVG(_fiber, this.elementTypeMap);
+        const _isSVG = isSVG(_fiber, this.svgTypeMap);
         safeCallWithFiber({
           fiber: _fiber,
           action: () => create(_fiber, false, _fiber, _isSVG),
@@ -278,9 +278,9 @@ export class ClientDispatch implements FiberDispatch {
     delete this.effectMap[_fiber.uid];
     delete this.contextMap[_fiber.uid];
     delete this.unmountMap[_fiber.uid];
+    delete this.svgTypeMap[_fiber.uid];
     delete this.keepLiveMap[_fiber.uid];
     delete this.suspenseMap[_fiber.uid];
-    delete this.elementTypeMap[_fiber.uid];
     delete this.layoutEffectMap[_fiber.uid];
   }
 }

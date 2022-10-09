@@ -54,7 +54,7 @@
         NODE_TYPE[NODE_TYPE["__isLazy__"] = 4] = "__isLazy__";
         NODE_TYPE[NODE_TYPE["__isMemo__"] = 8] = "__isMemo__";
         NODE_TYPE[NODE_TYPE["__isPortal__"] = 16] = "__isPortal__";
-        NODE_TYPE[NODE_TYPE["__isSuspense__"] = 32] = "__isSuspense__";
+        NODE_TYPE[NODE_TYPE["__isReactive__"] = 32] = "__isReactive__";
         NODE_TYPE[NODE_TYPE["__isForwardRef__"] = 64] = "__isForwardRef__";
         NODE_TYPE[NODE_TYPE["__isContextProvider__"] = 128] = "__isContextProvider__";
         NODE_TYPE[NODE_TYPE["__isContextConsumer__"] = 256] = "__isContextConsumer__";
@@ -64,8 +64,9 @@
         NODE_TYPE[NODE_TYPE["__isEmptyNode__"] = 2048] = "__isEmptyNode__";
         NODE_TYPE[NODE_TYPE["__isPlainNode__"] = 4096] = "__isPlainNode__";
         NODE_TYPE[NODE_TYPE["__isStrictNode__"] = 8192] = "__isStrictNode__";
-        NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 16384] = "__isFragmentNode__";
-        NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 32768] = "__isKeepLiveNode__";
+        NODE_TYPE[NODE_TYPE["__isSuspenseNode__"] = 16384] = "__isSuspenseNode__";
+        NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 32768] = "__isFragmentNode__";
+        NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 65536] = "__isKeepLiveNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -786,8 +787,6 @@
             return nextWorkLazy(fiber);
         if (fiber.type & NODE_TYPE.__isPortal__)
             return nextWorkNormal(fiber);
-        if (fiber.type & NODE_TYPE.__isSuspense__)
-            return nextWorkNormal(fiber);
         if (fiber.type & NODE_TYPE.__isForwardRef__)
             return nextWorkForwardRef(fiber);
         if (fiber.type & NODE_TYPE.__isContextProvider__)
@@ -893,7 +892,7 @@
     var defaultGenerateSuspenseMap = function (fiber, map) {
         var parent = fiber.parent;
         var element = fiber.element;
-        if (typeof element === "object" && fiber.type & NODE_TYPE.__isSuspense__) {
+        if (typeof element === "object" && fiber.type & NODE_TYPE.__isSuspenseNode__) {
             map[fiber.uid] = element === null || element === void 0 ? void 0 : element.props["fallback"];
         }
         else {
@@ -1680,7 +1679,10 @@
             hasNext: function () {
                 if (globalScope.isAppCrash)
                     return false;
-                return globalScope.currentYield !== null || globalScope.modifyFiberArray.length > 0;
+                if (globalScope.currentYield !== null)
+                    return true;
+                globalScope.modifyFiberRoot = null;
+                return globalScope.modifyFiberArray.length > 0;
             },
             doesPause: function () { return globalScope.currentYield !== null; },
             getTopLevel: function () { return globalScope.modifyFiberRoot; },
@@ -2515,7 +2517,7 @@
             this.effectMap = {};
             this.layoutEffectMap = {};
             this.suspenseMap = {};
-            this.elementTypeMap = {};
+            this.svgTypeMap = {};
             this.contextMap = {};
             this.unmountMap = {};
             this.eventMap = {};
@@ -2606,7 +2608,7 @@
             }
         };
         ClientDispatch.prototype.reconcileCommit = function (_fiber, _hydrate, _parentFiberWithDom) {
-            var _isSVG = isSVG(_fiber, this.elementTypeMap);
+            var _isSVG = isSVG(_fiber, this.svgTypeMap);
             var _result = safeCallWithFiber$1({
                 fiber: _fiber,
                 action: function () { return create$1(_fiber, _hydrate, _parentFiberWithDom, _isSVG); },
@@ -2640,7 +2642,7 @@
             var _this = this;
             _list.listToFoot(function (_fiber) {
                 if (_fiber.mounted) {
-                    var _isSVG_1 = isSVG(_fiber, _this.elementTypeMap);
+                    var _isSVG_1 = isSVG(_fiber, _this.svgTypeMap);
                     safeCallWithFiber$1({
                         fiber: _fiber,
                         action: function () { return create$1(_fiber, false, _fiber, _isSVG_1); },
@@ -2726,9 +2728,9 @@
             delete this.effectMap[_fiber.uid];
             delete this.contextMap[_fiber.uid];
             delete this.unmountMap[_fiber.uid];
+            delete this.svgTypeMap[_fiber.uid];
             delete this.keepLiveMap[_fiber.uid];
             delete this.suspenseMap[_fiber.uid];
-            delete this.elementTypeMap[_fiber.uid];
             delete this.layoutEffectMap[_fiber.uid];
         };
         return ClientDispatch;
@@ -3650,7 +3652,7 @@
             this.keepLiveMap = {};
             this.layoutEffectMap = {};
             this.suspenseMap = {};
-            this.elementTypeMap = {};
+            this.svgTypeMap = {};
             this.contextMap = {};
             this.unmountMap = {};
             this.eventMap = {};

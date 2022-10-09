@@ -258,7 +258,6 @@ const nextWorkObject = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isMemo__) return nextWorkMemo(fiber);
   if (fiber.type & NODE_TYPE.__isLazy__) return nextWorkLazy(fiber);
   if (fiber.type & NODE_TYPE.__isPortal__) return nextWorkNormal(fiber);
-  if (fiber.type & NODE_TYPE.__isSuspense__) return nextWorkNormal(fiber);
   if (fiber.type & NODE_TYPE.__isForwardRef__) return nextWorkForwardRef(fiber);
   if (fiber.type & NODE_TYPE.__isContextProvider__) return nextWorkNormal(fiber);
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);

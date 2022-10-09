@@ -26,7 +26,7 @@ export class ServerDispatch implements FiberDispatch {
 
   suspenseMap: Record<string, MyReactElementNode> = {};
 
-  elementTypeMap: Record<string, boolean> = {};
+  svgTypeMap: Record<string, boolean> = {};
 
   contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
 

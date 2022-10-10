@@ -119,7 +119,7 @@ export class MyReactFiberNode {
     if (this.parent) {
       this.parent.addChild(this);
     }
-    const globalDispatch = this.root.dispatch;
+    const globalDispatch = this.root.root_dispatch;
     globalDispatch.resolveSuspenseMap(this);
     globalDispatch.resolveContextMap(this);
     globalDispatch.resolveStrictMap(this);
@@ -213,6 +213,8 @@ export class MyReactFiberNode {
         return Object.is(typedExistElement.type, typedIncomingElement.type);
       }
       if (this.type & NODE_TYPE.__isObjectNode__ && typeof typedIncomingElement.type === "object" && typeof typedExistElement.type === "object") {
+        // for reactive component
+        if (this.type & NODE_TYPE.__isReactive__) return Object.is(typedExistElement.type, typedIncomingElement.type);
         return Object.is(typedExistElement.type["$$typeof"], typedIncomingElement.type["$$typeof"]);
       }
     }
@@ -255,7 +257,8 @@ export class MyReactFiberNode {
   }
 
   update() {
-    this.root.dispatch.trigger(this);
+    if (!this.activated || !this.mounted) return;
+    this.root.root_dispatch.trigger(this);
   }
 
   unmount() {
@@ -264,6 +267,7 @@ export class MyReactFiberNode {
     this.mounted = false;
     this.mode = UPDATE_TYPE.__initial__;
     this.patch = PATCH_TYPE.__initial__;
+    this.root.root_dispatch.removeFiber(this);
   }
 
   deactivate() {
@@ -276,9 +280,9 @@ export class MyReactFiberNode {
 }
 
 export class MyReactFiberNodeRoot extends MyReactFiberNode {
-  dispatch: FiberDispatch = new EmptyDispatch();
+  root_dispatch: FiberDispatch = new EmptyDispatch();
 
-  scope: RenderScope = new EmptyRenderScope();
+  root_scope: RenderScope = new EmptyRenderScope();
 }
 
 export class MyReactFiberNodeDev extends MyReactFiberNode {
@@ -293,6 +297,8 @@ export class MyReactFiberNodeDev extends MyReactFiberNode {
   _debugContextMap: Record<string, MyReactFiberNode> = {};
 
   _debugDynamicChildren: MaybeArrayMyReactElementNode;
+
+  _debugDynamicChildrenFiber: MyReactFiberNode[] | MyReactFiberNode;
 
   _debugGlobalDispatch: FiberDispatch | null = null;
 

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, KeepLive, Component, StrictMode, createReactive, __my_react_reactive__ } = React;
+
+    // reactive api just like `vue`
+    const { reactiveApi, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } = __my_react_reactive__;
+
+    const { reactive, ref } = reactiveApi;
+
+    const Context = createContext();
+
+    const Reactive = createReactive({
+      contextType: Context,
+      setup: (props, context) => {
+        const data = reactive({ dd: 1 });
+        const arr = reactive([1]);
+        const bar = ref(1);
+        const dom = ref();
+        let a = ref(null);
+        const click = () => data.dd++;
+        const addRef = () => bar.value++;
+        const addArray = () => arr.push(Math.random())
+        const setRef = (node) => a.value = node;
+
+        // onBeforeMount(() => {
+        //   console.log('before mount', data, a.value)
+        // })
+
+        // onMounted(() => {
+        //   console.log('mounted', data, a.value)
+        // })
+
+        // onBeforeUpdate(() => {
+        //   console.log('beforeUpdate', data)
+        // })
+
+        // onUpdated(() => {
+        //   console.log('updated', data)
+        // })
+
+        onBeforeUnmount(() => {
+          console.log('before unmount', data)
+        })
+
+        onUnmounted(() => {
+          console.log('unmounted', data)
+        })
+
+        return { data, click, bar, addRef, arr, addArray, setRef }
+      }
+    })
+
+    const usePosition = () => {
+      const [currentPosition, setCurrentPosition] = useState({
+        x: 0,
+        y: 0,
+      });
+
+      useEffect(() => {
+        const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
+        window.addEventListener("mousemove", action);
+        return () => window.removeEventListener("mousemove", action);
+      }, []);
+
+      return [currentPosition.x, currentPosition.y];
+    };
+
+    const useCounter = (init = 1) => {
+      const [count, setCount] = useState(init);
+      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+      return [count, i, j];
+    };
+
+    const useReactiveApi_Time = () => {
+      const timeRef = ref(new Date().toString());
+      let id = null;
+      onMounted(() => {
+        id = setInterval(() => timeRef.value = new Date().toString(), 1000)
+      })
+
+      onUnmounted(() => {
+        clearInterval(id);
+      })
+
+      return timeRef
+    }
+
+    const useReactiveApi_Position = () => {
+      const position = reactive({ x: 0, y: 0 });
+      let id = null;
+      const action = (e) => (position.x = e.clientX, position.y = e.clientY);
+      onMounted(() => {
+        window.addEventListener("mousemove", action);
+      })
+
+      onUnmounted(() => {
+        window.removeEventListener("mousemove", action);
+      })
+
+      return position
+    }
+
+    const ReactiveHook = createReactive(() => {
+      const timeRef = useReactiveApi_Time();
+      const position = useReactiveApi_Position();
+      return { timeRef, position }
+    })
+
+    const TestReactiveProps = createReactive({ render: (_, props) => <div>reactive props {props.position.x} {props.position.y}</div> })
+
+    const Bar = memo((props) => {
+      console.log(props);
+      return <div>123</div>
+    })
+
+    const App = () => {
+      const [time, setTime] = useState(0);
+      const [x] = usePosition();
+      const [i, add] = useCounter();
+      useEffect(() => {
+        const id = setInterval(() => setTime(new Date().toString()), 1000)
+        return () => clearInterval(id);
+      }, [])
+      return <Context.Provider value={x}>
+        <KeepLive>
+          {i % 2 === 0 ? <Reactive time={time}>
+            {({ data, click, bar, addRef, arr, addArray, setRef }, { time: timeCCC }, c) => <><p>reactive data: {data.dd}</p>
+              <p>ref data: {bar}</p>
+              <button onClick={click}>add reactive</button>
+              {arr.map((i) => <p key={i}>{i}</p>)}
+              <button onClick={addRef} ref={setRef}>add ref</button>
+              <button onClick={addArray}>push</button>
+              <p>{timeCCC}</p>
+              <p>context: {c}</p>
+              <Bar data={data} />
+            </>}
+          </Reactive> : <ReactiveHook>
+            {({ timeRef, position }) => <><p>test reactive hook {timeRef}</p><p>{position.x} {position.y}</p> <TestReactiveProps position={position} /> </>}
+          </ReactiveHook>}
+        </KeepLive>
+
+        <button onClick={add}>toggle reactive component</button>
+      </Context.Provider>
+    }
+
+    ReactDOM.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>,
+      document.getElementById("root")
+    );
+  </script>
+</body>
+
+</html>

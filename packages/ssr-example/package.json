@@ -20,6 +20,7 @@
     "@loadable/server": "^5.15.2",
     "@my-react/react": "workspace:*",
     "@my-react/react-shared": "workspace:*",
+    "@my-react/react-reactive": "workspace:*",
     "@my-react/react-reconciler": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "antd": "^4.23.4",

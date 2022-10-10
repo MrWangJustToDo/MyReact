@@ -11,7 +11,7 @@ export const initialFiberNode = (fiber: MyReactFiberNode) => {
 
   fiber.initialParent();
 
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   globalDispatch.pendingCreate(fiber);
 

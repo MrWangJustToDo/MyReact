@@ -26,9 +26,9 @@ const updateEntry = (globalDispatch: FiberDispatch, globalScope: DomScope) => {
 const asyncUpdate = (globalDispatch: FiberDispatch, globalScope: DomScope) => Promise.resolve().then(() => updateEntry(globalDispatch, globalScope));
 
 export const triggerUpdate = (fiber: MyReactFiberNode) => {
-  const globalScope = fiber.root.scope as DomScope;
+  const globalScope = fiber.root.root_scope as DomScope;
 
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   if (globalScope.isHydrateRender || globalScope.isServerRender) {
     if (__DEV__) {

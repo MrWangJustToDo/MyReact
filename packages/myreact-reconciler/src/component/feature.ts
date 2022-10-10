@@ -7,7 +7,6 @@ import type {
   MixinMyReactComponentType,
   MyReactClassComponent,
   MyReactComponentStaticType,
-  MyReactFiberNodeDev,
   MyReactComponent,
 } from "@my-react/react";
 
@@ -54,7 +53,7 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: M
 const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
 
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   const strictMod = globalDispatch.resolveStrictValue(fiber);
 
@@ -107,14 +106,10 @@ const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
 const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  const typeFiber = fiber as MyReactFiberNodeDev;
-
   if (devInstance) {
     const cached = Object.assign({}, typedInstance);
 
     const children = typedInstance.render();
-
-    typeFiber._debugDynamicChildren = children;
 
     // reset
     Object.assign(typedInstance, cached);
@@ -125,10 +120,6 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInst
   } else {
     const children = typedInstance.render();
 
-    if (__DEV__) {
-      typeFiber._debugDynamicChildren = children;
-    }
-
     return children;
   }
 };
@@ -136,7 +127,7 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInst
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   if (devInstance) {
     if (!(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
@@ -160,7 +151,7 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: 
 const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
 
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
 
@@ -181,6 +172,20 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
 
     return context;
   }
+};
+
+const processComponentPropsAndContextOnActive = (fiber: MyReactFiberNode) => {
+  const typedElement = fiber.element as MyReactElement;
+
+  const props = Object.assign({}, typedElement.props);
+
+  const context = processComponentContextOnUpdate(fiber);
+
+  const typedInstance = fiber.instance as MixinMyReactComponentType;
+
+  typedInstance.props = props;
+
+  typedInstance.context = context;
 };
 
 const processComponentShouldUpdateOnUpdate = (
@@ -214,7 +219,7 @@ const processComponentDidUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   const hasEffect = typedInstance.componentDidUpdate || callback.length;
 
@@ -237,6 +242,8 @@ export const classComponentMount = (fiber: MyReactFiberNode) => {
 };
 
 export const classComponentActive = (fiber: MyReactFiberNode) => {
+  processComponentFiberOnUpdate(fiber);
+  processComponentPropsAndContextOnActive(fiber);
   const children = processComponentRenderOnMountAndUpdate(fiber);
   processComponentDidMountOnMount(fiber);
   return children;
@@ -245,12 +252,12 @@ export const classComponentActive = (fiber: MyReactFiberNode) => {
 export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
   processComponentStateFromProps(fiber);
-  fiber.root.dispatch.resolveComponentQueue(fiber);
+  fiber.root.root_dispatch.resolveComponentQueue(fiber);
   const typedInstance = fiber.instance as MixinMyReactComponentType;
   const newElement = fiber.element;
-  const { newState, isForce, callback } = typedInstance.result;
+  const { newState, isForce, callback } = typedInstance._result;
   // maybe could improve here
-  typedInstance.result = DEFAULT_RESULT;
+  typedInstance._result = DEFAULT_RESULT;
   const baseState = typedInstance.state;
   const baseProps = typedInstance.props;
   const baseContext = typedInstance.context;

@@ -4,6 +4,7 @@ import { currentRunningFiber } from "./env";
 
 import type { forwardRef, lazy, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "../element";
 import type { MyReactFiberNode } from "../fiber";
+import type { createReactive } from "../reactive";
 
 const getTrackDevLog = (fiber: MyReactFiberNode) => {
   if (__DEV__) {
@@ -42,11 +43,17 @@ const getElementName = (fiber: MyReactFiberNode) => {
     if (typedType.render.displayName) return `<Lazy -(${typedType.render.displayName}) />`;
     return `<Lazy />`;
   }
+  if (fiber.type & NODE_TYPE.__isReactive__) {
+    const typedElement = fiber.element as MyReactElement;
+    const typedType = typedElement.type as ReturnType<typeof createReactive>;
+    if (typedType.name) return `<Reactive* - (${typedType.name}) />`;
+    return `<Reactive* />`;
+  }
   if (fiber.type & NODE_TYPE.__isPortal__) return `<Portal />`;
   if (fiber.type & NODE_TYPE.__isNullNode__) return `<Null />`;
   if (fiber.type & NODE_TYPE.__isEmptyNode__) return `<Empty />`;
-  if (fiber.type & NODE_TYPE.__isSuspense__) return `<Suspense />`;
   if (fiber.type & NODE_TYPE.__isStrictNode__) return `<Strict />`;
+  if (fiber.type & NODE_TYPE.__isSuspenseNode__) return `<Suspense />`;
   if (fiber.type & NODE_TYPE.__isFragmentNode__) return `<Fragment />`;
   if (fiber.type & NODE_TYPE.__isKeepLiveNode__) return `<KeepAlive />`;
   if (fiber.type & NODE_TYPE.__isContextProvider__) return `<Provider />`;
@@ -137,7 +144,7 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
 
     const fiber = currentRunningFiber.current;
 
-    if (fiber) fiber.root.scope.isAppCrash = true;
+    if (fiber) fiber.root.root_scope.isAppCrash = true;
 
     throw new Error((e as Error).message);
   }
@@ -149,7 +156,7 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>({ action, fi
   } catch (e) {
     log({ message: e as Error, level: "error", fiber });
 
-    fiber.root.scope.isAppCrash = true;
+    fiber.root.root_scope.isAppCrash = true;
 
     throw new Error((e as Error).message);
   }

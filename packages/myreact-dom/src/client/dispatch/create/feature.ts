@@ -26,9 +26,9 @@ export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWit
       nativeCreate(fiber, isSVG);
     }
 
-    const scope = fiber.root.scope as DomScope;
+    const renderScope = fiber.root.root_scope as DomScope;
 
-    if (scope.isHydrateRender) {
+    if (renderScope.isHydrateRender) {
       const { element } = fiber.node as DomFiberNode;
 
       const typedDom = element as HydrateDOM;

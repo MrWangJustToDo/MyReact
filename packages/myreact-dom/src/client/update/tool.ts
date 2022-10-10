@@ -49,7 +49,11 @@ export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispat
     hasNext: () => {
       if (globalScope.isAppCrash) return false;
 
-      return globalScope.currentYield !== null || globalScope.modifyFiberArray.length > 0;
+      if (globalScope.currentYield !== null) return true;
+
+      globalScope.modifyFiberRoot = null;
+
+      return globalScope.modifyFiberArray.length > 0;
     },
 
     doesPause: () => globalScope.currentYield !== null,

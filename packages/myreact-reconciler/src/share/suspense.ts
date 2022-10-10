@@ -5,7 +5,7 @@ import type { MyReactElementNode, MyReactFiberNode, MyReactFiberNodeDev } from "
 export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: Record<string, MyReactElementNode>) => {
   const parent = fiber.parent;
   const element = fiber.element;
-  if (typeof element === "object" && fiber.type & NODE_TYPE.__isSuspense__) {
+  if (typeof element === "object" && fiber.type & NODE_TYPE.__isSuspenseNode__) {
     map[fiber.uid] = element?.props["fallback"] as MyReactElementNode;
   } else {
     if (parent) {

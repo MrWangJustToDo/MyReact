@@ -8,7 +8,6 @@ export * from "./render";
 export * from "./findDom";
 export * from "./unmount";
 export * from "./dispatch";
-export * from "./mapFiber";
 export * from "./shouldPause";
 export * from "./numberStyle";
 export * from "./singleElement";

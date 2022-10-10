@@ -24,7 +24,7 @@ export const updateFiberNode = (
 
   fiber.installParent(parent);
 
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   if (__DEV__) {
     fiber.checkElement();

@@ -6,7 +6,7 @@ import type { MyReactFiberNode } from "@my-react/react";
 
 export const deactivate = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) {
-    const globalDispatch = fiber.root.dispatch;
+    const globalDispatch = fiber.root.root_dispatch;
 
     const allDeactivateFibers = globalDispatch.keepLiveMap[fiber.uid];
 

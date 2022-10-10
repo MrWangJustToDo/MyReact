@@ -26,11 +26,11 @@ export class ServerDispatch implements FiberDispatch {
 
   suspenseMap: Record<string, MyReactElementNode> = {};
 
-  elementTypeMap: Record<string, boolean> = {};
+  svgTypeMap: Record<string, boolean> = {};
 
   contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
 
-  unmountMap: Record<string, (MyReactFiberNode | MyReactFiberNode[])[]> = {};
+  unmountMap: Record<string, Array<LinkTreeList<MyReactFiberNode>>> = {};
 
   eventMap: Record<string, Record<string, ((...args: any[]) => void) & { cb?: any[] | undefined }>> = {};
 
@@ -49,7 +49,7 @@ export class ServerDispatch implements FiberDispatch {
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  resolveMemorizeProps(_fiber: MyReactFiberNode): MyReactElement['props'] {
+  resolveMemorizeProps(_fiber: MyReactFiberNode): MyReactElement["props"] {
     return {};
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {

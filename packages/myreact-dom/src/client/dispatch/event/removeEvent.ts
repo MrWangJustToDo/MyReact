@@ -6,7 +6,7 @@ import type { DomFiberNode } from "@my-react-dom-shared";
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
 export const removeEventListener = (fiber: MyReactFiberNode, node: DomFiberNode, key: string) => {
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   const typedElement = fiber.element as MyReactElement;
 

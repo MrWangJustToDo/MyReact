@@ -6,7 +6,7 @@ import type { CreateHookParams, MyReactFiberNode } from "@my-react/react";
 const { createHookNode: _createHookNode } = __my_react_shared__;
 
 export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   const hookNode = _createHookNode(props, fiber);
   if (hookNode.hookType === HOOK_TYPE.useMemo || hookNode.hookType === HOOK_TYPE.useState || hookNode.hookType === HOOK_TYPE.useReducer) {

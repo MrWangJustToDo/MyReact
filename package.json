@@ -29,6 +29,7 @@
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "@my-react/react-shared": "workspace:*",
+    "@my-react/react-reactive": "workspace:*",
     "@my-react/react-reconciler": "workspace:*",
     "@rollup/plugin-commonjs": "^22.0.2",
     "@rollup/plugin-node-resolve": "^14.1.0",

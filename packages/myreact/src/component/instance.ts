@@ -5,7 +5,7 @@ import { MyReactInternalInstance } from "../internal";
 import type { MyReactElementNode, createContext } from "../element";
 import type { ComponentUpdateQueue } from "../fiber";
 
-interface MyReactComponentType<P, S, C> {
+export interface MyReactComponentType<P, S, C> {
   render(this: MyReactComponent): MyReactElementNode;
   componentDidMount?(this: MyReactComponent): void;
   shouldComponentUpdate?(this: MyReactComponent, nextProps: P, nextState: S, nextContext: C): boolean;
@@ -40,7 +40,7 @@ export class MyReactComponent<
   context: C | null = null;
 
   // for queue update
-  result: { newState: unknown; isForce: boolean; callback: Array<() => void> } = DEFAULT_RESULT;
+  _result: { newState: unknown; isForce: boolean; callback: Array<() => void> } = DEFAULT_RESULT;
 
   constructor(props?: P, context?: C | null) {
     super();

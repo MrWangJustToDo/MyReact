@@ -20,7 +20,7 @@ type ControlledElement = HTMLInputElement & {
 };
 
 export const addEventListener = (fiber: MyReactFiberNode, node: DomFiberNode, key: string) => {
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   const typedElement = fiber.element as MyReactElement;
 

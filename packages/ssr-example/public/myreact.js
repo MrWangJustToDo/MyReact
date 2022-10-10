@@ -29,7 +29,7 @@
         NODE_TYPE[NODE_TYPE["__isLazy__"] = 4] = "__isLazy__";
         NODE_TYPE[NODE_TYPE["__isMemo__"] = 8] = "__isMemo__";
         NODE_TYPE[NODE_TYPE["__isPortal__"] = 16] = "__isPortal__";
-        NODE_TYPE[NODE_TYPE["__isSuspense__"] = 32] = "__isSuspense__";
+        NODE_TYPE[NODE_TYPE["__isReactive__"] = 32] = "__isReactive__";
         NODE_TYPE[NODE_TYPE["__isForwardRef__"] = 64] = "__isForwardRef__";
         NODE_TYPE[NODE_TYPE["__isContextProvider__"] = 128] = "__isContextProvider__";
         NODE_TYPE[NODE_TYPE["__isContextConsumer__"] = 256] = "__isContextConsumer__";
@@ -39,8 +39,9 @@
         NODE_TYPE[NODE_TYPE["__isEmptyNode__"] = 2048] = "__isEmptyNode__";
         NODE_TYPE[NODE_TYPE["__isPlainNode__"] = 4096] = "__isPlainNode__";
         NODE_TYPE[NODE_TYPE["__isStrictNode__"] = 8192] = "__isStrictNode__";
-        NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 16384] = "__isFragmentNode__";
-        NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 32768] = "__isKeepLiveNode__";
+        NODE_TYPE[NODE_TYPE["__isSuspenseNode__"] = 16384] = "__isSuspenseNode__";
+        NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 32768] = "__isFragmentNode__";
+        NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 65536] = "__isKeepLiveNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -69,6 +70,22 @@
         Effect_TYPE[Effect_TYPE["__initial__"] = 0] = "__initial__";
         Effect_TYPE[Effect_TYPE["__pendingEffect__"] = 1] = "__pendingEffect__";
     })(Effect_TYPE || (Effect_TYPE = {}));
+
+    function isObject(target) {
+        return typeof target === "object" && target !== null;
+    }
+    function isFunction(target) {
+        return typeof target === "function";
+    }
+    function isArray(target) {
+        return Array.isArray(target);
+    }
+    function isInteger(target) {
+        return Number.isInteger(Number(target));
+    }
+    function isCollection(target) {
+        return target instanceof Map || target instanceof Set || target instanceof WeakMap || target instanceof WeakSet;
+    }
 
     var isNormalEquals = function (src, target, isSkipKey) {
         if (isSkipKey === void 0) { isSkipKey = function () { return false; }; }
@@ -132,6 +149,734 @@
         };
     };
 
+    var globalDepsMap = new WeakMap();
+    var globalReactiveMap = new WeakMap();
+    var globalReadOnlyMap = new WeakMap();
+    var globalShallowReactiveMap = new WeakMap();
+    var globalShallowReadOnlyMap = new WeakMap();
+    {
+        globalThis.__globalDeps__ = globalDepsMap;
+    }
+
+    var _a$2;
+    var globalEffect = null;
+    var ReactiveEffect = /** @class */ (function () {
+        function ReactiveEffect(_action, _scheduler) {
+            this._action = _action;
+            this._scheduler = _scheduler;
+            this._active = true;
+            this._parent = null;
+            this[_a$2] = true;
+            this._depsSetArray = [];
+        }
+        ReactiveEffect.prototype.cleanDeps = function () {
+            var _this = this;
+            // delete current effect deps
+            this._depsSetArray.forEach(function (set) { return set.delete(_this); });
+            // clean the dep array
+            this._depsSetArray.length = 0;
+        };
+        ReactiveEffect.prototype.addDeps = function (set) {
+            this._depsSetArray.push(set);
+        };
+        ReactiveEffect.prototype.entryScope = function () {
+            this._parent = globalEffect;
+            // eslint-disable-next-line @typescript-eslint/no-this-alias
+            globalEffect = this;
+        };
+        ReactiveEffect.prototype.exitScope = function () {
+            globalEffect = this._parent;
+            this._parent = null;
+        };
+        ReactiveEffect.prototype.run = function () {
+            this.entryScope();
+            this.cleanDeps();
+            var re = null;
+            try {
+                re = this._action();
+            }
+            catch (e) {
+                console.error(e);
+            }
+            finally {
+                this.exitScope();
+            }
+            return re;
+        };
+        ReactiveEffect.prototype.update = function (newValue, oldValue) {
+            if (!this._active)
+                return this._action();
+            this.entryScope();
+            this.cleanDeps();
+            var re = null;
+            try {
+                if (this._scheduler) {
+                    re = this._scheduler(newValue, oldValue);
+                }
+                else {
+                    re = this._action();
+                }
+            }
+            catch (e) {
+                console.error(e);
+            }
+            finally {
+                this.exitScope();
+            }
+            return re;
+        };
+        ReactiveEffect.prototype.stop = function () {
+            if (this._active) {
+                this._active = false;
+                this.cleanDeps();
+            }
+        };
+        ReactiveEffect.prototype.active = function () {
+            if (!this._active) {
+                this._active = true;
+            }
+        };
+        return ReactiveEffect;
+    }());
+    _a$2 = "__my_effect__" /* EffectFlags.Effect_key */;
+    var shouldTrack = true;
+    var trackStack = [];
+    function pauseTracking() {
+        trackStack.push(shouldTrack);
+        shouldTrack = false;
+    }
+    function resetTracking() {
+        var last = trackStack.pop();
+        shouldTrack = last === undefined ? true : last;
+    }
+    function track(target, type, key) {
+        if (!globalEffect || !shouldTrack)
+            return;
+        var depsMap = globalDepsMap.get(target);
+        if (!depsMap) {
+            globalDepsMap.set(target, (depsMap = new Map()));
+        }
+        var depsSet = depsMap.get(key);
+        if (!depsSet) {
+            depsMap.set(key, (depsSet = new Set()));
+        }
+        trackEffects(depsSet);
+    }
+    function trackEffects(set) {
+        if (!globalEffect)
+            return;
+        if (!set.has(globalEffect)) {
+            set.add(globalEffect);
+            globalEffect.addDeps(set);
+        }
+    }
+    function trigger(target, type, key, newValue, oldValue) {
+        var depsMap = globalDepsMap.get(target);
+        if (!depsMap)
+            return;
+        if (isArray(target)) {
+            // 直接修改length
+            if (key === "length") {
+                depsMap.forEach(function (depsSet, _key) {
+                    if (_key === "length") {
+                        if (depsSet)
+                            triggerEffects(depsSet, newValue, oldValue);
+                    }
+                    if (Number(_key) >= newValue) {
+                        if (depsSet)
+                            triggerEffects(depsSet);
+                    }
+                });
+            }
+            if (isInteger(key)) {
+                var depsSet = depsMap.get(key);
+                if (depsSet)
+                    triggerEffects(depsSet, oldValue, newValue);
+                // 数组调用了push等方法
+                if (type === "add") {
+                    var depsSet_1 = depsMap.get("length");
+                    if (depsSet_1)
+                        triggerEffects(depsSet_1);
+                }
+            }
+        }
+        else {
+            var depsSet = depsMap.get(key);
+            if (depsSet)
+                triggerEffects(depsSet, newValue, oldValue);
+        }
+    }
+    function triggerEffects(set, oldValue, newValue) {
+        var allReactiveEffect = new Set(set);
+        allReactiveEffect.forEach(function (reactiveEffect) {
+            if (!Object.is(reactiveEffect, globalEffect)) {
+                reactiveEffect.update(oldValue, newValue);
+            }
+        });
+    }
+    function effect(action) {
+        var effectObject = new ReactiveEffect(action);
+        effectObject.run();
+        var runner = effectObject.update.bind(effectObject);
+        runner.effect = effectObject;
+        return runner;
+    }
+
+    /******************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
+    var _a$1, _b$1;
+    function ref(value) {
+        if (isRef(value))
+            return value;
+        return new RefImpl(value);
+    }
+    function isRef(value) {
+        return isObject(value) && !!value["__my_ref__" /* RefFlags.Ref_key */];
+    }
+    function toRefs(reactiveValue) {
+        if (isObject(reactiveValue)) {
+            if (isReactive(reactiveValue)) {
+                if (isArray(reactiveValue)) {
+                    return reactiveValue.map(function (_, index) { return toRef(reactiveValue, index); });
+                }
+                return Object.keys(reactiveValue).reduce(function (p, c) {
+                    var _c;
+                    return (__assign(__assign({}, p), (_c = {}, _c[c] = toRef(reactiveValue, c), _c)));
+                }, {});
+            }
+            else {
+                throw new Error("expects a reactive object but received a plain object");
+            }
+        }
+        throw new Error("expects a reactive object but received a plain value");
+    }
+    // 支持解构一层 就是把原始的ReactiveObject的属性访问转换到target.value的形式访问
+    function toRef(object, key) {
+        var value = object[key];
+        if (isRef(value))
+            return value;
+        return new ObjectRefImpl(object, key);
+    }
+    function unRef(refObject) {
+        if (isRef(refObject))
+            return refObject.value;
+        return refObject;
+    }
+    var unwrapRefGerHandler = function (target, key, receiver) { return unRef(Reflect.get(target, key, receiver)); };
+    var unwrapRefSetHandler = function (target, key, value, receiver) {
+        var oldValue = target[key];
+        if (isRef(oldValue) && !isRef(value)) {
+            oldValue.value = value;
+            return true;
+        }
+        else {
+            return Reflect.set(target, key, value, receiver);
+        }
+    };
+    function proxyRefs(objectWithRefs) {
+        if (isObject(objectWithRefs)) {
+            if (isReactive(objectWithRefs))
+                return objectWithRefs;
+            return new Proxy(objectWithRefs, {
+                get: unwrapRefGerHandler,
+                set: unwrapRefSetHandler,
+            });
+        }
+        throw new Error("expect a object but received a plain value");
+    }
+    var RefImpl = /** @class */ (function () {
+        function RefImpl(_rawValue) {
+            this._rawValue = _rawValue;
+            this[_a$1] = true;
+            this._depsSet = new Set();
+            if (isObject(_rawValue)) {
+                this._value = reactive(_rawValue);
+            }
+            else {
+                this._value = _rawValue;
+            }
+        }
+        Object.defineProperty(RefImpl.prototype, "value", {
+            get: function () {
+                trackEffects(this._depsSet);
+                return this._value;
+            },
+            set: function (newValue) {
+                if (!Object.is(newValue, this._rawValue)) {
+                    this._rawValue = newValue;
+                    this._value = isObject(newValue) ? reactive(newValue) : newValue;
+                    triggerEffects(this._depsSet);
+                }
+            },
+            enumerable: false,
+            configurable: true
+        });
+        RefImpl.prototype.toString = function () {
+            return this._value;
+        };
+        return RefImpl;
+    }());
+    _a$1 = "__my_ref__" /* RefFlags.Ref_key */;
+    var ObjectRefImpl = /** @class */ (function () {
+        function ObjectRefImpl(_object, _key) {
+            this._object = _object;
+            this._key = _key;
+            this[_b$1] = true;
+        }
+        Object.defineProperty(ObjectRefImpl.prototype, "value", {
+            get: function () {
+                return this._object[this._key];
+            },
+            set: function (newValue) {
+                this._object[this._key] = newValue;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return ObjectRefImpl;
+    }());
+    _b$1 = "__my_ref__" /* RefFlags.Ref_key */;
+
+    /**
+     * array method track:
+     * const data = {a: 1, b: 2};
+     * const arr = reactive([data]);
+     * usage effect(() => {
+     *  if (arr.includes(data)) {
+     *    console.log('foo')
+     *  }
+     * })
+     */
+    var generateArrayProxyHandler = function () {
+        var methodNames = ["includes", "indexOf", "lastIndexOf", "find", "findIndex", "findLast", "findLastIndex"];
+        // 这些方法会修改数组  同时也会访问length属性，对于数组的操作可能会死循环
+        var noTrackMethodNames = ["push", "pop", "shift", "unshift", "splice"];
+        var handlerObject = {};
+        methodNames.reduce(function (p, c) {
+            p[c] = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                var arr = toRaw(this);
+                for (var i = 0; i < this.length; i++) {
+                    track(arr, "get", i.toString());
+                }
+                var res = arr[c].apply(arr, args);
+                if (res === -1 || res === false) {
+                    // if that didn't work, run it again using raw values.
+                    return arr[c].apply(arr, args.map(toRaw));
+                }
+                else {
+                    return res;
+                }
+            };
+            return p;
+        }, handlerObject);
+        noTrackMethodNames.reduce(function (p, c) {
+            p[c] = function () {
+                var args = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    args[_i] = arguments[_i];
+                }
+                pauseTracking();
+                var arr = toRaw(this);
+                var res = arr[c].apply(this, args);
+                resetTracking();
+                return res;
+            };
+            return p;
+        }, handlerObject);
+        return handlerObject;
+    };
+    var arrayProxyHandler = generateArrayProxyHandler();
+    var generateProxyHandler = function (isShallow, isReadOnly) {
+        if (isShallow === void 0) { isShallow = false; }
+        if (isReadOnly === void 0) { isReadOnly = false; }
+        var deletePropertyHandler = createDeletePropertyHandler(isReadOnly);
+        var getHandler = createGetHandler(isShallow, isReadOnly);
+        var setHandler = createSetHandler(isShallow, isReadOnly);
+        var ownKeysHandler = createOwnKeysHandler();
+        var hasHandler = createHasHandler();
+        return {
+            deleteProperty: deletePropertyHandler,
+            ownKeys: ownKeysHandler,
+            get: getHandler,
+            set: setHandler,
+            has: hasHandler,
+        };
+    };
+    var createObjectGetHandler = function (isShallow, isReadOnly) {
+        return function (target, key, receiver) {
+            var res = Reflect.get(target, key, receiver);
+            if (!isReadOnly) {
+                track(target, "get", key);
+            }
+            if (isShallow)
+                return res;
+            if (isRef(res))
+                return res.value;
+            if (isObject(res)) {
+                return isReadOnly ? readonly(res) : reactive(res);
+            }
+            return res;
+        };
+    };
+    var createArrayGetHandler = function (isShallow, isReadOnly) {
+        return function (target, key, receiver) {
+            if (!isReadOnly && Reflect.has(arrayProxyHandler, key)) {
+                return Reflect.get(arrayProxyHandler, key, receiver);
+            }
+            var res = Reflect.get(target, key, receiver);
+            if (!isReadOnly) {
+                track(target, "get", key);
+            }
+            if (isShallow)
+                return res;
+            if (isRef(res)) {
+                return isInteger(key) ? res : res.value;
+            }
+            if (isObject(res)) {
+                return isReadOnly ? readonly(res) : reactive(res);
+            }
+            return res;
+        };
+    };
+    var createGetHandler = function (isShallow, isReadOnly) {
+        var objectGetHandler = createObjectGetHandler(isShallow, isReadOnly);
+        var arrayGetHandler = createArrayGetHandler(isShallow, isReadOnly);
+        return function (target, key, receiver) {
+            if (key === "__my_effect__" /* EffectFlags.Effect_key */ || key === "__my_ref__" /* RefFlags.Ref_key */ || key === "__my_computed__" /* ComputedFlags.Computed_key */)
+                return Reflect.get(target, key, receiver);
+            if (key === "__my_reactive__" /* ReactiveFlags.Reactive_key */)
+                return !isReadOnly;
+            if (key === "__my_readonly__" /* ReactiveFlags.Readonly_key */)
+                return isReadOnly;
+            if (key === "__my_shallow__" /* ReactiveFlags.Shallow_key */)
+                return isShallow;
+            if (key === "__my_raw__" /* ReactiveFlags.Raw_key */ && receiver === getProxyCacheMap(isShallow, isReadOnly).get(target)) {
+                return target;
+            }
+            if (isArray(target)) {
+                return arrayGetHandler(target, key, receiver);
+            }
+            if (isCollection(target)) {
+                throw new Error("current not support collection object");
+            }
+            return objectGetHandler(target, key, receiver);
+        };
+    };
+    var createDeletePropertyHandler = function (isReadonly) {
+        return function (target, key) {
+            if (isReadonly) {
+                console.warn("current object is readonly object");
+                return true;
+            }
+            var hasKey = Reflect.has(target, key);
+            var oldValue = target[key];
+            var result = Reflect.deleteProperty(target, key);
+            if (result && hasKey) {
+                trigger(target, "delete", key, undefined, oldValue);
+            }
+            return result;
+        };
+    };
+    var createHasHandler = function () {
+        return function (target, key) {
+            var result = Reflect.has(target, key);
+            track(target, "has", key);
+            return result;
+        };
+    };
+    var createOwnKeysHandler = function () {
+        return function (target) {
+            track(target, "iterate", isArray(target) ? "length" : "collection");
+            return Reflect.ownKeys(target);
+        };
+    };
+    var createSetHandler = function (isShallow$1, isReadOnly) {
+        return function (target, key, value, receiver) {
+            if (key === "__my_reactive__" /* ReactiveFlags.Reactive_key */ || key === "__my_readonly__" /* ReactiveFlags.Readonly_key */ || key === "__my_shallow__" /* ReactiveFlags.Shallow_key */ || key === "__my_raw__" /* ReactiveFlags.Raw_key */) {
+                throw new Error("can not set internal ".concat(key, " field for current object"));
+            }
+            if (isReadOnly) {
+                throw new Error("can not set ".concat(key, " field for readonly object"));
+            }
+            var targetIsArray = isArray(target);
+            var oldValue = target[key];
+            // TODO from source code
+            if (isReadonly(oldValue) && isRef(oldValue) && !isRef(value)) {
+                return false;
+            }
+            // TODO from source code
+            if (!isShallow$1) {
+                if (!isShallow(value) && !isReadonly(value)) {
+                    oldValue = toRaw(oldValue);
+                    value = toRaw(value);
+                }
+                if (!targetIsArray && isRef(oldValue) && !isRef(value)) {
+                    oldValue.value = value;
+                    return true;
+                }
+            }
+            var hadKey = targetIsArray && isInteger(key) ? Number(key) < target.length : Reflect.has(target, key);
+            var res = Reflect.set(target, key, value, receiver);
+            // 原型链的proxy set方法会按层级触发
+            if (Object.is(target, toRaw(receiver))) {
+                if (!hadKey) {
+                    trigger(target, "add", key, value, oldValue);
+                }
+                else if (!Object.is(oldValue, value)) {
+                    trigger(target, "set", key, value, oldValue);
+                }
+            }
+            return res;
+        };
+    };
+
+    var getProxyCacheMap = function (isShallow, isReadOnly) {
+        if (isShallow && isReadOnly)
+            return globalShallowReadOnlyMap;
+        if (isShallow)
+            return globalShallowReactiveMap;
+        if (isReadOnly)
+            return globalReadOnlyMap;
+        return globalReactiveMap;
+    };
+    var createReactive$1 = function (target, cacheMap, proxyHandler) {
+        if (target["__my_skip__" /* ReactiveFlags.Skip_key */])
+            return target;
+        if (!Object.isExtensible(target))
+            return target;
+        if (cacheMap.has(target))
+            return cacheMap.get(target);
+        var proxy = new Proxy(target, proxyHandler);
+        cacheMap.set(target, proxy);
+        return proxy;
+    };
+    function createReactiveWithCache(target, isShallow, isReadOnly) {
+        return createReactive$1(target, getProxyCacheMap(isShallow, isReadOnly), generateProxyHandler(isShallow, isReadOnly));
+    }
+
+    function reactive(target) {
+        if (isObject(target)) {
+            if (isReactive(target))
+                return target;
+            // from source code
+            if (isReadonly(target))
+                return target;
+            return createReactiveWithCache(target, false, false);
+        }
+        else {
+            throw new Error("reactive() only accept a object value");
+        }
+    }
+    function readonly(target) {
+        if (isObject(target)) {
+            if (isReadonly(target))
+                return target;
+            return createReactiveWithCache(target, false, true);
+        }
+        else {
+            throw new Error("readonly() only accept a object value");
+        }
+    }
+    function shallowReactive(target) {
+        if (isObject(target)) {
+            if (isReactive(target) && isShallow(target))
+                return target;
+            return createReactiveWithCache(target, true, false);
+        }
+        else {
+            throw new Error("shallowReactive() only accept a object value");
+        }
+    }
+    function shallowReadonly(target) {
+        if (isObject(target)) {
+            if (isReadonly(target) && isShallow(target))
+                return target;
+            return createReactiveWithCache(target, true, true);
+        }
+        else {
+            throw new Error("shallowReadonly() only accept a object value");
+        }
+    }
+    function isReactive(target) {
+        return isObject(target) && !!target["__my_reactive__" /* ReactiveFlags.Reactive_key */];
+    }
+    function isReadonly(target) {
+        return isObject(target) && !!target["__my_readonly__" /* ReactiveFlags.Readonly_key */];
+    }
+    function isShallow(target) {
+        return isObject(target) && !!target["__my_shallow__" /* ReactiveFlags.Shallow_key */];
+    }
+    function isProxy(target) {
+        return isReactive(target) || isReadonly(target);
+    }
+    function toReactive(value) {
+        return isObject(value) ? reactive(value) : value;
+    }
+    function toReadonly(value) {
+        return isObject(value) ? readonly(value) : value;
+    }
+    function toRaw(observed) {
+        var raw = isObject(observed) && observed["__my_raw__" /* ReactiveFlags.Raw_key */];
+        return raw ? toRaw(raw) : observed;
+    }
+    function markRaw(value) {
+        Object.defineProperty(value, "__my_skip__" /* ReactiveFlags.Skip_key */, {
+            value: value,
+            configurable: true,
+            enumerable: false,
+        });
+        return value;
+    }
+
+    var _a, _b;
+    var computed = function (getterOrOption) {
+        var getter;
+        var setter = function () {
+            console.warn("current computed is readonly");
+        };
+        if (isFunction(getterOrOption)) {
+            getter = getterOrOption;
+        }
+        else {
+            getter = getterOrOption.get;
+            setter = getterOrOption.set;
+        }
+        return new ComputedRefImpl(getter, setter);
+    };
+    var ComputedRefImpl = /** @class */ (function () {
+        function ComputedRefImpl(_getter, _setter) {
+            var _this = this;
+            this._getter = _getter;
+            this._setter = _setter;
+            this._dirty = true;
+            this._value = null;
+            this[_a] = true;
+            this[_b] = true;
+            this._depsSet = new Set();
+            this._effect = new ReactiveEffect(_getter, function () {
+                if (!_this._dirty) {
+                    _this._dirty = true;
+                    triggerEffects(_this._depsSet);
+                }
+            });
+        }
+        Object.defineProperty(ComputedRefImpl.prototype, "value", {
+            get: function () {
+                trackEffects(this._depsSet);
+                if (this._dirty) {
+                    this._dirty = false;
+                    this._value = this._effect.run();
+                }
+                return this._value;
+            },
+            set: function (v) {
+                // TODO
+                this._setter(v);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return ComputedRefImpl;
+    }());
+    _a = "__my_ref__" /* RefFlags.Ref_key */, _b = "__my_computed__" /* ComputedFlags.Computed_key */;
+
+    function traversal(target, set) {
+        if (set === void 0) { set = new Set(); }
+        if (isObject(target)) {
+            if (set.has(target))
+                return target;
+            set.add(target);
+            for (var key in target) {
+                traversal(target[key], set);
+            }
+            return target;
+        }
+        else {
+            return target;
+        }
+    }
+    function watch(source, cb) {
+        var effectAction = function () { return void 0; };
+        if (isReactive(source)) {
+            effectAction = function () { return traversal(source); };
+        }
+        else if (isFunction(source)) {
+            effectAction = source;
+        }
+        else {
+            return;
+        }
+        var cleanUp = null;
+        var onCleanUp = function (fn) {
+            cleanUp = fn;
+        };
+        var oldValue = null;
+        var effect = new ReactiveEffect(effectAction, function () {
+            if (cleanUp) {
+                cleanUp();
+                cleanUp = null;
+            }
+            var newValue = effect.run();
+            cb(newValue, oldValue, onCleanUp);
+            oldValue = newValue;
+        });
+        oldValue = effect.run();
+        return effect;
+    }
+
+    var reactiveApi = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        ReactiveEffect: ReactiveEffect,
+        computed: computed,
+        effect: effect,
+        isProxy: isProxy,
+        isReactive: isReactive,
+        isReadonly: isReadonly,
+        isRef: isRef,
+        isShallow: isShallow,
+        markRaw: markRaw,
+        proxyRefs: proxyRefs,
+        reactive: reactive,
+        readonly: readonly,
+        ref: ref,
+        shallowReactive: shallowReactive,
+        shallowReadonly: shallowReadonly,
+        toRaw: toRaw,
+        toReactive: toReactive,
+        toReadonly: toReadonly,
+        toRef: toRef,
+        toRefs: toRefs,
+        watch: watch
+    });
+
     var createRef = function (value) {
         return { current: value };
     };
@@ -193,6 +938,7 @@
     var currentRunningFiber = createRef(null);
     var currentComponentFiber = createRef(null);
     var currentFunctionFiber = createRef(null);
+    var currentReactiveInstance = createRef(null);
     var currentHookDeepIndex = createRef(0);
     // ==== feature ==== //
     var enableDebugLog = createRef(false);
@@ -241,16 +987,23 @@
                 return "<Lazy -(".concat(typedType.render.displayName, ") />");
             return "<Lazy />";
         }
+        if (fiber.type & NODE_TYPE.__isReactive__) {
+            var typedElement = fiber.element;
+            var typedType = typedElement.type;
+            if (typedType.name)
+                return "<Reactive* - (".concat(typedType.name, ") />");
+            return "<Reactive* />";
+        }
         if (fiber.type & NODE_TYPE.__isPortal__)
             return "<Portal />";
         if (fiber.type & NODE_TYPE.__isNullNode__)
             return "<Null />";
         if (fiber.type & NODE_TYPE.__isEmptyNode__)
             return "<Empty />";
-        if (fiber.type & NODE_TYPE.__isSuspense__)
-            return "<Suspense />";
         if (fiber.type & NODE_TYPE.__isStrictNode__)
             return "<Strict />";
+        if (fiber.type & NODE_TYPE.__isSuspenseNode__)
+            return "<Suspense />";
         if (fiber.type & NODE_TYPE.__isFragmentNode__)
             return "<Fragment />";
         if (fiber.type & NODE_TYPE.__isKeepLiveNode__)
@@ -332,7 +1085,7 @@
             log({ message: e, level: "error" });
             var fiber = currentRunningFiber.current;
             if (fiber)
-                fiber.root.scope.isAppCrash = true;
+                fiber.root.root_scope.isAppCrash = true;
             throw new Error(e.message);
         }
     };
@@ -347,7 +1100,7 @@
         }
         catch (e) {
             log({ message: e, level: "error", fiber: fiber });
-            fiber.root.scope.isAppCrash = true;
+            fiber.root.root_scope.isAppCrash = true;
             throw new Error(e.message);
         }
     };
@@ -364,6 +1117,7 @@
     var My_React_Suspense = Symbol.for("react.suspense");
     var My_React_Strict = Symbol.for("react.strict");
     var My_React_KeepLive = Symbol.for("react.keep_live");
+    var My_React_Reactive = Symbol.for("react.reactive");
 
     function isValidElement(element) {
         return (typeof element === "object" &&
@@ -372,6 +1126,7 @@
                 (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Context ||
                 (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Consumer ||
                 (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Provider ||
+                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Reactive ||
                 (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_ForwardRef ||
                 (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Memo ||
                 (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Lazy ||
@@ -404,6 +1159,9 @@
                     case My_React_Lazy:
                         nodeTypeSymbol |= NODE_TYPE.__isLazy__;
                         break;
+                    case My_React_Reactive:
+                        nodeTypeSymbol |= NODE_TYPE.__isReactive__;
+                        break;
                     default:
                         throw new Error("invalid object element type ".concat(typedRawType["$$typeof"].toString()));
                 }
@@ -428,7 +1186,7 @@
                         nodeTypeSymbol |= NODE_TYPE.__isStrictNode__;
                         break;
                     case My_React_Suspense:
-                        nodeTypeSymbol |= NODE_TYPE.__isSuspense__;
+                        nodeTypeSymbol |= NODE_TYPE.__isSuspenseNode__;
                         break;
                     default:
                         throw new Error("invalid symbol element type ".concat(rawType.toString()));
@@ -788,7 +1546,7 @@
             _this.props = null;
             _this.context = null;
             // for queue update
-            _this.result = DEFAULT_RESULT;
+            _this._result = DEFAULT_RESULT;
             _this.setState = function (payLoad, callback) {
                 var _a;
                 var updater = {
@@ -1064,7 +1822,7 @@
             if (this.parent) {
                 this.parent.addChild(this);
             }
-            var globalDispatch = this.root.dispatch;
+            var globalDispatch = this.root.root_dispatch;
             globalDispatch.resolveSuspenseMap(this);
             globalDispatch.resolveContextMap(this);
             globalDispatch.resolveStrictMap(this);
@@ -1149,6 +1907,9 @@
                     return Object.is(typedExistElement.type, typedIncomingElement.type);
                 }
                 if (this.type & NODE_TYPE.__isObjectNode__ && typeof typedIncomingElement.type === "object" && typeof typedExistElement.type === "object") {
+                    // for reactive component
+                    if (this.type & NODE_TYPE.__isReactive__)
+                        return Object.is(typedExistElement.type, typedIncomingElement.type);
                     return Object.is(typedExistElement.type["$$typeof"], typedIncomingElement.type["$$typeof"]);
                 }
             }
@@ -1183,7 +1944,9 @@
         MyReactFiberNode.prototype.checkInstance = function () {
         };
         MyReactFiberNode.prototype.update = function () {
-            this.root.dispatch.trigger(this);
+            if (!this.activated || !this.mounted)
+                return;
+            this.root.root_dispatch.trigger(this);
         };
         MyReactFiberNode.prototype.unmount = function () {
             this.hookNodeArray.forEach(function (hook) { return hook.unmount(); });
@@ -1191,6 +1954,7 @@
             this.mounted = false;
             this.mode = UPDATE_TYPE.__initial__;
             this.patch = PATCH_TYPE.__initial__;
+            this.root.root_dispatch.removeFiber(this);
         };
         MyReactFiberNode.prototype.deactivate = function () {
             this.hookNodeArray.forEach(function (hook) { return hook.unmount(); });
@@ -1205,8 +1969,8 @@
         __extends(MyReactFiberNodeRoot, _super);
         function MyReactFiberNodeRoot() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.dispatch = new EmptyDispatch();
-            _this.scope = new EmptyRenderScope();
+            _this.root_dispatch = new EmptyDispatch();
+            _this.root_scope = new EmptyRenderScope();
             return _this;
         }
         return MyReactFiberNodeRoot;
@@ -1237,7 +2001,7 @@
             fiber.checkElement();
         }
         fiber.initialParent();
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         globalDispatch.pendingCreate(fiber);
         globalDispatch.pendingUpdate(fiber);
         globalDispatch.pendingAppend(fiber);
@@ -1258,7 +2022,7 @@
             newFiberNode.checkElement();
         }
         newFiberNode.initialParent();
-        var globalDispatch = newFiberNode.root.dispatch;
+        var globalDispatch = newFiberNode.root.root_dispatch;
         globalDispatch.pendingCreate(newFiberNode);
         globalDispatch.pendingUpdate(newFiberNode);
         if (type === "append") {
@@ -1282,7 +2046,7 @@
         // make sure invoke `installParent` after `installElement`
         fiber.installElement(nextElement);
         fiber.installParent(parent);
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         {
             fiber.checkElement();
         }
@@ -1393,7 +2157,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -1408,7 +2172,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -1422,7 +2186,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -1436,7 +2200,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -1451,7 +2215,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -1466,7 +2230,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -1481,7 +2245,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -1496,7 +2260,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -1511,7 +2275,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -1603,6 +2367,99 @@
         return jsxDEV(type, config, key, true, source, self);
     };
 
+    function createReactive(props) {
+        var _a;
+        return _a = {},
+            _a["$$typeof"] = My_React_Reactive,
+            _a.name = typeof props === "function" ? props.name : props.name,
+            _a.setup = typeof props === "function" ? props : props.setup,
+            _a.render = typeof props === "function" ? null : props.render,
+            _a.contextType = typeof props === "function" ? null : props.contextType,
+            _a;
+    }
+    // hook api like `Vue`
+    var onBeforeMount = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.beforeMountHooks.push(cb);
+        }
+    };
+    var onMounted = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.mountedHooks.push(cb);
+        }
+    };
+    var onBeforeUpdate = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.beforeUpdateHooks.push(cb);
+        }
+    };
+    var onUpdated = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.updatedHooks.push(cb);
+        }
+    };
+    var onBeforeUnmount = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.beforeUnmountHooks.push(cb);
+        }
+    };
+    var onUnmounted = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.unmountedHooks.push(cb);
+        }
+    };
+
+    var MyReactReactiveInstance = /** @class */ (function (_super) {
+        __extends(MyReactReactiveInstance, _super);
+        function MyReactReactiveInstance(props, context) {
+            var _this = _super.call(this) || this;
+            _this.beforeMountHooks = [];
+            _this.mountedHooks = [];
+            _this.beforeUpdateHooks = [];
+            _this.updatedHooks = [];
+            _this.beforeUnmountHooks = [];
+            _this.unmountedHooks = [];
+            _this.props = props;
+            _this.context = context;
+            return _this;
+        }
+        Object.defineProperty(MyReactReactiveInstance.prototype, "isMyReactReactive", {
+            get: function () {
+                return true;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        MyReactReactiveInstance.prototype.createSetupState = function (setup, render) {
+            var _a = this, props = _a.props, context = _a.context;
+            this.setup = setup;
+            this.staticRender = render;
+            var data = (setup === null || setup === void 0 ? void 0 : setup(props, context)) || {};
+            this.state = proxyRefs(data);
+        };
+        MyReactReactiveInstance.prototype.createEffectUpdate = function (scheduler) {
+            var _this = this;
+            this.effect = new ReactiveEffect(function () {
+                var render = _this.staticRender ? _this.staticRender : typeof _this.props.children === "function" ? _this.props.children : function () { return null; };
+                return render(_this.state, _this.props, _this.context);
+            }, scheduler);
+        };
+        MyReactReactiveInstance.prototype.unmount = function () {
+            var _this = this;
+            _super.prototype.unmount.call(this);
+            this.beforeUnmountHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
+            this.effect.stop();
+            Promise.resolve().then(function () { return _this.unmountedHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); }); });
+        };
+        return MyReactReactiveInstance;
+    }(MyReactInternalInstance));
+
     var Component = MyReactComponent;
     var PureComponent = MyReactPureComponent;
     var version = "0.0.1";
@@ -1630,6 +2487,18 @@
         currentHookDeepIndex: currentHookDeepIndex,
         currentFunctionFiber: currentFunctionFiber,
         currentComponentFiber: currentComponentFiber,
+        currentReactiveInstance: currentReactiveInstance,
+    };
+    // reactive component
+    var __my_react_reactive__ = {
+        MyReactReactiveInstance: MyReactReactiveInstance,
+        onBeforeMount: onBeforeMount,
+        onBeforeUnmount: onBeforeUnmount,
+        onBeforeUpdate: onBeforeUpdate,
+        onMounted: onMounted,
+        onUnmounted: onUnmounted,
+        onUpdated: onUpdated,
+        reactiveApi: reactiveApi,
     };
     var Children = {
         map: map,
@@ -1649,6 +2518,7 @@
         createRef: createRef,
         forwardRef: forwardRef,
         createContext: createContext,
+        createReactive: createReactive,
         Portal: My_React_Portal,
         Element: My_React_Element,
         Provider: My_React_Provider,
@@ -1684,10 +2554,12 @@
     exports.StrictMode = My_React_Strict;
     exports.Suspense = My_React_Suspense;
     exports.__my_react_internal__ = __my_react_internal__;
+    exports.__my_react_reactive__ = __my_react_reactive__;
     exports.__my_react_shared__ = __my_react_shared__;
     exports.cloneElement = cloneElement;
     exports.createContext = createContext;
     exports.createElement = createElement;
+    exports.createReactive = createReactive;
     exports.createRef = createRef;
     exports["default"] = React;
     exports.forwardRef = forwardRef;

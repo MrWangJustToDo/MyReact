@@ -36,6 +36,7 @@
   },
   "peerDependencies": {
     "@my-react/react": "workspace:*",
-    "@my-react/react-shared": "workspace:*"
+    "@my-react/react-shared": "workspace:*",
+    "@my-react/react-reactive": "workspace:*"
   }
 }

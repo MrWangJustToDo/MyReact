@@ -1,3 +1,5 @@
+import * as reactiveApi from "@my-react/react-reactive";
+
 import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
 import {
@@ -35,6 +37,7 @@ import {
 } from "./hook";
 import { MyReactInternalInstance } from "./internal";
 import { jsx, jsxs, jsxDEV } from "./jsx";
+import { createReactive, MyReactReactiveInstance, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated } from "./reactive";
 import {
   log,
   logHook,
@@ -43,6 +46,7 @@ import {
   currentFunctionFiber,
   currentComponentFiber,
   currentHookDeepIndex,
+  currentReactiveInstance,
   globalLoop,
   safeCall,
   safeCallWithFiber,
@@ -82,6 +86,19 @@ const __my_react_internal__ = {
   currentHookDeepIndex,
   currentFunctionFiber,
   currentComponentFiber,
+  currentReactiveInstance,
+};
+
+// reactive component
+const __my_react_reactive__ = {
+  MyReactReactiveInstance,
+  onBeforeMount,
+  onBeforeUnmount,
+  onBeforeUpdate,
+  onMounted,
+  onUnmounted,
+  onUpdated,
+  reactiveApi,
 };
 
 const Children = {
@@ -103,6 +120,7 @@ const React = {
   createRef,
   forwardRef,
   createContext,
+  createReactive,
   Portal,
   Element,
   Provider,
@@ -139,6 +157,7 @@ export {
   createRef,
   forwardRef,
   createContext,
+  createReactive,
   Portal,
   Element,
   Provider,
@@ -161,6 +180,7 @@ export {
   Children,
   __my_react_internal__,
   __my_react_shared__,
+  __my_react_reactive__,
   version,
   React as default,
 };
@@ -187,3 +207,5 @@ export type { MyReactInternalInstance } from "./internal";
 export type { MyReactFiberNode, MyReactFiberNodeDev, MyReactFiberNodeRoot, UpdateQueue } from "./fiber";
 
 export type { MyReactComponent, MyReactComponentStaticType, MixinMyReactComponentType } from "./component";
+
+export type { MyReactReactiveInstance } from "./reactive";

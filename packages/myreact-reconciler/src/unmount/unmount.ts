@@ -1,19 +1,20 @@
 import { generateFiberToList } from "../share";
 
+import { flatten } from "./tools";
+
 import type { MyReactFiberNode } from "@my-react/react";
+import type { LinkTreeList } from "@my-react/react-shared";
 
-export const unmountFiberNode = (fiber?: MyReactFiberNode) => {
-  if (!fiber) return;
-  // unmountFiberNode(fiber.child);
-  // fiber.unmount();
-  // fiber.root.dispatch.removeFiber(fiber);
-  // unmountFiberNode(fiber.sibling);
+export const defaultGenerateUnmountListMap = (
+  fiber: MyReactFiberNode,
+  unmount: MyReactFiberNode | MyReactFiberNode[],
+  map: Record<string, Array<LinkTreeList<MyReactFiberNode>>>
+) => {
+  const allUnmount = flatten(unmount);
 
-  // loop
-  const dispatch = fiber.root.dispatch;
-  const listTree = generateFiberToList(fiber);
-  listTree.listToHead((f) => {
-    f.unmount();
-    dispatch.removeFiber(f);
-  });
+  const fiberList = allUnmount.map((f) => generateFiberToList(f));
+
+  const exist = map[fiber.uid] || [];
+
+  map[fiber.uid] = [...exist, ...fiberList];
 };

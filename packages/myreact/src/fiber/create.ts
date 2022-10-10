@@ -26,7 +26,7 @@ export const createFiberNode = (
 
   newFiberNode.initialParent();
 
-  const globalDispatch = newFiberNode.root.dispatch;
+  const globalDispatch = newFiberNode.root.root_dispatch;
 
   globalDispatch.pendingCreate(newFiberNode);
 

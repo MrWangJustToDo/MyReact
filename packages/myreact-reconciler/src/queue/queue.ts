@@ -25,7 +25,7 @@ export const processComponentUpdateQueue = (fiber: MyReactFiberNode) => {
         if (__DEV__ && c.trigger !== typedInstance) {
           throw new Error("current update not valid, look like a bug for MyReact");
         }
-        typedInstance.result = result;
+        typedInstance._result = result;
         return result;
       } else {
         lastQueue.push(c);

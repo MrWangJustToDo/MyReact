@@ -1,5 +1,5 @@
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const reconcileMount = (fiber: MyReactFiberNode, hydrate: boolean) => {
-  fiber.root.dispatch.reconcileCommit(fiber, hydrate, fiber);
+  fiber.root.root_dispatch.reconcileCommit(fiber, hydrate, fiber);
 };

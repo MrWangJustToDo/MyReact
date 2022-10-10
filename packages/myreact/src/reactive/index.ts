@@ -4,22 +4,30 @@
  * const Reactive = createReactive(
  *  () => {
  *    const data = reactive({a: 1});
- *
- *    onBeforeMount(() => {
- *
+ * 
+ *    onBeforeMounted(() => {
+ * 
  *    })
- *
+ * 
  *    onMounted(() => {
- *
+ * 
  *    })
- *
+ * 
  *    onBeforeUpdate(() => {
- *
+ * 
+ *    })
+ * 
+ *    onUpdated(() => {
+ * 
  *    })
  *
- *    onUpdated(() => {
- *
- *    });
+ *    onBeforeUnmount(() => {
+ * 
+ *    })
+ * 
+ *    onUnmounted(() => {
+ * 
+ *    })
  *
  *    return {data};  return a object
  *  }
@@ -33,8 +41,6 @@
  *      {(context) => (<Reactive>
  *          // support function
  *          {(data) => <div>{data.fff}</div>}
- *          // support jsx
- *          <p>123</p>
  *        </Reactive>)}
  *    </Consumer>
  *  </>

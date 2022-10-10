@@ -82,6 +82,7 @@ importers:
       '@loadable/webpack-plugin': ^5.15.2
       '@my-react/react': workspace:*
       '@my-react/react-dom': workspace:*
+      '@my-react/react-reactive': workspace:*
       '@my-react/react-reconciler': workspace:*
       '@my-react/react-shared': workspace:*
       '@types/compression': ^1.7.2
@@ -166,6 +167,7 @@ importers:
       '@loadable/server': 5.15.2_y3rnbano2fur2lz5mykskop6mm
       '@my-react/react': link:../myreact
       '@my-react/react-dom': link:../myreact-dom
+      '@my-react/react-reactive': link:../myreact-reactivity
       '@my-react/react-reconciler': link:../myreact-reconciler
       '@my-react/react-shared': link:../myreact-shared
       animate.css: 4.1.1
@@ -297,6 +299,7 @@ importers:
       '@loadable/webpack-plugin': ^5.15.2
       '@my-react/react': workspace:*
       '@my-react/react-dom': workspace:*
+      '@my-react/react-reactive': workspace:*
       '@my-react/react-reconciler': workspace:*
       '@my-react/react-shared': workspace:*
       '@pmmmwh/react-refresh-webpack-plugin': ^0.5.7
@@ -392,6 +395,7 @@ importers:
       '@loadable/server': 5.15.2_y3rnbano2fur2lz5mykskop6mm
       '@my-react/react': link:../myreact
       '@my-react/react-dom': link:../myreact-dom
+      '@my-react/react-reactive': link:../myreact-reactivity
       '@my-react/react-reconciler': link:../myreact-reconciler
       '@my-react/react-shared': link:../myreact-shared
       antd: 4.23.4_sfoxds7t5ydpegc3knd667wn6m
@@ -4920,7 +4924,7 @@ packages:
   /axios/0.21.4_debug@4.3.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.1_debug@4.3.4
+      follow-redirects: 1.15.1
     transitivePeerDependencies:
       - debug
     dev: true
@@ -4928,7 +4932,7 @@ packages:
   /axios/0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
     dependencies:
-      follow-redirects: 1.15.1_debug@4.3.4
+      follow-redirects: 1.15.1
       form-data: 4.0.0
     transitivePeerDependencies:
       - debug
@@ -6888,7 +6892,7 @@ packages:
       tslib: 2.4.0
     dev: false
 
-  /follow-redirects/1.15.1_debug@4.3.4:
+  /follow-redirects/1.15.1:
     resolution: {integrity: sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==}
     engines: {node: '>=4.0'}
     peerDependencies:
@@ -6896,8 +6900,6 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dependencies:
-      debug: 4.3.4
 
   /fork-ts-checker-webpack-plugin/7.2.13_frxmcuunqqqeqipt45cd6rjuvu:
     resolution: {integrity: sha512-fR3WRkOb4bQdWB/y7ssDUlVdrclvwtyCUIHCfivAoYxq9dF7XfrDKbMdZIfwJ7hxIAqkYSGeU7lLJE6xrxIBdg==}
@@ -7437,7 +7439,7 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       eventemitter3: 4.0.7
-      follow-redirects: 1.15.1_debug@4.3.4
+      follow-redirects: 1.15.1
       requires-port: 1.0.0
     transitivePeerDependencies:
       - debug

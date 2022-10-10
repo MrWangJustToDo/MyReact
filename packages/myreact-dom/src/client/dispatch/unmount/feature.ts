@@ -1,19 +1,22 @@
-import { unmountFiberNode } from "@my-react/react-reconciler";
-
-import { mapFiber } from "@my-react-dom-shared";
+import { generateFiberToList } from "@my-react/react-reconciler";
 
 import { clearFiberDom } from "./clearFiberDom";
 
 import type { MyReactFiberNode } from "@my-react/react";
+import type { LinkTreeList } from "@my-react/react-shared";
 
 export const unmountFiber = (fiber: MyReactFiberNode) => {
-  unmountFiberNode(fiber);
+  const list = generateFiberToList(fiber);
+  unmountList(list);
+};
 
-  clearFiberDom(fiber);
+export const unmountList = (list: LinkTreeList<MyReactFiberNode>) => {
+  list.listToHead((f) => f.unmount());
+  list.head.value && clearFiberDom(list.head.value);
 };
 
 export const unmount = (fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   const unmountMap = globalDispatch.unmountMap;
 
@@ -21,7 +24,5 @@ export const unmount = (fiber: MyReactFiberNode) => {
 
   unmountMap[fiber.uid] = [];
 
-  if (allUnmountFiber.length) {
-    mapFiber(allUnmountFiber as MyReactFiberNode | MyReactFiberNode[], (f) => unmountFiber(f));
-  }
+  if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountList(l));
 };

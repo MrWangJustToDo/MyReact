@@ -24,9 +24,9 @@ export const renderToString = (element: MyReactElement) => {
 
   fiber.node = container;
 
-  fiber.scope = globalScope;
+  fiber.root_scope = globalScope;
 
-  fiber.dispatch = globalDispatch;
+  fiber.root_dispatch = globalDispatch;
 
   globalScope.rootFiber = fiber;
 

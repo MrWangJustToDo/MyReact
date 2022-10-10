@@ -231,7 +231,7 @@
         return LinkTreeList;
     }());
 
-    var MyReactFiberNodeClass$3 = react.__my_react_internal__.MyReactFiberNode;
+    var MyReactFiberNodeClass$2 = react.__my_react_internal__.MyReactFiberNode;
     var _updateFiberNode = react.__my_react_shared__.updateFiberNode, _createFiberNode = react.__my_react_shared__.createFiberNode, enableKeyDiff = react.__my_react_shared__.enableKeyDiff;
     var createFiberNode = function () {
         var props = [];
@@ -249,7 +249,7 @@
                 updateTimeStep: 0,
                 currentUpdateTime: timeNow,
             };
-            typedFiber._debugGlobalDispatch = typedFiber.root.dispatch;
+            typedFiber._debugGlobalDispatch = typedFiber.root.root_dispatch;
         }
         return fiber;
     };
@@ -295,7 +295,7 @@
             if (tempChildren.length) {
                 if (react.isValidElement(element)) {
                     if (typeof element.key === "string") {
-                        var targetIndex = tempChildren.findIndex(function (fiber) { var _a; return fiber instanceof MyReactFiberNodeClass$3 && typeof fiber.element === "object" && ((_a = fiber.element) === null || _a === void 0 ? void 0 : _a.key) === element.key; });
+                        var targetIndex = tempChildren.findIndex(function (fiber) { var _a; return fiber instanceof MyReactFiberNodeClass$2 && typeof fiber.element === "object" && ((_a = fiber.element) === null || _a === void 0 ? void 0 : _a.key) === element.key; });
                         if (targetIndex !== -1) {
                             assignPrevChildren[index] = tempChildren[targetIndex];
                             tempChildren.splice(targetIndex, 1);
@@ -334,8 +334,8 @@
         }
     };
     var getNewFiberWithUpdate = function (newChild, parentFiber, prevFiberChild, assignPrevFiberChild) {
-        var renderScope = parentFiber.root.scope;
-        var globalDispatch = parentFiber.root.dispatch;
+        var renderScope = parentFiber.root.root_scope;
+        var globalDispatch = parentFiber.root.root_dispatch;
         var isSameType = getIsSameTypeNode(newChild, renderScope, assignPrevFiberChild);
         if (isSameType) {
             if (Array.isArray(newChild) && Array.isArray(prevFiberChild) && Array.isArray(assignPrevFiberChild)) {
@@ -376,7 +376,7 @@
         var isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
         var newChildren = Array.isArray(children) ? children : [children];
         var prevFiberChildren = isUpdate ? parentFiber.renderedChildren : [];
-        var renderScope = parentFiber.root.scope;
+        var renderScope = parentFiber.root.root_scope;
         var assignPrevFiberChildren = getKeyMatchedChildren(newChildren, prevFiberChildren, renderScope);
         parentFiber.beforeUpdate();
         while (index < newChildren.length || index < assignPrevFiberChildren.length) {
@@ -396,7 +396,7 @@
         var isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
         if (!isUpdate)
             return transformChildrenFiber(parentFiber, children);
-        var globalDispatch = parentFiber.root.dispatch;
+        var globalDispatch = parentFiber.root.root_dispatch;
         var prevFiber = parentFiber.child;
         var cachedFiber = globalDispatch.resolveKeepLive(parentFiber, children);
         if (cachedFiber) {
@@ -453,7 +453,7 @@
     };
     var processComponentInstanceOnMount = function (fiber) {
         var typedElement = fiber.element;
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var strictMod = globalDispatch.resolveStrictValue(fiber);
         var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
         var typedComponent = Component;
@@ -484,11 +484,9 @@
     };
     var processComponentRenderOnMountAndUpdate = function (fiber, devInstance) {
         var typedInstance = fiber.instance;
-        var typeFiber = fiber;
         if (devInstance) {
             var cached = Object.assign({}, typedInstance);
             var children = typedInstance.render();
-            typeFiber._debugDynamicChildren = children;
             // reset
             Object.assign(typedInstance, cached);
             typedInstance.render();
@@ -496,15 +494,12 @@
         }
         else {
             var children = typedInstance.render();
-            {
-                typeFiber._debugDynamicChildren = children;
-            }
             return children;
         }
     };
     var processComponentDidMountOnMount = function (fiber, devInstance) {
         var typedInstance = fiber.instance;
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         if (devInstance) {
             if (!(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
                 typedInstance.mode = Effect_TYPE.__pendingEffect__;
@@ -528,7 +523,7 @@
     };
     var processComponentContextOnUpdate = function (fiber) {
         var typedElement = fiber.element;
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
         var typedInstance = fiber.instance;
         var typedComponent = Component;
@@ -543,6 +538,14 @@
             return context;
         }
     };
+    var processComponentPropsAndContextOnActive = function (fiber) {
+        var typedElement = fiber.element;
+        var props = Object.assign({}, typedElement.props);
+        var context = processComponentContextOnUpdate(fiber);
+        var typedInstance = fiber.instance;
+        typedInstance.props = props;
+        typedInstance.context = context;
+    };
     var processComponentShouldUpdateOnUpdate = function (fiber, _a) {
         var nextState = _a.nextState, nextProps = _a.nextProps, nextContext = _a.nextContext;
         var typedInstance = fiber.instance;
@@ -556,7 +559,7 @@
     var processComponentDidUpdateOnUpdate = function (fiber, _a) {
         var baseState = _a.baseState, baseProps = _a.baseProps, baseContext = _a.baseContext, callback = _a.callback;
         var typedInstance = fiber.instance;
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var hasEffect = typedInstance.componentDidUpdate || callback.length;
         if (hasEffect && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
             typedInstance.mode = Effect_TYPE.__pendingEffect__;
@@ -576,6 +579,8 @@
         return children;
     };
     var classComponentActive = function (fiber) {
+        processComponentFiberOnUpdate(fiber);
+        processComponentPropsAndContextOnActive(fiber);
         var children = processComponentRenderOnMountAndUpdate(fiber);
         processComponentDidMountOnMount(fiber);
         return children;
@@ -583,7 +588,7 @@
     var classComponentUpdate = function (fiber) {
         processComponentFiberOnUpdate(fiber);
         processComponentStateFromProps(fiber);
-        fiber.root.dispatch.resolveComponentQueue(fiber);
+        fiber.root.root_dispatch.resolveComponentQueue(fiber);
         var typedInstance = fiber.instance;
         var newElement = fiber.element;
         var _a = typedInstance._result, newState = _a.newState, isForce = _a.isForce, callback = _a.callback;
@@ -621,12 +626,141 @@
         }
     };
 
+    var jobs = new Set();
+    var process$1 = false;
+    var queueJob = function (job) {
+        if (!jobs.has(job)) {
+            jobs.add(job);
+        }
+        Promise.resolve().then(flushQueue);
+    };
+    var flushQueue = function () {
+        if (!process$1) {
+            process$1 = true;
+            var all = [];
+            var iterate = jobs.values();
+            var res = null;
+            while ((res = iterate.next())) {
+                res.value && all.push(res.value);
+                if (res.done)
+                    break;
+            }
+            jobs.clear();
+            for (var _i = 0, all_1 = all; _i < all_1.length; _i++) {
+                var job = all_1[_i];
+                job();
+            }
+            process$1 = false;
+        }
+    };
+
+    var MyReactReactiveInstance = react.__my_react_reactive__.MyReactReactiveInstance;
+    var currentReactiveInstance = react.__my_react_internal__.currentReactiveInstance;
+    var processReactiveInstanceOnMount = function (fiber) {
+        var typedElement = fiber.element;
+        var globalDispatch = fiber.root.root_dispatch;
+        var typedType = typedElement.type;
+        var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
+        var context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
+        var props = Object.assign({}, typedElement.props);
+        var instance = new MyReactReactiveInstance(props, context);
+        // set global reactiveInstance, so in the `setup` function, we can get the current instance
+        currentReactiveInstance.current = instance;
+        instance.createSetupState(typedType.setup, typedType.render);
+        instance.createEffectUpdate(function () { return queueJob(function () { return instance._ownerFiber.update(); }); });
+        currentReactiveInstance.current = null;
+        instance.props = props;
+        instance.context = context;
+        fiber.installInstance(instance);
+        instance.setOwner(fiber);
+        instance.setContext(ProviderFiber);
+    };
+    var processBeforeMountHooks = function (fiber) {
+        var typedInstance = fiber.instance;
+        if (typedInstance.beforeMountHooks.length) {
+            typedInstance.beforeMountHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
+        }
+    };
+    var processReactiveRenderOnMountAndUpdate = function (fiber) {
+        var typedInstance = fiber.instance;
+        var children = typedInstance.effect.run();
+        return children;
+    };
+    var processReactivePropsAndContextOnActiveAndUpdate = function (fiber) {
+        var typedElement = fiber.element;
+        var globalDispatch = fiber.root.root_dispatch;
+        var typedInstance = fiber.instance;
+        var typedType = typedElement.type;
+        var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
+        var context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
+        var props = Object.assign({}, typedElement.props);
+        typedInstance.props = props;
+        typedInstance.context = context;
+    };
+    var processMountedHooks = function (fiber) {
+        var typedInstance = fiber.instance;
+        var globalDispatch = fiber.root.root_dispatch;
+        if (typedInstance.mountedHooks.length && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+            typedInstance.mode = Effect_TYPE.__pendingEffect__;
+            globalDispatch.pendingLayoutEffect(fiber, function () {
+                typedInstance.mode = Effect_TYPE.__initial__;
+                typedInstance.mountedHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
+            });
+        }
+    };
+    var processBeforeUpdateHooks = function (fiber) {
+        var typedInstance = fiber.instance;
+        if (typedInstance.beforeUpdateHooks.length) {
+            typedInstance.beforeUpdateHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
+        }
+    };
+    var processUpdatedHooks = function (fiber) {
+        var typedInstance = fiber.instance;
+        var globalDispatch = fiber.root.root_dispatch;
+        if (typedInstance.updatedHooks.length && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+            typedInstance.mode = Effect_TYPE.__pendingEffect__;
+            globalDispatch.pendingLayoutEffect(fiber, function () {
+                typedInstance.mode = Effect_TYPE.__initial__;
+                typedInstance.updatedHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
+            });
+        }
+    };
+    var processReactiveFiberOnUpdate = function (fiber) {
+        var typedInstance = fiber.instance;
+        typedInstance.effect.active();
+        typedInstance.setOwner(fiber);
+    };
+    var reactiveComponentMount = function (fiber) {
+        processReactiveInstanceOnMount(fiber);
+        processBeforeMountHooks(fiber);
+        var children = processReactiveRenderOnMountAndUpdate(fiber);
+        processMountedHooks(fiber);
+        return children;
+    };
+    var reactiveComponentActive = function (fiber) {
+        processReactiveFiberOnUpdate(fiber);
+        processBeforeMountHooks(fiber);
+        processReactivePropsAndContextOnActiveAndUpdate(fiber);
+        var children = processReactiveRenderOnMountAndUpdate(fiber);
+        processMountedHooks(fiber);
+        return children;
+    };
+    var reactiveComponentUpdate = function (fiber) {
+        processReactiveFiberOnUpdate(fiber);
+        processBeforeUpdateHooks(fiber);
+        processReactivePropsAndContextOnActiveAndUpdate(fiber);
+        var children = processReactiveRenderOnMountAndUpdate(fiber);
+        processUpdatedHooks(fiber);
+        return children;
+    };
+
     var currentHookDeepIndex = react.__my_react_internal__.currentHookDeepIndex, currentFunctionFiber = react.__my_react_internal__.currentFunctionFiber, currentRunningFiber = react.__my_react_internal__.currentRunningFiber, currentComponentFiber = react.__my_react_internal__.currentComponentFiber;
     var nextWorkCommon = function (fiber, children) {
         var childrenFiber = transformChildrenFiber(fiber, children);
         {
             var typedFiber = fiber;
             typedFiber._debugDynamicChildren = children;
+            typedFiber._debugDynamicChildrenFiber = Array.isArray(children) ? childrenFiber : childrenFiber[0];
         }
         return childrenFiber;
     };
@@ -651,7 +785,7 @@
         }
     };
     var nextWorkFunctionComponent = function (fiber) {
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         globalDispatch.resolveHookQueue(fiber);
         currentHookDeepIndex.current = 0;
         currentFunctionFiber.current = fiber;
@@ -691,7 +825,7 @@
             return res;
         }
         else {
-            var globalDispatch = fiber.root.dispatch;
+            var globalDispatch = fiber.root.root_dispatch;
             currentComponentFiber.current = fiber;
             globalDispatch.resolveHookQueue(fiber);
             currentHookDeepIndex.current = 0;
@@ -706,7 +840,7 @@
     };
     var nextWorkLazy = function (fiber) {
         var _a = fiber.element, type = _a.type, props = _a.props;
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var typedType = type;
         if (typedType._loaded === true) {
             var render = typedType.render;
@@ -730,8 +864,22 @@
         var children = globalDispatch.resolveSuspenseElement(fiber);
         return nextWorkCommon(fiber, children);
     };
+    var nextWorkReactive = function (fiber) {
+        if (!fiber.instance) {
+            var children = reactiveComponentMount(fiber);
+            return nextWorkCommon(fiber, children);
+        }
+        else if (!fiber.activated) {
+            var children = reactiveComponentActive(fiber);
+            return nextWorkCommon(fiber, children);
+        }
+        else {
+            var children = reactiveComponentUpdate(fiber);
+            return nextWorkCommon(fiber, children);
+        }
+    };
     var nextWorkForwardRef = function (fiber) {
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         currentComponentFiber.current = fiber;
         globalDispatch.resolveHookQueue(fiber);
         var _a = fiber.element, type = _a.type, ref = _a.ref, props = _a.props;
@@ -758,7 +906,7 @@
         }
     };
     var nextWorkConsumer = function (fiber) {
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var _a = fiber.element, type = _a.type, props = _a.props;
         var typedType = type;
         fiber.instance = fiber.instance || new typedType.Internal();
@@ -787,6 +935,8 @@
             return nextWorkLazy(fiber);
         if (fiber.type & NODE_TYPE.__isPortal__)
             return nextWorkNormal(fiber);
+        if (fiber.type & NODE_TYPE.__isReactive__)
+            return nextWorkReactive(fiber);
         if (fiber.type & NODE_TYPE.__isForwardRef__)
             return nextWorkForwardRef(fiber);
         if (fiber.type & NODE_TYPE.__isContextProvider__)
@@ -796,7 +946,7 @@
         throw new Error("unknown element ".concat(fiber.element));
     };
     var nextWorkKeepLive = function (fiber) {
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         globalDispatch.resolveKeepLiveMap(fiber);
         var typedElement = fiber.element;
         var children = typedElement.props.children;
@@ -1031,7 +1181,7 @@
 
     var _createHookNode = react.__my_react_shared__.createHookNode;
     var createHookNode = function (props, fiber) {
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var hookNode = _createHookNode(props, fiber);
         if (hookNode.hookType === HOOK_TYPE.useMemo || hookNode.hookType === HOOK_TYPE.useState || hookNode.hookType === HOOK_TYPE.useReducer) {
             hookNode.result = hookNode.value.call(null);
@@ -1057,7 +1207,7 @@
     };
 
     var effect$1 = function (fiber, hookNode) {
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
             hookNode.mode = Effect_TYPE.__pendingEffect__;
             var strictMod_1 = globalDispatch.resolveStrictValue(fiber) ;
@@ -1113,7 +1263,7 @@
     var logHook$1 = react.__my_react_shared__.logHook;
     var updateHookNode = function (_a, fiber) {
         var hookIndex = _a.hookIndex, hookType = _a.hookType, value = _a.value, reducer = _a.reducer, deps = _a.deps;
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var currentHook = fiber.hookNodeArray[hookIndex];
         if (hookType !== currentHook.hookType) {
             var array = fiber.hookTypeArray.slice(0, hookIndex);
@@ -1243,20 +1393,18 @@
         }
     };
 
-    var unmountFiberNode = function (fiber) {
-        if (!fiber)
-            return;
-        // unmountFiberNode(fiber.child);
-        // fiber.unmount();
-        // fiber.root.dispatch.removeFiber(fiber);
-        // unmountFiberNode(fiber.sibling);
-        // loop
-        var dispatch = fiber.root.dispatch;
-        var listTree = generateFiberToList(fiber);
-        listTree.listToHead(function (f) {
-            f.unmount();
-            dispatch.removeFiber(f);
-        });
+    var flatten = function (children) {
+        if (Array.isArray(children)) {
+            return children.reduce(function (p, c) { return p.concat(flatten(c)); }, []);
+        }
+        return [children];
+    };
+
+    var defaultGenerateUnmountListMap = function (fiber, unmount, map) {
+        var allUnmount = flatten(unmount);
+        var fiberList = allUnmount.map(function (f) { return generateFiberToList(f); });
+        var exist = map[fiber.uid] || [];
+        map[fiber.uid] = __spreadArray(__spreadArray([], exist, true), fiberList, true);
     };
 
     var processComponentUpdateQueue = function (fiber) {
@@ -1398,7 +1546,7 @@
     };
 
     var reconcileMount = function (fiber, hydrate) {
-        fiber.root.dispatch.reconcileCommit(fiber, hydrate, fiber);
+        fiber.root.root_dispatch.reconcileCommit(fiber, hydrate, fiber);
     };
 
     var globalLoop$2 = react.__my_react_internal__.globalLoop;
@@ -1408,7 +1556,7 @@
         globalLoop$2.current = true;
         safeCall$1(function () { return mountLoopSync(fiber); });
         reconcileMount(fiber, hydrate);
-        fiber.root.scope.isAppMounted = true;
+        fiber.root.root_scope.isAppMounted = true;
         globalLoop$2.current = false;
     };
 
@@ -1460,23 +1608,26 @@
     };
 
     var unmountFiber = function (fiber) {
-        unmountFiberNode(fiber);
-        clearFiberDom(fiber);
+        var list = generateFiberToList(fiber);
+        unmountList(list);
+    };
+    var unmountList = function (list) {
+        list.listToHead(function (f) { return f.unmount(); });
+        list.head.value && clearFiberDom(list.head.value);
     };
     var unmount = function (fiber) {
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var unmountMap = globalDispatch.unmountMap;
         var allUnmountFiber = unmountMap[fiber.uid] || [];
         unmountMap[fiber.uid] = [];
-        if (allUnmountFiber.length) {
-            mapFiber(allUnmountFiber, function (f) { return unmountFiber(f); });
-        }
+        if (allUnmountFiber.length)
+            allUnmountFiber.forEach(function (l) { return unmountList(l); });
     };
 
-    var MyReactFiberNodeClass$2 = react.__my_react_internal__.MyReactFiberNode;
+    var MyReactFiberNodeClass$1 = react.__my_react_internal__.MyReactFiberNode;
     var unmountComponentAtNode = function (container) {
         var fiber = container.__fiber__;
-        if (fiber instanceof MyReactFiberNodeClass$2) {
+        if (fiber instanceof MyReactFiberNodeClass$1) {
             unmountFiber(fiber);
         }
     };
@@ -1523,18 +1674,6 @@
             }
             else {
                 throw new Error("class component do not have a instance");
-            }
-        }
-    };
-
-    var MyReactFiberNodeClass$1 = react.__my_react_internal__.MyReactFiberNode;
-    var mapFiber = function (arrayLike, action) {
-        if (Array.isArray(arrayLike)) {
-            arrayLike.forEach(function (f) { return mapFiber(f, action); });
-        }
-        else {
-            if (arrayLike instanceof MyReactFiberNodeClass$1) {
-                action(arrayLike);
             }
         }
     };
@@ -1706,8 +1845,8 @@
     };
     var asyncUpdate = function (globalDispatch, globalScope) { return Promise.resolve().then(function () { return updateEntry(globalDispatch, globalScope); }); };
     var triggerUpdate = function (fiber) {
-        var globalScope = fiber.root.scope;
-        var globalDispatch = fiber.root.dispatch;
+        var globalScope = fiber.root.root_scope;
+        var globalDispatch = fiber.root.root_dispatch;
         if (globalScope.isHydrateRender || globalScope.isServerRender) {
             {
                 console.log("can not update component");
@@ -1879,8 +2018,8 @@
             else {
                 nativeCreate(fiber, isSVG);
             }
-            var scope = fiber.root.scope;
-            if (scope.isHydrateRender) {
+            var renderScope = fiber.root.root_scope;
+            if (renderScope.isHydrateRender) {
                 var element = fiber.node.element;
                 var typedDom = element;
                 typedDom.__hydrate__ = true;
@@ -1910,7 +2049,7 @@
 
     var deactivate = function (fiber) {
         if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) {
-            var globalDispatch = fiber.root.dispatch;
+            var globalDispatch = fiber.root.root_dispatch;
             var allDeactivateFibers = globalDispatch.keepLiveMap[fiber.uid];
             allDeactivateFibers === null || allDeactivateFibers === void 0 ? void 0 : allDeactivateFibers.forEach(function (fiber) {
                 if (fiber.activated)
@@ -1922,14 +2061,14 @@
     };
 
     var layoutEffect = function (fiber) {
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var layoutEffectMap = globalDispatch.layoutEffectMap;
         var allLayoutEffect = layoutEffectMap[fiber.uid] || [];
         layoutEffectMap[fiber.uid] = [];
         allLayoutEffect.forEach(function (layoutEffect) { return layoutEffect.call(null); });
     };
     var effect = function (fiber) {
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var effectMap = globalDispatch.effectMap;
         var allEffect = effectMap[fiber.uid] || [];
         effectMap[fiber.uid] = [];
@@ -1937,8 +2076,8 @@
     };
 
     var fallback = function (fiber) {
-        var scope = fiber.root.scope;
-        if (scope.isHydrateRender && fiber.type & NODE_TYPE.__isPlainNode__) {
+        var renderScope = fiber.root.root_scope;
+        if (renderScope.isHydrateRender && fiber.type & NODE_TYPE.__isPlainNode__) {
             var dom = fiber.node.element;
             var children = Array.from(dom.childNodes);
             children.forEach(function (node) {
@@ -2109,7 +2248,7 @@
     };
     var addEventListener = function (fiber, node, key) {
         var _a;
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var typedElement = fiber.element;
         var pendingProps = fiber.pendingProps;
         var callback = pendingProps[key];
@@ -2160,7 +2299,7 @@
 
     var removeEventListener = function (fiber, node, key) {
         var _a;
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         var typedElement = fiber.element;
         var currentProps = node.memoizedProps || {};
         var dom = node.element;
@@ -2379,7 +2518,7 @@
     var nativeUpdate = function (fiber, isSVG) {
         if (!fiber.node)
             throw new Error("update error, dom not exist");
-        var scope = fiber.root.scope;
+        var renderScope = fiber.root.root_scope;
         var node = fiber.node;
         if (fiber.type & NODE_TYPE.__isTextNode__) {
             var typedDom = node.element;
@@ -2489,7 +2628,7 @@
         {
             debugWithDOM(fiber);
         }
-        if (scope.isAppMounted && !scope.isHydrateRender && !scope.isServerRender && (enableHighlight.current || window.__highlight__)) {
+        if (renderScope.isAppMounted && !renderScope.isHydrateRender && !renderScope.isServerRender && (enableHighlight.current || window.__highlight__)) {
             HighLight.getHighLightInstance().highLight(fiber);
         }
     };
@@ -2711,8 +2850,7 @@
             _fiber.patch |= PATCH_TYPE.__pendingDeactivate__;
         };
         ClientDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
-            var exist = this.unmountMap[_fiber.uid] || [];
-            this.unmountMap[_fiber.uid] = __spreadArray$1(__spreadArray$1([], exist, true), [_pendingUnmount], false);
+            defaultGenerateUnmountListMap(_fiber, _pendingUnmount, this.unmountMap);
         };
         ClientDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {
             var exist = this.layoutEffectMap[_fiber.uid] || [];
@@ -2742,7 +2880,7 @@
         var _a;
         var containerFiber = container.__fiber__;
         if (containerFiber instanceof MyReactFiberNodeClass) {
-            containerFiber.root.scope.isAppCrash = false;
+            containerFiber.root.root_scope.isAppCrash = false;
             if (containerFiber.checkIsSameType(element)) {
                 containerFiber.installElement(element);
                 containerFiber.update();
@@ -2757,8 +2895,8 @@
         Array.from(container.children).forEach(function (n) { var _a; return (_a = n.remove) === null || _a === void 0 ? void 0 : _a.call(n); });
         var fiber = new MyReactFiberNodeRoot$2(0, null, element);
         fiber.node = createDomNode(container);
-        fiber.scope = globalScope;
-        fiber.dispatch = globalDispatch;
+        fiber.root_scope = globalScope;
+        fiber.root_dispatch = globalDispatch;
         globalScope.rootFiber = fiber;
         globalScope.rootContainer = container;
         (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "render", "MyReact");
@@ -2778,8 +2916,8 @@
         globalScope.isHydrateRender = true;
         var fiber = new MyReactFiberNodeRoot$1(0, null, element);
         fiber.node = createDomNode(container);
-        fiber.scope = globalScope;
-        fiber.dispatch = globalDispatch;
+        fiber.root_scope = globalScope;
+        fiber.root_dispatch = globalDispatch;
         globalScope.rootFiber = fiber;
         globalScope.rootContainer = container;
         (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "hydrate", "MyReact");
@@ -3772,8 +3910,8 @@
         var container = new PlainElement("");
         var fiber = new MyReactFiberNodeRoot(0, null, element);
         fiber.node = container;
-        fiber.scope = globalScope;
-        fiber.dispatch = globalDispatch;
+        fiber.root_scope = globalScope;
+        fiber.root_dispatch = globalDispatch;
         globalScope.rootFiber = fiber;
         globalScope.rootContainer = container;
         initialFiberNode(fiber);

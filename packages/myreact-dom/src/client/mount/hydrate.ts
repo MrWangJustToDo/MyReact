@@ -21,9 +21,9 @@ export const hydrate = (element: MyReactElement, container: RenderContainer) => 
 
   fiber.node = createDomNode(container);
 
-  fiber.scope = globalScope;
+  fiber.root_scope = globalScope;
 
-  fiber.dispatch = globalDispatch;
+  fiber.root_dispatch = globalDispatch;
 
   globalScope.rootFiber = fiber;
 

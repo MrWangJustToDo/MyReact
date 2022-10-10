@@ -97,4 +97,58 @@ you can see the `.env` file to learn how to switch render formwork `myreact or r
 
 ## more
 
-## TODO: add KeepLive internal component
+## KeepLive component
+
+## Vue like reactive api
+
+```tsx
+import { reactive } from "@my-react/react-reactive";
+import { createReactive, __my_react_reactive__ } from "@my-react/react";
+
+const { onMounted, onUnmounted } = __my_react_reactive__;
+
+const useReactiveApi_Position = () => {
+  const position = reactive({ x: 0, y: 0 });
+  let id = null;
+  const action = (e) => ((position.x = e.clientX), (position.y = e.clientY));
+  onMounted(() => {
+    window.addEventListener("mousemove", action);
+  });
+
+  onUnmounted(() => {
+    window.removeEventListener("mousemove", action);
+  });
+
+  return position;
+};
+
+const Reactive1 = createReactive({
+  contextType: null,
+  setup(props, context) {
+    const position = useReactiveApi_Position();
+    const data = reactive({ a: 1 });
+    const click = () => data.a++;
+
+    return { data, click, position };
+  },
+  // or add a render function
+  // render: (state, props, context) => xxx
+});
+
+const App = () => {
+  return (
+    <Reactive1 title="hello">
+      {({ data, click, position }, { title }) => (
+        <>
+          <p>{data.a}</p>
+          <button onClick={click}>click</button>
+          <p>
+            {position.x} {position.y}
+          </p>
+          {title}
+        </>
+      )}
+    </Reactive1>
+  );
+};
+```

@@ -5,9 +5,9 @@ import type { DomFiberNode, DomScope } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const fallback = (fiber: MyReactFiberNode) => {
-  const scope = fiber.root.scope as DomScope;
+  const renderScope = fiber.root.root_scope as DomScope;
 
-  if (scope.isHydrateRender && fiber.type & NODE_TYPE.__isPlainNode__) {
+  if (renderScope.isHydrateRender && fiber.type & NODE_TYPE.__isPlainNode__) {
     const { element: dom } = fiber.node as DomFiberNode;
 
     const children = Array.from(dom.childNodes);

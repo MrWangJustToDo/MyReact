@@ -8,7 +8,7 @@ import type { CreateHookParams, MyReactFiberNode } from "@my-react/react";
 const { logHook } = __my_react_shared__;
 
 export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: CreateHookParams, fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.dispatch;
+  const globalDispatch = fiber.root.root_dispatch;
 
   const currentHook = fiber.hookNodeArray[hookIndex];
 

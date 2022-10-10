@@ -12,7 +12,7 @@ import type { MyReactFiberNode } from "@my-react/react";
 export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (!fiber.node) throw new Error("update error, dom not exist");
 
-  const scope = fiber.root.scope as DomScope;
+  const renderScope = fiber.root.root_scope as DomScope;
 
   const node = fiber.node as DomFiberNode;
 
@@ -116,7 +116,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     debugWithDOM(fiber);
   }
 
-  if (scope.isAppMounted && !scope.isHydrateRender && !scope.isServerRender && (enableHighlight.current || (window as any).__highlight__)) {
+  if (renderScope.isAppMounted && !renderScope.isHydrateRender && !renderScope.isServerRender && (enableHighlight.current || (window as any).__highlight__)) {
     HighLight.getHighLightInstance().highLight(fiber);
   }
 };

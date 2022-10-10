@@ -31,7 +31,7 @@ const createFiberNode = (...props: Parameters<typeof _createFiberNode>) => {
       currentUpdateTime: timeNow,
     };
 
-    typedFiber._debugGlobalDispatch = typedFiber.root.dispatch;
+    typedFiber._debugGlobalDispatch = typedFiber.root.root_dispatch;
   }
 
   return fiber;
@@ -131,9 +131,9 @@ const getNewFiberWithUpdate = (
   prevFiberChild?: MyReactFiberNode | MyReactFiberNode[],
   assignPrevFiberChild?: MyReactFiberNode | MyReactFiberNode[]
 ): MyReactFiberNode | MyReactFiberNode[] => {
-  const renderScope = parentFiber.root.scope;
+  const renderScope = parentFiber.root.root_scope;
 
-  const globalDispatch = parentFiber.root.dispatch;
+  const globalDispatch = parentFiber.root.root_dispatch;
 
   const isSameType = getIsSameTypeNode(newChild, renderScope, assignPrevFiberChild);
 
@@ -191,7 +191,7 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
   const prevFiberChildren = isUpdate ? parentFiber.renderedChildren : [];
 
-  const renderScope = parentFiber.root.scope;
+  const renderScope = parentFiber.root.root_scope;
 
   const assignPrevFiberChildren = getKeyMatchedChildren(newChildren, prevFiberChildren, renderScope);
 
@@ -221,7 +221,7 @@ export const transformKeepLiveChildrenFiber = (parentFiber: MyReactFiberNode, ch
 
   if (!isUpdate) return transformChildrenFiber(parentFiber, children);
 
-  const globalDispatch = parentFiber.root.dispatch;
+  const globalDispatch = parentFiber.root.root_dispatch;
 
   const prevFiber = parentFiber.child;
 

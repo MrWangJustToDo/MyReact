@@ -1,8 +1,8 @@
-import { ReactiveFlags, ReactiveEffect } from "@my-react/react-reactive";
+import { ReactiveFlags, ReactiveEffect, proxyRefs } from "@my-react/react-reactive";
 
 import { MyReactInternalInstance } from "../internal";
 
-import type { createContext, MaybeArrayMyReactElementNode } from "../element";
+import type { createContext, MyReactElementNode } from "../element";
 
 export class MyReactReactiveInstance<
   P extends Record<string, unknown> = any,
@@ -21,40 +21,53 @@ export class MyReactReactiveInstance<
 
   context: C;
 
-  effect?: ReactiveEffect;
+  effect?: ReactiveEffect<MyReactElementNode>;
 
-  render: (s: S, p: P, c?: C) => MaybeArrayMyReactElementNode;
+  render: (s: S, p: P, c?: C) => MyReactElementNode;
+
+  staticRender: (s: S, p: P, c?: C) => MyReactElementNode;
+
+  beforeMountHooks: Array<() => void> = [];
+
+  mountedHooks: Array<() => void> = [];
+
+  beforeUpdateHooks: Array<() => void> = [];
+
+  updatedHooks: Array<() => void> = [];
+
+  beforeUnmountHooks: Array<() => void> = [];
+
+  unmountedHooks: Array<() => void> = [];
 
   constructor(props: P, context?: C) {
     super();
     this.props = props;
     this.context = context;
-
-    this.createSetupState();
-
-    this.createScopeRender();
   }
 
   get isMyReactReactive() {
     return true;
   }
 
-  createSetupState() {
-    const { setup, props, context } = this;
-    this.state = setup(props, context);
+  createSetupState(setup?: (props: P, context?: C) => S, render?: (s: S, p: P, c?: C) => MyReactElementNode) {
+    const { props, context } = this;
+    this.setup = setup;
+    this.staticRender = render;
+    const data = setup?.(props, context) || {};
+    this.state = proxyRefs(data) as S;
   }
 
-  createScopeRender() {
-    const { props } = this;
-
-    const { children } = props;
-
-    const typedChildren = children as (s: S, p: P, c?: C) => MaybeArrayMyReactElementNode;
-
-    this.render = this.render || typedChildren;
+  createEffectUpdate(scheduler: () => void) {
+    this.effect = new ReactiveEffect(() => {
+      const render = this.staticRender ? this.staticRender : typeof this.props.children === "function" ? this.props.children : () => null;
+      return render(this.state, this.props, this.context);
+    }, scheduler);
   }
 
-  createEffectUpdate(action: () => void, scheduler: () => void) {
-    this.effect = new ReactiveEffect(action, scheduler);
+  unmount(): void {
+    super.unmount();
+    this.beforeUnmountHooks.forEach((f) => f?.());
+    this.effect.stop();
+    Promise.resolve().then(() => this.unmountedHooks.forEach((f) => f?.()));
   }
 }

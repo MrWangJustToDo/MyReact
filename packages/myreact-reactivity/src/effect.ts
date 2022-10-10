@@ -83,6 +83,12 @@ export class ReactiveEffect<T = any> {
       this.cleanDeps();
     }
   }
+
+  active() {
+    if (!this._active) {
+      this._active = true;
+    }
+  }
 }
 
 export let shouldTrack = true;

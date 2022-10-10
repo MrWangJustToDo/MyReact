@@ -19,7 +19,7 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
   const containerFiber = container.__fiber__;
 
   if (containerFiber instanceof MyReactFiberNodeClass) {
-    containerFiber.root.scope.isAppCrash = false;
+    containerFiber.root.root_scope.isAppCrash = false;
 
     if (containerFiber.checkIsSameType(element)) {
       containerFiber.installElement(element);
@@ -41,9 +41,9 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   fiber.node = createDomNode(container);
 
-  fiber.scope = globalScope;
+  fiber.root_scope = globalScope;
 
-  fiber.dispatch = globalDispatch;
+  fiber.root_dispatch = globalDispatch;
 
   globalScope.rootFiber = fiber;
 

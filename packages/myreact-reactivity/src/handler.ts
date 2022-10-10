@@ -4,7 +4,7 @@ import { getProxyCacheMap } from "./create";
 import { pauseTracking, resetTracking, track, trigger } from "./effect";
 import { reactive, isReadonly as isReadOnlyFunction, isShallow as isShallowFunction, toRaw, readonly } from "./reactive";
 import { isRef } from "./ref";
-import { ReactiveFlags } from "./symbol";
+import { ComputedFlags, EffectFlags, ReactiveFlags, RefFlags } from "./symbol";
 
 /**
  * array method track:
@@ -124,6 +124,7 @@ export const createGetHandler = (isShallow: boolean, isReadOnly: boolean) => {
   const arrayGetHandler = createArrayGetHandler(isShallow, isReadOnly);
 
   return function (target: Record<string | number | symbol, unknown>, key: string | number | symbol, receiver: unknown) {
+    if (key === EffectFlags.Effect_key || key === RefFlags.Ref_key || key === ComputedFlags.Computed_key) return Reflect.get(target, key, receiver);
     if (key === ReactiveFlags.Reactive_key) return !isReadOnly;
     if (key === ReactiveFlags.Readonly_key) return isReadOnly;
     if (key === ReactiveFlags.Shallow_key) return isShallow;

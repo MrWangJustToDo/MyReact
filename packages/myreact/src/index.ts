@@ -37,7 +37,7 @@ import {
 } from "./hook";
 import { MyReactInternalInstance } from "./internal";
 import { jsx, jsxs, jsxDEV } from "./jsx";
-import { createReactive, MyReactReactiveInstance } from "./reactive";
+import { createReactive, MyReactReactiveInstance, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated } from "./reactive";
 import {
   log,
   logHook,
@@ -46,6 +46,7 @@ import {
   currentFunctionFiber,
   currentComponentFiber,
   currentHookDeepIndex,
+  currentReactiveInstance,
   globalLoop,
   safeCall,
   safeCallWithFiber,
@@ -85,10 +86,18 @@ const __my_react_internal__ = {
   currentHookDeepIndex,
   currentFunctionFiber,
   currentComponentFiber,
+  currentReactiveInstance,
 };
 
+// reactive component
 const __my_react_reactive__ = {
   MyReactReactiveInstance,
+  onBeforeMount,
+  onBeforeUnmount,
+  onBeforeUpdate,
+  onMounted,
+  onUnmounted,
+  onUpdated,
   reactiveApi,
 };
 
@@ -198,3 +207,5 @@ export type { MyReactInternalInstance } from "./internal";
 export type { MyReactFiberNode, MyReactFiberNodeDev, MyReactFiberNodeRoot, UpdateQueue } from "./fiber";
 
 export type { MyReactComponent, MyReactComponentStaticType, MixinMyReactComponentType } from "./component";
+
+export type { MyReactReactiveInstance } from "./reactive";

@@ -231,6 +231,11 @@
                 this.cleanDeps();
             }
         };
+        ReactiveEffect.prototype.active = function () {
+            if (!this._active) {
+                this._active = true;
+            }
+        };
         return ReactiveEffect;
     }());
     _a$2 = "__my_effect__" /* EffectFlags.Effect_key */;
@@ -565,6 +570,8 @@
         var objectGetHandler = createObjectGetHandler(isShallow, isReadOnly);
         var arrayGetHandler = createArrayGetHandler(isShallow, isReadOnly);
         return function (target, key, receiver) {
+            if (key === "__my_effect__" /* EffectFlags.Effect_key */ || key === "__my_ref__" /* RefFlags.Ref_key */ || key === "__my_computed__" /* ComputedFlags.Computed_key */)
+                return Reflect.get(target, key, receiver);
             if (key === "__my_reactive__" /* ReactiveFlags.Reactive_key */)
                 return !isReadOnly;
             if (key === "__my_readonly__" /* ReactiveFlags.Readonly_key */)
@@ -931,6 +938,7 @@
     var currentRunningFiber = createRef(null);
     var currentComponentFiber = createRef(null);
     var currentFunctionFiber = createRef(null);
+    var currentReactiveInstance = createRef(null);
     var currentHookDeepIndex = createRef(0);
     // ==== feature ==== //
     var enableDebugLog = createRef(false);
@@ -978,6 +986,13 @@
             if (typedType.render.displayName)
                 return "<Lazy -(".concat(typedType.render.displayName, ") />");
             return "<Lazy />";
+        }
+        if (fiber.type & NODE_TYPE.__isReactive__) {
+            var typedElement = fiber.element;
+            var typedType = typedElement.type;
+            if (typedType.name)
+                return "<Reactive* - (".concat(typedType.name, ") />");
+            return "<Reactive* />";
         }
         if (fiber.type & NODE_TYPE.__isPortal__)
             return "<Portal />";
@@ -1070,7 +1085,7 @@
             log({ message: e, level: "error" });
             var fiber = currentRunningFiber.current;
             if (fiber)
-                fiber.root.scope.isAppCrash = true;
+                fiber.root.root_scope.isAppCrash = true;
             throw new Error(e.message);
         }
     };
@@ -1085,7 +1100,7 @@
         }
         catch (e) {
             log({ message: e, level: "error", fiber: fiber });
-            fiber.root.scope.isAppCrash = true;
+            fiber.root.root_scope.isAppCrash = true;
             throw new Error(e.message);
         }
     };
@@ -1807,7 +1822,7 @@
             if (this.parent) {
                 this.parent.addChild(this);
             }
-            var globalDispatch = this.root.dispatch;
+            var globalDispatch = this.root.root_dispatch;
             globalDispatch.resolveSuspenseMap(this);
             globalDispatch.resolveContextMap(this);
             globalDispatch.resolveStrictMap(this);
@@ -1892,6 +1907,9 @@
                     return Object.is(typedExistElement.type, typedIncomingElement.type);
                 }
                 if (this.type & NODE_TYPE.__isObjectNode__ && typeof typedIncomingElement.type === "object" && typeof typedExistElement.type === "object") {
+                    // for reactive component
+                    if (this.type & NODE_TYPE.__isReactive__)
+                        return Object.is(typedExistElement.type, typedIncomingElement.type);
                     return Object.is(typedExistElement.type["$$typeof"], typedIncomingElement.type["$$typeof"]);
                 }
             }
@@ -1926,7 +1944,9 @@
         MyReactFiberNode.prototype.checkInstance = function () {
         };
         MyReactFiberNode.prototype.update = function () {
-            this.root.dispatch.trigger(this);
+            if (!this.activated || !this.mounted)
+                return;
+            this.root.root_dispatch.trigger(this);
         };
         MyReactFiberNode.prototype.unmount = function () {
             this.hookNodeArray.forEach(function (hook) { return hook.unmount(); });
@@ -1934,6 +1954,7 @@
             this.mounted = false;
             this.mode = UPDATE_TYPE.__initial__;
             this.patch = PATCH_TYPE.__initial__;
+            this.root.root_dispatch.removeFiber(this);
         };
         MyReactFiberNode.prototype.deactivate = function () {
             this.hookNodeArray.forEach(function (hook) { return hook.unmount(); });
@@ -1948,8 +1969,8 @@
         __extends(MyReactFiberNodeRoot, _super);
         function MyReactFiberNodeRoot() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.dispatch = new EmptyDispatch();
-            _this.scope = new EmptyRenderScope();
+            _this.root_dispatch = new EmptyDispatch();
+            _this.root_scope = new EmptyRenderScope();
             return _this;
         }
         return MyReactFiberNodeRoot;
@@ -1980,7 +2001,7 @@
             fiber.checkElement();
         }
         fiber.initialParent();
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         globalDispatch.pendingCreate(fiber);
         globalDispatch.pendingUpdate(fiber);
         globalDispatch.pendingAppend(fiber);
@@ -2001,7 +2022,7 @@
             newFiberNode.checkElement();
         }
         newFiberNode.initialParent();
-        var globalDispatch = newFiberNode.root.dispatch;
+        var globalDispatch = newFiberNode.root.root_dispatch;
         globalDispatch.pendingCreate(newFiberNode);
         globalDispatch.pendingUpdate(newFiberNode);
         if (type === "append") {
@@ -2025,7 +2046,7 @@
         // make sure invoke `installParent` after `installElement`
         fiber.installElement(nextElement);
         fiber.installParent(parent);
-        var globalDispatch = fiber.root.dispatch;
+        var globalDispatch = fiber.root.root_dispatch;
         {
             fiber.checkElement();
         }
@@ -2136,7 +2157,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2151,7 +2172,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2165,7 +2186,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2179,7 +2200,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2194,7 +2215,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2209,7 +2230,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2224,7 +2245,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2239,7 +2260,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2254,7 +2275,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.dispatch;
+        var globalDispatch = currentFiber.root.root_dispatch;
         var currentIndex = currentHookDeepIndex.current++;
         globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2350,19 +2371,62 @@
         var _a;
         return _a = {},
             _a["$$typeof"] = My_React_Reactive,
+            _a.name = typeof props === "function" ? props.name : props.name,
             _a.setup = typeof props === "function" ? props : props.setup,
+            _a.render = typeof props === "function" ? null : props.render,
             _a.contextType = typeof props === "function" ? null : props.contextType,
             _a;
     }
+    // hook api like `Vue`
+    var onBeforeMount = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.beforeMountHooks.push(cb);
+        }
+    };
+    var onMounted = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.mountedHooks.push(cb);
+        }
+    };
+    var onBeforeUpdate = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.beforeUpdateHooks.push(cb);
+        }
+    };
+    var onUpdated = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.updatedHooks.push(cb);
+        }
+    };
+    var onBeforeUnmount = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.beforeUnmountHooks.push(cb);
+        }
+    };
+    var onUnmounted = function (cb) {
+        var reactiveInstance = currentReactiveInstance.current;
+        if (reactiveInstance) {
+            reactiveInstance.unmountedHooks.push(cb);
+        }
+    };
 
     var MyReactReactiveInstance = /** @class */ (function (_super) {
         __extends(MyReactReactiveInstance, _super);
         function MyReactReactiveInstance(props, context) {
             var _this = _super.call(this) || this;
+            _this.beforeMountHooks = [];
+            _this.mountedHooks = [];
+            _this.beforeUpdateHooks = [];
+            _this.updatedHooks = [];
+            _this.beforeUnmountHooks = [];
+            _this.unmountedHooks = [];
             _this.props = props;
             _this.context = context;
-            _this.createSetupState();
-            _this.createScopeRender();
             return _this;
         }
         Object.defineProperty(MyReactReactiveInstance.prototype, "isMyReactReactive", {
@@ -2372,18 +2436,26 @@
             enumerable: false,
             configurable: true
         });
-        MyReactReactiveInstance.prototype.createSetupState = function () {
-            var _a = this, setup = _a.setup, props = _a.props, context = _a.context;
-            this.state = setup(props, context);
+        MyReactReactiveInstance.prototype.createSetupState = function (setup, render) {
+            var _a = this, props = _a.props, context = _a.context;
+            this.setup = setup;
+            this.staticRender = render;
+            var data = (setup === null || setup === void 0 ? void 0 : setup(props, context)) || {};
+            this.state = proxyRefs(data);
         };
-        MyReactReactiveInstance.prototype.createScopeRender = function () {
-            var props = this.props;
-            var children = props.children;
-            var typedChildren = children;
-            this.render = this.render || typedChildren;
+        MyReactReactiveInstance.prototype.createEffectUpdate = function (scheduler) {
+            var _this = this;
+            this.effect = new ReactiveEffect(function () {
+                var render = _this.staticRender ? _this.staticRender : typeof _this.props.children === "function" ? _this.props.children : function () { return null; };
+                return render(_this.state, _this.props, _this.context);
+            }, scheduler);
         };
-        MyReactReactiveInstance.prototype.createEffectUpdate = function (action, scheduler) {
-            this.effect = new ReactiveEffect(action, scheduler);
+        MyReactReactiveInstance.prototype.unmount = function () {
+            var _this = this;
+            _super.prototype.unmount.call(this);
+            this.beforeUnmountHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
+            this.effect.stop();
+            Promise.resolve().then(function () { return _this.unmountedHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); }); });
         };
         return MyReactReactiveInstance;
     }(MyReactInternalInstance));
@@ -2415,9 +2487,17 @@
         currentHookDeepIndex: currentHookDeepIndex,
         currentFunctionFiber: currentFunctionFiber,
         currentComponentFiber: currentComponentFiber,
+        currentReactiveInstance: currentReactiveInstance,
     };
+    // reactive component
     var __my_react_reactive__ = {
         MyReactReactiveInstance: MyReactReactiveInstance,
+        onBeforeMount: onBeforeMount,
+        onBeforeUnmount: onBeforeUnmount,
+        onBeforeUpdate: onBeforeUpdate,
+        onMounted: onMounted,
+        onUnmounted: onUnmounted,
+        onUpdated: onUpdated,
         reactiveApi: reactiveApi,
     };
     var Children = {

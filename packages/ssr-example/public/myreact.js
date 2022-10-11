@@ -945,7 +945,7 @@
     var enableAsyncUpdate = createRef(true);
     var enableKeyDiff = createRef(true);
     // enable react-18 strict lifecycle method
-    var enableStrictLifeCycle = createRef(true);
+    var enableStrictLifeCycle = createRef(false);
 
     var getTrackDevLog = function (fiber) {
         var _a, _b, _c, _d;
@@ -1120,17 +1120,7 @@
     var My_React_Reactive = Symbol.for("react.reactive");
 
     function isValidElement(element) {
-        return (typeof element === "object" &&
-            !Array.isArray(element) &&
-            ((element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element ||
-                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Context ||
-                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Consumer ||
-                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Provider ||
-                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Reactive ||
-                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_ForwardRef ||
-                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Memo ||
-                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Lazy ||
-                (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Portal));
+        return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
     }
     function getTypeFromElement(element) {
         var _a;
@@ -2295,78 +2285,6 @@
         }
     };
 
-    var RESERVED_PROPS = {
-        key: true,
-        ref: true,
-        __self: true,
-        __source: true,
-    };
-    // todo
-    var jsx = function (type, config, maybeKey, source, self) {
-        var _a;
-        var props = {};
-        var key = null;
-        var ref = null;
-        if (maybeKey !== undefined) {
-            key = "" + maybeKey;
-        }
-        // <div {...props} /> we can not make sure this usage will contain `key` of not
-        if (config === null || config === void 0 ? void 0 : config.key) {
-            key = "" + config.key;
-        }
-        if (config === null || config === void 0 ? void 0 : config.ref) {
-            ref = config.ref;
-        }
-        for (var propsName in config) {
-            if (Object.prototype.hasOwnProperty.call(config, propsName) && !Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName)) {
-                props[propsName] = config[propsName];
-            }
-        }
-        if (type && (typeof type === "function" || typeof type === "object")) {
-            var typedType_1 = type;
-            Object.keys((typedType_1 === null || typedType_1 === void 0 ? void 0 : typedType_1.defaultProps) || {}).forEach(function (key) {
-                var _a;
-                props[key] = props[key] === undefined ? (_a = typedType_1.defaultProps) === null || _a === void 0 ? void 0 : _a[key] : props[key];
-            });
-        }
-        var element = (_a = {},
-            _a["$$typeof"] = My_React_Element,
-            _a.type = type,
-            _a.key = key,
-            _a.ref = ref,
-            _a.props = props,
-            _a._jsx = true,
-            _a._self = self,
-            _a._source = source,
-            _a._owner = currentComponentFiber.current,
-            _a._store = {},
-            _a);
-        if (typeof Object.freeze === "function") {
-            Object.freeze(element.props);
-            Object.freeze(element);
-        }
-        return element;
-    };
-    var jsxDEV = function (type, config, key, isStaticChildren, source, self) {
-        var element = jsx(type, config, key, source, self);
-        if (config.children) {
-            var children = config.children;
-            if (isStaticChildren) {
-                checkSingleChildrenKey(children);
-                if (!Array.isArray(children)) {
-                    log({ message: "Static children should always be an array.", level: "warn" });
-                }
-            }
-            else {
-                checkSingleChildrenKey(children);
-            }
-        }
-        return element;
-    };
-    var jsxs = function (type, config, key, source, self) {
-        return jsxDEV(type, config, key, true, source, self);
-    };
-
     function createReactive(props) {
         var _a;
         return _a = {},
@@ -2564,9 +2482,6 @@
     exports["default"] = React;
     exports.forwardRef = forwardRef;
     exports.isValidElement = isValidElement;
-    exports.jsx = jsx;
-    exports.jsxDEV = jsxDEV;
-    exports.jsxs = jsxs;
     exports.lazy = lazy;
     exports.memo = memo;
     exports.useCallback = useCallback;

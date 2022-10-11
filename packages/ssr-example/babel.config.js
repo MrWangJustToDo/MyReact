@@ -29,7 +29,7 @@ module.exports = (api) => {
   // presets.push(["@babel/preset-react", { development: !api.env("production"), runtime: process.env.REACT === "react" ? "automatic" : "classic" }]);
   presets.push([
     "@babel/preset-react",
-    { development: !api.env("production"), runtime: "automatic", importSource: process.env.REACT === "react" ? "react" : "@my-react/react" },
+    { development: !api.env("production"), runtime: "automatic", importSource: process.env.REACT === "react" ? "react" : "@my-react/react-jsx" },
   ]);
 
   plugins.push(["@babel/plugin-proposal-decorators", { legacy: true }]);

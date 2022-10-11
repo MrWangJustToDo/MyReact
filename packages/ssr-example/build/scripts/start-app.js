@@ -5,10 +5,6 @@ dotenv.config();
 
 if (process.env.REACT === "myreact") {
   require("module-alias/register");
-
-  // use `jsx` transform react element
-  // const React = require("@my-react/react");
-  // global.React = React;
 }
 
 if (process.env.NODE_ENV === "development") {

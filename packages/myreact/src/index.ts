@@ -36,7 +36,6 @@ import {
   useImperativeHandle,
 } from "./hook";
 import { MyReactInternalInstance } from "./internal";
-import { jsx, jsxs, jsxDEV } from "./jsx";
 import { createReactive, MyReactReactiveInstance, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated } from "./reactive";
 import {
   log,
@@ -144,9 +143,6 @@ const React = {
 };
 
 export {
-  jsx,
-  jsxs,
-  jsxDEV,
   Component,
   PureComponent,
   createElement,
@@ -192,7 +188,10 @@ export type { RenderScope } from "./scope";
 export type { CreateHookParams, MyReactHookNode } from "./hook";
 
 export type {
+  Props,
+  CreateElementProps,
   MyReactElement,
+  MyReactElementType,
   MyReactElementNode,
   ArrayMyReactElementNode,
   MaybeArrayMyReactElementNode,

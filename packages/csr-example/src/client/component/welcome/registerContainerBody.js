@@ -44,7 +44,7 @@ function RegisterContainerBody() {
       .map(jquery);
 
     registerEle(
-      "/register-check",
+      "/api/register-check",
       listEle,
       optList,
       () => {

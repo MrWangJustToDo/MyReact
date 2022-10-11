@@ -15,5 +15,5 @@ export {
 export { effect, ReactiveEffect } from "./effect";
 export { computed, ComputedGetter, ComputedSetter, WritableComputedOptions } from "./computed";
 export { watch, WatchSource, WatchCallback } from "./watch";
-export { ref, toRef, toRefs, proxyRefs, isRef } from "./ref";
+export { ref, toRef, toRefs, proxyRefs, isRef, UnwrapRef } from "./ref";
 export { EffectFlags, ReactiveFlags, RefFlags, ComputedFlags } from "./symbol";

@@ -73,7 +73,11 @@ const rollupWatch = async (packageName: packages) => {
 
 rollupWatch("myreact-shared");
 
+rollupWatch("myreact-reactivity");
+
 rollupWatch("myreact");
+
+rollupWatch("myreact-jsx");
 
 rollupWatch("myreact-reconciler");
 

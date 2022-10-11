@@ -1,7 +1,15 @@
-import { checkSingleChildrenKey, My_React_Element } from "../element";
-import { currentComponentFiber, log } from "../share";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType, Props, MyReactElement } from "../element";
+import { checkSingleChildrenKey } from "./check";
+import { My_React_Element, My_React_Fragment } from "./symbol";
+
+import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement, MyReactElementType, Props } from "@my-react/react";
+
+export const Fragment = My_React_Fragment;
+
+const { log } = __my_react_shared__;
+
+const { currentComponentFiber } = __my_react_internal__;
 
 const RESERVED_PROPS = {
   key: true,
@@ -87,7 +95,14 @@ export const jsxDEV = (
   if (config.children) {
     const children = config.children;
     if (isStaticChildren) {
-      checkSingleChildrenKey(children);
+      if (Array.isArray(children)) {
+        children.forEach((c) => checkSingleChildrenKey(c));
+        if (__DEV__) {
+          Object.freeze(children);
+        }
+      } else {
+        log({ message: "Static children should always be an array.", level: "warn" });
+      }
       if (!Array.isArray(children)) {
         log({ message: "Static children should always be an array.", level: "warn" });
       }

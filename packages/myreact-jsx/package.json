@@ -1,17 +1,31 @@
 {
-  "name": "@my-react/react",
-  "description": "@my-react/react",
+  "name": "@my-react/react-jsx",
+  "description": "@my-react/react-jsx",
   "version": "0.0.1",
   "main": "index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
-    "index.js"
+    "index.js",
+    "jsx-runtime.d.ts",
+    "jsx-dev-runtime.d.ts"
   ],
   "exports": {
     ".": {
       "require": "./index.js",
+      "node": "./index.js",
+      "import": "./dist/esm/index.js",
+      "default": "./index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./jsx-runtime.d.ts",
+      "node": "./index.js",
+      "import": "./dist/esm/index.js",
+      "default": "./index.js"
+    },
+    "./jsx-dev-runtime": {
+      "types": "./jsx-dev-runtime.d.ts",
       "node": "./index.js",
       "import": "./dist/esm/index.js",
       "default": "./index.js"
@@ -35,21 +49,11 @@
         "format": "esm",
         "exports": "named",
         "sourcemap": true
-      },
-      {
-        "dir": "./dist",
-        "entryFileNames": "umd/index.js",
-        "format": "umd",
-        "esModule": false,
-        "exports": "named",
-        "multiple": true,
-        "name": "React",
-        "sourcemap": true
       }
     ]
   },
   "peerDependencies": {
-    "@my-react/react-shared": "workspace:*",
-    "@my-react/react-reactive": "workspace:*"
+    "@my-react/react": "workspace:*",
+    "@my-react/react-shared": "workspace:*"
   }
 }

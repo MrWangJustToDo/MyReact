@@ -5,6 +5,8 @@ import type { Configuration } from "webpack";
 
 export const resolveConfig = ({ env }: SafeGenerateActionProps): Configuration["resolve"] => ({
   alias: {
+    react: process.env.REACT === "react" ? "react" : "@my-react/react",
+    "react-dom": process.env.REACT === "react" ? "react-dom" : "@my-react/react-dom",
     lodash: env === "client" ? "lodash-es" : "lodash",
     "lodash-es": env === "server" ? "lodash" : "lodash-es",
     "@build": resolve(process.cwd(), "build"),

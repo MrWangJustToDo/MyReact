@@ -8,6 +8,7 @@ importers:
       '@babel/runtime': ^7.19.0
       '@my-react/react': workspace:*
       '@my-react/react-dom': workspace:*
+      '@my-react/react-jsx': workspace:*
       '@my-react/react-reactive': workspace:*
       '@my-react/react-reconciler': workspace:*
       '@my-react/react-shared': workspace:*
@@ -26,6 +27,7 @@ importers:
       eslint-plugin-prettier: ^4.2.1
       husky: ^8.0.1
       lodash: ^4.17.21
+      lodash-es: ^4.17.21
       pm2: ^5.2.0
       prettier: ^2.7.1
       rollup: ^2.79.1
@@ -39,6 +41,7 @@ importers:
       '@babel/runtime': 7.19.0
       '@my-react/react': link:packages/myreact
       '@my-react/react-dom': link:packages/myreact-dom
+      '@my-react/react-jsx': link:packages/myreact-jsx
       '@my-react/react-reactive': link:packages/myreact-reactivity
       '@my-react/react-reconciler': link:packages/myreact-reconciler
       '@my-react/react-shared': link:packages/myreact-shared
@@ -57,6 +60,7 @@ importers:
       eslint-plugin-prettier: 4.2.1_cfn5x6ujhhgzv3423d6k7r2zzm
       husky: 8.0.1
       lodash: 4.17.21
+      lodash-es: 4.17.21
       pm2: 5.2.0
       prettier: 2.7.1
       rollup: 2.79.1
@@ -82,6 +86,7 @@ importers:
       '@loadable/webpack-plugin': ^5.15.2
       '@my-react/react': workspace:*
       '@my-react/react-dom': workspace:*
+      '@my-react/react-jsx': workspace:*
       '@my-react/react-reactive': workspace:*
       '@my-react/react-reconciler': workspace:*
       '@my-react/react-shared': workspace:*
@@ -129,6 +134,7 @@ importers:
       immer: ^9.0.15
       jquery: ^3.6.0
       lodash: ^4.17.21
+      lodash-es: ^4.17.21
       mime: ^3.0.0
       mini-css-extract-plugin: ^2.6.1
       module-alias: ^2.2.2
@@ -167,6 +173,7 @@ importers:
       '@loadable/server': 5.15.2_y3rnbano2fur2lz5mykskop6mm
       '@my-react/react': link:../myreact
       '@my-react/react-dom': link:../myreact-dom
+      '@my-react/react-jsx': link:../myreact-jsx
       '@my-react/react-reactive': link:../myreact-reactivity
       '@my-react/react-reconciler': link:../myreact-reconciler
       '@my-react/react-shared': link:../myreact-shared
@@ -182,6 +189,7 @@ importers:
       fast-folder-size: 1.7.1
       immer: 9.0.15
       jquery: 3.6.1
+      lodash-es: 4.17.21
       mime: 3.0.0
       module-alias: 2.2.2
       multer: 1.4.5-lts.1
@@ -268,6 +276,9 @@ importers:
     dependencies:
       lodash: 4.17.21
 
+  packages/myreact-jsx:
+    specifiers: {}
+
   packages/myreact-reactivity:
     specifiers: {}
 
@@ -299,6 +310,7 @@ importers:
       '@loadable/webpack-plugin': ^5.15.2
       '@my-react/react': workspace:*
       '@my-react/react-dom': workspace:*
+      '@my-react/react-jsx': workspace:*
       '@my-react/react-reactive': workspace:*
       '@my-react/react-reconciler': workspace:*
       '@my-react/react-shared': workspace:*
@@ -395,6 +407,7 @@ importers:
       '@loadable/server': 5.15.2_y3rnbano2fur2lz5mykskop6mm
       '@my-react/react': link:../myreact
       '@my-react/react-dom': link:../myreact-dom
+      '@my-react/react-jsx': link:../myreact-jsx
       '@my-react/react-reactive': link:../myreact-reactivity
       '@my-react/react-reconciler': link:../myreact-reconciler
       '@my-react/react-shared': link:../myreact-shared
@@ -4924,7 +4937,7 @@ packages:
   /axios/0.21.4_debug@4.3.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.1
+      follow-redirects: 1.15.1_debug@4.3.4
     transitivePeerDependencies:
       - debug
     dev: true
@@ -6901,6 +6914,18 @@ packages:
       debug:
         optional: true
 
+  /follow-redirects/1.15.1_debug@4.3.4:
+    resolution: {integrity: sha512-yLAMQs+k0b2m7cVxpS1VKJVvoz7SS9Td1zss3XRwXj+ZDH00RJgnuLx7E44wx02kQLrdM3aOOy+FpzS7+8OizA==}
+    engines: {node: '>=4.0'}
+    peerDependencies:
+      debug: '*'
+    peerDependenciesMeta:
+      debug:
+        optional: true
+    dependencies:
+      debug: 4.3.4
+    dev: true
+
   /fork-ts-checker-webpack-plugin/7.2.13_frxmcuunqqqeqipt45cd6rjuvu:
     resolution: {integrity: sha512-fR3WRkOb4bQdWB/y7ssDUlVdrclvwtyCUIHCfivAoYxq9dF7XfrDKbMdZIfwJ7hxIAqkYSGeU7lLJE6xrxIBdg==}
     engines: {node: '>=12.13.0', yarn: '>=1.0.0'}
@@ -8574,7 +8599,6 @@ packages:
 
   /lodash-es/4.17.21:
     resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-    dev: false
 
   /lodash.debounce/4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}

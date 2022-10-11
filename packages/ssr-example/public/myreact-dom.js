@@ -2277,11 +2277,23 @@
                         var pendingProps_1 = fiber.pendingProps;
                         if (controlElementTag[typedElement.type] && typeof pendingProps_1["value"] !== "undefined") {
                             var typedDom = dom;
-                            typedDom.__isControlled__ = true;
                             typedDom["value"] = pendingProps_1["value"];
                         }
                     }
                 };
+                if (enableControlComponent.current) {
+                    if (controlElementTag[typedElement.type]) {
+                        if ("value" in typedElement.props) {
+                            var typedDom = dom;
+                            if ("onChange" in typedElement.props) {
+                                typedDom.__isControlled__ = true;
+                            }
+                            else {
+                                typedDom.__isReadonly__ = true;
+                            }
+                        }
+                    }
+                }
                 handler_1.cb = [callback];
                 eventState[eventName] = handler_1;
                 dom.addEventListener(nativeName, handler_1, isCapture);

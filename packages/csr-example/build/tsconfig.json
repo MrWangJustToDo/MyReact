@@ -3,6 +3,9 @@
     "module": "commonjs",
     "esModuleInterop": true
   },
+  "include": [
+    "../global.d.ts"
+  ],
   "ts-node": {
     "swc": true
   }

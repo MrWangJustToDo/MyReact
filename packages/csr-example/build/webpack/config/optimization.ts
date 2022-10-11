@@ -32,7 +32,7 @@ export const optimizationConfig = ({ env, isDEV }: SafeGenerateActionProps): Con
               enforce: true,
               chunks: "all",
               name(module: { context: string }) {
-                const packageName = module.context.match(/[\\/]node_modules[\\/](.*)/);
+                const packageName = module.context.match(/[\\/]node_modules[\\/](.*)/) || [];
                 return splitChunk(packageName);
               },
             },
@@ -54,7 +54,7 @@ export const optimizationConfig = ({ env, isDEV }: SafeGenerateActionProps): Con
             enforce: true,
             chunks: "all",
             name(module: { context: string }) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*)/);
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*)/) || [];
               return splitChunk(packageName);
             },
           },

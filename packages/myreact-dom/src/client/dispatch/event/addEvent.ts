@@ -17,6 +17,7 @@ const controlElementTag: Record<string, boolean> = {
 
 type ControlledElement = HTMLInputElement & {
   __isControlled__: boolean;
+  __isReadonly__: boolean;
 };
 
 export const addEventListener = (fiber: MyReactFiberNode, node: DomFiberNode, key: string) => {
@@ -56,11 +57,23 @@ export const addEventListener = (fiber: MyReactFiberNode, node: DomFiberNode, ke
           const pendingProps = fiber.pendingProps;
           if (controlElementTag[typedElement.type as string] && typeof pendingProps["value"] !== "undefined") {
             const typedDom = dom as ControlledElement;
-            typedDom.__isControlled__ = true;
             typedDom["value"] = pendingProps["value"] as string;
           }
         }
       };
+
+      if (enableControlComponent.current) {
+        if (controlElementTag[typedElement.type as string]) {
+          if ("value" in typedElement.props) {
+            const typedDom = dom as ControlledElement;
+            if ("onChange" in typedElement.props) {
+              typedDom.__isControlled__ = true;
+            } else {
+              typedDom.__isReadonly__ = true;
+            }
+          }
+        }
+      }
 
       handler.cb = [callback];
 

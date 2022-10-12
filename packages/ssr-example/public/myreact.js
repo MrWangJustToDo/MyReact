@@ -158,8 +158,12 @@
         globalThis.__globalDeps__ = globalDepsMap;
     }
 
+    var createRef$1 = function (value) {
+        return { current: value };
+    };
+
     var _a$2;
-    var globalEffect = null;
+    var globalEffectRef = createRef$1(null);
     var ReactiveEffect = /** @class */ (function () {
         function ReactiveEffect(_action, _scheduler) {
             this._action = _action;
@@ -180,12 +184,11 @@
             this._depsSetArray.push(set);
         };
         ReactiveEffect.prototype.entryScope = function () {
-            this._parent = globalEffect;
-            // eslint-disable-next-line @typescript-eslint/no-this-alias
-            globalEffect = this;
+            this._parent = globalEffectRef.current;
+            globalEffectRef.current = this;
         };
         ReactiveEffect.prototype.exitScope = function () {
-            globalEffect = this._parent;
+            globalEffectRef.current = this._parent;
             this._parent = null;
         };
         ReactiveEffect.prototype.run = function () {
@@ -239,18 +242,36 @@
         return ReactiveEffect;
     }());
     _a$2 = "__my_effect__" /* EffectFlags.Effect_key */;
-    var shouldTrack = true;
+    var shouldTrackRef = createRef$1(true);
     var trackStack = [];
+    var shouldTriggerRef = createRef$1(true);
+    var triggerStack = [];
     function pauseTracking() {
-        trackStack.push(shouldTrack);
-        shouldTrack = false;
+        trackStack.push(shouldTrackRef.current);
+        shouldTrackRef.current = false;
+    }
+    function pauseTrigger() {
+        triggerStack.push(shouldTriggerRef.current);
+        shouldTriggerRef.current = false;
+    }
+    function enableTracking() {
+        trackStack.push(shouldTrackRef.current);
+        shouldTrackRef.current = true;
+    }
+    function enableTrigger() {
+        triggerStack.push(shouldTriggerRef.current);
+        shouldTriggerRef.current = true;
     }
     function resetTracking() {
         var last = trackStack.pop();
-        shouldTrack = last === undefined ? true : last;
+        shouldTrackRef.current = last === undefined ? true : last;
+    }
+    function resetTrigger() {
+        var last = triggerStack.pop();
+        shouldTriggerRef.current = last === undefined ? true : last;
     }
     function track(target, type, key) {
-        if (!globalEffect || !shouldTrack)
+        if (!globalEffectRef.current || !shouldTrackRef.current)
             return;
         var depsMap = globalDepsMap.get(target);
         if (!depsMap) {
@@ -263,14 +284,16 @@
         trackEffects(depsSet);
     }
     function trackEffects(set) {
-        if (!globalEffect)
+        if (!globalEffectRef.current || !shouldTrackRef.current)
             return;
-        if (!set.has(globalEffect)) {
-            set.add(globalEffect);
-            globalEffect.addDeps(set);
+        if (!set.has(globalEffectRef.current)) {
+            set.add(globalEffectRef.current);
+            globalEffectRef.current.addDeps(set);
         }
     }
     function trigger(target, type, key, newValue, oldValue) {
+        if (!shouldTriggerRef.current)
+            return;
         var depsMap = globalDepsMap.get(target);
         if (!depsMap)
             return;
@@ -307,9 +330,11 @@
         }
     }
     function triggerEffects(set, oldValue, newValue) {
+        if (!shouldTriggerRef.current)
+            return;
         var allReactiveEffect = new Set(set);
         allReactiveEffect.forEach(function (reactiveEffect) {
-            if (!Object.is(reactiveEffect, globalEffect)) {
+            if (!Object.is(reactiveEffect, globalEffectRef.current)) {
                 reactiveEffect.update(oldValue, newValue);
             }
         });
@@ -857,18 +882,26 @@
         ReactiveEffect: ReactiveEffect,
         computed: computed,
         effect: effect,
+        enableTracking: enableTracking,
+        enableTrigger: enableTrigger,
         isProxy: isProxy,
         isReactive: isReactive,
         isReadonly: isReadonly,
         isRef: isRef,
         isShallow: isShallow,
         markRaw: markRaw,
+        pauseTracking: pauseTracking,
+        pauseTrigger: pauseTrigger,
         proxyRefs: proxyRefs,
         reactive: reactive,
         readonly: readonly,
         ref: ref,
+        resetTracking: resetTracking,
+        resetTrigger: resetTrigger,
         shallowReactive: shallowReactive,
         shallowReadonly: shallowReadonly,
+        shouldTrackRef: shouldTrackRef,
+        shouldTriggerRef: shouldTriggerRef,
         toRaw: toRaw,
         toReactive: toReactive,
         toReadonly: toReadonly,
@@ -2335,7 +2368,7 @@
 
     var Component = MyReactComponent;
     var PureComponent = MyReactPureComponent;
-    var version = "0.0.1";
+    var version = "0.0.2";
     var __my_react_shared__ = {
         log: log,
         safeCall: safeCall,
@@ -2364,6 +2397,7 @@
         currentReactiveInstance: currentReactiveInstance,
     };
     // reactive component
+    // 实验性🧪
     var __my_react_reactive__ = {
         MyReactReactiveInstance: MyReactReactiveInstance,
         onBeforeMount: onBeforeMount,
@@ -2399,8 +2433,8 @@
         Consumer: My_React_Consumer,
         Fragment: My_React_Fragment,
         Suspense: My_React_Suspense,
-        KeepLive: My_React_KeepLive,
         Reactive: My_React_Reactive,
+        KeepLive: My_React_KeepLive,
         StrictMode: My_React_Strict,
         ForwardRef: My_React_ForwardRef,
         useRef: useRef,
@@ -2414,6 +2448,10 @@
         useLayoutEffect: useLayoutEffect,
         useImperativeHandle: useImperativeHandle,
         Children: Children,
+        __my_react_internal__: __my_react_internal__,
+        __my_react_shared__: __my_react_shared__,
+        __my_react_reactive__: __my_react_reactive__,
+        version: version,
     };
 
     exports.Children = Children;

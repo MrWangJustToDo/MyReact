@@ -16,12 +16,12 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
-    const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, KeepLive, Component, StrictMode, createReactive, __my_react_reactive__ } = React;
+    const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, KeepLive, Component, StrictMode, createReactive, __my_react_reactive__, createRef } = React;
 
     // reactive api just like `vue`
     const { reactiveApi, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } = __my_react_reactive__;
 
-    const { reactive, ref } = reactiveApi;
+    const { reactive, ref, shouldTriggerRef } = reactiveApi;
 
     const Context = createContext();
 
@@ -46,9 +46,11 @@
         //   console.log('mounted', data, a.value)
         // })
 
-        // onBeforeUpdate(() => {
-        //   console.log('beforeUpdate', data)
-        // })
+        onBeforeUpdate(() => {
+          data.dd++;
+          bar.value++;
+          console.log('beforeUpdate', data)
+        })
 
         // onUpdated(() => {
         //   console.log('updated', data)
@@ -127,24 +129,53 @@
     const TestReactive = createReactive({
       setup: () => {
         const valueRef = ref("");
+        const count = ref(0);
+        // let count = createRef(0);
         const changeRef = (e) => {
           valueRef.value = e.target.value;
         };
 
-        return { changeRef, valueRef };
-      }, render: ({ valueRef, changeRef }) => <div>reactive control component: <input value={valueRef} onChange={changeRef} /></div>
+        onBeforeUpdate(() => {
+          // count.current++;
+          console.log(shouldTriggerRef.current);
+          count.value++;
+          console.log('TestReactive before update')
+        })
+
+        return { changeRef, valueRef, count };
+      },
+      render: ({ valueRef, changeRef, count }) => { return <div><p>{count}</p> reactive control component: <input value={valueRef} onChange={changeRef} /></div> }
     })
+
+    const MemoTestReactive = memo(TestReactive);
 
     const Bar = memo((props) => {
       console.log(props);
       return <div>123</div>
     })
 
+    const App = () => {
+      const [x, y] = usePosition();
+      const ref = useRef(0);
+      ref.current++;
+
+      return <Context.Provider value={{ x, y }}>
+        position: {x} {y}
+        <Bar />
+        <TestReactive />
+        <MemoTestReactive />
+        <Reactive>
+          {({ data, bar }, _, { x, y }) => <p>{data.dd} : {bar}, context: {x} {y}</p>}
+        </Reactive>
+        update count: {ref.current}
+      </Context.Provider>
+    }
+
 
 
     ReactDOM.render(
       <React.StrictMode>
-        <TestReactive />
+        <App />
       </React.StrictMode>,
       document.getElementById("root")
     );

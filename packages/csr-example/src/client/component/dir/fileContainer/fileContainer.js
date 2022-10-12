@@ -36,7 +36,6 @@ const FileContainer = createReactive({
   contextType: ReactReduxContext,
   setup: (_, c) => {
     const contextRef = ref(c.store.getState());
-    console.log(c);
     const domRef = createRef(null);
     let currentItem = null;
     let unSubscribe = null;

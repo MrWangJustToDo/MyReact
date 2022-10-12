@@ -5,7 +5,10 @@ import { queueJob } from "./scheduler";
 
 import type { createReactive, MyReactElement, MyReactFiberNode, MyReactReactiveInstance as MyReactReactiveInstanceType, memo } from "@my-react/react";
 
-const { MyReactReactiveInstance } = __my_react_reactive__;
+const {
+  MyReactReactiveInstance,
+  reactiveApi: { pauseTracking, pauseTrigger, resetTracking, resetTrigger },
+} = __my_react_reactive__;
 
 const { currentReactiveInstance } = __my_react_internal__;
 
@@ -100,7 +103,13 @@ const processMountedHooks = (fiber: MyReactFiberNode) => {
 const processBeforeUpdateHooks = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactReactiveInstanceType;
 
-  if (typedInstance.beforeUpdateHooks.length) typedInstance.beforeUpdateHooks.forEach((f) => f?.());
+  if (typedInstance.beforeUpdateHooks.length) {
+    pauseTracking();
+    pauseTrigger();
+    typedInstance.beforeUpdateHooks.forEach((f) => f?.());
+    resetTrigger();
+    resetTracking();
+  }
 };
 
 const processUpdatedHooks = (fiber: MyReactFiberNode) => {

@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-shared",
   "description": "@my-react/react-shared",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",

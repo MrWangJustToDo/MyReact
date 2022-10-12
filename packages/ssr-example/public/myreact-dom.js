@@ -1189,7 +1189,7 @@
         }
     };
 
-    var MyReactReactiveInstance = react.__my_react_reactive__.MyReactReactiveInstance;
+    var MyReactReactiveInstance = react.__my_react_reactive__.MyReactReactiveInstance, _a = react.__my_react_reactive__.reactiveApi, pauseTracking = _a.pauseTracking, pauseTrigger = _a.pauseTrigger, resetTracking = _a.resetTracking, resetTrigger = _a.resetTrigger;
     var currentReactiveInstance = react.__my_react_internal__.currentReactiveInstance;
     var processReactiveInstanceOnMount = function (fiber) {
         var typedElement = fiber.element;
@@ -1246,8 +1246,13 @@
     };
     var processBeforeUpdateHooks = function (fiber) {
         var typedInstance = fiber.instance;
-        if (typedInstance.beforeUpdateHooks.length)
+        if (typedInstance.beforeUpdateHooks.length) {
+            pauseTracking();
+            pauseTrigger();
             typedInstance.beforeUpdateHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
+            resetTrigger();
+            resetTracking();
+        }
     };
     var processUpdatedHooks = function (fiber) {
         var typedInstance = fiber.instance;
@@ -2323,9 +2328,7 @@
         var globalScope = fiber.root.globalScope;
         var globalDispatch = fiber.root.globalDispatch;
         if (globalScope.isHydrateRender || globalScope.isServerRender) {
-            {
-                console.log("can not update component");
-            }
+            console.log("can not update component");
             return;
         }
         fiber.triggerUpdate();
@@ -4196,7 +4199,7 @@
     };
 
     var safeCall = react.__my_react_shared__.safeCall;
-    var version = "0.0.1";
+    var version = "0.0.2";
     var unstable_batchedUpdates = safeCall;
     var ReactDOM = {
         render: render,
@@ -4206,6 +4209,7 @@
         renderToString: renderToString,
         unmountComponentAtNode: unmountComponentAtNode,
         unstable_batchedUpdates: unstable_batchedUpdates,
+        version: version,
     };
 
     exports.createPortal = createPortal;

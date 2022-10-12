@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-jsx",
   "description": "@my-react/react-jsx",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
@@ -39,7 +39,6 @@
         "entryFileNames": "cjs/index.js",
         "esModule": false,
         "format": "cjs",
-        "exports": "named",
         "multiple": true,
         "sourcemap": true
       },
@@ -47,7 +46,6 @@
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
-        "exports": "named",
         "sourcemap": true
       }
     ]

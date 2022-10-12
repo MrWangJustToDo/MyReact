@@ -92,6 +92,7 @@ const __my_react_internal__ = {
 };
 
 // reactive component
+// 实验性🧪
 const __my_react_reactive__ = {
   MyReactReactiveInstance,
   onBeforeMount,
@@ -129,8 +130,8 @@ const React = {
   Consumer,
   Fragment,
   Suspense,
-  KeepLive,
   Reactive,
+  KeepLive,
   StrictMode,
   ForwardRef,
   useRef,
@@ -144,6 +145,10 @@ const React = {
   useLayoutEffect,
   useImperativeHandle,
   Children,
+  __my_react_internal__,
+  __my_react_shared__,
+  __my_react_reactive__,
+  version,
 };
 
 export {

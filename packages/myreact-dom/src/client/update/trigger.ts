@@ -31,9 +31,8 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
   const globalDispatch = fiber.root.globalDispatch;
 
   if (globalScope.isHydrateRender || globalScope.isServerRender) {
-    if (__DEV__) {
-      console.log("can not update component");
-    }
+    if (__DEV__) console.log("can not update component");
+
     return;
   }
 

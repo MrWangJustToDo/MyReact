@@ -1,9 +1,10 @@
 import { isArray, isInteger } from "@my-react/react-shared";
 
+import { createRef } from "./createRef";
 import { globalDepsMap } from "./env";
 import { EffectFlags } from "./symbol";
 
-let globalEffect: null | ReactiveEffect = null;
+const globalEffectRef = createRef<null | ReactiveEffect>(null);
 
 export class ReactiveEffect<T = any> {
   private _active = true;
@@ -25,13 +26,12 @@ export class ReactiveEffect<T = any> {
   }
 
   private entryScope() {
-    this._parent = globalEffect;
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    globalEffect = this;
+    this._parent = globalEffectRef.current;
+    globalEffectRef.current = this;
   }
 
   private exitScope() {
-    globalEffect = this._parent;
+    globalEffectRef.current = this._parent;
     this._parent = null;
   }
 
@@ -91,26 +91,43 @@ export class ReactiveEffect<T = any> {
   }
 }
 
-export let shouldTrack = true;
+export const shouldTrackRef = createRef(true);
 const trackStack: boolean[] = [];
+export const shouldTriggerRef = createRef(true);
+const triggerStack: boolean[] = [];
 
 export function pauseTracking() {
-  trackStack.push(shouldTrack);
-  shouldTrack = false;
+  trackStack.push(shouldTrackRef.current);
+  shouldTrackRef.current = false;
+}
+
+export function pauseTrigger() {
+  triggerStack.push(shouldTriggerRef.current);
+  shouldTriggerRef.current = false;
 }
 
 export function enableTracking() {
-  trackStack.push(shouldTrack);
-  shouldTrack = true;
+  trackStack.push(shouldTrackRef.current);
+  shouldTrackRef.current = true;
+}
+
+export function enableTrigger() {
+  triggerStack.push(shouldTriggerRef.current);
+  shouldTriggerRef.current = true;
 }
 
 export function resetTracking() {
   const last = trackStack.pop();
-  shouldTrack = last === undefined ? true : last;
+  shouldTrackRef.current = last === undefined ? true : last;
+}
+
+export function resetTrigger() {
+  const last = triggerStack.pop();
+  shouldTriggerRef.current = last === undefined ? true : last;
 }
 
 export function track(target: any, type: "get" | "has" | "iterate", key: string | symbol | number) {
-  if (!globalEffect || !shouldTrack) return;
+  if (!globalEffectRef.current || !shouldTrackRef.current) return;
 
   let depsMap = globalDepsMap.get(target);
 
@@ -128,18 +145,22 @@ export function track(target: any, type: "get" | "has" | "iterate", key: string 
 }
 
 export function trackEffects(set: Set<ReactiveEffect>) {
-  if (!globalEffect) return;
+  if (!globalEffectRef.current || !shouldTrackRef.current) return;
 
-  if (!set.has(globalEffect)) {
-    set.add(globalEffect);
+  if (!set.has(globalEffectRef.current)) {
+    set.add(globalEffectRef.current);
 
-    globalEffect.addDeps(set);
+    globalEffectRef.current.addDeps(set);
   }
 }
 
 export function trigger(target: any, type: "set" | "add" | "delete" | "clear", key: string | symbol | number, newValue: unknown, oldValue: unknown) {
+  if (!shouldTriggerRef.current) return;
+
   const depsMap = globalDepsMap.get(target);
+
   if (!depsMap) return;
+
   if (isArray(target)) {
     // 直接修改length
     if (key === "length") {
@@ -168,10 +189,12 @@ export function trigger(target: any, type: "set" | "add" | "delete" | "clear", k
 }
 
 export function triggerEffects(set: Set<ReactiveEffect>, oldValue?: unknown, newValue?: unknown) {
+  if (!shouldTriggerRef.current) return;
+
   const allReactiveEffect = new Set(set);
 
   allReactiveEffect.forEach((reactiveEffect) => {
-    if (!Object.is(reactiveEffect, globalEffect)) {
+    if (!Object.is(reactiveEffect, globalEffectRef.current)) {
       reactiveEffect.update(oldValue, newValue);
     }
   });

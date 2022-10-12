@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-reconciler",
   "description": "@my-react/react-reconciler",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
@@ -39,7 +39,6 @@
   },
   "peerDependencies": {
     "@my-react/react": "workspace:*",
-    "@my-react/react-shared": "workspace:*",
-    "@my-react/react-reactive": "workspace:*"
+    "@my-react/react-shared": "workspace:*"
   }
 }

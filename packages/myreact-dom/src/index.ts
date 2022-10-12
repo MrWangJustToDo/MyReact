@@ -18,6 +18,7 @@ const ReactDOM = {
   renderToString,
   unmountComponentAtNode,
   unstable_batchedUpdates,
+  version,
 };
 
 export { render, hydrate, findDOMNode, createPortal, renderToString, unmountComponentAtNode, unstable_batchedUpdates, version, ReactDOM as default };

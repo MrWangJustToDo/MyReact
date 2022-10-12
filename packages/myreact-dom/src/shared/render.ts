@@ -16,7 +16,7 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
 
   reconcileMount(fiber, hydrate);
 
-  fiber.root.root_scope.isAppMounted = true;
+  fiber.root.globalScope.isAppMounted = true;
 
   globalLoop.current = false;
 };

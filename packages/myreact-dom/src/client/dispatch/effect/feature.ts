@@ -1,7 +1,7 @@
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const layoutEffect = (fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   const layoutEffectMap = globalDispatch.layoutEffectMap;
 
@@ -13,7 +13,7 @@ export const layoutEffect = (fiber: MyReactFiberNode) => {
 };
 
 export const effect = (fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   const effectMap = globalDispatch.effectMap;
 

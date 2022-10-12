@@ -9,6 +9,7 @@ const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
 
   while (nextFiber && nextFiber !== root) {
     if (nextFiber.sibling) return nextFiber.sibling;
+
     nextFiber = nextFiber.parent;
   }
 };

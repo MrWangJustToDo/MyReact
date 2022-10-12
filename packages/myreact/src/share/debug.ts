@@ -4,6 +4,7 @@ import { currentRunningFiber } from "./env";
 
 import type { forwardRef, lazy, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "../element";
 import type { MyReactFiberNode } from "../fiber";
+import type { MyReactHookNode } from "../hook";
 import type { createReactive } from "../reactive";
 
 const getTrackDevLog = (fiber: MyReactFiberNode) => {
@@ -16,11 +17,18 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
       const { fileName, lineNumber } = source || {};
       preString = `${preString} (${fileName}:${lineNumber})`;
     }
-    if (!(fiber.type & NODE_TYPE.__isDynamicNode__) && typeof owner?.element === "object" && typeof (owner?.element as MyReactElement)?.type === "function") {
-      const typedType = (owner?.element as MyReactElement)?.type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
-      // eslint-disable-next-line @typescript-eslint/ban-types
-      const name = typedType.displayName || ((owner?.element as MyReactElement)?.type as Function)?.name;
-      preString = `${preString} (render dy ${name})`;
+    if (!(fiber.type & NODE_TYPE.__isDynamicNode__) && owner) {
+      const ownerElement = owner.element as MyReactElement;
+      const ownerElementType = ownerElement.type;
+      if (typeof ownerElementType === "function") {
+        const typedOwnerElementType = ownerElementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
+        const name = typedOwnerElementType.name || typedOwnerElementType.displayName;
+        preString = `${preString} (render dy ${name})`;
+      }
+      if (typeof ownerElementType === "object") {
+        // todo
+        void 0;
+      }
     }
     return preString;
   } else {
@@ -32,8 +40,15 @@ const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isMemo__) {
     const typedElement = fiber.element as MyReactElement;
     const typedType = typedElement.type as ReturnType<typeof memo>;
-    if (typedType.render.name) return `<Memo - (${typedType.render.name}) />`;
-    if (typedType.render.displayName) return `<Memo -(${typedType.render.displayName}) />`;
+    const targetRender = typedType.render;
+    if (typeof targetRender === "function") {
+      if (targetRender.name) return `<Memo - (${targetRender.name}) />`;
+      if (targetRender.displayName) return `<Memo -(${targetRender.displayName}) />`;
+    }
+    if (typeof targetRender === "object") {
+      const typedTargetRender = targetRender as ReturnType<typeof createReactive>;
+      if (typedTargetRender.name) return `<Memo - (${typedTargetRender.name}) />`;
+    }
     return `<Memo />`;
   }
   if (fiber.type & NODE_TYPE.__isLazy__) {
@@ -97,19 +112,20 @@ export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   return "";
 };
 
-const getHookTree = (hookType: MyReactFiberNode["hookTypeArray"], newType: MyReactFiberNode["hookTypeArray"]) => {
+export const getHookTree = (hookNodes: MyReactHookNode[], currentIndex: number, newHookType: MyReactHookNode["hookType"]) => {
   let re = "\n" + "".padEnd(6) + "Prev render:".padEnd(20) + "Next render:".padEnd(10) + "\n";
-  for (const key in hookType) {
-    const c = hookType[key];
-    const n = newType[key];
-    re += (+key + 1).toString().padEnd(6) + c?.padEnd(20) + n?.padEnd(10) + "\n";
+  for (let index = 0; index <= currentIndex; index++) {
+    if (index < currentIndex) {
+      const currentType = hookNodes[index]?.hookType || "undefined";
+      re += (index + 1).toString().padEnd(6) + currentType.padEnd(20) + currentType.padEnd(10) + "\n";
+    } else {
+      const currentType = hookNodes[index]?.hookType || "undefined";
+      re += (index + 1).toString().padEnd(6) + currentType.padEnd(20) + newHookType.padEnd(10) + "\n";
+    }
   }
   re += "".padEnd(6) + "^".repeat(30) + "\n";
-
   return re;
 };
-
-export const logHook = (oldType: MyReactFiberNode["hookTypeArray"], newType: MyReactFiberNode["hookTypeArray"]) => getHookTree(oldType, newType);
 
 const cache: Record<string, boolean> = {};
 
@@ -144,7 +160,7 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
 
     const fiber = currentRunningFiber.current;
 
-    if (fiber) fiber.root.root_scope.isAppCrash = true;
+    if (fiber) fiber.root.globalScope.isAppCrash = true;
 
     throw new Error((e as Error).message);
   }
@@ -156,7 +172,7 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>({ action, fi
   } catch (e) {
     log({ message: e as Error, level: "error", fiber });
 
-    fiber.root.root_scope.isAppCrash = true;
+    fiber.root.globalScope.isAppCrash = true;
 
     throw new Error((e as Error).message);
   }

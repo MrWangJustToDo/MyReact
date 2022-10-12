@@ -1,6 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { checkIsSameType } from "@my-react/react-reconciler";
 
-import { createDomNode, DomScope, startRender, unmountComponentAtNode } from "../../shared";
+import { DomScope, startRender, unmountComponentAtNode } from "../../shared";
 import { ClientDispatch } from "../dispatch";
 
 import type { MyReactElement, MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
@@ -19,9 +20,9 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
   const containerFiber = container.__fiber__;
 
   if (containerFiber instanceof MyReactFiberNodeClass) {
-    containerFiber.root.root_scope.isAppCrash = false;
+    containerFiber.root.globalScope.isAppCrash = false;
 
-    if (containerFiber.checkIsSameType(element)) {
+    if (checkIsSameType(containerFiber, element)) {
       containerFiber.installElement(element);
 
       containerFiber.update();
@@ -39,11 +40,11 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   const fiber = new MyReactFiberNodeRoot(0, null, element);
 
-  fiber.node = createDomNode(container);
+  fiber.node = container;
 
-  fiber.root_scope = globalScope;
+  fiber.globalScope = globalScope;
 
-  fiber.root_dispatch = globalDispatch;
+  fiber.globalDispatch = globalDispatch;
 
   globalScope.rootFiber = fiber;
 

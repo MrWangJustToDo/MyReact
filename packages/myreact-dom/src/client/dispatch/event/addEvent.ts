@@ -4,7 +4,7 @@ import { enableControlComponent, enableEventSystem } from "@my-react-dom-shared"
 
 import { getNativeEventName } from "./getEventName";
 
-import type { DomFiberNode } from "@my-react-dom-shared";
+import type { DomElement} from "@my-react-dom-shared";
 import type { MyReactElement, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
 
 const { safeCallWithFiber } = __my_react_shared__;
@@ -20,16 +20,14 @@ type ControlledElement = HTMLInputElement & {
   __isReadonly__: boolean;
 };
 
-export const addEventListener = (fiber: MyReactFiberNode, node: DomFiberNode, key: string) => {
-  const globalDispatch = fiber.root.root_dispatch;
+export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
+  const globalDispatch = fiber.root.globalDispatch;
 
   const typedElement = fiber.element as MyReactElement;
 
   const pendingProps = fiber.pendingProps;
 
   const callback = pendingProps[key] as (...args: any[]) => void;
-
-  const { element: dom } = node;
 
   const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElement.type as string, typedElement.props);
 

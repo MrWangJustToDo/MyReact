@@ -26,7 +26,7 @@ import type {
   MyReactObjectComponent,
 } from "./instance";
 
-export function isValidElement(element?: MyReactElementNode): element is MyReactElement {
+export function isValidElement(element?: MyReactElementNode | any): element is MyReactElement {
   return typeof element === "object" && !Array.isArray(element) && element?.$$typeof === My_React_Element;
 }
 

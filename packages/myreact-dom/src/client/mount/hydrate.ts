@@ -1,6 +1,6 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { createDomNode, DomScope, startRender } from "../../shared";
+import { DomScope, startRender } from "../../shared";
 import { ClientDispatch } from "../dispatch";
 
 import type { RenderContainer } from "./render";
@@ -19,11 +19,11 @@ export const hydrate = (element: MyReactElement, container: RenderContainer) => 
 
   const fiber = new MyReactFiberNodeRoot(0, null, element);
 
-  fiber.node = createDomNode(container);
+  fiber.node = container;
 
-  fiber.root_scope = globalScope;
+  fiber.globalScope = globalScope;
 
-  fiber.root_dispatch = globalDispatch;
+  fiber.globalDispatch = globalDispatch;
 
   globalScope.rootFiber = fiber;
 

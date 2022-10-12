@@ -15,8 +15,8 @@ export type UnwrapRef<T> = T extends Ref<infer V> ? UnwrapRef<V> : T extends Rec
 
 export function ref<T>(value: T): Ref<UnwrapRef<T>>;
 export function ref<T = any>(): Ref<T | undefined>;
-export function ref<T>(value?: unknown) {
-  if (isRef<T>(value)) return value;
+export function ref<T>(value?: unknown): Ref<UnwrapRef<T>> {
+  if (isRef<T>(value)) return value as Ref<UnwrapRef<T>>;
   return new RefImpl(value) as Ref<UnwrapRef<T>>;
 }
 

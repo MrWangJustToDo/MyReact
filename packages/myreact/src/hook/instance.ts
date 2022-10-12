@@ -19,10 +19,6 @@ export type CreateHookParams = {
 export class MyReactHookNode extends MyReactInternalInstance {
   hookIndex = 0;
 
-  hookNext: MyReactHookNode | null = null;
-
-  hookPrev: MyReactHookNode | null = null;
-
   hookType: HOOK_TYPE;
 
   cancel: (() => void) | null = null;

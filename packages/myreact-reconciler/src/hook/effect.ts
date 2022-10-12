@@ -3,7 +3,7 @@ import { Effect_TYPE } from "@my-react/react-shared";
 import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react";
 
 export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
     hookNode.mode = Effect_TYPE.__pendingEffect__;

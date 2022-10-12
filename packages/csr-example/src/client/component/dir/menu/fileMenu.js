@@ -12,7 +12,11 @@ import FileMenuDeleteItem from "./fileMenuDeleteItem";
 function FileMenu() {
   let ref = useRef();
   let dispatch = useDispatch();
-  let { menuPosition, menuState, menuType } = useSelector((state) => state);
+  let { menuPosition, menuState, menuType } = useSelector((state) => ({
+    menuPosition: state.menuPosition,
+    menuState: state.menuState,
+    menuType: state.menuType,
+  }));
 
   // 菜单的显示与隐藏
   useEffect(() => {
@@ -23,7 +27,9 @@ function FileMenu() {
         .css(
           "top",
           currentMenu.height() + menuPosition.y + 10 > document.body.offsetHeight ? document.body.offsetHeight - currentMenu.height() - 10 : menuPosition.y
-        );
+        )
+        .removeClass("animate__zoomOut")
+        .addClass("animate__zoomIn");
     } else if (menuState === "padding") {
       promiseNext(0, () => {
         currentMenu.removeClass("animate__zoomIn").addClass("animate__zoomOut");

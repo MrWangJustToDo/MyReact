@@ -945,24 +945,26 @@
     var enableAsyncUpdate = createRef(true);
     var enableKeyDiff = createRef(true);
     // enable react-18 strict lifecycle method
-    var enableStrictLifeCycle = createRef(false);
+    var enableStrictLifeCycle = createRef(true);
 
     var getTrackDevLog = function (fiber) {
-        var _a, _b, _c, _d;
         {
             var element = fiber.element;
             var source = typeof element === "object" ? element === null || element === void 0 ? void 0 : element["_source"] : null;
             var owner = typeof element === "object" ? element === null || element === void 0 ? void 0 : element["_owner"] : null;
             var preString = "";
             if (source) {
-                var _e = source || {}, fileName = _e.fileName, lineNumber = _e.lineNumber;
+                var _a = source || {}, fileName = _a.fileName, lineNumber = _a.lineNumber;
                 preString = "".concat(preString, " (").concat(fileName, ":").concat(lineNumber, ")");
             }
-            if (!(fiber.type & NODE_TYPE.__isDynamicNode__) && typeof (owner === null || owner === void 0 ? void 0 : owner.element) === "object" && typeof ((_a = owner === null || owner === void 0 ? void 0 : owner.element) === null || _a === void 0 ? void 0 : _a.type) === "function") {
-                var typedType = (_b = owner === null || owner === void 0 ? void 0 : owner.element) === null || _b === void 0 ? void 0 : _b.type;
-                // eslint-disable-next-line @typescript-eslint/ban-types
-                var name_1 = typedType.displayName || ((_d = (_c = owner === null || owner === void 0 ? void 0 : owner.element) === null || _c === void 0 ? void 0 : _c.type) === null || _d === void 0 ? void 0 : _d.name);
-                preString = "".concat(preString, " (render dy ").concat(name_1, ")");
+            if (!(fiber.type & NODE_TYPE.__isDynamicNode__) && owner) {
+                var ownerElement = owner.element;
+                var ownerElementType = ownerElement.type;
+                if (typeof ownerElementType === "function") {
+                    var typedOwnerElementType = ownerElementType;
+                    var name_1 = typedOwnerElementType.name || typedOwnerElementType.displayName;
+                    preString = "".concat(preString, " (render dy ").concat(name_1, ")");
+                }
             }
             return preString;
         }
@@ -972,10 +974,18 @@
         if (fiber.type & NODE_TYPE.__isMemo__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
-            if (typedType.render.name)
-                return "<Memo - (".concat(typedType.render.name, ") />");
-            if (typedType.render.displayName)
-                return "<Memo -(".concat(typedType.render.displayName, ") />");
+            var targetRender = typedType.render;
+            if (typeof targetRender === "function") {
+                if (targetRender.name)
+                    return "<Memo - (".concat(targetRender.name, ") />");
+                if (targetRender.displayName)
+                    return "<Memo -(".concat(targetRender.displayName, ") />");
+            }
+            if (typeof targetRender === "object") {
+                var typedTargetRender = targetRender;
+                if (typedTargetRender.name)
+                    return "<Memo - (".concat(typedTargetRender.name, ") />");
+            }
             return "<Memo />";
         }
         if (fiber.type & NODE_TYPE.__isLazy__) {
@@ -1051,17 +1061,22 @@
         }
         return "";
     };
-    var getHookTree = function (hookType, newType) {
+    var getHookTree = function (hookNodes, currentIndex, newHookType) {
+        var _a, _b;
         var re = "\n" + "".padEnd(6) + "Prev render:".padEnd(20) + "Next render:".padEnd(10) + "\n";
-        for (var key in hookType) {
-            var c = hookType[key];
-            var n = newType[key];
-            re += (+key + 1).toString().padEnd(6) + (c === null || c === void 0 ? void 0 : c.padEnd(20)) + (n === null || n === void 0 ? void 0 : n.padEnd(10)) + "\n";
+        for (var index = 0; index <= currentIndex; index++) {
+            if (index < currentIndex) {
+                var currentType = ((_a = hookNodes[index]) === null || _a === void 0 ? void 0 : _a.hookType) || "undefined";
+                re += (index + 1).toString().padEnd(6) + currentType.padEnd(20) + currentType.padEnd(10) + "\n";
+            }
+            else {
+                var currentType = ((_b = hookNodes[index]) === null || _b === void 0 ? void 0 : _b.hookType) || "undefined";
+                re += (index + 1).toString().padEnd(6) + currentType.padEnd(20) + newHookType.padEnd(10) + "\n";
+            }
         }
         re += "".padEnd(6) + "^".repeat(30) + "\n";
         return re;
     };
-    var logHook = function (oldType, newType) { return getHookTree(oldType, newType); };
     var cache = {};
     var log = function (_a) {
         var fiber = _a.fiber, message = _a.message, _b = _a.level, level = _b === void 0 ? "warn" : _b, _c = _a.triggerOnce, triggerOnce = _c === void 0 ? false : _c;
@@ -1085,7 +1100,7 @@
             log({ message: e, level: "error" });
             var fiber = currentRunningFiber.current;
             if (fiber)
-                fiber.root.root_scope.isAppCrash = true;
+                fiber.root.globalScope.isAppCrash = true;
             throw new Error(e.message);
         }
     };
@@ -1100,7 +1115,7 @@
         }
         catch (e) {
             log({ message: e, level: "error", fiber: fiber });
-            fiber.root.root_scope.isAppCrash = true;
+            fiber.root.globalScope.isAppCrash = true;
             throw new Error(e.message);
         }
     };
@@ -1399,21 +1414,18 @@
             configurable: true
         });
         MyReactInternalInstance.prototype.setContext = function (fiber) {
-            var _a, _b, _c, _d;
-            (_a = this._ownerFiber) === null || _a === void 0 ? void 0 : _a.removeContext(this._contextFiber);
-            (_b = this._contextFiber) === null || _b === void 0 ? void 0 : _b.removeDependence(this);
+            var _a, _b;
+            (_a = this._contextFiber) === null || _a === void 0 ? void 0 : _a.removeDependence(this);
             this._contextFiber = fiber;
-            (_c = this._contextFiber) === null || _c === void 0 ? void 0 : _c.addDependence(this);
-            (_d = this._ownerFiber) === null || _d === void 0 ? void 0 : _d.addContext(this._contextFiber);
+            (_b = this._contextFiber) === null || _b === void 0 ? void 0 : _b.addDependence(this);
         };
         MyReactInternalInstance.prototype.setOwner = function (fiber) {
             this._ownerFiber = fiber;
         };
         MyReactInternalInstance.prototype.unmount = function () {
-            var _a, _b;
+            var _a;
             this.mode = Effect_TYPE.__initial__;
             (_a = this._contextFiber) === null || _a === void 0 ? void 0 : _a.removeDependence(this);
-            (_b = this._ownerFiber) === null || _b === void 0 ? void 0 : _b.removeContext(this._contextFiber);
         };
         return MyReactInternalInstance;
     }());
@@ -1576,6 +1588,9 @@
             enumerable: false,
             configurable: true
         });
+        MyReactComponent.prototype.render = function () {
+            return void 0;
+        };
         MyReactComponent.prototype.unmount = function () {
             var _a;
             _super.prototype.unmount.call(this);
@@ -1622,9 +1637,6 @@
         };
         EmptyDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
             return null;
-        };
-        EmptyDispatch.prototype.resolveMemorizeProps = function (_fiber) {
-            return {};
         };
         EmptyDispatch.prototype.resolveStrictValue = function (_fiber) {
             return false;
@@ -1676,6 +1688,8 @@
         };
         EmptyDispatch.prototype.pendingDeactivate = function (_fiber) {
         };
+        EmptyDispatch.prototype.pendingMemorizedProps = function (_fiber) {
+        };
         EmptyDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {
         };
         EmptyDispatch.prototype.pendingEffect = function (_fiber, _effect) {
@@ -1698,6 +1712,181 @@
         }
         return EmptyRenderScope;
     }());
+
+    var fiberId = 0;
+    var MyReactFiberNode = /** @class */ (function () {
+        function MyReactFiberNode(fiberIndex, parent, element) {
+            var _a;
+            this.mounted = true;
+            this.activated = true;
+            this.invoked = false;
+            this.node = null;
+            this.children = [];
+            this.return = null;
+            this.child = null;
+            this.parent = null;
+            this.sibling = null;
+            this.instance = null;
+            this.dependence = [];
+            this.hookNodes = [];
+            this.type = NODE_TYPE.__initial__;
+            this.patch = PATCH_TYPE.__initial__;
+            this.mode = UPDATE_TYPE.__initial__;
+            this.updateQueue = [];
+            this.pendingProps = {};
+            this.memoizedProps = null;
+            this.uid = "fiber_" + fiberId++;
+            this.fiberIndex = fiberIndex;
+            this.parent = parent;
+            this.element = element;
+            this.root = ((_a = this.parent) === null || _a === void 0 ? void 0 : _a.root) || this;
+            this.initialPops();
+        }
+        MyReactFiberNode.prototype.addChild = function (child) {
+            var last = this.children.at(-1);
+            if (last) {
+                last.sibling = child;
+            }
+            else {
+                this.child = child;
+            }
+            this.children.push(child);
+        };
+        MyReactFiberNode.prototype.initialParent = function () {
+            if (this.parent)
+                this.parent.addChild(this);
+            var globalDispatch = this.root.globalDispatch;
+            globalDispatch.resolveSuspenseMap(this);
+            globalDispatch.resolveContextMap(this);
+            globalDispatch.resolveStrictMap(this);
+        };
+        MyReactFiberNode.prototype.installParent = function (parent) {
+            this.parent = parent;
+            this.sibling = null;
+            this.initialParent();
+        };
+        MyReactFiberNode.prototype.addDependence = function (node) {
+            if (this.dependence.every(function (n) { return n !== node; }))
+                this.dependence.push(node);
+        };
+        MyReactFiberNode.prototype.removeDependence = function (node) {
+            this.dependence = this.dependence.filter(function (n) { return n !== node; });
+        };
+        MyReactFiberNode.prototype.beforeUpdate = function () {
+            this.child = null;
+            this.children = [];
+            this.return = null;
+        };
+        MyReactFiberNode.prototype.triggerUpdate = function () {
+            var updateSymbol = UPDATE_TYPE.__initial__;
+            updateSymbol |= UPDATE_TYPE.__update__;
+            updateSymbol |= UPDATE_TYPE.__trigger__;
+            this.mode = updateSymbol;
+        };
+        MyReactFiberNode.prototype.prepareUpdate = function () {
+            var updateSymbol = UPDATE_TYPE.__initial__;
+            updateSymbol |= UPDATE_TYPE.__update__;
+            this.mode = updateSymbol;
+        };
+        MyReactFiberNode.prototype.afterUpdate = function () {
+            this.mode = UPDATE_TYPE.__initial__;
+        };
+        MyReactFiberNode.prototype.installElement = function (element) {
+            this.element = element;
+            this.initialPops();
+        };
+        MyReactFiberNode.prototype.initialPops = function () {
+            var element = this.element;
+            if (isValidElement(element)) {
+                this.pendingProps = Object.assign({}, element.props);
+            }
+            else {
+                this.pendingProps = {};
+            }
+        };
+        MyReactFiberNode.prototype.initialType = function () {
+            var element = this.element;
+            var type = getTypeFromElement(element);
+            this.type = type;
+        };
+        // checkIsSameType(element: MyReactElementNode) {
+        //   // if (this.mode & UPDATE_TYPE.__trigger__) return true;
+        //   const type = getTypeFromElement(element);
+        //   const result = type === this.type;
+        //   const typedIncomingElement = element as MyReactElement;
+        //   const typedExistElement = this.element as MyReactElement;
+        //   if (result) {
+        //     if (this.type & (NODE_TYPE.__isDynamicNode__ | NODE_TYPE.__isPlainNode__)) {
+        //       return Object.is(typedExistElement.type, typedIncomingElement.type);
+        //     }
+        //     if (this.type & NODE_TYPE.__isObjectNode__ && typeof typedIncomingElement.type === "object" && typeof typedExistElement.type === "object") {
+        //       // for reactive component
+        //       if (this.type & NODE_TYPE.__isReactive__) return Object.is(typedExistElement.type, typedIncomingElement.type);
+        //       return Object.is(typedExistElement.type["$$typeof"], typedIncomingElement.type["$$typeof"]);
+        //     }
+        //   }
+        //   return result;
+        // }
+        MyReactFiberNode.prototype.addHook = function (hookNode) {
+            this.hookNodes.push(hookNode);
+        };
+        MyReactFiberNode.prototype.applyElement = function () {
+            this.memoizedProps = Object.assign({}, this.pendingProps);
+        };
+        MyReactFiberNode.prototype.installInstance = function (instance) {
+            this.instance = instance;
+        };
+        MyReactFiberNode.prototype.update = function () {
+            if (!this.activated || !this.mounted)
+                return;
+            this.root.globalDispatch.trigger(this);
+        };
+        MyReactFiberNode.prototype.unmount = function () {
+            this.hookNodes.forEach(function (hook) { return hook.unmount(); });
+            this.instance && this.instance.unmount();
+            this.mounted = false;
+            this.mode = UPDATE_TYPE.__initial__;
+            this.patch = PATCH_TYPE.__initial__;
+            this.root.globalDispatch.removeFiber(this);
+        };
+        MyReactFiberNode.prototype.deactivate = function () {
+            this.hookNodes.forEach(function (hook) { return hook.unmount(); });
+            this.instance && this.instance.unmount();
+            this.activated = false;
+            this.mode = UPDATE_TYPE.__initial__;
+            this.patch = PATCH_TYPE.__initial__;
+        };
+        return MyReactFiberNode;
+    }());
+    var MyReactFiberNodeRoot = /** @class */ (function (_super) {
+        __extends(MyReactFiberNodeRoot, _super);
+        function MyReactFiberNodeRoot() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.globalDispatch = new EmptyDispatch();
+            _this.globalScope = new EmptyRenderScope();
+            return _this;
+        }
+        return MyReactFiberNodeRoot;
+    }(MyReactFiberNode));
+    /** @class */ ((function (_super) {
+        __extends(MyReactFiberNodeDev, _super);
+        function MyReactFiberNodeDev() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this._debugRenderState = {
+                renderCount: 0,
+                mountTime: 0,
+                prevUpdateTime: 0,
+                updateTimeStep: 0,
+                currentUpdateTime: 0,
+            };
+            _this._debugContextMap = {};
+            _this._debugGlobalDispatch = null;
+            _this._debugStrict = false;
+            _this._debugEventMap = {};
+            return _this;
+        }
+        return MyReactFiberNodeDev;
+    })(MyReactFiberNode));
 
     var checkFiberElement = function (fiber) {
         var element = fiber.element;
@@ -1744,7 +1933,7 @@
         }
     };
     var checkFiberHook = function (fiber) {
-        var hookNode = fiber.hookListFoot;
+        var hookNode = fiber.hookNodes.at(-1);
         if (hookNode.hookType === HOOK_TYPE.useMemo ||
             hookNode.hookType === HOOK_TYPE.useEffect ||
             hookNode.hookType === HOOK_TYPE.useCallback ||
@@ -1760,238 +1949,11 @@
         }
     };
 
-    var fiberId = 0;
-    var MyReactFiberNode = /** @class */ (function () {
-        function MyReactFiberNode(fiberIndex, parent, element) {
-            var _a;
-            this.mounted = true;
-            this.activated = true;
-            this.invoked = false;
-            this.node = null;
-            this.children = [];
-            this.renderedChildren = [];
-            this.childListHead = null;
-            this.childListFoot = null;
-            this.child = null;
-            this.parent = null;
-            this.sibling = null;
-            this.instance = null;
-            // current fiber all the context
-            this.context = [];
-            this.dependence = [];
-            this.hookNodeArray = [];
-            this.hookTypeArray = [];
-            this.hookListHead = null;
-            this.hookListFoot = null;
-            this.type = NODE_TYPE.__initial__;
-            this.patch = PATCH_TYPE.__initial__;
-            this.mode = UPDATE_TYPE.__initial__;
-            this.updateQueue = [];
-            this.pendingProps = {};
-            this.memoizedProps = null;
-            this.uid = "my_react_" + fiberId++;
-            this.fiberIndex = fiberIndex;
-            this.parent = parent;
-            this.element = element;
-            this.root = ((_a = this.parent) === null || _a === void 0 ? void 0 : _a.root) || this;
-            this.initialPops();
-        }
-        MyReactFiberNode.prototype.addChild = function (child) {
-            this.children.push(child);
-            if (this.childListFoot) {
-                this.childListFoot.sibling = child;
-                this.childListFoot = child;
-            }
-            else {
-                this.child = child;
-                this.childListHead = child;
-                this.childListFoot = child;
-            }
-        };
-        MyReactFiberNode.prototype.initialParent = function () {
-            if (this.parent) {
-                this.parent.addChild(this);
-            }
-            var globalDispatch = this.root.root_dispatch;
-            globalDispatch.resolveSuspenseMap(this);
-            globalDispatch.resolveContextMap(this);
-            globalDispatch.resolveStrictMap(this);
-        };
-        MyReactFiberNode.prototype.installParent = function (parent) {
-            this.parent = parent;
-            this.sibling = null;
-            this.initialParent();
-        };
-        MyReactFiberNode.prototype.addDependence = function (node) {
-            if (this.dependence.every(function (n) { return n !== node; }))
-                this.dependence.push(node);
-        };
-        MyReactFiberNode.prototype.removeDependence = function (node) {
-            this.dependence = this.dependence.filter(function (n) { return n !== node; });
-        };
-        MyReactFiberNode.prototype.addContext = function (fiber) {
-            if (!fiber)
-                return;
-            this.context.push(fiber);
-        };
-        MyReactFiberNode.prototype.removeContext = function (fiber) {
-            if (!fiber)
-                return;
-            var index = this.context.indexOf(fiber);
-            if (index !== -1)
-                this.context.splice(index, 1);
-        };
-        MyReactFiberNode.prototype.beforeUpdate = function () {
-            this.child = null;
-            this.children = [];
-            this.childListHead = null;
-            this.childListFoot = null;
-            this.renderedChildren = [];
-        };
-        MyReactFiberNode.prototype.triggerUpdate = function () {
-            var updateSymbol = UPDATE_TYPE.__initial__;
-            updateSymbol |= UPDATE_TYPE.__update__;
-            updateSymbol |= UPDATE_TYPE.__trigger__;
-            this.mode = updateSymbol;
-        };
-        MyReactFiberNode.prototype.prepareUpdate = function () {
-            var updateSymbol = UPDATE_TYPE.__initial__;
-            updateSymbol |= UPDATE_TYPE.__update__;
-            this.mode = updateSymbol;
-        };
-        MyReactFiberNode.prototype.afterUpdate = function () {
-            this.mode = UPDATE_TYPE.__initial__;
-        };
-        MyReactFiberNode.prototype.installElement = function (element) {
-            this.element = element;
-            this.initialPops();
-        };
-        MyReactFiberNode.prototype.initialPops = function () {
-            var element = this.element;
-            if (isValidElement(element)) {
-                this.pendingProps = Object.assign({}, element.props);
-            }
-            else {
-                this.pendingProps = {};
-            }
-        };
-        // TODO
-        MyReactFiberNode.prototype.checkElement = function () {
-            {
-                checkFiberElement(this);
-            }
-        };
-        MyReactFiberNode.prototype.initialType = function () {
-            var element = this.element;
-            var type = getTypeFromElement(element);
-            this.type = type;
-        };
-        MyReactFiberNode.prototype.checkIsSameType = function (element) {
-            // if (this.mode & UPDATE_TYPE.__trigger__) return true;
-            var type = getTypeFromElement(element);
-            var result = type === this.type;
-            var typedIncomingElement = element;
-            var typedExistElement = this.element;
-            if (result) {
-                if (this.type & (NODE_TYPE.__isDynamicNode__ | NODE_TYPE.__isPlainNode__)) {
-                    return Object.is(typedExistElement.type, typedIncomingElement.type);
-                }
-                if (this.type & NODE_TYPE.__isObjectNode__ && typeof typedIncomingElement.type === "object" && typeof typedExistElement.type === "object") {
-                    // for reactive component
-                    if (this.type & NODE_TYPE.__isReactive__)
-                        return Object.is(typedExistElement.type, typedIncomingElement.type);
-                    return Object.is(typedExistElement.type["$$typeof"], typedIncomingElement.type["$$typeof"]);
-                }
-            }
-            return result;
-        };
-        MyReactFiberNode.prototype.addHook = function (hookNode) {
-            this.hookNodeArray.push(hookNode);
-            this.hookTypeArray.push(hookNode.hookType);
-            if (!this.hookListFoot) {
-                this.hookListFoot = hookNode;
-                this.hookListHead = hookNode;
-            }
-            else {
-                this.hookListFoot.hookNext = hookNode;
-                hookNode.hookPrev = this.hookListFoot;
-                this.hookListFoot = hookNode;
-            }
-        };
-        // TODO
-        MyReactFiberNode.prototype.checkHook = function () {
-            {
-                checkFiberHook(this);
-            }
-        };
-        MyReactFiberNode.prototype.applyElement = function () {
-            this.memoizedProps = Object.assign({}, this.pendingProps);
-        };
-        MyReactFiberNode.prototype.installInstance = function (instance) {
-            this.instance = instance;
-        };
-        // TODO
-        MyReactFiberNode.prototype.checkInstance = function () {
-        };
-        MyReactFiberNode.prototype.update = function () {
-            if (!this.activated || !this.mounted)
-                return;
-            this.root.root_dispatch.trigger(this);
-        };
-        MyReactFiberNode.prototype.unmount = function () {
-            this.hookNodeArray.forEach(function (hook) { return hook.unmount(); });
-            this.instance && this.instance.unmount();
-            this.mounted = false;
-            this.mode = UPDATE_TYPE.__initial__;
-            this.patch = PATCH_TYPE.__initial__;
-            this.root.root_dispatch.removeFiber(this);
-        };
-        MyReactFiberNode.prototype.deactivate = function () {
-            this.hookNodeArray.forEach(function (hook) { return hook.unmount(); });
-            this.instance && this.instance.unmount();
-            this.activated = false;
-            this.mode = UPDATE_TYPE.__initial__;
-            this.patch = PATCH_TYPE.__initial__;
-        };
-        return MyReactFiberNode;
-    }());
-    var MyReactFiberNodeRoot = /** @class */ (function (_super) {
-        __extends(MyReactFiberNodeRoot, _super);
-        function MyReactFiberNodeRoot() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this.root_dispatch = new EmptyDispatch();
-            _this.root_scope = new EmptyRenderScope();
-            return _this;
-        }
-        return MyReactFiberNodeRoot;
-    }(MyReactFiberNode));
-    /** @class */ ((function (_super) {
-        __extends(MyReactFiberNodeDev, _super);
-        function MyReactFiberNodeDev() {
-            var _this = _super !== null && _super.apply(this, arguments) || this;
-            _this._debugRenderState = {
-                renderCount: 0,
-                mountTime: 0,
-                prevUpdateTime: 0,
-                updateTimeStep: 0,
-                currentUpdateTime: 0,
-            };
-            _this._debugContextMap = {};
-            _this._debugGlobalDispatch = null;
-            _this._debugStrict = false;
-            _this._debugEventMap = {};
-            return _this;
-        }
-        return MyReactFiberNodeDev;
-    })(MyReactFiberNode));
-
     var initialFiberNode = function (fiber) {
         fiber.initialType();
-        {
-            fiber.checkElement();
-        }
+        checkFiberElement(fiber);
         fiber.initialParent();
-        var globalDispatch = fiber.root.root_dispatch;
+        var globalDispatch = fiber.root.globalDispatch;
         globalDispatch.pendingCreate(fiber);
         globalDispatch.pendingUpdate(fiber);
         globalDispatch.pendingAppend(fiber);
@@ -2008,11 +1970,9 @@
         var fiberIndex = _a.fiberIndex, parent = _a.parent, _b = _a.type, type = _b === void 0 ? "append" : _b;
         var newFiberNode = new MyReactFiberNode(fiberIndex, parent, element);
         newFiberNode.initialType();
-        {
-            newFiberNode.checkElement();
-        }
+        checkFiberElement(newFiberNode);
         newFiberNode.initialParent();
-        var globalDispatch = newFiberNode.root.root_dispatch;
+        var globalDispatch = newFiberNode.root.globalDispatch;
         globalDispatch.pendingCreate(newFiberNode);
         globalDispatch.pendingUpdate(newFiberNode);
         if (type === "append") {
@@ -2032,14 +1992,12 @@
     var updateFiberNode = function (_a, nextElement) {
         var fiber = _a.fiber, parent = _a.parent, prevFiber = _a.prevFiber;
         var prevElement = fiber.element;
-        fiber.applyElement();
+        // fiber.applyElement();
         // make sure invoke `installParent` after `installElement`
         fiber.installElement(nextElement);
         fiber.installParent(parent);
-        var globalDispatch = fiber.root.root_dispatch;
-        {
-            fiber.checkElement();
-        }
+        var globalDispatch = fiber.root.globalDispatch;
+        checkFiberElement(fiber);
         if (prevElement !== nextElement || !fiber.activated) {
             if (fiber.type & NODE_TYPE.__isMemo__) {
                 var typedPrevElement = prevElement;
@@ -2071,6 +2029,7 @@
                     globalDispatch.pendingUpdate(fiber);
                 }
             }
+            globalDispatch.pendingMemorizedProps(fiber);
         }
         if (fiber !== prevFiber) {
             globalDispatch.pendingPosition(fiber);
@@ -2083,8 +2042,6 @@
         function MyReactHookNode(hookIndex, hookType, value, reducer, deps) {
             var _this = _super.call(this) || this;
             _this.hookIndex = 0;
-            _this.hookNext = null;
-            _this.hookPrev = null;
             _this.cancel = null;
             _this.effect = false;
             _this.value = null;
@@ -2136,9 +2093,7 @@
         var newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
         newHookNode.setOwner(fiber);
         fiber.addHook(newHookNode);
-        {
-            fiber.checkHook();
-        }
+        checkFiberHook(fiber);
         return newHookNode;
     };
 
@@ -2147,7 +2102,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.root_dispatch;
+        var globalDispatch = currentFiber.root.globalDispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2162,7 +2117,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.root_dispatch;
+        var globalDispatch = currentFiber.root.globalDispatch;
         var currentIndex = currentHookDeepIndex.current++;
         globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2176,7 +2131,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.root_dispatch;
+        var globalDispatch = currentFiber.root.globalDispatch;
         var currentIndex = currentHookDeepIndex.current++;
         globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2190,7 +2145,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.root_dispatch;
+        var globalDispatch = currentFiber.root.globalDispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2205,7 +2160,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.root_dispatch;
+        var globalDispatch = currentFiber.root.globalDispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2220,7 +2175,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.root_dispatch;
+        var globalDispatch = currentFiber.root.globalDispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2235,7 +2190,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.root_dispatch;
+        var globalDispatch = currentFiber.root.globalDispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2250,7 +2205,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.root_dispatch;
+        var globalDispatch = currentFiber.root.globalDispatch;
         var currentIndex = currentHookDeepIndex.current++;
         var currentHookNode = globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2265,7 +2220,7 @@
         var currentFiber = currentFunctionFiber.current;
         if (!currentFiber)
             throw new Error("can not use hook outside of component");
-        var globalDispatch = currentFiber.root.root_dispatch;
+        var globalDispatch = currentFiber.root.globalDispatch;
         var currentIndex = currentHookDeepIndex.current++;
         globalDispatch.resolveHook(currentFiber, {
             hookIndex: currentIndex,
@@ -2383,8 +2338,9 @@
     var version = "0.0.1";
     var __my_react_shared__ = {
         log: log,
-        logHook: logHook,
         safeCall: safeCall,
+        getHookTree: getHookTree,
+        getFiberTree: getFiberTree,
         createFiberNode: createFiberNode,
         updateFiberNode: updateFiberNode,
         initialFiberNode: initialFiberNode,
@@ -2444,6 +2400,7 @@
         Fragment: My_React_Fragment,
         Suspense: My_React_Suspense,
         KeepLive: My_React_KeepLive,
+        Reactive: My_React_Reactive,
         StrictMode: My_React_Strict,
         ForwardRef: My_React_ForwardRef,
         useRef: useRef,
@@ -2469,6 +2426,7 @@
     exports.Portal = My_React_Portal;
     exports.Provider = My_React_Provider;
     exports.PureComponent = PureComponent;
+    exports.Reactive = My_React_Reactive;
     exports.StrictMode = My_React_Strict;
     exports.Suspense = My_React_Suspense;
     exports.__my_react_internal__ = __my_react_internal__;

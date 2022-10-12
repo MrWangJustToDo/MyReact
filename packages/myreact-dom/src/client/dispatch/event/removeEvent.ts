@@ -2,17 +2,15 @@ import { enableEventSystem } from "@my-react-dom-shared";
 
 import { getNativeEventName } from "./getEventName";
 
-import type { DomFiberNode } from "@my-react-dom-shared";
+import type { DomElement} from "@my-react-dom-shared";
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
-export const removeEventListener = (fiber: MyReactFiberNode, node: DomFiberNode, key: string) => {
-  const globalDispatch = fiber.root.root_dispatch;
+export const removeEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
+  const globalDispatch = fiber.root.globalDispatch;
 
   const typedElement = fiber.element as MyReactElement;
 
-  const currentProps = node.memoizedProps || {};
-
-  const { element: dom } = node;
+  const currentProps = fiber.memoizedProps || {};
 
   const callback = currentProps[key] as (...args: any[]) => void;
 

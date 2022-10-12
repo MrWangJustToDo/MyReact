@@ -1,5 +1,6 @@
 import { NODE_TYPE } from "@my-react/react-shared";
 
+import { checkFiberElement } from "./check";
 import { MyReactFiberNode } from "./instance";
 
 import type { MyReactElement, MyReactElementNode } from "../element";
@@ -20,13 +21,11 @@ export const createFiberNode = (
 
   newFiberNode.initialType();
 
-  if (__DEV__) {
-    newFiberNode.checkElement();
-  }
+  if (__DEV__) checkFiberElement(newFiberNode);
 
   newFiberNode.initialParent();
 
-  const globalDispatch = newFiberNode.root.root_dispatch;
+  const globalDispatch = newFiberNode.root.globalDispatch;
 
   globalDispatch.pendingCreate(newFiberNode);
 

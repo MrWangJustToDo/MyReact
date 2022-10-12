@@ -2,6 +2,7 @@ import { MyReactInternalInstance } from "../internal";
 
 import { My_React_Consumer, My_React_Context, My_React_ForwardRef, My_React_Lazy, My_React_Memo, My_React_Provider } from "./symbol";
 
+import type { createReactive } from "../reactive";
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "./instance";
 
 let contextId = 0;
@@ -50,7 +51,7 @@ export const createContext = <T = any>(value: T) => {
   return ContextObject;
 };
 
-export const forwardRef = (render: MixinMyReactFunctionComponent | { ["$$typeof"]: symbol; [p: string]: unknown }) => {
+export const forwardRef = (render: MixinMyReactFunctionComponent) => {
   return {
     ["$$typeof"]: My_React_ForwardRef,
     render,
@@ -58,14 +59,7 @@ export const forwardRef = (render: MixinMyReactFunctionComponent | { ["$$typeof"
 };
 
 export const memo = (
-  render:
-    | MixinMyReactFunctionComponent
-    | MixinMyReactClassComponent
-    | {
-        ["$$typeof"]: symbol;
-        render: MixinMyReactFunctionComponent | MixinMyReactClassComponent;
-        [p: string]: unknown;
-      }
+  render: MixinMyReactFunctionComponent | MixinMyReactClassComponent | ReturnType<typeof forwardRef> | ReturnType<typeof createReactive>
 ) => {
   return { ["$$typeof"]: My_React_Memo, render };
 };

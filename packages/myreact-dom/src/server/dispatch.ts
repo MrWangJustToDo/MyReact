@@ -10,7 +10,7 @@ import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
 import { append, create, update } from "./dom";
 
-import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode, MyReactElement } from "@my-react/react";
+import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode } from "@my-react/react";
 import type { LinkTreeList } from "@my-react/react-shared";
 
 const { safeCallWithFiber } = __my_react_shared__;
@@ -48,9 +48,6 @@ export class ServerDispatch implements FiberDispatch {
   }
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
     void 0;
-  }
-  resolveMemorizeProps(_fiber: MyReactFiberNode): MyReactElement["props"] {
-    return {};
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
     void 0;
@@ -141,7 +138,10 @@ export class ServerDispatch implements FiberDispatch {
   pendingDeactivate(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void {
+  pendingMemorizedProps(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void {
     void 0;
   }
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {

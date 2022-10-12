@@ -6,19 +6,19 @@ import { updateHookNode } from "./update";
 
 import type { CreateHookParams, MyReactFiberNode, MyReactHookNode } from "@my-react/react";
 
-const { logHook } = __my_react_shared__;
+const { getHookTree } = __my_react_shared__;
 
 export const processHookNode = (fiber: MyReactFiberNode | null, { hookIndex, hookType, reducer, value, deps }: CreateHookParams) => {
   if (!fiber) throw new Error("can not use hook outside of component");
 
   let currentHook: MyReactHookNode | null = null;
 
-  if (fiber.hookNodeArray.length > hookIndex) {
+  if (fiber.hookNodes.length > hookIndex) {
     currentHook = updateHookNode({ hookIndex, hookType, reducer, value, deps }, fiber);
   } else if (!fiber.invoked) {
     currentHook = createHookNode({ hookIndex, hookType, reducer, value, deps }, fiber);
   } else {
-    throw new Error(logHook([...fiber.hookTypeArray], [...fiber.hookTypeArray, hookType]));
+    throw new Error(getHookTree(fiber.hookNodes, hookIndex, hookType));
   }
 
   effect(fiber, currentHook);

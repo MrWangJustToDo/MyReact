@@ -30,11 +30,10 @@ export type MixinMyReactComponentType<
   C extends Record<string, unknown> = any
 > = MyReactComponent<P, S, C> & MyReactComponentType<P, S, C>;
 
-export class MyReactComponent<
-  P extends Record<string, unknown> = any,
-  S extends Record<string, unknown> = any,
-  C extends Record<string, unknown> = any
-> extends MyReactInternalInstance {
+export class MyReactComponent<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>
+  extends MyReactInternalInstance
+  implements MyReactComponentType<P, S, C>
+{
   state: S | null = null;
   props: P | null = null;
   context: C | null = null;
@@ -81,9 +80,13 @@ export class MyReactComponent<
     Promise.resolve().then(() => this._ownerFiber?.update());
   };
 
+  render() {
+    return void 0;
+  }
+
   unmount() {
     super.unmount();
-    const instance = this as unknown as MixinMyReactComponentType;
+    const instance = this as MixinMyReactComponentType;
     instance.componentWillUnmount?.();
   }
 }

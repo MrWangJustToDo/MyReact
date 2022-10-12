@@ -53,7 +53,7 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: M
 const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
 
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   const strictMod = globalDispatch.resolveStrictValue(fiber);
 
@@ -74,10 +74,6 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   instance.context = context;
 
   fiber.installInstance(instance);
-
-  if (__DEV__) {
-    fiber.checkInstance();
-  }
 
   instance.setOwner(fiber);
 
@@ -127,7 +123,7 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInst
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   if (devInstance) {
     if (!(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
@@ -151,7 +147,7 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: 
 const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const typedElement = fiber.element as MyReactElement;
 
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
 
@@ -219,7 +215,7 @@ const processComponentDidUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   const hasEffect = typedInstance.componentDidUpdate || callback.length;
 
@@ -252,7 +248,7 @@ export const classComponentActive = (fiber: MyReactFiberNode) => {
 export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
   processComponentStateFromProps(fiber);
-  fiber.root.root_dispatch.resolveComponentQueue(fiber);
+  fiber.root.globalDispatch.resolveComponentQueue(fiber);
   const typedInstance = fiber.instance as MixinMyReactComponentType;
   const newElement = fiber.element;
   const { newState, isForce, callback } = typedInstance._result;

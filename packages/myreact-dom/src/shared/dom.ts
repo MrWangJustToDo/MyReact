@@ -1,4 +1,4 @@
-import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react";
 
 export type DomElement = Element & {
   __fiber__?: MyReactFiberNode;
@@ -9,17 +9,4 @@ export type DomElement = Element & {
 export type DomNode = Node & {
   __fiber__?: MyReactFiberNode;
   __element__?: MyReactFiberNode["element"];
-};
-
-export type DomFiberNode = ReturnType<typeof createDomNode>;
-
-export const createDomNode = (element: DomElement | DomNode): { memoizedProps: MyReactElement["props"]; element: DomElement | DomNode } => ({
-  memoizedProps: {},
-  element,
-});
-
-export const getMemoizedProps = (fiber: MyReactFiberNode): MyReactElement["props"] => {
-  const element = fiber.node as DomFiberNode;
-
-  return element.memoizedProps;
 };

@@ -1,4 +1,4 @@
-import { createElement, isValidElement, __my_react_internal__ } from "@my-react/react";
+import { createElement, ForwardRef, isValidElement, Reactive, __my_react_internal__ } from "@my-react/react";
 import { NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentActive, classComponentMount, classComponentUpdate } from "../component";
@@ -15,9 +15,10 @@ import type {
   MaybeArrayMyReactElementNode,
   memo,
   lazy,
-  createContext,
   forwardRef,
+  createContext,
   MyReactElementNode,
+  MixinMyReactFunctionComponent,
 } from "@my-react/react";
 
 const { currentHookDeepIndex, currentFunctionFiber, currentRunningFiber, currentComponentFiber } = __my_react_internal__;
@@ -29,8 +30,6 @@ export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyRe
     const typedFiber = fiber as MyReactFiberNodeDev;
 
     typedFiber._debugDynamicChildren = children;
-
-    typedFiber._debugDynamicChildrenFiber = Array.isArray(children) ? childrenFiber : childrenFiber[0];
   }
 
   return childrenFiber;
@@ -39,23 +38,27 @@ export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyRe
 const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
   if (!fiber.instance) {
     const children = classComponentMount(fiber);
+
     return nextWorkCommon(fiber, children);
   } else if (!fiber.activated) {
     const children = classComponentActive(fiber);
+
     return nextWorkCommon(fiber, children);
   } else {
     const { updated, children } = classComponentUpdate(fiber);
+
     if (updated) {
       return nextWorkCommon(fiber, children);
     } else {
       fiber.afterUpdate();
+
       return [];
     }
   }
 };
 
 const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   globalDispatch.resolveHookQueue(fiber);
 
@@ -101,51 +104,87 @@ const nextWorkMemo = (fiber: MyReactFiberNode) => {
 
   const typedType = type as ReturnType<typeof memo>;
 
-  const render = typedType.render;
+  const targetRender = typedType.render;
 
-  let isForwardRefRender = false;
+  if (typeof targetRender === "object") {
+    if (targetRender.$$typeof === ForwardRef) {
+      const typedTargetRender = targetRender as ReturnType<typeof forwardRef>;
 
-  const targetRender = typeof render === "object" ? ((isForwardRefRender = true), render.render) : render;
+      const forwardRefRender = typedTargetRender.render;
 
-  const isClassComponent = targetRender?.prototype?.isMyReactComponent;
+      const globalDispatch = fiber.root.globalDispatch;
 
-  if (isClassComponent) {
-    currentComponentFiber.current = fiber;
+      currentComponentFiber.current = fiber;
 
-    const res = nextWorkClassComponent(fiber);
+      globalDispatch.resolveHookQueue(fiber);
 
-    currentComponentFiber.current = null;
+      currentHookDeepIndex.current = 0;
 
-    return res;
-  } else {
-    const globalDispatch = fiber.root.root_dispatch;
+      // support hook for forwardRef render function
+      currentFunctionFiber.current = fiber;
 
-    currentComponentFiber.current = fiber;
+      const children = forwardRefRender(props, ref);
 
-    globalDispatch.resolveHookQueue(fiber);
+      currentFunctionFiber.current = null;
 
-    currentHookDeepIndex.current = 0;
+      currentHookDeepIndex.current = 0;
 
-    currentFunctionFiber.current = fiber;
+      currentComponentFiber.current = null;
 
-    const typedRender = targetRender as MyReactFunctionComponent;
+      return nextWorkCommon(fiber, children);
+    }
 
-    const children = isForwardRefRender ? typedRender(props, ref) : typedRender(props);
+    if (targetRender.$$typeof === Reactive) {
+      currentComponentFiber.current = fiber;
 
-    currentFunctionFiber.current = null;
+      const res = nextWorkReactive(fiber);
 
-    currentHookDeepIndex.current = 0;
+      currentComponentFiber.current = fiber;
 
-    currentComponentFiber.current = null;
+      return res;
+    }
 
-    return nextWorkCommon(fiber, children);
+    throw new Error("unSupport memo() usage");
   }
+
+  if (typeof targetRender === "function") {
+    const isClassComponent = targetRender?.prototype?.isMyReactComponent;
+    if (isClassComponent) {
+      currentComponentFiber.current = fiber;
+
+      const res = nextWorkClassComponent(fiber);
+
+      currentComponentFiber.current = null;
+
+      return res;
+    } else {
+      const typedTargetRender = targetRender as MixinMyReactFunctionComponent;
+
+      const globalDispatch = fiber.root.globalDispatch;
+
+      globalDispatch.resolveHookQueue(fiber);
+
+      currentHookDeepIndex.current = 0;
+
+      currentFunctionFiber.current = fiber;
+
+      const children = typedTargetRender(props);
+
+      currentFunctionFiber.current = null;
+
+      currentHookDeepIndex.current = 0;
+
+      return nextWorkCommon(fiber, children);
+    }
+  }
+
+  throw new Error("unSupport memo() usage");
 };
 
 const nextWorkLazy = (fiber: MyReactFiberNode) => {
   const { type, props } = fiber.element as MyReactElement;
 
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   const typedType = type as ReturnType<typeof lazy>;
 
@@ -158,13 +197,18 @@ const nextWorkLazy = (fiber: MyReactFiberNode) => {
   } else if (typedType._loading === false) {
     if (globalDispatch.resolveLazy()) {
       typedType._loading = true;
+
       Promise.resolve()
         .then(() => typedType.loader())
         .then((re) => {
           const render = typeof re === "object" && typeof re?.default === "function" ? re.default : re;
+
           typedType._loaded = true;
+
           typedType._loading = false;
+
           typedType.render = render as MyReactClassComponent | MyReactFunctionComponent;
+
           fiber.update();
         });
     }
@@ -178,18 +222,21 @@ const nextWorkLazy = (fiber: MyReactFiberNode) => {
 const nextWorkReactive = (fiber: MyReactFiberNode) => {
   if (!fiber.instance) {
     const children = reactiveComponentMount(fiber);
+
     return nextWorkCommon(fiber, children);
   } else if (!fiber.activated) {
     const children = reactiveComponentActive(fiber);
+
     return nextWorkCommon(fiber, children);
   } else {
     const children = reactiveComponentUpdate(fiber);
+
     return nextWorkCommon(fiber, children);
   }
 };
 
 const nextWorkForwardRef = (fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   currentComponentFiber.current = fiber;
 
@@ -199,7 +246,7 @@ const nextWorkForwardRef = (fiber: MyReactFiberNode) => {
 
   const typedType = type as ReturnType<typeof forwardRef>;
 
-  const typedRender = typedType.render as MyReactFunctionComponent;
+  const typedRender = typedType.render;
 
   currentHookDeepIndex.current = 0;
 
@@ -233,7 +280,7 @@ const nextWorkNormal = (fiber: MyReactFiberNode) => {
 };
 
 const nextWorkConsumer = (fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   const { type, props } = fiber.element as MyReactElement;
 
@@ -247,6 +294,7 @@ const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   currentComponentFiber.current = fiber;
 
+  // for deactivated context fiber, maybe will not update children context, but all the children has deactivated, so it will not matter
   if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.mounted) {
     const ProviderFiber = globalDispatch.resolveContextFiber(fiber, Context);
 
@@ -261,7 +309,7 @@ const nextWorkConsumer = (fiber: MyReactFiberNode) => {
     fiber.instance.context = context;
   }
 
-  const typedChildren = props.children as unknown as MyReactFunctionComponent;
+  const typedChildren = props.children as MyReactFunctionComponent;
 
   const children = typedChildren(fiber.instance.context);
 
@@ -282,7 +330,7 @@ const nextWorkObject = (fiber: MyReactFiberNode) => {
 };
 
 const nextWorkKeepLive = (fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   globalDispatch.resolveKeepLiveMap(fiber);
 
@@ -319,7 +367,7 @@ export const nextWorkSync = (fiber: MyReactFiberNode) => {
 export const nextWorkAsync = (fiber: MyReactFiberNode, topLevelFiber: MyReactFiberNode | null) => {
   if (!fiber.mounted) return null;
 
-  if (!fiber.invoked || fiber.mode & UPDATE_TYPE.__update__ || fiber.mode & UPDATE_TYPE.__trigger__) {
+  if (!fiber.invoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
     currentRunningFiber.current = fiber;
 
     if (fiber.type & NODE_TYPE.__isDynamicNode__) nextWorkComponent(fiber);

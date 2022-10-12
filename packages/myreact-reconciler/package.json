@@ -34,6 +34,9 @@
       }
     ]
   },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
   "peerDependencies": {
     "@my-react/react": "workspace:*",
     "@my-react/react-shared": "workspace:*",

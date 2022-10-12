@@ -1,6 +1,6 @@
 import { NODE_TYPE } from "@my-react/react-shared";
 
-import type { DomFiberNode } from "./dom";
+import type { DomElement } from "./dom";
 import type { MyReactFiberNode, MyReactElement } from "@my-react/react";
 
 export const isSVG = (_fiber: MyReactFiberNode, map: Record<string, boolean>) => {
@@ -24,12 +24,12 @@ export const setRef = (_fiber: MyReactFiberNode) => {
   if (_fiber.type & NODE_TYPE.__isPlainNode__) {
     const typedElement = _fiber.element as MyReactElement;
     if (_fiber.node) {
-      const typedNode = _fiber.node as DomFiberNode;
+      const typedNode = _fiber.node as DomElement;
       const ref = typedElement.ref;
       if (typeof ref === "object" && ref !== null) {
-        ref.current = typedNode.element;
+        ref.current = typedNode;
       } else if (typeof ref === "function") {
-        ref(typedNode.element);
+        ref(typedNode);
       }
     } else {
       throw new Error("plain element do not have a native node");

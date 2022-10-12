@@ -94,12 +94,12 @@ export const jsxDEV = (
 
   if (config.children) {
     const children = config.children;
+
     if (isStaticChildren) {
       if (Array.isArray(children)) {
         children.forEach((c) => checkSingleChildrenKey(c));
-        if (__DEV__) {
-          Object.freeze(children);
-        }
+
+        if (__DEV__) Object.freeze(children);
       } else {
         log({ message: "Static children should always be an array.", level: "warn" });
       }

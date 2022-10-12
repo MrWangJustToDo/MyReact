@@ -14,7 +14,7 @@ import {
 } from "@my-react/react-reconciler";
 import { LinkTreeList, NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { getMemoizedProps, isSVG, setRef } from "@my-react-dom-shared";
+import { isSVG, setRef } from "@my-react-dom-shared";
 
 import { triggerUpdate } from "../update";
 
@@ -36,7 +36,6 @@ import type {
   CreateHookParams,
   MyReactHookNode,
   RenderScope,
-  MyReactElement,
 } from "@my-react/react";
 
 const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
@@ -83,9 +82,6 @@ export class ClientDispatch implements FiberDispatch {
   }
   resolveStrictValue(_fiber: MyReactFiberNode): boolean {
     return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
-  }
-  resolveMemorizeProps(_fiber: MyReactFiberNode): MyReactElement["props"] {
-    return getMemoizedProps(_fiber);
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
     defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
@@ -183,7 +179,7 @@ export class ClientDispatch implements FiberDispatch {
   }
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
     _list.listToFoot((_fiber) => {
-      if (_fiber.mounted) {
+      if (_fiber.mounted && _fiber.activated) {
         const _isSVG = isSVG(_fiber, this.svgTypeMap);
         safeCallWithFiber({
           fiber: _fiber,
@@ -207,7 +203,7 @@ export class ClientDispatch implements FiberDispatch {
     });
 
     _list.listToHead((_fiber) => {
-      if (_fiber.mounted) {
+      if (_fiber.mounted && _fiber.activated) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => position(_fiber),
@@ -216,7 +212,7 @@ export class ClientDispatch implements FiberDispatch {
     });
 
     _list.listToFoot((_fiber) => {
-      if (_fiber.mounted) {
+      if (_fiber.mounted && _fiber.activated) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => append(_fiber),
@@ -225,7 +221,7 @@ export class ClientDispatch implements FiberDispatch {
     });
 
     _list.reconcile((_fiber) => {
-      if (_fiber.mounted) {
+      if (_fiber.mounted && _fiber.activated) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => layoutEffect(_fiber),
@@ -261,7 +257,12 @@ export class ClientDispatch implements FiberDispatch {
   pendingDeactivate(_fiber: MyReactFiberNode): void {
     _fiber.patch |= PATCH_TYPE.__pendingDeactivate__;
   }
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void {
+  pendingMemorizedProps(_fiber: MyReactFiberNode): void {
+    if (!(_fiber.patch & PATCH_TYPE.__pendingUpdate__)) {
+      _fiber.applyElement();
+    }
+  }
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void {
     defaultGenerateUnmountListMap(_fiber, _pendingUnmount, this.unmountMap);
   }
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {

@@ -17,7 +17,7 @@ function parse(jsonString: string | any[]) {
     }
   };
   const parseNumber = (val: string) => {
-    if (!isNaN(val as unknown as number)) {
+    if (!isNaN(+val)) {
       return Number(val);
     }
     return val;

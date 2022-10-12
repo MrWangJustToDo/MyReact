@@ -1,4 +1,4 @@
-import type { createContext, MyReactElementNode, Props } from "../element";
+import type { createContext, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 import type { CreateHookParams, MyReactHookNode } from "../hook";
 import type { RenderScope } from "../scope";
@@ -42,9 +42,6 @@ export class EmptyDispatch implements FiberDispatch {
   }
   resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null {
     return null;
-  }
-  resolveMemorizeProps(_fiber: MyReactFiberNode): Props {
-    return {};
   }
   resolveStrictValue(_fiber: MyReactFiberNode): boolean {
     return false;
@@ -103,10 +100,13 @@ export class EmptyDispatch implements FiberDispatch {
   pendingPosition(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void {
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void {
     void 0;
   }
   pendingDeactivate(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  pendingMemorizedProps(_fiber: MyReactFiberNode): void {
     void 0;
   }
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {

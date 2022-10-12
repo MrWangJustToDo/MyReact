@@ -1,6 +1,6 @@
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import type { DomFiberNode } from "@my-react-dom-shared";
+import type { DomElement, DomNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
@@ -13,18 +13,10 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReac
   if (fiber.type & NODE_TYPE.__isPortal__) return;
 
   if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__)) {
-    let inserted = false;
-    const action = () => {
-      const { element: parentDOM } = (parentFiberWithDom.node || {}) as DomFiberNode;
-      const { element: beforeDOM } = (beforeFiberWithDom.node || {}) as DomFiberNode;
-      const { element: childDOM } = (fiber.node || {}) as DomFiberNode;
-      if (!inserted && beforeDOM && childDOM) {
-        inserted = true;
-        parentDOM.insertBefore(childDOM, beforeDOM);
-      }
-      return Promise.resolve(inserted);
-    };
-    action().then((s) => !s && action());
+    const parentDOM = parentFiberWithDom.node as DomElement;
+    const beforeDOM = beforeFiberWithDom.node as DomNode;
+    const childDOM = fiber.node as DomNode;
+    parentDOM.insertBefore(childDOM, beforeDOM);
     return;
   }
 

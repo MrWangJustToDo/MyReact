@@ -1,3 +1,5 @@
+import { checkIsSameType } from "../share";
+
 import type { MyReactElementNode, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
 
 export const defaultGenerateKeepLiveMap = (fiber: MyReactFiberNode, map: Record<string, MyReactFiberNode[]>) => {
@@ -19,13 +21,13 @@ export const defaultGetKeepLiveFiber = (fiber: MyReactFiberNode, map: Record<str
   // set cache map
   map[fiber.uid] = cacheArray;
   // just a normal update
-  if (currentChild.checkIsSameType(element)) {
-    return currentChild;
-  }
+  if (checkIsSameType(currentChild, element)) return currentChild;
+
   if (cacheArray.every((f) => f.uid !== currentChild.uid)) {
     cacheArray.push(currentChild);
   }
-  const cachedFiber = cacheArray.find((f) => f.checkIsSameType(element));
+
+  const cachedFiber = cacheArray.find((f) => checkIsSameType(f, element));
 
   map[fiber.uid] = cacheArray.filter((f) => f !== cachedFiber);
 

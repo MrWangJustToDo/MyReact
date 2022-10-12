@@ -5,27 +5,26 @@ import { debugWithDOM, isEvent, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from 
 
 import { addEventListener } from "../event";
 
-import type { DomFiberNode } from "@my-react-dom-shared";
+import type { DomElement, DomNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
 
 const log = __my_react_shared__.log;
 
-const domPropsHydrate = (fiber: MyReactFiberNode, node: DomFiberNode, isSVG: boolean) => {
+const domPropsHydrate = (fiber: MyReactFiberNode, node: DomElement | DomNode, isSVG: boolean) => {
   if (fiber.type & NODE_TYPE.__isTextNode__) {
-    const { element: dom } = node;
-    if (dom.textContent !== String(fiber.element)) {
-      if (dom.textContent === " " && fiber.element === "") {
-        dom.textContent = "";
+    if (node.textContent !== String(fiber.element)) {
+      if (node.textContent === " " && fiber.element === "") {
+        node.textContent = "";
       } else {
         log({
           fiber,
-          message: `hydrate warning, text not match from server. server: ${dom.textContent}, client: ${fiber.element}`,
+          message: `hydrate warning, text not match from server. server: ${node.textContent}, client: ${fiber.element}`,
         });
-        dom.textContent = fiber.element as string;
+        node.textContent = fiber.element as string;
       }
     }
   } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
-    const dom = node.element as Element;
+    const dom = node as Element;
     const props = fiber.pendingProps;
     Object.keys(props)
       .filter(isProperty)
@@ -75,9 +74,8 @@ const domPropsHydrate = (fiber: MyReactFiberNode, node: DomFiberNode, isSVG: boo
   }
 };
 
-const domStyleHydrate = (fiber: MyReactFiberNode, node: DomFiberNode) => {
+const domStyleHydrate = (fiber: MyReactFiberNode, dom: DomElement | DomNode) => {
   if (fiber.type & NODE_TYPE.__isPlainNode__) {
-    const dom = node.element;
     const props = fiber.pendingProps;
     Object.keys(props)
       .filter(isStyle)
@@ -96,29 +94,29 @@ const domStyleHydrate = (fiber: MyReactFiberNode, node: DomFiberNode) => {
   }
 };
 
-const domEventHydrate = (fiber: MyReactFiberNode, node: DomFiberNode) => {
+const domEventHydrate = (fiber: MyReactFiberNode, node: DomElement | DomNode) => {
   if (fiber.type & NODE_TYPE.__isPlainNode__) {
     const props = fiber.pendingProps;
     Object.keys(props)
       .filter(isEvent)
       .forEach((key) => {
-        addEventListener(fiber, node, key);
+        addEventListener(fiber, node as DomElement, key);
       });
   }
 };
 
 export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
-  const node = fiber.node as DomFiberNode;
+  const node = fiber.node as DomElement | DomNode;
 
   // for now it is necessary to judge
   if (node) {
     domPropsHydrate(fiber, node, isSVG);
+
     domStyleHydrate(fiber, node);
+
     domEventHydrate(fiber, node);
 
-    if (__DEV__) {
-      debugWithDOM(fiber);
-    }
+    if (__DEV__) debugWithDOM(fiber);
   }
 
   fiber.patch = PATCH_TYPE.__initial__;

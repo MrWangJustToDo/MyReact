@@ -1,3 +1,5 @@
+import { checkFiberHook } from "../fiber";
+
 import { MyReactHookNode } from "./instance";
 
 import type { MyReactFiberNode } from "../fiber";
@@ -14,9 +16,7 @@ export const createHookNode = ({ hookIndex, hookType, value, reducer, deps }: Cr
 
   fiber.addHook(newHookNode);
 
-  if (__DEV__) {
-    fiber.checkHook();
-  }
+  if (__DEV__) checkFiberHook(fiber);
 
   return newHookNode;
 };

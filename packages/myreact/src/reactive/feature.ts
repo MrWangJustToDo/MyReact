@@ -26,7 +26,7 @@ export function createReactive<
   ["$$typeof"]: symbol;
   contextType: null | ReturnType<typeof createContext>;
   name: string;
-  render: (s: UnwrapRef<S>, p: UnwrapRef<P>, c?: C) => MyReactElementNode | null;
+  render: (s: UnwrapRef<S>, p: UnwrapRef<P>, c?: C) => MyReactElementNode;
   setup: (props: P, context?: C) => S;
 };
 export function createReactive<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>(

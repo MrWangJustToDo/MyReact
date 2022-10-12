@@ -13,16 +13,19 @@ export function isValidElement(element?: MyReactElementNode): element is MyReact
 
 export const checkValidKey = (children: MyReactElementNode[]) => {
   const obj: Record<string, boolean> = {};
+
   const onceWarnDuplicate = once(log);
+
   const onceWarnUndefined = once(log);
+
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
+
   if (validElement.length > 1) {
     validElement.forEach((c) => {
       if (!c._store["validKey"]) {
         if (typeof c.key === "string") {
-          if (obj[c.key]) {
-            onceWarnDuplicate({ message: `array child have duplicate key` });
-          }
+          if (obj[c.key]) onceWarnDuplicate({ message: `array child have duplicate key` });
+
           obj[c.key] = true;
         } else {
           onceWarnUndefined({

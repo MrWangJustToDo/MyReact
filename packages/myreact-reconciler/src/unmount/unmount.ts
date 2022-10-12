@@ -7,7 +7,7 @@ import type { LinkTreeList } from "@my-react/react-shared";
 
 export const defaultGenerateUnmountListMap = (
   fiber: MyReactFiberNode,
-  unmount: MyReactFiberNode | MyReactFiberNode[],
+  unmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>,
   map: Record<string, Array<LinkTreeList<MyReactFiberNode>>>
 ) => {
   const allUnmount = flatten(unmount);

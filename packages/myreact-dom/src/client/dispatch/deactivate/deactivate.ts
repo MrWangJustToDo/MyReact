@@ -9,7 +9,5 @@ export const deactivateFiber = (fiber: MyReactFiberNode) => {
 
   clearFiberDom(fiber);
 
-  listTree.listToHead((f) => {
-    f.deactivate();
-  });
+  listTree.listToHead((f) => f.deactivate());
 };

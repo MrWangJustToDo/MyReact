@@ -6,27 +6,26 @@ import { addEventListener, removeEventListener } from "../event";
 
 import { HighLight } from "./highlight";
 
-import type { DomScope, DomFiberNode } from "@my-react-dom-shared";
+import type { DomScope , DomElement, DomNode} from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (!fiber.node) throw new Error("update error, dom not exist");
 
-  const renderScope = fiber.root.root_scope as DomScope;
+  const renderScope = fiber.root.globalScope as DomScope;
 
-  const node = fiber.node as DomFiberNode;
+  const node = fiber.node as DomElement | DomNode;
 
   if (fiber.type & NODE_TYPE.__isTextNode__) {
-    const { element: typedDom } = node;
-    typedDom.textContent = fiber.element as string;
+    node.textContent = fiber.element as string;
   } else {
-    const dom = node.element as HTMLElement;
-    const oldProps = node.memoizedProps || {};
+    const dom = node as HTMLElement;
+    const oldProps = fiber.memoizedProps || {};
     const newProps = fiber.pendingProps || {};
     Object.keys(oldProps)
       .filter(isEvent)
       .filter((key) => isGone(newProps)(key) || isNew(oldProps, newProps)(key))
-      .forEach((key) => removeEventListener(fiber, node, key));
+      .forEach((key) => removeEventListener(fiber, node as DomElement, key));
     Object.keys(oldProps)
       .filter(isProperty)
       .filter(isGone(newProps))
@@ -57,7 +56,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     Object.keys(newProps)
       .filter(isEvent)
       .filter(isNew(oldProps, newProps))
-      .forEach((key) => addEventListener(fiber, node, key));
+      .forEach((key) => addEventListener(fiber, node as DomElement, key));
     Object.keys(newProps)
       .filter(isProperty)
       .filter(isNew(oldProps, newProps))

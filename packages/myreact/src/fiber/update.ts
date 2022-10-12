@@ -1,5 +1,7 @@
 import { isNormalEquals, NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
+import { checkFiberElement } from "./check";
+
 import type { MyReactElement, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "./instance";
 
@@ -17,18 +19,16 @@ export const updateFiberNode = (
 ) => {
   const prevElement = fiber.element;
 
-  fiber.applyElement();
+  // fiber.applyElement();
 
   // make sure invoke `installParent` after `installElement`
   fiber.installElement(nextElement);
 
   fiber.installParent(parent);
 
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
-  if (__DEV__) {
-    fiber.checkElement();
-  }
+  if (__DEV__) checkFiberElement(fiber);
 
   if (prevElement !== nextElement || !fiber.activated) {
     if (fiber.type & NODE_TYPE.__isMemo__) {
@@ -62,6 +62,7 @@ export const updateFiberNode = (
         globalDispatch.pendingUpdate(fiber);
       }
     }
+    globalDispatch.pendingMemorizedProps(fiber);
   }
 
   if (fiber !== prevFiber) {

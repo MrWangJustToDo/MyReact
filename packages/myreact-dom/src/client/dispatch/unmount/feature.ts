@@ -16,7 +16,7 @@ export const unmountList = (list: LinkTreeList<MyReactFiberNode>) => {
 };
 
 export const unmount = (fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.root_dispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
   const unmountMap = globalDispatch.unmountMap;
 

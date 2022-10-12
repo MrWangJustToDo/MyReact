@@ -2,10 +2,10 @@ import { ReactiveFlags, ReactiveEffect, proxyRefs } from "@my-react/react-reacti
 
 import { MyReactInternalInstance } from "../internal";
 
-import type { createContext, MyReactElementNode } from "../element";
+import type { createContext, MyReactElementNode, Props } from "../element";
 
 export class MyReactReactiveInstance<
-  P extends Record<string, unknown> = any,
+  P extends Props = any,
   S extends Record<string, unknown> = any,
   C extends Record<string, unknown> = any
 > extends MyReactInternalInstance {

@@ -1,4 +1,4 @@
-import type { createContext, MyReactElementNode, Props } from "../element";
+import type { createContext, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 import type { CreateHookParams, MyReactHookNode } from "../hook";
 import type { RenderScope } from "../scope";
@@ -36,8 +36,6 @@ export interface FiberDispatch {
   resolveStrictMap(_fiber: MyReactFiberNode): void;
 
   resolveStrictValue(_fiber: MyReactFiberNode): boolean;
-
-  resolveMemorizeProps(_fiber: MyReactFiberNode): Props;
 
   resolveSuspenseMap(_fiber: MyReactFiberNode): void;
 
@@ -77,7 +75,9 @@ export interface FiberDispatch {
 
   pendingDeactivate(_fiber: MyReactFiberNode): void;
 
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[]): void;
+  pendingMemorizedProps(_fiber: MyReactFiberNode): void;
+
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void;
 
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void;
 

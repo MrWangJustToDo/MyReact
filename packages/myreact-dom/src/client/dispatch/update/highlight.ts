@@ -1,6 +1,5 @@
 import { NODE_TYPE } from "@my-react/react-shared";
 
-import type { DomFiberNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
 
 type HighlightDOM = HTMLElement & {
@@ -59,7 +58,7 @@ export class HighLight {
 
   highLight = (fiber: MyReactFiberNode) => {
     if (fiber.node) {
-      const typedDom = (fiber.node as DomFiberNode).element as HighlightDOM;
+      const typedDom = fiber.node as HighlightDOM;
       if (!typedDom.__pendingHighLight__) {
         typedDom.__pendingHighLight__ = true;
         this.startHighLight(fiber);
@@ -80,9 +79,7 @@ export class HighLight {
       allFiber.forEach((f) => {
         const wrapperDom = this.getHighLight();
         allWrapper.push(wrapperDom);
-        f.type & NODE_TYPE.__isTextNode__
-          ? this.range.selectNodeContents((f.node as DomFiberNode).element as Node)
-          : this.range.selectNode((f.node as DomFiberNode).element as Element);
+        f.type & NODE_TYPE.__isTextNode__ ? this.range.selectNodeContents(f.node as HighlightDOM) : this.range.selectNode(f.node as HighlightDOM);
         const rect = this.range.getBoundingClientRect();
         const left = rect.left + (document.scrollingElement?.scrollLeft || 0);
         const top = rect.top + (document.scrollingElement?.scrollTop || 0);
@@ -97,7 +94,7 @@ export class HighLight {
           left: ${positionLeft}px;
           top: ${positionTop}px;
           pointer-events: none;
-          box-shadow: 0.0625rem 0.0625rem 0.0625rem red, -0.0625rem -0.0625rem 0.0625rem red;
+          box-shadow: 1px 1px 1px red, -1px -1px 1px red;
           `;
       });
       setTimeout(() => {
@@ -105,7 +102,7 @@ export class HighLight {
           wrapperDom.style.boxShadow = "none";
           this.map.push(wrapperDom);
         });
-        allFiber.forEach((f) => (((f.node as DomFiberNode).element as HighlightDOM).__pendingHighLight__ = false));
+        allFiber.forEach((f) => ((f.node as HighlightDOM).__pendingHighLight__ = false));
       }, 100);
     });
   };

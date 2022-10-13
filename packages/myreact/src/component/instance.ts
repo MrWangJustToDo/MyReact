@@ -8,8 +8,9 @@ import type { ComponentUpdateQueue } from "../fiber";
 export interface MyReactComponentType<P, S, C> {
   render(this: MyReactComponent): MyReactElementNode;
   componentDidMount?(this: MyReactComponent): void;
+  getSnapshotBeforeUpdate?(this: MyReactComponent, prevProps: P, prevState: S): void;
   shouldComponentUpdate?(this: MyReactComponent, nextProps: P, nextState: S, nextContext: C): boolean;
-  componentDidUpdate?(this: MyReactComponent, prevProps: P, prevState: S, prevContext: C): void;
+  componentDidUpdate?(this: MyReactComponent, prevProps: P, prevState: S, snapshot: any): void;
   componentWillUnmount?(): void;
 }
 

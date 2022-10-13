@@ -1547,7 +1547,7 @@
     var toArray = function (arrayLike) {
         return map(arrayLike, function (element, index) {
             return cloneElement(element, {
-                key: (element === null || element === void 0 ? void 0 : element.key) !== undefined ? ".$".concat(element.key) : ".".concat(index),
+                key: typeof (element === null || element === void 0 ? void 0 : element.key) === "string" ? ".$".concat(element.key) : ".".concat(index),
             });
         });
     };
@@ -1912,6 +1912,7 @@
                 updateTimeStep: 0,
                 currentUpdateTime: 0,
             };
+            _this._debugHookTypes = [];
             _this._debugContextMap = {};
             _this._debugGlobalDispatch = null;
             _this._debugStrict = false;

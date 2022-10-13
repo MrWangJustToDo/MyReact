@@ -199,17 +199,27 @@ const processComponentShouldUpdateOnUpdate = (
   return true;
 };
 
+const processComponentGetSnapshotOnUpdate = (fiber: MyReactFiberNode, { baseState, baseProps }: { baseState: unknown; baseProps: unknown }) => {
+  const typedInstance = fiber.instance as MixinMyReactComponentType;
+
+  if (typedInstance.getSnapshotBeforeUpdate) {
+    return typedInstance.getSnapshotBeforeUpdate(baseProps, baseState);
+  }
+
+  return null;
+};
+
 const processComponentDidUpdateOnUpdate = (
   fiber: MyReactFiberNode,
   {
     baseState,
     baseProps,
-    baseContext,
+    snapshot,
     callback,
   }: {
     baseState: unknown;
     baseProps: unknown;
-    baseContext: unknown;
+    snapshot: unknown;
     callback: Array<() => void>;
   }
 ) => {
@@ -224,7 +234,7 @@ const processComponentDidUpdateOnUpdate = (
     globalDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
       callback.forEach((c) => c.call(null));
-      typedInstance.componentDidUpdate?.(baseProps, baseState, baseContext);
+      typedInstance.componentDidUpdate?.(baseProps, baseState, snapshot);
     });
   }
 };
@@ -256,7 +266,7 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   typedInstance._result = DEFAULT_RESULT;
   const baseState = typedInstance.state;
   const baseProps = typedInstance.props;
-  const baseContext = typedInstance.context;
+  // const baseContext = typedInstance.context;
   const nextState = Object.assign({}, baseState, newState);
   const nextProps = Object.assign({}, typeof newElement === "object" ? newElement?.["props"] : {});
   const nextContext = processComponentContextOnUpdate(fiber);
@@ -273,8 +283,9 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   typedInstance.context = nextContext;
   if (shouldUpdate) {
     const children = processComponentRenderOnMountAndUpdate(fiber);
+    const snapshot = processComponentGetSnapshotOnUpdate(fiber, { baseState, baseProps });
     processComponentDidUpdateOnUpdate(fiber, {
-      baseContext,
+      snapshot,
       baseProps,
       baseState,
       callback,

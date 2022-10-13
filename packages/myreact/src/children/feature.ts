@@ -10,7 +10,7 @@ export const map = (arrayLike: MaybeArrayMyReactElementNode, action: (child: MyR
 export const toArray = (arrayLike: MaybeArrayMyReactElementNode) => {
   return map(arrayLike, (element, index) =>
     cloneElement(element, {
-      key: element?.key !== undefined ? `.$${element.key}` : `.${index}`,
+      key: typeof element?.key === "string" ? `.$${element.key}` : `.${index}`,
     })
   );
 };

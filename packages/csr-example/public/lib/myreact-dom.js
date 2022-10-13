@@ -1091,8 +1091,16 @@
         }
         return true;
     };
+    var processComponentGetSnapshotOnUpdate = function (fiber, _a) {
+        var baseState = _a.baseState, baseProps = _a.baseProps;
+        var typedInstance = fiber.instance;
+        if (typedInstance.getSnapshotBeforeUpdate) {
+            return typedInstance.getSnapshotBeforeUpdate(baseProps, baseState);
+        }
+        return null;
+    };
     var processComponentDidUpdateOnUpdate = function (fiber, _a) {
-        var baseState = _a.baseState, baseProps = _a.baseProps, baseContext = _a.baseContext, callback = _a.callback;
+        var baseState = _a.baseState, baseProps = _a.baseProps, snapshot = _a.snapshot, callback = _a.callback;
         var typedInstance = fiber.instance;
         var globalDispatch = fiber.root.globalDispatch;
         var hasEffect = typedInstance.componentDidUpdate || callback.length;
@@ -1102,7 +1110,7 @@
                 var _a;
                 typedInstance.mode = Effect_TYPE.__initial__;
                 callback.forEach(function (c) { return c.call(null); });
-                (_a = typedInstance.componentDidUpdate) === null || _a === void 0 ? void 0 : _a.call(typedInstance, baseProps, baseState, baseContext);
+                (_a = typedInstance.componentDidUpdate) === null || _a === void 0 ? void 0 : _a.call(typedInstance, baseProps, baseState, snapshot);
             });
         }
     };
@@ -1131,7 +1139,7 @@
         typedInstance._result = DEFAULT_RESULT;
         var baseState = typedInstance.state;
         var baseProps = typedInstance.props;
-        var baseContext = typedInstance.context;
+        // const baseContext = typedInstance.context;
         var nextState = Object.assign({}, baseState, newState);
         var nextProps = Object.assign({}, typeof newElement === "object" ? newElement === null || newElement === void 0 ? void 0 : newElement["props"] : {});
         var nextContext = processComponentContextOnUpdate(fiber);
@@ -1148,8 +1156,9 @@
         typedInstance.context = nextContext;
         if (shouldUpdate) {
             var children = processComponentRenderOnMountAndUpdate(fiber);
+            var snapshot = processComponentGetSnapshotOnUpdate(fiber, { baseState: baseState, baseProps: baseProps });
             processComponentDidUpdateOnUpdate(fiber, {
-                baseContext: baseContext,
+                snapshot: snapshot,
                 baseProps: baseProps,
                 baseState: baseState,
                 callback: callback,
@@ -1633,6 +1642,11 @@
     var createHookNode = function (props, fiber) {
         var globalDispatch = fiber.root.globalDispatch;
         var hookNode = _createHookNode(props, fiber);
+        {
+            var typedFiber = fiber;
+            typedFiber._debugHookTypes = typedFiber._debugHookTypes || [];
+            typedFiber._debugHookTypes.push(hookNode.hookType);
+        }
         if (hookNode.hookType === HOOK_TYPE.useMemo || hookNode.hookType === HOOK_TYPE.useState || hookNode.hookType === HOOK_TYPE.useReducer) {
             hookNode.result = hookNode.value.call(null);
             return hookNode;

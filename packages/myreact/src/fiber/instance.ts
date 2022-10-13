@@ -10,6 +10,7 @@ import type { MyReactElement, MyReactElementNode, MaybeArrayMyReactElementNode }
 import type { Action, MyReactHookNode } from "../hook";
 import type { MyReactInternalInstance } from "../internal";
 import type { RenderScope } from "../scope";
+import type { HOOK_TYPE} from "@my-react/react-shared";
 
 type RenderNode = { [p: string]: any };
 
@@ -230,6 +231,8 @@ export class MyReactFiberNodeDev extends MyReactFiberNode {
     updateTimeStep: 0,
     currentUpdateTime: 0,
   };
+
+  _debugHookTypes: HOOK_TYPE[] = [];
 
   _debugContextMap: Record<string, MyReactFiberNode> = {};
 

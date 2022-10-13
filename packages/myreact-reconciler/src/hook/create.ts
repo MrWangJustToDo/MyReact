@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
-import type { CreateHookParams, MyReactFiberNode } from "@my-react/react";
+import type { CreateHookParams, MyReactFiberNode , MyReactFiberNodeDev} from "@my-react/react";
 
 const { createHookNode: _createHookNode } = __my_react_shared__;
 
@@ -9,6 +9,15 @@ export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode)
   const globalDispatch = fiber.root.globalDispatch;
 
   const hookNode = _createHookNode(props, fiber);
+
+  if (__DEV__) {
+    const typedFiber = fiber as MyReactFiberNodeDev;
+
+    typedFiber._debugHookTypes = typedFiber._debugHookTypes || [];
+
+    typedFiber._debugHookTypes.push(hookNode.hookType);
+  }
+
   if (hookNode.hookType === HOOK_TYPE.useMemo || hookNode.hookType === HOOK_TYPE.useState || hookNode.hookType === HOOK_TYPE.useReducer) {
     hookNode.result = hookNode.value.call(null);
     return hookNode;

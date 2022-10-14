@@ -19,8 +19,7 @@ export const updateLoopAsync = (loopController: ReconcilerLoopController, should
   while (loopController.hasNext() && !shouldPause()) {
     const fiber = loopController.getNext();
     if (fiber) {
-      const nextFiber = safeCall(() => nextWorkAsync(fiber, loopController.getTopLevel()));
-      loopController.getUpdateList(fiber);
+      const nextFiber = safeCall(() => nextWorkAsync(fiber, loopController));
       loopController.setYield(nextFiber);
     }
   }

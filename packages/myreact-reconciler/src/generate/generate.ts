@@ -113,7 +113,6 @@ const getNewFiberWithUpdate = (
 
     return createFiberNode(
       {
-        fiberIndex: parentFiber.fiberIndex + 1,
         parent: parentFiber,
         type: "position",
       },
@@ -127,7 +126,7 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
     return newChild.map((v) => getNewFiberWithInitial(v, parentFiber)) as MyReactFiberNode[];
   }
 
-  return createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber }, newChild);
+  return createFiberNode({ parent: parentFiber }, newChild);
 };
 
 export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
@@ -307,7 +306,7 @@ export const transformKeepLiveChildrenFiber = (parentFiber: MyReactFiberNode, ch
     // not have cachedFiber, maybe it is a first time to run
     parentFiber.beforeUpdate();
 
-    const newChildFiber = createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber, type: "position" }, children);
+    const newChildFiber = createFiberNode({ parent: parentFiber, type: "position" }, children);
 
     parentFiber.return = newChildFiber;
 

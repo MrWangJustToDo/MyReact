@@ -6,7 +6,6 @@ import FileTable from "./table/fileTable";
 import FileBlock from "./block/fileBlock";
 import FileMenu from "../menu/fileMenu";
 import { createReactive, createRef, KeepLive, __my_react_reactive__ } from "@my-react/react";
-import { reactive, ref } from "@my-react/react-reactive";
 
 // function FileContainer() {
 //   let ref = useRef();
@@ -29,27 +28,33 @@ import { reactive, ref } from "@my-react/react-reactive";
 //   );
 // }
 
-const { onMounted, onBeforeUpdate, onUnmounted } = __my_react_reactive__;
+const { onMounted, onBeforeUpdate, onUnmounted, reactiveApi } = __my_react_reactive__;
+
+const { ref, reactive, watch } = reactiveApi;
 
 const FileContainer = createReactive({
   // myreact context type not same as react...
   contextType: ReactReduxContext,
   setup: (_, c) => {
     const contextRef = ref(c.store.getState());
+    const reactiveDomRef = reactive({ current: null });
     const domRef = createRef(null);
     let currentItem = null;
     let unSubscribe = null;
 
+    watch(
+      () => reactiveDomRef.current,
+      (newValue, oldValue) => {
+        console.log("reactiveDomRef update", newValue, oldValue);
+      }
+    );
+
     onMounted(() => {
       unSubscribe = c.store.subscribe(() => {
         contextRef.value = c.store.getState();
-      })
+      });
       currentItem = jquery(domRef.current);
       currentItem.on("contextmenu", () => false);
-    });
-
-    onBeforeUpdate(() => {
-      // contextRef.value = c.store.getState();
     });
 
     onUnmounted(() => {
@@ -57,10 +62,15 @@ const FileContainer = createReactive({
       currentItem.off("contextmenu");
     });
 
-    return { domRef, contextRef };
+    const setRef = (node) => {
+      domRef.current = node;
+      reactiveDomRef.current = node;
+    };
+
+    return { domRef, contextRef, setRef };
   },
-  render: ({ domRef, contextRef: { menuState, fileModelType } }) => (
-    <div className="fm-table-container relative animate__animated animate__fadeIn animate__faster" ref={domRef}>
+  render: ({ setRef, contextRef: { menuState, fileModelType } }) => (
+    <div className="fm-table-container relative animate__animated animate__fadeIn animate__faster" ref={setRef}>
       <FileContainerHead />
       {/* keepLive component will keep the dom/component/hook/reactive state */}
       <KeepLive>{menuState && <FileMenu />}</KeepLive>

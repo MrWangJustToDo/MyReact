@@ -12,7 +12,7 @@ export const updateLoopSync = (loopController: ReconcilerLoopController, reconci
     let fiber = loopController.getNext();
     while (fiber) {
       const _fiber = fiber as MyReactFiberNode;
-      fiber = safeCall(() => nextWorkAsync(_fiber, loopController.getTopLevel()));
+      fiber = safeCall(() => nextWorkAsync(_fiber, loopController));
       loopController.getUpdateList(_fiber);
       loopController.setYield(fiber);
     }

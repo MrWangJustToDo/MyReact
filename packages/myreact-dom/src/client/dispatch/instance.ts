@@ -14,7 +14,7 @@ import {
 } from "@my-react/react-reconciler";
 import { LinkTreeList, NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { isSVG, setRef } from "@my-react-dom-shared";
+import { generateSVGElementType, setRef } from "@my-react-dom-shared";
 
 import { triggerUpdate } from "../update";
 
@@ -28,15 +28,7 @@ import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
 
-import type {
-  MyReactFiberNode,
-  FiberDispatch,
-  MyReactElementNode,
-  createContext,
-  CreateHookParams,
-  MyReactHookNode,
-  RenderScope,
-} from "@my-react/react";
+import type { MyReactFiberNode, FiberDispatch, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode, RenderScope } from "@my-react/react";
 
 const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
 
@@ -70,6 +62,9 @@ export class ClientDispatch implements FiberDispatch {
   }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return processHookNode(_fiber, _hookParams);
+  }
+  resolveElementTypeMap(_fiber: MyReactFiberNode): void {
+    generateSVGElementType(_fiber, this.svgTypeMap);
   }
   resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null {
     return defaultGetKeepLiveFiber(_fiber, this.keepLiveMap, _element);
@@ -132,14 +127,14 @@ export class ClientDispatch implements FiberDispatch {
         _fiber.patch & PATCH_TYPE.__pendingPosition__ ||
         _fiber.patch & PATCH_TYPE.__pendingDeactivate__
       ) {
-        _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
+        _scope.updateFiberList.append(_fiber);
       } else if (this.effectMap[_fiber.uid]?.length || this.unmountMap[_fiber.uid]?.length || this.layoutEffectMap[_fiber.uid]?.length) {
-        _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
+        _scope.updateFiberList.append(_fiber);
       }
     }
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean {
-    const _isSVG = isSVG(_fiber, this.svgTypeMap);
+    const _isSVG = this.svgTypeMap[_fiber.uid];
 
     const _result = safeCallWithFiber({
       fiber: _fiber,
@@ -180,7 +175,7 @@ export class ClientDispatch implements FiberDispatch {
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
     _list.listToFoot((_fiber) => {
       if (_fiber.mounted && _fiber.activated) {
-        const _isSVG = isSVG(_fiber, this.svgTypeMap);
+        const _isSVG = this.svgTypeMap[_fiber.uid];
         safeCallWithFiber({
           fiber: _fiber,
           action: () => create(_fiber, false, _fiber, _isSVG),
@@ -220,14 +215,12 @@ export class ClientDispatch implements FiberDispatch {
       }
     });
 
-    _list.reconcile((_fiber) => {
+    _list.listToFoot((_fiber) => {
       if (_fiber.mounted && _fiber.activated) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => layoutEffect(_fiber),
         });
-
-        // requestAnimationFrame(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }))
 
         Promise.resolve().then(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }));
       }

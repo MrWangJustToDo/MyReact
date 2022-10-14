@@ -10,7 +10,7 @@ import type { MyReactElement, MyReactElementNode, MaybeArrayMyReactElementNode }
 import type { Action, MyReactHookNode } from "../hook";
 import type { MyReactInternalInstance } from "../internal";
 import type { RenderScope } from "../scope";
-import type { HOOK_TYPE} from "@my-react/react-shared";
+import type { HOOK_TYPE } from "@my-react/react-shared";
 
 type RenderNode = { [p: string]: any };
 
@@ -36,8 +36,6 @@ let fiberId = 0;
 
 export class MyReactFiberNode {
   uid: string;
-
-  fiberIndex: number;
 
   mounted = true;
 
@@ -79,9 +77,8 @@ export class MyReactFiberNode {
 
   memoizedProps: MyReactElement["props"] | null = null;
 
-  constructor(fiberIndex: number, parent: MyReactFiberNode | null, element: MyReactElementNode) {
+  constructor(parent: MyReactFiberNode | null, element: MyReactElementNode) {
     this.uid = "fiber_" + fiberId++;
-    this.fiberIndex = fiberIndex;
     this.parent = parent;
     this.element = element;
     this.root = this.parent?.root || (this as unknown as MyReactFiberNodeRoot);
@@ -101,6 +98,7 @@ export class MyReactFiberNode {
   initialParent() {
     if (this.parent) this.parent.addChild(this);
     const globalDispatch = this.root.globalDispatch;
+    globalDispatch.resolveElementTypeMap(this);
     globalDispatch.resolveSuspenseMap(this);
     globalDispatch.resolveContextMap(this);
     globalDispatch.resolveStrictMap(this);
@@ -162,25 +160,6 @@ export class MyReactFiberNode {
     const type = getTypeFromElement(element);
     this.type = type;
   }
-
-  // checkIsSameType(element: MyReactElementNode) {
-  //   // if (this.mode & UPDATE_TYPE.__trigger__) return true;
-  //   const type = getTypeFromElement(element);
-  //   const result = type === this.type;
-  //   const typedIncomingElement = element as MyReactElement;
-  //   const typedExistElement = this.element as MyReactElement;
-  //   if (result) {
-  //     if (this.type & (NODE_TYPE.__isDynamicNode__ | NODE_TYPE.__isPlainNode__)) {
-  //       return Object.is(typedExistElement.type, typedIncomingElement.type);
-  //     }
-  //     if (this.type & NODE_TYPE.__isObjectNode__ && typeof typedIncomingElement.type === "object" && typeof typedExistElement.type === "object") {
-  //       // for reactive component
-  //       if (this.type & NODE_TYPE.__isReactive__) return Object.is(typedExistElement.type, typedIncomingElement.type);
-  //       return Object.is(typedExistElement.type["$$typeof"], typedIncomingElement.type["$$typeof"]);
-  //     }
-  //   }
-  //   return result;
-  // }
 
   addHook(hookNode: MyReactHookNode) {
     this.hookNodes.push(hookNode);

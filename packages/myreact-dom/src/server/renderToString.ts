@@ -20,7 +20,7 @@ export const renderToString = (element: MyReactElement) => {
 
   const container = new PlainElement("");
 
-  const fiber = new MyReactFiberNodeRoot(0, null, element);
+  const fiber = new MyReactFiberNodeRoot(null, element);
 
   fiber.node = container;
 

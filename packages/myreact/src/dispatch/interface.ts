@@ -27,11 +27,13 @@ export interface FiberDispatch {
 
   resolveRef(_fiber: MyReactFiberNode): void;
 
+  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
+
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void;
 
   resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null;
 
-  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
+  resolveElementTypeMap(_fiber: MyReactFiberNode): void;
 
   resolveStrictMap(_fiber: MyReactFiberNode): void;
 

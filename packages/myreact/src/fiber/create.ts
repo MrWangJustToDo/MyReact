@@ -7,17 +7,15 @@ import type { MyReactElement, MyReactElementNode } from "../element";
 
 export const createFiberNode = (
   {
-    fiberIndex,
     parent,
     type = "append",
   }: {
-    fiberIndex: number;
     parent: MyReactFiberNode | null;
     type?: "append" | "position";
   },
   element: MyReactElementNode
 ) => {
-  const newFiberNode = new MyReactFiberNode(fiberIndex, parent, element);
+  const newFiberNode = new MyReactFiberNode(parent, element);
 
   newFiberNode.initialType();
 

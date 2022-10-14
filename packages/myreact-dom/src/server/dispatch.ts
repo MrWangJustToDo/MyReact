@@ -26,8 +26,6 @@ export class ServerDispatch implements FiberDispatch {
 
   suspenseMap: Record<string, MyReactElementNode> = {};
 
-  svgTypeMap: Record<string, boolean> = {};
-
   contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
 
   unmountMap: Record<string, Array<LinkTreeList<MyReactFiberNode>>> = {};
@@ -41,6 +39,9 @@ export class ServerDispatch implements FiberDispatch {
     return false;
   }
   resolveRef(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveElementTypeMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
   resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null {

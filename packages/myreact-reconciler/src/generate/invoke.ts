@@ -6,6 +6,7 @@ import { reactiveComponentActive, reactiveComponentMount, reactiveComponentUpdat
 
 import { transformChildrenFiber, transformKeepLiveChildrenFiber } from "./generate";
 
+import type { ReconcilerLoopController } from "../update";
 import type {
   MyReactElement,
   MyReactFiberNode,
@@ -364,7 +365,7 @@ export const nextWorkSync = (fiber: MyReactFiberNode) => {
   return children;
 };
 
-export const nextWorkAsync = (fiber: MyReactFiberNode, topLevelFiber: MyReactFiberNode | null) => {
+export const nextWorkAsync = (fiber: MyReactFiberNode, loopController: ReconcilerLoopController) => {
   if (!fiber.mounted) return null;
 
   if (!fiber.invoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
@@ -388,11 +389,16 @@ export const nextWorkAsync = (fiber: MyReactFiberNode, topLevelFiber: MyReactFib
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
-  while (nextFiber && nextFiber !== topLevelFiber) {
-    if (nextFiber.sibling) {
-      return nextFiber.sibling;
-    }
+  while (nextFiber && nextFiber !== loopController.getTopLevel()) {
+    loopController.getUpdateList(nextFiber);
+
+    if (nextFiber.sibling) return nextFiber.sibling;
+
     nextFiber = nextFiber.parent;
+  }
+
+  if (nextFiber === loopController.getTopLevel()) {
+    loopController.getUpdateList(nextFiber);
   }
 
   return null;

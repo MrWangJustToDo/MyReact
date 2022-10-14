@@ -100,7 +100,6 @@
         function ListTreeNode(value) {
             this.prev = null;
             this.next = null;
-            this.children = [];
             this.value = value;
         }
         return ListTreeNode;
@@ -108,33 +107,16 @@
     var LinkTreeList = /** @class */ (function () {
         function LinkTreeList() {
             this.rawArray = [];
-            this.scopeRoot = { index: -1, value: new ListTreeNode(false) };
-            this.scopeArray = [];
-            this.scopeLength = 0;
             this.length = 0;
+            this.last = null;
             this.head = null;
             this.foot = null;
         }
-        LinkTreeList.prototype.scopePush = function (scopeItem) {
-            while (this.scopeLength && this.scopeArray[this.scopeLength - 1].index >= scopeItem.index) {
-                this.scopeArray.pop();
-                this.scopeLength--;
-            }
-            if (this.scopeLength) {
-                this.scopeArray[this.scopeLength - 1].value.children.push(scopeItem.value);
-            }
-            else {
-                this.scopeRoot.value.children.push(scopeItem.value);
-            }
-            this.scopeArray.push(scopeItem);
-            this.scopeLength++;
-        };
-        LinkTreeList.prototype.append = function (node, _index) {
+        LinkTreeList.prototype.append = function (node) {
             this.length++;
             this.rawArray.push(node);
             var listNode = new ListTreeNode(node);
             this.push(listNode);
-            this.scopePush({ index: _index, value: listNode });
         };
         LinkTreeList.prototype.unshift = function (node) {
             if (!this.head) {
@@ -212,17 +194,6 @@
             while (node) {
                 action(node.value);
                 node = node.prev;
-            }
-        };
-        LinkTreeList.prototype.reconcile = function (action) {
-            var reconcileScope = function (node) {
-                if (node.children) {
-                    node.children.forEach(reconcileScope);
-                }
-                action(node.value);
-            };
-            if (this.scopeLength) {
-                this.scopeRoot.value.children.forEach(reconcileScope);
             }
         };
         LinkTreeList.prototype.has = function () {
@@ -683,22 +654,27 @@
         }
     };
 
-    var getNext = function (fiber, root) {
+    var getNext = function (fiber, root, listTree) {
         if (fiber.child)
             return fiber.child;
         var nextFiber = fiber;
         while (nextFiber && nextFiber !== root) {
+            listTree.append(nextFiber);
             if (nextFiber.sibling)
                 return nextFiber.sibling;
             nextFiber = nextFiber.parent;
         }
+        if (nextFiber === root) {
+            listTree.append(nextFiber);
+        }
+        return null;
     };
     var generateFiberToList = function (fiber) {
         var listTree = new LinkTreeList();
         var temp = fiber;
-        listTree.append(temp, temp.fiberIndex);
-        while ((temp = getNext(temp, fiber)))
-            listTree.append(temp, temp.fiberIndex);
+        while (temp) {
+            temp = getNext(temp, fiber, listTree);
+        }
         return listTree;
     };
 
@@ -822,7 +798,6 @@
             if (Array.isArray(newChild))
                 return newChild.map(function (v) { return getNewFiberWithUpdate(v, parentFiber); });
             return createFiberNode({
-                fiberIndex: parentFiber.fiberIndex + 1,
                 parent: parentFiber,
                 type: "position",
             }, newChild);
@@ -832,7 +807,7 @@
         if (Array.isArray(newChild)) {
             return newChild.map(function (v) { return getNewFiberWithInitial(v, parentFiber); });
         }
-        return createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber }, newChild);
+        return createFiberNode({ parent: parentFiber }, newChild);
     };
     var transformChildrenFiber = function (parentFiber, children) {
         var isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
@@ -951,7 +926,7 @@
         else {
             // not have cachedFiber, maybe it is a first time to run
             parentFiber.beforeUpdate();
-            var newChildFiber = createFiberNode({ fiberIndex: parentFiber.fiberIndex + 1, parent: parentFiber, type: "position" }, children);
+            var newChildFiber = createFiberNode({ parent: parentFiber, type: "position" }, children);
             parentFiber.return = newChildFiber;
             parentFiber.afterUpdate();
             globalDispatch.pendingDeactivate(parentFiber);
@@ -1544,7 +1519,7 @@
         currentRunningFiber.current = null;
         return children;
     };
-    var nextWorkAsync = function (fiber, topLevelFiber) {
+    var nextWorkAsync = function (fiber, loopController) {
         if (!fiber.mounted)
             return null;
         if (!fiber.invoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
@@ -1565,11 +1540,14 @@
             }
         }
         var nextFiber = fiber;
-        while (nextFiber && nextFiber !== topLevelFiber) {
-            if (nextFiber.sibling) {
+        while (nextFiber && nextFiber !== loopController.getTopLevel()) {
+            loopController.getUpdateList(nextFiber);
+            if (nextFiber.sibling)
                 return nextFiber.sibling;
-            }
             nextFiber = nextFiber.parent;
+        }
+        if (nextFiber === loopController.getTopLevel()) {
+            loopController.getUpdateList(nextFiber);
         }
         return null;
     };
@@ -1833,7 +1811,7 @@
             var fiber = loopController.getNext();
             var _loop_1 = function () {
                 var _fiber = fiber;
-                fiber = safeCall$1$1(function () { return nextWorkAsync(_fiber, loopController.getTopLevel()); });
+                fiber = safeCall$1$1(function () { return nextWorkAsync(_fiber, loopController); });
                 loopController.getUpdateList(_fiber);
                 loopController.setYield(fiber);
             };
@@ -1849,8 +1827,7 @@
         var _loop_1 = function () {
             var fiber = loopController.getNext();
             if (fiber) {
-                var nextFiber = safeCall$2(function () { return nextWorkAsync(fiber, loopController.getTopLevel()); });
-                loopController.getUpdateList(fiber);
+                var nextFiber = safeCall$2(function () { return nextWorkAsync(fiber, loopController); });
                 loopController.setYield(nextFiber);
             }
         };
@@ -2106,8 +2083,8 @@
         unmountList(list);
     };
     var unmountList = function (list) {
-        list.listToHead(function (f) { return f.unmount(); });
-        list.head.value && clearFiberDom(list.head.value);
+        list.listToFoot(function (f) { return f.unmount(); });
+        list.foot.value && clearFiberDom(list.foot.value);
     };
     var unmount = function (fiber) {
         var globalDispatch = fiber.root.globalDispatch;
@@ -2126,17 +2103,16 @@
         }
     };
 
-    var isSVG = function (_fiber, map) {
-        var _isSVG = _fiber.parent ? map[_fiber.parent.uid] : false;
-        if (!_isSVG) {
+    var generateSVGElementType = function (_fiber, map) {
+        var isSVG = _fiber.parent ? map[_fiber.parent.uid] : false;
+        if (!isSVG) {
             var element = _fiber.element;
             if (typeof element === "object" && (element === null || element === void 0 ? void 0 : element.type) === "svg") {
-                _isSVG = true;
+                isSVG = true;
             }
         }
-        _isSVG = Boolean(_isSVG);
-        map[_fiber.uid] = _isSVG;
-        return _isSVG;
+        map[_fiber.uid] = isSVG;
+        return isSVG;
     };
     var setRef = function (_fiber) {
         if (_fiber.type & NODE_TYPE.__isPlainNode__) {
@@ -3148,6 +3124,9 @@
         ClientDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
             return processHookNode(_fiber, _hookParams);
         };
+        ClientDispatch.prototype.resolveElementTypeMap = function (_fiber) {
+            generateSVGElementType(_fiber, this.svgTypeMap);
+        };
         ClientDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
             return defaultGetKeepLiveFiber(_fiber, this.keepLiveMap, _element);
         };
@@ -3211,15 +3190,15 @@
                     _fiber.patch & PATCH_TYPE.__pendingContext__ ||
                     _fiber.patch & PATCH_TYPE.__pendingPosition__ ||
                     _fiber.patch & PATCH_TYPE.__pendingDeactivate__) {
-                    _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
+                    _scope.updateFiberList.append(_fiber);
                 }
                 else if (((_a = this.effectMap[_fiber.uid]) === null || _a === void 0 ? void 0 : _a.length) || ((_b = this.unmountMap[_fiber.uid]) === null || _b === void 0 ? void 0 : _b.length) || ((_c = this.layoutEffectMap[_fiber.uid]) === null || _c === void 0 ? void 0 : _c.length)) {
-                    _scope.updateFiberList.append(_fiber, _fiber.fiberIndex);
+                    _scope.updateFiberList.append(_fiber);
                 }
             }
         };
         ClientDispatch.prototype.reconcileCommit = function (_fiber, _hydrate, _parentFiberWithDom) {
-            var _isSVG = isSVG(_fiber, this.svgTypeMap);
+            var _isSVG = this.svgTypeMap[_fiber.uid];
             var _result = safeCallWithFiber$1({
                 fiber: _fiber,
                 action: function () { return create$1(_fiber, _hydrate, _parentFiberWithDom, _isSVG); },
@@ -3253,7 +3232,7 @@
             var _this = this;
             _list.listToFoot(function (_fiber) {
                 if (_fiber.mounted && _fiber.activated) {
-                    var _isSVG_1 = isSVG(_fiber, _this.svgTypeMap);
+                    var _isSVG_1 = _this.svgTypeMap[_fiber.uid];
                     safeCallWithFiber$1({
                         fiber: _fiber,
                         action: function () { return create$1(_fiber, false, _fiber, _isSVG_1); },
@@ -3286,13 +3265,12 @@
                     });
                 }
             });
-            _list.reconcile(function (_fiber) {
+            _list.listToFoot(function (_fiber) {
                 if (_fiber.mounted && _fiber.activated) {
                     safeCallWithFiber$1({
                         fiber: _fiber,
                         action: function () { return layoutEffect(_fiber); },
                     });
-                    // requestAnimationFrame(() => safeCallWithFiber({ fiber: _fiber, action: () => effect(_fiber) }))
                     Promise.resolve().then(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
                 }
             });
@@ -3370,7 +3348,7 @@
         var globalDispatch = new ClientDispatch();
         var globalScope = new DomScope();
         Array.from(container.children).forEach(function (n) { var _a; return (_a = n.remove) === null || _a === void 0 ? void 0 : _a.call(n); });
-        var fiber = new MyReactFiberNodeRoot$2(0, null, element);
+        var fiber = new MyReactFiberNodeRoot$2(null, element);
         fiber.node = container;
         fiber.globalScope = globalScope;
         fiber.globalDispatch = globalDispatch;
@@ -3391,7 +3369,7 @@
         var globalDispatch = new ClientDispatch();
         var globalScope = new DomScope();
         globalScope.isHydrateRender = true;
-        var fiber = new MyReactFiberNodeRoot$1(0, null, element);
+        var fiber = new MyReactFiberNodeRoot$1(null, element);
         fiber.node = container;
         fiber.globalScope = globalScope;
         fiber.globalDispatch = globalDispatch;
@@ -4083,7 +4061,6 @@
             this.keepLiveMap = {};
             this.layoutEffectMap = {};
             this.suspenseMap = {};
-            this.svgTypeMap = {};
             this.contextMap = {};
             this.unmountMap = {};
             this.eventMap = {};
@@ -4094,6 +4071,8 @@
             return false;
         };
         ServerDispatch.prototype.resolveRef = function (_fiber) {
+        };
+        ServerDispatch.prototype.resolveElementTypeMap = function (_fiber) {
         };
         ServerDispatch.prototype.resolveKeepLive = function (_fiber, _element) {
             return null;
@@ -4200,7 +4179,7 @@
         var globalScope = new DomScope();
         globalScope.isServerRender = true;
         var container = new PlainElement("");
-        var fiber = new MyReactFiberNodeRoot(0, null, element);
+        var fiber = new MyReactFiberNodeRoot(null, element);
         fiber.node = container;
         fiber.globalScope = globalScope;
         fiber.globalDispatch = globalDispatch;

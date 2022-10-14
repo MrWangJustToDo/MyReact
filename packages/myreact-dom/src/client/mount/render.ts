@@ -38,7 +38,7 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   Array.from(container.children).forEach((n) => n.remove?.());
 
-  const fiber = new MyReactFiberNodeRoot(0, null, element);
+  const fiber = new MyReactFiberNodeRoot(null, element);
 
   fiber.node = container;
 

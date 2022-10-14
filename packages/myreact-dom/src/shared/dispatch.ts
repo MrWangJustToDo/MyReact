@@ -3,21 +3,19 @@ import { NODE_TYPE } from "@my-react/react-shared";
 import type { DomElement } from "./dom";
 import type { MyReactFiberNode, MyReactElement } from "@my-react/react";
 
-export const isSVG = (_fiber: MyReactFiberNode, map: Record<string, boolean>) => {
-  let _isSVG = _fiber.parent ? map[_fiber.parent.uid] : false;
+export const generateSVGElementType = (_fiber: MyReactFiberNode, map: Record<string, boolean>) => {
+  let isSVG = _fiber.parent ? map[_fiber.parent.uid] : false;
 
-  if (!_isSVG) {
+  if (!isSVG) {
     const element = _fiber.element;
     if (typeof element === "object" && element?.type === "svg") {
-      _isSVG = true;
+      isSVG = true;
     }
   }
 
-  _isSVG = Boolean(_isSVG);
+  map[_fiber.uid] = isSVG;
 
-  map[_fiber.uid] = _isSVG;
-
-  return _isSVG;
+  return isSVG;
 };
 
 export const setRef = (_fiber: MyReactFiberNode) => {

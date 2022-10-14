@@ -17,7 +17,7 @@ export const hydrate = (element: MyReactElement, container: RenderContainer) => 
 
   globalScope.isHydrateRender = true;
 
-  const fiber = new MyReactFiberNodeRoot(0, null, element);
+  const fiber = new MyReactFiberNodeRoot(null, element);
 
   fiber.node = container;
 

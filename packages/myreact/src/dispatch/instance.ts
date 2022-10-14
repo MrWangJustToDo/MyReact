@@ -37,14 +37,17 @@ export class EmptyDispatch implements FiberDispatch {
   resolveStrictMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
+  resolveStrictValue(_fiber: MyReactFiberNode): boolean {
+    return false;
+  }
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
   resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null {
     return null;
   }
-  resolveStrictValue(_fiber: MyReactFiberNode): boolean {
-    return false;
+  resolveElementTypeMap(_fiber: MyReactFiberNode): void {
+    void 0;
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
     void 0;

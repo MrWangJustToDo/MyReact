@@ -1795,10 +1795,12 @@
             globalDispatch.resolveContextMap(this);
             globalDispatch.resolveStrictMap(this);
         };
+        // TODO change name to `updateParent`
         MyReactFiberNode.prototype.installParent = function (parent) {
+            var _a;
             this.parent = parent;
             this.sibling = null;
-            this.initialParent();
+            (_a = this.parent) === null || _a === void 0 ? void 0 : _a.addChild(this);
         };
         MyReactFiberNode.prototype.addDependence = function (node) {
             if (this.dependence.every(function (n) { return n !== node; }))
@@ -2010,7 +2012,6 @@
     var updateFiberNode = function (_a, nextElement) {
         var fiber = _a.fiber, parent = _a.parent, prevFiber = _a.prevFiber;
         var prevElement = fiber.element;
-        // fiber.applyElement();
         // make sure invoke `installParent` after `installElement`
         fiber.installElement(nextElement);
         fiber.installParent(parent);
@@ -2460,7 +2461,7 @@
     exports.createElement = createElement;
     exports.createReactive = createReactive;
     exports.createRef = createRef;
-    exports["default"] = React;
+    exports.default = React;
     exports.forwardRef = forwardRef;
     exports.isValidElement = isValidElement;
     exports.lazy = lazy;

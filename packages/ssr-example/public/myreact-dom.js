@@ -4206,7 +4206,7 @@
     };
 
     exports.createPortal = createPortal;
-    exports["default"] = ReactDOM;
+    exports.default = ReactDOM;
     exports.findDOMNode = findDOMNode;
     exports.hydrate = hydrate;
     exports.render = render;

@@ -8,6 +8,8 @@ import type { RollupOptions } from "rollup";
 
 const obj: Record<string, { start: boolean; timer: NodeJS.Timeout | null }> = {};
 
+// TODO: use `pm2` to keep live
+
 const watch = (packageName: string, rollupOptions: RollupOptions, mode: string, isUMD: boolean) => {
   rollupOptions.watch = {
     buildDelay: 300,

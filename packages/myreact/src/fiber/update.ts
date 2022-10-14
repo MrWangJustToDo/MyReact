@@ -19,8 +19,6 @@ export const updateFiberNode = (
 ) => {
   const prevElement = fiber.element;
 
-  // fiber.applyElement();
-
   // make sure invoke `installParent` after `installElement`
   fiber.installElement(nextElement);
 

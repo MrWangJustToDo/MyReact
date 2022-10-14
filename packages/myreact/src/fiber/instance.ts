@@ -104,10 +104,11 @@ export class MyReactFiberNode {
     globalDispatch.resolveStrictMap(this);
   }
 
+  // TODO change name to `updateParent`
   installParent(parent: MyReactFiberNode) {
     this.parent = parent;
     this.sibling = null;
-    this.initialParent();
+    this.parent?.addChild(this);
   }
 
   addDependence(node: MyReactInternalInstance) {

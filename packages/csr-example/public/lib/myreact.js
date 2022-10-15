@@ -1777,7 +1777,7 @@
             this.initialPops();
         }
         MyReactFiberNode.prototype.addChild = function (child) {
-            var last = this.children.at(-1);
+            var last = this.children[this.children.length - 1];
             if (last) {
                 last.sibling = child;
             }
@@ -1953,7 +1953,7 @@
         }
     };
     var checkFiberHook = function (fiber) {
-        var hookNode = fiber.hookNodes.at(-1);
+        var hookNode = fiber.hookNodes[fiber.hookNodes.length - 1];
         if (hookNode.hookType === HOOK_TYPE.useMemo ||
             hookNode.hookType === HOOK_TYPE.useEffect ||
             hookNode.hookType === HOOK_TYPE.useCallback ||

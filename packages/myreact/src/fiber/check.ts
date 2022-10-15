@@ -53,7 +53,7 @@ export const checkFiberElement = (fiber: MyReactFiberNode) => {
 };
 
 export const checkFiberHook = (fiber: MyReactFiberNode) => {
-  const hookNode = fiber.hookNodes.at(-1) as MyReactHookNode;
+  const hookNode = fiber.hookNodes[fiber.hookNodes.length - 1] as MyReactHookNode;
   if (
     hookNode.hookType === HOOK_TYPE.useMemo ||
     hookNode.hookType === HOOK_TYPE.useEffect ||

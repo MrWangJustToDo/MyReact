@@ -27,8 +27,6 @@ export const updateAllAsync = (updateFiberController: ReconcilerLoopController, 
   globalLoop.current = false;
 
   Promise.resolve().then(() => {
-    if (updateFiberController.hasNext()) {
-      updateAllAsync(updateFiberController, reconcileUpdate);
-    }
+    if (updateFiberController.hasNext()) updateAllAsync(updateFiberController, reconcileUpdate);
   });
 };

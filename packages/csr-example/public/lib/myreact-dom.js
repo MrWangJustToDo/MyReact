@@ -2247,9 +2247,8 @@
         updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate, reconcileUpdate);
         globalLoop$1.current = false;
         Promise.resolve().then(function () {
-            if (updateFiberController.hasNext()) {
+            if (updateFiberController.hasNext())
                 updateAllAsync(updateFiberController, reconcileUpdate);
-            }
         });
     };
 

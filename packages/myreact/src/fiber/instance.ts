@@ -86,7 +86,7 @@ export class MyReactFiberNode {
   }
 
   addChild(child: MyReactFiberNode) {
-    const last = this.children.at(-1);
+    const last = this.children[this.children.length - 1];
     if (last) {
       last.sibling = child;
     } else {

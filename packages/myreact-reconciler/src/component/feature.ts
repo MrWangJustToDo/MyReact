@@ -241,36 +241,57 @@ const processComponentDidUpdateOnUpdate = (
 
 export const classComponentMount = (fiber: MyReactFiberNode) => {
   const devInstance = processComponentInstanceOnMount(fiber);
+
   processComponentStateFromProps(fiber, devInstance);
+
   const children = processComponentRenderOnMountAndUpdate(fiber, devInstance);
+
   processComponentDidMountOnMount(fiber, devInstance);
+
   return children;
 };
 
 export const classComponentActive = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
+
   processComponentPropsAndContextOnActive(fiber);
+
   const children = processComponentRenderOnMountAndUpdate(fiber);
+
   processComponentDidMountOnMount(fiber);
+
   return children;
 };
 
 export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
+
   processComponentStateFromProps(fiber);
+
   fiber.root.globalDispatch.resolveComponentQueue(fiber);
+
   const typedInstance = fiber.instance as MixinMyReactComponentType;
+
   const newElement = fiber.element;
+
   const { newState, isForce, callback } = typedInstance._result;
+
   // maybe could improve here
   typedInstance._result = DEFAULT_RESULT;
+
   const baseState = typedInstance.state;
+
   const baseProps = typedInstance.props;
+
   // const baseContext = typedInstance.context;
   const nextState = Object.assign({}, baseState, newState);
+
   const nextProps = Object.assign({}, typeof newElement === "object" ? newElement?.["props"] : {});
+
   const nextContext = processComponentContextOnUpdate(fiber);
+
   let shouldUpdate = isForce;
+
   if (!shouldUpdate) {
     shouldUpdate = processComponentShouldUpdateOnUpdate(fiber, {
       nextState,
@@ -278,18 +299,25 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
       nextContext,
     });
   }
+
   typedInstance.state = nextState;
+
   typedInstance.props = nextProps;
+
   typedInstance.context = nextContext;
+
   if (shouldUpdate) {
     const children = processComponentRenderOnMountAndUpdate(fiber);
+
     const snapshot = processComponentGetSnapshotOnUpdate(fiber, { baseState, baseProps });
+
     processComponentDidUpdateOnUpdate(fiber, {
       snapshot,
       baseProps,
       baseState,
       callback,
     });
+
     return { updated: true, children };
   } else {
     return { updated: false };

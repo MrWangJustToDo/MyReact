@@ -71,7 +71,10 @@ const processReactivePropsAndContextOnActiveAndUpdate = (fiber: MyReactFiberNode
 
   const typedInstance = fiber.instance as MyReactReactiveInstanceType;
 
-  const typedType = typedElement.type as ReturnType<typeof createReactive>;
+  const typedType =
+    fiber.type & NODE_TYPE.__isMemo__
+      ? ((typedElement.type as ReturnType<typeof memo>)["render"] as ReturnType<typeof createReactive>)
+      : (typedElement.type as ReturnType<typeof createReactive>);
 
   const ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
 

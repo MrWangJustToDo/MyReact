@@ -1210,7 +1210,9 @@
         var typedElement = fiber.element;
         var globalDispatch = fiber.root.globalDispatch;
         var typedInstance = fiber.instance;
-        var typedType = typedElement.type;
+        var typedType = fiber.type & NODE_TYPE.__isMemo__
+            ? typedElement.type["render"]
+            : typedElement.type;
         var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
         var context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
         var props = Object.assign({}, typedElement.props);

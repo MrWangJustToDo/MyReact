@@ -154,9 +154,6 @@
     var globalReadOnlyMap = new WeakMap();
     var globalShallowReactiveMap = new WeakMap();
     var globalShallowReadOnlyMap = new WeakMap();
-    {
-        globalThis.__globalDeps__ = globalDepsMap;
-    }
 
     var createRef$1 = function (value) {
         return { current: value };
@@ -2263,10 +2260,10 @@
         var _a;
         return _a = {},
             _a["$$typeof"] = My_React_Reactive,
-            _a.name = typeof props === "function" ? props.name : props.name,
-            _a.setup = typeof props === "function" ? props : props.setup,
-            _a.render = typeof props === "function" ? null : props.render,
-            _a.contextType = typeof props === "function" ? null : props.contextType,
+            _a.name = typeof props === "function" ? props.name : props === null || props === void 0 ? void 0 : props.name,
+            _a.setup = typeof props === "function" ? props : props === null || props === void 0 ? void 0 : props.setup,
+            _a.render = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.render,
+            _a.contextType = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.contextType,
             _a;
     }
     // hook api like `Vue`

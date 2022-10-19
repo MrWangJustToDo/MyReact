@@ -9,7 +9,3 @@ export const globalReadOnlyMap = new WeakMap<Record<string, unknown>, Record<str
 export const globalShallowReactiveMap = new WeakMap<Record<string, unknown>, Record<string, unknown>>();
 
 export const globalShallowReadOnlyMap = new WeakMap<Record<string, unknown>, Record<string, unknown>>();
-
-if (__DEV__) {
-  (globalThis as any).__globalDeps__ = globalDepsMap;
-}

@@ -1280,7 +1280,7 @@
         return children;
     };
 
-    var currentHookDeepIndex = react.__my_react_internal__.currentHookDeepIndex, currentFunctionFiber = react.__my_react_internal__.currentFunctionFiber, currentRunningFiber = react.__my_react_internal__.currentRunningFiber, currentComponentFiber = react.__my_react_internal__.currentComponentFiber;
+    var currentHookDeepIndex = react.__my_react_internal__.currentHookDeepIndex, currentFunctionFiber = react.__my_react_internal__.currentFunctionFiber, currentRunningFiber$2 = react.__my_react_internal__.currentRunningFiber, currentComponentFiber = react.__my_react_internal__.currentComponentFiber;
     var nextWorkCommon = function (fiber, children) {
         var childrenFiber = transformChildrenFiber(fiber, children);
         {
@@ -1506,7 +1506,7 @@
             return [];
         if (fiber.invoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)))
             return [];
-        currentRunningFiber.current = fiber;
+        currentRunningFiber$2.current = fiber;
         var children = [];
         if (fiber.type & NODE_TYPE.__isDynamicNode__)
             children = nextWorkComponent(fiber);
@@ -1518,14 +1518,14 @@
             children = nextWorkNormal(fiber);
         fiber.invoked = true;
         fiber.activated = true;
-        currentRunningFiber.current = null;
+        currentRunningFiber$2.current = null;
         return children;
     };
     var nextWorkAsync = function (fiber, loopController) {
         if (!fiber.mounted)
             return null;
         if (!fiber.invoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
-            currentRunningFiber.current = fiber;
+            currentRunningFiber$2.current = fiber;
             if (fiber.type & NODE_TYPE.__isDynamicNode__)
                 nextWorkComponent(fiber);
             else if (fiber.type & NODE_TYPE.__isObjectNode__)
@@ -1536,7 +1536,7 @@
                 nextWorkNormal(fiber);
             fiber.invoked = true;
             fiber.activated = true;
-            currentRunningFiber.current = null;
+            currentRunningFiber$2.current = null;
             if (fiber.children.length) {
                 return fiber.child;
             }
@@ -2004,6 +2004,8 @@
         return DomScope;
     }());
 
+    var currentRunningFiber$1 = react.__my_react_internal__.currentRunningFiber;
+    var getFiberTree = react.__my_react_shared__.getFiberTree;
     var debugWithDOM = function (fiber) {
         if (fiber.node) {
             var debugDOM = fiber.node;
@@ -2011,6 +2013,30 @@
             debugDOM["__element__"] = fiber.element;
             debugDOM["__children__"] = fiber.children;
         }
+    };
+    var originalConsoleWarn = console.warn;
+    var originalConsoleError = console.error;
+    var setScopeLog = function () {
+        console.warn = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            var fiberTree = getFiberTree(currentRunningFiber$1.current);
+            originalConsoleWarn.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
+        };
+        console.error = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            var fiberTree = getFiberTree(currentRunningFiber$1.current);
+            originalConsoleError.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
+        };
+    };
+    var resetScopeLog = function () {
+        console.warn = originalConsoleWarn;
+        console.error = originalConsoleError;
     };
 
     var createPortal = function (element, container) {
@@ -2023,12 +2049,17 @@
     };
 
     var globalLoop$2 = react.__my_react_internal__.globalLoop;
-    var safeCall$1 = react.__my_react_shared__.safeCall;
+    var safeCall$1 = react.__my_react_shared__.safeCall, enableStrictLifeCycle$1 = react.__my_react_shared__.enableStrictLifeCycle;
     var startRender = function (fiber, hydrate) {
         if (hydrate === void 0) { hydrate = false; }
         globalLoop$2.current = true;
+        setScopeLog();
         safeCall$1(function () { return mountLoopSync(fiber); });
         reconcileMount(fiber, hydrate);
+        if (enableStrictLifeCycle$1.current) {
+            console.warn("react-18 like lifecycle have been enabled!");
+        }
+        resetScopeLog();
         fiber.root.globalScope.isAppMounted = true;
         globalLoop$2.current = false;
     };
@@ -2237,7 +2268,9 @@
     var globalLoop$1 = react.__my_react_internal__.globalLoop;
     var updateAllSync = function (updateFiberController, reconcileUpdate) {
         globalLoop$1.current = true;
+        setScopeLog();
         updateLoopSync(updateFiberController, reconcileUpdate);
+        resetScopeLog();
         globalLoop$1.current = false;
         Promise.resolve().then(function () {
             if (updateFiberController.hasNext())
@@ -2246,7 +2279,9 @@
     };
     var updateAllAsync = function (updateFiberController, reconcileUpdate) {
         globalLoop$1.current = true;
+        setScopeLog();
         updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate, reconcileUpdate);
+        resetScopeLog();
         globalLoop$1.current = false;
         Promise.resolve().then(function () {
             if (updateFiberController.hasNext())
@@ -2526,19 +2561,24 @@
         }
     };
 
+    var currentRunningFiber = react.__my_react_internal__.currentRunningFiber;
     var layoutEffect = function (fiber) {
         var globalDispatch = fiber.root.globalDispatch;
         var layoutEffectMap = globalDispatch.layoutEffectMap;
         var allLayoutEffect = layoutEffectMap[fiber.uid] || [];
         layoutEffectMap[fiber.uid] = [];
+        currentRunningFiber.current = fiber;
         allLayoutEffect.forEach(function (layoutEffect) { return layoutEffect.call(null); });
+        currentRunningFiber.current = null;
     };
     var effect = function (fiber) {
         var globalDispatch = fiber.root.globalDispatch;
         var effectMap = globalDispatch.effectMap;
         var allEffect = effectMap[fiber.uid] || [];
         effectMap[fiber.uid] = [];
+        currentRunningFiber.current = fiber;
         allEffect.forEach(function (effect) { return effect.call(null); });
+        currentRunningFiber.current = null;
     };
 
     var fallback = function (fiber) {

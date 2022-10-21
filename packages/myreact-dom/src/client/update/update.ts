@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { updateLoopAsync, updateLoopSync } from "@my-react/react-reconciler";
 
-import { shouldPauseAsyncUpdate } from "@my-react-dom-shared";
+import { resetScopeLog, setScopeLog, shouldPauseAsyncUpdate } from "@my-react-dom-shared";
 
 import type { ReconcilerLoopController } from "@my-react/react-reconciler";
 
@@ -10,7 +10,11 @@ const { globalLoop } = __my_react_internal__;
 export const updateAllSync = (updateFiberController: ReconcilerLoopController, reconcileUpdate: () => void) => {
   globalLoop.current = true;
 
+  setScopeLog();
+
   updateLoopSync(updateFiberController, reconcileUpdate);
+
+  resetScopeLog();
 
   globalLoop.current = false;
 
@@ -22,7 +26,11 @@ export const updateAllSync = (updateFiberController: ReconcilerLoopController, r
 export const updateAllAsync = (updateFiberController: ReconcilerLoopController, reconcileUpdate: () => void) => {
   globalLoop.current = true;
 
+  setScopeLog();
+
   updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate, reconcileUpdate);
+
+  resetScopeLog();
 
   globalLoop.current = false;
 

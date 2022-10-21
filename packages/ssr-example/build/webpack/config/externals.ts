@@ -7,7 +7,20 @@ export const externalsConfig = ({ env }: SafeGenerateActionProps) =>
     ? [
         nodeExternals({
           // load non-javascript files with extensions, presumably via loaders
-          allowlist: [/\.(?!(?:jsx?|json)$).{1,5}$/i, "webpack/hot/poll?1000", "lodash-es"],
+          allowlist: [
+            /\.(?!(?:jsx?|json)$).{1,5}$/i,
+            "webpack/hot/poll?1000",
+            "lodash-es",
+            // "react",
+            // "react-dom",
+            // "react-dom/server",
+            // "@my-react/react",
+            // "@my-react/react-shared",
+            // "@my-react/react-reactive",
+            // "@my-react/react-reconciler",
+            // "@my-react/react-dom",
+            // "@my-react/react-jsx",
+          ],
         }),
       ]
     : [{ react: "React" }, { "react-dom": "ReactDOM" }];

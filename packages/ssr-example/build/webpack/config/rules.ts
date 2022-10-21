@@ -37,12 +37,14 @@ const jsRules = ({ env, isDEV }: SafeGenerateActionProps): RuleSetRule => {
       {
         loader: "babel-loader",
         options: {
+          // https://github.com/babel/babel/issues/8900
+          sourceType: "unambiguous",
           cacheDirectory: true,
           configFile: resolve(process.cwd(), "babel.config.js"),
           plugins:
             env === "client"
               ? [
-                  isDEV && "react-refresh/babel",
+                  isDEV && process.env.REACT === "react" && "react-refresh/babel",
                   [
                     "import",
                     {

@@ -8,6 +8,8 @@ const { safeCall } = __my_react_shared__;
 
 const version = __VERSION__;
 
+const flushSync = safeCall;
+
 const unstable_batchedUpdates = safeCall;
 
 const ReactDOM = {
@@ -16,9 +18,10 @@ const ReactDOM = {
   findDOMNode,
   createPortal,
   renderToString,
+  flushSync,
   unmountComponentAtNode,
   unstable_batchedUpdates,
   version,
 };
 
-export { render, hydrate, findDOMNode, createPortal, renderToString, unmountComponentAtNode, unstable_batchedUpdates, version, ReactDOM as default };
+export { render, hydrate, findDOMNode, createPortal, renderToString, unmountComponentAtNode, flushSync, unstable_batchedUpdates, version, ReactDOM as default };

@@ -2927,18 +2927,21 @@
                     _this.__pendingUpdate__ = [];
                     var allWrapper = [];
                     allFiber.forEach(function (f) {
-                        var _a, _b;
-                        var wrapperDom = _this.getHighLight();
-                        allWrapper.push(wrapperDom);
                         f.type & NODE_TYPE.__isTextNode__ ? _this.range.selectNodeContents(f.node) : _this.range.selectNode(f.node);
                         var rect = _this.range.getBoundingClientRect();
-                        var left = rect.left + (((_a = document.scrollingElement) === null || _a === void 0 ? void 0 : _a.scrollLeft) || 0);
-                        var top = rect.top + (((_b = document.scrollingElement) === null || _b === void 0 ? void 0 : _b.scrollTop) || 0);
-                        var width = rect.width + 4;
-                        var height = rect.height + 4;
-                        var positionLeft = left - 2;
-                        var positionTop = top - 2;
-                        wrapperDom.style.cssText = "\n          position: absolute;\n          width: ".concat(width, "px;\n          height: ").concat(height, "px;\n          left: ").concat(positionLeft, "px;\n          top: ").concat(positionTop, "px;\n          pointer-events: none;\n          box-shadow: 1px 1px 1px red, -1px -1px 1px red;\n          ");
+                        if (rect.top >= 0 &&
+                            rect.left >= 0 &&
+                            rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+                            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)) {
+                            // in the viewport
+                            var wrapperDom = _this.getHighLight();
+                            allWrapper.push(wrapperDom);
+                            var width = rect.width + 4;
+                            var height = rect.height + 4;
+                            var positionLeft = rect.left - 2;
+                            var positionTop = rect.top - 2;
+                            wrapperDom.style.cssText = "\n          position: absolute;\n          width: ".concat(width, "px;\n          height: ").concat(height, "px;\n          left: ").concat(positionLeft, "px;\n          top: ").concat(positionTop, "px;\n          pointer-events: none;\n          box-shadow: 1px 1px 1px red, -1px -1px 1px red;\n          ");
+                        }
                     });
                     setTimeout(function () {
                         allWrapper.forEach(function (wrapperDom) {
@@ -2951,7 +2954,7 @@
             };
             this.container = document.createElement("div");
             this.container.setAttribute("debug_highlight", "MyReact");
-            this.container.style.cssText = "\n      position: absolute;\n      z-index: 999999;\n      width: 100%;\n      left: 0;\n      top: 0;\n      pointer-events: none;\n      ";
+            this.container.style.cssText = "\n      position: fixed;\n      z-index: 99999999;\n      width: 100%;\n      left: 0;\n      top: 0;\n      pointer-events: none;\n      ";
             document.body.append(this.container);
         }
         /**
@@ -4194,6 +4197,7 @@
 
     var safeCall = react.__my_react_shared__.safeCall;
     var version = "0.0.2";
+    var flushSync = safeCall;
     var unstable_batchedUpdates = safeCall;
     var ReactDOM = {
         render: render,
@@ -4201,6 +4205,7 @@
         findDOMNode: findDOMNode,
         createPortal: createPortal,
         renderToString: renderToString,
+        flushSync: flushSync,
         unmountComponentAtNode: unmountComponentAtNode,
         unstable_batchedUpdates: unstable_batchedUpdates,
         version: version,
@@ -4209,6 +4214,7 @@
     exports.createPortal = createPortal;
     exports.default = ReactDOM;
     exports.findDOMNode = findDOMNode;
+    exports.flushSync = flushSync;
     exports.hydrate = hydrate;
     exports.render = render;
     exports.renderToString = renderToString;

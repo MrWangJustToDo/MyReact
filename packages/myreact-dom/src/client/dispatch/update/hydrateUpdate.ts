@@ -1,14 +1,12 @@
-import { __my_react_shared__ } from "@my-react/react";
+
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { debugWithDOM, isEvent, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
+import { debugWithDOM, isEvent, isProperty, isStyle, IS_UNIT_LESS_NUMBER, log } from "@my-react-dom-shared";
 
 import { addEventListener } from "../event";
 
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
-
-const log = __my_react_shared__.log;
 
 const domPropsHydrate = (fiber: MyReactFiberNode, node: DomElement | DomNode, isSVG: boolean) => {
   if (fiber.type & NODE_TYPE.__isTextNode__) {

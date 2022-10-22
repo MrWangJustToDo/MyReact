@@ -1,14 +1,14 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { mountLoopSync } from "@my-react/react-reconciler";
 
-import { resetScopeLog, setScopeLog } from "./debug";
+import { resetScopeLog, safeCall, setScopeLog } from "./debug";
 import { reconcileMount } from "./reconcileMount";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
 const { globalLoop } = __my_react_internal__;
 
-const { safeCall, enableStrictLifeCycle } = __my_react_shared__;
+const { enableStrictLifeCycle } = __my_react_shared__;
 
 export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
   globalLoop.current = true;

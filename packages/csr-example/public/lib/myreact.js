@@ -911,72 +911,6 @@
         return { current: value };
     };
 
-    /******************************************************************************
-    Copyright (c) Microsoft Corporation.
-
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
-
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
-    ***************************************************************************** */
-    /* global Reflect, Promise */
-
-    var extendStatics = function(d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-
-    function __extends(d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    }
-
-    function __rest(s, e) {
-        var t = {};
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-            t[p] = s[p];
-        if (s != null && typeof Object.getOwnPropertySymbols === "function")
-            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                    t[p[i]] = s[p[i]];
-            }
-        return t;
-    }
-
-    function __spreadArray(to, from, pack) {
-        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-            if (ar || !(i in from)) {
-                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-                ar[i] = from[i];
-            }
-        }
-        return to.concat(ar || Array.prototype.slice.call(from));
-    }
-
-    var globalLoop = createRef(false);
-    var currentRunningFiber = createRef(null);
-    var currentComponentFiber = createRef(null);
-    var currentFunctionFiber = createRef(null);
-    var currentReactiveInstance = createRef(null);
-    var currentHookDeepIndex = createRef(0);
-    // ==== feature ==== //
-    var enableDebugLog = createRef(false);
-    var enableAsyncUpdate = createRef(true);
-    var enableKeyDiff = createRef(true);
-    // enable react-18 strict lifecycle method
-    var enableStrictLifeCycle = createRef(true);
-
     var getTrackDevLog = function (fiber) {
         {
             var element = fiber.element;
@@ -1107,48 +1041,28 @@
         re += "".padEnd(6) + "^".repeat(30) + "\n";
         return re;
     };
-    var cache = {};
-    var log = function (_a) {
-        var fiber = _a.fiber, message = _a.message, _b = _a.level, level = _b === void 0 ? "warn" : _b, _c = _a.triggerOnce, triggerOnce = _c === void 0 ? false : _c;
-        var tree = getFiberTree(fiber || currentRunningFiber.current);
-        if (triggerOnce) {
-            if (cache[tree])
-                return;
-            cache[tree] = true;
+
+    var EmptyPlatform = /** @class */ (function () {
+        function EmptyPlatform() {
+            this.name = "empty";
+            this.log = function () { return void 0; };
         }
-        console[level]("[".concat(level, "]:"), "\n-----------------------------------------\n", "".concat(typeof message === "string" ? message : message.stack || message.message), "\n-----------------------------------------\n", "Render Tree:", tree);
-    };
-    var safeCall = function (action) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        try {
-            return action.call.apply(action, __spreadArray([null], args, false));
-        }
-        catch (e) {
-            log({ message: e, level: "error" });
-            var fiber = currentRunningFiber.current;
-            if (fiber)
-                fiber.root.globalScope.isAppCrash = true;
-            throw new Error(e.message);
-        }
-    };
-    var safeCallWithFiber = function (_a) {
-        var action = _a.action, fiber = _a.fiber;
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        try {
-            return action.call.apply(action, __spreadArray([null], args, false));
-        }
-        catch (e) {
-            log({ message: e, level: "error", fiber: fiber });
-            fiber.root.globalScope.isAppCrash = true;
-            throw new Error(e.message);
-        }
-    };
+        return EmptyPlatform;
+    }());
+
+    var globalLoop = createRef(false);
+    var currentRunningFiber = createRef(null);
+    var currentComponentFiber = createRef(null);
+    var currentFunctionFiber = createRef(null);
+    var currentReactiveInstance = createRef(null);
+    var currentHookDeepIndex = createRef(0);
+    var renderPlatform = createRef(new EmptyPlatform());
+    // ==== feature ==== //
+    var enableDebugLog = createRef(false);
+    var enableAsyncUpdate = createRef(true);
+    var enableKeyDiff = createRef(true);
+    // enable react-18 strict lifecycle method
+    var enableStrictLifeCycle = createRef(true);
 
     var My_React_Element = Symbol.for("react.element");
     var My_React_Memo = Symbol.for("react.memo");
@@ -1232,7 +1146,7 @@
             }
             else {
                 {
-                    log({ message: "invalid element type ".concat(String(rawType)), level: "warn", triggerOnce: true });
+                    renderPlatform.current.log({ message: "invalid element type ".concat(String(rawType)), level: "warn", triggerOnce: true });
                 }
                 nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
             }
@@ -1240,7 +1154,7 @@
         else {
             if (typeof element === "object" && element !== null) {
                 {
-                    log({ message: "invalid object element type ".concat(JSON.stringify(element)), level: "warn", triggerOnce: true });
+                    renderPlatform.current.log({ message: "invalid object element type ".concat(JSON.stringify(element)), level: "warn", triggerOnce: true });
                 }
                 nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
             }
@@ -1255,8 +1169,8 @@
     }
     var checkValidKey = function (children) {
         var obj = {};
-        var onceWarnDuplicate = once(log);
-        var onceWarnUndefined = once(log);
+        var onceWarnDuplicate = once(renderPlatform.current.log);
+        var onceWarnUndefined = once(renderPlatform.current.log);
         var validElement = children.filter(function (c) { return isValidElement(c); });
         if (validElement.length > 1) {
             validElement.forEach(function (c) {
@@ -1298,6 +1212,59 @@
                 children._store["validKey"] = true;
         }
     };
+
+    /******************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+    /* global Reflect, Promise */
+
+    var extendStatics = function(d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+
+    function __extends(d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    }
+
+    function __rest(s, e) {
+        var t = {};
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+            t[p] = s[p];
+        if (s != null && typeof Object.getOwnPropertySymbols === "function")
+            for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+                if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                    t[p[i]] = s[p[i]];
+            }
+        return t;
+    }
+
+    function __spreadArray(to, from, pack) {
+        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+            if (ar || !(i in from)) {
+                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+                ar[i] = from[i];
+            }
+        }
+        return to.concat(ar || Array.prototype.slice.call(from));
+    }
 
     var createMyReactElement = function (_a) {
         var _b;
@@ -2353,8 +2320,6 @@
     var PureComponent = MyReactPureComponent;
     var version = "0.0.2";
     var __my_react_shared__ = {
-        log: log,
-        safeCall: safeCall,
         getHookTree: getHookTree,
         getFiberTree: getFiberTree,
         createFiberNode: createFiberNode,
@@ -2362,7 +2327,6 @@
         initialFiberNode: initialFiberNode,
         createHookNode: createHookNode,
         getTypeFromElement: getTypeFromElement,
-        safeCallWithFiber: safeCallWithFiber,
         enableAsyncUpdate: enableAsyncUpdate,
         enableKeyDiff: enableKeyDiff,
         enableStrictLifeCycle: enableStrictLifeCycle,
@@ -2373,6 +2337,7 @@
         MyReactFiberNodeRoot: MyReactFiberNodeRoot,
         MyReactInternalInstance: MyReactInternalInstance,
         globalLoop: globalLoop,
+        renderPlatform: renderPlatform,
         currentRunningFiber: currentRunningFiber,
         currentHookDeepIndex: currentHookDeepIndex,
         currentFunctionFiber: currentFunctionFiber,

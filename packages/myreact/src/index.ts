@@ -39,18 +39,16 @@ import {
 import { MyReactInternalInstance } from "./internal";
 import { createReactive, MyReactReactiveInstance, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated } from "./reactive";
 import {
-  log,
   getFiberTree,
   getHookTree,
   createRef,
+  renderPlatform,
   currentRunningFiber,
   currentFunctionFiber,
   currentComponentFiber,
   currentHookDeepIndex,
   currentReactiveInstance,
   globalLoop,
-  safeCall,
-  safeCallWithFiber,
   enableAsyncUpdate,
   enableKeyDiff,
   enableStrictLifeCycle,
@@ -63,8 +61,6 @@ const PureComponent = MyReactPureComponent;
 const version = __VERSION__;
 
 const __my_react_shared__ = {
-  log,
-  safeCall,
   getHookTree,
   getFiberTree,
   createFiberNode,
@@ -72,7 +68,6 @@ const __my_react_shared__ = {
   initialFiberNode,
   createHookNode,
   getTypeFromElement,
-  safeCallWithFiber,
   enableAsyncUpdate,
   enableKeyDiff,
   enableStrictLifeCycle,
@@ -84,6 +79,7 @@ const __my_react_internal__ = {
   MyReactFiberNodeRoot,
   MyReactInternalInstance,
   globalLoop,
+  renderPlatform,
   currentRunningFiber,
   currentHookDeepIndex,
   currentFunctionFiber,
@@ -190,6 +186,8 @@ export {
   version,
   React as default,
 };
+
+export type { RenderPlatform } from "./platform";
 
 export type { FiberDispatch } from "./dispatch";
 

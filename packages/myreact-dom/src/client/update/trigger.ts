@@ -23,7 +23,7 @@ const updateEntry = (globalDispatch: FiberDispatch, globalScope: DomScope) => {
   }
 };
 
-const asyncUpdate = (globalDispatch: FiberDispatch, globalScope: DomScope) => Promise.resolve().then(() => updateEntry(globalDispatch, globalScope));
+const asyncUpdate = (globalDispatch: FiberDispatch, globalScope: DomScope) => setTimeout(() => updateEntry(globalDispatch, globalScope));
 
 export const triggerUpdate = (fiber: MyReactFiberNode) => {
   const globalScope = fiber.root.globalScope as DomScope;

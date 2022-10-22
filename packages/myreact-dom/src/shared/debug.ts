@@ -34,3 +34,54 @@ export const resetScopeLog = () => {
   console.warn = originalConsoleWarn;
   console.error = originalConsoleError;
 };
+
+const cache: Record<string, boolean> = {};
+
+type LogProps = {
+  message: string | Error;
+  fiber?: MyReactFiberNode;
+  triggerOnce?: boolean;
+  level?: "warn" | "error";
+};
+
+export const log = ({ fiber, message, level = "warn", triggerOnce = false }: LogProps) => {
+  const tree = getFiberTree(fiber || currentRunningFiber.current);
+  if (triggerOnce) {
+    if (cache[tree]) return;
+    cache[tree] = true;
+  }
+  console[level](
+    `[${level}]:`,
+    "\n-----------------------------------------\n",
+    `${typeof message === "string" ? message : message.stack || message.message}`,
+    "\n-----------------------------------------\n",
+    "Render Tree:",
+    tree
+  );
+};
+
+export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T) => {
+  try {
+    return action.call(null, ...args);
+  } catch (e) {
+    log({ message: e as Error, level: "error" });
+
+    const fiber = currentRunningFiber.current;
+
+    if (fiber) fiber.root.globalScope.isAppCrash = true;
+
+    throw new Error((e as Error).message);
+  }
+};
+
+export const safeCallWithFiber = <T extends any[] = any[], K = any>({ action, fiber }: { action: (...args: T) => K; fiber: MyReactFiberNode }, ...args: T) => {
+  try {
+    return action.call(null, ...args);
+  } catch (e) {
+    log({ message: e as Error, level: "error", fiber });
+
+    fiber.root.globalScope.isAppCrash = true;
+
+    throw new Error((e as Error).message);
+  }
+};

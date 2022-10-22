@@ -42,9 +42,7 @@ export const generateUpdateControllerWithDispatch = (globalDispatch: FiberDispat
       return null;
     },
 
-    getUpdateList: (fiber: MyReactFiberNode) => {
-      globalDispatch.generateUpdateList(fiber, globalScope);
-    },
+    getUpdateList: (fiber: MyReactFiberNode) => globalDispatch.generateUpdateList(fiber, globalScope),
 
     hasNext: () => {
       if (globalScope.isAppCrash) return false;

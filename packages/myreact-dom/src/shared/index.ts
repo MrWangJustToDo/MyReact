@@ -7,6 +7,7 @@ export * from "./portal";
 export * from "./render";
 export * from "./findDom";
 export * from "./unmount";
+export * from "./platform";
 export * from "./dispatch";
 export * from "./shouldPause";
 export * from "./numberStyle";

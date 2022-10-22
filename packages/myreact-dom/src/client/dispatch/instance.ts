@@ -14,7 +14,7 @@ import {
 } from "@my-react/react-reconciler";
 import { LinkTreeList, NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { generateSVGElementType, setRef } from "@my-react-dom-shared";
+import { generateSVGElementType, safeCallWithFiber, setRef } from "@my-react-dom-shared";
 
 import { triggerUpdate } from "../update";
 
@@ -30,7 +30,7 @@ import { update } from "./update";
 
 import type { MyReactFiberNode, FiberDispatch, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode, RenderScope } from "@my-react/react";
 
-const { safeCallWithFiber, enableStrictLifeCycle } = __my_react_shared__;
+const { enableStrictLifeCycle } = __my_react_shared__;
 
 export class ClientDispatch implements FiberDispatch {
   strictMap: Record<string, boolean> = {};

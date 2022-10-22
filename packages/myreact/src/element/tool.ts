@@ -1,6 +1,6 @@
 import { NODE_TYPE, once } from "@my-react/react-shared";
 
-import { log } from "../share";
+import { renderPlatform } from "../share";
 
 import {
   My_React_Consumer,
@@ -89,14 +89,14 @@ export function getTypeFromElement(element: MyReactElementNode) {
       nodeTypeSymbol |= NODE_TYPE.__isPlainNode__;
     } else {
       if (__DEV__) {
-        log({ message: `invalid element type ${String(rawType)}`, level: "warn", triggerOnce: true });
+        renderPlatform.current.log({ message: `invalid element type ${String(rawType)}`, level: "warn", triggerOnce: true });
       }
       nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
     }
   } else {
     if (typeof element === "object" && element !== null) {
       if (__DEV__) {
-        log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
+        renderPlatform.current.log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
       }
       nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
     } else if (element === null || element === undefined || typeof element === "boolean") {
@@ -111,8 +111,8 @@ export function getTypeFromElement(element: MyReactElementNode) {
 
 export const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
-  const onceWarnDuplicate = once(log);
-  const onceWarnUndefined = once(log);
+  const onceWarnDuplicate = once(renderPlatform.current.log);
+  const onceWarnUndefined = once(renderPlatform.current.log);
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
   if (validElement.length > 1) {
     validElement.forEach((c) => {

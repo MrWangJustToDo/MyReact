@@ -1,13 +1,13 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { DomScope, startRender } from "../shared";
+import { DomPlatform, DomScope, startRender } from "../shared";
 
 import { ServerDispatch } from "./dispatch";
 import { PlainElement } from "./dom";
 
 import type { MyReactElement } from "@my-react/react";
 
-const { MyReactFiberNodeRoot } = __my_react_internal__;
+const { MyReactFiberNodeRoot, renderPlatform } = __my_react_internal__;
 
 const { initialFiberNode } = __my_react_shared__;
 
@@ -15,6 +15,10 @@ export const renderToString = (element: MyReactElement) => {
   const globalDispatch = new ServerDispatch();
 
   const globalScope = new DomScope();
+
+  const platform = new DomPlatform("myreact-dom/server");
+
+  renderPlatform.current = platform;
 
   globalScope.isServerRender = true;
 

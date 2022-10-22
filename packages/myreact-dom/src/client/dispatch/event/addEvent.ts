@@ -1,13 +1,10 @@
-import { __my_react_shared__ } from "@my-react/react";
-
-import { enableControlComponent, enableEventSystem } from "@my-react-dom-shared";
+import { enableControlComponent, enableEventSystem, safeCallWithFiber } from "@my-react-dom-shared";
 
 import { getNativeEventName } from "./getEventName";
 
 import type { DomElement} from "@my-react-dom-shared";
 import type { MyReactElement, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
 
-const { safeCallWithFiber } = __my_react_shared__;
 
 const controlElementTag: Record<string, boolean> = {
   input: true,

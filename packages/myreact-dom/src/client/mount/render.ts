@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { checkIsSameType } from "@my-react/react-reconciler";
 
-import { DomScope, startRender, unmountComponentAtNode } from "../../shared";
+import { DomPlatform, DomScope, startRender, unmountComponentAtNode } from "../../shared";
 import { ClientDispatch } from "../dispatch";
 
 import type { MyReactElement, MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
@@ -12,7 +12,7 @@ export type RenderContainer = Element & {
   __dispatch__: FiberDispatch;
 };
 
-const { MyReactFiberNode: MyReactFiberNodeClass, MyReactFiberNodeRoot } = __my_react_internal__;
+const { MyReactFiberNode: MyReactFiberNodeClass, MyReactFiberNodeRoot, renderPlatform } = __my_react_internal__;
 
 const { initialFiberNode } = __my_react_shared__;
 
@@ -35,6 +35,10 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
   const globalDispatch = new ClientDispatch();
 
   const globalScope = new DomScope();
+
+  const platform = new DomPlatform("myreact-dom");
+
+  renderPlatform.current = platform;
 
   Array.from(container.children).forEach((n) => n.remove?.());
 

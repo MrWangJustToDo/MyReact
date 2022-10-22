@@ -726,8 +726,8 @@
         return fiber;
     };
 
-    var MyReactFiberNodeClass$2 = react.__my_react_internal__.MyReactFiberNode;
-    var enableKeyDiff = react.__my_react_shared__.enableKeyDiff, log$3 = react.__my_react_shared__.log;
+    var MyReactFiberNodeClass$2 = react.__my_react_internal__.MyReactFiberNode, renderPlatform$3 = react.__my_react_internal__.renderPlatform;
+    var enableKeyDiff = react.__my_react_shared__.enableKeyDiff;
     var getKeyMatchedChildren = function (newChildren, prevFiberChildren) {
         if (!enableKeyDiff.current)
             return prevFiberChildren;
@@ -861,7 +861,7 @@
         else {
             if (parentFiber.return) {
                 {
-                    log$3({ message: "unmount for current fiber children, look like a bug", level: "warn" });
+                    renderPlatform$3.current.log({ message: "unmount for current fiber children, look like a bug", level: "warn" });
                 }
                 globalDispatch.pendingUnmount(parentFiber, parentFiber.return);
             }
@@ -1807,37 +1807,25 @@
         return currentHook;
     };
 
-    var safeCall$1$1 = react.__my_react_shared__.safeCall;
-    var updateLoopSync = function (loopController, reconcileUpdate) {
+    var updateLoopSync = function (loopController) {
         if (loopController.hasNext()) {
             var fiber = loopController.getNext();
-            var _loop_1 = function () {
+            while (fiber) {
                 var _fiber = fiber;
-                fiber = safeCall$1$1(function () { return nextWorkAsync(_fiber, loopController); });
+                fiber = nextWorkAsync(_fiber, loopController);
                 loopController.getUpdateList(_fiber);
                 loopController.setYield(fiber);
-            };
-            while (fiber) {
-                _loop_1();
             }
         }
-        reconcileUpdate();
     };
 
-    var safeCall$2 = react.__my_react_shared__.safeCall;
-    var updateLoopAsync = function (loopController, shouldPause, reconcileUpdate) {
-        var _loop_1 = function () {
+    var updateLoopAsync = function (loopController, shouldPause) {
+        while (loopController.hasNext() && !shouldPause()) {
             var fiber = loopController.getNext();
             if (fiber) {
-                var nextFiber = safeCall$2(function () { return nextWorkAsync(fiber, loopController); });
+                var nextFiber = nextWorkAsync(fiber, loopController);
                 loopController.setYield(nextFiber);
             }
-        };
-        while (loopController.hasNext() && !shouldPause()) {
-            _loop_1();
-        }
-        if (!loopController.doesPause()) {
-            reconcileUpdate();
         }
     };
 
@@ -2038,6 +2026,48 @@
         console.warn = originalConsoleWarn;
         console.error = originalConsoleError;
     };
+    var cache = {};
+    var log = function (_a) {
+        var fiber = _a.fiber, message = _a.message, _b = _a.level, level = _b === void 0 ? "warn" : _b, _c = _a.triggerOnce, triggerOnce = _c === void 0 ? false : _c;
+        var tree = getFiberTree(fiber || currentRunningFiber$1.current);
+        if (triggerOnce) {
+            if (cache[tree])
+                return;
+            cache[tree] = true;
+        }
+        console[level]("[".concat(level, "]:"), "\n-----------------------------------------\n", "".concat(typeof message === "string" ? message : message.stack || message.message), "\n-----------------------------------------\n", "Render Tree:", tree);
+    };
+    var safeCall = function (action) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        try {
+            return action.call.apply(action, __spreadArray$1([null], args, false));
+        }
+        catch (e) {
+            log({ message: e, level: "error" });
+            var fiber = currentRunningFiber$1.current;
+            if (fiber)
+                fiber.root.globalScope.isAppCrash = true;
+            throw new Error(e.message);
+        }
+    };
+    var safeCallWithFiber = function (_a) {
+        var action = _a.action, fiber = _a.fiber;
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        try {
+            return action.call.apply(action, __spreadArray$1([null], args, false));
+        }
+        catch (e) {
+            log({ message: e, level: "error", fiber: fiber });
+            fiber.root.globalScope.isAppCrash = true;
+            throw new Error(e.message);
+        }
+    };
 
     var createPortal = function (element, container) {
         var _a;
@@ -2049,12 +2079,12 @@
     };
 
     var globalLoop$2 = react.__my_react_internal__.globalLoop;
-    var safeCall$1 = react.__my_react_shared__.safeCall, enableStrictLifeCycle$1 = react.__my_react_shared__.enableStrictLifeCycle;
+    var enableStrictLifeCycle$1 = react.__my_react_shared__.enableStrictLifeCycle;
     var startRender = function (fiber, hydrate) {
         if (hydrate === void 0) { hydrate = false; }
         globalLoop$2.current = true;
         setScopeLog();
-        safeCall$1(function () { return mountLoopSync(fiber); });
+        safeCall(function () { return mountLoopSync(fiber); });
         reconcileMount(fiber, hydrate);
         if (enableStrictLifeCycle$1.current) {
             console.warn("react-18 like lifecycle have been enabled!");
@@ -2135,6 +2165,15 @@
             unmountFiber(fiber);
         }
     };
+
+    var DomPlatform = /** @class */ (function () {
+        function DomPlatform(name) {
+            this.name = "dom";
+            this.log = log;
+            this.name = name;
+        }
+        return DomPlatform;
+    }());
 
     var generateSVGElementType = function (_fiber, map) {
         var isSVG = _fiber.parent ? map[_fiber.parent.uid] : false;
@@ -2269,7 +2308,8 @@
     var updateAllSync = function (updateFiberController, reconcileUpdate) {
         globalLoop$1.current = true;
         setScopeLog();
-        updateLoopSync(updateFiberController, reconcileUpdate);
+        safeCall(function () { return updateLoopSync(updateFiberController); });
+        reconcileUpdate();
         resetScopeLog();
         globalLoop$1.current = false;
         Promise.resolve().then(function () {
@@ -2280,7 +2320,9 @@
     var updateAllAsync = function (updateFiberController, reconcileUpdate) {
         globalLoop$1.current = true;
         setScopeLog();
-        updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate, reconcileUpdate);
+        safeCall(function () { return updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate); });
+        if (!updateFiberController.doesPause())
+            reconcileUpdate();
         resetScopeLog();
         globalLoop$1.current = false;
         Promise.resolve().then(function () {
@@ -2349,7 +2391,7 @@
             updateAllSync(updateFiberController, reconcileUpdate);
         }
     };
-    var asyncUpdate = function (globalDispatch, globalScope) { return Promise.resolve().then(function () { return updateEntry(globalDispatch, globalScope); }); };
+    var asyncUpdate = function (globalDispatch, globalScope) { return setTimeout(function () { return updateEntry(globalDispatch, globalScope); }); };
     var triggerUpdate = function (fiber) {
         var globalScope = fiber.root.globalScope;
         var globalDispatch = fiber.root.globalDispatch;
@@ -2392,14 +2434,13 @@
         }
     };
 
-    var log$2 = react.__my_react_shared__.log;
     var getNextHydrateDom = function (parentDom) {
         var children = Array.from(parentDom.childNodes);
         return children.find(function (dom) { return dom.nodeType !== document.COMMENT_NODE && !dom.__hydrate__; });
     };
     var checkHydrateDom = function (fiber, dom) {
         if (!dom) {
-            log$2({
+            log({
                 fiber: fiber,
                 level: "error",
                 message: "hydrate error, dom not render from server",
@@ -2408,7 +2449,7 @@
         }
         if (fiber.type & NODE_TYPE.__isTextNode__) {
             if (dom.nodeType !== Node.TEXT_NODE) {
-                log$2({
+                log({
                     fiber: fiber,
                     level: "error",
                     message: "hydrate error, dom not match from server. server: ".concat(dom.nodeName.toLowerCase(), ", client: ").concat(fiber.element),
@@ -2420,7 +2461,7 @@
         if (fiber.type & NODE_TYPE.__isPlainNode__) {
             var typedElement = fiber.element;
             if (dom.nodeType !== Node.ELEMENT_NODE) {
-                log$2({
+                log({
                     fiber: fiber,
                     level: "error",
                     message: "hydrate error, dom not match from server. server: ".concat(dom.nodeName.toLowerCase(), ", client: ").concat(typedElement.type.toString()),
@@ -2428,7 +2469,7 @@
                 return false;
             }
             if (typedElement.type.toString() !== dom.nodeName.toLowerCase()) {
-                log$2({
+                log({
                     fiber: fiber,
                     level: "error",
                     message: "hydrate error, dom not match from server. server: ".concat(dom.nodeName.toLowerCase(), ", client: ").concat(typedElement.type.toString()),
@@ -2483,7 +2524,6 @@
     };
 
     // for invalid dom structure
-    var log$1 = react.__my_react_shared__.log;
     // TODO
     var validDomNesting = function (fiber) {
         if (!enableAllCheck.current)
@@ -2495,7 +2535,7 @@
                 while (parent_1 && parent_1.type & NODE_TYPE.__isPlainNode__) {
                     var typedParentElement = parent_1.element;
                     if (typedParentElement.type === "p") {
-                        log$1({
+                        log({
                             fiber: fiber,
                             level: "warn",
                             triggerOnce: true,
@@ -2730,7 +2770,6 @@
         return { nativeName: nativeName, isCapture: isCapture };
     };
 
-    var safeCallWithFiber$2 = react.__my_react_shared__.safeCallWithFiber;
     var controlElementTag = {
         input: true,
         // textarea: true,
@@ -2758,7 +2797,7 @@
                     }
                     var e = args[0];
                     e.nativeEvent = e;
-                    safeCallWithFiber$2({
+                    safeCallWithFiber({
                         action: function () { var _a; return (_a = handler_1.cb) === null || _a === void 0 ? void 0 : _a.forEach(function (cb) { return typeof cb === "function" && cb.call.apply(cb, __spreadArray$1([null], args, false)); }); },
                         fiber: fiber,
                     });
@@ -2818,7 +2857,6 @@
         }
     };
 
-    var log = react.__my_react_shared__.log;
     var domPropsHydrate = function (fiber, node, isSVG) {
         if (fiber.type & NODE_TYPE.__isTextNode__) {
             if (node.textContent !== String(fiber.element)) {
@@ -3143,7 +3181,7 @@
         }
     };
 
-    var safeCallWithFiber$1 = react.__my_react_shared__.safeCallWithFiber, enableStrictLifeCycle = react.__my_react_shared__.enableStrictLifeCycle;
+    var enableStrictLifeCycle = react.__my_react_shared__.enableStrictLifeCycle;
     var ClientDispatch = /** @class */ (function () {
         function ClientDispatch() {
             this.strictMap = {};
@@ -3243,15 +3281,15 @@
         };
         ClientDispatch.prototype.reconcileCommit = function (_fiber, _hydrate, _parentFiberWithDom) {
             var _isSVG = this.svgTypeMap[_fiber.uid];
-            var _result = safeCallWithFiber$1({
+            var _result = safeCallWithFiber({
                 fiber: _fiber,
                 action: function () { return create$1(_fiber, _hydrate, _parentFiberWithDom, _isSVG); },
             });
-            safeCallWithFiber$1({
+            safeCallWithFiber({
                 fiber: _fiber,
                 action: function () { return update$1(_fiber, _result, _isSVG); },
             });
-            safeCallWithFiber$1({
+            safeCallWithFiber({
                 fiber: _fiber,
                 action: function () { return append$2(_fiber, _parentFiberWithDom); },
             });
@@ -3260,8 +3298,8 @@
                 _final = this.reconcileCommit(_fiber.child, _result, _fiber.node ? _fiber : _parentFiberWithDom);
                 fallback(_fiber);
             }
-            safeCallWithFiber$1({ fiber: _fiber, action: function () { return layoutEffect(_fiber); } });
-            Promise.resolve().then(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
+            safeCallWithFiber({ fiber: _fiber, action: function () { return layoutEffect(_fiber); } });
+            Promise.resolve().then(function () { return safeCallWithFiber({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
             if (_fiber.sibling) {
                 this.reconcileCommit(_fiber.sibling, _fiber.node ? _result : _final, _parentFiberWithDom);
             }
@@ -3277,25 +3315,25 @@
             _list.listToFoot(function (_fiber) {
                 if (_fiber.mounted && _fiber.activated) {
                     var _isSVG_1 = _this.svgTypeMap[_fiber.uid];
-                    safeCallWithFiber$1({
+                    safeCallWithFiber({
                         fiber: _fiber,
                         action: function () { return create$1(_fiber, false, _fiber, _isSVG_1); },
                     });
-                    safeCallWithFiber$1({
+                    safeCallWithFiber({
                         fiber: _fiber,
                         action: function () { return update$1(_fiber, false, _isSVG_1); },
                     });
-                    safeCallWithFiber$1({
+                    safeCallWithFiber({
                         fiber: _fiber,
                         action: function () { return unmount(_fiber); },
                     });
-                    safeCallWithFiber$1({ fiber: _fiber, action: function () { return deactivate(_fiber); } });
-                    safeCallWithFiber$1({ fiber: _fiber, action: function () { return context(_fiber); } });
+                    safeCallWithFiber({ fiber: _fiber, action: function () { return deactivate(_fiber); } });
+                    safeCallWithFiber({ fiber: _fiber, action: function () { return context(_fiber); } });
                 }
             });
             _list.listToHead(function (_fiber) {
                 if (_fiber.mounted && _fiber.activated) {
-                    safeCallWithFiber$1({
+                    safeCallWithFiber({
                         fiber: _fiber,
                         action: function () { return position(_fiber); },
                     });
@@ -3303,7 +3341,7 @@
             });
             _list.listToFoot(function (_fiber) {
                 if (_fiber.mounted && _fiber.activated) {
-                    safeCallWithFiber$1({
+                    safeCallWithFiber({
                         fiber: _fiber,
                         action: function () { return append$2(_fiber); },
                     });
@@ -3311,11 +3349,11 @@
             });
             _list.listToFoot(function (_fiber) {
                 if (_fiber.mounted && _fiber.activated) {
-                    safeCallWithFiber$1({
+                    safeCallWithFiber({
                         fiber: _fiber,
                         action: function () { return layoutEffect(_fiber); },
                     });
-                    Promise.resolve().then(function () { return safeCallWithFiber$1({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
+                    Promise.resolve().then(function () { return safeCallWithFiber({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
                 }
             });
         };
@@ -3373,7 +3411,7 @@
         return ClientDispatch;
     }());
 
-    var MyReactFiberNodeClass = react.__my_react_internal__.MyReactFiberNode, MyReactFiberNodeRoot$2 = react.__my_react_internal__.MyReactFiberNodeRoot;
+    var MyReactFiberNodeClass = react.__my_react_internal__.MyReactFiberNode, MyReactFiberNodeRoot$2 = react.__my_react_internal__.MyReactFiberNodeRoot, renderPlatform$2 = react.__my_react_internal__.renderPlatform;
     var initialFiberNode$2 = react.__my_react_shared__.initialFiberNode;
     var render = function (element, container) {
         var _a;
@@ -3391,6 +3429,8 @@
         }
         var globalDispatch = new ClientDispatch();
         var globalScope = new DomScope();
+        var platform = new DomPlatform("myreact-dom");
+        renderPlatform$2.current = platform;
         Array.from(container.children).forEach(function (n) { var _a; return (_a = n.remove) === null || _a === void 0 ? void 0 : _a.call(n); });
         var fiber = new MyReactFiberNodeRoot$2(null, element);
         fiber.node = container;
@@ -3406,12 +3446,14 @@
         startRender(fiber);
     };
 
-    var MyReactFiberNodeRoot$1 = react.__my_react_internal__.MyReactFiberNodeRoot;
+    var MyReactFiberNodeRoot$1 = react.__my_react_internal__.MyReactFiberNodeRoot, renderPlatform$1 = react.__my_react_internal__.renderPlatform;
     var initialFiberNode$1 = react.__my_react_shared__.initialFiberNode;
     var hydrate = function (element, container) {
         var _a;
         var globalDispatch = new ClientDispatch();
         var globalScope = new DomScope();
+        var platform = new DomPlatform("myreact-dom");
+        renderPlatform$1.current = platform;
         globalScope.isHydrateRender = true;
         var fiber = new MyReactFiberNodeRoot$1(null, element);
         fiber.node = container;
@@ -4097,7 +4139,6 @@
         }
     };
 
-    var safeCallWithFiber = react.__my_react_shared__.safeCallWithFiber;
     var ServerDispatch = /** @class */ (function () {
         function ServerDispatch() {
             this.effectMap = {};
@@ -4216,11 +4257,13 @@
         return ServerDispatch;
     }());
 
-    var MyReactFiberNodeRoot = react.__my_react_internal__.MyReactFiberNodeRoot;
+    var MyReactFiberNodeRoot = react.__my_react_internal__.MyReactFiberNodeRoot, renderPlatform = react.__my_react_internal__.renderPlatform;
     var initialFiberNode = react.__my_react_shared__.initialFiberNode;
     var renderToString = function (element) {
         var globalDispatch = new ServerDispatch();
         var globalScope = new DomScope();
+        var platform = new DomPlatform("myreact-dom/server");
+        renderPlatform.current = platform;
         globalScope.isServerRender = true;
         var container = new PlainElement("");
         var fiber = new MyReactFiberNodeRoot(null, element);
@@ -4235,7 +4278,6 @@
         return container.toString();
     };
 
-    var safeCall = react.__my_react_shared__.safeCall;
     var version = "0.0.2";
     var flushSync = safeCall;
     var unstable_batchedUpdates = safeCall;

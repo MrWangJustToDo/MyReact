@@ -1,7 +1,6 @@
-import { __my_react_shared__ } from "@my-react/react";
 import { NODE_TYPE } from "@my-react/react-shared";
 
-import { IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
+import { IS_SINGLE_ELEMENT, log } from "@my-react-dom-shared";
 
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
@@ -9,7 +8,6 @@ export type HydrateDOM = Element & {
   __hydrate__: boolean;
 };
 
-const { log } = __my_react_shared__;
 
 const getNextHydrateDom = (parentDom: Element) => {
   const children = Array.from(parentDom.childNodes);

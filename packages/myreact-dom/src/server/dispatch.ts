@@ -1,4 +1,4 @@
-import { __my_react_shared__, cloneElement } from "@my-react/react";
+import { cloneElement } from "@my-react/react";
 import {
   defaultGenerateContextMap,
   defaultGenerateSuspenseMap,
@@ -8,12 +8,12 @@ import {
 } from "@my-react/react-reconciler";
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
+import { safeCallWithFiber } from "../shared/debug";
+
 import { append, create, update } from "./dom";
 
 import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode } from "@my-react/react";
 import type { LinkTreeList } from "@my-react/react-shared";
-
-const { safeCallWithFiber } = __my_react_shared__;
 
 export class ServerDispatch implements FiberDispatch {
   effectMap: Record<string, (() => void)[]> = {};

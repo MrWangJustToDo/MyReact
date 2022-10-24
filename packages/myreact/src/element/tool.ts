@@ -1,6 +1,6 @@
 import { NODE_TYPE, once } from "@my-react/react-shared";
 
-import { renderPlatform } from "../share";
+import { currentRunningFiber } from "../share";
 
 import {
   My_React_Consumer,
@@ -89,14 +89,16 @@ export function getTypeFromElement(element: MyReactElementNode) {
       nodeTypeSymbol |= NODE_TYPE.__isPlainNode__;
     } else {
       if (__DEV__) {
-        renderPlatform.current.log({ message: `invalid element type ${String(rawType)}`, level: "warn", triggerOnce: true });
+        const fiber = currentRunningFiber.current;
+        fiber?.root.globalPlatform.log({ message: `invalid element type ${String(rawType)}`, level: "warn", triggerOnce: true });
       }
       nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
     }
   } else {
     if (typeof element === "object" && element !== null) {
       if (__DEV__) {
-        renderPlatform.current.log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
+        const fiber = currentRunningFiber.current;
+        fiber?.root.globalPlatform.log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
       }
       nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
     } else if (element === null || element === undefined || typeof element === "boolean") {
@@ -111,8 +113,9 @@ export function getTypeFromElement(element: MyReactElementNode) {
 
 export const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
-  const onceWarnDuplicate = once(renderPlatform.current.log);
-  const onceWarnUndefined = once(renderPlatform.current.log);
+  const fiber = currentRunningFiber.current;
+  const onceWarnDuplicate = once(fiber?.root.globalPlatform.log);
+  const onceWarnUndefined = once(fiber?.root.globalPlatform.log);
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
   if (validElement.length > 1) {
     validElement.forEach((c) => {

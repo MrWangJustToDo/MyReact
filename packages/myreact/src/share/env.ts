@@ -1,5 +1,3 @@
-import { EmptyPlatform } from "../platform";
-
 import { createRef } from "./createRef";
 
 import type { MyReactFiberNode } from "../fiber";
@@ -16,8 +14,6 @@ export const currentFunctionFiber = createRef<MyReactFiberNode | null>(null);
 export const currentReactiveInstance = createRef<MyReactReactiveInstance | null>(null);
 
 export const currentHookDeepIndex = createRef(0);
-
-export const renderPlatform = createRef(new EmptyPlatform());
 
 // ==== feature ==== //
 export const enableDebugLog = createRef(false);

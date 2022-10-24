@@ -3,6 +3,8 @@ export const once = <T extends any[], K = any>(action: (...args: T) => K) => {
   return (...args: T) => {
     if (called) return;
     called = true;
-    action.call(null, ...args);
+    if (typeof action === "function") {
+      action.call(null, ...args);
+    }
   };
 };

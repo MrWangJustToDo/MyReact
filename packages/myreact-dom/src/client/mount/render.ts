@@ -12,7 +12,7 @@ export type RenderContainer = Element & {
   __dispatch__: FiberDispatch;
 };
 
-const { MyReactFiberNode: MyReactFiberNodeClass, MyReactFiberNodeRoot, renderPlatform } = __my_react_internal__;
+const { MyReactFiberNode: MyReactFiberNodeClass, MyReactFiberNodeRoot } = __my_react_internal__;
 
 const { initialFiberNode } = __my_react_shared__;
 
@@ -36,9 +36,7 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   const globalScope = new DomScope();
 
-  const platform = new DomPlatform("myreact-dom");
-
-  renderPlatform.current = platform;
+  const globalPlatform = new DomPlatform("myreact-dom");
 
   Array.from(container.children).forEach((n) => n.remove?.());
 
@@ -49,6 +47,8 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
   fiber.globalScope = globalScope;
 
   fiber.globalDispatch = globalDispatch;
+
+  fiber.globalPlatform = globalPlatform;
 
   globalScope.rootFiber = fiber;
 

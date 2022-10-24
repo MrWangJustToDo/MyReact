@@ -14,7 +14,7 @@ import type {
   ArrayMyReactElementChildren,
 } from "@my-react/react";
 
-const { MyReactFiberNode: MyReactFiberNodeClass, renderPlatform } = __my_react_internal__;
+const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
 
 const { enableKeyDiff } = __my_react_shared__;
 
@@ -209,7 +209,7 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
   } else {
     if (parentFiber.return) {
       if (__DEV__) {
-        renderPlatform.current.log({ message: `unmount for current fiber children, look like a bug`, level: "warn" });
+        parentFiber.root.globalPlatform.log({ message: `unmount for current fiber children, look like a bug`, level: "warn" });
       }
       globalDispatch.pendingUnmount(parentFiber, parentFiber.return);
     }

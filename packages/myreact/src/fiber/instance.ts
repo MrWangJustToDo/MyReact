@@ -2,6 +2,7 @@ import { NODE_TYPE, PATCH_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import { EmptyDispatch } from "../dispatch";
 import { getTypeFromElement, isValidElement } from "../element";
+import { EmptyPlatform } from "../platform";
 import { EmptyRenderScope } from "../scope";
 
 import type { MyReactComponent } from "../component";
@@ -9,6 +10,7 @@ import type { FiberDispatch } from "../dispatch";
 import type { MyReactElement, MyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
 import type { Action, MyReactHookNode } from "../hook";
 import type { MyReactInternalInstance } from "../internal";
+import type { RenderPlatform } from "../platform";
 import type { RenderScope } from "../scope";
 import type { HOOK_TYPE } from "@my-react/react-shared";
 
@@ -201,6 +203,8 @@ export class MyReactFiberNodeRoot extends MyReactFiberNode {
   globalDispatch: FiberDispatch = new EmptyDispatch();
 
   globalScope: RenderScope = new EmptyRenderScope();
+
+  globalPlatform: RenderPlatform = new EmptyPlatform();
 }
 
 export class MyReactFiberNodeDev extends MyReactFiberNode {

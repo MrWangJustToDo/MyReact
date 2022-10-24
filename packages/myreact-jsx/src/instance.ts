@@ -7,7 +7,7 @@ import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFuncti
 
 export const Fragment = My_React_Fragment;
 
-const { currentComponentFiber, renderPlatform } = __my_react_internal__;
+const { currentComponentFiber, currentRunningFiber } = __my_react_internal__;
 
 const RESERVED_PROPS = {
   key: true,
@@ -99,10 +99,12 @@ export const jsxDEV = (
 
         if (__DEV__) Object.freeze(children);
       } else {
-        renderPlatform.current.log({ message: "Static children should always be an array.", level: "warn" });
+        const fiber = currentRunningFiber.current;
+        fiber?.root.globalPlatform.log({ message: "Static children should always be an array.", level: "warn" });
       }
       if (!Array.isArray(children)) {
-        renderPlatform.current.log({ message: "Static children should always be an array.", level: "warn" });
+        const fiber = currentRunningFiber.current;
+        fiber?.root.globalPlatform.log({ message: "Static children should always be an array.", level: "warn" });
       }
     } else {
       checkSingleChildrenKey(children);

@@ -7,7 +7,7 @@ import { PlainElement } from "./dom";
 
 import type { MyReactElement } from "@my-react/react";
 
-const { MyReactFiberNodeRoot, renderPlatform } = __my_react_internal__;
+const { MyReactFiberNodeRoot } = __my_react_internal__;
 
 const { initialFiberNode } = __my_react_shared__;
 
@@ -16,9 +16,7 @@ export const renderToString = (element: MyReactElement) => {
 
   const globalScope = new DomScope();
 
-  const platform = new DomPlatform("myreact-dom/server");
-
-  renderPlatform.current = platform;
+  const globalPlatform = new DomPlatform("myreact-dom/server");
 
   globalScope.isServerRender = true;
 
@@ -31,6 +29,8 @@ export const renderToString = (element: MyReactElement) => {
   fiber.globalScope = globalScope;
 
   fiber.globalDispatch = globalDispatch;
+
+  fiber.globalPlatform = globalPlatform;
 
   globalScope.rootFiber = fiber;
 

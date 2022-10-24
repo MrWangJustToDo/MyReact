@@ -145,7 +145,9 @@
             if (called)
                 return;
             called = true;
-            action.call.apply(action, __spreadArray$1([null], args, false));
+            if (typeof action === "function") {
+                action.call.apply(action, __spreadArray$1([null], args, false));
+            }
         };
     };
 
@@ -1042,21 +1044,12 @@
         return re;
     };
 
-    var EmptyPlatform = /** @class */ (function () {
-        function EmptyPlatform() {
-            this.name = "empty";
-            this.log = function () { return void 0; };
-        }
-        return EmptyPlatform;
-    }());
-
     var globalLoop = createRef(false);
     var currentRunningFiber = createRef(null);
     var currentComponentFiber = createRef(null);
     var currentFunctionFiber = createRef(null);
     var currentReactiveInstance = createRef(null);
     var currentHookDeepIndex = createRef(0);
-    var renderPlatform = createRef(new EmptyPlatform());
     // ==== feature ==== //
     var enableDebugLog = createRef(false);
     var enableAsyncUpdate = createRef(true);
@@ -1146,7 +1139,8 @@
             }
             else {
                 {
-                    renderPlatform.current.log({ message: "invalid element type ".concat(String(rawType)), level: "warn", triggerOnce: true });
+                    var fiber = currentRunningFiber.current;
+                    fiber === null || fiber === void 0 ? void 0 : fiber.root.globalPlatform.log({ message: "invalid element type ".concat(String(rawType)), level: "warn", triggerOnce: true });
                 }
                 nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
             }
@@ -1154,7 +1148,8 @@
         else {
             if (typeof element === "object" && element !== null) {
                 {
-                    renderPlatform.current.log({ message: "invalid object element type ".concat(JSON.stringify(element)), level: "warn", triggerOnce: true });
+                    var fiber = currentRunningFiber.current;
+                    fiber === null || fiber === void 0 ? void 0 : fiber.root.globalPlatform.log({ message: "invalid object element type ".concat(JSON.stringify(element)), level: "warn", triggerOnce: true });
                 }
                 nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
             }
@@ -1169,8 +1164,9 @@
     }
     var checkValidKey = function (children) {
         var obj = {};
-        var onceWarnDuplicate = once(renderPlatform.current.log);
-        var onceWarnUndefined = once(renderPlatform.current.log);
+        var fiber = currentRunningFiber.current;
+        var onceWarnDuplicate = once(fiber === null || fiber === void 0 ? void 0 : fiber.root.globalPlatform.log);
+        var onceWarnUndefined = once(fiber === null || fiber === void 0 ? void 0 : fiber.root.globalPlatform.log);
         var validElement = children.filter(function (c) { return isValidElement(c); });
         if (validElement.length > 1) {
             validElement.forEach(function (c) {
@@ -1698,6 +1694,14 @@
         return EmptyDispatch;
     }());
 
+    var EmptyPlatform = /** @class */ (function () {
+        function EmptyPlatform() {
+            this.name = "empty";
+            this.log = function () { return void 0; };
+        }
+        return EmptyPlatform;
+    }());
+
     var EmptyRenderScope = /** @class */ (function () {
         function EmptyRenderScope() {
             this.rootFiber = null;
@@ -1847,6 +1851,7 @@
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this.globalDispatch = new EmptyDispatch();
             _this.globalScope = new EmptyRenderScope();
+            _this.globalPlatform = new EmptyPlatform();
             return _this;
         }
         return MyReactFiberNodeRoot;
@@ -2337,7 +2342,6 @@
         MyReactFiberNodeRoot: MyReactFiberNodeRoot,
         MyReactInternalInstance: MyReactInternalInstance,
         globalLoop: globalLoop,
-        renderPlatform: renderPlatform,
         currentRunningFiber: currentRunningFiber,
         currentHookDeepIndex: currentHookDeepIndex,
         currentFunctionFiber: currentFunctionFiber,

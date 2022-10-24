@@ -5,7 +5,7 @@ import { My_React_Element } from "./symbol";
 
 import type { MyReactElementNode, MyReactElement, MaybeArrayMyReactElementNode } from "@my-react/react";
 
-const { renderPlatform } = __my_react_internal__;
+const { currentRunningFiber } = __my_react_internal__;
 
 export function isValidElement(element?: MyReactElementNode): element is MyReactElement {
   return typeof element === "object" && !Array.isArray(element) && element?.$$typeof === My_React_Element;
@@ -14,9 +14,9 @@ export function isValidElement(element?: MyReactElementNode): element is MyReact
 export const checkValidKey = (children: MyReactElementNode[]) => {
   const obj: Record<string, boolean> = {};
 
-  const onceWarnDuplicate = once(renderPlatform.current.log);
+  const onceWarnDuplicate = once(currentRunningFiber.current?.root.globalPlatform.log);
 
-  const onceWarnUndefined = once(renderPlatform.current.log);
+  const onceWarnUndefined = once(currentRunningFiber.current?.root.globalPlatform.log);
 
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
 

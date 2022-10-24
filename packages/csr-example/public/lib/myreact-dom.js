@@ -726,7 +726,7 @@
         return fiber;
     };
 
-    var MyReactFiberNodeClass$2 = react.__my_react_internal__.MyReactFiberNode, renderPlatform$3 = react.__my_react_internal__.renderPlatform;
+    var MyReactFiberNodeClass$2 = react.__my_react_internal__.MyReactFiberNode;
     var enableKeyDiff = react.__my_react_shared__.enableKeyDiff;
     var getKeyMatchedChildren = function (newChildren, prevFiberChildren) {
         if (!enableKeyDiff.current)
@@ -861,7 +861,7 @@
         else {
             if (parentFiber.return) {
                 {
-                    renderPlatform$3.current.log({ message: "unmount for current fiber children, look like a bug", level: "warn" });
+                    parentFiber.root.globalPlatform.log({ message: "unmount for current fiber children, look like a bug", level: "warn" });
                 }
                 globalDispatch.pendingUnmount(parentFiber, parentFiber.return);
             }
@@ -2360,9 +2360,7 @@
                 }
                 return null;
             },
-            getUpdateList: function (fiber) {
-                globalDispatch.generateUpdateList(fiber, globalScope);
-            },
+            getUpdateList: function (fiber) { return globalDispatch.generateUpdateList(fiber, globalScope); },
             hasNext: function () {
                 if (globalScope.isAppCrash)
                     return false;
@@ -2391,7 +2389,7 @@
             updateAllSync(updateFiberController, reconcileUpdate);
         }
     };
-    var asyncUpdate = function (globalDispatch, globalScope) { return setTimeout(function () { return updateEntry(globalDispatch, globalScope); }); };
+    var asyncUpdate = function (globalDispatch, globalScope) { return Promise.resolve().then(function () { return updateEntry(globalDispatch, globalScope); }); };
     var triggerUpdate = function (fiber) {
         var globalScope = fiber.root.globalScope;
         var globalDispatch = fiber.root.globalDispatch;
@@ -3411,7 +3409,7 @@
         return ClientDispatch;
     }());
 
-    var MyReactFiberNodeClass = react.__my_react_internal__.MyReactFiberNode, MyReactFiberNodeRoot$2 = react.__my_react_internal__.MyReactFiberNodeRoot, renderPlatform$2 = react.__my_react_internal__.renderPlatform;
+    var MyReactFiberNodeClass = react.__my_react_internal__.MyReactFiberNode, MyReactFiberNodeRoot$2 = react.__my_react_internal__.MyReactFiberNodeRoot;
     var initialFiberNode$2 = react.__my_react_shared__.initialFiberNode;
     var render = function (element, container) {
         var _a;
@@ -3429,13 +3427,13 @@
         }
         var globalDispatch = new ClientDispatch();
         var globalScope = new DomScope();
-        var platform = new DomPlatform("myreact-dom");
-        renderPlatform$2.current = platform;
+        var globalPlatform = new DomPlatform("myreact-dom");
         Array.from(container.children).forEach(function (n) { var _a; return (_a = n.remove) === null || _a === void 0 ? void 0 : _a.call(n); });
         var fiber = new MyReactFiberNodeRoot$2(null, element);
         fiber.node = container;
         fiber.globalScope = globalScope;
         fiber.globalDispatch = globalDispatch;
+        fiber.globalPlatform = globalPlatform;
         globalScope.rootFiber = fiber;
         globalScope.rootContainer = container;
         (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "render", "MyReact");
@@ -3446,19 +3444,19 @@
         startRender(fiber);
     };
 
-    var MyReactFiberNodeRoot$1 = react.__my_react_internal__.MyReactFiberNodeRoot, renderPlatform$1 = react.__my_react_internal__.renderPlatform;
+    var MyReactFiberNodeRoot$1 = react.__my_react_internal__.MyReactFiberNodeRoot;
     var initialFiberNode$1 = react.__my_react_shared__.initialFiberNode;
     var hydrate = function (element, container) {
         var _a;
         var globalDispatch = new ClientDispatch();
         var globalScope = new DomScope();
-        var platform = new DomPlatform("myreact-dom");
-        renderPlatform$1.current = platform;
+        var globalPlatform = new DomPlatform("myreact-dom");
         globalScope.isHydrateRender = true;
         var fiber = new MyReactFiberNodeRoot$1(null, element);
         fiber.node = container;
         fiber.globalScope = globalScope;
         fiber.globalDispatch = globalDispatch;
+        fiber.globalPlatform = globalPlatform;
         globalScope.rootFiber = fiber;
         globalScope.rootContainer = container;
         (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "hydrate", "MyReact");
@@ -4257,19 +4255,19 @@
         return ServerDispatch;
     }());
 
-    var MyReactFiberNodeRoot = react.__my_react_internal__.MyReactFiberNodeRoot, renderPlatform = react.__my_react_internal__.renderPlatform;
+    var MyReactFiberNodeRoot = react.__my_react_internal__.MyReactFiberNodeRoot;
     var initialFiberNode = react.__my_react_shared__.initialFiberNode;
     var renderToString = function (element) {
         var globalDispatch = new ServerDispatch();
         var globalScope = new DomScope();
-        var platform = new DomPlatform("myreact-dom/server");
-        renderPlatform.current = platform;
+        var globalPlatform = new DomPlatform("myreact-dom/server");
         globalScope.isServerRender = true;
         var container = new PlainElement("");
         var fiber = new MyReactFiberNodeRoot(null, element);
         fiber.node = container;
         fiber.globalScope = globalScope;
         fiber.globalDispatch = globalDispatch;
+        fiber.globalPlatform = globalPlatform;
         globalScope.rootFiber = fiber;
         globalScope.rootContainer = container;
         initialFiberNode(fiber);

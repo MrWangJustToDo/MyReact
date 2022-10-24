@@ -35,6 +35,8 @@ export const createFiberNode = (
     globalDispatch.pendingPosition(newFiberNode);
   }
 
+  globalDispatch.pendingMemorizedProps(newFiberNode);
+
   if (newFiberNode.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
     if ((element as MyReactElement).ref) {
       globalDispatch.pendingLayoutEffect(newFiberNode, () => globalDispatch.resolveRef(newFiberNode));

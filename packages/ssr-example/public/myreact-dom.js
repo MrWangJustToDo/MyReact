@@ -907,6 +907,14 @@
     };
     var transformKeepLiveChildrenFiber = function (parentFiber, children) {
         var isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
+        {
+            var log = parentFiber.root.globalPlatform.log;
+            log({
+                message: "you are using internal <KeepLive /> component to render different component by toggle logic, pls note this is a experimental feature, \n    1. <KeepLive /> component will not clean rendered tree state when render a different component, so it will keep dom(like <input /> value and soon), hook, state.\n    2. <KeepLive /> component currently can not contain any <Portal /> component, will cause some bug\n    ",
+                fiber: parentFiber,
+                triggerOnce: true,
+            });
+        }
         if (!isUpdate)
             return transformChildrenFiber(parentFiber, children);
         var globalDispatch = parentFiber.root.globalDispatch;
@@ -2031,9 +2039,11 @@
         var fiber = _a.fiber, message = _a.message, _b = _a.level, level = _b === void 0 ? "warn" : _b, _c = _a.triggerOnce, triggerOnce = _c === void 0 ? false : _c;
         var tree = getFiberTree(fiber || currentRunningFiber$1.current);
         if (triggerOnce) {
-            if (cache[tree])
+            var messageKey = message.toString();
+            cache[messageKey] = cache[messageKey] || {};
+            if (cache[messageKey][tree])
                 return;
-            cache[tree] = true;
+            cache[messageKey][tree] = true;
         }
         console[level]("[".concat(level, "]:"), "\n-----------------------------------------\n", "".concat(typeof message === "string" ? message : message.stack || message.message), "\n-----------------------------------------\n", "Render Tree:", tree);
     };

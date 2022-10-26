@@ -35,7 +35,7 @@ export const resetScopeLog = () => {
   console.error = originalConsoleError;
 };
 
-const cache: Record<string, boolean> = {};
+const cache: Record<string, Record<string, boolean>> = {};
 
 type LogProps = {
   message: string | Error;
@@ -47,8 +47,10 @@ type LogProps = {
 export const log = ({ fiber, message, level = "warn", triggerOnce = false }: LogProps) => {
   const tree = getFiberTree(fiber || currentRunningFiber.current);
   if (triggerOnce) {
-    if (cache[tree]) return;
-    cache[tree] = true;
+    const messageKey = message.toString();
+    cache[messageKey] = cache[messageKey] || {};
+    if (cache[messageKey][tree]) return;
+    cache[messageKey][tree] = true;
   }
   console[level](
     `[${level}]:`,

@@ -4,7 +4,7 @@ import {
   defaultGenerateKeepLiveMap,
   defaultGenerateStrictMap,
   defaultGenerateSuspenseMap,
-  defaultGenerateUnmountListMap,
+  defaultGenerateUnmountArrayMap,
   defaultGetContextMapFromMap,
   defaultGetContextValue,
   defaultGetKeepLiveFiber,
@@ -47,7 +47,7 @@ export class ClientDispatch implements FiberDispatch {
 
   contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
 
-  unmountMap: Record<string, Array<LinkTreeList<MyReactFiberNode>>> = {};
+  unmountMap: Record<string, MyReactFiberNode[]> = {};
 
   eventMap: Record<string, Record<string, ((...args: any[]) => void) & { cb?: any[] | undefined }>> = {};
 
@@ -256,7 +256,7 @@ export class ClientDispatch implements FiberDispatch {
     }
   }
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void {
-    defaultGenerateUnmountListMap(_fiber, _pendingUnmount, this.unmountMap);
+    defaultGenerateUnmountArrayMap(_fiber, _pendingUnmount, this.unmountMap);
   }
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
     const exist = this.layoutEffectMap[_fiber.uid] || [];

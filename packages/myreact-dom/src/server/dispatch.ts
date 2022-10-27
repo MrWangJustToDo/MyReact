@@ -28,7 +28,7 @@ export class ServerDispatch implements FiberDispatch {
 
   contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
 
-  unmountMap: Record<string, Array<LinkTreeList<MyReactFiberNode>>> = {};
+  unmountMap: Record<string, MyReactFiberNode[]> = {};
 
   eventMap: Record<string, Record<string, ((...args: any[]) => void) & { cb?: any[] | undefined }>> = {};
 

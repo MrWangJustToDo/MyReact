@@ -12,7 +12,7 @@ export const unmountFiber = (fiber: MyReactFiberNode) => {
 
 export const unmountList = (list: LinkTreeList<MyReactFiberNode>) => {
   list.listToFoot((f) => f.unmount());
-  list.foot.value && clearFiberDom(list.foot.value);
+  list.head.value && clearFiberDom(list.head.value);
 };
 
 export const unmount = (fiber: MyReactFiberNode) => {
@@ -24,5 +24,5 @@ export const unmount = (fiber: MyReactFiberNode) => {
 
   unmountMap[fiber.uid] = [];
 
-  if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountList(l));
+  if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountFiber(l));
 };

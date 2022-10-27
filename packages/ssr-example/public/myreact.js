@@ -1055,7 +1055,7 @@
     var enableAsyncUpdate = createRef(true);
     var enableKeyDiff = createRef(true);
     // enable react-18 strict lifecycle method
-    var enableStrictLifeCycle = createRef(true);
+    var enableStrictLifeCycle = createRef(false);
 
     var My_React_Element = Symbol.for("react.element");
     var My_React_Memo = Symbol.for("react.memo");

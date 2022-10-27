@@ -654,26 +654,25 @@
         }
     };
 
-    var getNext = function (fiber, root, listTree) {
+    var getNext = function (fiber, root) {
         if (fiber.child)
             return fiber.child;
         var nextFiber = fiber;
         while (nextFiber && nextFiber !== root) {
-            listTree.append(nextFiber);
             if (nextFiber.sibling)
                 return nextFiber.sibling;
             nextFiber = nextFiber.parent;
-        }
-        if (nextFiber === root) {
-            listTree.append(nextFiber);
         }
         return null;
     };
     var generateFiberToList = function (fiber) {
         var listTree = new LinkTreeList();
         var temp = fiber;
+        listTree.append(temp);
         while (temp) {
-            temp = getNext(temp, fiber, listTree);
+            temp = getNext(temp, fiber);
+            if (temp)
+                listTree.append(temp);
         }
         return listTree;
     };
@@ -1879,11 +1878,10 @@
         return [children];
     };
 
-    var defaultGenerateUnmountListMap = function (fiber, unmount, map) {
+    var defaultGenerateUnmountArrayMap = function (fiber, unmount, map) {
         var allUnmount = flatten(unmount);
-        var fiberList = allUnmount.map(function (f) { return generateFiberToList(f); });
         var exist = map[fiber.uid] || [];
-        map[fiber.uid] = __spreadArray(__spreadArray([], exist, true), fiberList, true);
+        map[fiber.uid] = __spreadArray(__spreadArray([], exist, true), allUnmount, true);
     };
 
     var processComponentUpdateQueue = function (fiber) {
@@ -2157,7 +2155,7 @@
     };
     var unmountList = function (list) {
         list.listToFoot(function (f) { return f.unmount(); });
-        list.foot.value && clearFiberDom(list.foot.value);
+        list.head.value && clearFiberDom(list.head.value);
     };
     var unmount = function (fiber) {
         var globalDispatch = fiber.root.globalDispatch;
@@ -2165,7 +2163,7 @@
         var allUnmountFiber = unmountMap[fiber.uid] || [];
         unmountMap[fiber.uid] = [];
         if (allUnmountFiber.length)
-            allUnmountFiber.forEach(function (l) { return unmountList(l); });
+            allUnmountFiber.forEach(function (l) { return unmountFiber(l); });
     };
 
     var MyReactFiberNodeClass$1 = react.__my_react_internal__.MyReactFiberNode;
@@ -3395,7 +3393,7 @@
             }
         };
         ClientDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
-            defaultGenerateUnmountListMap(_fiber, _pendingUnmount, this.unmountMap);
+            defaultGenerateUnmountArrayMap(_fiber, _pendingUnmount, this.unmountMap);
         };
         ClientDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {
             var exist = this.layoutEffectMap[_fiber.uid] || [];

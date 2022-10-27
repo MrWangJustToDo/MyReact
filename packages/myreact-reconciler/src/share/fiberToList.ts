@@ -2,21 +2,15 @@ import { LinkTreeList } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
-const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode, listTree: LinkTreeList<MyReactFiberNode>) => {
+const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
   if (fiber.child) return fiber.child;
 
   let nextFiber = fiber;
 
   while (nextFiber && nextFiber !== root) {
-    listTree.append(nextFiber);
-
     if (nextFiber.sibling) return nextFiber.sibling;
 
     nextFiber = nextFiber.parent;
-  }
-
-  if (nextFiber === root) {
-    listTree.append(nextFiber);
   }
 
   return null;
@@ -27,8 +21,11 @@ export const generateFiberToList = (fiber: MyReactFiberNode) => {
 
   let temp = fiber;
 
+  listTree.append(temp);
+
   while (temp) {
-    temp = getNext(temp, fiber, listTree);
+    temp = getNext(temp, fiber);
+    if (temp) listTree.append(temp);
   }
 
   return listTree;

@@ -26,29 +26,55 @@
       return [count, i, j];
     };
 
-    const Foo = () => {
+    const useUnmount = (cb) => {
+      useEffect(() => cb, []);
+    }
+
+    class Cl extends Component {
+      componentWillUnmount() {
+        console.log('class unmount')
+      }
+
+      render() {
+        return <div>Class
+          <B />
+          {this.props.children}
+        </div>
+      }
+    }
+
+    const A = ({ children }) => {
+      useEffect(() => console.log('a mount'), [])
+      useUnmount(() => console.log('a unmount'));
+
+      return <div>A {children}</div>
+    }
+    const B = ({ children }) => {
+      useUnmount(() => console.log('b unmount'));
+
+      return <div>B {children}</div>
+    }
+    const C = ({ children }) => {
+      useUnmount(() => console.log('c unmount'));
+
+      return <div>C {children}</div>
+    }
+    const D = ({ children }) => {
+      useUnmount(() => console.log('d unmount'));
+
+      return <div>D {children}</div>
+    }
+
+    const App = () => {
+      const [c, add] = useCounter();
+
       return <div>
-        1
-        <p>2</p>
+        {c % 2 === 0 ? <A><B><C><A /></C></B><D /></A> : <Cl><C><D /><A /></C></Cl>}
+        <button onClick={add}>add</button>
       </div>
     }
 
-    const App = ({ text }) => {
-      const [id, add] = useCounter()
-      return (
-        <div>
-          {id % 2 === 0 ? [1, 2, 3].map((i) => <div>{i}</div>) : 'null'}
-          <button
-            onClick={add}
-          >
-            add
-          </button>
-        </div>
-      );
-    };
-
-    const app = document.querySelector("#root");
-    ReactDOM.render(<App text="" />, app);
+    ReactDOM.render(<App />, document.querySelector('#root'))
   </script>
 </body>
 

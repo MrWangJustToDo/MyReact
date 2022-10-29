@@ -1619,8 +1619,6 @@
         EmptyDispatch.prototype.resolveLazy = function () {
             return false;
         };
-        EmptyDispatch.prototype.resolveRef = function (_fiber) {
-        };
         EmptyDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
             return null;
         };
@@ -1650,10 +1648,12 @@
             return null;
         };
         EmptyDispatch.prototype.resolveComponentQueue = function (_fiber) {
-            return void 0;
         };
         EmptyDispatch.prototype.resolveHookQueue = function (_fiber) {
-            return void 0;
+        };
+        EmptyDispatch.prototype.resolveFiberUpdate = function (_fiber) {
+        };
+        EmptyDispatch.prototype.resolveMemorizedProps = function (_fiber) {
         };
         // TODO this part of logic should not include global dispatch interface
         // start
@@ -1683,11 +1683,11 @@
         };
         EmptyDispatch.prototype.pendingDeactivate = function (_fiber) {
         };
-        EmptyDispatch.prototype.pendingMemorizedProps = function (_fiber) {
-        };
         EmptyDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {
         };
         EmptyDispatch.prototype.pendingEffect = function (_fiber, _effect) {
+        };
+        EmptyDispatch.prototype.pendingRef = function (_fiber) {
         };
         EmptyDispatch.prototype.removeFiber = function (_fiber) {
         };
@@ -1946,12 +1946,8 @@
         globalDispatch.pendingCreate(fiber);
         globalDispatch.pendingUpdate(fiber);
         globalDispatch.pendingAppend(fiber);
-        var element = fiber.element;
-        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
-            if (typeof element === "object" && element !== null && element.ref) {
-                globalDispatch.pendingLayoutEffect(fiber, function () { return globalDispatch.resolveRef(fiber); });
-            }
-        }
+        globalDispatch.pendingRef(fiber);
+        globalDispatch.resolveMemorizedProps(fiber);
         return fiber;
     };
 
@@ -1970,12 +1966,8 @@
         else {
             globalDispatch.pendingPosition(newFiberNode);
         }
-        globalDispatch.pendingMemorizedProps(newFiberNode);
-        if (newFiberNode.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
-            if (element.ref) {
-                globalDispatch.pendingLayoutEffect(newFiberNode, function () { return globalDispatch.resolveRef(newFiberNode); });
-            }
-        }
+        globalDispatch.pendingRef(newFiberNode);
+        globalDispatch.resolveMemorizedProps(newFiberNode);
         return newFiberNode;
     };
 
@@ -1987,38 +1979,10 @@
         fiber.installParent(parent);
         var globalDispatch = fiber.root.globalDispatch;
         checkFiberElement(fiber);
+        globalDispatch.resolveFiberUpdate;
         if (prevElement !== nextElement || !fiber.activated) {
-            if (fiber.type & NODE_TYPE.__isMemo__) {
-                var typedPrevElement = prevElement;
-                var typedNextElement = nextElement;
-                if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(typedPrevElement.props, typedNextElement.props) && fiber.activated) {
-                    fiber.afterUpdate();
-                }
-                else {
-                    fiber.prepareUpdate();
-                }
-            }
-            else {
-                fiber.prepareUpdate();
-                if (fiber.type & NODE_TYPE.__isContextProvider__) {
-                    var typedPrevElement = prevElement;
-                    var typedNextElement = nextElement;
-                    if (!isNormalEquals(typedPrevElement.props.value, typedNextElement.props.value)) {
-                        globalDispatch.pendingContext(fiber);
-                    }
-                }
-                if (fiber.type & NODE_TYPE.__isPlainNode__) {
-                    var typedPrevElement = prevElement;
-                    var typedNextElement = nextElement;
-                    if (!isNormalEquals(typedPrevElement.props, typedNextElement.props, function (key) { return key === "children"; })) {
-                        globalDispatch.pendingUpdate(fiber);
-                    }
-                }
-                if (fiber.type & NODE_TYPE.__isTextNode__) {
-                    globalDispatch.pendingUpdate(fiber);
-                }
-            }
-            globalDispatch.pendingMemorizedProps(fiber);
+            globalDispatch.resolveFiberUpdate(fiber);
+            globalDispatch.resolveMemorizedProps(fiber);
         }
         if (fiber !== prevFiber) {
             globalDispatch.pendingPosition(fiber);

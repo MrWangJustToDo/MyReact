@@ -25,8 +25,6 @@ export interface FiberDispatch {
 
   resolveLazy(): boolean;
 
-  resolveRef(_fiber: MyReactFiberNode): void;
-
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
 
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void;
@@ -53,6 +51,10 @@ export interface FiberDispatch {
 
   resolveHookQueue(_fiber: MyReactFiberNode): void;
 
+  resolveFiberUpdate(_fiber: MyReactFiberNode): void;
+
+  resolveMemorizedProps(_fiber: MyReactFiberNode): void;
+
   // loop to mount/hydrate
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean;
 
@@ -77,7 +79,7 @@ export interface FiberDispatch {
 
   pendingDeactivate(_fiber: MyReactFiberNode): void;
 
-  pendingMemorizedProps(_fiber: MyReactFiberNode): void;
+  pendingRef(_fiber: MyReactFiberNode): void;
 
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void;
 

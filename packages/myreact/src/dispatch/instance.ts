@@ -28,9 +28,6 @@ export class EmptyDispatch implements FiberDispatch {
   resolveLazy(): boolean {
     return false;
   }
-  resolveRef(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return null;
   }
@@ -65,10 +62,16 @@ export class EmptyDispatch implements FiberDispatch {
     return null;
   }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {
-    return void 0;
+    void 0;
   }
   resolveHookQueue(_fiber: MyReactFiberNode): void {
-    return void 0;
+    void 0;
+  }
+  resolveFiberUpdate(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveMemorizedProps(_fiber: MyReactFiberNode): void {
+    void 0;
   }
   // TODO this part of logic should not include global dispatch interface
   // start
@@ -109,13 +112,13 @@ export class EmptyDispatch implements FiberDispatch {
   pendingDeactivate(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  pendingMemorizedProps(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
     void 0;
   }
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
+    void 0;
+  }
+  pendingRef(_fiber: MyReactFiberNode): void {
     void 0;
   }
   removeFiber(_fiber: MyReactFiberNode): void {

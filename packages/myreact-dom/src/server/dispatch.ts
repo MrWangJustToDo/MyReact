@@ -79,10 +79,16 @@ export class ServerDispatch implements FiberDispatch {
   resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return defaultGetContextValue(_fiber, _contextObject);
   }
+  resolveMemorizedProps(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {
     void 0;
   }
   resolveHookQueue(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveFiberUpdate(_fiber: MyReactFiberNode): void {
     void 0;
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean {
@@ -139,9 +145,6 @@ export class ServerDispatch implements FiberDispatch {
   pendingDeactivate(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  pendingMemorizedProps(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void {
     void 0;
   }
@@ -149,6 +152,9 @@ export class ServerDispatch implements FiberDispatch {
     void 0;
   }
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
+    void 0;
+  }
+  pendingRef(_fiber: MyReactFiberNode): void {
     void 0;
   }
   removeFiber(_fiber: MyReactFiberNode): void {

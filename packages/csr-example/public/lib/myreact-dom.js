@@ -96,6 +96,29 @@
         Effect_TYPE[Effect_TYPE["__pendingEffect__"] = 1] = "__pendingEffect__";
     })(Effect_TYPE || (Effect_TYPE = {}));
 
+    var isNormalEquals = function (src, target, isSkipKey) {
+        if (isSkipKey === void 0) { isSkipKey = function () { return false; }; }
+        if (typeof src === "object" && typeof target === "object" && src !== null && target !== null) {
+            var srcKeys = Object.keys(src);
+            var targetKeys = Object.keys(target);
+            if (srcKeys.length !== targetKeys.length)
+                return false;
+            var res = true;
+            for (var key in src) {
+                if (isSkipKey(key)) {
+                    continue;
+                }
+                else {
+                    res = res && Object.is(src[key], target[key]);
+                }
+                if (!res)
+                    return res;
+            }
+            return res;
+        }
+        return Object.is(src, target);
+    };
+
     var ListTreeNode = /** @class */ (function () {
         function ListTreeNode(value) {
             this.prev = null;
@@ -1814,6 +1837,34 @@
         return currentHook;
     };
 
+    var defaultUpdateFiberNode = function (fiber) {
+        var globalDispatch = fiber.root.globalDispatch;
+        if (fiber.type & NODE_TYPE.__isMemo__) {
+            if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(fiber.pendingProps, fiber.memoizedProps) && fiber.activated) {
+                fiber.afterUpdate();
+            }
+            else {
+                fiber.prepareUpdate();
+            }
+        }
+        else {
+            fiber.prepareUpdate();
+            if (fiber.type & NODE_TYPE.__isContextProvider__) {
+                if (!isNormalEquals(fiber.pendingProps.value, fiber.memoizedProps.value)) {
+                    globalDispatch.pendingContext(fiber);
+                }
+            }
+            if (fiber.type & NODE_TYPE.__isPlainNode__) {
+                if (!isNormalEquals(fiber.pendingProps, fiber.memoizedProps, function (key) { return key === "children"; })) {
+                    globalDispatch.pendingUpdate(fiber);
+                }
+            }
+            if (fiber.type & NODE_TYPE.__isTextNode__) {
+                globalDispatch.pendingUpdate(fiber);
+            }
+        }
+    };
+
     var updateLoopSync = function (loopController) {
         if (loopController.hasNext()) {
             var fiber = loopController.getNext();
@@ -3248,11 +3299,19 @@
         ClientDispatch.prototype.resolveContextValue = function (_fiber, _contextObject) {
             return defaultGetContextValue(_fiber, _contextObject);
         };
+        ClientDispatch.prototype.resolveMemorizedProps = function (_fiber) {
+            if (!(_fiber.patch & PATCH_TYPE.__pendingUpdate__)) {
+                _fiber.applyElement();
+            }
+        };
         ClientDispatch.prototype.resolveComponentQueue = function (_fiber) {
             processComponentUpdateQueue(_fiber);
         };
         ClientDispatch.prototype.resolveHookQueue = function (_fiber) {
             processHookUpdateQueue(_fiber);
+        };
+        ClientDispatch.prototype.resolveFiberUpdate = function (_fiber) {
+            defaultUpdateFiberNode(_fiber);
         };
         ClientDispatch.prototype.beginProgressList = function (_scope) {
             var _a;
@@ -3387,11 +3446,6 @@
         ClientDispatch.prototype.pendingDeactivate = function (_fiber) {
             _fiber.patch |= PATCH_TYPE.__pendingDeactivate__;
         };
-        ClientDispatch.prototype.pendingMemorizedProps = function (_fiber) {
-            if (!(_fiber.patch & PATCH_TYPE.__pendingUpdate__)) {
-                _fiber.applyElement();
-            }
-        };
         ClientDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
             defaultGenerateUnmountArrayMap(_fiber, _pendingUnmount, this.unmountMap);
         };
@@ -3402,6 +3456,12 @@
         ClientDispatch.prototype.pendingEffect = function (_fiber, _effect) {
             var exist = this.effectMap[_fiber.uid] || [];
             this.effectMap[_fiber.uid] = __spreadArray$1(__spreadArray$1([], exist, true), [_effect], false);
+        };
+        ClientDispatch.prototype.pendingRef = function (_fiber) {
+            if (_fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
+                if (_fiber.element.ref)
+                    this.pendingLayoutEffect(_fiber, function () { return setRef(_fiber); });
+            }
         };
         ClientDispatch.prototype.removeFiber = function (_fiber) {
             delete this.eventMap[_fiber.uid];
@@ -4199,9 +4259,13 @@
         ServerDispatch.prototype.resolveContextValue = function (_fiber, _contextObject) {
             return defaultGetContextValue(_fiber, _contextObject);
         };
+        ServerDispatch.prototype.resolveMemorizedProps = function (_fiber) {
+        };
         ServerDispatch.prototype.resolveComponentQueue = function (_fiber) {
         };
         ServerDispatch.prototype.resolveHookQueue = function (_fiber) {
+        };
+        ServerDispatch.prototype.resolveFiberUpdate = function (_fiber) {
         };
         ServerDispatch.prototype.reconcileCommit = function (_fiber, _hydrate, _parentFiberWithDom) {
             safeCallWithFiber({ fiber: _fiber, action: function () { return create(_fiber); } });
@@ -4250,13 +4314,13 @@
         };
         ServerDispatch.prototype.pendingDeactivate = function (_fiber) {
         };
-        ServerDispatch.prototype.pendingMemorizedProps = function (_fiber) {
-        };
         ServerDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
         };
         ServerDispatch.prototype.pendingLayoutEffect = function (_fiber, _layoutEffect) {
         };
         ServerDispatch.prototype.pendingEffect = function (_fiber, _effect) {
+        };
+        ServerDispatch.prototype.pendingRef = function (_fiber) {
         };
         ServerDispatch.prototype.removeFiber = function (_fiber) {
         };

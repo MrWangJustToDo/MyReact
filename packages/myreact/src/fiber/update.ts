@@ -1,8 +1,6 @@
-import { isNormalEquals, NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
-
 import { checkFiberElement } from "./check";
 
-import type { MyReactElement, MyReactElementNode } from "../element";
+import type { MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "./instance";
 
 export const updateFiberNode = (
@@ -28,39 +26,11 @@ export const updateFiberNode = (
 
   if (__DEV__) checkFiberElement(fiber);
 
+  globalDispatch.resolveFiberUpdate;
+
   if (prevElement !== nextElement || !fiber.activated) {
-    if (fiber.type & NODE_TYPE.__isMemo__) {
-      const typedPrevElement = prevElement as MyReactElement;
-      const typedNextElement = nextElement as MyReactElement;
-      if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(typedPrevElement.props, typedNextElement.props) && fiber.activated) {
-        fiber.afterUpdate();
-      } else {
-        fiber.prepareUpdate();
-      }
-    } else {
-      fiber.prepareUpdate();
-
-      if (fiber.type & NODE_TYPE.__isContextProvider__) {
-        const typedPrevElement = prevElement as MyReactElement;
-        const typedNextElement = nextElement as MyReactElement;
-        if (!isNormalEquals(typedPrevElement.props.value as Record<string, unknown>, typedNextElement.props.value as Record<string, unknown>)) {
-          globalDispatch.pendingContext(fiber);
-        }
-      }
-
-      if (fiber.type & NODE_TYPE.__isPlainNode__) {
-        const typedPrevElement = prevElement as MyReactElement;
-        const typedNextElement = nextElement as MyReactElement;
-        if (!isNormalEquals(typedPrevElement.props, typedNextElement.props, (key: string) => key === "children")) {
-          globalDispatch.pendingUpdate(fiber);
-        }
-      }
-
-      if (fiber.type & NODE_TYPE.__isTextNode__) {
-        globalDispatch.pendingUpdate(fiber);
-      }
-    }
-    globalDispatch.pendingMemorizedProps(fiber);
+    globalDispatch.resolveFiberUpdate(fiber);
+    globalDispatch.resolveMemorizedProps(fiber);
   }
 
   if (fiber !== prevFiber) {

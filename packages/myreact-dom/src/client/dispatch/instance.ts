@@ -8,6 +8,7 @@ import {
   defaultGetContextMapFromMap,
   defaultGetContextValue,
   defaultGetKeepLiveFiber,
+  defaultUpdateFiberNode,
   processComponentUpdateQueue,
   processHookNode,
   processHookUpdateQueue,
@@ -28,7 +29,16 @@ import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
 
-import type { MyReactFiberNode, FiberDispatch, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode, RenderScope } from "@my-react/react";
+import type {
+  MyReactFiberNode,
+  FiberDispatch,
+  MyReactElementNode,
+  createContext,
+  CreateHookParams,
+  MyReactHookNode,
+  RenderScope,
+  MyReactElement,
+} from "@my-react/react";
 
 const { enableStrictLifeCycle } = __my_react_shared__;
 
@@ -98,11 +108,19 @@ export class ClientDispatch implements FiberDispatch {
   resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return defaultGetContextValue(_fiber, _contextObject);
   }
+  resolveMemorizedProps(_fiber: MyReactFiberNode): void {
+    if (!(_fiber.patch & PATCH_TYPE.__pendingUpdate__)) {
+      _fiber.applyElement();
+    }
+  }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {
     processComponentUpdateQueue(_fiber);
   }
   resolveHookQueue(_fiber: MyReactFiberNode): void {
     processHookUpdateQueue(_fiber);
+  }
+  resolveFiberUpdate(_fiber: MyReactFiberNode): void {
+    defaultUpdateFiberNode(_fiber);
   }
   beginProgressList(_scope: RenderScope): void {
     if (_scope.updateFiberList?.length) {
@@ -250,11 +268,7 @@ export class ClientDispatch implements FiberDispatch {
   pendingDeactivate(_fiber: MyReactFiberNode): void {
     _fiber.patch |= PATCH_TYPE.__pendingDeactivate__;
   }
-  pendingMemorizedProps(_fiber: MyReactFiberNode): void {
-    if (!(_fiber.patch & PATCH_TYPE.__pendingUpdate__)) {
-      _fiber.applyElement();
-    }
-  }
+
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void {
     defaultGenerateUnmountArrayMap(_fiber, _pendingUnmount, this.unmountMap);
   }
@@ -265,6 +279,11 @@ export class ClientDispatch implements FiberDispatch {
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
     const exist = this.effectMap[_fiber.uid] || [];
     this.effectMap[_fiber.uid] = [...exist, _effect];
+  }
+  pendingRef(_fiber: MyReactFiberNode): void {
+    if (_fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
+      if ((_fiber.element as MyReactElement).ref) this.pendingLayoutEffect(_fiber, () => setRef(_fiber));
+    }
   }
   removeFiber(_fiber: MyReactFiberNode): void {
     delete this.eventMap[_fiber.uid];

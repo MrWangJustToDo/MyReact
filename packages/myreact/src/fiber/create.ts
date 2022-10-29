@@ -1,9 +1,7 @@
-import { NODE_TYPE } from "@my-react/react-shared";
-
 import { checkFiberElement } from "./check";
 import { MyReactFiberNode } from "./instance";
 
-import type { MyReactElement, MyReactElementNode } from "../element";
+import type { MyReactElementNode } from "../element";
 
 export const createFiberNode = (
   {
@@ -35,13 +33,9 @@ export const createFiberNode = (
     globalDispatch.pendingPosition(newFiberNode);
   }
 
-  globalDispatch.pendingMemorizedProps(newFiberNode);
+  globalDispatch.pendingRef(newFiberNode);
 
-  if (newFiberNode.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
-    if ((element as MyReactElement).ref) {
-      globalDispatch.pendingLayoutEffect(newFiberNode, () => globalDispatch.resolveRef(newFiberNode));
-    }
-  }
+  globalDispatch.resolveMemorizedProps(newFiberNode);
 
   return newFiberNode;
 };

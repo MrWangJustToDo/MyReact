@@ -59,10 +59,6 @@ const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
 };
 
 const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.globalDispatch;
-
-  globalDispatch.resolveHookQueue(fiber);
-
   currentHookDeepIndex.current = 0;
 
   currentFunctionFiber.current = fiber;
@@ -113,11 +109,7 @@ const nextWorkMemo = (fiber: MyReactFiberNode) => {
 
       const forwardRefRender = typedTargetRender.render;
 
-      const globalDispatch = fiber.root.globalDispatch;
-
       currentComponentFiber.current = fiber;
-
-      globalDispatch.resolveHookQueue(fiber);
 
       currentHookDeepIndex.current = 0;
 
@@ -160,10 +152,6 @@ const nextWorkMemo = (fiber: MyReactFiberNode) => {
       return res;
     } else {
       const typedTargetRender = targetRender as MixinMyReactFunctionComponent;
-
-      const globalDispatch = fiber.root.globalDispatch;
-
-      globalDispatch.resolveHookQueue(fiber);
 
       currentHookDeepIndex.current = 0;
 
@@ -237,11 +225,7 @@ const nextWorkReactive = (fiber: MyReactFiberNode) => {
 };
 
 const nextWorkForwardRef = (fiber: MyReactFiberNode) => {
-  const globalDispatch = fiber.root.globalDispatch;
-
   currentComponentFiber.current = fiber;
-
-  globalDispatch.resolveHookQueue(fiber);
 
   const { type, ref, props } = fiber.element as MyReactElement;
 

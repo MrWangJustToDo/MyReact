@@ -44,7 +44,11 @@ export const processHookUpdateQueue = (fiber: MyReactFiberNode) => {
   allQueue.forEach((updater) => {
     if (updater.type === "hook") {
       const { trigger, payLoad } = updater;
-      trigger.result = trigger.reducer(trigger.result, payLoad);
+      const lastResult = trigger.result;
+      trigger.result = trigger.reducer(lastResult, payLoad);
+      if (!Object.is(lastResult, trigger.result)) {
+        fiber.update();
+      }
     } else {
       lastQueue.push(updater);
     }

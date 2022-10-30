@@ -268,7 +268,6 @@ export class ClientDispatch implements FiberDispatch {
   pendingDeactivate(_fiber: MyReactFiberNode): void {
     _fiber.patch |= PATCH_TYPE.__pendingDeactivate__;
   }
-
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void {
     defaultGenerateUnmountArrayMap(_fiber, _pendingUnmount, this.unmountMap);
   }
@@ -282,7 +281,13 @@ export class ClientDispatch implements FiberDispatch {
   }
   pendingRef(_fiber: MyReactFiberNode): void {
     if (_fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
-      if ((_fiber.element as MyReactElement).ref) this.pendingLayoutEffect(_fiber, () => setRef(_fiber));
+      if (_fiber.patch & PATCH_TYPE.__pendingRef__) return;
+      _fiber.patch |= PATCH_TYPE.__pendingRef__;
+      if ((_fiber.element as MyReactElement).ref)
+        this.pendingLayoutEffect(_fiber, () => {
+          _fiber.patch ^= PATCH_TYPE.__pendingRef__;
+          setRef(_fiber);
+        });
     }
   }
   removeFiber(_fiber: MyReactFiberNode): void {

@@ -65,7 +65,10 @@ export class MyReactHookNode extends MyReactInternalInstance {
     this._ownerFiber?.updateQueue.push(updater);
 
     Promise.resolve().then(() => {
-      this._ownerFiber?.update();
+      const fiber = this._ownerFiber;
+      if (fiber) {
+        fiber.root.globalDispatch.resolveHookQueue(fiber);
+      }
     });
   };
 }

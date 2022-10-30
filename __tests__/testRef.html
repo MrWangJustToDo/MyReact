@@ -1,59 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
 
-    <script type="text/babel">
-      const { forwardRef, useRef, useImperativeHandle, useEffect, useLayoutEffect } = React;
-      const Foo = forwardRef((p, ref) => {
-        const bRef = useRef();
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+</head>
 
-        useLayoutEffect(() => {
-          console.log("layout inner");
-        }, []);
+<body>
+  <div id="root"></div>
 
-        useEffect(() => {
-          console.log("inner");
-        }, []);
+  <script type="text/babel">
+    const { forwardRef, useRef, useImperativeHandle, useEffect, useLayoutEffect, useState, useCallback } = React;
+    const useCounter = (init = 1) => {
+      const [count, setCount] = useState(init);
+      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
 
-        useImperativeHandle(ref, () => {
-          console.log("inner handler");
-          return {
-            foo: bRef.current,
-          };
-        });
+      return [count, i, j];
+    };
 
-        return <div ref={bRef}>12345</div>;
+    const Foo = forwardRef((p, ref) => {
+      const bRef = useRef();
+
+      useLayoutEffect(() => {
+        console.log("layout inner");
+      }, []);
+
+      useEffect(() => {
+        console.log("inner");
+      }, []);
+
+      useImperativeHandle(ref, () => {
+        console.log("inner handler");
+        return {
+          foo: bRef.current,
+        };
       });
 
-      const Bar = () => {
-        const ref = useRef();
+      return <div ref={bRef}>12345</div>;
+    });
 
-        useLayoutEffect(() => {
-          console.log("layout outer");
-        }, []);
+    const Bar = () => {
+      const ref = useRef();
 
-        useEffect(() => {
-          console.log("outer");
-        }, []);
+      useLayoutEffect(() => {
+        console.log("layout outer");
+      }, []);
 
-        console.log(ref);
+      useEffect(() => {
+        console.log("outer");
+      }, []);
 
-        return <Foo ref={ref} />;
-      };
+      console.log(ref);
 
-      ReactDOM.render(<Bar />, document.querySelector("#root"));
-    </script>
-  </body>
+      return <Foo ref={ref} />;
+    };
+
+    const App = () => {
+      const [c, add] = useCounter();
+      useLayoutEffect(() => console.log('layout'))
+
+      return <>
+        <p>{c}</p>
+        <button onClick={add}>add</button>
+        <p ref={(n) => {
+          // add();
+          console.log(n)
+        }}>fff</p>
+      </>
+    }
+
+    ReactDOM.render(<App />, document.querySelector("#root"));
+  </script>
+</body>
+
 </html>

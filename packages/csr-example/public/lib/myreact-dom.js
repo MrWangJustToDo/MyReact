@@ -41,6 +41,7 @@
         PATCH_TYPE[PATCH_TYPE["__pendingLayoutEffect__"] = 64] = "__pendingLayoutEffect__";
         PATCH_TYPE[PATCH_TYPE["__pendingUnmount__"] = 128] = "__pendingUnmount__";
         PATCH_TYPE[PATCH_TYPE["__pendingDeactivate__"] = 256] = "__pendingDeactivate__";
+        PATCH_TYPE[PATCH_TYPE["__pendingRef__"] = 512] = "__pendingRef__";
     })(PATCH_TYPE || (PATCH_TYPE = {}));
 
     var NODE_TYPE;
@@ -1340,8 +1341,6 @@
         }
     };
     var nextWorkFunctionComponent = function (fiber) {
-        var globalDispatch = fiber.root.globalDispatch;
-        globalDispatch.resolveHookQueue(fiber);
         currentHookDeepIndex.current = 0;
         currentFunctionFiber.current = fiber;
         var typedElement = fiber.element;
@@ -1374,9 +1373,7 @@
             if (targetRender.$$typeof === react.ForwardRef) {
                 var typedTargetRender = targetRender;
                 var forwardRefRender = typedTargetRender.render;
-                var globalDispatch = fiber.root.globalDispatch;
                 currentComponentFiber.current = fiber;
-                globalDispatch.resolveHookQueue(fiber);
                 currentHookDeepIndex.current = 0;
                 // support hook for forwardRef render function
                 currentFunctionFiber.current = fiber;
@@ -1404,8 +1401,6 @@
             }
             else {
                 var typedTargetRender = targetRender;
-                var globalDispatch = fiber.root.globalDispatch;
-                globalDispatch.resolveHookQueue(fiber);
                 currentHookDeepIndex.current = 0;
                 currentFunctionFiber.current = fiber;
                 var children = typedTargetRender(props);
@@ -1457,9 +1452,7 @@
         }
     };
     var nextWorkForwardRef = function (fiber) {
-        var globalDispatch = fiber.root.globalDispatch;
         currentComponentFiber.current = fiber;
-        globalDispatch.resolveHookQueue(fiber);
         var _a = fiber.element, type = _a.type, ref = _a.ref, props = _a.props;
         var typedType = type;
         var typedRender = typedType.render;
@@ -1969,7 +1962,11 @@
         allQueue.forEach(function (updater) {
             if (updater.type === "hook") {
                 var trigger = updater.trigger, payLoad = updater.payLoad;
-                trigger.result = trigger.reducer(trigger.result, payLoad);
+                var lastResult = trigger.result;
+                trigger.result = trigger.reducer(lastResult, payLoad);
+                if (!Object.is(lastResult, trigger.result)) {
+                    fiber.update();
+                }
             }
             else {
                 lastQueue.push(updater);
@@ -3459,8 +3456,14 @@
         };
         ClientDispatch.prototype.pendingRef = function (_fiber) {
             if (_fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
+                if (_fiber.patch & PATCH_TYPE.__pendingRef__)
+                    return;
+                _fiber.patch |= PATCH_TYPE.__pendingRef__;
                 if (_fiber.element.ref)
-                    this.pendingLayoutEffect(_fiber, function () { return setRef(_fiber); });
+                    this.pendingLayoutEffect(_fiber, function () {
+                        _fiber.patch ^= PATCH_TYPE.__pendingRef__;
+                        setRef(_fiber);
+                    });
             }
         };
         ClientDispatch.prototype.removeFiber = function (_fiber) {

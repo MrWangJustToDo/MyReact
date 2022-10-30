@@ -14,12 +14,21 @@ import {
   InputGroup,
   InputLeftAddon,
   InputRightAddon,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   Select,
   Stack,
   Textarea,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useRef } from "react";
+
+const PopoverTriggerAny = PopoverTrigger as any;
 
 export default function Index() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -31,6 +40,18 @@ export default function Index() {
         Create user
       </Button>
       <br />
+
+      <Popover>
+        <PopoverTriggerAny>
+          <Button>Trigger</Button>
+        </PopoverTriggerAny>
+        <PopoverContent>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverHeader>Confirmation!</PopoverHeader>
+          <PopoverBody>Are you sure you want to have that milkshake?</PopoverBody>
+        </PopoverContent>
+      </Popover>
 
       <Drawer isOpen={isOpen} placement="right" initialFocusRef={firstField} onClose={onClose}>
         <DrawerOverlay />

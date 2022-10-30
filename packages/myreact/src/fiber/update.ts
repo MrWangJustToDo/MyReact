@@ -1,3 +1,5 @@
+import { isValidElement } from "../element";
+
 import { checkFiberElement } from "./check";
 
 import type { MyReactElementNode } from "../element";
@@ -31,6 +33,10 @@ export const updateFiberNode = (
   if (prevElement !== nextElement || !fiber.activated) {
     globalDispatch.resolveFiberUpdate(fiber);
     globalDispatch.resolveMemorizedProps(fiber);
+  }
+
+  if (isValidElement(prevElement) && isValidElement(nextElement) && prevElement.ref !== nextElement.ref) {
+    globalDispatch.pendingRef(fiber);
   }
 
   if (fiber !== prevFiber) {

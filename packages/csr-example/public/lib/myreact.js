@@ -16,6 +16,7 @@
         PATCH_TYPE[PATCH_TYPE["__pendingLayoutEffect__"] = 64] = "__pendingLayoutEffect__";
         PATCH_TYPE[PATCH_TYPE["__pendingUnmount__"] = 128] = "__pendingUnmount__";
         PATCH_TYPE[PATCH_TYPE["__pendingDeactivate__"] = 256] = "__pendingDeactivate__";
+        PATCH_TYPE[PATCH_TYPE["__pendingRef__"] = 512] = "__pendingRef__";
     })(PATCH_TYPE || (PATCH_TYPE = {}));
 
     var NODE_TYPE;
@@ -1984,6 +1985,9 @@
             globalDispatch.resolveFiberUpdate(fiber);
             globalDispatch.resolveMemorizedProps(fiber);
         }
+        if (isValidElement(prevElement) && isValidElement(nextElement) && prevElement.ref !== nextElement.ref) {
+            globalDispatch.pendingRef(fiber);
+        }
         if (fiber !== prevFiber) {
             globalDispatch.pendingPosition(fiber);
         }
@@ -2009,8 +2013,10 @@
                 };
                 (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
                 Promise.resolve().then(function () {
-                    var _a;
-                    (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update();
+                    var fiber = _this._ownerFiber;
+                    if (fiber) {
+                        fiber.root.globalDispatch.resolveHookQueue(fiber);
+                    }
                 });
             };
             _this.deps = deps;

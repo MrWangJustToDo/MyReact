@@ -9,4 +9,5 @@ export enum PATCH_TYPE {
   __pendingLayoutEffect__ = 1 << 6,
   __pendingUnmount__ = 1 << 7,
   __pendingDeactivate__ = 1 << 8,
+  __pendingRef__ = 1 << 9,
 }

@@ -4,17 +4,20 @@ import { copyMyReact, copyMyReactDOM } from "./cope";
 import { getRollupConfig } from "./rollupConfig";
 
 import type { packages } from "./type";
-import type { OutputOptions, RollupOptions } from "rollup";
+import type { OutputOptions, RollupOptions , RollupBuild } from "rollup";
 
 const build = async (packageName: string, rollupOptions: RollupOptions, mode: string, isUMD: boolean) => {
   console.log(`[build] start build package '${packageName}' with ${mode} mode ${isUMD ? "in umd format" : ""}`);
+  let bundle: RollupBuild | null = null;
   try {
     const { output, ...options } = rollupOptions;
-    const bundle = await rollup(options);
-    await Promise.all((output as OutputOptions[]).map((output) => bundle.write(output)));
+    bundle = await rollup(options);
+    await Promise.all((output as OutputOptions[]).map((output) => bundle?.write(output)));
   } catch (e) {
     console.error(`[build] build package '${packageName}' with ${mode} mode ${isUMD ? "in umd format error" : "error"} \n ${(e as Error).message}`);
     throw e;
+  } finally {
+    await bundle?.close();
   }
   console.log(`[build] build package '${packageName}' with ${mode} mode ${isUMD ? "in umd format success" : "success"}`);
 };

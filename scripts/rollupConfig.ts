@@ -98,11 +98,11 @@ const transformBuildOptions = (
       return output;
     });
 
-    // options.onwarn = (msg, warn) => {
-    //   if (!/Circular/.test(msg.message)) {
-    //     warn(msg);
-    //   }
-    // };
+    options.onwarn = (msg, warn) => {
+      if (!/Circular/.test(msg.message)) {
+        warn(msg);
+      }
+    };
 
     if (singleOtherConfig.length) {
       allOptions.singleOther = {

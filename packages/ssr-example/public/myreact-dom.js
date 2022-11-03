@@ -1401,11 +1401,13 @@
             }
             else {
                 var typedTargetRender = targetRender;
+                currentComponentFiber.current = fiber;
                 currentHookDeepIndex.current = 0;
                 currentFunctionFiber.current = fiber;
                 var children = typedTargetRender(props);
                 currentFunctionFiber.current = null;
                 currentHookDeepIndex.current = 0;
+                currentComponentFiber.current = null;
                 return nextWorkCommon(fiber, children);
             }
         }
@@ -1450,6 +1452,12 @@
             var children = reactiveComponentUpdate(fiber);
             return nextWorkCommon(fiber, children);
         }
+    };
+    var nextWorkReactiveComponent = function (fiber) {
+        currentComponentFiber.current = fiber;
+        var res = nextWorkReactive(fiber);
+        currentComponentFiber.current = null;
+        return res;
     };
     var nextWorkForwardRef = function (fiber) {
         currentComponentFiber.current = fiber;
@@ -1508,7 +1516,7 @@
         if (fiber.type & NODE_TYPE.__isPortal__)
             return nextWorkNormal(fiber);
         if (fiber.type & NODE_TYPE.__isReactive__)
-            return nextWorkReactive(fiber);
+            return nextWorkReactiveComponent(fiber);
         if (fiber.type & NODE_TYPE.__isForwardRef__)
             return nextWorkForwardRef(fiber);
         if (fiber.type & NODE_TYPE.__isContextProvider__)
@@ -2911,112 +2919,106 @@
         }
     };
 
-    var domPropsHydrate = function (fiber, node, isSVG) {
-        if (fiber.type & NODE_TYPE.__isTextNode__) {
-            if (node.textContent !== String(fiber.element)) {
-                if (node.textContent === " " && fiber.element === "") {
-                    node.textContent = "";
+    var domContentHydrate = function (fiber) {
+        var node = fiber.node;
+        if (node.textContent !== String(fiber.element)) {
+            if (node.textContent === " " && fiber.element === "") {
+                node.textContent = "";
+            }
+            else {
+                log({
+                    fiber: fiber,
+                    message: "hydrate warning, text not match from server. server: ".concat(node.textContent, ", client: ").concat(fiber.element),
+                });
+                node.textContent = fiber.element;
+            }
+        }
+    };
+    var domPropsHydrate = function (fiber, isSVG, key, value) {
+        var _a;
+        var node = fiber.node;
+        var dom = node;
+        if (value !== null && value !== false && value !== undefined) {
+            if (key === "className") {
+                if (isSVG) {
+                    var v = (_a = dom.getAttribute("class")) === null || _a === void 0 ? void 0 : _a.toString();
+                    if (v !== String(value)) {
+                        log({
+                            fiber: fiber,
+                            message: "hydrate warning, dom ".concat(key, " not match from server. server: ").concat(v, ", client: ").concat(value),
+                        });
+                        dom.setAttribute("class", value);
+                    }
                 }
                 else {
-                    log({
-                        fiber: fiber,
-                        message: "hydrate warning, text not match from server. server: ".concat(node.textContent, ", client: ").concat(fiber.element),
-                    });
-                    node.textContent = fiber.element;
+                    if (dom[key].toString() !== String(value)) {
+                        log({
+                            fiber: fiber,
+                            message: "hydrate warning, dom ".concat(key, " not match from server. server: ").concat(dom[key], ", client: ").concat(value),
+                        });
+                        dom[key] == value;
+                    }
+                }
+            }
+            else {
+                if (key in dom && !isSVG) {
+                    if (dom[key].toString() !== String(value)) {
+                        log({
+                            fiber: fiber,
+                            message: "hydrate warning, dom ".concat(key, " props not match from server. server: ").concat(dom[key], ", client: ").concat(value),
+                        });
+                        dom[key] = value;
+                    }
+                }
+                else {
+                    var v = dom.getAttribute(key);
+                    if ((v === null || v === void 0 ? void 0 : v.toString()) !== String(value)) {
+                        log({
+                            fiber: fiber,
+                            message: "hydrate warning, dom ".concat(v, " attr not match from server. server: ").concat(v, ", client: ").concat(value),
+                        });
+                        dom.setAttribute(key, value);
+                    }
                 }
             }
         }
-        else if (fiber.type & NODE_TYPE.__isPlainNode__) {
-            var dom_1 = node;
-            var props_1 = fiber.pendingProps;
-            Object.keys(props_1)
-                .filter(isProperty)
-                .forEach(function (key) {
-                var _a;
-                if (props_1[key] !== null && props_1[key] !== false && props_1[key] !== undefined) {
-                    if (key === "className") {
-                        if (isSVG) {
-                            var v = (_a = dom_1.getAttribute("class")) === null || _a === void 0 ? void 0 : _a.toString();
-                            if (v !== String(props_1[key])) {
-                                log({
-                                    fiber: fiber,
-                                    message: "hydrate warning, dom ".concat(key, " not match from server. server: ").concat(v, ", client: ").concat(props_1[key]),
-                                });
-                                dom_1.setAttribute("class", props_1[key]);
-                            }
-                        }
-                        else {
-                            if (dom_1[key].toString() !== String(props_1[key])) {
-                                log({
-                                    fiber: fiber,
-                                    message: "hydrate warning, dom ".concat(key, " not match from server. server: ").concat(dom_1[key], ", client: ").concat(props_1[key]),
-                                });
-                                dom_1[key] == props_1[key];
-                            }
-                        }
-                    }
-                    else {
-                        if (key in dom_1 && !isSVG) {
-                            if (dom_1[key].toString() !== String(props_1[key])) {
-                                log({
-                                    fiber: fiber,
-                                    message: "hydrate warning, dom ".concat(key, " props not match from server. server: ").concat(dom_1[key], ", client: ").concat(props_1[key]),
-                                });
-                                dom_1[key] = props_1[key];
-                            }
-                        }
-                        else {
-                            var v = dom_1.getAttribute(key);
-                            if ((v === null || v === void 0 ? void 0 : v.toString()) !== String(props_1[key])) {
-                                log({
-                                    fiber: fiber,
-                                    message: "hydrate warning, dom ".concat(v, " attr not match from server. server: ").concat(v, ", client: ").concat(props_1[key]),
-                                });
-                                dom_1.setAttribute(key, props_1[key]);
-                            }
-                        }
-                    }
-                }
-            });
-        }
     };
-    var domStyleHydrate = function (fiber, dom) {
-        if (fiber.type & NODE_TYPE.__isPlainNode__) {
-            var props_2 = fiber.pendingProps;
-            Object.keys(props_2)
-                .filter(isStyle)
-                .forEach(function (styleKey) {
-                var typedProps = props_2[styleKey] || {};
-                Object.keys(typedProps).forEach(function (styleName) {
-                    if (Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedProps[styleName] === "number") {
-                        dom[styleKey][styleName] = "".concat(typedProps[styleName], "px");
-                        return;
-                    }
-                    if (typedProps[styleName] !== null && typedProps[styleName] !== undefined) {
-                        dom[styleKey][styleName] = typedProps[styleName];
-                    }
-                });
-            });
-        }
+    var domStyleHydrate = function (fiber, key, value) {
+        var node = fiber.node;
+        Object.keys(value).forEach(function (styleName) {
+            if (Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof value[styleName] === "number") {
+                node[key][styleName] = "".concat(value[styleName], "px");
+                return;
+            }
+            if (value[styleName] !== null && value[styleName] !== undefined) {
+                node[key][styleName] = value[styleName];
+            }
+        });
     };
-    var domEventHydrate = function (fiber, node) {
-        if (fiber.type & NODE_TYPE.__isPlainNode__) {
-            var props = fiber.pendingProps;
-            Object.keys(props)
-                .filter(isEvent)
-                .forEach(function (key) {
-                addEventListener(fiber, node, key);
-            });
-        }
+    var domEventHydrate = function (fiber, key) {
+        var node = fiber.node;
+        addEventListener(fiber, node, key);
     };
     var hydrateUpdate = function (fiber, isSVG) {
         var node = fiber.node;
-        // for now it is necessary to judge
         if (node) {
-            domPropsHydrate(fiber, node, isSVG);
-            domStyleHydrate(fiber, node);
-            domEventHydrate(fiber, node);
-            debugWithDOM(fiber);
+            var props_1 = fiber.pendingProps;
+            if (fiber.type & NODE_TYPE.__isPlainNode__) {
+                Object.keys(props_1).forEach(function (key) {
+                    if (isEvent(key)) {
+                        domEventHydrate(fiber, key);
+                    }
+                    else if (isStyle(key)) {
+                        domStyleHydrate(fiber, key, props_1[key] || {});
+                    }
+                    else if (isProperty(key)) {
+                        domPropsHydrate(fiber, isSVG, key, props_1[key]);
+                    }
+                });
+            }
+            if (fiber.type & NODE_TYPE.__isTextNode__) {
+                domContentHydrate(fiber);
+            }
         }
         fiber.patch = PATCH_TYPE.__initial__;
     };
@@ -3117,104 +3119,172 @@
             var oldProps_1 = fiber.memoizedProps || {};
             var newProps_1 = fiber.pendingProps || {};
             Object.keys(oldProps_1)
-                .filter(isEvent)
                 .filter(function (key) { return isGone(newProps_1)(key) || isNew(oldProps_1, newProps_1)(key); })
-                .forEach(function (key) { return removeEventListener(fiber, node, key); });
-            Object.keys(oldProps_1)
-                .filter(isProperty)
-                .filter(isGone(newProps_1))
                 .forEach(function (key) {
-                if (key === "className") {
-                    if (isSVG) {
-                        dom_1.removeAttribute("class");
-                    }
-                    else {
-                        dom_1[key] = "";
-                    }
+                if (isEvent(key)) {
+                    removeEventListener(fiber, node, key);
                 }
-                else {
-                    if (key in dom_1 && !isSVG) {
-                        dom_1[key] = "";
-                    }
-                    else {
-                        dom_1.removeAttribute(key);
-                    }
-                }
-            });
-            Object.keys(oldProps_1)
-                .filter(isStyle)
-                .forEach(function (styleKey) {
-                Object.keys(oldProps_1[styleKey] || {})
-                    .filter(isGone(newProps_1[styleKey] || {}))
-                    .forEach(function (styleName) {
-                    dom_1.style[styleName] = "";
-                });
-            });
-            Object.keys(newProps_1)
-                .filter(isEvent)
-                .filter(isNew(oldProps_1, newProps_1))
-                .forEach(function (key) { return addEventListener(fiber, node, key); });
-            Object.keys(newProps_1)
-                .filter(isProperty)
-                .filter(isNew(oldProps_1, newProps_1))
-                .forEach(function (key) {
-                if (key === "className") {
-                    if (isSVG) {
-                        dom_1.setAttribute("class", newProps_1[key] || "");
-                    }
-                    else {
-                        dom_1[key] = newProps_1[key] || "";
-                    }
-                }
-                else {
-                    if (key in dom_1 && !isSVG) {
-                        if (newProps_1[key] !== null && newProps_1[key] !== false && newProps_1[key] !== undefined) {
-                            dom_1[key] = newProps_1[key];
+                else if (isProperty(key)) {
+                    if (newProps_1[key] === null || newProps_1[key] === undefined || newProps_1[key] === false) {
+                        if (key === "className") {
+                            if (isSVG) {
+                                dom_1.removeAttribute("class");
+                            }
+                            else {
+                                dom_1[key] = "";
+                            }
                         }
                         else {
-                            dom_1[key] = "";
+                            if (key in dom_1 && !isSVG) {
+                                dom_1[key] = "";
+                            }
+                            else {
+                                dom_1.removeAttribute(key);
+                            }
                         }
-                    }
-                    else {
-                        if (newProps_1[key] !== null && newProps_1[key] !== false && newProps_1[key] !== undefined) {
-                            dom_1.setAttribute(key, String(newProps_1[key]));
-                        }
-                        else {
-                            dom_1.removeAttribute(key);
-                        }
-                    }
-                    if ((key === "autofocus" || key === "autoFocus") && newProps_1[key]) {
-                        Promise.resolve().then(function () { return dom_1.focus(); });
                     }
                 }
+                else if (isStyle(key)) {
+                    Object.keys(oldProps_1[key] || {})
+                        .filter(isGone(newProps_1[key] || {}))
+                        .forEach(function (styleName) {
+                        dom_1.style[styleName] = "";
+                    });
+                }
             });
-            Object.keys(newProps_1)
-                .filter(isStyle)
-                .forEach(function (styleKey) {
-                var typedNewProps = newProps_1[styleKey];
-                var typedOldProps = oldProps_1[styleKey];
-                Object.keys(typedNewProps || {})
-                    .filter(isNew(typedOldProps || {}, typedNewProps))
-                    .forEach(function (styleName) {
-                    if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedNewProps[styleName] === "number") {
-                        dom_1[styleKey][styleName] = "".concat(typedNewProps[styleName], "px");
-                        return;
+            Object.keys(newProps_1).filter(function (key) {
+                if (isEvent(key)) {
+                    addEventListener(fiber, node, key);
+                }
+                else if (isProperty(key)) {
+                    if (newProps_1[key] !== null && newProps_1[key] !== undefined && newProps_1[key] !== false) {
+                        if (key === "className") {
+                            if (isSVG) {
+                                dom_1.setAttribute("class", newProps_1[key] || "");
+                            }
+                            else {
+                                dom_1[key] = newProps_1[key] || "";
+                            }
+                        }
+                        else {
+                            if (key in dom_1 && !isSVG) {
+                                dom_1[key] = newProps_1[key];
+                            }
+                            else {
+                                dom_1.setAttribute(key, String(newProps_1[key]));
+                            }
+                        }
+                        if ((key === "autofocus" || key === "autoFocus") && newProps_1[key]) {
+                            Promise.resolve().then(function () { return dom_1.focus(); });
+                        }
                     }
-                    if (typedNewProps[styleName] !== null && typedNewProps[styleName] !== undefined) {
-                        dom_1[styleKey][styleName] = typedNewProps[styleName];
-                    }
-                    else {
-                        dom_1[styleKey][styleName] = "";
-                    }
-                });
+                }
+                else if (isStyle(key)) {
+                    var typedNewProps_1 = newProps_1[key];
+                    var typedOldProps = oldProps_1[key];
+                    Object.keys(typedNewProps_1 || {})
+                        .filter(isNew(typedOldProps || {}, typedNewProps_1))
+                        .forEach(function (styleName) {
+                        if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedNewProps_1[styleName] === "number") {
+                            dom_1[key][styleName] = "".concat(typedNewProps_1[styleName], "px");
+                            return;
+                        }
+                        if (typedNewProps_1[styleName] !== null && typedNewProps_1[styleName] !== undefined) {
+                            dom_1[key][styleName] = typedNewProps_1[styleName];
+                        }
+                        else {
+                            dom_1[key][styleName] = "";
+                        }
+                    });
+                }
             });
+            // Object.keys(oldProps)
+            //   .filter(isEvent)
+            //   .filter((key) => isGone(newProps)(key) || isNew(oldProps, newProps)(key))
+            //   .forEach((key) => removeEventListener(fiber, node as DomElement, key));
+            // Object.keys(oldProps)
+            //   .filter(isProperty)
+            //   .filter(isGone(newProps))
+            //   .forEach((key) => {
+            //     if (key === "className") {
+            //       if (isSVG) {
+            //         dom.removeAttribute("class");
+            //       } else {
+            //         dom[key] = "";
+            //       }
+            //     } else {
+            //       if (key in dom && !isSVG) {
+            //         dom[key] = "";
+            //       } else {
+            //         dom.removeAttribute(key);
+            //       }
+            //     }
+            //   });
+            // Object.keys(oldProps)
+            //   .filter(isStyle)
+            //   .forEach((styleKey) => {
+            //     Object.keys((oldProps[styleKey] as Record<string, unknown>) || {})
+            //       .filter(isGone((newProps[styleKey] as Record<string, unknown>) || {}))
+            //       .forEach((styleName) => {
+            //         dom.style[styleName] = "";
+            //       });
+            //   });
+            // Object.keys(newProps)
+            //   .filter(isEvent)
+            //   .filter(isNew(oldProps, newProps))
+            //   .forEach((key) => addEventListener(fiber, node as DomElement, key));
+            // Object.keys(newProps)
+            //   .filter(isProperty)
+            //   .filter(isNew(oldProps, newProps))
+            //   .forEach((key) => {
+            //     if (key === "className") {
+            //       if (isSVG) {
+            //         dom.setAttribute("class", (newProps[key] as string) || "");
+            //       } else {
+            //         dom[key] = (newProps[key] as string) || "";
+            //       }
+            //     } else {
+            //       if (key in dom && !isSVG) {
+            //         if (newProps[key] !== null && newProps[key] !== false && newProps[key] !== undefined) {
+            //           dom[key] = newProps[key];
+            //         } else {
+            //           dom[key] = "";
+            //         }
+            //       } else {
+            //         if (newProps[key] !== null && newProps[key] !== false && newProps[key] !== undefined) {
+            //           dom.setAttribute(key, String(newProps[key]));
+            //         } else {
+            //           dom.removeAttribute(key);
+            //         }
+            //       }
+            //       if ((key === "autofocus" || key === "autoFocus") && newProps[key]) {
+            //         Promise.resolve().then(() => dom.focus());
+            //       }
+            //     }
+            //   });
+            // Object.keys(newProps)
+            //   .filter(isStyle)
+            //   .forEach((styleKey) => {
+            //     const typedNewProps = newProps[styleKey] as Record<string, unknown>;
+            //     const typedOldProps = oldProps[styleKey] as Record<string, unknown>;
+            //     Object.keys(typedNewProps || {})
+            //       .filter(isNew(typedOldProps || {}, typedNewProps))
+            //       .forEach((styleName) => {
+            //         if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedNewProps[styleName] === "number") {
+            //           dom[styleKey][styleName] = `${typedNewProps[styleName]}px`;
+            //           return;
+            //         }
+            //         if (typedNewProps[styleName] !== null && typedNewProps[styleName] !== undefined) {
+            //           dom[styleKey][styleName] = typedNewProps[styleName];
+            //         } else {
+            //           dom[styleKey][styleName] = "";
+            //         }
+            //       });
+            //   });
             if (newProps_1["dangerouslySetInnerHTML"] && newProps_1["dangerouslySetInnerHTML"] !== oldProps_1["dangerouslySetInnerHTML"]) {
                 var typedProps = newProps_1["dangerouslySetInnerHTML"];
                 dom_1.innerHTML = typedProps.__html;
             }
-        }
-        {
-            debugWithDOM(fiber);
         }
         if (renderScope.isAppMounted && !renderScope.isHydrateRender && !renderScope.isServerRender && (enableHighlight.current || window.__highlight__)) {
             HighLight.getHighLightInstance().highLight(fiber);
@@ -3228,6 +3298,9 @@
             }
             else {
                 nativeUpdate(fiber, isSVG);
+            }
+            {
+                debugWithDOM(fiber);
             }
             fiber.applyElement();
             if (fiber.patch & PATCH_TYPE.__pendingUpdate__)
@@ -4174,28 +4247,47 @@
             if (fiber.type & NODE_TYPE.__isPlainNode__) {
                 var dom_1 = fiber.node;
                 var props_1 = fiber.pendingProps || {};
-                Object.keys(props_1)
-                    .filter(isProperty)
-                    .forEach(function (key) {
-                    if (key === "className") {
-                        dom_1[key] = props_1[key];
-                    }
-                    else {
-                        dom_1.setAttribute(key, props_1[key]);
-                    }
-                });
-                Object.keys(props_1)
-                    .filter(isStyle)
-                    .forEach(function (styleKey) {
-                    var typedProps = props_1[styleKey] || {};
-                    Object.keys(typedProps).forEach(function (styleName) {
-                        if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedProps[styleName] === "number") {
-                            dom_1[styleKey][styleName] = "".concat(typedProps[styleName], "px");
-                            return;
+                Object.keys(props_1).forEach(function (key) {
+                    if (isProperty(key)) {
+                        if (key === "className") {
+                            dom_1[key] = props_1[key];
                         }
-                        dom_1[styleKey][styleName] = typedProps[styleName];
-                    });
+                        else {
+                            dom_1.setAttribute(key, props_1[key]);
+                        }
+                    }
+                    if (isStyle(key)) {
+                        var typedProps_1 = props_1[key] || {};
+                        Object.keys(typedProps_1).forEach(function (styleName) {
+                            if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedProps_1[styleName] === "number") {
+                                dom_1[key][styleName] = "".concat(typedProps_1[styleName], "px");
+                                return;
+                            }
+                            dom_1[key][styleName] = typedProps_1[styleName];
+                        });
+                    }
                 });
+                // Object.keys(props)
+                //   .filter(isProperty)
+                //   .forEach((key) => {
+                //     if (key === "className") {
+                //       dom[key] = props[key] as string;
+                //     } else {
+                //       dom.setAttribute(key, props[key] as string);
+                //     }
+                //   });
+                // Object.keys(props)
+                //   .filter(isStyle)
+                //   .forEach((styleKey) => {
+                //     const typedProps = (props[styleKey] as Record<string, unknown>) || {};
+                //     Object.keys(typedProps).forEach((styleName) => {
+                //       if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedProps[styleName] === "number") {
+                //         dom[styleKey][styleName] = `${typedProps[styleName]}px`;
+                //         return;
+                //       }
+                //       dom[styleKey][styleName] = typedProps[styleName];
+                //     });
+                //   });
                 if (props_1["dangerouslySetInnerHTML"]) {
                     var typedProps = props_1["dangerouslySetInnerHTML"];
                     if (typedProps.__html) {

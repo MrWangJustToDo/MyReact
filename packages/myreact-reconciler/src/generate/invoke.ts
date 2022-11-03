@@ -153,6 +153,8 @@ const nextWorkMemo = (fiber: MyReactFiberNode) => {
     } else {
       const typedTargetRender = targetRender as MixinMyReactFunctionComponent;
 
+      currentComponentFiber.current = fiber;
+
       currentHookDeepIndex.current = 0;
 
       currentFunctionFiber.current = fiber;
@@ -162,6 +164,8 @@ const nextWorkMemo = (fiber: MyReactFiberNode) => {
       currentFunctionFiber.current = null;
 
       currentHookDeepIndex.current = 0;
+
+      currentComponentFiber.current = null;
 
       return nextWorkCommon(fiber, children);
     }
@@ -222,6 +226,16 @@ const nextWorkReactive = (fiber: MyReactFiberNode) => {
 
     return nextWorkCommon(fiber, children);
   }
+};
+
+const nextWorkReactiveComponent = (fiber: MyReactFiberNode) => {
+  currentComponentFiber.current = fiber;
+
+  const res = nextWorkReactive(fiber);
+
+  currentComponentFiber.current = null;
+
+  return res;
 };
 
 const nextWorkForwardRef = (fiber: MyReactFiberNode) => {
@@ -307,7 +321,7 @@ const nextWorkObject = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isMemo__) return nextWorkMemo(fiber);
   if (fiber.type & NODE_TYPE.__isLazy__) return nextWorkLazy(fiber);
   if (fiber.type & NODE_TYPE.__isPortal__) return nextWorkNormal(fiber);
-  if (fiber.type & NODE_TYPE.__isReactive__) return nextWorkReactive(fiber);
+  if (fiber.type & NODE_TYPE.__isReactive__) return nextWorkReactiveComponent(fiber);
   if (fiber.type & NODE_TYPE.__isForwardRef__) return nextWorkForwardRef(fiber);
   if (fiber.type & NODE_TYPE.__isContextProvider__) return nextWorkNormal(fiber);
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);

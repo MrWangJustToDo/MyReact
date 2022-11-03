@@ -1,5 +1,7 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
+import { debugWithDOM } from "@my-react-dom-shared";
+
 import { hydrateUpdate } from "./hydrateUpdate";
 import { nativeUpdate } from "./nativeUpdate";
 
@@ -11,6 +13,10 @@ export const update = (fiber: MyReactFiberNode, hydrate: boolean, isSVG: boolean
       hydrateUpdate(fiber, isSVG);
     } else {
       nativeUpdate(fiber, isSVG);
+    }
+
+    if (__DEV__) {
+      debugWithDOM(fiber);
     }
 
     fiber.applyElement();

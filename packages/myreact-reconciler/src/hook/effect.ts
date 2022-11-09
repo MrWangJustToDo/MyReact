@@ -52,7 +52,10 @@ export const effect = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
 
     if (hookNode.hookType === "useImperativeHandle") {
       globalDispatch.pendingLayoutEffect(fiber, () => {
+        // ref obj
         if (hookNode.value && typeof hookNode.value === "object") hookNode.value.current = hookNode.reducer.call(null);
+        // ref function
+        if (hookNode.value && typeof hookNode.value === "function") hookNode.value(hookNode.reducer.call(null));
 
         hookNode.effect = false;
 

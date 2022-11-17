@@ -2047,6 +2047,8 @@
             this.rootContainer = {};
             this.isAppMounted = false;
             this.isAppCrash = false;
+            this.renderTime = null;
+            this.hydrateTime = null;
             this.modifyFiberArray = [];
             this.modifyFiberRoot = null;
             this.updateFiberListArray = [];
@@ -2151,6 +2153,7 @@
     var startRender = function (fiber, hydrate) {
         if (hydrate === void 0) { hydrate = false; }
         globalLoop$2.current = true;
+        var startTime = Date.now();
         setScopeLog();
         safeCall(function () { return mountLoopSync(fiber); });
         reconcileMount(fiber, hydrate);
@@ -2158,7 +2161,17 @@
             console.warn("react-18 like lifecycle have been enabled!");
         }
         resetScopeLog();
-        fiber.root.globalScope.isAppMounted = true;
+        var endTime = Date.now();
+        var globalScope = fiber.root.globalScope;
+        globalScope.isAppMounted = true;
+        {
+            if (hydrate) {
+                globalScope.hydrateTime = endTime - startTime;
+            }
+            else {
+                globalScope.renderTime = endTime - startTime;
+            }
+        }
         globalLoop$2.current = false;
     };
 

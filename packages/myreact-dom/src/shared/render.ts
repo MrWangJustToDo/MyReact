@@ -4,6 +4,7 @@ import { mountLoopSync } from "@my-react/react-reconciler";
 import { resetScopeLog, safeCall, setScopeLog } from "./debug";
 import { reconcileMount } from "./reconcileMount";
 
+import type { DomScope } from "./scope";
 import type { MyReactFiberNode } from "@my-react/react";
 
 const { globalLoop } = __my_react_internal__;
@@ -12,6 +13,8 @@ const { enableStrictLifeCycle } = __my_react_shared__;
 
 export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
   globalLoop.current = true;
+
+  const startTime = Date.now();
 
   setScopeLog();
 
@@ -25,7 +28,19 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
 
   resetScopeLog();
 
-  fiber.root.globalScope.isAppMounted = true;
+  const endTime = Date.now();
+
+  const globalScope = fiber.root.globalScope as DomScope;
+
+  globalScope.isAppMounted = true;
+
+  if (__DEV__) {
+    if (hydrate) {
+      globalScope.hydrateTime = endTime - startTime;
+    } else {
+      globalScope.renderTime = endTime - startTime;
+    }
+  }
 
   globalLoop.current = false;
 };

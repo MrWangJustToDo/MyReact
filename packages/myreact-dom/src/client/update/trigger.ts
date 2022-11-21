@@ -10,13 +10,13 @@ import type { MyReactFiberNode, FiberDispatch } from "@my-react/react";
 
 const { globalLoop } = __my_react_internal__;
 
-const { enableAsyncUpdate } = __my_react_shared__;
+const { enableConcurrentMode } = __my_react_shared__;
 
 const updateEntry = (globalDispatch: FiberDispatch, globalScope: DomScope) => {
   if (globalLoop.current) return;
   const updateFiberController = generateUpdateControllerWithDispatch(globalDispatch, globalScope);
   const reconcileUpdate = generateReconcileUpdate(globalDispatch, globalScope);
-  if (enableAsyncUpdate.current) {
+  if (enableConcurrentMode.current) {
     updateAllAsync(updateFiberController, reconcileUpdate);
   } else {
     updateAllSync(updateFiberController, reconcileUpdate);

@@ -18,7 +18,7 @@ export const currentHookDeepIndex = createRef(0);
 // ==== feature ==== //
 export const enableDebugLog = createRef(false);
 
-export const enableAsyncUpdate = createRef(true);
+export const enableConcurrentMode = createRef(false);
 
 export const enableKeyDiff = createRef(true);
 

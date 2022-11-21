@@ -1053,7 +1053,7 @@
     var currentHookDeepIndex = createRef(0);
     // ==== feature ==== //
     var enableDebugLog = createRef(false);
-    var enableAsyncUpdate = createRef(true);
+    var enableConcurrentMode = createRef(false);
     var enableKeyDiff = createRef(true);
     // enable react-18 strict lifecycle method
     var enableStrictLifeCycle = createRef(false);
@@ -2321,8 +2321,8 @@
         initialFiberNode: initialFiberNode,
         createHookNode: createHookNode,
         getTypeFromElement: getTypeFromElement,
-        enableAsyncUpdate: enableAsyncUpdate,
         enableKeyDiff: enableKeyDiff,
+        enableConcurrentMode: enableConcurrentMode,
         enableStrictLifeCycle: enableStrictLifeCycle,
     };
     var __my_react_internal__ = {

@@ -308,7 +308,7 @@ const nextWorkConsumer = (fiber: MyReactFiberNode) => {
     fiber.instance.context = context;
   }
 
-  const typedChildren = props.children as MyReactFunctionComponent;
+  const typedChildren = props.children as (p: any) => MyReactElementNode;
 
   const children = typedChildren(fiber.instance.context);
 

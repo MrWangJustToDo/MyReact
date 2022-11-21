@@ -1,0 +1,43 @@
+{
+  "name": "@my-react/react-server-component",
+  "description": "@my-react/react-server-component",
+  "version": "0.0.2",
+  "main": "index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "index.js"
+  ],
+  "exports": {
+    ".": {
+      "require": "./index.js",
+      "node": "./index.js",
+      "import": "./dist/esm/index.js",
+      "default": "./index.js"
+    }
+  },
+  "buildOptions": {
+    "input": "./src/index.ts",
+    "output": [
+      {
+        "dir": "./dist",
+        "entryFileNames": "cjs/index.js",
+        "esModule": false,
+        "format": "cjs",
+        "multiple": true,
+        "sourcemap": true
+      },
+      {
+        "dir": "./dist",
+        "entryFileNames": "esm/index.js",
+        "format": "esm",
+        "sourcemap": true
+      }
+    ]
+  },
+  "peerDependencies": {
+    "@my-react/react": "workspace:*",
+    "@my-react/react-shared": "workspace:*"
+  }
+}

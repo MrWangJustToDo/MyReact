@@ -45,7 +45,7 @@ export type MyReactElementType =
 
 export type MyReactElement = ReturnType<typeof createMyReactElement>;
 
-export type MyReactElementNode = MyReactElement | MyReactFunctionComponent | string | number | boolean | null | undefined;
+export type MyReactElementNode = MyReactElement | ((p: any) => MyReactElementNode) | string | number | boolean | null | undefined;
 
 export type MaybeArrayMyReactElementNode = MyReactElementNode | MyReactElementNode[];
 

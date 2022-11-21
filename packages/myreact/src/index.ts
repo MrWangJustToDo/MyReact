@@ -48,7 +48,7 @@ import {
   currentHookDeepIndex,
   currentReactiveInstance,
   globalLoop,
-  enableAsyncUpdate,
+  enableConcurrentMode,
   enableKeyDiff,
   enableStrictLifeCycle,
 } from "./share";
@@ -67,8 +67,8 @@ const __my_react_shared__ = {
   initialFiberNode,
   createHookNode,
   getTypeFromElement,
-  enableAsyncUpdate,
   enableKeyDiff,
+  enableConcurrentMode,
   enableStrictLifeCycle,
 };
 

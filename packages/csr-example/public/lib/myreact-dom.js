@@ -1871,13 +1871,11 @@
     };
 
     var updateLoopSync = function (loopController) {
-        if (loopController.hasNext()) {
+        while (loopController.hasNext()) {
             var fiber = loopController.getNext();
-            while (fiber) {
-                var _fiber = fiber;
-                fiber = nextWorkAsync(_fiber, loopController);
-                loopController.getUpdateList(_fiber);
-                loopController.setYield(fiber);
+            if (fiber) {
+                var nextFiber = nextWorkAsync(fiber, loopController);
+                loopController.setYield(nextFiber);
             }
         }
     };
@@ -2457,13 +2455,13 @@
     };
 
     var globalLoop = react.__my_react_internal__.globalLoop;
-    var enableAsyncUpdate = react.__my_react_shared__.enableAsyncUpdate;
+    var enableConcurrentMode = react.__my_react_shared__.enableConcurrentMode;
     var updateEntry = function (globalDispatch, globalScope) {
         if (globalLoop.current)
             return;
         var updateFiberController = generateUpdateControllerWithDispatch(globalDispatch, globalScope);
         var reconcileUpdate = generateReconcileUpdate(globalDispatch, globalScope);
-        if (enableAsyncUpdate.current) {
+        if (enableConcurrentMode.current) {
             updateAllAsync(updateFiberController, reconcileUpdate);
         }
         else {

@@ -3169,7 +3169,9 @@
                     });
                 }
             });
-            Object.keys(newProps_1).filter(function (key) {
+            Object.keys(newProps_1)
+                .filter(isNew(oldProps_1, newProps_1))
+                .filter(function (key) {
                 if (isEvent(key)) {
                     addEventListener(fiber, node, key);
                 }

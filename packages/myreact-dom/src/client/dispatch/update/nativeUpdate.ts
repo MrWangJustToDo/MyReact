@@ -51,46 +51,48 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
             });
         }
       });
-    Object.keys(newProps).filter((key) => {
-      if (isEvent(key)) {
-        addEventListener(fiber, node as DomElement, key);
-      } else if (isProperty(key)) {
-        if (newProps[key] !== null && newProps[key] !== undefined && newProps[key] !== false) {
-          if (key === "className") {
-            if (isSVG) {
-              dom.setAttribute("class", (newProps[key] as string) || "");
+    Object.keys(newProps)
+      .filter(isNew(oldProps, newProps))
+      .filter((key) => {
+        if (isEvent(key)) {
+          addEventListener(fiber, node as DomElement, key);
+        } else if (isProperty(key)) {
+          if (newProps[key] !== null && newProps[key] !== undefined && newProps[key] !== false) {
+            if (key === "className") {
+              if (isSVG) {
+                dom.setAttribute("class", (newProps[key] as string) || "");
+              } else {
+                dom[key] = (newProps[key] as string) || "";
+              }
             } else {
-              dom[key] = (newProps[key] as string) || "";
+              if (key in dom && !isSVG) {
+                dom[key] = newProps[key];
+              } else {
+                dom.setAttribute(key, String(newProps[key]));
+              }
             }
-          } else {
-            if (key in dom && !isSVG) {
-              dom[key] = newProps[key];
-            } else {
-              dom.setAttribute(key, String(newProps[key]));
+            if ((key === "autofocus" || key === "autoFocus") && newProps[key]) {
+              Promise.resolve().then(() => dom.focus());
             }
           }
-          if ((key === "autofocus" || key === "autoFocus") && newProps[key]) {
-            Promise.resolve().then(() => dom.focus());
-          }
+        } else if (isStyle(key)) {
+          const typedNewProps = newProps[key] as Record<string, unknown>;
+          const typedOldProps = oldProps[key] as Record<string, unknown>;
+          Object.keys(typedNewProps || {})
+            .filter(isNew(typedOldProps || {}, typedNewProps))
+            .forEach((styleName) => {
+              if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedNewProps[styleName] === "number") {
+                dom[key][styleName] = `${typedNewProps[styleName]}px`;
+                return;
+              }
+              if (typedNewProps[styleName] !== null && typedNewProps[styleName] !== undefined) {
+                dom[key][styleName] = typedNewProps[styleName];
+              } else {
+                dom[key][styleName] = "";
+              }
+            });
         }
-      } else if (isStyle(key)) {
-        const typedNewProps = newProps[key] as Record<string, unknown>;
-        const typedOldProps = oldProps[key] as Record<string, unknown>;
-        Object.keys(typedNewProps || {})
-          .filter(isNew(typedOldProps || {}, typedNewProps))
-          .forEach((styleName) => {
-            if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedNewProps[styleName] === "number") {
-              dom[key][styleName] = `${typedNewProps[styleName]}px`;
-              return;
-            }
-            if (typedNewProps[styleName] !== null && typedNewProps[styleName] !== undefined) {
-              dom[key][styleName] = typedNewProps[styleName];
-            } else {
-              dom[key][styleName] = "";
-            }
-          });
-      }
-    });
+      });
     if (newProps["dangerouslySetInnerHTML"] && newProps["dangerouslySetInnerHTML"] !== oldProps["dangerouslySetInnerHTML"]) {
       const typedProps = newProps["dangerouslySetInnerHTML"] as Record<string, unknown>;
       dom.innerHTML = typedProps.__html as string;

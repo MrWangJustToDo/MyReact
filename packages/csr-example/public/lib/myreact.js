@@ -1053,7 +1053,7 @@
     var currentHookDeepIndex = createRef(0);
     // ==== feature ==== //
     var enableDebugLog = createRef(false);
-    var enableConcurrentMode = createRef(false);
+    var enableConcurrentMode = createRef(true);
     var enableKeyDiff = createRef(true);
     // enable react-18 strict lifecycle method
     var enableStrictLifeCycle = createRef(false);

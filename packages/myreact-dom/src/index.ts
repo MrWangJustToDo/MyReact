@@ -1,5 +1,5 @@
 import { render, hydrate } from "./client";
-import { renderToString } from "./server";
+import { renderToString, renderToStringAsync } from "./server";
 import { createPortal, findDOMNode, safeCall, unmountComponentAtNode } from "./shared";
 
 const version = __VERSION__;
@@ -14,10 +14,23 @@ const ReactDOM = {
   findDOMNode,
   createPortal,
   renderToString,
+  renderToStringAsync,
   flushSync,
   unmountComponentAtNode,
   unstable_batchedUpdates,
   version,
 };
 
-export { render, hydrate, findDOMNode, createPortal, renderToString, unmountComponentAtNode, flushSync, unstable_batchedUpdates, version, ReactDOM as default };
+export {
+  render,
+  hydrate,
+  findDOMNode,
+  createPortal,
+  renderToString,
+  renderToStringAsync,
+  unmountComponentAtNode,
+  flushSync,
+  unstable_batchedUpdates,
+  version,
+  ReactDOM as default,
+};

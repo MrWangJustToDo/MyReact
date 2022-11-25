@@ -11,6 +11,7 @@ import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 import { safeCallWithFiber } from "../shared/debug";
 
 import { append, create, update } from "./dom";
+import { defaultResolveLazyElement } from "./lazy";
 
 import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode } from "@my-react/react";
 import type { LinkTreeList } from "@my-react/react-shared";
@@ -37,6 +38,9 @@ export class ServerDispatch implements FiberDispatch {
   }
   resolveLazy(): boolean {
     return false;
+  }
+  resolveLazyElement(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
+    return defaultResolveLazyElement(_fiber);
   }
   resolveRef(_fiber: MyReactFiberNode): void {
     void 0;

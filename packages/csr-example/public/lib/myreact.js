@@ -936,12 +936,16 @@
             return preString;
         }
     };
+    var UnKnownType = {
+        name: "Unknown",
+        displayName: "Unknown",
+    };
     var getElementName = function (fiber) {
         var _a;
         if (fiber.type & NODE_TYPE.__isMemo__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
-            var targetRender = typedType.render;
+            var targetRender = typedType.render || UnKnownType;
             if (typeof targetRender === "function") {
                 if (targetRender.name)
                     return "<Memo - (".concat(targetRender.name, ") />");
@@ -958,10 +962,11 @@
         if (fiber.type & NODE_TYPE.__isLazy__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
-            if (typedType.render.name)
-                return "<Lazy - (".concat(typedType.render.name, ") />");
-            if (typedType.render.displayName)
-                return "<Lazy -(".concat(typedType.render.displayName, ") />");
+            var typedRender = typedType.render || UnKnownType;
+            if (typedRender.name)
+                return "<Lazy - (".concat(typedRender.name, ") />");
+            if (typedRender.displayName)
+                return "<Lazy -(".concat(typedRender.displayName, ") />");
             return "<Lazy />";
         }
         if (fiber.type & NODE_TYPE.__isReactive__) {
@@ -1057,6 +1062,7 @@
     var enableKeyDiff = createRef(true);
     // enable react-18 strict lifecycle method
     var enableStrictLifeCycle = createRef(false);
+    var enableLazySSRHydrate = createRef(true);
 
     var My_React_Element = Symbol.for("react.element");
     var My_React_Memo = Symbol.for("react.memo");
@@ -1619,6 +1625,9 @@
         };
         EmptyDispatch.prototype.resolveLazy = function () {
             return false;
+        };
+        EmptyDispatch.prototype.resolveLazyElement = function (_fiber) {
+            return null;
         };
         EmptyDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
             return null;
@@ -2323,6 +2332,7 @@
         getTypeFromElement: getTypeFromElement,
         enableKeyDiff: enableKeyDiff,
         enableConcurrentMode: enableConcurrentMode,
+        enableLazySSRHydrate: enableLazySSRHydrate,
         enableStrictLifeCycle: enableStrictLifeCycle,
     };
     var __my_react_internal__ = {

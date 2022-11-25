@@ -67,6 +67,9 @@ export class ClientDispatch implements FiberDispatch {
   resolveLazy(): boolean {
     return true;
   }
+  resolveLazyElement(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
+    return null;
+  }
   resolveRef(_fiber: MyReactFiberNode): void {
     setRef(_fiber);
   }

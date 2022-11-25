@@ -28,6 +28,9 @@ export class EmptyDispatch implements FiberDispatch {
   resolveLazy(): boolean {
     return false;
   }
+  resolveLazyElement(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
+    return null;
+  }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return null;
   }

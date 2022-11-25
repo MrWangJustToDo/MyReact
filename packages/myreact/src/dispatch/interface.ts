@@ -25,6 +25,8 @@ export interface FiberDispatch {
 
   resolveLazy(): boolean;
 
+  resolveLazyElement(_fiber: MyReactFiberNode): Promise<MyReactElementNode>;
+
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
 
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void;

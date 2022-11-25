@@ -34,11 +34,16 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
   }
 };
 
+const UnKnownType = {
+  name: "Unknown",
+  displayName: "Unknown",
+};
+
 const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isMemo__) {
     const typedElement = fiber.element as MyReactElement;
     const typedType = typedElement.type as ReturnType<typeof memo>;
-    const targetRender = typedType.render;
+    const targetRender = typedType.render || UnKnownType;
     if (typeof targetRender === "function") {
       if (targetRender.name) return `<Memo - (${targetRender.name}) />`;
       if (targetRender.displayName) return `<Memo -(${targetRender.displayName}) />`;
@@ -52,8 +57,9 @@ const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isLazy__) {
     const typedElement = fiber.element as MyReactElement;
     const typedType = typedElement.type as ReturnType<typeof lazy>;
-    if (typedType.render.name) return `<Lazy - (${typedType.render.name}) />`;
-    if (typedType.render.displayName) return `<Lazy -(${typedType.render.displayName}) />`;
+    const typedRender = typedType.render || UnKnownType;
+    if (typedRender.name) return `<Lazy - (${typedRender.name}) />`;
+    if (typedRender.displayName) return `<Lazy -(${typedRender.displayName}) />`;
     return `<Lazy />`;
   }
   if (fiber.type & NODE_TYPE.__isReactive__) {

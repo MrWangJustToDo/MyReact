@@ -23,3 +23,5 @@ export const My_React_Strict = Symbol.for("react.strict");
 export const My_React_KeepLive = Symbol.for("react.keep_live");
 
 export const My_React_Reactive = Symbol.for("react.reactive");
+
+export const My_React_Scope = Symbol.for("react.scope");

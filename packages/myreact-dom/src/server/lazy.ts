@@ -1,4 +1,4 @@
-import { createElement, Fragment } from "@my-react/react";
+import { createElement, Scope } from "@my-react/react";
 
 import type { lazy, MyReactClassComponent, MyReactElement, MyReactElementNode, MyReactFiberNode, MyReactFunctionComponent } from "@my-react/react";
 
@@ -16,5 +16,5 @@ export const defaultResolveLazyElement = async (_fiber: MyReactFiberNode): Promi
 
   typedType.render = render as MyReactClassComponent | MyReactFunctionComponent;
 
-  return createElement(Fragment, null, [`<!-- [ -->`, createElement(typedType.render, props), `<!-- ] -->`]);
+  return createElement(Scope, null, createElement(typedType.render, props));
 };

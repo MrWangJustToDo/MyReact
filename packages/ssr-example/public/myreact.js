@@ -43,6 +43,7 @@
         NODE_TYPE[NODE_TYPE["__isSuspenseNode__"] = 16384] = "__isSuspenseNode__";
         NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 32768] = "__isFragmentNode__";
         NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 65536] = "__isKeepLiveNode__";
+        NODE_TYPE[NODE_TYPE["__isScopeNode__"] = 131072] = "__isScopeNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -1077,6 +1078,7 @@
     var My_React_Strict = Symbol.for("react.strict");
     var My_React_KeepLive = Symbol.for("react.keep_live");
     var My_React_Reactive = Symbol.for("react.reactive");
+    var My_React_Scope = Symbol.for("react.scope");
 
     function isValidElement(element) {
         return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
@@ -1136,6 +1138,9 @@
                         break;
                     case My_React_Suspense:
                         nodeTypeSymbol |= NODE_TYPE.__isSuspenseNode__;
+                        break;
+                    case My_React_Scope:
+                        nodeTypeSymbol |= NODE_TYPE.__isScopeNode__;
                         break;
                     default:
                         throw new Error("invalid symbol element type ".concat(rawType.toString()));
@@ -2208,16 +2213,6 @@
         }
     };
 
-    function createReactive(props) {
-        var _a;
-        return _a = {},
-            _a["$$typeof"] = My_React_Reactive,
-            _a.name = typeof props === "function" ? props.name : props === null || props === void 0 ? void 0 : props.name,
-            _a.setup = typeof props === "function" ? props : props === null || props === void 0 ? void 0 : props.setup,
-            _a.render = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.render,
-            _a.contextType = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.contextType,
-            _a;
-    }
     // hook api like `Vue`
     var onBeforeMount = function (cb) {
         var reactiveInstance = currentReactiveInstance.current;
@@ -2273,6 +2268,17 @@
             throw new Error("can not use hook without setup function");
         }
     };
+
+    function createReactive(props) {
+        var _a;
+        return _a = {},
+            _a["$$typeof"] = My_React_Reactive,
+            _a.name = typeof props === "function" ? props.name : props === null || props === void 0 ? void 0 : props.name,
+            _a.setup = typeof props === "function" ? props : props === null || props === void 0 ? void 0 : props.setup,
+            _a.render = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.render,
+            _a.contextType = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.contextType,
+            _a;
+    }
 
     var MyReactReactiveInstance = /** @class */ (function (_super) {
         __extends(MyReactReactiveInstance, _super);
@@ -2378,6 +2384,7 @@
         forwardRef: forwardRef,
         createContext: createContext,
         createReactive: createReactive,
+        Scope: My_React_Scope,
         Portal: My_React_Portal,
         Element: My_React_Element,
         Provider: My_React_Provider,
@@ -2416,6 +2423,7 @@
     exports.Provider = My_React_Provider;
     exports.PureComponent = PureComponent;
     exports.Reactive = My_React_Reactive;
+    exports.Scope = My_React_Scope;
     exports.StrictMode = My_React_Strict;
     exports.Suspense = My_React_Suspense;
     exports.__my_react_internal__ = __my_react_internal__;

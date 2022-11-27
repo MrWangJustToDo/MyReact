@@ -15,6 +15,7 @@ import {
   My_React_Reactive,
   My_React_Strict,
   My_React_Suspense,
+  My_React_Scope,
 } from "./symbol";
 
 import type {
@@ -81,6 +82,9 @@ export function getTypeFromElement(element: MyReactElementNode) {
           break;
         case My_React_Suspense:
           nodeTypeSymbol |= NODE_TYPE.__isSuspenseNode__;
+          break;
+        case My_React_Scope:
+          nodeTypeSymbol |= NODE_TYPE.__isScopeNode__;
           break;
         default:
           throw new Error(`invalid symbol element type ${rawType.toString()}`);

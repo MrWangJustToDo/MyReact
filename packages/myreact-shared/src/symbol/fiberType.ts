@@ -27,4 +27,5 @@ export enum NODE_TYPE {
   __isSuspenseNode__ = 1 << 14,
   __isFragmentNode__ = 1 << 15,
   __isKeepLiveNode__ = 1 << 16,
+  __isScopeNode__ = 1 << 17,
 }

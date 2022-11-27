@@ -106,6 +106,7 @@
         NODE_TYPE[NODE_TYPE["__isSuspenseNode__"] = 16384] = "__isSuspenseNode__";
         NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 32768] = "__isFragmentNode__";
         NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 65536] = "__isKeepLiveNode__";
+        NODE_TYPE[NODE_TYPE["__isScopeNode__"] = 131072] = "__isScopeNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -1644,6 +1645,7 @@
     var processBeforeUpdateHooks = function (fiber) {
         var typedInstance = fiber.instance;
         if (typedInstance.beforeUpdateHooks.length) {
+            // disable reactive for beforeUpdate hook
             pauseTracking();
             pauseTrigger();
             typedInstance.beforeUpdateHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
@@ -4391,6 +4393,7 @@
                     return "<".concat(this.type).concat(this.serialize(), ">").concat(this.children
                         .reduce(function (p, c) {
                         if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
+                            console.log(p, c);
                             p.push("<!-- -->");
                             p.push(c);
                         }
@@ -4511,7 +4514,7 @@
                     loaded = _b.sent();
                     render = typeof loaded === "object" && typeof (loaded === null || loaded === void 0 ? void 0 : loaded.default) === "function" ? loaded.default : loaded;
                     typedType.render = render;
-                    return [2 /*return*/, react.createElement(react.Fragment, null, ["<!-- [ -->", react.createElement(typedType.render, props), "<!-- ] -->"])];
+                    return [2 /*return*/, react.createElement(react.Scope, null, react.createElement(typedType.render, props))];
             }
         });
     }); };

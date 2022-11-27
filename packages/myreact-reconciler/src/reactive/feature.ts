@@ -107,6 +107,7 @@ const processBeforeUpdateHooks = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactReactiveInstanceType;
 
   if (typedInstance.beforeUpdateHooks.length) {
+    // disable reactive for beforeUpdate hook
     pauseTracking();
     pauseTrigger();
     typedInstance.beforeUpdateHooks.forEach((f) => f?.());

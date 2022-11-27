@@ -248,7 +248,7 @@ export class ClientDispatch implements FiberDispatch {
     });
   }
   pendingCreate(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isScopeNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingCreate__;
     }
   }
@@ -258,7 +258,7 @@ export class ClientDispatch implements FiberDispatch {
     }
   }
   pendingAppend(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isScopeNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingAppend__;
     }
   }

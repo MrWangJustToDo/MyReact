@@ -983,6 +983,8 @@
             return "<Null />";
         if (fiber.type & NODE_TYPE.__isEmptyNode__)
             return "<Empty />";
+        if (fiber.type & NODE_TYPE.__isScopeNode__)
+            return "<Scope />";
         if (fiber.type & NODE_TYPE.__isStrictNode__)
             return "<Strict />";
         if (fiber.type & NODE_TYPE.__isSuspenseNode__)

@@ -71,6 +71,7 @@ const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isPortal__) return `<Portal />`;
   if (fiber.type & NODE_TYPE.__isNullNode__) return `<Null />`;
   if (fiber.type & NODE_TYPE.__isEmptyNode__) return `<Empty />`;
+  if (fiber.type & NODE_TYPE.__isScopeNode__) return `<Scope />`;
   if (fiber.type & NODE_TYPE.__isStrictNode__) return `<Strict />`;
   if (fiber.type & NODE_TYPE.__isSuspenseNode__) return `<Suspense />`;
   if (fiber.type & NODE_TYPE.__isFragmentNode__) return `<Fragment />`;

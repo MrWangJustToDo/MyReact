@@ -2325,7 +2325,12 @@
                 return;
             cache[messageKey][tree] = true;
         }
-        console[level]("[".concat(level, "]:"), "\n-----------------------------------------\n", "".concat(typeof message === "string" ? message : message.stack || message.message), "\n-----------------------------------------\n", "Render Tree:", tree);
+        if (level === "warn") {
+            originalConsoleWarn("[".concat(level, "]:"), "\n-----------------------------------------\n", "".concat(typeof message === "string" ? message : message.stack || message.message), "\n-----------------------------------------\n", "Render Tree:", tree);
+        }
+        else if (level === "error") {
+            originalConsoleError("[".concat(level, "]:"), "\n-----------------------------------------\n", "".concat(typeof message === "string" ? message : message.stack || message.message), "\n-----------------------------------------\n", "Render Tree:", tree);
+        }
     };
     var safeCall = function (action) {
         var args = [];
@@ -2336,12 +2341,41 @@
             return action.call.apply(action, __spreadArray$1([null], args, false));
         }
         catch (e) {
-            log({ message: e, level: "error" });
             var fiber = currentRunningFiber$1.current;
+            if (fiber && fiber.root.globalScope.isAppCrash)
+                return;
+            log({ message: e, level: "error" });
             if (fiber)
                 fiber.root.globalScope.isAppCrash = true;
             throw new Error(e.message);
         }
+    };
+    var safeCallAsync = function (action) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        return __awaiter$1(void 0, void 0, void 0, function () {
+            var e_1, fiber;
+            return __generator$1(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, action.call.apply(action, __spreadArray$1([null], args, false))];
+                    case 1: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        e_1 = _a.sent();
+                        fiber = currentRunningFiber$1.current;
+                        if (fiber && fiber.root.globalScope.isAppCrash)
+                            return [2 /*return*/];
+                        log({ message: e_1, level: "error" });
+                        if (fiber)
+                            fiber.root.globalScope.isAppCrash = true;
+                        throw new Error(e_1.message);
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
     };
     var safeCallWithFiber = function (_a) {
         var action = _a.action, fiber = _a.fiber;
@@ -2353,6 +2387,8 @@
             return action.call.apply(action, __spreadArray$1([null], args, false));
         }
         catch (e) {
+            if (fiber.root.globalScope.isAppCrash)
+                return;
             log({ message: e, level: "error", fiber: fiber });
             fiber.root.globalScope.isAppCrash = true;
             throw new Error(e.message);
@@ -2404,12 +2440,7 @@
                         globalLoop$2.current = true;
                         startTime = Date.now();
                         setScopeLog();
-                        return [4 /*yield*/, safeCall(function () { return __awaiter$1(void 0, void 0, void 0, function () { return __generator$1(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0: return [4 /*yield*/, mountLoopSyncAwait(fiber)];
-                                    case 1: return [2 /*return*/, _a.sent()];
-                                }
-                            }); }); })];
+                        return [4 /*yield*/, safeCallAsync(function () { return mountLoopSyncAwait(fiber); })];
                     case 1:
                         _a.sent();
                         reconcileMount(fiber, hydrate);
@@ -2856,9 +2887,17 @@
                 fiber.node = document.createElement(typedElement.type);
             }
         }
-        else {
+        else if (fiber.type & NODE_TYPE.__isPortal__) {
             var typedElement = fiber.element;
             fiber.node = typedElement.props["container"];
+        }
+        else if (fiber.type & NODE_TYPE.__isScopeNode__) {
+            var startScope = document.createComment("[");
+            var endScope = document.createComment("]");
+            fiber.node = {
+                startScope: startScope,
+                endScope: endScope,
+            };
         }
     };
 
@@ -3692,7 +3731,7 @@
             });
         };
         ClientDispatch.prototype.pendingCreate = function (_fiber) {
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isScopeNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingCreate__;
             }
         };
@@ -3702,7 +3741,7 @@
             }
         };
         ClientDispatch.prototype.pendingAppend = function (_fiber) {
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isScopeNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingAppend__;
             }
         };
@@ -3823,6 +3862,17 @@
                 fiber.patch ^= PATCH_TYPE.__pendingAppend__;
         }
     };
+
+    var TextElement = /** @class */ (function () {
+        function TextElement(content) {
+            this.content = "";
+            this.content = content === "" ? " " : content;
+        }
+        TextElement.prototype.toString = function () {
+            return this.content.toString();
+        };
+        return TextElement;
+    }());
 
     /**
      * A specialized version of `_.reduce` for arrays without support for
@@ -4301,15 +4351,56 @@
 
     var kebabCase_1 = kebabCase;
 
-    var TextElement = /** @class */ (function () {
-        function TextElement(content) {
+    var CommentElement = /** @class */ (function () {
+        function CommentElement(content) {
             this.content = "";
+            this.children = [];
             this.content = content === "" ? " " : content;
         }
-        TextElement.prototype.toString = function () {
-            return this.content.toString();
+        /**
+         *
+         * @param {Element} dom
+         */
+        CommentElement.prototype.append = function () {
+            var _this = this;
+            var dom = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                dom[_i] = arguments[_i];
+            }
+            dom.forEach(function (d) { return _this.appendChild(d); });
         };
-        return TextElement;
+        CommentElement.prototype.appendChild = function (dom) {
+            if (dom instanceof PlainElement || dom instanceof TextElement || dom instanceof CommentElement || typeof dom === "string") {
+                this.children.push(dom);
+                return dom;
+            }
+            else {
+                throw new Error("element instance error");
+            }
+        };
+        CommentElement.prototype.renderChildren = function () {
+            return this.children
+                .reduce(function (p, c) {
+                if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
+                    p.push("<!-- -->");
+                    p.push(c);
+                }
+                else if (p.length && typeof c === "string" && typeof p[p.length - 1] === "string") {
+                    p.push("<!-- -->");
+                    p.push(c);
+                }
+                else {
+                    p.push(c);
+                }
+                return p;
+            }, [])
+                .map(function (dom) { return dom.toString(); })
+                .reduce(function (p, c) { return p + c; }, "");
+        };
+        CommentElement.prototype.toString = function () {
+            return "<!-- [ -->".concat(this.renderChildren(), "<!-- ] -->");
+        };
+        return CommentElement;
     }());
 
     var PlainElement = /** @class */ (function () {
@@ -4348,7 +4439,7 @@
         PlainElement.prototype.appendChild = function (dom) {
             if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type))
                 return;
-            if (dom instanceof PlainElement || dom instanceof TextElement || typeof dom === "string") {
+            if (dom instanceof PlainElement || dom instanceof TextElement || dom instanceof CommentElement || typeof dom === "string") {
                 this.children.push(dom);
                 return dom;
             }
@@ -4384,41 +4475,35 @@
                 return " " + arr.reduce(function (p, c) { return "".concat(p, " ").concat(c); }) + " ";
             return "";
         };
+        PlainElement.prototype.renderChildren = function () {
+            return this.children
+                .reduce(function (p, c) {
+                if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
+                    p.push("<!-- -->");
+                    p.push(c);
+                }
+                else if (p.length && typeof c === "string" && typeof p[p.length - 1] === "string") {
+                    p.push("<!-- -->");
+                    p.push(c);
+                }
+                else {
+                    p.push(c);
+                }
+                return p;
+            }, [])
+                .map(function (dom) { return dom.toString(); })
+                .reduce(function (p, c) { return p + c; }, "");
+        };
         PlainElement.prototype.toString = function () {
             if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type)) {
                 return "<".concat(this.type).concat(this.serialize(), "/>");
             }
             else {
                 if (this.type) {
-                    return "<".concat(this.type).concat(this.serialize(), ">").concat(this.children
-                        .reduce(function (p, c) {
-                        if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
-                            console.log(p, c);
-                            p.push("<!-- -->");
-                            p.push(c);
-                        }
-                        else {
-                            p.push(c);
-                        }
-                        return p;
-                    }, [])
-                        .map(function (dom) { return dom.toString(); })
-                        .reduce(function (p, c) { return p + c; }, ""), "</").concat(this.type, ">");
+                    return "<".concat(this.type).concat(this.serialize(), ">").concat(this.renderChildren(), "</").concat(this.type, ">");
                 }
                 else {
-                    return this.children
-                        .reduce(function (p, c) {
-                        if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
-                            p.push("<!-- -->");
-                            p.push(c);
-                        }
-                        else {
-                            p.push(c);
-                        }
-                        return p;
-                    }, [])
-                        .map(function (dom) { return dom.toString(); })
-                        .reduce(function (p, c) { return p + c; }, "");
+                    return this.renderChildren();
                 }
             }
         };
@@ -4433,6 +4518,9 @@
             else if (fiber.type & NODE_TYPE.__isPlainNode__) {
                 var typedElement = fiber.element;
                 fiber.node = new PlainElement(typedElement.type);
+            }
+            else if (fiber.type & NODE_TYPE.__isScopeNode__) {
+                fiber.node = new CommentElement("");
             }
             else {
                 throw new Error("createPortal() can not call on the server");
@@ -4467,27 +4555,6 @@
                         });
                     }
                 });
-                // Object.keys(props)
-                //   .filter(isProperty)
-                //   .forEach((key) => {
-                //     if (key === "className") {
-                //       dom[key] = props[key] as string;
-                //     } else {
-                //       dom.setAttribute(key, props[key] as string);
-                //     }
-                //   });
-                // Object.keys(props)
-                //   .filter(isStyle)
-                //   .forEach((styleKey) => {
-                //     const typedProps = (props[styleKey] as Record<string, unknown>) || {};
-                //     Object.keys(typedProps).forEach((styleName) => {
-                //       if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedProps[styleName] === "number") {
-                //         dom[styleKey][styleName] = `${typedProps[styleName]}px`;
-                //         return;
-                //       }
-                //       dom[styleKey][styleName] = typedProps[styleName];
-                //     });
-                //   });
                 if (props_1["dangerouslySetInnerHTML"]) {
                     var typedProps = props_1["dangerouslySetInnerHTML"];
                     if (typedProps.__html) {
@@ -4611,7 +4678,7 @@
             if (_fiber.type & NODE_TYPE.__isPortal__) {
                 throw new Error("should not use portal element on the server");
             }
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isScopeNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingCreate__;
             }
         };
@@ -4621,7 +4688,7 @@
             }
         };
         ServerDispatch.prototype.pendingAppend = function (_fiber) {
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isScopeNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingAppend__;
             }
         };

@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { mountLoopSync, mountLoopSyncAwait } from "@my-react/react-reconciler";
 
-import { resetScopeLog, safeCall, setScopeLog } from "./debug";
+import { resetScopeLog, safeCall, safeCallAsync, setScopeLog } from "./debug";
 import { reconcileMount } from "./reconcileMount";
 
 import type { DomScope } from "./scope";
@@ -52,7 +52,7 @@ export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false)
 
   setScopeLog();
 
-  await safeCall(async () => await mountLoopSyncAwait(fiber));
+  await safeCallAsync(() => mountLoopSyncAwait(fiber));
 
   reconcileMount(fiber, hydrate);
 

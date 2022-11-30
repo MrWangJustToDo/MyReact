@@ -3,7 +3,7 @@ import { NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentActive, classComponentMount, classComponentUpdate } from "../component";
 import { reactiveComponentActive, reactiveComponentMount, reactiveComponentUpdate } from "../reactive";
-import { defaultResolveLazyElement } from "../share";
+import { isCommentElement } from "../share";
 
 import { transformChildrenFiber, transformKeepLiveChildrenFiber } from "./generate";
 
@@ -174,7 +174,9 @@ export const nextWorkMemo = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkLazy = (fiber: MyReactFiberNode) => {
-  const children = defaultResolveLazyElement(fiber);
+  const globalDispatch = fiber.root.globalDispatch;
+
+  const children = globalDispatch.resolveLazyElement(fiber);
 
   return nextWorkCommon(fiber, children);
 };
@@ -182,7 +184,7 @@ export const nextWorkLazy = (fiber: MyReactFiberNode) => {
 export const nextWorkLazySync = async (fiber: MyReactFiberNode) => {
   const globalDispatch = fiber.root.globalDispatch;
 
-  const children = await globalDispatch.resolveLazyElement(fiber);
+  const children = await globalDispatch.resolveLazyElementAsync(fiber);
 
   return nextWorkCommon(fiber, children);
 };
@@ -238,7 +240,7 @@ export const nextWorkForwardRef = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
-  if (isValidElement(fiber.element)) {
+  if (isValidElement(fiber.element) && !isCommentElement(fiber)) {
     const { props } = fiber.element;
 
     const { children } = props;

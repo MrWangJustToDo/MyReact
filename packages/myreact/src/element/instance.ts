@@ -98,7 +98,7 @@ export const createMyReactElement = ({ type, key, ref, props, _self, _source, _o
   return element;
 };
 
-export function createElement(type: CreateElementProps["type"], config: CreateElementConfig, children?: Props["children"]) {
+export function createElement(type: CreateElementProps["type"], config?: CreateElementConfig, ...children: ArrayMyReactElementChildren) {
   let key: CreateElementProps["key"] = null;
   let ref: CreateElementProps["ref"] = null;
   let self: CreateElementProps["_self"] = null;
@@ -129,12 +129,12 @@ export function createElement(type: CreateElementProps["type"], config: CreateEl
     if (__DEV__) {
       checkArrayChildrenKey(children as ArrayMyReactElementNode);
     }
-    props.children = children;
+    props.children = children as MaybeArrayMyReactElementNode;
   } else if (childrenLength === 1) {
     if (__DEV__) {
-      checkSingleChildrenKey(children as MyReactElementNode);
+      checkSingleChildrenKey(children[0] as MyReactElementNode);
     }
-    props.children = children;
+    props.children = children[0];
   }
 
   return createMyReactElement({

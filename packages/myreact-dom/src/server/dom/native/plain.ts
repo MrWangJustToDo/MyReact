@@ -2,7 +2,7 @@ import kebabCase from "lodash/kebabCase";
 
 import { IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
-import { CommentElement } from "./comment";
+import { CommentEndElement, CommentStartElement } from "./comment";
 import { TextElement } from "./text";
 
 export class PlainElement {
@@ -11,7 +11,7 @@ export class PlainElement {
   // attrs
   style: Record<string, string | null | undefined> = {};
   attrs: Record<string, string | boolean | null | undefined> = {};
-  children: Array<TextElement | PlainElement | CommentElement | string> = [];
+  children: Array<TextElement | PlainElement | CommentStartElement | CommentEndElement | string> = [];
   constructor(type: string) {
     this.type = type;
   }
@@ -37,13 +37,19 @@ export class PlainElement {
    *
    * @param {Element} dom
    */
-  append(...dom: Array<TextElement | PlainElement | CommentElement>) {
+  append(...dom: Array<TextElement | PlainElement | CommentStartElement | CommentEndElement>) {
     dom.forEach((d) => this.appendChild(d));
   }
 
-  appendChild(dom: PlainElement | TextElement | CommentElement | string) {
+  appendChild(dom: PlainElement | TextElement | CommentStartElement | CommentEndElement | string) {
     if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type)) return;
-    if (dom instanceof PlainElement || dom instanceof TextElement || dom instanceof CommentElement || typeof dom === "string") {
+    if (
+      dom instanceof PlainElement ||
+      dom instanceof TextElement ||
+      dom instanceof CommentStartElement ||
+      dom instanceof CommentEndElement ||
+      typeof dom === "string"
+    ) {
       this.children.push(dom);
       return dom;
     } else {
@@ -79,7 +85,7 @@ export class PlainElement {
 
   renderChildren() {
     return this.children
-      .reduce<Array<PlainElement | TextElement | CommentElement | string>>((p, c) => {
+      .reduce<Array<PlainElement | TextElement | CommentStartElement | CommentEndElement | string>>((p, c) => {
         if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
           p.push("<!-- -->");
           p.push(c);

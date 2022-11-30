@@ -2,7 +2,7 @@ import { ChakraProvider, cookieStorageManager } from "@chakra-ui/react";
 import { CacheProvider } from "@emotion/react";
 import createEmotionServer from "@emotion/server/create-instance";
 import { ChunkExtractor } from "@loadable/server";
-import { renderToStringAsync } from "@my-react/react-dom";
+// import { renderToStringAsync } from "@my-react/react-dom";
 import { renderToString } from "react-dom/server";
 import { HelmetProvider } from "react-helmet-async";
 import { Provider } from "react-redux";
@@ -43,7 +43,7 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
 
   // const body = renderToString(jsx);
 
-  const body = await renderToStringAsync(jsx as any);
+  const body = renderToString(jsx);
 
   const emotionChunks = extractCriticalToChunks(body);
 

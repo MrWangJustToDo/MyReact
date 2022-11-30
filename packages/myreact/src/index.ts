@@ -14,6 +14,8 @@ import {
   My_React_KeepLive as KeepLive,
   My_React_Reactive as Reactive,
   My_React_Scope as Scope,
+  My_React_Comment_Start as CommentStart,
+  My_React_Comment_End as CommentEnd,
   createElement,
   cloneElement,
   isValidElement,
@@ -40,6 +42,8 @@ import {
 import { MyReactInternalInstance } from "./internal";
 import { createReactive, MyReactReactiveInstance, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated } from "./reactive";
 import {
+  getElementName,
+  getFiberNodeName,
   getFiberTree,
   getHookTree,
   createRef,
@@ -64,6 +68,8 @@ const version = __VERSION__;
 const __my_react_shared__ = {
   getHookTree,
   getFiberTree,
+  getElementName,
+  getFiberNodeName,
   createFiberNode,
   updateFiberNode,
   initialFiberNode,
@@ -132,6 +138,8 @@ const React = {
   KeepLive,
   StrictMode,
   ForwardRef,
+  CommentStart,
+  CommentEnd,
   useRef,
   useMemo,
   useState,
@@ -172,6 +180,8 @@ export {
   KeepLive,
   StrictMode,
   ForwardRef,
+  CommentStart,
+  CommentEnd,
   useRef,
   useMemo,
   useState,

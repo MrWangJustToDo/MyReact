@@ -7,7 +7,7 @@ import { nativeCreate } from "./nativeCreate";
 import { validDomNesting } from "./validDomNesting";
 
 import type { HydrateDOM } from "./getHydrateDom";
-import type { DomScope, DomElement, DomNode } from "@my-react-dom-shared";
+import type { DomComment, DomElement, DomNode, DomScope } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWithDom: MyReactFiberNode, isSVG: boolean): boolean => {
@@ -29,7 +29,7 @@ export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWit
     const renderScope = fiber.root.globalScope as DomScope;
 
     if (renderScope.isHydrateRender) {
-      const element = fiber.node as DomElement | DomNode;
+      const element = fiber.node as DomElement | DomNode | DomComment;
 
       const typedDom = element as HydrateDOM;
 

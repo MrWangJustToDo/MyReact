@@ -1,3 +1,4 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { NODE_TYPE } from "@my-react/react-shared";
 
 import { IS_SINGLE_ELEMENT, log } from "@my-react-dom-shared";
@@ -8,11 +9,25 @@ export type HydrateDOM = Element & {
   __hydrate__: boolean;
 };
 
+const { getElementName } = __my_react_shared__;
 
 const getNextHydrateDom = (parentDom: Element) => {
   const children = Array.from(parentDom.childNodes);
 
-  return children.find((dom) => dom.nodeType !== document.COMMENT_NODE && !(dom as HydrateDOM).__hydrate__);
+  return children.find((dom) => {
+    const typedDom = dom as HydrateDOM;
+
+    // skip hydrated
+    if (typedDom.__hydrate__) return false;
+
+    if (dom.nodeType === Node.COMMENT_NODE) {
+      // skip empty comment
+      if (dom.textContent === " " || dom.textContent === "") return false;
+      // scope comment
+      if (dom.textContent === " [ " || dom.textContent === " ] ") return true;
+    }
+    return true;
+  });
 };
 
 const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
@@ -20,7 +35,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     log({
       fiber,
       level: "error",
-      message: "hydrate error, dom not render from server",
+      message: `hydrate error, dom not render from server, client: "${getElementName(fiber)}"`,
     });
     return false;
   }
@@ -29,7 +44,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
       log({
         fiber,
         level: "error",
-        message: `hydrate error, dom not match from server. server: ${dom.nodeName.toLowerCase()}, client: ${fiber.element}`,
+        message: `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`,
       });
       return false;
     }
@@ -41,7 +56,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
       log({
         fiber,
         level: "error",
-        message: `hydrate error, dom not match from server. server: ${dom.nodeName.toLowerCase()}, client: ${typedElement.type.toString()}`,
+        message: `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`,
       });
       return false;
     }
@@ -49,7 +64,18 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
       log({
         fiber,
         level: "error",
-        message: `hydrate error, dom not match from server. server: ${dom.nodeName.toLowerCase()}, client: ${typedElement.type.toString()}`,
+        message: `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`,
+      });
+      return false;
+    }
+    return true;
+  }
+  if (fiber.type & (NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+    if (dom.nodeType !== Node.COMMENT_NODE) {
+      log({
+        fiber,
+        level: "error",
+        message: `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`,
       });
       return false;
     }

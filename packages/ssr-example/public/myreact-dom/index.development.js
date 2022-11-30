@@ -67,6 +67,163 @@
         return to.concat(ar || Array.prototype.slice.call(from));
     }
 
+    var enableAllCheck = react.createRef(true);
+    var asyncUpdateTimeLimit = 8;
+    var asyncUpdateTimeStep = react.createRef(null);
+    // ==== feature ==== //
+    var enableControlComponent = react.createRef(true);
+    var enableEventSystem = react.createRef(true);
+    var enableHighlight = react.createRef(false);
+    // TODO
+    react.createRef(false);
+
+    var isInternal = function (key) { return key.startsWith("_"); };
+    var isChildren = function (key) { return key === "children" || key === "dangerouslySetInnerHTML"; };
+    var isEvent = function (key) { return key.startsWith("on"); };
+    var isStyle = function (key) { return key === "style"; };
+    var isProperty = function (key) { return !isChildren(key) && !isEvent(key) && !isStyle(key) && !isInternal(key); };
+    var isNew = function (oldProps, newProps) { return function (key) { return oldProps[key] !== newProps[key]; }; };
+    var isGone = function (newProps) { return function (key) { return !(key in newProps); }; };
+
+    var DomScope = /** @class */ (function () {
+        function DomScope() {
+            this.rootFiber = null;
+            this.rootContainer = {};
+            this.isAppMounted = false;
+            this.isAppCrash = false;
+            this.renderTime = null;
+            this.hydrateTime = null;
+            this.modifyFiberArray = [];
+            this.modifyFiberRoot = null;
+            this.updateFiberListArray = [];
+            this.updateFiberList = null;
+            this.currentYield = null;
+            this.isHydrateRender = false;
+            this.isServerRender = false;
+        }
+        return DomScope;
+    }());
+
+    var currentRunningFiber$2 = react.__my_react_internal__.currentRunningFiber;
+    var getFiberTree = react.__my_react_shared__.getFiberTree;
+    var debugWithDOM = function (fiber) {
+        if (fiber.node) {
+            var debugDOM = fiber.node;
+            debugDOM["__fiber__"] = fiber;
+            debugDOM["__element__"] = fiber.element;
+            debugDOM["__children__"] = fiber.children;
+        }
+    };
+    var originalConsoleWarn = console.warn;
+    var originalConsoleError = console.error;
+    var setScopeLog = function () {
+        console.warn = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            var fiberTree = getFiberTree(currentRunningFiber$2.current);
+            originalConsoleWarn.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
+        };
+        console.error = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            var fiberTree = getFiberTree(currentRunningFiber$2.current);
+            originalConsoleError.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
+        };
+    };
+    var resetScopeLog = function () {
+        console.warn = originalConsoleWarn;
+        console.error = originalConsoleError;
+    };
+    var cache = {};
+    var log = function (_a) {
+        var fiber = _a.fiber, message = _a.message, _b = _a.level, level = _b === void 0 ? "warn" : _b, _c = _a.triggerOnce, triggerOnce = _c === void 0 ? false : _c;
+        var tree = getFiberTree(fiber || currentRunningFiber$2.current);
+        if (triggerOnce) {
+            var messageKey = message.toString();
+            cache[messageKey] = cache[messageKey] || {};
+            if (cache[messageKey][tree])
+                return;
+            cache[messageKey][tree] = true;
+        }
+        if (level === "warn") {
+            originalConsoleWarn("[".concat(level, "]:"), "\n-----------------------------------------\n", "".concat(typeof message === "string" ? message : message.stack || message.message), "\n-----------------------------------------\n", "Render Tree:", tree);
+        }
+        else if (level === "error") {
+            originalConsoleError("[".concat(level, "]:"), "\n-----------------------------------------\n", "".concat(typeof message === "string" ? message : message.stack || message.message), "\n-----------------------------------------\n", "Render Tree:", tree);
+        }
+    };
+    var safeCall = function (action) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        try {
+            return action.call.apply(action, __spreadArray$1([null], args, false));
+        }
+        catch (e) {
+            var fiber = currentRunningFiber$2.current;
+            if (fiber && fiber.root.globalScope.isAppCrash)
+                return;
+            log({ message: e, level: "error" });
+            if (fiber)
+                fiber.root.globalScope.isAppCrash = true;
+            throw new Error(e.message);
+        }
+    };
+    var safeCallAsync = function (action) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        return __awaiter$1(void 0, void 0, void 0, function () {
+            var e_1, fiber;
+            return __generator$1(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, action.call.apply(action, __spreadArray$1([null], args, false))];
+                    case 1: return [2 /*return*/, _a.sent()];
+                    case 2:
+                        e_1 = _a.sent();
+                        fiber = currentRunningFiber$2.current;
+                        if (fiber && fiber.root.globalScope.isAppCrash)
+                            return [2 /*return*/];
+                        log({ message: e_1, level: "error" });
+                        if (fiber)
+                            fiber.root.globalScope.isAppCrash = true;
+                        throw new Error(e_1.message);
+                    case 3: return [2 /*return*/];
+                }
+            });
+        });
+    };
+    var safeCallWithFiber = function (_a) {
+        var action = _a.action, fiber = _a.fiber;
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        try {
+            return action.call.apply(action, __spreadArray$1([null], args, false));
+        }
+        catch (e) {
+            if (fiber.root.globalScope.isAppCrash)
+                return;
+            log({ message: e, level: "error", fiber: fiber });
+            fiber.root.globalScope.isAppCrash = true;
+            throw new Error(e.message);
+        }
+    };
+
+    var createPortal = function (element, container) {
+        var _a;
+        return react.createElement((_a = {}, _a["$$typeof"] = react.Portal, _a), { container: container }, element);
+    };
+
     var PATCH_TYPE;
     (function (PATCH_TYPE) {
         PATCH_TYPE[PATCH_TYPE["__initial__"] = 0] = "__initial__";
@@ -107,6 +264,8 @@
         NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 32768] = "__isFragmentNode__";
         NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 65536] = "__isKeepLiveNode__";
         NODE_TYPE[NODE_TYPE["__isScopeNode__"] = 131072] = "__isScopeNode__";
+        NODE_TYPE[NODE_TYPE["__isCommentStartNode__"] = 262144] = "__isCommentStartNode__";
+        NODE_TYPE[NODE_TYPE["__isCommentEndNode__"] = 524288] = "__isCommentEndNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -707,33 +866,8 @@
     var nRoundTransformFiberArray = react.createRef([]);
     var cRoundTransformFiberArray = react.createRef([]);
 
-    // default lazy resolve, not work for SSR, like React17
-    var defaultResolveLazyElement$1 = function (_fiber) {
-        var _a = _fiber.element, type = _a.type, props = _a.props;
-        var globalDispatch = _fiber.root.globalDispatch;
-        var typedType = type;
-        if (typedType._loaded === true) {
-            var render = typedType.render;
-            var children_1 = react.createElement(render, props);
-            return children_1;
-        }
-        else if (typedType._loading === false) {
-            if (globalDispatch.resolveLazy()) {
-                typedType._loading = true;
-                Promise.resolve()
-                    .then(function () { return typedType.loader(); })
-                    .then(function (re) {
-                    var render = typeof re === "object" && typeof (re === null || re === void 0 ? void 0 : re.default) === "function" ? re.default : re;
-                    typedType._loaded = true;
-                    typedType._loading = false;
-                    typedType.render = render;
-                    _fiber.update();
-                });
-            }
-        }
-        var children = globalDispatch.resolveSuspenseElement(_fiber);
-        return children;
-    };
+    var WrapperByScope = function (children) { return react.createElement(react.Scope, null, react.createElement(react.CommentStart), children, react.createElement(react.CommentEnd)); };
+    var isCommentElement = function (fiber) { return fiber.type & (NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__); };
 
     var defaultGenerateStrictMap = function (fiber, map) {
         var parent = fiber.parent;
@@ -766,6 +900,26 @@
             return re;
         }
         return false;
+    };
+
+    var defaultGenerateSuspenseMap = function (fiber, map) {
+        var parent = fiber.parent;
+        var element = fiber.element;
+        if (typeof element === "object" && fiber.type & NODE_TYPE.__isSuspenseNode__) {
+            map[fiber.uid] = element === null || element === void 0 ? void 0 : element.props["fallback"];
+        }
+        else {
+            if (parent) {
+                map[fiber.uid] = map[parent.uid];
+            }
+            else {
+                map[fiber.uid] = null;
+            }
+        }
+        {
+            var typedFiber = fiber;
+            typedFiber._debugSuspense = map[fiber.uid];
+        }
     };
 
     var MyReactFiberNodeClass$1$1 = react.__my_react_internal__.MyReactFiberNode;
@@ -814,26 +968,6 @@
             }
         }
     }
-
-    var defaultGenerateSuspenseMap = function (fiber, map) {
-        var parent = fiber.parent;
-        var element = fiber.element;
-        if (typeof element === "object" && fiber.type & NODE_TYPE.__isSuspenseNode__) {
-            map[fiber.uid] = element === null || element === void 0 ? void 0 : element.props["fallback"];
-        }
-        else {
-            if (parent) {
-                map[fiber.uid] = map[parent.uid];
-            }
-            else {
-                map[fiber.uid] = null;
-            }
-        }
-        {
-            var typedFiber = fiber;
-            typedFiber._debugSuspense = map[fiber.uid];
-        }
-    };
 
     var getNext = function (fiber, root) {
         if (fiber.child)
@@ -1693,7 +1827,7 @@
         return children;
     };
 
-    var currentHookDeepIndex = react.__my_react_internal__.currentHookDeepIndex, currentFunctionFiber = react.__my_react_internal__.currentFunctionFiber, currentRunningFiber$2 = react.__my_react_internal__.currentRunningFiber, currentComponentFiber = react.__my_react_internal__.currentComponentFiber;
+    var currentHookDeepIndex = react.__my_react_internal__.currentHookDeepIndex, currentFunctionFiber = react.__my_react_internal__.currentFunctionFiber, currentRunningFiber$1 = react.__my_react_internal__.currentRunningFiber, currentComponentFiber = react.__my_react_internal__.currentComponentFiber;
     var nextWorkCommon = function (fiber, children) {
         var childrenFiber = transformChildrenFiber(fiber, children);
         {
@@ -1796,7 +1930,8 @@
         throw new Error("unSupport memo() usage");
     };
     var nextWorkLazy = function (fiber) {
-        var children = defaultResolveLazyElement$1(fiber);
+        var globalDispatch = fiber.root.globalDispatch;
+        var children = globalDispatch.resolveLazyElement(fiber);
         return nextWorkCommon(fiber, children);
     };
     var nextWorkLazySync = function (fiber) { return __awaiter(void 0, void 0, void 0, function () {
@@ -1805,7 +1940,7 @@
             switch (_a.label) {
                 case 0:
                     globalDispatch = fiber.root.globalDispatch;
-                    return [4 /*yield*/, globalDispatch.resolveLazyElement(fiber)];
+                    return [4 /*yield*/, globalDispatch.resolveLazyElementAsync(fiber)];
                 case 1:
                     children = _a.sent();
                     return [2 /*return*/, nextWorkCommon(fiber, children)];
@@ -1846,7 +1981,7 @@
         return nextWorkCommon(fiber, children);
     };
     var nextWorkNormal = function (fiber) {
-        if (react.isValidElement(fiber.element)) {
+        if (react.isValidElement(fiber.element) && !isCommentElement(fiber)) {
             var props = fiber.element.props;
             var children = props.children;
             var childrenFiber = transformChildrenFiber(fiber, children);
@@ -1910,7 +2045,7 @@
             return [];
         if (fiber.invoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)))
             return [];
-        currentRunningFiber$2.current = fiber;
+        currentRunningFiber$1.current = fiber;
         var children = [];
         if (fiber.type & NODE_TYPE.__isDynamicNode__)
             children = nextWorkComponent(fiber);
@@ -1922,7 +2057,7 @@
             children = nextWorkNormal(fiber);
         fiber.invoked = true;
         fiber.activated = true;
-        currentRunningFiber$2.current = null;
+        currentRunningFiber$1.current = null;
         return children;
     };
     var nextWorkSyncAwait = function (fiber) { return __awaiter(void 0, void 0, void 0, function () {
@@ -1934,7 +2069,7 @@
                         return [2 /*return*/, []];
                     if (fiber.invoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)))
                         return [2 /*return*/, []];
-                    currentRunningFiber$2.current = fiber;
+                    currentRunningFiber$1.current = fiber;
                     children = [];
                     if (!(fiber.type & NODE_TYPE.__isDynamicNode__)) return [3 /*break*/, 1];
                     children = nextWorkComponent(fiber);
@@ -1956,7 +2091,7 @@
                 case 4:
                     fiber.invoked = true;
                     fiber.activated = true;
-                    currentRunningFiber$2.current = null;
+                    currentRunningFiber$1.current = null;
                     return [2 /*return*/, children];
             }
         });
@@ -1965,7 +2100,7 @@
         if (!fiber.mounted)
             return null;
         if (!fiber.invoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
-            currentRunningFiber$2.current = fiber;
+            currentRunningFiber$1.current = fiber;
             if (fiber.type & NODE_TYPE.__isDynamicNode__)
                 nextWorkComponent(fiber);
             else if (fiber.type & NODE_TYPE.__isObjectNode__)
@@ -1976,7 +2111,7 @@
                 nextWorkNormal(fiber);
             fiber.invoked = true;
             fiber.activated = true;
-            currentRunningFiber$2.current = null;
+            currentRunningFiber$1.current = null;
             if (fiber.children.length) {
                 return fiber.child;
             }
@@ -2241,163 +2376,6 @@
             typedFiber._debugKeepLiveCache = map[fiber.uid];
         }
         return cachedFiber || null;
-    };
-
-    var enableAllCheck = react.createRef(true);
-    var asyncUpdateTimeLimit = 8;
-    var asyncUpdateTimeStep = react.createRef(null);
-    // ==== feature ==== //
-    var enableControlComponent = react.createRef(true);
-    var enableEventSystem = react.createRef(true);
-    var enableHighlight = react.createRef(false);
-    // TODO
-    react.createRef(false);
-
-    var isInternal = function (key) { return key.startsWith("_"); };
-    var isChildren = function (key) { return key === "children" || key === "dangerouslySetInnerHTML"; };
-    var isEvent = function (key) { return key.startsWith("on"); };
-    var isStyle = function (key) { return key === "style"; };
-    var isProperty = function (key) { return !isChildren(key) && !isEvent(key) && !isStyle(key) && !isInternal(key); };
-    var isNew = function (oldProps, newProps) { return function (key) { return oldProps[key] !== newProps[key]; }; };
-    var isGone = function (newProps) { return function (key) { return !(key in newProps); }; };
-
-    var DomScope = /** @class */ (function () {
-        function DomScope() {
-            this.rootFiber = null;
-            this.rootContainer = {};
-            this.isAppMounted = false;
-            this.isAppCrash = false;
-            this.renderTime = null;
-            this.hydrateTime = null;
-            this.modifyFiberArray = [];
-            this.modifyFiberRoot = null;
-            this.updateFiberListArray = [];
-            this.updateFiberList = null;
-            this.currentYield = null;
-            this.isHydrateRender = false;
-            this.isServerRender = false;
-        }
-        return DomScope;
-    }());
-
-    var currentRunningFiber$1 = react.__my_react_internal__.currentRunningFiber;
-    var getFiberTree = react.__my_react_shared__.getFiberTree;
-    var debugWithDOM = function (fiber) {
-        if (fiber.node) {
-            var debugDOM = fiber.node;
-            debugDOM["__fiber__"] = fiber;
-            debugDOM["__element__"] = fiber.element;
-            debugDOM["__children__"] = fiber.children;
-        }
-    };
-    var originalConsoleWarn = console.warn;
-    var originalConsoleError = console.error;
-    var setScopeLog = function () {
-        console.warn = function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
-            var fiberTree = getFiberTree(currentRunningFiber$1.current);
-            originalConsoleWarn.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
-        };
-        console.error = function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
-            var fiberTree = getFiberTree(currentRunningFiber$1.current);
-            originalConsoleError.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
-        };
-    };
-    var resetScopeLog = function () {
-        console.warn = originalConsoleWarn;
-        console.error = originalConsoleError;
-    };
-    var cache = {};
-    var log = function (_a) {
-        var fiber = _a.fiber, message = _a.message, _b = _a.level, level = _b === void 0 ? "warn" : _b, _c = _a.triggerOnce, triggerOnce = _c === void 0 ? false : _c;
-        var tree = getFiberTree(fiber || currentRunningFiber$1.current);
-        if (triggerOnce) {
-            var messageKey = message.toString();
-            cache[messageKey] = cache[messageKey] || {};
-            if (cache[messageKey][tree])
-                return;
-            cache[messageKey][tree] = true;
-        }
-        if (level === "warn") {
-            originalConsoleWarn("[".concat(level, "]:"), "\n-----------------------------------------\n", "".concat(typeof message === "string" ? message : message.stack || message.message), "\n-----------------------------------------\n", "Render Tree:", tree);
-        }
-        else if (level === "error") {
-            originalConsoleError("[".concat(level, "]:"), "\n-----------------------------------------\n", "".concat(typeof message === "string" ? message : message.stack || message.message), "\n-----------------------------------------\n", "Render Tree:", tree);
-        }
-    };
-    var safeCall = function (action) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        try {
-            return action.call.apply(action, __spreadArray$1([null], args, false));
-        }
-        catch (e) {
-            var fiber = currentRunningFiber$1.current;
-            if (fiber && fiber.root.globalScope.isAppCrash)
-                return;
-            log({ message: e, level: "error" });
-            if (fiber)
-                fiber.root.globalScope.isAppCrash = true;
-            throw new Error(e.message);
-        }
-    };
-    var safeCallAsync = function (action) {
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        return __awaiter$1(void 0, void 0, void 0, function () {
-            var e_1, fiber;
-            return __generator$1(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, action.call.apply(action, __spreadArray$1([null], args, false))];
-                    case 1: return [2 /*return*/, _a.sent()];
-                    case 2:
-                        e_1 = _a.sent();
-                        fiber = currentRunningFiber$1.current;
-                        if (fiber && fiber.root.globalScope.isAppCrash)
-                            return [2 /*return*/];
-                        log({ message: e_1, level: "error" });
-                        if (fiber)
-                            fiber.root.globalScope.isAppCrash = true;
-                        throw new Error(e_1.message);
-                    case 3: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    var safeCallWithFiber = function (_a) {
-        var action = _a.action, fiber = _a.fiber;
-        var args = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            args[_i - 1] = arguments[_i];
-        }
-        try {
-            return action.call.apply(action, __spreadArray$1([null], args, false));
-        }
-        catch (e) {
-            if (fiber.root.globalScope.isAppCrash)
-                return;
-            log({ message: e, level: "error", fiber: fiber });
-            fiber.root.globalScope.isAppCrash = true;
-            throw new Error(e.message);
-        }
-    };
-
-    var createPortal = function (element, container) {
-        var _a;
-        return react.createElement((_a = {}, _a["$$typeof"] = react.Portal, _a), { container: container }, element);
     };
 
     var reconcileMount = function (fiber, hydrate) {
@@ -2676,6 +2654,122 @@
         return null;
     };
 
+    var getNativeEventName = function (eventName, tagName, props) {
+        var isCapture = false;
+        var nativeName = eventName;
+        if (eventName.endsWith("Capture")) {
+            isCapture = true;
+            nativeName = eventName.split("Capture")[0];
+        }
+        if (nativeName === "DoubleClick") {
+            nativeName = "dblclick";
+        }
+        else if (nativeName === "Change") {
+            if (tagName === "input") {
+                if (props.type === "radio" || props.type === "checkbox") {
+                    nativeName = "click";
+                }
+                else {
+                    nativeName = "input";
+                }
+            }
+            else {
+                nativeName = "change";
+            }
+        }
+        else {
+            nativeName = nativeName.toLowerCase();
+        }
+        return { nativeName: nativeName, isCapture: isCapture };
+    };
+
+    var controlElementTag = {
+        input: true,
+        // textarea: true,
+        // select: true,
+    };
+    var addEventListener = function (fiber, dom, key) {
+        var _a;
+        var globalDispatch = fiber.root.globalDispatch;
+        var typedElement = fiber.element;
+        var pendingProps = fiber.pendingProps;
+        var callback = pendingProps[key];
+        var _b = getNativeEventName(key.slice(2), typedElement.type, typedElement.props), nativeName = _b.nativeName, isCapture = _b.isCapture;
+        if (enableEventSystem.current) {
+            var eventMap = globalDispatch.eventMap;
+            var eventState = eventMap[fiber.uid] || {};
+            var eventName = "".concat(nativeName, "_").concat(isCapture);
+            if (eventState[eventName]) {
+                (_a = eventState[eventName].cb) === null || _a === void 0 ? void 0 : _a.push(callback);
+            }
+            else {
+                var handler_1 = function () {
+                    var args = [];
+                    for (var _i = 0; _i < arguments.length; _i++) {
+                        args[_i] = arguments[_i];
+                    }
+                    var e = args[0];
+                    e.nativeEvent = e;
+                    safeCallWithFiber({
+                        action: function () { var _a; return (_a = handler_1.cb) === null || _a === void 0 ? void 0 : _a.forEach(function (cb) { return typeof cb === "function" && cb.call.apply(cb, __spreadArray$1([null], args, false)); }); },
+                        fiber: fiber,
+                    });
+                    if (enableControlComponent.current) {
+                        var pendingProps_1 = fiber.pendingProps;
+                        if (controlElementTag[typedElement.type] && typeof pendingProps_1["value"] !== "undefined") {
+                            var typedDom = dom;
+                            typedDom["value"] = pendingProps_1["value"];
+                        }
+                    }
+                };
+                if (enableControlComponent.current) {
+                    if (controlElementTag[typedElement.type]) {
+                        if ("value" in typedElement.props) {
+                            var typedDom = dom;
+                            if ("onChange" in typedElement.props) {
+                                typedDom.__isControlled__ = true;
+                            }
+                            else {
+                                typedDom.__isReadonly__ = true;
+                            }
+                        }
+                    }
+                }
+                handler_1.cb = [callback];
+                eventState[eventName] = handler_1;
+                dom.addEventListener(nativeName, handler_1, isCapture);
+            }
+            eventMap[fiber.uid] = eventState;
+            {
+                var typedFiber = fiber;
+                typedFiber._debugEventMap = eventState;
+            }
+        }
+        else {
+            dom.addEventListener(nativeName, callback, isCapture);
+        }
+    };
+
+    var removeEventListener = function (fiber, dom, key) {
+        var _a;
+        var globalDispatch = fiber.root.globalDispatch;
+        var typedElement = fiber.element;
+        var currentProps = fiber.memoizedProps || {};
+        var callback = currentProps[key];
+        var _b = getNativeEventName(key.slice(2), typedElement.type, currentProps), nativeName = _b.nativeName, isCapture = _b.isCapture;
+        if (enableEventSystem.current) {
+            var eventMap = globalDispatch.eventMap;
+            var eventState = eventMap[fiber.uid];
+            var eventName = "".concat(nativeName, "_").concat(isCapture);
+            if (!eventState[eventName])
+                return;
+            eventState[eventName].cb = (_a = eventState[eventName].cb) === null || _a === void 0 ? void 0 : _a.filter(function (c) { return c !== callback || typeof c !== "function"; });
+        }
+        else {
+            dom.removeEventListener(nativeName, callback, isCapture);
+        }
+    };
+
     var globalLoop$1 = react.__my_react_internal__.globalLoop;
     var updateAllSync = function (updateFiberController, reconcileUpdate) {
         globalLoop$1.current = true;
@@ -2804,16 +2898,31 @@
         }
     };
 
+    var getElementName = react.__my_react_shared__.getElementName;
     var getNextHydrateDom = function (parentDom) {
         var children = Array.from(parentDom.childNodes);
-        return children.find(function (dom) { return dom.nodeType !== document.COMMENT_NODE && !dom.__hydrate__; });
+        return children.find(function (dom) {
+            var typedDom = dom;
+            // skip hydrated
+            if (typedDom.__hydrate__)
+                return false;
+            if (dom.nodeType === Node.COMMENT_NODE) {
+                // skip empty comment
+                if (dom.textContent === " " || dom.textContent === "")
+                    return false;
+                // scope comment
+                if (dom.textContent === " [ " || dom.textContent === " ] ")
+                    return true;
+            }
+            return true;
+        });
     };
     var checkHydrateDom = function (fiber, dom) {
         if (!dom) {
             log({
                 fiber: fiber,
                 level: "error",
-                message: "hydrate error, dom not render from server",
+                message: "hydrate error, dom not render from server, client: \"".concat(getElementName(fiber), "\""),
             });
             return false;
         }
@@ -2822,7 +2931,7 @@
                 log({
                     fiber: fiber,
                     level: "error",
-                    message: "hydrate error, dom not match from server. server: ".concat(dom.nodeName.toLowerCase(), ", client: ").concat(fiber.element),
+                    message: "hydrate error, dom not match from server. server: \"<".concat(dom.nodeName.toLowerCase(), " />\", client: \"").concat(getElementName(fiber), "\""),
                 });
                 return false;
             }
@@ -2834,7 +2943,7 @@
                 log({
                     fiber: fiber,
                     level: "error",
-                    message: "hydrate error, dom not match from server. server: ".concat(dom.nodeName.toLowerCase(), ", client: ").concat(typedElement.type.toString()),
+                    message: "hydrate error, dom not match from server. server: \"<".concat(dom.nodeName.toLowerCase(), " />\", client: \"").concat(getElementName(fiber), "\""),
                 });
                 return false;
             }
@@ -2842,7 +2951,18 @@
                 log({
                     fiber: fiber,
                     level: "error",
-                    message: "hydrate error, dom not match from server. server: ".concat(dom.nodeName.toLowerCase(), ", client: ").concat(typedElement.type.toString()),
+                    message: "hydrate error, dom not match from server. server: \"<".concat(dom.nodeName.toLowerCase(), " />\", client: \"").concat(getElementName(fiber), "\""),
+                });
+                return false;
+            }
+            return true;
+        }
+        if (fiber.type & (NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+            if (dom.nodeType !== Node.COMMENT_NODE) {
+                log({
+                    fiber: fiber,
+                    level: "error",
+                    message: "hydrate error, dom not match from server. server: \"<".concat(dom.nodeName.toLowerCase(), " />\", client: \"").concat(getElementName(fiber), "\""),
                 });
                 return false;
             }
@@ -2866,7 +2986,7 @@
     };
 
     var hydrateCreate = function (fiber, parentFiberWithDom) {
-        if (fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__)) {
+        if (fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
             var element = parentFiberWithDom.node;
             var result = getHydrateDom(fiber, element).result;
             return result;
@@ -2891,13 +3011,11 @@
             var typedElement = fiber.element;
             fiber.node = typedElement.props["container"];
         }
-        else if (fiber.type & NODE_TYPE.__isScopeNode__) {
-            var startScope = document.createComment("[");
-            var endScope = document.createComment("]");
-            fiber.node = {
-                startScope: startScope,
-                endScope: endScope,
-            };
+        else if (fiber.type & NODE_TYPE.__isCommentStartNode__) {
+            fiber.node = document.createComment(" [ ");
+        }
+        else if (fiber.type & NODE_TYPE.__isCommentEndNode__) {
+            fiber.node = document.createComment(" ] ");
         }
     };
 
@@ -3006,11 +3124,50 @@
             var children = Array.from(dom.childNodes);
             children.forEach(function (node) {
                 var typedNode = node;
-                if (typedNode.nodeType !== document.COMMENT_NODE && !typedNode.__hydrate__)
-                    node.remove();
+                if (typedNode.nodeType === Node.COMMENT_NODE) {
+                    // remove scope placeholder
+                    if (typedNode.textContent !== " [ " && typedNode.textContent !== " ] ")
+                        node.remove();
+                }
+                else {
+                    if (!typedNode.__hydrate__)
+                        node.remove();
+                }
                 delete typedNode["__hydrate__"];
             });
         }
+    };
+
+    var enableLazySSRHydrate$1 = react.__my_react_shared__.enableLazySSRHydrate;
+    var defaultResolveLazyElement$1 = function (_fiber) {
+        var _a = _fiber.element, type = _a.type, props = _a.props;
+        var globalDispatch = _fiber.root.globalDispatch;
+        var typedType = type;
+        if (typedType._loaded === true) {
+            var render = typedType.render;
+            var children_1 = react.createElement(render, props);
+            if (enableLazySSRHydrate$1.current) {
+                return WrapperByScope(children_1);
+            }
+            return children_1;
+        }
+        else if (typedType._loading === false) {
+            typedType._loading = true;
+            Promise.resolve()
+                .then(function () { return typedType.loader(); })
+                .then(function (re) {
+                var render = typeof re === "object" && typeof (re === null || re === void 0 ? void 0 : re.default) === "function" ? re.default : re;
+                typedType._loaded = true;
+                typedType._loading = false;
+                typedType.render = render;
+                _fiber.update();
+            });
+        }
+        var children = globalDispatch.resolveSuspenseElement(_fiber);
+        if (enableLazySSRHydrate$1.current) {
+            return WrapperByScope(children);
+        }
+        return children;
     };
 
     var append$1 = function (fiber, parentFiberWithDom) {
@@ -3022,7 +3179,7 @@
             fiber.patch ^= PATCH_TYPE.__pendingPosition__;
         if (fiber.type & NODE_TYPE.__isPortal__)
             return;
-        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__)) {
+        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
             var parentDOM = parentFiberWithDom.node;
             var childDOM = fiber.node;
             parentDOM.appendChild(childDOM);
@@ -3041,7 +3198,7 @@
             return null;
         if (fiber.type & NODE_TYPE.__isPortal__)
             return null;
-        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__))
+        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__))
             return fiber;
         var nextFibers = transform(fiber);
         if (Array.isArray(nextFibers)) {
@@ -3088,7 +3245,7 @@
             fiber.patch ^= PATCH_TYPE.__pendingPosition__;
         if (fiber.type & NODE_TYPE.__isPortal__)
             return;
-        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__)) {
+        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
             var parentDOM = parentFiberWithDom.node;
             var beforeDOM = beforeFiberWithDom.node;
             var childDOM = fiber.node;
@@ -3116,122 +3273,6 @@
             }
             if (fiber.patch & PATCH_TYPE.__pendingPosition__)
                 fiber.patch ^= PATCH_TYPE.__pendingPosition__;
-        }
-    };
-
-    var getNativeEventName = function (eventName, tagName, props) {
-        var isCapture = false;
-        var nativeName = eventName;
-        if (eventName.endsWith("Capture")) {
-            isCapture = true;
-            nativeName = eventName.split("Capture")[0];
-        }
-        if (nativeName === "DoubleClick") {
-            nativeName = "dblclick";
-        }
-        else if (nativeName === "Change") {
-            if (tagName === "input") {
-                if (props.type === "radio" || props.type === "checkbox") {
-                    nativeName = "click";
-                }
-                else {
-                    nativeName = "input";
-                }
-            }
-            else {
-                nativeName = "change";
-            }
-        }
-        else {
-            nativeName = nativeName.toLowerCase();
-        }
-        return { nativeName: nativeName, isCapture: isCapture };
-    };
-
-    var controlElementTag = {
-        input: true,
-        // textarea: true,
-        // select: true,
-    };
-    var addEventListener = function (fiber, dom, key) {
-        var _a;
-        var globalDispatch = fiber.root.globalDispatch;
-        var typedElement = fiber.element;
-        var pendingProps = fiber.pendingProps;
-        var callback = pendingProps[key];
-        var _b = getNativeEventName(key.slice(2), typedElement.type, typedElement.props), nativeName = _b.nativeName, isCapture = _b.isCapture;
-        if (enableEventSystem.current) {
-            var eventMap = globalDispatch.eventMap;
-            var eventState = eventMap[fiber.uid] || {};
-            var eventName = "".concat(nativeName, "_").concat(isCapture);
-            if (eventState[eventName]) {
-                (_a = eventState[eventName].cb) === null || _a === void 0 ? void 0 : _a.push(callback);
-            }
-            else {
-                var handler_1 = function () {
-                    var args = [];
-                    for (var _i = 0; _i < arguments.length; _i++) {
-                        args[_i] = arguments[_i];
-                    }
-                    var e = args[0];
-                    e.nativeEvent = e;
-                    safeCallWithFiber({
-                        action: function () { var _a; return (_a = handler_1.cb) === null || _a === void 0 ? void 0 : _a.forEach(function (cb) { return typeof cb === "function" && cb.call.apply(cb, __spreadArray$1([null], args, false)); }); },
-                        fiber: fiber,
-                    });
-                    if (enableControlComponent.current) {
-                        var pendingProps_1 = fiber.pendingProps;
-                        if (controlElementTag[typedElement.type] && typeof pendingProps_1["value"] !== "undefined") {
-                            var typedDom = dom;
-                            typedDom["value"] = pendingProps_1["value"];
-                        }
-                    }
-                };
-                if (enableControlComponent.current) {
-                    if (controlElementTag[typedElement.type]) {
-                        if ("value" in typedElement.props) {
-                            var typedDom = dom;
-                            if ("onChange" in typedElement.props) {
-                                typedDom.__isControlled__ = true;
-                            }
-                            else {
-                                typedDom.__isReadonly__ = true;
-                            }
-                        }
-                    }
-                }
-                handler_1.cb = [callback];
-                eventState[eventName] = handler_1;
-                dom.addEventListener(nativeName, handler_1, isCapture);
-            }
-            eventMap[fiber.uid] = eventState;
-            {
-                var typedFiber = fiber;
-                typedFiber._debugEventMap = eventState;
-            }
-        }
-        else {
-            dom.addEventListener(nativeName, callback, isCapture);
-        }
-    };
-
-    var removeEventListener = function (fiber, dom, key) {
-        var _a;
-        var globalDispatch = fiber.root.globalDispatch;
-        var typedElement = fiber.element;
-        var currentProps = fiber.memoizedProps || {};
-        var callback = currentProps[key];
-        var _b = getNativeEventName(key.slice(2), typedElement.type, currentProps), nativeName = _b.nativeName, isCapture = _b.isCapture;
-        if (enableEventSystem.current) {
-            var eventMap = globalDispatch.eventMap;
-            var eventState = eventMap[fiber.uid];
-            var eventName = "".concat(nativeName, "_").concat(isCapture);
-            if (!eventState[eventName])
-                return;
-            eventState[eventName].cb = (_a = eventState[eventName].cb) === null || _a === void 0 ? void 0 : _a.filter(function (c) { return c !== callback || typeof c !== "function"; });
-        }
-        else {
-            dom.removeEventListener(nativeName, callback, isCapture);
         }
     };
 
@@ -3430,7 +3471,7 @@
         if (fiber.type & NODE_TYPE.__isTextNode__) {
             node.textContent = fiber.element;
         }
-        else {
+        else if (fiber.type & NODE_TYPE.__isPlainNode__) {
             var dom_1 = node;
             var oldProps_1 = fiber.memoizedProps || {};
             var newProps_1 = fiber.pendingProps || {};
@@ -3559,10 +3600,11 @@
         ClientDispatch.prototype.trigger = function (_fiber) {
             triggerUpdate(_fiber);
         };
-        ClientDispatch.prototype.resolveLazy = function () {
-            return true;
-        };
         ClientDispatch.prototype.resolveLazyElement = function (_fiber) {
+            return defaultResolveLazyElement$1(_fiber);
+        };
+        // client side not need async render
+        ClientDispatch.prototype.resolveLazyElementAsync = function (_fiber) {
             return null;
         };
         ClientDispatch.prototype.resolveRef = function (_fiber) {
@@ -3669,7 +3711,8 @@
             var _final = _hydrate;
             if (_fiber.child) {
                 _final = this.reconcileCommit(_fiber.child, _result, _fiber.node ? _fiber : _parentFiberWithDom);
-                fallback(_fiber);
+                if (_hydrate)
+                    fallback(_fiber);
             }
             safeCallWithFiber({ fiber: _fiber, action: function () { return layoutEffect(_fiber); } });
             Promise.resolve().then(function () { return safeCallWithFiber({ fiber: _fiber, action: function () { return effect(_fiber); } }); });
@@ -3731,17 +3774,18 @@
             });
         };
         ClientDispatch.prototype.pendingCreate = function (_fiber) {
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isScopeNode__)) {
+            if (_fiber.type &
+                (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingCreate__;
             }
         };
         ClientDispatch.prototype.pendingUpdate = function (_fiber) {
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingUpdate__;
             }
         };
         ClientDispatch.prototype.pendingAppend = function (_fiber) {
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isScopeNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingAppend__;
             }
         };
@@ -4351,56 +4395,21 @@
 
     var kebabCase_1 = kebabCase;
 
-    var CommentElement = /** @class */ (function () {
-        function CommentElement(content) {
-            this.content = "";
-            this.children = [];
-            this.content = content === "" ? " " : content;
+    var CommentStartElement = /** @class */ (function () {
+        function CommentStartElement() {
         }
-        /**
-         *
-         * @param {Element} dom
-         */
-        CommentElement.prototype.append = function () {
-            var _this = this;
-            var dom = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                dom[_i] = arguments[_i];
-            }
-            dom.forEach(function (d) { return _this.appendChild(d); });
+        CommentStartElement.prototype.toString = function () {
+            return "<!-- [ -->";
         };
-        CommentElement.prototype.appendChild = function (dom) {
-            if (dom instanceof PlainElement || dom instanceof TextElement || dom instanceof CommentElement || typeof dom === "string") {
-                this.children.push(dom);
-                return dom;
-            }
-            else {
-                throw new Error("element instance error");
-            }
+        return CommentStartElement;
+    }());
+    var CommentEndElement = /** @class */ (function () {
+        function CommentEndElement() {
+        }
+        CommentEndElement.prototype.toString = function () {
+            return "<!-- ] -->";
         };
-        CommentElement.prototype.renderChildren = function () {
-            return this.children
-                .reduce(function (p, c) {
-                if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
-                    p.push("<!-- -->");
-                    p.push(c);
-                }
-                else if (p.length && typeof c === "string" && typeof p[p.length - 1] === "string") {
-                    p.push("<!-- -->");
-                    p.push(c);
-                }
-                else {
-                    p.push(c);
-                }
-                return p;
-            }, [])
-                .map(function (dom) { return dom.toString(); })
-                .reduce(function (p, c) { return p + c; }, "");
-        };
-        CommentElement.prototype.toString = function () {
-            return "<!-- [ -->".concat(this.renderChildren(), "<!-- ] -->");
-        };
-        return CommentElement;
+        return CommentEndElement;
     }());
 
     var PlainElement = /** @class */ (function () {
@@ -4439,7 +4448,11 @@
         PlainElement.prototype.appendChild = function (dom) {
             if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type))
                 return;
-            if (dom instanceof PlainElement || dom instanceof TextElement || dom instanceof CommentElement || typeof dom === "string") {
+            if (dom instanceof PlainElement ||
+                dom instanceof TextElement ||
+                dom instanceof CommentStartElement ||
+                dom instanceof CommentEndElement ||
+                typeof dom === "string") {
                 this.children.push(dom);
                 return dom;
             }
@@ -4519,8 +4532,11 @@
                 var typedElement = fiber.element;
                 fiber.node = new PlainElement(typedElement.type);
             }
-            else if (fiber.type & NODE_TYPE.__isScopeNode__) {
-                fiber.node = new CommentElement("");
+            else if (fiber.type & NODE_TYPE.__isCommentStartNode__) {
+                fiber.node = new CommentStartElement();
+            }
+            else if (fiber.type & NODE_TYPE.__isCommentEndNode__) {
+                fiber.node = new CommentEndElement();
             }
             else {
                 throw new Error("createPortal() can not call on the server");
@@ -4567,24 +4583,34 @@
         }
     };
 
+    var enableLazySSRHydrate = react.__my_react_shared__.enableLazySSRHydrate;
     // type DePromise<T> = T extends Promise<infer I> ? DePromise<I> : T;
-    // server side lazy
-    var defaultResolveLazyElement = function (_fiber) { return __awaiter$1(void 0, void 0, void 0, function () {
+    var defaultResolveLazyElementAsync = function (_fiber) { return __awaiter$1(void 0, void 0, void 0, function () {
         var _a, type, props, typedType, loaded, render;
         return __generator$1(this, function (_b) {
             switch (_b.label) {
                 case 0:
                     _a = _fiber.element, type = _a.type, props = _a.props;
                     typedType = type;
+                    if (typedType._loaded)
+                        return [2 /*return*/, WrapperByScope(react.createElement(typedType.render, props))];
                     return [4 /*yield*/, typedType.loader()];
                 case 1:
                     loaded = _b.sent();
                     render = typeof loaded === "object" && typeof (loaded === null || loaded === void 0 ? void 0 : loaded.default) === "function" ? loaded.default : loaded;
                     typedType.render = render;
-                    return [2 /*return*/, react.createElement(react.Scope, null, react.createElement(typedType.render, props))];
+                    typedType._loaded = true;
+                    return [2 /*return*/, WrapperByScope(react.createElement(typedType.render, props))];
             }
         });
     }); };
+    var defaultResolveLazyElement = function (_fiber) {
+        var globalDispatch = _fiber.root.globalDispatch;
+        var children = globalDispatch.resolveSuspenseElement(_fiber);
+        if (enableLazySSRHydrate.current)
+            return WrapperByScope(children);
+        return children;
+    };
 
     var ServerDispatch = /** @class */ (function () {
         function ServerDispatch() {
@@ -4599,11 +4625,11 @@
         }
         ServerDispatch.prototype.trigger = function (_fiber) {
         };
-        ServerDispatch.prototype.resolveLazy = function () {
-            return false;
-        };
         ServerDispatch.prototype.resolveLazyElement = function (_fiber) {
             return defaultResolveLazyElement(_fiber);
+        };
+        ServerDispatch.prototype.resolveLazyElementAsync = function (_fiber) {
+            return defaultResolveLazyElementAsync(_fiber);
         };
         ServerDispatch.prototype.resolveRef = function (_fiber) {
         };
@@ -4678,7 +4704,7 @@
             if (_fiber.type & NODE_TYPE.__isPortal__) {
                 throw new Error("should not use portal element on the server");
             }
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isScopeNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingCreate__;
             }
         };
@@ -4688,7 +4714,7 @@
             }
         };
         ServerDispatch.prototype.pendingAppend = function (_fiber) {
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isScopeNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingAppend__;
             }
         };

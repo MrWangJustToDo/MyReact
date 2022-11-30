@@ -10,7 +10,7 @@ export const getFiberWithDom = (
 
   if (fiber.type & NODE_TYPE.__isPortal__) return null;
 
-  if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__)) return fiber;
+  if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) return fiber;
 
   const nextFibers = transform(fiber);
 

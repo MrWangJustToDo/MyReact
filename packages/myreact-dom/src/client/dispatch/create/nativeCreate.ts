@@ -17,14 +17,9 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     const typedElement = fiber.element as MyReactElement;
 
     fiber.node = typedElement.props["container"] as Element;
-  } else if (fiber.type & NODE_TYPE.__isScopeNode__) {
-    const startScope = document.createComment("[");
-
-    const endScope = document.createComment("]");
-
-    fiber.node = {
-      startScope,
-      endScope,
-    };
+  } else if (fiber.type & NODE_TYPE.__isCommentStartNode__) {
+    fiber.node = document.createComment(" [ ");
+  } else if (fiber.type & NODE_TYPE.__isCommentEndNode__) {
+    fiber.node = document.createComment(" ] ");
   }
 };

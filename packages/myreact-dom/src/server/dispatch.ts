@@ -8,10 +8,10 @@ import {
 } from "@my-react/react-reconciler";
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { safeCallWithFiber } from "../shared/debug";
+import { safeCallWithFiber } from "../shared";
 
 import { append, create, update } from "./dom";
-import { defaultResolveLazyElement } from "./lazy";
+import { defaultResolveLazyElement, defaultResolveLazyElementAsync } from "./lazy";
 
 import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode } from "@my-react/react";
 import type { LinkTreeList } from "@my-react/react-shared";
@@ -36,11 +36,11 @@ export class ServerDispatch implements FiberDispatch {
   trigger(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  resolveLazy(): boolean {
-    return false;
-  }
-  resolveLazyElement(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
     return defaultResolveLazyElement(_fiber);
+  }
+  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
+    return defaultResolveLazyElementAsync(_fiber);
   }
   resolveRef(_fiber: MyReactFiberNode): void {
     void 0;
@@ -126,7 +126,7 @@ export class ServerDispatch implements FiberDispatch {
     if (_fiber.type & NODE_TYPE.__isPortal__) {
       throw new Error("should not use portal element on the server");
     }
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isScopeNode__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingCreate__;
     }
   }
@@ -136,7 +136,7 @@ export class ServerDispatch implements FiberDispatch {
     }
   }
   pendingAppend(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isScopeNode__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingAppend__;
     }
   }

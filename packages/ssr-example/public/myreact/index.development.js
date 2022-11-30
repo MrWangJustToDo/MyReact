@@ -44,6 +44,8 @@
         NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 32768] = "__isFragmentNode__";
         NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 65536] = "__isKeepLiveNode__";
         NODE_TYPE[NODE_TYPE["__isScopeNode__"] = 131072] = "__isScopeNode__";
+        NODE_TYPE[NODE_TYPE["__isCommentStartNode__"] = 262144] = "__isCommentStartNode__";
+        NODE_TYPE[NODE_TYPE["__isCommentEndNode__"] = 524288] = "__isCommentEndNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -937,25 +939,21 @@
             return preString;
         }
     };
-    var UnKnownType = {
-        name: "Unknown",
-        displayName: "Unknown",
-    };
     var getElementName = function (fiber) {
         var _a;
         if (fiber.type & NODE_TYPE.__isMemo__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
-            var targetRender = typedType.render || UnKnownType;
+            var targetRender = typedType === null || typedType === void 0 ? void 0 : typedType.render;
             if (typeof targetRender === "function") {
-                if (targetRender.name)
+                if (targetRender === null || targetRender === void 0 ? void 0 : targetRender.name)
                     return "<Memo - (".concat(targetRender.name, ") />");
-                if (targetRender.displayName)
+                if (targetRender === null || targetRender === void 0 ? void 0 : targetRender.displayName)
                     return "<Memo -(".concat(targetRender.displayName, ") />");
             }
             if (typeof targetRender === "object") {
                 var typedTargetRender = targetRender;
-                if (typedTargetRender.name)
+                if (typedTargetRender === null || typedTargetRender === void 0 ? void 0 : typedTargetRender.name)
                     return "<Memo - (".concat(typedTargetRender.name, ") />");
             }
             return "<Memo />";
@@ -963,17 +961,17 @@
         if (fiber.type & NODE_TYPE.__isLazy__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
-            var typedRender = typedType.render || UnKnownType;
-            if (typedRender.name)
+            var typedRender = typedType === null || typedType === void 0 ? void 0 : typedType.render;
+            if (typedRender === null || typedRender === void 0 ? void 0 : typedRender.name)
                 return "<Lazy - (".concat(typedRender.name, ") />");
-            if (typedRender.displayName)
+            if (typedRender === null || typedRender === void 0 ? void 0 : typedRender.displayName)
                 return "<Lazy -(".concat(typedRender.displayName, ") />");
             return "<Lazy />";
         }
         if (fiber.type & NODE_TYPE.__isReactive__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
-            if (typedType.name)
+            if (typedType === null || typedType === void 0 ? void 0 : typedType.name)
                 return "<Reactive* - (".concat(typedType.name, ") />");
             return "<Reactive* />";
         }
@@ -997,6 +995,10 @@
             return "<Provider />";
         if (fiber.type & NODE_TYPE.__isContextConsumer__)
             return "<Consumer />";
+        if (fiber.type & NODE_TYPE.__isCommentEndNode__)
+            return "<Comment />";
+        if (fiber.type & NODE_TYPE.__isCommentStartNode__)
+            return "<Comment />";
         if (fiber.type & NODE_TYPE.__isForwardRef__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
@@ -1081,6 +1083,8 @@
     var My_React_KeepLive = Symbol.for("react.keep_live");
     var My_React_Reactive = Symbol.for("react.reactive");
     var My_React_Scope = Symbol.for("react.scope");
+    var My_React_Comment_Start = Symbol.for("react.comment_start");
+    var My_React_Comment_End = Symbol.for("react.comment_end");
 
     function isValidElement(element) {
         return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
@@ -1143,6 +1147,12 @@
                         break;
                     case My_React_Scope:
                         nodeTypeSymbol |= NODE_TYPE.__isScopeNode__;
+                        break;
+                    case My_React_Comment_Start:
+                        nodeTypeSymbol |= NODE_TYPE.__isCommentStartNode__;
+                        break;
+                    case My_React_Comment_End:
+                        nodeTypeSymbol |= NODE_TYPE.__isCommentEndNode__;
                         break;
                     default:
                         throw new Error("invalid symbol element type ".concat(rawType.toString()));
@@ -1296,7 +1306,11 @@
         }
         return element;
     };
-    function createElement(type, config, children) {
+    function createElement(type, config) {
+        var children = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            children[_i - 2] = arguments[_i];
+        }
         var key = null;
         var ref = null;
         var self = null;
@@ -1327,9 +1341,9 @@
         }
         else if (childrenLength === 1) {
             {
-                checkSingleChildrenKey(children);
+                checkSingleChildrenKey(children[0]);
             }
-            props.children = children;
+            props.children = children[0];
         }
         return createMyReactElement({
             type: type,
@@ -1630,10 +1644,10 @@
         }
         EmptyDispatch.prototype.trigger = function (_fiber) {
         };
-        EmptyDispatch.prototype.resolveLazy = function () {
-            return false;
-        };
         EmptyDispatch.prototype.resolveLazyElement = function (_fiber) {
+            return null;
+        };
+        EmptyDispatch.prototype.resolveLazyElementAsync = function (_fiber) {
             return null;
         };
         EmptyDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
@@ -2333,6 +2347,8 @@
     var __my_react_shared__ = {
         getHookTree: getHookTree,
         getFiberTree: getFiberTree,
+        getElementName: getElementName,
+        getFiberNodeName: getFiberNodeName,
         createFiberNode: createFiberNode,
         updateFiberNode: updateFiberNode,
         initialFiberNode: initialFiberNode,
@@ -2397,6 +2413,8 @@
         KeepLive: My_React_KeepLive,
         StrictMode: My_React_Strict,
         ForwardRef: My_React_ForwardRef,
+        CommentStart: My_React_Comment_Start,
+        CommentEnd: My_React_Comment_End,
         useRef: useRef,
         useMemo: useMemo,
         useState: useState,
@@ -2415,6 +2433,8 @@
     };
 
     exports.Children = Children;
+    exports.CommentEnd = My_React_Comment_End;
+    exports.CommentStart = My_React_Comment_Start;
     exports.Component = Component;
     exports.Consumer = My_React_Consumer;
     exports.Element = My_React_Element;

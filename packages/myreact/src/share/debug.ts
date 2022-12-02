@@ -73,8 +73,7 @@ export const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isKeepLiveNode__) return `<KeepAlive />`;
   if (fiber.type & NODE_TYPE.__isContextProvider__) return `<Provider />`;
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return `<Consumer />`;
-  if (fiber.type & NODE_TYPE.__isCommentEndNode__) return `<Comment />`;
-  if (fiber.type & NODE_TYPE.__isCommentStartNode__) return `<Comment />`;
+  if (fiber.type & NODE_TYPE.__isCommentNode__) return `<Comment />`;
   if (fiber.type & NODE_TYPE.__isForwardRef__) {
     const typedElement = fiber.element as MyReactElement;
     const typedType = typedElement.type as ReturnType<typeof forwardRef>;

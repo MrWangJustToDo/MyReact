@@ -250,20 +250,17 @@ export class ClientDispatch implements FiberDispatch {
     });
   }
   pendingCreate(_fiber: MyReactFiberNode): void {
-    if (
-      _fiber.type &
-      (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)
-    ) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isCommentNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingCreate__;
     }
   }
   pendingUpdate(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingUpdate__;
     }
   }
   pendingAppend(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingAppend__;
     }
   }

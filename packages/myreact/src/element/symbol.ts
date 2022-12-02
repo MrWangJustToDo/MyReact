@@ -26,6 +26,4 @@ export const My_React_Reactive = Symbol.for("react.reactive");
 
 export const My_React_Scope = Symbol.for("react.scope");
 
-export const My_React_Comment_Start = Symbol.for("react.comment_start");
-
-export const My_React_Comment_End = Symbol.for("react.comment_end");
+export const My_React_Comment = Symbol.for("react.comment");

@@ -264,8 +264,7 @@
         NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 32768] = "__isFragmentNode__";
         NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 65536] = "__isKeepLiveNode__";
         NODE_TYPE[NODE_TYPE["__isScopeNode__"] = 131072] = "__isScopeNode__";
-        NODE_TYPE[NODE_TYPE["__isCommentStartNode__"] = 262144] = "__isCommentStartNode__";
-        NODE_TYPE[NODE_TYPE["__isCommentEndNode__"] = 524288] = "__isCommentEndNode__";
+        NODE_TYPE[NODE_TYPE["__isCommentNode__"] = 262144] = "__isCommentNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -866,8 +865,17 @@
     var nRoundTransformFiberArray = react.createRef([]);
     var cRoundTransformFiberArray = react.createRef([]);
 
-    var WrapperByScope = function (children) { return react.createElement(react.Scope, null, react.createElement(react.CommentStart), children, react.createElement(react.CommentEnd)); };
-    var isCommentElement = function (fiber) { return fiber.type & (NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__); };
+    var WrapperByScope = function (children) {
+        return react.createElement(react.Scope, null, react.createElement(react.Comment, { mode: "s" }), children, react.createElement(react.Comment, { mode: "e" }));
+    };
+    var isCommentElement = function (fiber) { return fiber.type & NODE_TYPE.__isCommentNode__; };
+    var isCommentStartElement = function (fiber) {
+        if (isCommentElement(fiber)) {
+            var typedElement = fiber.element;
+            return typedElement.props["mode"] === "s";
+        }
+        return false;
+    };
 
     var defaultGenerateStrictMap = function (fiber, map) {
         var parent = fiber.parent;
@@ -2957,7 +2965,7 @@
             }
             return true;
         }
-        if (fiber.type & (NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+        if (fiber.type & NODE_TYPE.__isCommentNode__) {
             if (dom.nodeType !== Node.COMMENT_NODE) {
                 log({
                     fiber: fiber,
@@ -2986,7 +2994,7 @@
     };
 
     var hydrateCreate = function (fiber, parentFiberWithDom) {
-        if (fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+        if (fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
             var element = parentFiberWithDom.node;
             var result = getHydrateDom(fiber, element).result;
             return result;
@@ -3011,11 +3019,13 @@
             var typedElement = fiber.element;
             fiber.node = typedElement.props["container"];
         }
-        else if (fiber.type & NODE_TYPE.__isCommentStartNode__) {
-            fiber.node = document.createComment(" [ ");
-        }
-        else if (fiber.type & NODE_TYPE.__isCommentEndNode__) {
-            fiber.node = document.createComment(" ] ");
+        else if (fiber.type & NODE_TYPE.__isCommentNode__) {
+            if (isCommentStartElement(fiber)) {
+                fiber.node = document.createComment(" [ ");
+            }
+            else {
+                fiber.node = document.createComment(" ] ");
+            }
         }
     };
 
@@ -3179,7 +3189,7 @@
             fiber.patch ^= PATCH_TYPE.__pendingPosition__;
         if (fiber.type & NODE_TYPE.__isPortal__)
             return;
-        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentNode__)) {
             var parentDOM = parentFiberWithDom.node;
             var childDOM = fiber.node;
             parentDOM.appendChild(childDOM);
@@ -3198,7 +3208,7 @@
             return null;
         if (fiber.type & NODE_TYPE.__isPortal__)
             return null;
-        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__))
+        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentNode__))
             return fiber;
         var nextFibers = transform(fiber);
         if (Array.isArray(nextFibers)) {
@@ -3245,7 +3255,7 @@
             fiber.patch ^= PATCH_TYPE.__pendingPosition__;
         if (fiber.type & NODE_TYPE.__isPortal__)
             return;
-        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+        if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentNode__)) {
             var parentDOM = parentFiberWithDom.node;
             var beforeDOM = beforeFiberWithDom.node;
             var childDOM = fiber.node;
@@ -3774,18 +3784,17 @@
             });
         };
         ClientDispatch.prototype.pendingCreate = function (_fiber) {
-            if (_fiber.type &
-                (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isCommentNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingCreate__;
             }
         };
         ClientDispatch.prototype.pendingUpdate = function (_fiber) {
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingUpdate__;
             }
         };
         ClientDispatch.prototype.pendingAppend = function (_fiber) {
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingAppend__;
             }
         };
@@ -4532,11 +4541,14 @@
                 var typedElement = fiber.element;
                 fiber.node = new PlainElement(typedElement.type);
             }
-            else if (fiber.type & NODE_TYPE.__isCommentStartNode__) {
-                fiber.node = new CommentStartElement();
-            }
-            else if (fiber.type & NODE_TYPE.__isCommentEndNode__) {
-                fiber.node = new CommentEndElement();
+            else if (fiber.type & NODE_TYPE.__isCommentNode__) {
+                // const typedElement = fiber.element as MyReactElement;
+                if (isCommentStartElement(fiber)) {
+                    fiber.node = new CommentStartElement();
+                }
+                else {
+                    fiber.node = new CommentEndElement();
+                }
             }
             else {
                 throw new Error("createPortal() can not call on the server");
@@ -4704,7 +4716,7 @@
             if (_fiber.type & NODE_TYPE.__isPortal__) {
                 throw new Error("should not use portal element on the server");
             }
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingCreate__;
             }
         };
@@ -4714,7 +4726,7 @@
             }
         };
         ServerDispatch.prototype.pendingAppend = function (_fiber) {
-            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+            if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
                 _fiber.patch |= PATCH_TYPE.__pendingAppend__;
             }
         };

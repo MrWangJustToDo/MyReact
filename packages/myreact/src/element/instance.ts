@@ -122,10 +122,12 @@ export function createElement(type: CreateElementProps["type"], config?: CreateE
     });
   }
 
-  const childrenLength = arguments.length - 2;
+  // const childrenLength = arguments.length - 2;
+
+  const childrenLength = children.length;
 
   if (childrenLength > 1) {
-    children = Array.from(arguments).slice(2);
+    // children = Array.from(arguments).slice(2);
     if (__DEV__) {
       checkArrayChildrenKey(children as ArrayMyReactElementNode);
     }

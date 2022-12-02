@@ -28,6 +28,5 @@ export enum NODE_TYPE {
   __isFragmentNode__ = 1 << 15,
   __isKeepLiveNode__ = 1 << 16,
   __isScopeNode__ = 1 << 17,
-  __isCommentStartNode__ = 1 << 18,
-  __isCommentEndNode__ = 1 << 19,
+  __isCommentNode__ = 1 << 18,
 }

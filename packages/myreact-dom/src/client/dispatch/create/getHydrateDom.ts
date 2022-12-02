@@ -70,7 +70,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     }
     return true;
   }
-  if (fiber.type & (NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+  if (fiber.type & NODE_TYPE.__isCommentNode__) {
     if (dom.nodeType !== Node.COMMENT_NODE) {
       log({
         fiber,

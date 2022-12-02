@@ -44,8 +44,7 @@
         NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 32768] = "__isFragmentNode__";
         NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 65536] = "__isKeepLiveNode__";
         NODE_TYPE[NODE_TYPE["__isScopeNode__"] = 131072] = "__isScopeNode__";
-        NODE_TYPE[NODE_TYPE["__isCommentStartNode__"] = 262144] = "__isCommentStartNode__";
-        NODE_TYPE[NODE_TYPE["__isCommentEndNode__"] = 524288] = "__isCommentEndNode__";
+        NODE_TYPE[NODE_TYPE["__isCommentNode__"] = 262144] = "__isCommentNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -995,9 +994,7 @@
             return "<Provider />";
         if (fiber.type & NODE_TYPE.__isContextConsumer__)
             return "<Consumer />";
-        if (fiber.type & NODE_TYPE.__isCommentEndNode__)
-            return "<Comment />";
-        if (fiber.type & NODE_TYPE.__isCommentStartNode__)
+        if (fiber.type & NODE_TYPE.__isCommentNode__)
             return "<Comment />";
         if (fiber.type & NODE_TYPE.__isForwardRef__) {
             var typedElement = fiber.element;
@@ -1083,8 +1080,7 @@
     var My_React_KeepLive = Symbol.for("react.keep_live");
     var My_React_Reactive = Symbol.for("react.reactive");
     var My_React_Scope = Symbol.for("react.scope");
-    var My_React_Comment_Start = Symbol.for("react.comment_start");
-    var My_React_Comment_End = Symbol.for("react.comment_end");
+    var My_React_Comment = Symbol.for("react.comment");
 
     function isValidElement(element) {
         return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
@@ -1148,11 +1144,8 @@
                     case My_React_Scope:
                         nodeTypeSymbol |= NODE_TYPE.__isScopeNode__;
                         break;
-                    case My_React_Comment_Start:
-                        nodeTypeSymbol |= NODE_TYPE.__isCommentStartNode__;
-                        break;
-                    case My_React_Comment_End:
-                        nodeTypeSymbol |= NODE_TYPE.__isCommentEndNode__;
+                    case My_React_Comment:
+                        nodeTypeSymbol |= NODE_TYPE.__isCommentNode__;
                         break;
                     default:
                         throw new Error("invalid symbol element type ".concat(rawType.toString()));
@@ -1331,9 +1324,10 @@
                 props[key] = props[key] === undefined ? (_a = typedType_1.defaultProps) === null || _a === void 0 ? void 0 : _a[key] : props[key];
             });
         }
-        var childrenLength = arguments.length - 2;
+        // const childrenLength = arguments.length - 2;
+        var childrenLength = children.length;
         if (childrenLength > 1) {
-            children = Array.from(arguments).slice(2);
+            // children = Array.from(arguments).slice(2);
             {
                 checkArrayChildrenKey(children);
             }
@@ -2413,8 +2407,7 @@
         KeepLive: My_React_KeepLive,
         StrictMode: My_React_Strict,
         ForwardRef: My_React_ForwardRef,
-        CommentStart: My_React_Comment_Start,
-        CommentEnd: My_React_Comment_End,
+        Comment: My_React_Comment,
         useRef: useRef,
         useMemo: useMemo,
         useState: useState,
@@ -2433,8 +2426,7 @@
     };
 
     exports.Children = Children;
-    exports.CommentEnd = My_React_Comment_End;
-    exports.CommentStart = My_React_Comment_Start;
+    exports.Comment = My_React_Comment;
     exports.Component = Component;
     exports.Consumer = My_React_Consumer;
     exports.Element = My_React_Element;

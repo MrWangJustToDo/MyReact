@@ -12,7 +12,7 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReac
 
   if (fiber.type & NODE_TYPE.__isPortal__) return;
 
-  if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+  if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentNode__)) {
     const parentDOM = parentFiberWithDom.node as DomElement;
     const beforeDOM = beforeFiberWithDom.node as DomNode;
     const childDOM = fiber.node as DomNode;

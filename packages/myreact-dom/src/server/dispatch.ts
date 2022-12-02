@@ -126,7 +126,7 @@ export class ServerDispatch implements FiberDispatch {
     if (_fiber.type & NODE_TYPE.__isPortal__) {
       throw new Error("should not use portal element on the server");
     }
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingCreate__;
     }
   }
@@ -136,7 +136,7 @@ export class ServerDispatch implements FiberDispatch {
     }
   }
   pendingAppend(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentStartNode__ | NODE_TYPE.__isCommentEndNode__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingAppend__;
     }
   }

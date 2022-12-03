@@ -1456,7 +1456,7 @@
         {
             var log = parentFiber.root.globalPlatform.log;
             log({
-                message: "you are using internal <KeepLive /> component to render different component by toggle logic, pls note this is a experimental feature, \n    1. <KeepLive /> component will not clean rendered tree state when render a different component, so it will keep dom(like <input /> value and soon), hook, state.\n    2. <KeepLive /> component currently can not contain any <Portal /> component, will cause some bug\n    ",
+                message: "you are using internal <KeepLive /> component to render different component by toggle logic, pls note this is a experimental feature, \n    1. <KeepLive /> component will not clean rendered tree state when render a different component, so it will keep dom(like <input /> value and so on), hook, state.\n    2. <KeepLive /> component currently can not contain any <Portal /> component, will cause some bug\n    ",
                 fiber: parentFiber,
                 triggerOnce: true,
             });

@@ -17,9 +17,7 @@ export const defaultResolveLazyElement = (_fiber: MyReactFiberNode) => {
 
     const children = createElement(render, props);
 
-    if (enableLazySSRHydrate.current) {
-      return WrapperByScope(children);
-    }
+    if (enableLazySSRHydrate.current) return WrapperByScope(children);
 
     return children;
   } else if (typedType._loading === false) {
@@ -42,9 +40,7 @@ export const defaultResolveLazyElement = (_fiber: MyReactFiberNode) => {
 
   const children = globalDispatch.resolveSuspenseElement(_fiber);
 
-  if (enableLazySSRHydrate.current) {
-    return WrapperByScope(children);
-  }
+  if (enableLazySSRHydrate.current) return WrapperByScope(children);
 
   return children;
 };

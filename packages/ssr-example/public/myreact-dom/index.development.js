@@ -2452,6 +2452,9 @@
         });
     };
 
+    var commentS = " [ ";
+    var commentE = " ] ";
+
     var MyReactComponent = react.__my_react_internal__.MyReactComponent;
     var findDOMFromFiber = function (fiber) {
         var currentArray = [fiber];
@@ -2919,12 +2922,25 @@
                 if (dom.textContent === " " || dom.textContent === "")
                     return false;
                 // scope comment
-                if (dom.textContent === " [ " || dom.textContent === " ] ")
+                if (dom.textContent === commentS || dom.textContent === commentE)
                     return true;
             }
             return true;
         });
     };
+    // const getNextScopeStartDom = (parentDom: Element) => {
+    //   const children = Array.from(parentDom.childNodes);
+    //   const targetElement = children.find((dom) => {
+    //     const typedDom = dom as HydrateDOM;
+    //     if (typedDom.__hydrate__) return false;
+    //     return true;
+    //   });
+    //   if (targetElement && targetElement.nodeType === Node.COMMENT_NODE && targetElement.textContent === commentS) {
+    //     return targetElement;
+    //   } else {
+    //     return false;
+    //   }
+    // };
     var checkHydrateDom = function (fiber, dom) {
         if (!dom) {
             log({
@@ -3021,10 +3037,10 @@
         }
         else if (fiber.type & NODE_TYPE.__isCommentNode__) {
             if (isCommentStartElement(fiber)) {
-                fiber.node = document.createComment(" [ ");
+                fiber.node = document.createComment(commentS);
             }
             else {
-                fiber.node = document.createComment(" ] ");
+                fiber.node = document.createComment(commentE);
             }
         }
     };
@@ -3132,19 +3148,17 @@
         if (renderScope.isHydrateRender && fiber.type & NODE_TYPE.__isPlainNode__) {
             var dom = fiber.node;
             var children = Array.from(dom.childNodes);
+            var pendingDeleteArray_1 = [];
             children.forEach(function (node) {
                 var typedNode = node;
-                if (typedNode.nodeType === Node.COMMENT_NODE) {
-                    // remove scope placeholder
-                    if (typedNode.textContent !== " [ " && typedNode.textContent !== " ] ")
-                        node.remove();
+                if (!typedNode.__hydrate__) {
+                    pendingDeleteArray_1.push(typedNode);
                 }
                 else {
-                    if (!typedNode.__hydrate__)
-                        node.remove();
+                    delete typedNode["__hydrate__"];
                 }
-                delete typedNode["__hydrate__"];
             });
+            pendingDeleteArray_1.forEach(function (n) { return n.remove(); });
         }
     };
 
@@ -3156,9 +3170,8 @@
         if (typedType._loaded === true) {
             var render = typedType.render;
             var children_1 = react.createElement(render, props);
-            if (enableLazySSRHydrate$1.current) {
+            if (enableLazySSRHydrate$1.current)
                 return WrapperByScope(children_1);
-            }
             return children_1;
         }
         else if (typedType._loading === false) {
@@ -3174,9 +3187,8 @@
             });
         }
         var children = globalDispatch.resolveSuspenseElement(_fiber);
-        if (enableLazySSRHydrate$1.current) {
+        if (enableLazySSRHydrate$1.current)
             return WrapperByScope(children);
-        }
         return children;
     };
 

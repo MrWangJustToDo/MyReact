@@ -12,17 +12,18 @@ export const fallback = (fiber: MyReactFiberNode) => {
 
     const children = Array.from(dom.childNodes);
 
+    const pendingDeleteArray: Element[] = [];
+
     children.forEach((node) => {
-      const typedNode = node as Partial<HydrateDOM>;
+      const typedNode = node as HydrateDOM;
 
-      if (typedNode.nodeType === Node.COMMENT_NODE) {
-        // remove scope placeholder
-        if (typedNode.textContent !== " [ " && typedNode.textContent !== " ] ") node.remove();
+      if (!typedNode.__hydrate__) {
+        pendingDeleteArray.push(typedNode);
       } else {
-        if (!typedNode.__hydrate__) node.remove();
+        delete typedNode["__hydrate__"];
       }
-
-      delete typedNode["__hydrate__"];
     });
+
+    pendingDeleteArray.forEach((n) => n.remove());
   }
 };

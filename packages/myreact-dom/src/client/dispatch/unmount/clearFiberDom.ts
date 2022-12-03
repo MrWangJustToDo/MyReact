@@ -7,6 +7,7 @@ export const clearFiberDom = (fiber: MyReactFiberNode) => {
   if (fiber.node) {
     if (!(fiber.type & NODE_TYPE.__isPortal__) && fiber !== fiber.root) {
       const dom = fiber.node as DomNode;
+
       dom.parentElement.removeChild(dom);
     } else {
       fiber.children.forEach(clearFiberDom);

@@ -26,6 +26,7 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiber
 
   while (child) {
     append(child, parentFiberWithDom);
+
     child = child.sibling;
   }
 };

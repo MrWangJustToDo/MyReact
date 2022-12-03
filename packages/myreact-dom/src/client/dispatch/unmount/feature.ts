@@ -7,11 +7,13 @@ import type { LinkTreeList } from "@my-react/react-shared";
 
 export const unmountFiber = (fiber: MyReactFiberNode) => {
   const list = generateFiberToList(fiber);
+
   unmountList(list);
 };
 
 export const unmountList = (list: LinkTreeList<MyReactFiberNode>) => {
   list.listToFoot((f) => f.unmount());
+
   list.head.value && clearFiberDom(list.head.value);
 };
 

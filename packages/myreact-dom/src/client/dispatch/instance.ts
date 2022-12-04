@@ -25,7 +25,7 @@ import { create } from "./create";
 import { deactivate } from "./deactivate";
 import { effect, layoutEffect } from "./effect";
 import { fallback } from "./fallback";
-import { defaultResolveLazyElement } from "./lazy";
+import { defaultResolveLazyElement, defaultResolveLazyElementAsync } from "./lazy";
 import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
@@ -68,9 +68,8 @@ export class ClientDispatch implements FiberDispatch {
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
     return defaultResolveLazyElement(_fiber);
   }
-  // client side not need async render
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
-    return null;
+    return defaultResolveLazyElementAsync(_fiber);
   }
   resolveRef(_fiber: MyReactFiberNode): void {
     setRef(_fiber);

@@ -2872,6 +2872,7 @@
         var globalDispatch = fiber.root.globalDispatch;
         if (globalScope.isHydrateRender || globalScope.isServerRender) {
             console.log("can not update component");
+            setTimeout(function () { return triggerUpdate(fiber); });
             return;
         }
         fiber.triggerUpdate();
@@ -3163,6 +3164,26 @@
     };
 
     var enableLazySSRHydrate$1 = react.__my_react_shared__.enableLazySSRHydrate;
+    // TODO same as server side
+    var defaultResolveLazyElementAsync$1 = function (_fiber) { return __awaiter$1(void 0, void 0, void 0, function () {
+        var _a, type, props, typedType, loaded, render;
+        return __generator$1(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    _a = _fiber.element, type = _a.type, props = _a.props;
+                    typedType = type;
+                    if (typedType._loaded)
+                        return [2 /*return*/, WrapperByScope(react.createElement(typedType.render, props))];
+                    return [4 /*yield*/, typedType.loader()];
+                case 1:
+                    loaded = _b.sent();
+                    render = typeof loaded === "object" && typeof (loaded === null || loaded === void 0 ? void 0 : loaded.default) === "function" ? loaded.default : loaded;
+                    typedType.render = render;
+                    typedType._loaded = true;
+                    return [2 /*return*/, WrapperByScope(react.createElement(typedType.render, props))];
+            }
+        });
+    }); };
     var defaultResolveLazyElement$1 = function (_fiber) {
         var _a = _fiber.element, type = _a.type, props = _a.props;
         var globalDispatch = _fiber.root.globalDispatch;
@@ -3625,9 +3646,8 @@
         ClientDispatch.prototype.resolveLazyElement = function (_fiber) {
             return defaultResolveLazyElement$1(_fiber);
         };
-        // client side not need async render
         ClientDispatch.prototype.resolveLazyElementAsync = function (_fiber) {
-            return null;
+            return defaultResolveLazyElementAsync$1(_fiber);
         };
         ClientDispatch.prototype.resolveRef = function (_fiber) {
             setRef(_fiber);
@@ -3890,6 +3910,47 @@
         initialFiberNode$3(fiber);
         startRender(fiber);
     };
+    var renderAsync = function (element, container) { return __awaiter$1(void 0, void 0, void 0, function () {
+        var containerFiber, globalDispatch, globalScope, globalPlatform, fiber;
+        var _a;
+        return __generator$1(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    containerFiber = container.__fiber__;
+                    if (containerFiber instanceof MyReactFiberNodeClass) {
+                        containerFiber.root.globalScope.isAppCrash = false;
+                        if (checkIsSameType(containerFiber, element)) {
+                            containerFiber.installElement(element);
+                            containerFiber.update();
+                            return [2 /*return*/];
+                        }
+                        else {
+                            unmountComponentAtNode(container);
+                        }
+                    }
+                    globalDispatch = new ClientDispatch();
+                    globalScope = new DomScope();
+                    globalPlatform = new DomPlatform("myreact-dom");
+                    Array.from(container.children).forEach(function (n) { var _a; return (_a = n.remove) === null || _a === void 0 ? void 0 : _a.call(n); });
+                    fiber = new MyReactFiberNodeRoot$3(null, element);
+                    fiber.node = container;
+                    fiber.globalScope = globalScope;
+                    fiber.globalDispatch = globalDispatch;
+                    fiber.globalPlatform = globalPlatform;
+                    globalScope.rootFiber = fiber;
+                    globalScope.rootContainer = container;
+                    (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "render", "MyReact");
+                    container.__fiber__ = fiber;
+                    container.__scope__ = globalScope;
+                    container.__dispatch__ = globalDispatch;
+                    initialFiberNode$3(fiber);
+                    return [4 /*yield*/, startRenderAsync(fiber)];
+                case 1:
+                    _b.sent();
+                    return [2 /*return*/];
+            }
+        });
+    }); };
 
     var MyReactFiberNodeRoot$2 = react.__my_react_internal__.MyReactFiberNodeRoot;
     var initialFiberNode$2 = react.__my_react_shared__.initialFiberNode;
@@ -3914,6 +3975,36 @@
         startRender(fiber, true);
         globalScope.isHydrateRender = false;
     };
+    var hydrateAsync = function (element, container) { return __awaiter$1(void 0, void 0, void 0, function () {
+        var globalDispatch, globalScope, globalPlatform, fiber;
+        var _a;
+        return __generator$1(this, function (_b) {
+            switch (_b.label) {
+                case 0:
+                    globalDispatch = new ClientDispatch();
+                    globalScope = new DomScope();
+                    globalPlatform = new DomPlatform("myreact-dom");
+                    globalScope.isHydrateRender = true;
+                    fiber = new MyReactFiberNodeRoot$2(null, element);
+                    fiber.node = container;
+                    fiber.globalScope = globalScope;
+                    fiber.globalDispatch = globalDispatch;
+                    fiber.globalPlatform = globalPlatform;
+                    globalScope.rootFiber = fiber;
+                    globalScope.rootContainer = container;
+                    (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "hydrate", "MyReact");
+                    container.__fiber__ = fiber;
+                    container.__scope__ = globalScope;
+                    container.__dispatch__ = globalDispatch;
+                    initialFiberNode$2(fiber);
+                    return [4 /*yield*/, startRenderAsync(fiber, true)];
+                case 1:
+                    _b.sent();
+                    globalScope.isHydrateRender = false;
+                    return [2 /*return*/];
+            }
+        });
+    }); };
 
     var append = function (fiber, parentFiberWithDom) {
         if (fiber.patch & PATCH_TYPE.__pendingAppend__) {
@@ -4817,6 +4908,8 @@
     var ReactDOM = {
         render: render,
         hydrate: hydrate,
+        renderAsync: renderAsync,
+        hydrateAsync: hydrateAsync,
         findDOMNode: findDOMNode,
         createPortal: createPortal,
         renderToString: renderToString,
@@ -4832,7 +4925,9 @@
     exports.findDOMNode = findDOMNode;
     exports.flushSync = flushSync;
     exports.hydrate = hydrate;
+    exports.hydrateAsync = hydrateAsync;
     exports.render = render;
+    exports.renderAsync = renderAsync;
     exports.renderToString = renderToString;
     exports.renderToStringAsync = renderToStringAsync;
     exports.unmountComponentAtNode = unmountComponentAtNode;

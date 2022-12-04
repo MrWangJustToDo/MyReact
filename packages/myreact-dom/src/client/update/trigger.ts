@@ -35,6 +35,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
 
   if (globalScope.isHydrateRender || globalScope.isServerRender) {
     if (__DEV__) console.log("can not update component");
+    setTimeout(() => triggerUpdate(fiber));
     return;
   }
 

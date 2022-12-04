@@ -62,7 +62,7 @@ export function getTypeFromElement(element: MyReactElementNode) {
           nodeTypeSymbol |= NODE_TYPE.__isReactive__;
           break;
         default:
-          throw new Error(`invalid object element type ${typedRawType["$$typeof"].toString()}`);
+          throw new Error(`invalid object element type ${typedRawType["$$typeof"]?.toString()}`);
       }
     } else if (typeof rawType === "function") {
       if (rawType.prototype?.isMyReactComponent) {
@@ -91,7 +91,7 @@ export function getTypeFromElement(element: MyReactElementNode) {
           nodeTypeSymbol |= NODE_TYPE.__isCommentNode__;
           break;
         default:
-          throw new Error(`invalid symbol element type ${rawType.toString()}`);
+          throw new Error(`invalid symbol element type ${rawType?.toString()}`);
       }
     } else if (typeof rawType === "string") {
       nodeTypeSymbol |= NODE_TYPE.__isPlainNode__;

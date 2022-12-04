@@ -1,4 +1,4 @@
-import { render, hydrate } from "./client";
+import { render, hydrate, renderAsync, hydrateAsync } from "./client";
 import { renderToString, renderToStringAsync } from "./server";
 import { createPortal, findDOMNode, safeCall, unmountComponentAtNode } from "./shared";
 
@@ -11,6 +11,8 @@ const unstable_batchedUpdates = safeCall;
 const ReactDOM = {
   render,
   hydrate,
+  renderAsync,
+  hydrateAsync,
   findDOMNode,
   createPortal,
   renderToString,
@@ -24,6 +26,8 @@ const ReactDOM = {
 export {
   render,
   hydrate,
+  renderAsync,
+  hydrateAsync,
   findDOMNode,
   createPortal,
   renderToString,

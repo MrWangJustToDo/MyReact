@@ -1086,7 +1086,7 @@
         return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
     }
     function getTypeFromElement(element) {
-        var _a;
+        var _a, _b;
         var nodeTypeSymbol = NODE_TYPE.__initial__;
         if (isValidElement(element)) {
             var rawType = element.type;
@@ -1116,11 +1116,11 @@
                         nodeTypeSymbol |= NODE_TYPE.__isReactive__;
                         break;
                     default:
-                        throw new Error("invalid object element type ".concat(typedRawType["$$typeof"].toString()));
+                        throw new Error("invalid object element type ".concat((_a = typedRawType["$$typeof"]) === null || _a === void 0 ? void 0 : _a.toString()));
                 }
             }
             else if (typeof rawType === "function") {
-                if ((_a = rawType.prototype) === null || _a === void 0 ? void 0 : _a.isMyReactComponent) {
+                if ((_b = rawType.prototype) === null || _b === void 0 ? void 0 : _b.isMyReactComponent) {
                     nodeTypeSymbol |= NODE_TYPE.__isClassComponent__;
                 }
                 else {
@@ -1148,7 +1148,7 @@
                         nodeTypeSymbol |= NODE_TYPE.__isCommentNode__;
                         break;
                     default:
-                        throw new Error("invalid symbol element type ".concat(rawType.toString()));
+                        throw new Error("invalid symbol element type ".concat(rawType === null || rawType === void 0 ? void 0 : rawType.toString()));
                 }
             }
             else if (typeof rawType === "string") {

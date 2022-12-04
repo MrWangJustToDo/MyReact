@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ChakraProvider, cookieStorageManager } from "@chakra-ui/react";
 import { CacheProvider } from "@emotion/react";
 import createEmotionServer from "@emotion/server/create-instance";
 import { ChunkExtractor } from "@loadable/server";
+import { renderToStringAsync } from "@my-react/react-dom";
 import { renderToString } from "react-dom/server";
 import { HelmetProvider } from "react-helmet-async";
 import { Provider } from "react-redux";
@@ -12,6 +14,7 @@ import { manifestLoadableFile } from "@server/util/manifest";
 import { createEmotionCache, HTML } from "@shared";
 
 import type { SafeAction } from "../compose";
+import type { MyReactElement } from "@my-react/react";
 
 export const targetRender: SafeAction = async ({ req, res, store, lang, env }) => {
   const helmetContext = {};
@@ -40,7 +43,9 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
 
   const jsx = webExtractor.collectChunks(content);
 
-  const body = renderToString(jsx);
+  const body = await renderToStringAsync(jsx as MyReactElement);
+
+  // const body = renderToString(jsx);
 
   const emotionChunks = extractCriticalToChunks(body);
 

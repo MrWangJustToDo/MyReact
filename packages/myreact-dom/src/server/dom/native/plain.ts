@@ -2,6 +2,7 @@ import kebabCase from "lodash/kebabCase";
 
 import { IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
+import { CommentEndElement, CommentStartElement } from "./comment";
 import { TextElement } from "./text";
 
 export class PlainElement {
@@ -10,7 +11,7 @@ export class PlainElement {
   // attrs
   style: Record<string, string | null | undefined> = {};
   attrs: Record<string, string | boolean | null | undefined> = {};
-  children: Array<TextElement | PlainElement | string> = [];
+  children: Array<TextElement | PlainElement | CommentStartElement | CommentEndElement | string> = [];
   constructor(type: string) {
     this.type = type;
   }
@@ -36,13 +37,19 @@ export class PlainElement {
    *
    * @param {Element} dom
    */
-  append(...dom: Array<TextElement | PlainElement>) {
+  append(...dom: Array<TextElement | PlainElement | CommentStartElement | CommentEndElement>) {
     dom.forEach((d) => this.appendChild(d));
   }
 
-  appendChild(dom: PlainElement | TextElement | string) {
+  appendChild(dom: PlainElement | TextElement | CommentStartElement | CommentEndElement | string) {
     if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type)) return;
-    if (dom instanceof PlainElement || dom instanceof TextElement || typeof dom === "string") {
+    if (
+      dom instanceof PlainElement ||
+      dom instanceof TextElement ||
+      dom instanceof CommentStartElement ||
+      dom instanceof CommentEndElement ||
+      typeof dom === "string"
+    ) {
       this.children.push(dom);
       return dom;
     } else {
@@ -76,36 +83,32 @@ export class PlainElement {
     return "";
   }
 
+  renderChildren() {
+    return this.children
+      .reduce<Array<PlainElement | TextElement | CommentStartElement | CommentEndElement | string>>((p, c) => {
+        if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
+          p.push("<!-- -->");
+          p.push(c);
+        } else if (p.length && typeof c === "string" && typeof p[p.length - 1] === "string") {
+          p.push("<!-- -->");
+          p.push(c);
+        } else {
+          p.push(c);
+        }
+        return p;
+      }, [])
+      .map((dom) => dom.toString())
+      .reduce((p, c) => p + c, "");
+  }
+
   toString(): string {
     if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type)) {
       return `<${this.type}${this.serialize()}/>`;
     } else {
       if (this.type) {
-        return `<${this.type}${this.serialize()}>${this.children
-          .reduce<Array<TextElement | string | PlainElement>>((p, c) => {
-            if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
-              p.push("<!-- -->");
-              p.push(c);
-            } else {
-              p.push(c);
-            }
-            return p;
-          }, [])
-          .map((dom) => dom.toString())
-          .reduce((p, c) => p + c, "")}</${this.type}>`;
+        return `<${this.type}${this.serialize()}>${this.renderChildren()}</${this.type}>`;
       } else {
-        return this.children
-          .reduce<Array<TextElement | string | PlainElement>>((p, c) => {
-            if (p.length && c instanceof TextElement && p[p.length - 1] instanceof TextElement) {
-              p.push("<!-- -->");
-              p.push(c);
-            } else {
-              p.push(c);
-            }
-            return p;
-          }, [])
-          .map((dom) => dom.toString())
-          .reduce((p, c) => p + c, "");
+        return this.renderChildren();
       }
     }
   }

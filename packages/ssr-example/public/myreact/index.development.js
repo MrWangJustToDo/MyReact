@@ -43,6 +43,8 @@
         NODE_TYPE[NODE_TYPE["__isSuspenseNode__"] = 16384] = "__isSuspenseNode__";
         NODE_TYPE[NODE_TYPE["__isFragmentNode__"] = 32768] = "__isFragmentNode__";
         NODE_TYPE[NODE_TYPE["__isKeepLiveNode__"] = 65536] = "__isKeepLiveNode__";
+        NODE_TYPE[NODE_TYPE["__isScopeNode__"] = 131072] = "__isScopeNode__";
+        NODE_TYPE[NODE_TYPE["__isCommentNode__"] = 262144] = "__isCommentNode__";
     })(NODE_TYPE || (NODE_TYPE = {}));
 
     var UPDATE_TYPE;
@@ -941,16 +943,16 @@
         if (fiber.type & NODE_TYPE.__isMemo__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
-            var targetRender = typedType.render;
+            var targetRender = typedType === null || typedType === void 0 ? void 0 : typedType.render;
             if (typeof targetRender === "function") {
-                if (targetRender.name)
+                if (targetRender === null || targetRender === void 0 ? void 0 : targetRender.name)
                     return "<Memo - (".concat(targetRender.name, ") />");
-                if (targetRender.displayName)
+                if (targetRender === null || targetRender === void 0 ? void 0 : targetRender.displayName)
                     return "<Memo -(".concat(targetRender.displayName, ") />");
             }
             if (typeof targetRender === "object") {
                 var typedTargetRender = targetRender;
-                if (typedTargetRender.name)
+                if (typedTargetRender === null || typedTargetRender === void 0 ? void 0 : typedTargetRender.name)
                     return "<Memo - (".concat(typedTargetRender.name, ") />");
             }
             return "<Memo />";
@@ -958,16 +960,17 @@
         if (fiber.type & NODE_TYPE.__isLazy__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
-            if (typedType.render.name)
-                return "<Lazy - (".concat(typedType.render.name, ") />");
-            if (typedType.render.displayName)
-                return "<Lazy -(".concat(typedType.render.displayName, ") />");
+            var typedRender = typedType === null || typedType === void 0 ? void 0 : typedType.render;
+            if (typedRender === null || typedRender === void 0 ? void 0 : typedRender.name)
+                return "<Lazy - (".concat(typedRender.name, ") />");
+            if (typedRender === null || typedRender === void 0 ? void 0 : typedRender.displayName)
+                return "<Lazy -(".concat(typedRender.displayName, ") />");
             return "<Lazy />";
         }
         if (fiber.type & NODE_TYPE.__isReactive__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
-            if (typedType.name)
+            if (typedType === null || typedType === void 0 ? void 0 : typedType.name)
                 return "<Reactive* - (".concat(typedType.name, ") />");
             return "<Reactive* />";
         }
@@ -977,6 +980,8 @@
             return "<Null />";
         if (fiber.type & NODE_TYPE.__isEmptyNode__)
             return "<Empty />";
+        if (fiber.type & NODE_TYPE.__isScopeNode__)
+            return "<Scope />";
         if (fiber.type & NODE_TYPE.__isStrictNode__)
             return "<Strict />";
         if (fiber.type & NODE_TYPE.__isSuspenseNode__)
@@ -989,6 +994,8 @@
             return "<Provider />";
         if (fiber.type & NODE_TYPE.__isContextConsumer__)
             return "<Consumer />";
+        if (fiber.type & NODE_TYPE.__isCommentNode__)
+            return "<Comment />";
         if (fiber.type & NODE_TYPE.__isForwardRef__) {
             var typedElement = fiber.element;
             var typedType = typedElement.type;
@@ -1057,6 +1064,7 @@
     var enableKeyDiff = createRef(true);
     // enable react-18 strict lifecycle method
     var enableStrictLifeCycle = createRef(false);
+    var enableLazySSRHydrate = createRef(true);
 
     var My_React_Element = Symbol.for("react.element");
     var My_React_Memo = Symbol.for("react.memo");
@@ -1071,12 +1079,14 @@
     var My_React_Strict = Symbol.for("react.strict");
     var My_React_KeepLive = Symbol.for("react.keep_live");
     var My_React_Reactive = Symbol.for("react.reactive");
+    var My_React_Scope = Symbol.for("react.scope");
+    var My_React_Comment = Symbol.for("react.comment");
 
     function isValidElement(element) {
         return typeof element === "object" && !Array.isArray(element) && (element === null || element === void 0 ? void 0 : element.$$typeof) === My_React_Element;
     }
     function getTypeFromElement(element) {
-        var _a;
+        var _a, _b;
         var nodeTypeSymbol = NODE_TYPE.__initial__;
         if (isValidElement(element)) {
             var rawType = element.type;
@@ -1106,11 +1116,11 @@
                         nodeTypeSymbol |= NODE_TYPE.__isReactive__;
                         break;
                     default:
-                        throw new Error("invalid object element type ".concat(typedRawType["$$typeof"].toString()));
+                        throw new Error("invalid object element type ".concat((_a = typedRawType["$$typeof"]) === null || _a === void 0 ? void 0 : _a.toString()));
                 }
             }
             else if (typeof rawType === "function") {
-                if ((_a = rawType.prototype) === null || _a === void 0 ? void 0 : _a.isMyReactComponent) {
+                if ((_b = rawType.prototype) === null || _b === void 0 ? void 0 : _b.isMyReactComponent) {
                     nodeTypeSymbol |= NODE_TYPE.__isClassComponent__;
                 }
                 else {
@@ -1131,8 +1141,14 @@
                     case My_React_Suspense:
                         nodeTypeSymbol |= NODE_TYPE.__isSuspenseNode__;
                         break;
+                    case My_React_Scope:
+                        nodeTypeSymbol |= NODE_TYPE.__isScopeNode__;
+                        break;
+                    case My_React_Comment:
+                        nodeTypeSymbol |= NODE_TYPE.__isCommentNode__;
+                        break;
                     default:
-                        throw new Error("invalid symbol element type ".concat(rawType.toString()));
+                        throw new Error("invalid symbol element type ".concat(rawType === null || rawType === void 0 ? void 0 : rawType.toString()));
                 }
             }
             else if (typeof rawType === "string") {
@@ -1283,7 +1299,11 @@
         }
         return element;
     };
-    function createElement(type, config, children) {
+    function createElement(type, config) {
+        var children = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            children[_i - 2] = arguments[_i];
+        }
         var key = null;
         var ref = null;
         var self = null;
@@ -1304,9 +1324,10 @@
                 props[key] = props[key] === undefined ? (_a = typedType_1.defaultProps) === null || _a === void 0 ? void 0 : _a[key] : props[key];
             });
         }
-        var childrenLength = arguments.length - 2;
+        // const childrenLength = arguments.length - 2;
+        var childrenLength = children.length;
         if (childrenLength > 1) {
-            children = Array.from(arguments).slice(2);
+            // children = Array.from(arguments).slice(2);
             {
                 checkArrayChildrenKey(children);
             }
@@ -1314,9 +1335,9 @@
         }
         else if (childrenLength === 1) {
             {
-                checkSingleChildrenKey(children);
+                checkSingleChildrenKey(children[0]);
             }
-            props.children = children;
+            props.children = children[0];
         }
         return createMyReactElement({
             type: type,
@@ -1617,8 +1638,11 @@
         }
         EmptyDispatch.prototype.trigger = function (_fiber) {
         };
-        EmptyDispatch.prototype.resolveLazy = function () {
-            return false;
+        EmptyDispatch.prototype.resolveLazyElement = function (_fiber) {
+            return null;
+        };
+        EmptyDispatch.prototype.resolveLazyElementAsync = function (_fiber) {
+            return null;
         };
         EmptyDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
             return null;
@@ -2199,16 +2223,6 @@
         }
     };
 
-    function createReactive(props) {
-        var _a;
-        return _a = {},
-            _a["$$typeof"] = My_React_Reactive,
-            _a.name = typeof props === "function" ? props.name : props === null || props === void 0 ? void 0 : props.name,
-            _a.setup = typeof props === "function" ? props : props === null || props === void 0 ? void 0 : props.setup,
-            _a.render = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.render,
-            _a.contextType = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.contextType,
-            _a;
-    }
     // hook api like `Vue`
     var onBeforeMount = function (cb) {
         var reactiveInstance = currentReactiveInstance.current;
@@ -2265,6 +2279,17 @@
         }
     };
 
+    function createReactive(props) {
+        var _a;
+        return _a = {},
+            _a["$$typeof"] = My_React_Reactive,
+            _a.name = typeof props === "function" ? props.name : props === null || props === void 0 ? void 0 : props.name,
+            _a.setup = typeof props === "function" ? props : props === null || props === void 0 ? void 0 : props.setup,
+            _a.render = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.render,
+            _a.contextType = typeof props === "function" ? null : props === null || props === void 0 ? void 0 : props.contextType,
+            _a;
+    }
+
     var MyReactReactiveInstance = /** @class */ (function (_super) {
         __extends(MyReactReactiveInstance, _super);
         function MyReactReactiveInstance(props, context) {
@@ -2316,6 +2341,8 @@
     var __my_react_shared__ = {
         getHookTree: getHookTree,
         getFiberTree: getFiberTree,
+        getElementName: getElementName,
+        getFiberNodeName: getFiberNodeName,
         createFiberNode: createFiberNode,
         updateFiberNode: updateFiberNode,
         initialFiberNode: initialFiberNode,
@@ -2323,6 +2350,7 @@
         getTypeFromElement: getTypeFromElement,
         enableKeyDiff: enableKeyDiff,
         enableConcurrentMode: enableConcurrentMode,
+        enableLazySSRHydrate: enableLazySSRHydrate,
         enableStrictLifeCycle: enableStrictLifeCycle,
     };
     var __my_react_internal__ = {
@@ -2368,6 +2396,7 @@
         forwardRef: forwardRef,
         createContext: createContext,
         createReactive: createReactive,
+        Scope: My_React_Scope,
         Portal: My_React_Portal,
         Element: My_React_Element,
         Provider: My_React_Provider,
@@ -2378,6 +2407,7 @@
         KeepLive: My_React_KeepLive,
         StrictMode: My_React_Strict,
         ForwardRef: My_React_ForwardRef,
+        Comment: My_React_Comment,
         useRef: useRef,
         useMemo: useMemo,
         useState: useState,
@@ -2396,6 +2426,7 @@
     };
 
     exports.Children = Children;
+    exports.Comment = My_React_Comment;
     exports.Component = Component;
     exports.Consumer = My_React_Consumer;
     exports.Element = My_React_Element;
@@ -2406,6 +2437,7 @@
     exports.Provider = My_React_Provider;
     exports.PureComponent = PureComponent;
     exports.Reactive = My_React_Reactive;
+    exports.Scope = My_React_Scope;
     exports.StrictMode = My_React_Strict;
     exports.Suspense = My_React_Suspense;
     exports.__my_react_internal__ = __my_react_internal__;

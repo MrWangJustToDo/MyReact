@@ -23,7 +23,9 @@ export interface FiberDispatch {
 
   trigger(_fiber: MyReactFiberNode): void;
 
-  resolveLazy(): boolean;
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode;
+
+  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode>;
 
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
 

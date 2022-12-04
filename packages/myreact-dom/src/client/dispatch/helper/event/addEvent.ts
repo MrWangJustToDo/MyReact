@@ -2,9 +2,8 @@ import { enableControlComponent, enableEventSystem, safeCallWithFiber } from "@m
 
 import { getNativeEventName } from "./getEventName";
 
-import type { DomElement} from "@my-react-dom-shared";
+import type { DomElement } from "@my-react-dom-shared";
 import type { MyReactElement, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
-
 
 const controlElementTag: Record<string, boolean> = {
   input: true,
@@ -50,8 +49,10 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
 
         if (enableControlComponent.current) {
           const pendingProps = fiber.pendingProps;
+
           if (controlElementTag[typedElement.type as string] && typeof pendingProps["value"] !== "undefined") {
             const typedDom = dom as ControlledElement;
+
             typedDom["value"] = pendingProps["value"] as string;
           }
         }

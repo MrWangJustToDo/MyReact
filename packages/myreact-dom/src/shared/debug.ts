@@ -52,23 +52,52 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
     if (cache[messageKey][tree]) return;
     cache[messageKey][tree] = true;
   }
-  console[level](
-    `[${level}]:`,
-    "\n-----------------------------------------\n",
-    `${typeof message === "string" ? message : message.stack || message.message}`,
-    "\n-----------------------------------------\n",
-    "Render Tree:",
-    tree
-  );
+  if (level === "warn") {
+    originalConsoleWarn(
+      `[${level}]:`,
+      "\n-----------------------------------------\n",
+      `${typeof message === "string" ? message : message.stack || message.message}`,
+      "\n-----------------------------------------\n",
+      "Render Tree:",
+      tree
+    );
+  } else if (level === "error") {
+    originalConsoleError(
+      `[${level}]:`,
+      "\n-----------------------------------------\n",
+      `${typeof message === "string" ? message : message.stack || message.message}`,
+      "\n-----------------------------------------\n",
+      "Render Tree:",
+      tree
+    );
+  }
 };
 
 export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T) => {
   try {
     return action.call(null, ...args);
   } catch (e) {
+    const fiber = currentRunningFiber.current;
+
+    if (fiber && fiber.root.globalScope.isAppCrash) return;
+
     log({ message: e as Error, level: "error" });
 
+    if (fiber) fiber.root.globalScope.isAppCrash = true;
+
+    throw new Error((e as Error).message);
+  }
+};
+
+export const safeCallAsync = async <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T) => {
+  try {
+    return await action.call(null, ...args);
+  } catch (e) {
     const fiber = currentRunningFiber.current;
+
+    if (fiber && fiber.root.globalScope.isAppCrash) return;
+
+    log({ message: e as Error, level: "error" });
 
     if (fiber) fiber.root.globalScope.isAppCrash = true;
 
@@ -80,6 +109,8 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>({ action, fi
   try {
     return action.call(null, ...args);
   } catch (e) {
+    if (fiber.root.globalScope.isAppCrash) return;
+
     log({ message: e as Error, level: "error", fiber });
 
     fiber.root.globalScope.isAppCrash = true;

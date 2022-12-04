@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <div id="a"></div>
+  <hr />
+  <div id="b"></div>
+
+  <script type="text/babel">
+    const { Component, Suspense, lazy } = React;
+
+    const delay = (time) =>
+      new Promise((r) => {
+        setTimeout(r, time);
+      });
+
+    const Bar = () => {
+      // throw new Error(100);
+      return <div>bar</div>;
+    };
+
+    const LazyBar = lazy(async () => {
+      await delay('kkkkk');
+      // throw new Error('hhhh')
+      return { default: Bar }
+    });
+
+    // <Suspense fallback={<>123</>}>
+    //   <LazyBar />
+    // </Suspense>;
+
+    const App = () => {
+      return (
+        <div>
+          app
+          <Suspense fallback={<>123</>}>
+            <LazyBar />
+          </Suspense>
+        </div>
+      );
+    };
+
+    const a = document.querySelector("#a");
+    const b = document.querySelector("#b");
+
+    const aString = ReactDOM.renderToString(<App />);
+    const bString = ReactDOM.renderToStringAsync(<App />).then((re) => {
+      b.innerHTML = re;
+    });
+
+    a.innerHTML = aString;
+  </script>
+</body>
+
+</html>

@@ -25,6 +25,7 @@ import { create } from "./create";
 import { deactivate } from "./deactivate";
 import { effect, layoutEffect } from "./effect";
 import { fallback } from "./fallback";
+import { defaultResolveLazyElement, defaultResolveLazyElementAsync } from "./lazy";
 import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
@@ -64,8 +65,11 @@ export class ClientDispatch implements FiberDispatch {
   trigger(_fiber: MyReactFiberNode): void {
     triggerUpdate(_fiber);
   }
-  resolveLazy(): boolean {
-    return true;
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
+    return defaultResolveLazyElement(_fiber);
+  }
+  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
+    return defaultResolveLazyElementAsync(_fiber);
   }
   resolveRef(_fiber: MyReactFiberNode): void {
     setRef(_fiber);
@@ -173,7 +177,7 @@ export class ClientDispatch implements FiberDispatch {
 
     if (_fiber.child) {
       _final = this.reconcileCommit(_fiber.child, _result, _fiber.node ? _fiber : _parentFiberWithDom);
-      fallback(_fiber);
+      if (_hydrate) fallback(_fiber);
     }
 
     safeCallWithFiber({ fiber: _fiber, action: () => layoutEffect(_fiber) });
@@ -245,17 +249,17 @@ export class ClientDispatch implements FiberDispatch {
     });
   }
   pendingCreate(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isCommentNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingCreate__;
     }
   }
   pendingUpdate(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingUpdate__;
     }
   }
   pendingAppend(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__)) {
+    if (_fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
       _fiber.patch |= PATCH_TYPE.__pendingAppend__;
     }
   }

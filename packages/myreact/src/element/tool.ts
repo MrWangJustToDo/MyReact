@@ -15,6 +15,8 @@ import {
   My_React_Reactive,
   My_React_Strict,
   My_React_Suspense,
+  My_React_Scope,
+  My_React_Comment,
 } from "./symbol";
 
 import type {
@@ -60,7 +62,7 @@ export function getTypeFromElement(element: MyReactElementNode) {
           nodeTypeSymbol |= NODE_TYPE.__isReactive__;
           break;
         default:
-          throw new Error(`invalid object element type ${typedRawType["$$typeof"].toString()}`);
+          throw new Error(`invalid object element type ${typedRawType["$$typeof"]?.toString()}`);
       }
     } else if (typeof rawType === "function") {
       if (rawType.prototype?.isMyReactComponent) {
@@ -82,8 +84,14 @@ export function getTypeFromElement(element: MyReactElementNode) {
         case My_React_Suspense:
           nodeTypeSymbol |= NODE_TYPE.__isSuspenseNode__;
           break;
+        case My_React_Scope:
+          nodeTypeSymbol |= NODE_TYPE.__isScopeNode__;
+          break;
+        case My_React_Comment:
+          nodeTypeSymbol |= NODE_TYPE.__isCommentNode__;
+          break;
         default:
-          throw new Error(`invalid symbol element type ${rawType.toString()}`);
+          throw new Error(`invalid symbol element type ${rawType?.toString()}`);
       }
     } else if (typeof rawType === "string") {
       nodeTypeSymbol |= NODE_TYPE.__isPlainNode__;

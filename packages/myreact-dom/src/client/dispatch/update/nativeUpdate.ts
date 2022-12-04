@@ -2,7 +2,7 @@ import { NODE_TYPE } from "@my-react/react-shared";
 
 import { enableHighlight, isEvent, isGone, isNew, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
 
-import { addEventListener, removeEventListener } from "../event";
+import { addEventListener, removeEventListener } from "../helper";
 
 import { HighLight } from "./highlight";
 
@@ -18,7 +18,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
 
   if (fiber.type & NODE_TYPE.__isTextNode__) {
     node.textContent = fiber.element as string;
-  } else {
+  } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
     const dom = node as HTMLElement;
     const oldProps = fiber.memoizedProps || {};
     const newProps = fiber.pendingProps || {};

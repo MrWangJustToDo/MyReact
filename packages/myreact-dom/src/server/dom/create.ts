@@ -1,7 +1,7 @@
+import { isCommentStartElement } from "@my-react/react-reconciler";
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { PlainElement } from "./plain";
-import { TextElement } from "./text";
+import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
 
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
 
@@ -12,6 +12,13 @@ export const create = (fiber: MyReactFiberNode) => {
     } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
       const typedElement = fiber.element as MyReactElement;
       fiber.node = new PlainElement(typedElement.type as string);
+    } else if (fiber.type & NODE_TYPE.__isCommentNode__) {
+      // const typedElement = fiber.element as MyReactElement;
+      if (isCommentStartElement(fiber)) {
+        fiber.node = new CommentStartElement();
+      } else {
+        fiber.node = new CommentEndElement();
+      }
     } else {
       throw new Error("createPortal() can not call on the server");
     }

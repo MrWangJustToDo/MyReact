@@ -13,6 +13,14 @@ const Test = () => {
   return <BazLazy />;
 };
 
+// const BBB = () => {
+//   return (
+//     <Suspense fallback={<>123</>}>
+//       <Test />
+//     </Suspense>
+//   );
+// };
+
 export default function Index(props: { foo: string }) {
   return (
     <>
@@ -21,6 +29,8 @@ export default function Index(props: { foo: string }) {
       <Suspense fallback={<>123</>}>
         <Test />
       </Suspense>
+      <div>123</div>
+      <p>234</p>
     </>
   );
 }

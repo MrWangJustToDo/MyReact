@@ -25,8 +25,8 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     <script id="__preload_state__" type="application/json" dangerouslySetInnerHTML={{ __html: `${preloadedState}` }} />
     {process.env.REACT === "myreact" && (
       <>
-        <script src="./myreact.js"></script>
-        <script src="./myreact-dom.js"></script>
+        <script src="./myreact/index.development.js"></script>
+        <script src="./myreact-dom/index.development.js"></script>
       </>
     )}
     {process.env.REACT === "react" && (

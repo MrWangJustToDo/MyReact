@@ -2,7 +2,7 @@ import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
 import { isEvent, isProperty, isStyle, IS_UNIT_LESS_NUMBER, log } from "@my-react-dom-shared";
 
-import { addEventListener } from "../event";
+import { addEventListener } from "../helper";
 
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";

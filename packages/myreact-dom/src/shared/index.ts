@@ -5,6 +5,7 @@ export * from "./scope";
 export * from "./debug";
 export * from "./portal";
 export * from "./render";
+export * from "./comment";
 export * from "./findDom";
 export * from "./unmount";
 export * from "./platform";

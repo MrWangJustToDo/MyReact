@@ -12,13 +12,13 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiber
 
   if (fiber.type & NODE_TYPE.__isPortal__) return;
 
-  if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__)) {
+  if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentNode__)) {
     const parentDOM = parentFiberWithDom.node as DomElement;
 
     const childDOM = fiber.node as DomNode;
 
     parentDOM.appendChild(childDOM);
-    
+
     return;
   }
 
@@ -26,6 +26,7 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiber
 
   while (child) {
     append(child, parentFiberWithDom);
+
     child = child.sibling;
   }
 };

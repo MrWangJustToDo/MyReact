@@ -23,4 +23,4 @@ export const externalsConfig = ({ env }: SafeGenerateActionProps) =>
           ],
         }),
       ]
-    : [{ react: "React" }, { "react-dom": "ReactDOM" }];
+    : [{ react: "React" }, { "react-dom": "ReactDOM" }, { "@my-react/react-dom": "ReactDOM" }];

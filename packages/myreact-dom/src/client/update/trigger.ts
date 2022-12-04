@@ -14,8 +14,11 @@ const { enableConcurrentMode } = __my_react_shared__;
 
 const updateEntry = (globalDispatch: FiberDispatch, globalScope: DomScope) => {
   if (globalLoop.current) return;
+
   const updateFiberController = generateUpdateControllerWithDispatch(globalDispatch, globalScope);
+
   const reconcileUpdate = generateReconcileUpdate(globalDispatch, globalScope);
+
   if (enableConcurrentMode.current) {
     updateAllAsync(updateFiberController, reconcileUpdate);
   } else {
@@ -32,7 +35,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
 
   if (globalScope.isHydrateRender || globalScope.isServerRender) {
     if (__DEV__) console.log("can not update component");
-
+    setTimeout(() => triggerUpdate(fiber));
     return;
   }
 

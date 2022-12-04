@@ -13,6 +13,8 @@ import {
   My_React_ForwardRef as ForwardRef,
   My_React_KeepLive as KeepLive,
   My_React_Reactive as Reactive,
+  My_React_Scope as Scope,
+  My_React_Comment as Comment,
   createElement,
   cloneElement,
   isValidElement,
@@ -39,6 +41,8 @@ import {
 import { MyReactInternalInstance } from "./internal";
 import { createReactive, MyReactReactiveInstance, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated } from "./reactive";
 import {
+  getElementName,
+  getFiberNodeName,
   getFiberTree,
   getHookTree,
   createRef,
@@ -50,6 +54,7 @@ import {
   globalLoop,
   enableConcurrentMode,
   enableKeyDiff,
+  enableLazySSRHydrate,
   enableStrictLifeCycle,
 } from "./share";
 
@@ -62,6 +67,8 @@ const version = __VERSION__;
 const __my_react_shared__ = {
   getHookTree,
   getFiberTree,
+  getElementName,
+  getFiberNodeName,
   createFiberNode,
   updateFiberNode,
   initialFiberNode,
@@ -69,6 +76,7 @@ const __my_react_shared__ = {
   getTypeFromElement,
   enableKeyDiff,
   enableConcurrentMode,
+  enableLazySSRHydrate,
   enableStrictLifeCycle,
 };
 
@@ -118,6 +126,7 @@ const React = {
   forwardRef,
   createContext,
   createReactive,
+  Scope,
   Portal,
   Element,
   Provider,
@@ -128,6 +137,7 @@ const React = {
   KeepLive,
   StrictMode,
   ForwardRef,
+  Comment,
   useRef,
   useMemo,
   useState,
@@ -157,6 +167,7 @@ export {
   forwardRef,
   createContext,
   createReactive,
+  Scope,
   Portal,
   Element,
   Provider,
@@ -167,6 +178,7 @@ export {
   KeepLive,
   StrictMode,
   ForwardRef,
+  Comment,
   useRef,
   useMemo,
   useState,

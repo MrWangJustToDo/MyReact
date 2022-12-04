@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router";
-import { KeepLive } from "@my-react/react";
 import { useDispatch, useSelector } from "react-redux";
 import FileContainer from "./fileContainer/fileContainer";
 import EchartsContainer from "./echartsContainer/echartsContainer";
@@ -20,8 +19,8 @@ export default () => {
 
   return (
     <div className="fm-container relative overflow">
-      <KeepLive>{fileModel && <FileContainer />}</KeepLive>
-      <KeepLive>{echartsModel && <EchartsContainer />}</KeepLive>
+      {fileModel && <FileContainer />}
+      {echartsModel && <EchartsContainer />}
     </div>
   );
 };

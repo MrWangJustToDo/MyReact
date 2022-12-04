@@ -4,29 +4,29 @@
  * const Reactive = createReactive(
  *  () => {
  *    const data = reactive({a: 1});
- * 
+ *
  *    onBeforeMounted(() => {
- * 
+ *
  *    })
- * 
+ *
  *    onMounted(() => {
- * 
+ *
  *    })
- * 
+ *
  *    onBeforeUpdate(() => {
- * 
+ *
  *    })
- * 
+ *
  *    onUpdated(() => {
- * 
+ *
  *    })
  *
  *    onBeforeUnmount(() => {
- * 
+ *
  *    })
- * 
+ *
  *    onUnmounted(() => {
- * 
+ *
  *    })
  *
  *    return {data};  return a object
@@ -46,6 +46,6 @@
  *  </>
  * }
  */
-
+export * from "./hook";
 export * from "./feature";
 export * from "./instance";

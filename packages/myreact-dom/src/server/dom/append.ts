@@ -1,7 +1,6 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import type { PlainElement } from "./plain";
-import type { TextElement } from "./text";
+import type { PlainElement, TextElement } from "./native";
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {

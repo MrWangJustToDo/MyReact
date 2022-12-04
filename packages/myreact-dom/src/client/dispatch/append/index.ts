@@ -2,7 +2,7 @@ import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { getFiberWithDom, IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
-import type { DomElement , DomNode} from "@my-react-dom-shared";
+import type { DomElement, DomNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFiberNode) => {

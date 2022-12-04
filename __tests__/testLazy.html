@@ -1,128 +1,143 @@
 <!DOCTYPE html>
 <html lang="zh_cn">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>测试react框架</title>
-    <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-    <style>
-      .red {
-        color: red;
-        font-size: 20px;
-      }
-      .box {
-        width: 100px;
-        height: 100px;
-        border: 1px solid red;
-        border-radius: 3px;
-      }
 
-      .green {
-        color: green;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>测试react框架</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  <style>
+    .red {
+      color: red;
+      font-size: 20px;
+    }
 
-    <script type="text/babel" async>
-      const { memo, useState, useCallback, useEffect, useRef, useMemo, map, lazy, Suspense, cloneElement, createContext } = React;
+    .box {
+      width: 100px;
+      height: 100px;
+      border: 1px solid red;
+      border-radius: 3px;
+    }
 
-      const useCounter = (init = 1) => {
-        const [count, setCount] = useState(init);
-        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
-        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+    .green {
+      color: green;
+    }
+  </style>
+</head>
 
-        return [count, i, j];
-      };
+<body>
+  <div id="root"></div>
 
-      const useTime = () => {
-        const [c, setC] = useState(100);
-        const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
-        useEffect(() => {
-          console.log("init");
-          const id = setInterval(() => {
-            setCurrentTime(new Date().toLocaleString());
-          }, 1000);
-          return () => clearInterval(id);
-        }, []);
+  <script type="text/babel" async>
+    const { memo, useState, useCallback, useEffect, useRef, useMemo, map, lazy, Suspense, cloneElement, createContext } = React;
 
-        return currentTime;
-      };
+    const useCounter = (init = 1) => {
+      const [count, setCount] = useState(init);
+      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
 
-      const usePosition = () => {
-        const [currentPosition, setCurrentPosition] = useState({
-          x: 0,
-          y: 0,
-        });
+      return [count, i, j];
+    };
 
-        useEffect(() => {
-          const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
-          window.addEventListener("mousemove", action);
-          return () => window.removeEventListener("mousemove", action);
-        }, []);
+    const useTime = () => {
+      const [c, setC] = useState(100);
+      const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
+      useEffect(() => {
+        console.log("init");
+        const id = setInterval(() => {
+          setCurrentTime(new Date().toLocaleString());
+        }, 1000);
+        return () => clearInterval(id);
+      }, []);
 
-        return [currentPosition.x, currentPosition.y];
-      };
+      return currentTime;
+    };
 
-      const delay = (time) =>
-        new Promise((r) => {
-          setTimeout(r, time);
-        });
-
-      const Foo = ({ t }) => {
-        const time = useTime();
-        return (
-          <div>
-            foo render {time} {t}
-          </div>
-        );
-      };
-
-      const LazyFoo = lazy(async () => {
-        await delay(60);
-        return { default: Foo };
+    const usePosition = () => {
+      const [currentPosition, setCurrentPosition] = useState({
+        x: 0,
+        y: 0,
       });
 
-      const LazyBar = lazy(async () => {
-        await delay(100);
-        return { default: Foo };
+      useEffect(() => {
+        const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
+        window.addEventListener("mousemove", action);
+        return () => window.removeEventListener("mousemove", action);
+      }, []);
+
+      return [currentPosition.x, currentPosition.y];
+    };
+
+    const delay = (time) =>
+      new Promise((r) => {
+        setTimeout(r, time);
       });
 
-      const Baz = () => <LazyFoo />;
+    const Foo = ({ t }) => {
+      const time = useTime();
+      return (
+        <div>
+          foo render {time} {t}
+        </div>
+      );
+    };
 
-      const Bar = memo(() => {
-        const [x] = usePosition();
+    const LazyFoo = lazy(async () => {
+      await delay(60);
+      return { default: Foo };
+    });
 
-        return <div>bar {x}</div>;
-      });
 
-      const App = () => {
-        const time = useTime();
-        const [x] = usePosition();
+    const LazyBar = lazy(async () => {
+      await delay(100);
+      return { default: Foo };
+    });
 
-        return (
-          <div>
-            <Suspense fallback={<>123</>}>
-              <div>
-                app: {time} {x}
-                <Bar />
-                <div>last render</div>
-                <LazyFoo />
-                <LazyFoo t={time} />
-                <LazyFoo t={x} />
-              </div>
-            </Suspense>
-          </div>
-        );
-      };
+    const LazyBgg = lazy(async () => {
+      await delay(1000);
+      return { default: () => <>{[1, 2, 3].map((i) => <p>{i}</p>)}</> }
+    })
 
-      const container = document.getElementById("root");
-      ReactDOM.render(<App />, container);
-    </script>
-  </body>
+    const Baz = () => <LazyFoo />;
+
+    const Bar = memo(() => {
+      const [x] = usePosition();
+
+      return <div>bar {x}</div>;
+    });
+
+    const App = () => {
+      const time = useTime();
+      const [x] = usePosition();
+
+      return (
+        <div>
+          <Suspense fallback={<>123</>}>
+            <div>
+              app: {time} {x}
+              <Bar />
+              <div>last render</div>
+              <LazyBgg />
+              <LazyFoo />
+              <LazyFoo t={time} />
+              <LazyFoo t={x} />
+            </div>
+          </Suspense>
+        </div>
+      );
+    };
+
+    const container = document.getElementById("root");
+    // ReactDOM.render(<App />, container);
+    ReactDOM.renderAsync(<App />, container);
+    // container.innerHTML = ReactDOM.renderToString(<App />)
+    // ReactDOM.renderToStringAsync(<App />).then((r) => container.innerHTML = r);
+
+  </script>
+</body>
+
 </html>

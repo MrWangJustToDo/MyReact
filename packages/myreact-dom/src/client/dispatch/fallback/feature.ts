@@ -4,6 +4,7 @@ import type { HydrateDOM } from "../create/getHydrateDom";
 import type { DomElement, DomNode, DomScope } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
 
+// TODO use <Scope /> to avoid unnecessary fallback !
 export const fallback = (fiber: MyReactFiberNode) => {
   const renderScope = fiber.root.globalScope as DomScope;
 

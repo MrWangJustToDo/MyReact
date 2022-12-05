@@ -1064,7 +1064,6 @@
     var enableKeyDiff = createRef(true);
     // enable react-18 strict lifecycle method
     var enableStrictLifeCycle = createRef(false);
-    var enableLazySSRHydrate = createRef(true);
 
     var My_React_Element = Symbol.for("react.element");
     var My_React_Memo = Symbol.for("react.memo");
@@ -2350,7 +2349,6 @@
         getTypeFromElement: getTypeFromElement,
         enableKeyDiff: enableKeyDiff,
         enableConcurrentMode: enableConcurrentMode,
-        enableLazySSRHydrate: enableLazySSRHydrate,
         enableStrictLifeCycle: enableStrictLifeCycle,
     };
     var __my_react_internal__ = {

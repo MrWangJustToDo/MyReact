@@ -1,14 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { loadableReady } from "@loadable/component";
-import { hydrateAsync } from "@my-react/react-dom";
-import { hydrate, render } from "react-dom";
+import { hydrate } from "@my-react/react-dom";
+import { render } from "react-dom";
 
 import { createUniversalStore, safeData } from "@shared";
 
 import { Root } from "./app";
 
+import type { MyReactElement } from "@my-react/react";
 import type { RootState } from "@shared";
+
 
 const place = document.querySelector("#__content__") as HTMLDivElement;
 
@@ -41,7 +42,6 @@ if (window.__ENV__.isPURE_CSR) {
   if (!window.__ENV__.isSSR || (window.__ENV__.isDEVELOPMENT && window.__ENV__.isMIDDLEWARE)) {
     loadableReady(() => render(<Root store={store} />, place));
   } else {
-    // loadableReady(() => hydrate(<Root store={store} />, place));
-    loadableReady(() => hydrateAsync(<Root store={store} /> as any, place as any));
+    loadableReady(() => hydrate((<Root store={store} />) as MyReactElement, place, true));
   }
 }

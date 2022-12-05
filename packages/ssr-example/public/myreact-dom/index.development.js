@@ -3144,6 +3144,7 @@
         currentRunningFiber.current = null;
     };
 
+    // TODO use <Scope /> to avoid unnecessary fallback !
     var fallback = function (fiber) {
         var renderScope = fiber.root.globalScope;
         if (renderScope.isHydrateRender && fiber.type & NODE_TYPE.__isPlainNode__) {
@@ -3163,7 +3164,6 @@
         }
     };
 
-    var enableLazySSRHydrate$1 = react.__my_react_shared__.enableLazySSRHydrate;
     // TODO same as server side
     var defaultResolveLazyElementAsync$1 = function (_fiber) { return __awaiter$1(void 0, void 0, void 0, function () {
         var _a, type, props, typedType, loaded, render;
@@ -3191,9 +3191,7 @@
         if (typedType._loaded === true) {
             var render = typedType.render;
             var children_1 = react.createElement(render, props);
-            if (enableLazySSRHydrate$1.current)
-                return WrapperByScope(children_1);
-            return children_1;
+            return WrapperByScope(children_1);
         }
         else if (typedType._loading === false) {
             typedType._loading = true;
@@ -3208,9 +3206,7 @@
             });
         }
         var children = globalDispatch.resolveSuspenseElement(_fiber);
-        if (enableLazySSRHydrate$1.current)
-            return WrapperByScope(children);
-        return children;
+        return WrapperByScope(children);
     };
 
     var append$1 = function (fiber, parentFiberWithDom) {
@@ -3876,8 +3872,8 @@
         return ClientDispatch;
     }());
 
-    var MyReactFiberNodeClass = react.__my_react_internal__.MyReactFiberNode, MyReactFiberNodeRoot$3 = react.__my_react_internal__.MyReactFiberNodeRoot;
-    var initialFiberNode$3 = react.__my_react_shared__.initialFiberNode;
+    var MyReactFiberNodeClass = react.__my_react_internal__.MyReactFiberNode, MyReactFiberNodeRoot$2 = react.__my_react_internal__.MyReactFiberNodeRoot;
+    var initialFiberNode$2 = react.__my_react_shared__.initialFiberNode;
     var render = function (element, container) {
         var _a;
         var containerFiber = container.__fiber__;
@@ -3896,7 +3892,7 @@
         var globalScope = new DomScope();
         var globalPlatform = new DomPlatform("myreact-dom");
         Array.from(container.children).forEach(function (n) { var _a; return (_a = n.remove) === null || _a === void 0 ? void 0 : _a.call(n); });
-        var fiber = new MyReactFiberNodeRoot$3(null, element);
+        var fiber = new MyReactFiberNodeRoot$2(null, element);
         fiber.node = container;
         fiber.globalScope = globalScope;
         fiber.globalDispatch = globalDispatch;
@@ -3907,60 +3903,19 @@
         container.__fiber__ = fiber;
         container.__scope__ = globalScope;
         container.__dispatch__ = globalDispatch;
-        initialFiberNode$3(fiber);
+        initialFiberNode$2(fiber);
         startRender(fiber);
     };
-    var renderAsync = function (element, container) { return __awaiter$1(void 0, void 0, void 0, function () {
-        var containerFiber, globalDispatch, globalScope, globalPlatform, fiber;
-        var _a;
-        return __generator$1(this, function (_b) {
-            switch (_b.label) {
-                case 0:
-                    containerFiber = container.__fiber__;
-                    if (containerFiber instanceof MyReactFiberNodeClass) {
-                        containerFiber.root.globalScope.isAppCrash = false;
-                        if (checkIsSameType(containerFiber, element)) {
-                            containerFiber.installElement(element);
-                            containerFiber.update();
-                            return [2 /*return*/];
-                        }
-                        else {
-                            unmountComponentAtNode(container);
-                        }
-                    }
-                    globalDispatch = new ClientDispatch();
-                    globalScope = new DomScope();
-                    globalPlatform = new DomPlatform("myreact-dom");
-                    Array.from(container.children).forEach(function (n) { var _a; return (_a = n.remove) === null || _a === void 0 ? void 0 : _a.call(n); });
-                    fiber = new MyReactFiberNodeRoot$3(null, element);
-                    fiber.node = container;
-                    fiber.globalScope = globalScope;
-                    fiber.globalDispatch = globalDispatch;
-                    fiber.globalPlatform = globalPlatform;
-                    globalScope.rootFiber = fiber;
-                    globalScope.rootContainer = container;
-                    (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "render", "MyReact");
-                    container.__fiber__ = fiber;
-                    container.__scope__ = globalScope;
-                    container.__dispatch__ = globalDispatch;
-                    initialFiberNode$3(fiber);
-                    return [4 /*yield*/, startRenderAsync(fiber)];
-                case 1:
-                    _b.sent();
-                    return [2 /*return*/];
-            }
-        });
-    }); };
 
-    var MyReactFiberNodeRoot$2 = react.__my_react_internal__.MyReactFiberNodeRoot;
-    var initialFiberNode$2 = react.__my_react_shared__.initialFiberNode;
-    var hydrate = function (element, container) {
+    var MyReactFiberNodeRoot$1 = react.__my_react_internal__.MyReactFiberNodeRoot;
+    var initialFiberNode$1 = react.__my_react_shared__.initialFiberNode;
+    var hydrateSync = function (element, container) {
         var _a;
         var globalDispatch = new ClientDispatch();
         var globalScope = new DomScope();
         var globalPlatform = new DomPlatform("myreact-dom");
         globalScope.isHydrateRender = true;
-        var fiber = new MyReactFiberNodeRoot$2(null, element);
+        var fiber = new MyReactFiberNodeRoot$1(null, element);
         fiber.node = container;
         fiber.globalScope = globalScope;
         fiber.globalDispatch = globalDispatch;
@@ -3971,7 +3926,7 @@
         container.__fiber__ = fiber;
         container.__scope__ = globalScope;
         container.__dispatch__ = globalDispatch;
-        initialFiberNode$2(fiber);
+        initialFiberNode$1(fiber);
         startRender(fiber, true);
         globalScope.isHydrateRender = false;
     };
@@ -3985,7 +3940,7 @@
                     globalScope = new DomScope();
                     globalPlatform = new DomPlatform("myreact-dom");
                     globalScope.isHydrateRender = true;
-                    fiber = new MyReactFiberNodeRoot$2(null, element);
+                    fiber = new MyReactFiberNodeRoot$1(null, element);
                     fiber.node = container;
                     fiber.globalScope = globalScope;
                     fiber.globalDispatch = globalDispatch;
@@ -3996,7 +3951,7 @@
                     container.__fiber__ = fiber;
                     container.__scope__ = globalScope;
                     container.__dispatch__ = globalDispatch;
-                    initialFiberNode$2(fiber);
+                    initialFiberNode$1(fiber);
                     return [4 /*yield*/, startRenderAsync(fiber, true)];
                 case 1:
                     _b.sent();
@@ -4005,6 +3960,14 @@
             }
         });
     }); };
+    var hydrate = function (element, container, asyncRender) {
+        if (asyncRender) {
+            return hydrateAsync(element, container);
+        }
+        else {
+            return hydrateSync(element, container);
+        }
+    };
 
     var append = function (fiber, parentFiberWithDom) {
         if (fiber.patch & PATCH_TYPE.__pendingAppend__) {
@@ -4698,7 +4661,6 @@
         }
     };
 
-    var enableLazySSRHydrate = react.__my_react_shared__.enableLazySSRHydrate;
     // type DePromise<T> = T extends Promise<infer I> ? DePromise<I> : T;
     var defaultResolveLazyElementAsync = function (_fiber) { return __awaiter$1(void 0, void 0, void 0, function () {
         var _a, type, props, typedType, loaded, render;
@@ -4722,9 +4684,7 @@
     var defaultResolveLazyElement = function (_fiber) {
         var globalDispatch = _fiber.root.globalDispatch;
         var children = globalDispatch.resolveSuspenseElement(_fiber);
-        if (enableLazySSRHydrate.current)
-            return WrapperByScope(children);
-        return children;
+        return WrapperByScope(children);
     };
 
     var ServerDispatch = /** @class */ (function () {
@@ -4852,29 +4812,26 @@
         return ServerDispatch;
     }());
 
-    var MyReactFiberNodeRoot$1 = react.__my_react_internal__.MyReactFiberNodeRoot;
-    var initialFiberNode$1 = react.__my_react_shared__.initialFiberNode;
-    var renderToString = function (element) {
+    var MyReactFiberNodeRoot = react.__my_react_internal__.MyReactFiberNodeRoot;
+    var initialFiberNode = react.__my_react_shared__.initialFiberNode;
+    var renderToStringSync = function (element) {
         var globalDispatch = new ServerDispatch();
         var globalScope = new DomScope();
         var globalPlatform = new DomPlatform("myreact-dom/server");
         globalScope.isServerRender = true;
         var container = new PlainElement("");
-        var fiber = new MyReactFiberNodeRoot$1(null, element);
+        var fiber = new MyReactFiberNodeRoot(null, element);
         fiber.node = container;
         fiber.globalScope = globalScope;
         fiber.globalDispatch = globalDispatch;
         fiber.globalPlatform = globalPlatform;
         globalScope.rootFiber = fiber;
         globalScope.rootContainer = container;
-        initialFiberNode$1(fiber);
+        initialFiberNode(fiber);
         startRender(fiber, false);
         globalScope.isServerRender = false;
         return container.toString();
     };
-
-    var MyReactFiberNodeRoot = react.__my_react_internal__.MyReactFiberNodeRoot;
-    var initialFiberNode = react.__my_react_shared__.initialFiberNode;
     var renderToStringAsync = function (element) { return __awaiter$1(void 0, void 0, void 0, function () {
         var globalDispatch, globalScope, globalPlatform, container, fiber;
         return __generator$1(this, function (_a) {
@@ -4901,6 +4858,14 @@
             }
         });
     }); };
+    var renderToString = function (element, renderAsync) {
+        if (renderAsync) {
+            return renderToStringAsync(element);
+        }
+        else {
+            return renderToStringSync(element);
+        }
+    };
 
     var version = "0.0.2";
     var flushSync = safeCall;
@@ -4908,12 +4873,9 @@
     var ReactDOM = {
         render: render,
         hydrate: hydrate,
-        renderAsync: renderAsync,
-        hydrateAsync: hydrateAsync,
         findDOMNode: findDOMNode,
         createPortal: createPortal,
         renderToString: renderToString,
-        renderToStringAsync: renderToStringAsync,
         flushSync: flushSync,
         unmountComponentAtNode: unmountComponentAtNode,
         unstable_batchedUpdates: unstable_batchedUpdates,
@@ -4925,11 +4887,8 @@
     exports.findDOMNode = findDOMNode;
     exports.flushSync = flushSync;
     exports.hydrate = hydrate;
-    exports.hydrateAsync = hydrateAsync;
     exports.render = render;
-    exports.renderAsync = renderAsync;
     exports.renderToString = renderToString;
-    exports.renderToStringAsync = renderToStringAsync;
     exports.unmountComponentAtNode = unmountComponentAtNode;
     exports.unstable_batchedUpdates = unstable_batchedUpdates;
     exports.version = version;

@@ -1,9 +1,7 @@
-import { createElement, __my_react_shared__ } from "@my-react/react";
+import { createElement } from "@my-react/react";
 import { WrapperByScope } from "@my-react/react-reconciler";
 
 import type { lazy, MyReactClassComponent, MyReactElement, MyReactElementNode, MyReactFiberNode, MyReactFunctionComponent } from "@my-react/react";
-
-const { enableLazySSRHydrate } = __my_react_shared__;
 
 // type DePromise<T> = T extends Promise<infer I> ? DePromise<I> : T;
 
@@ -30,7 +28,5 @@ export const defaultResolveLazyElement = (_fiber: MyReactFiberNode): MyReactElem
 
   const children = globalDispatch.resolveSuspenseElement(_fiber);
 
-  if (enableLazySSRHydrate.current) return WrapperByScope(children);
-
-  return children;
+  return WrapperByScope(children);
 };

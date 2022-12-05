@@ -1,9 +1,7 @@
-import { createElement, __my_react_shared__ } from "@my-react/react";
+import { createElement } from "@my-react/react";
 import { WrapperByScope } from "@my-react/react-reconciler";
 
 import type { lazy, MyReactClassComponent, MyReactElement, MyReactFiberNode, MyReactFunctionComponent, MyReactElementNode } from "@my-react/react";
-
-const { enableLazySSRHydrate } = __my_react_shared__;
 
 // TODO same as server side
 export const defaultResolveLazyElementAsync = async (_fiber: MyReactFiberNode): Promise<MyReactElementNode> => {
@@ -36,9 +34,7 @@ export const defaultResolveLazyElement = (_fiber: MyReactFiberNode) => {
 
     const children = createElement(render, props);
 
-    if (enableLazySSRHydrate.current) return WrapperByScope(children);
-
-    return children;
+    return WrapperByScope(children);
   } else if (typedType._loading === false) {
     typedType._loading = true;
 
@@ -59,7 +55,5 @@ export const defaultResolveLazyElement = (_fiber: MyReactFiberNode) => {
 
   const children = globalDispatch.resolveSuspenseElement(_fiber);
 
-  if (enableLazySSRHydrate.current) return WrapperByScope(children);
-
-  return children;
+  return WrapperByScope(children);
 };

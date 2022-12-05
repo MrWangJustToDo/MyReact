@@ -10,7 +10,7 @@ const { MyReactFiberNodeRoot } = __my_react_internal__;
 
 const { initialFiberNode } = __my_react_shared__;
 
-export const hydrate = (element: MyReactElement, container: RenderContainer) => {
+const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
   const globalDispatch = new ClientDispatch();
 
   const globalScope = new DomScope();
@@ -48,7 +48,7 @@ export const hydrate = (element: MyReactElement, container: RenderContainer) => 
   globalScope.isHydrateRender = false;
 };
 
-export const hydrateAsync = async (element: MyReactElement, container: RenderContainer) => {
+const hydrateAsync = async (element: MyReactElement, container: RenderContainer) => {
   const globalDispatch = new ClientDispatch();
 
   const globalScope = new DomScope();
@@ -84,4 +84,12 @@ export const hydrateAsync = async (element: MyReactElement, container: RenderCon
   await startRenderAsync(fiber, true);
 
   globalScope.isHydrateRender = false;
+};
+
+export const hydrate = (element: MyReactElement, container: Partial<RenderContainer>, asyncRender?: boolean) => {
+  if (asyncRender) {
+    return hydrateAsync(element, container as RenderContainer);
+  } else {
+    return hydrateSync(element, container as RenderContainer);
+  }
 };

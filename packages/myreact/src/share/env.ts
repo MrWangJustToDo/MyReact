@@ -24,5 +24,3 @@ export const enableKeyDiff = createRef(true);
 
 // enable react-18 strict lifecycle method
 export const enableStrictLifeCycle = createRef(false);
-
-export const enableLazySSRHydrate = createRef(true);

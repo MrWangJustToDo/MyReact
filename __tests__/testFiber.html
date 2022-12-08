@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+</head>
+
+<body>
+  <div id="react-mount"></div>
+  <script type="text/babel">
+    const { Component } = React;
+    class Dot extends Component {
+
+      state = { hover: false }
+
+      handleMouseEnter = () => {
+        this.setState({ hover: true });
+      }
+
+      handleMouseLeave = () => {
+        this.setState({ hover: false });
+      }
+
+      render() {
+
+        const { x, y, size, text } = this.props;
+        const { hover } = this.state;
+
+        const s = size * 1.3;
+
+        const base = {
+          position: `absolute`,
+          background: `#61dafb`,
+          font: `normal 15px sans-serif`,
+          textAlign: `center`,
+          cursor: `pointer`,
+        };
+
+        const style = {
+          ...base,
+          width: `${s}px`,
+          height: `${s}px`,
+          left: `${x}px`,
+          top: `${y}px`,
+          borderRadius: `${s / 2}px`,
+          lineHeight: `${s}px`,
+          background: hover ? `#ff0` : base.background
+        };
+
+        return (
+          <div
+            style={style}
+            onMouseEnter={this.handleMouseEnter}
+            onMouseLeave={this.handleMouseLeave}
+          >
+            {hover ? `*${text}*` : `<${text}>`}
+          </div>
+        );
+
+      }
+    }
+    class NewsDisplay extends Component {
+
+      state = { hover: false }
+
+      handleMouseEnter = () => {
+        this.setState({ hover: true });
+      }
+
+      handleMouseLeave = () => {
+        this.setState({ hover: false });
+      }
+
+      render() {
+
+        const { x, y, size, news } = this.props;
+        const { hover } = this.state;
+
+        const s = size * 2.3;
+
+        const base = {
+          position: `absolute`,
+          background: `#515a5b`,
+          font: `normal ${size}px sans-serif`,
+          textAlign: `center`,
+          cursor: `pointer`,
+          zIndex: 1000
+        };
+
+        const style = {
+          ...base,
+          width: `${s * 20}px`,
+          height: `${s * news.length}px`,
+          left: `${x}px`,
+          top: `${y}px`,
+          borderRadius: `${s / 4}px`,
+          lineHeight: `${s}px`,
+          background: hover ? `#ff0` : base.background
+        };
+
+        return (
+          <div
+            style={style}
+            onMouseEnter={this.handleMouseEnter}
+            onMouseLeave={this.handleMouseLeave}
+          >
+            {/*hover ? `*${text}*` : `<${text}>` */}
+            {news.map((newsItem, i) => <div key={i}>{newsItem}</div>)}
+          </div>
+        );
+
+      }
+    }
+    class TimeDisplay extends Component {
+
+      state = { hover: false }
+
+      handleMouseEnter = () => {
+        this.setState({ hover: true });
+      }
+
+      handleMouseLeave = () => {
+        this.setState({ hover: false });
+      }
+
+      render() {
+
+        const { x, y, size, seconds } = this.props;
+        const { hover } = this.state;
+
+        const text = `${seconds}s`;
+
+        const s = size * 1.3;
+
+        const base = {
+          position: `absolute`,
+          background: `#915abb`,
+          font: `normal 18px sans-serif`,
+          textAlign: `center`,
+          cursor: `pointer`,
+        };
+
+        const style = {
+          ...base,
+          width: `${s * 4}px`,
+          height: `${s}px`,
+          left: `${x}px`,
+          top: `${y}px`,
+          borderRadius: `${s / 4}px`,
+          lineHeight: `${s}px`,
+          background: hover ? `#f0f` : base.background
+        };
+
+        return (
+          <div
+            style={style}
+            onMouseEnter={this.handleMouseEnter}
+            onMouseLeave={this.handleMouseLeave}
+          >
+            {hover ? `*${text}*` : `<${text}>`}
+          </div>
+        );
+
+      }
+    }
+    class Triangle extends Component {
+
+      shouldComponentUpdate = (oldProps, newProps) => {
+
+        const o = oldProps || {};
+        const n = newProps || {};
+
+        return !(
+          o.x === n.x &&
+          o.y === n.y &&
+          o.s === n.s &&
+          o.children === n.children
+        );
+
+      };
+
+      render() {
+        const { x, y, s, children } = this.props;
+
+        const targetSize = 25;
+
+        if (s <= targetSize) {
+          return (
+            <Dot
+              x={x - (targetSize / 2)}
+              y={y - (targetSize / 2)}
+              size={targetSize}
+              text={children}
+            />
+          );
+        }
+
+        const slowDown = false;
+
+        if (slowDown) {
+          const e = performance.now() + 0.8;
+          while (performance.now() < e) {
+            // Artificially long execution time.
+          }
+        }
+
+        let _s = s / 2;
+
+        return [
+
+          <Triangle x={x} y={y - (_s / 2)} s={_s}>
+            {children}
+          </Triangle>,
+
+          <Triangle x={x - _s} y={y + (_s / 2)} s={_s}>
+            {children}
+          </Triangle>,
+
+          <Triangle x={x + _s} y={y + (_s / 2)} s={_s}>
+            {children}
+          </Triangle>,
+
+        ];
+      }
+    }
+    class App extends Component {
+
+      state = { seconds: 0 }
+
+      componentDidMount() {
+        this.invervalID = setInterval(this.tick, 1000);
+      }
+
+      tick = () => {
+        // ReactDOM.unstable_deferredUpdates(() =>
+        //   this.setState(state => ({ seconds: (state.seconds % 10) + 1 }))
+        // );
+        // ReactDOM.unstable_batchedUpdates(() => {
+        //   this.setState(state => ({ seconds: (state.seconds % 10) + 1 }))
+        // })
+        this.setState(state => ({ seconds: (state.seconds % 10) + 1 }));
+        // Promise.resolve().then(() => {
+        //   this.setState(state => ({ seconds: (state.seconds % 10) + 1 }))
+        // })
+      }
+
+      componentWillUnmount() {
+        clearInterval(this.intervalID);
+      }
+
+      render() {
+
+        const { seconds } = this.state;
+        const { elapsed } = this.props;
+
+        const t = (elapsed / 1000) % 10;
+        const scale = 1 + (t > 5 ? 10 - t : t) / 10;
+        const transform = `scaleX(${scale / 2.1}) scaleY(0.7) translateZ(0.1px)`;
+
+        const containerStyle = {
+          position: `absolute`,
+          transformOrigin: `0 0`,
+          left: `50%`,
+          top: `50%`,
+          width: `10px`,
+          height: `10px`,
+          background: `#eee`,
+        };
+
+        return (
+
+          <div style={{ ...containerStyle, transform }}>
+            <TimeDisplay x={100} y={200} size={30} seconds={Math.floor(elapsed / 1000)} />
+            <NewsDisplay x={10} y={50} size={16} news={[`Test 1`, `Another Example`]} />
+
+            <Triangle x={0} y={0} s={1000}>
+              {`${seconds}`}
+            </Triangle>
+          </div>
+
+        );
+
+      }
+
+    }
+
+    const start = new Date().getTime();
+
+    const container = document.querySelector('#react-mount');
+
+    // const s = ReactDOM.renderToString(<App elapsed={new Date().getTime() - start} />)
+
+    // container.innerHTML = s;
+
+    // ReactDOM.hydrate(<App elapsed={new Date().getTime() - start} />,
+    //   container);
+
+    const update = () => {
+
+      ReactDOM.render(
+        <App elapsed={new Date().getTime() - start} />,
+        document.querySelector('#react-mount')
+      );
+
+      requestAnimationFrame(update);
+
+    };
+
+    requestAnimationFrame(update);
+  </script>
+</body>
+
+</html>

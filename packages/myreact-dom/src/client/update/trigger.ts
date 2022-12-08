@@ -43,5 +43,9 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
 
   globalScope.modifyFiberArray.push(fiber);
 
-  asyncUpdate(globalDispatch, globalScope);
+  if (enableConcurrentMode.current) {
+    asyncUpdate(globalDispatch, globalScope);
+  } else {
+    updateEntry(globalDispatch, globalScope);
+  }
 };

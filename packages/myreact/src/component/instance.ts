@@ -66,6 +66,8 @@ export class MyReactComponent<P extends Record<string, unknown> = any, S extends
 
     this._ownerFiber?.updateQueue.push(updater);
 
+    // this._ownerFiber?.update();
+
     Promise.resolve().then(() => this._ownerFiber?.update());
   };
 
@@ -77,6 +79,8 @@ export class MyReactComponent<P extends Record<string, unknown> = any, S extends
     };
 
     this._ownerFiber?.updateQueue.push(updater);
+
+    // this._ownerFiber?.update();
 
     Promise.resolve().then(() => this._ownerFiber?.update());
   };

@@ -1572,6 +1572,7 @@
                     trigger: _this,
                 };
                 (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
+                // this._ownerFiber?.update();
                 Promise.resolve().then(function () { var _a; return (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update(); });
             };
             _this.forceUpdate = function () {
@@ -1582,6 +1583,7 @@
                     trigger: _this,
                 };
                 (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.updateQueue.push(updater);
+                // this._ownerFiber?.update();
                 Promise.resolve().then(function () { var _a; return (_a = _this._ownerFiber) === null || _a === void 0 ? void 0 : _a.update(); });
             };
             _this.props = props || null;

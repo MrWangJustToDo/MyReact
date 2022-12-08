@@ -364,6 +364,7 @@ export const nextWorkSyncAwait = async (fiber: MyReactFiberNode) => {
   return children;
 };
 
+// TODO maybe should provider a transform function to create fiber one by one?
 export const nextWorkAsync = (fiber: MyReactFiberNode, loopController: ReconcilerLoopController) => {
   if (!fiber.mounted) return null;
 

@@ -57,9 +57,6 @@
     const b = document.querySelector("#b");
 
     const aString = ReactDOM.renderToString(<App />);
-    const bString = ReactDOM.renderToStringAsync(<App />).then((re) => {
-      b.innerHTML = re;
-    });
 
     a.innerHTML = aString;
   </script>

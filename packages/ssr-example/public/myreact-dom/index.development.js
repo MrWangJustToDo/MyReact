@@ -2104,6 +2104,7 @@
             }
         });
     }); };
+    // TODO maybe should provider a transform function to create fiber one by one?
     var nextWorkAsync = function (fiber, loopController) {
         if (!fiber.mounted)
             return null;
@@ -2789,10 +2790,9 @@
         reconcileUpdate();
         resetScopeLog();
         globalLoop$1.current = false;
-        Promise.resolve().then(function () {
-            if (updateFiberController.hasNext())
-                updateAllSync(updateFiberController, reconcileUpdate);
-        });
+        // Promise.resolve().then(() => {
+        // if (updateFiberController.hasNext()) updateAllSync(updateFiberController, reconcileUpdate);
+        // });
     };
     var updateAllAsync = function (updateFiberController, reconcileUpdate) {
         globalLoop$1.current = true;
@@ -2877,7 +2877,12 @@
         }
         fiber.triggerUpdate();
         globalScope.modifyFiberArray.push(fiber);
-        asyncUpdate(globalDispatch, globalScope);
+        if (enableConcurrentMode.current) {
+            asyncUpdate(globalDispatch, globalScope);
+        }
+        else {
+            updateEntry(globalDispatch, globalScope);
+        }
     };
 
     var append$2 = function (fiber, parentFiberWithDom) {

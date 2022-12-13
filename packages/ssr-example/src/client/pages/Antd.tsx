@@ -1,10 +1,10 @@
 import { Carousel, Slider, Switch, Calendar, Tree, Space, TimePicker, TreeSelect, Button, Dropdown, Tooltip, Menu, message, Select } from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
 import React, { useState } from "react";
 
 import type { MenuProps } from "antd/lib/menu";
 import type { DataNode, TreeProps } from "antd/lib/tree";
-import type { Moment } from "moment";
+import type { Dayjs } from "dayjs";
 
 const treeData: DataNode[] = [
   {
@@ -52,7 +52,7 @@ const treeData: DataNode[] = [
 
 const { TreeNode } = TreeSelect;
 
-const onChange = (time: Moment | null, timeString: string) => {
+const onChange = (time: Dayjs | null, timeString: string) => {
   console.log(time, timeString);
 };
 
@@ -148,7 +148,7 @@ const AntDesignComponent = () => {
             </TreeNode>
           </TreeNode>
         </TreeSelect>
-        <TimePicker onChange={onChange} defaultOpenValue={moment("00:00:00", "HH:mm:ss")} />
+        <TimePicker onChange={onChange} defaultOpenValue={dayjs("00:00:00", "HH:mm:ss")} />
       </Space>
       <br />
       <Select

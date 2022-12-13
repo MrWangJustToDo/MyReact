@@ -100,17 +100,25 @@ export const getElementName = (fiber: MyReactFiberNode) => {
 export const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)}${getTrackDevLog(fiber)}`;
 
 export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
-  if (fiber) {
-    const preString = "".padEnd(4) + "at".padEnd(4);
-    let parent = fiber.parent;
-    let res = `${preString}${getFiberNodeName(fiber)}`;
-    while (parent) {
-      res = `${preString}${getFiberNodeName(parent)}\n${res}`;
-      parent = parent.parent;
+  if (__DEV__) {
+    if (fiber) {
+      const preString = "".padEnd(4) + "at".padEnd(4);
+      let parent = fiber.parent;
+      let res = `${preString}${getFiberNodeName(fiber)}`;
+      while (parent) {
+        res = `${preString}${getFiberNodeName(parent)}\n${res}`;
+        parent = parent.parent;
+      }
+      return `\n${res}`;
     }
-    return `\n${res}`;
+    return "";
+  } else {
+    if (fiber) {
+      return getFiberNodeName(fiber);
+    } else {
+      return "";
+    }
   }
-  return "";
 };
 
 export const getHookTree = (hookNodes: MyReactHookNode[], currentIndex: number, newHookType: MyReactHookNode["hookType"]) => {

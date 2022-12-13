@@ -115,5 +115,9 @@ export const jsxDEV = (
 };
 
 export const jsxs = (type: MyReactElementType, config: Props, key: string | null, source: CreateElementProps["_source"], self: CreateElementProps["_self"]) => {
-  return jsxDEV(type, config, key, true, source, self);
+  if (__DEV__) {
+    return jsxDEV(type, config, key, true, source, self);
+  } else {
+    return jsx(type, config, key, source, self);
+  }
 };

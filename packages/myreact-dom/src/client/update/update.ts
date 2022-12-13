@@ -10,13 +10,17 @@ const { globalLoop } = __my_react_internal__;
 export const updateAllSync = (updateFiberController: ReconcilerLoopController, reconcileUpdate: () => void) => {
   globalLoop.current = true;
 
-  setScopeLog();
+  if (__DEV__) {
+    setScopeLog();
+  }
 
   safeCall(() => updateLoopSync(updateFiberController));
 
   reconcileUpdate();
 
-  resetScopeLog();
+  if (__DEV__) {
+    resetScopeLog();
+  }
 
   globalLoop.current = false;
 
@@ -28,13 +32,17 @@ export const updateAllSync = (updateFiberController: ReconcilerLoopController, r
 export const updateAllAsync = (updateFiberController: ReconcilerLoopController, reconcileUpdate: () => void) => {
   globalLoop.current = true;
 
-  setScopeLog();
+  if (__DEV__) {
+    setScopeLog();
+  }
 
   safeCall(() => updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate));
 
   if (!updateFiberController.doesPause()) reconcileUpdate();
 
-  resetScopeLog();
+  if (__DEV__) {
+    resetScopeLog();
+  }
 
   globalLoop.current = false;
 

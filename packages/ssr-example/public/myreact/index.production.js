@@ -113,47 +113,6 @@
         return Object.is(src, target);
     };
 
-    /******************************************************************************
-    Copyright (c) Microsoft Corporation.
-
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
-
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
-    ***************************************************************************** */
-
-    function __spreadArray$1(to, from, pack) {
-        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-            if (ar || !(i in from)) {
-                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-                ar[i] = from[i];
-            }
-        }
-        return to.concat(ar || Array.prototype.slice.call(from));
-    }
-
-    var once = function (action) {
-        var called = false;
-        return function () {
-            var args = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
-                args[_i] = arguments[_i];
-            }
-            if (called)
-                return;
-            called = true;
-            if (typeof action === "function") {
-                action.call.apply(action, __spreadArray$1([null], args, false));
-            }
-        };
-    };
-
     var globalDepsMap = new WeakMap();
     var globalReactiveMap = new WeakMap();
     var globalReadOnlyMap = new WeakMap();
@@ -918,24 +877,7 @@
 
     var getTrackDevLog = function (fiber) {
         {
-            var element = fiber.element;
-            var source = typeof element === "object" ? element === null || element === void 0 ? void 0 : element["_source"] : null;
-            var owner = typeof element === "object" ? element === null || element === void 0 ? void 0 : element["_owner"] : null;
-            var preString = "";
-            if (source) {
-                var _a = source || {}, fileName = _a.fileName, lineNumber = _a.lineNumber;
-                preString = "".concat(preString, " (").concat(fileName, ":").concat(lineNumber, ")");
-            }
-            if (!(fiber.type & NODE_TYPE.__isDynamicNode__) && owner) {
-                var ownerElement = owner.element;
-                var ownerElementType = ownerElement.type;
-                if (typeof ownerElementType === "function") {
-                    var typedOwnerElementType = ownerElementType;
-                    var name_1 = typedOwnerElementType.name || typedOwnerElementType.displayName;
-                    preString = "".concat(preString, " (render dy ").concat(name_1, ")");
-                }
-            }
-            return preString;
+            return "";
         }
     };
     var getElementName = function (fiber) {
@@ -1021,20 +963,15 @@
             return "<text (".concat((_a = fiber.element) === null || _a === void 0 ? void 0 : _a.toString(), ") />");
         }
     };
-    var getFiberNodeName = function (fiber) { return "".concat(getElementName(fiber)).concat(getTrackDevLog(fiber)); };
+    var getFiberNodeName = function (fiber) { return "".concat(getElementName(fiber)).concat(getTrackDevLog()); };
     var getFiberTree = function (fiber) {
         {
             if (fiber) {
-                var preString = "".padEnd(4) + "at".padEnd(4);
-                var parent_1 = fiber.parent;
-                var res = "".concat(preString).concat(getFiberNodeName(fiber));
-                while (parent_1) {
-                    res = "".concat(preString).concat(getFiberNodeName(parent_1), "\n").concat(res);
-                    parent_1 = parent_1.parent;
-                }
-                return "\n".concat(res);
+                return getFiberNodeName(fiber);
             }
-            return "";
+            else {
+                return "";
+            }
         }
     };
     var getHookTree = function (hookNodes, currentIndex, newHookType) {
@@ -1156,19 +1093,11 @@
                 nodeTypeSymbol |= NODE_TYPE.__isPlainNode__;
             }
             else {
-                {
-                    var fiber = currentRunningFiber.current;
-                    fiber === null || fiber === void 0 ? void 0 : fiber.root.globalPlatform.log({ message: "invalid element type ".concat(String(rawType)), level: "warn", triggerOnce: true });
-                }
                 nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
             }
         }
         else {
             if (typeof element === "object" && element !== null) {
-                {
-                    var fiber = currentRunningFiber.current;
-                    fiber === null || fiber === void 0 ? void 0 : fiber.root.globalPlatform.log({ message: "invalid object element type ".concat(JSON.stringify(element)), level: "warn", triggerOnce: true });
-                }
                 nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
             }
             else if (element === null || element === undefined || typeof element === "boolean") {
@@ -1180,52 +1109,6 @@
         }
         return nodeTypeSymbol;
     }
-    var checkValidKey = function (children) {
-        var obj = {};
-        var fiber = currentRunningFiber.current;
-        var onceWarnDuplicate = once(fiber === null || fiber === void 0 ? void 0 : fiber.root.globalPlatform.log);
-        var onceWarnUndefined = once(fiber === null || fiber === void 0 ? void 0 : fiber.root.globalPlatform.log);
-        var validElement = children.filter(function (c) { return isValidElement(c); });
-        if (validElement.length > 1) {
-            validElement.forEach(function (c) {
-                if (!c._store["validKey"]) {
-                    if (typeof c.key === "string") {
-                        if (obj[c.key]) {
-                            onceWarnDuplicate({ message: "array child have duplicate key" });
-                        }
-                        obj[c.key] = true;
-                    }
-                    else {
-                        onceWarnUndefined({
-                            message: "each array child must have a unique key props",
-                            triggerOnce: true,
-                        });
-                    }
-                    c._store["validKey"] = true;
-                }
-            });
-        }
-    };
-    var checkArrayChildrenKey = function (children) {
-        children.forEach(function (child) {
-            if (Array.isArray(child)) {
-                checkValidKey(child);
-            }
-            else {
-                if (isValidElement(child))
-                    child._store["validKey"] = true;
-            }
-        });
-    };
-    var checkSingleChildrenKey = function (children) {
-        if (Array.isArray(children)) {
-            checkValidKey(children);
-        }
-        else {
-            if (isValidElement(children))
-                children._store["validKey"] = true;
-        }
-    };
 
     /******************************************************************************
     Copyright (c) Microsoft Corporation.
@@ -1294,10 +1177,6 @@
             _b._source = _source,
             _b._store = {},
             _b);
-        if (typeof Object.freeze === "function") {
-            Object.freeze(element.props);
-            Object.freeze(element);
-        }
         return element;
     };
     function createElement(type, config) {
@@ -1328,16 +1207,9 @@
         // const childrenLength = arguments.length - 2;
         var childrenLength = children.length;
         if (childrenLength > 1) {
-            // children = Array.from(arguments).slice(2);
-            {
-                checkArrayChildrenKey(children);
-            }
             props.children = children;
         }
         else if (childrenLength === 1) {
-            {
-                checkSingleChildrenKey(children[0]);
-            }
             props.children = children[0];
         }
         return createMyReactElement({
@@ -1387,15 +1259,9 @@
             var childrenLength = arguments.length - 2;
             if (childrenLength > 1) {
                 children = Array.from(arguments).slice(2);
-                {
-                    checkArrayChildrenKey(children);
-                }
                 props.children = children;
             }
             else if (childrenLength === 1) {
-                {
-                    checkSingleChildrenKey(children);
-                }
                 props.children = children;
             }
             var clonedElement = createMyReactElement({
@@ -1905,70 +1771,8 @@
         return MyReactFiberNodeDev;
     })(MyReactFiberNode));
 
-    var checkFiberElement = function (fiber) {
-        var element = fiber.element;
-        if (isValidElement(element)) {
-            var typedElement = element;
-            if (!typedElement._store["validType"]) {
-                if (fiber.type & NODE_TYPE.__isContextConsumer__) {
-                    if (typeof typedElement.props.children !== "function") {
-                        throw new Error("Consumer need a function children");
-                    }
-                }
-                if (fiber.type & (NODE_TYPE.__isMemo__ | NODE_TYPE.__isForwardRef__)) {
-                    var typedType = typedElement.type;
-                    if (typeof typedType.render !== "function" && typeof typedType.render !== "object") {
-                        throw new Error("invalid render type");
-                    }
-                    if (fiber.type & NODE_TYPE.__isForwardRef__ && typeof typedType.render !== "function") {
-                        throw new Error("forwardRef() need a function component");
-                    }
-                }
-                if (fiber.type & NODE_TYPE.__isKeepLiveNode__) {
-                    if (Array.isArray(element.props.children))
-                        throw new Error("<KeepLive /> expected to receive a single MyReact element child");
-                }
-                if (typedElement.ref) {
-                    if (typeof typedElement.ref !== "object" && typeof typedElement.ref !== "function") {
-                        throw new Error("unSupport ref usage, should be a function or a object like `{current: any}`");
-                    }
-                }
-                if (typedElement.key && typeof typedElement.key !== "string") {
-                    throw new Error("invalid key type, ".concat(typedElement.key));
-                }
-                if (typedElement.props.children && typedElement.props["dangerouslySetInnerHTML"]) {
-                    throw new Error("can not render contain `children` and `dangerouslySetInnerHTML` for current element");
-                }
-                if (typedElement.props["dangerouslySetInnerHTML"]) {
-                    if (typeof typedElement.props["dangerouslySetInnerHTML"] !== "object" ||
-                        !Object.prototype.hasOwnProperty.call(typedElement.props["dangerouslySetInnerHTML"], "__html")) {
-                        throw new Error("invalid dangerouslySetInnerHTML props, should like {__html: string}");
-                    }
-                }
-                typedElement._store["validType"] = true;
-            }
-        }
-    };
-    var checkFiberHook = function (fiber) {
-        var hookNode = fiber.hookNodes[fiber.hookNodes.length - 1];
-        if (hookNode.hookType === HOOK_TYPE.useMemo ||
-            hookNode.hookType === HOOK_TYPE.useEffect ||
-            hookNode.hookType === HOOK_TYPE.useCallback ||
-            hookNode.hookType === HOOK_TYPE.useLayoutEffect) {
-            if (typeof hookNode.value !== "function") {
-                throw new Error("".concat(hookNode.hookType, " initial error"));
-            }
-        }
-        if (hookNode.hookType === HOOK_TYPE.useContext) {
-            if (typeof hookNode.value !== "object" || hookNode.value === null) {
-                throw new Error("".concat(hookNode.hookType, " initial error"));
-            }
-        }
-    };
-
     var initialFiberNode = function (fiber) {
         fiber.initialType();
-        checkFiberElement(fiber);
         fiber.initialParent();
         var globalDispatch = fiber.root.globalDispatch;
         globalDispatch.pendingCreate(fiber);
@@ -1983,7 +1787,6 @@
         var parent = _a.parent, _b = _a.type, type = _b === void 0 ? "append" : _b;
         var newFiberNode = new MyReactFiberNode(parent, element);
         newFiberNode.initialType();
-        checkFiberElement(newFiberNode);
         newFiberNode.initialParent();
         var globalDispatch = newFiberNode.root.globalDispatch;
         globalDispatch.pendingCreate(newFiberNode);
@@ -2006,7 +1809,6 @@
         fiber.installElement(nextElement);
         fiber.installParent(parent);
         var globalDispatch = fiber.root.globalDispatch;
-        checkFiberElement(fiber);
         globalDispatch.resolveFiberUpdate;
         if (prevElement !== nextElement || !fiber.activated) {
             globalDispatch.resolveFiberUpdate(fiber);
@@ -2079,7 +1881,6 @@
         var newHookNode = new MyReactHookNode(hookIndex, hookType, value, reducer || defaultReducer, deps);
         newHookNode.setOwner(fiber);
         fiber.addHook(newHookNode);
-        checkFiberHook(fiber);
         return newHookNode;
     };
 
@@ -2468,4 +2269,4 @@
     exports.version = version;
 
 }));
-//# sourceMappingURL=index.development.js.map
+//# sourceMappingURL=index.production.js.map

@@ -45,14 +45,14 @@ const jsRules = ({ env, isDEV }: SafeGenerateActionProps): RuleSetRule => {
             env === "client"
               ? [
                   isDEV && process.env.REACT === "react" && "react-refresh/babel",
-                  [
-                    "import",
-                    {
-                      libraryName: "antd",
-                      libraryDirectory: "lib",
-                      style: "css", // 样式按需加载
-                    },
-                  ],
+                  // [
+                  //   "import",
+                  //   {
+                  //     libraryName: "antd",
+                  //     libraryDirectory: "lib",
+                  //     style: "css", // 样式按需加载
+                  //   },
+                  // ],
                 ].filter(Boolean)
               : [],
         },

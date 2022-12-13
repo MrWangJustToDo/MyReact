@@ -79,8 +79,8 @@ const renderToStringAsync = async (element: MyReactElement) => {
   return container.toString();
 };
 
-export const renderToString = (element: MyReactElement, renderAsync?: boolean) => {
-  if (renderAsync) {
+export const renderToString = (element: MyReactElement, asyncRender?: boolean) => {
+  if (asyncRender) {
     return renderToStringAsync(element);
   } else {
     return renderToStringSync(element);

@@ -23,10 +23,15 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     ))}
     <script id="__preload_env__" type="application/json" dangerouslySetInnerHTML={{ __html: `${env}` }} />
     <script id="__preload_state__" type="application/json" dangerouslySetInnerHTML={{ __html: `${preloadedState}` }} />
-    {process.env.REACT === "myreact" && (
+    {process.env.REACT === "myreact" && __DEVELOPMENT__ ? (
       <>
         <script src="./myreact/index.development.js"></script>
         <script src="./myreact-dom/index.development.js"></script>
+      </>
+    ) : (
+      <>
+        <script src="./myreact/index.production.js"></script>
+        <script src="./myreact-dom/index.production.js"></script>
       </>
     )}
     {process.env.REACT === "react" && (

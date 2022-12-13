@@ -16,7 +16,9 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
 
   const startTime = Date.now();
 
-  setScopeLog();
+  if (__DEV__) {
+    setScopeLog();
+  }
 
   safeCall(() => mountLoopSync(fiber));
 
@@ -26,7 +28,9 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
     console.warn("react-18 like lifecycle have been enabled!");
   }
 
-  resetScopeLog();
+  if (__DEV__) {
+    resetScopeLog();
+  }
 
   const endTime = Date.now();
 
@@ -34,12 +38,10 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
 
   globalScope.isAppMounted = true;
 
-  if (__DEV__) {
-    if (hydrate) {
-      globalScope.hydrateTime = endTime - startTime;
-    } else {
-      globalScope.renderTime = endTime - startTime;
-    }
+  if (hydrate) {
+    globalScope.hydrateTime = endTime - startTime;
+  } else {
+    globalScope.renderTime = endTime - startTime;
   }
 
   globalLoop.current = false;
@@ -50,7 +52,9 @@ export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false)
 
   const startTime = Date.now();
 
-  setScopeLog();
+  if (__DEV__) {
+    setScopeLog();
+  }
 
   await safeCallAsync(() => mountLoopSyncAwait(fiber));
 
@@ -60,7 +64,9 @@ export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false)
     console.warn("react-18 like lifecycle have been enabled!");
   }
 
-  resetScopeLog();
+  if (__DEV__) {
+    resetScopeLog();
+  }
 
   const endTime = Date.now();
 
@@ -68,12 +74,10 @@ export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false)
 
   globalScope.isAppMounted = true;
 
-  if (__DEV__) {
-    if (hydrate) {
-      globalScope.hydrateTime = endTime - startTime;
-    } else {
-      globalScope.renderTime = endTime - startTime;
-    }
+  if (hydrate) {
+    globalScope.hydrateTime = endTime - startTime;
+  } else {
+    globalScope.renderTime = endTime - startTime;
   }
 
   globalLoop.current = false;

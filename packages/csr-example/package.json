@@ -32,7 +32,6 @@
     "jquery": "^3.6.0",
     "lodash-es": "^4.17.21",
     "mime": "^3.0.0",
-    "module-alias": "^2.2.2",
     "multer": "^1.4.5-lts.1",
     "pino": "^8.7.0",
     "pino-pretty": "^9.1.1",
@@ -108,10 +107,5 @@
     "webpack-manifest-plugin": "^5.0.0",
     "webpack-merge": "^5.8.0",
     "webpack-node-externals": "^3.0.0"
-  },
-  "_moduleAliases": {
-    "react": "node_modules/@my-react/react",
-    "react-dom": "node_modules/@my-react/react-dom",
-    "react-dom/server": "node_modules/@my-react/react-dom"
   }
 }

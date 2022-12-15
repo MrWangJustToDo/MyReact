@@ -32,8 +32,13 @@
       return <div>bar</div>;
     };
 
-    const LazyBar = lazy(async () => {
-      await delay('kkkkk');
+    const LazyBar1 = lazy(async () => {
+      await delay(1000);
+      // throw new Error('hhhh')
+      return { default: Bar }
+    });
+    const LazyBar2 = lazy(async () => {
+      await delay(1000);
       // throw new Error('hhhh')
       return { default: Bar }
     });
@@ -42,12 +47,24 @@
     //   <LazyBar />
     // </Suspense>;
 
-    const App = () => {
+    const App1 = () => {
       return (
         <div>
           app
           <Suspense fallback={<>123</>}>
-            <LazyBar />
+            <LazyBar1 />
+          </Suspense>
+          <div>测试保留</div>
+        </div>
+      );
+    };
+
+    const App2 = () => {
+      return (
+        <div>
+          app
+          <Suspense fallback={<>123</>}>
+            <LazyBar2 />
           </Suspense>
         </div>
       );
@@ -56,9 +73,19 @@
     const a = document.querySelector("#a");
     const b = document.querySelector("#b");
 
-    const aString = ReactDOM.renderToString(<App />);
+    const aString = ReactDOM.renderToString(<App1 />);
 
     a.innerHTML = aString;
+
+    const hydrate1 = () => {
+      ReactDOM.hydrate(<App1 />, a, true);
+    }
+
+    ReactDOM.renderToString(<App2 />, true).then((string) => b.innerHTML = string);
+
+    const hydrate2 = async () => {
+      await ReactDOM.hydrate(<App2 />, b, true)
+    }
   </script>
 </body>
 

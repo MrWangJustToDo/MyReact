@@ -6,7 +6,7 @@ export const defaultUpdateFiberNode = (fiber: MyReactFiberNode) => {
   const globalDispatch = fiber.root.globalDispatch;
 
   if (fiber.type & NODE_TYPE.__isMemo__) {
-    if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(fiber.pendingProps, fiber.memoizedProps) && fiber.activated) {
+    if (!(fiber.mode & UPDATE_TYPE.__trigger__) && isNormalEquals(fiber.pendingProps, fiber.memoizedProps) && fiber.isActivated) {
       fiber.afterUpdate();
     } else {
       fiber.prepareUpdate();

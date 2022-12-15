@@ -40,7 +40,7 @@ export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
     const children = classComponentMount(fiber);
 
     return nextWorkCommon(fiber, children);
-  } else if (!fiber.activated) {
+  } else if (!fiber.isActivated) {
     const children = classComponentActive(fiber);
 
     return nextWorkCommon(fiber, children);
@@ -194,7 +194,7 @@ export const nextWorkReactive = (fiber: MyReactFiberNode) => {
     const children = reactiveComponentMount(fiber);
 
     return nextWorkCommon(fiber, children);
-  } else if (!fiber.activated) {
+  } else if (!fiber.isActivated) {
     const children = reactiveComponentActive(fiber);
 
     return nextWorkCommon(fiber, children);
@@ -271,7 +271,7 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
   currentComponentFiber.current = fiber;
 
   // for deactivated context fiber, maybe will not update children context, but all the children has deactivated, so it will not matter
-  if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.mounted) {
+  if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.isMounted) {
     const ProviderFiber = globalDispatch.resolveContextFiber(fiber, Context);
 
     const context = globalDispatch.resolveContextValue(ProviderFiber, Context);
@@ -318,9 +318,9 @@ export const nextWorkKeepLive = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkSync = (fiber: MyReactFiberNode) => {
-  if (!fiber.mounted) return [];
+  if (!fiber.isMounted) return [];
 
-  if (fiber.invoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [];
+  if (fiber.isInvoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [];
 
   currentRunningFiber.current = fiber;
 
@@ -331,9 +331,9 @@ export const nextWorkSync = (fiber: MyReactFiberNode) => {
   else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) children = nextWorkKeepLive(fiber);
   else children = nextWorkNormal(fiber);
 
-  fiber.invoked = true;
+  fiber.isInvoked = true;
 
-  fiber.activated = true;
+  fiber.isActivated = true;
 
   currentRunningFiber.current = null;
 
@@ -341,9 +341,9 @@ export const nextWorkSync = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkSyncAwait = async (fiber: MyReactFiberNode) => {
-  if (!fiber.mounted) return [];
+  if (!fiber.isMounted) return [];
 
-  if (fiber.invoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [];
+  if (fiber.isInvoked && !(fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__))) return [];
 
   currentRunningFiber.current = fiber;
 
@@ -355,9 +355,9 @@ export const nextWorkSyncAwait = async (fiber: MyReactFiberNode) => {
   else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) children = nextWorkKeepLive(fiber);
   else children = nextWorkNormal(fiber);
 
-  fiber.invoked = true;
+  fiber.isInvoked = true;
 
-  fiber.activated = true;
+  fiber.isActivated = true;
 
   currentRunningFiber.current = null;
 
@@ -366,9 +366,9 @@ export const nextWorkSyncAwait = async (fiber: MyReactFiberNode) => {
 
 // TODO maybe should provider a transform function to create fiber one by one?
 export const nextWorkAsync = (fiber: MyReactFiberNode, loopController: ReconcilerLoopController) => {
-  if (!fiber.mounted) return null;
+  if (!fiber.isMounted) return null;
 
-  if (!fiber.invoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
+  if (!fiber.isInvoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
     currentRunningFiber.current = fiber;
 
     if (fiber.type & NODE_TYPE.__isDynamicNode__) nextWorkComponent(fiber);
@@ -376,9 +376,9 @@ export const nextWorkAsync = (fiber: MyReactFiberNode, loopController: Reconcile
     else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) nextWorkKeepLive(fiber);
     else nextWorkNormal(fiber);
 
-    fiber.invoked = true;
+    fiber.isInvoked = true;
 
-    fiber.activated = true;
+    fiber.isActivated = true;
 
     currentRunningFiber.current = null;
 

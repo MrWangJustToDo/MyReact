@@ -11,7 +11,7 @@ export const deactivate = (fiber: MyReactFiberNode) => {
     const allDeactivateFibers = globalDispatch.keepLiveMap[fiber.uid];
 
     allDeactivateFibers?.forEach((fiber) => {
-      if (fiber.activated) deactivateFiber(fiber);
+      if (fiber.isActivated) deactivateFiber(fiber);
     });
 
     if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) fiber.patch ^= PATCH_TYPE.__pendingDeactivate__;

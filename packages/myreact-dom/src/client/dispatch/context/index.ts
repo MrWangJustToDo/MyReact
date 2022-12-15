@@ -10,7 +10,7 @@ export const context = (fiber: MyReactFiberNode) => {
       new Set(allListeners).forEach((i) => {
         const fiber = i._ownerFiber;
 
-        if (fiber?.mounted && fiber?.activated) fiber.update();
+        if (fiber?.isMounted && fiber?.isActivated) fiber.update();
       });
     });
 

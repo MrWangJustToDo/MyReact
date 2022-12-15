@@ -86,10 +86,12 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
   globalScope.isHydrateRender = false;
 };
 
-export const hydrate = (element: MyReactElement, container: Partial<RenderContainer>, asyncRender?: boolean) => {
+export function hydrate(element: MyReactElement, container: Partial<RenderContainer>): void;
+export function hydrate(element: MyReactElement, container: Partial<RenderContainer>, asyncRender: true): Promise<void>;
+export function hydrate(element: MyReactElement, container: Partial<RenderContainer>, asyncRender?: boolean) {
   if (asyncRender) {
     return hydrateAsync(element, container as RenderContainer);
   } else {
     return hydrateSync(element, container as RenderContainer);
   }
-};
+}

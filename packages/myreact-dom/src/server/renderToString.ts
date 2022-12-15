@@ -79,10 +79,12 @@ const renderToStringAsync = async (element: MyReactElement) => {
   return container.toString();
 };
 
-export const renderToString = (element: MyReactElement, asyncRender?: boolean) => {
+export function renderToString(element: MyReactElement): string;
+export function renderToString(element: MyReactElement, asyncRender: true): Promise<string>;
+export function renderToString(element: MyReactElement, asyncRender?: boolean) {
   if (asyncRender) {
     return renderToStringAsync(element);
   } else {
     return renderToStringSync(element);
   }
-};
+}

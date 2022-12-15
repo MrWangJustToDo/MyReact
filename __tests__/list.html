@@ -25,6 +25,7 @@
     </style>
 
     <script>
+      // React.__my_react_shared__.enableConcurrentMode.current = false;
       Number.prototype[Symbol.iterator] = function* () {
         const value = this.valueOf();
         for (let i = 0; i < value; i++) {

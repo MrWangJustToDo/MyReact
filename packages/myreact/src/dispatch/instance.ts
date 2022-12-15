@@ -8,6 +8,8 @@ import type { LinkTreeList } from "@my-react/react-shared";
 export class EmptyDispatch implements FiberDispatch {
   strictMap: Record<string, boolean> = {};
 
+  scopeMap: Record<string, string> = {};
+
   keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
   suspenseMap: Record<string, MyReactElementNode> = {};
@@ -33,6 +35,12 @@ export class EmptyDispatch implements FiberDispatch {
   }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return null;
+  }
+  resolveScopeMap(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveScopeId(_fiber: MyReactFiberNode): string {
+    return "";
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
     void 0;

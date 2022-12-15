@@ -44,7 +44,7 @@ export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: Cr
       currentHook.deps = deps;
 
       currentHook.effect = true;
-    } else if (!fiber.activated) {
+    } else if (!fiber.isActivated) {
       // KeepLive component
       currentHook.value = value;
 
@@ -88,7 +88,7 @@ export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: Cr
   }
 
   if (currentHook.hookType === HOOK_TYPE.useContext) {
-    if (!currentHook._contextFiber || !currentHook._contextFiber.mounted || !Object.is(currentHook.value, value)) {
+    if (!currentHook._contextFiber || !currentHook._contextFiber.isMounted || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
 
       const ProviderFiber = globalDispatch.resolveContextFiber(currentHook._ownerFiber as MyReactFiberNode, currentHook.value);

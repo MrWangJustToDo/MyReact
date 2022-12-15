@@ -155,7 +155,7 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
 
   const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
-  if (!typedInstance?._contextFiber || !typedInstance._contextFiber.mounted) {
+  if (!typedInstance?._contextFiber || !typedInstance._contextFiber.isMounted) {
     const ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
     const context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);

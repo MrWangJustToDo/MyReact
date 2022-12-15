@@ -21,6 +21,8 @@ export class ServerDispatch implements FiberDispatch {
 
   strictMap: Record<string, boolean> = {};
 
+  scopeMap: Record<string, string> = {};
+
   keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
   layoutEffectMap: Record<string, (() => void)[]> = {};
@@ -52,6 +54,12 @@ export class ServerDispatch implements FiberDispatch {
     return null;
   }
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  resolveScopeId(_fiber: MyReactFiberNode): string {
+    return "";
+  }
+  resolveScopeMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {

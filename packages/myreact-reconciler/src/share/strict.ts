@@ -4,8 +4,7 @@ import type { MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
 
 export const defaultGenerateStrictMap = (fiber: MyReactFiberNode, map: Record<string, boolean>) => {
   const parent = fiber.parent;
-  const element = fiber.element;
-  if (typeof element === "object" && fiber.type & NODE_TYPE.__isStrictNode__) {
+  if (fiber.type & NODE_TYPE.__isStrictNode__) {
     map[fiber.uid] = true;
   } else {
     if (parent) {

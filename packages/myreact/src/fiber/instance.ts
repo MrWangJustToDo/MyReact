@@ -39,11 +39,11 @@ let fiberId = 0;
 export class MyReactFiberNode {
   uid: string;
 
-  mounted = true;
+  isMounted = true;
 
-  activated = true;
+  isActivated = true;
 
-  invoked = false;
+  isInvoked = false;
 
   node: RenderNode | null = null;
 
@@ -104,6 +104,7 @@ export class MyReactFiberNode {
     globalDispatch.resolveSuspenseMap(this);
     globalDispatch.resolveContextMap(this);
     globalDispatch.resolveStrictMap(this);
+    globalDispatch.resolveScopeMap(this);
   }
 
   // TODO change name to `updateParent`
@@ -177,14 +178,14 @@ export class MyReactFiberNode {
   }
 
   update() {
-    if (!this.activated || !this.mounted) return;
+    if (!this.isActivated || !this.isMounted) return;
     this.root.globalDispatch.trigger(this);
   }
 
   unmount() {
     this.hookNodes.forEach((hook) => hook.unmount());
     this.instance && this.instance.unmount();
-    this.mounted = false;
+    this.isMounted = false;
     this.mode = UPDATE_TYPE.__initial__;
     this.patch = PATCH_TYPE.__initial__;
     this.root.globalDispatch.removeFiber(this);
@@ -193,7 +194,7 @@ export class MyReactFiberNode {
   deactivate() {
     this.hookNodes.forEach((hook) => hook.unmount());
     this.instance && this.instance.unmount();
-    this.activated = false;
+    this.isActivated = false;
     this.mode = UPDATE_TYPE.__initial__;
     this.patch = PATCH_TYPE.__initial__;
   }

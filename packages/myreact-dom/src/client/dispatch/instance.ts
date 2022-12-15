@@ -2,6 +2,7 @@ import { cloneElement, __my_react_shared__ } from "@my-react/react";
 import {
   defaultGenerateContextMap,
   defaultGenerateKeepLiveMap,
+  defaultGenerateScopeMap,
   defaultGenerateStrictMap,
   defaultGenerateSuspenseMap,
   defaultGenerateUnmountArrayMap,
@@ -30,6 +31,7 @@ import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
 
+import type { DomComment } from "@my-react-dom-shared";
 import type {
   MyReactFiberNode,
   FiberDispatch,
@@ -46,6 +48,8 @@ const { enableStrictLifeCycle } = __my_react_shared__;
 export class ClientDispatch implements FiberDispatch {
   strictMap: Record<string, boolean> = {};
 
+  scopeMap: Record<string, string> = {};
+
   keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
   effectMap: Record<string, (() => void)[]> = {};
@@ -61,6 +65,8 @@ export class ClientDispatch implements FiberDispatch {
   unmountMap: Record<string, MyReactFiberNode[]> = {};
 
   eventMap: Record<string, Record<string, ((...args: any[]) => void) & { cb?: any[] | undefined }>> = {};
+
+  hydrateScope: Record<string, { start?: DomComment; end?: DomComment }> = {};
 
   trigger(_fiber: MyReactFiberNode): void {
     triggerUpdate(_fiber);
@@ -85,6 +91,12 @@ export class ClientDispatch implements FiberDispatch {
   }
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void {
     defaultGenerateKeepLiveMap(_fiber, this.keepLiveMap);
+  }
+  resolveScopeId(_fiber: MyReactFiberNode): string {
+    return this.scopeMap[_fiber.uid];
+  }
+  resolveScopeMap(_fiber: MyReactFiberNode): void {
+    defaultGenerateScopeMap(_fiber, this.scopeMap);
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
     defaultGenerateStrictMap(_fiber, this.strictMap);
@@ -196,7 +208,7 @@ export class ClientDispatch implements FiberDispatch {
   }
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {
     _list.listToFoot((_fiber) => {
-      if (_fiber.mounted && _fiber.activated) {
+      if (_fiber.isMounted && _fiber.isActivated) {
         const _isSVG = this.svgTypeMap[_fiber.uid];
         safeCallWithFiber({
           fiber: _fiber,
@@ -220,7 +232,7 @@ export class ClientDispatch implements FiberDispatch {
     });
 
     _list.listToHead((_fiber) => {
-      if (_fiber.mounted && _fiber.activated) {
+      if (_fiber.isMounted && _fiber.isActivated) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => position(_fiber),
@@ -229,7 +241,7 @@ export class ClientDispatch implements FiberDispatch {
     });
 
     _list.listToFoot((_fiber) => {
-      if (_fiber.mounted && _fiber.activated) {
+      if (_fiber.isMounted && _fiber.isActivated) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => append(_fiber),
@@ -238,7 +250,7 @@ export class ClientDispatch implements FiberDispatch {
     });
 
     _list.listToFoot((_fiber) => {
-      if (_fiber.mounted && _fiber.activated) {
+      if (_fiber.isMounted && _fiber.isActivated) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => layoutEffect(_fiber),
@@ -296,6 +308,7 @@ export class ClientDispatch implements FiberDispatch {
   }
   removeFiber(_fiber: MyReactFiberNode): void {
     delete this.eventMap[_fiber.uid];
+    delete this.scopeMap[_fiber.uid];
     delete this.strictMap[_fiber.uid];
     delete this.effectMap[_fiber.uid];
     delete this.contextMap[_fiber.uid];
@@ -303,6 +316,7 @@ export class ClientDispatch implements FiberDispatch {
     delete this.svgTypeMap[_fiber.uid];
     delete this.keepLiveMap[_fiber.uid];
     delete this.suspenseMap[_fiber.uid];
+    delete this.hydrateScope[_fiber.uid];
     delete this.layoutEffectMap[_fiber.uid];
   }
 }

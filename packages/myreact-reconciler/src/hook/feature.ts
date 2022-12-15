@@ -15,7 +15,7 @@ export const processHookNode = (fiber: MyReactFiberNode | null, { hookIndex, hoo
 
   if (fiber.hookNodes.length > hookIndex) {
     currentHook = updateHookNode({ hookIndex, hookType, reducer, value, deps }, fiber);
-  } else if (!fiber.invoked) {
+  } else if (!fiber.isInvoked) {
     currentHook = createHookNode({ hookIndex, hookType, reducer, value, deps }, fiber);
   } else {
     throw new Error(getHookTree(fiber.hookNodes, hookIndex, hookType));

@@ -5,12 +5,17 @@ import { MyReactInternalInstance } from "../internal";
 import type { MyReactElementNode, createContext } from "../element";
 import type { ComponentUpdateQueue } from "../fiber";
 
+type ErrorInfo = {
+  componentStack: string;
+};
+
 export interface MyReactComponentType<P, S, C> {
   render(this: MyReactComponent): MyReactElementNode;
   componentDidMount?(this: MyReactComponent): void;
   getSnapshotBeforeUpdate?(this: MyReactComponent, prevProps: P, prevState: S): void;
   shouldComponentUpdate?(this: MyReactComponent, nextProps: P, nextState: S, nextContext: C): boolean;
   componentDidUpdate?(this: MyReactComponent, prevProps: P, prevState: S, snapshot: any): void;
+  componentDidCatch?(this: MyReactComponent, error: Error, errorInfo: ErrorInfo): void;
   componentWillUnmount?(): void;
 }
 
@@ -23,6 +28,7 @@ export const DEFAULT_RESULT = {
 export type MyReactComponentStaticType<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any> = {
   contextType: null | ReturnType<typeof createContext>;
   getDerivedStateFromProps(props: P, state: S): S;
+  getDerivedStateFromError(error: Error): S;
 };
 
 export type MixinMyReactComponentType<

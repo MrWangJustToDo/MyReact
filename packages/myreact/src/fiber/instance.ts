@@ -88,6 +88,10 @@ export class MyReactFiberNode {
   }
 
   addChild(child: MyReactFiberNode) {
+    const globalDispatch = this.root.globalDispatch;
+    if (!this.child) {
+      globalDispatch.resolveErrorBoundariesMap(this);
+    }
     const last = this.children[this.children.length - 1];
     if (last) {
       last.sibling = child;
@@ -104,7 +108,7 @@ export class MyReactFiberNode {
     globalDispatch.resolveSuspenseMap(this);
     globalDispatch.resolveContextMap(this);
     globalDispatch.resolveStrictMap(this);
-    globalDispatch.resolveScopeMap(this);
+    globalDispatch.resolveScopeIdMap(this);
   }
 
   // TODO change name to `updateParent`

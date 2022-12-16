@@ -958,6 +958,33 @@
         return listTree;
     };
 
+    var isErrorBoundariesComponent = function (fiber) {
+        if (fiber.type & NODE_TYPE.__isClassComponent__) {
+            var typedElement = fiber.element;
+            var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
+            var typedComponent = Component;
+            var typedInstance = fiber.instance;
+            if (typeof typedComponent.getDerivedStateFromError === "function" || typeof typedInstance.componentDidCatch === "function") {
+                return true;
+            }
+        }
+        return false;
+    };
+    var defaultGenerateErrorBoundariesMap = function (fiber, map) {
+        if (isErrorBoundariesComponent(fiber)) {
+            map[fiber.uid] = fiber;
+        }
+        else {
+            var parent_1 = fiber.parent;
+            if (parent_1) {
+                map[fiber.uid] = map[parent_1.uid];
+            }
+            else {
+                map[fiber.uid] = undefined;
+            }
+        }
+    };
+
     var getHookTree$1 = react.__my_react_shared__.getHookTree;
     var updateHookNode = function (_a, fiber) {
         var hookIndex = _a.hookIndex, hookType = _a.hookType, value = _a.value, reducer = _a.reducer, deps = _a.deps;
@@ -1402,6 +1429,7 @@
         }
     };
 
+    react.__my_react_shared__.getFiberTree;
     var DEFAULT_RESULT = {
         newState: null,
         isForce: false,
@@ -2753,6 +2781,12 @@
             updateEntry(globalDispatch, globalScope);
         }
     };
+    // export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
+    //   const globalScope = fiber.root.globalScope as DomScope;
+    //   const globalDispatch = fiber.root.globalDispatch;
+    //   const errorBoundariesFiber = globalDispatch.errorBoundariesMap[fiber.uid];
+    //   if ()
+    // };
 
     var append$2 = function (fiber, parentFiberWithDom) {
         if (fiber.patch & PATCH_TYPE.__pendingAppend__) {
@@ -3536,8 +3570,9 @@
     var ClientDispatch = /** @class */ (function () {
         function ClientDispatch() {
             this.strictMap = {};
-            this.scopeMap = {};
+            this.scopeIdMap = {};
             this.keepLiveMap = {};
+            this.errorBoundariesMap = {};
             this.effectMap = {};
             this.layoutEffectMap = {};
             this.suspenseMap = {};
@@ -3572,16 +3607,19 @@
             defaultGenerateKeepLiveMap(_fiber, this.keepLiveMap);
         };
         ClientDispatch.prototype.resolveScopeId = function (_fiber) {
-            return this.scopeMap[_fiber.uid];
+            return this.scopeIdMap[_fiber.uid];
         };
-        ClientDispatch.prototype.resolveScopeMap = function (_fiber) {
-            defaultGenerateScopeMap(_fiber, this.scopeMap);
+        ClientDispatch.prototype.resolveScopeIdMap = function (_fiber) {
+            defaultGenerateScopeMap(_fiber, this.scopeIdMap);
         };
         ClientDispatch.prototype.resolveStrictMap = function (_fiber) {
             defaultGenerateStrictMap(_fiber, this.strictMap);
         };
         ClientDispatch.prototype.resolveStrictValue = function (_fiber) {
             return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
+        };
+        ClientDispatch.prototype.resolveErrorBoundariesMap = function (_fiber) {
+            defaultGenerateErrorBoundariesMap(_fiber, this.errorBoundariesMap);
         };
         ClientDispatch.prototype.resolveSuspenseMap = function (_fiber) {
             defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
@@ -3777,10 +3815,10 @@
         };
         ClientDispatch.prototype.removeFiber = function (_fiber) {
             delete this.eventMap[_fiber.uid];
-            delete this.scopeMap[_fiber.uid];
             delete this.strictMap[_fiber.uid];
             delete this.effectMap[_fiber.uid];
             delete this.contextMap[_fiber.uid];
+            delete this.scopeIdMap[_fiber.uid];
             delete this.unmountMap[_fiber.uid];
             delete this.svgTypeMap[_fiber.uid];
             delete this.keepLiveMap[_fiber.uid];
@@ -4610,7 +4648,8 @@
         function ServerDispatch() {
             this.effectMap = {};
             this.strictMap = {};
-            this.scopeMap = {};
+            this.scopeIdMap = {};
+            this.errorBoundariesMap = {};
             this.keepLiveMap = {};
             this.layoutEffectMap = {};
             this.suspenseMap = {};
@@ -4638,7 +4677,7 @@
         ServerDispatch.prototype.resolveScopeId = function (_fiber) {
             return "";
         };
-        ServerDispatch.prototype.resolveScopeMap = function (_fiber) {
+        ServerDispatch.prototype.resolveScopeIdMap = function (_fiber) {
         };
         ServerDispatch.prototype.resolveStrictMap = function (_fiber) {
         };
@@ -4647,6 +4686,8 @@
         };
         ServerDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
             return processHookNode(_fiber, _hookParams);
+        };
+        ServerDispatch.prototype.resolveErrorBoundariesMap = function (_fiber) {
         };
         ServerDispatch.prototype.resolveSuspenseMap = function (_fiber) {
             defaultGenerateSuspenseMap(_fiber, this.suspenseMap);

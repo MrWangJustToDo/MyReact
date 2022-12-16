@@ -1,6 +1,7 @@
 import { cloneElement, __my_react_shared__ } from "@my-react/react";
 import {
   defaultGenerateContextMap,
+  defaultGenerateErrorBoundariesMap,
   defaultGenerateKeepLiveMap,
   defaultGenerateScopeMap,
   defaultGenerateStrictMap,
@@ -48,9 +49,11 @@ const { enableStrictLifeCycle } = __my_react_shared__;
 export class ClientDispatch implements FiberDispatch {
   strictMap: Record<string, boolean> = {};
 
-  scopeMap: Record<string, string> = {};
+  scopeIdMap: Record<string, string> = {};
 
   keepLiveMap: Record<string, MyReactFiberNode[]> = {};
+
+  errorBoundariesMap: Record<string, MyReactFiberNode | undefined> = {};
 
   effectMap: Record<string, (() => void)[]> = {};
 
@@ -93,16 +96,19 @@ export class ClientDispatch implements FiberDispatch {
     defaultGenerateKeepLiveMap(_fiber, this.keepLiveMap);
   }
   resolveScopeId(_fiber: MyReactFiberNode): string {
-    return this.scopeMap[_fiber.uid];
+    return this.scopeIdMap[_fiber.uid];
   }
-  resolveScopeMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateScopeMap(_fiber, this.scopeMap);
+  resolveScopeIdMap(_fiber: MyReactFiberNode): void {
+    defaultGenerateScopeMap(_fiber, this.scopeIdMap);
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
     defaultGenerateStrictMap(_fiber, this.strictMap);
   }
   resolveStrictValue(_fiber: MyReactFiberNode): boolean {
     return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
+  }
+  resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
+    defaultGenerateErrorBoundariesMap(_fiber, this.errorBoundariesMap);
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
     defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
@@ -308,15 +314,16 @@ export class ClientDispatch implements FiberDispatch {
   }
   removeFiber(_fiber: MyReactFiberNode): void {
     delete this.eventMap[_fiber.uid];
-    delete this.scopeMap[_fiber.uid];
     delete this.strictMap[_fiber.uid];
     delete this.effectMap[_fiber.uid];
     delete this.contextMap[_fiber.uid];
+    delete this.scopeIdMap[_fiber.uid];
     delete this.unmountMap[_fiber.uid];
     delete this.svgTypeMap[_fiber.uid];
     delete this.keepLiveMap[_fiber.uid];
     delete this.suspenseMap[_fiber.uid];
     delete this.hydrateScope[_fiber.uid];
     delete this.layoutEffectMap[_fiber.uid];
+    delete this.errorBoundariesMap[_fiber.uid];
   }
 }

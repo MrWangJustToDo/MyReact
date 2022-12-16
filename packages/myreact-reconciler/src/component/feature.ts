@@ -1,3 +1,4 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import type {
@@ -9,6 +10,8 @@ import type {
   MyReactComponentStaticType,
   MyReactComponent,
 } from "@my-react/react";
+
+const { getFiberTree } = __my_react_shared__;
 
 const DEFAULT_RESULT = {
   newState: null,
@@ -46,6 +49,23 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: M
       if (payloadState) {
         typedDevInstance.state = Object.assign({}, typedInstance.state, payloadState);
       }
+    }
+  }
+};
+
+const processComponentStateFromError = (fiber: MyReactFiberNode, error: Error) => {
+  const typedElement = fiber.element as MyReactElement;
+
+  const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : (typedElement.type as ReturnType<typeof memo>).render;
+
+  const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
+
+  const typedInstance = fiber.instance as MixinMyReactComponentType;
+
+  if (typeof typedComponent.getDerivedStateFromError === "function") {
+    const payloadState = typedComponent.getDerivedStateFromError(error);
+    if (payloadState) {
+      typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
     }
   }
 };
@@ -140,6 +160,20 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: 
     globalDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
       typedInstance.componentDidMount?.();
+    });
+  }
+};
+
+const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error: Error) => {
+  const typedInstance = fiber.instance as MixinMyReactComponentType;
+
+  const globalDispatch = fiber.root.globalDispatch;
+
+  if (typedInstance.componentDidCatch && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+    typedInstance.mode = Effect_TYPE.__pendingEffect__;
+    globalDispatch.pendingLayoutEffect(fiber, () => {
+      typedInstance.mode = Effect_TYPE.__initial__;
+      typedInstance.componentDidCatch(error, { componentStack: getFiberTree(fiber) });
     });
   }
 };
@@ -322,4 +356,14 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   } else {
     return { updated: false };
   }
+};
+
+export const classComponentCatch = (fiber: MyReactFiberNode, error: Error) => {
+  processComponentStateFromError(fiber, error);
+
+  const children = processComponentRenderOnMountAndUpdate(fiber);
+
+  processComponentDidCatchOnMountAndUpdate(fiber, error);
+
+  return children;
 };

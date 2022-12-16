@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { Component } = React;
+
+      class WrapperErrorCatch extends Component {
+        state = {
+          stack: "",
+          error: "",
+          hasError: false,
+        };
+
+        static getDerivedStateFromError() {
+          return { hasError: true };
+        }
+
+        componentDidCatch(error, info) {
+          this.setState({
+            error: error.message,
+            stack: info.componentStack,
+          });
+        }
+
+        render() {
+          if (this.state.hasError)
+            return (
+              <pre>
+                <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
+                {this.state.stack}
+              </pre>
+            );
+          return this.props.children;
+        }
+      }
+
+      const Bar = () => {
+        // console.log(foo);
+
+        return <div onClick={() => console.log(foo)}>123456</div>;
+      };
+
+      const Baz = () => (
+        <WrapperErrorCatch>
+          <Bar />
+        </WrapperErrorCatch>
+      );
+
+      const App = () => {
+        return <Baz />;
+      };
+
+      ReactDOM.render(<App />, document.querySelector("#root"));
+    </script>
+  </body>
+</html>

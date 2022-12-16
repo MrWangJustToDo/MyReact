@@ -17,11 +17,14 @@ import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext
 import type { LinkTreeList } from "@my-react/react-shared";
 
 export class ServerDispatch implements FiberDispatch {
+  
   effectMap: Record<string, (() => void)[]> = {};
 
   strictMap: Record<string, boolean> = {};
 
-  scopeMap: Record<string, string> = {};
+  scopeIdMap: Record<string, string> = {};
+
+  errorBoundariesMap: Record<string, MyReactFiberNode | undefined> = {};
 
   keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
@@ -59,7 +62,7 @@ export class ServerDispatch implements FiberDispatch {
   resolveScopeId(_fiber: MyReactFiberNode): string {
     return "";
   }
-  resolveScopeMap(_fiber: MyReactFiberNode): void {
+  resolveScopeIdMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
@@ -70,6 +73,10 @@ export class ServerDispatch implements FiberDispatch {
   }
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return processHookNode(_fiber, _hookParams);
+  }
+  resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
+    // throw new Error("Method not implemented.");
+    void 0;
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
     defaultGenerateSuspenseMap(_fiber, this.suspenseMap);

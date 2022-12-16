@@ -1497,7 +1497,8 @@
     var EmptyDispatch = /** @class */ (function () {
         function EmptyDispatch() {
             this.strictMap = {};
-            this.scopeMap = {};
+            this.scopeIdMap = {};
+            this.errorBoundariesMap = {};
             this.keepLiveMap = {};
             this.suspenseMap = {};
             this.effectMap = {};
@@ -1517,7 +1518,7 @@
         EmptyDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
             return null;
         };
-        EmptyDispatch.prototype.resolveScopeMap = function (_fiber) {
+        EmptyDispatch.prototype.resolveScopeIdMap = function (_fiber) {
         };
         EmptyDispatch.prototype.resolveScopeId = function (_fiber) {
             return "";
@@ -1546,6 +1547,8 @@
         };
         EmptyDispatch.prototype.resolveContextValue = function (_fiber, _contextObject) {
             return null;
+        };
+        EmptyDispatch.prototype.resolveErrorBoundariesMap = function (_fiber) {
         };
         EmptyDispatch.prototype.resolveComponentQueue = function (_fiber) {
         };
@@ -1645,6 +1648,10 @@
             this.initialPops();
         }
         MyReactFiberNode.prototype.addChild = function (child) {
+            var globalDispatch = this.root.globalDispatch;
+            if (!this.child) {
+                globalDispatch.resolveErrorBoundariesMap(this);
+            }
             var last = this.children[this.children.length - 1];
             if (last) {
                 last.sibling = child;
@@ -1662,7 +1669,7 @@
             globalDispatch.resolveSuspenseMap(this);
             globalDispatch.resolveContextMap(this);
             globalDispatch.resolveStrictMap(this);
-            globalDispatch.resolveScopeMap(this);
+            globalDispatch.resolveScopeIdMap(this);
         };
         // TODO change name to `updateParent`
         MyReactFiberNode.prototype.installParent = function (parent) {

@@ -9,7 +9,9 @@ export interface FiberDispatch {
 
   strictMap: Record<string, boolean>;
 
-  scopeMap: Record<string, string>;
+  scopeIdMap: Record<string, string | undefined>;
+
+  errorBoundariesMap: Record<string, MyReactFiberNode | undefined>;
 
   keepLiveMap: Record<string, MyReactFiberNode[]>;
 
@@ -39,13 +41,15 @@ export interface FiberDispatch {
 
   resolveStrictMap(_fiber: MyReactFiberNode): void;
 
-  resolveScopeMap(_fiber: MyReactFiberNode): void;
-
   resolveScopeId(_fiber: MyReactFiberNode): string;
+
+  resolveScopeIdMap(_fiber: MyReactFiberNode): void;
 
   resolveStrictValue(_fiber: MyReactFiberNode): boolean;
 
   resolveSuspenseMap(_fiber: MyReactFiberNode): void;
+
+  resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void;
 
   resolveSuspenseElement(_fiber: MyReactFiberNode): MyReactElementNode;
 

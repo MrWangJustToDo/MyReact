@@ -8,7 +8,9 @@ import type { LinkTreeList } from "@my-react/react-shared";
 export class EmptyDispatch implements FiberDispatch {
   strictMap: Record<string, boolean> = {};
 
-  scopeMap: Record<string, string> = {};
+  scopeIdMap: Record<string, string | undefined> = {};
+
+  errorBoundariesMap: Record<string, MyReactFiberNode | undefined> = {};
 
   keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
@@ -36,7 +38,7 @@ export class EmptyDispatch implements FiberDispatch {
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return null;
   }
-  resolveScopeMap(_fiber: MyReactFiberNode): void {
+  resolveScopeIdMap(_fiber: MyReactFiberNode): void {
     void 0;
   }
   resolveScopeId(_fiber: MyReactFiberNode): string {
@@ -71,6 +73,9 @@ export class EmptyDispatch implements FiberDispatch {
   }
   resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return null;
+  }
+  resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
+    void 0;
   }
   resolveComponentQueue(_fiber: MyReactFiberNode): void {
     void 0;

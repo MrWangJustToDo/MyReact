@@ -49,3 +49,13 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
     updateEntry(globalDispatch, globalScope);
   }
 };
+
+// export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
+//   const globalScope = fiber.root.globalScope as DomScope;
+
+//   const globalDispatch = fiber.root.globalDispatch;
+
+//   const errorBoundariesFiber = globalDispatch.errorBoundariesMap[fiber.uid];
+
+//   if ()
+// };

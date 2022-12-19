@@ -17,14 +17,15 @@ import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext
 import type { LinkTreeList } from "@my-react/react-shared";
 
 export class ServerDispatch implements FiberDispatch {
+ 
   
   effectMap: Record<string, (() => void)[]> = {};
 
   strictMap: Record<string, boolean> = {};
 
-  scopeIdMap: Record<string, string> = {};
+  scopeIdMap: Record<string, string | null> = {};
 
-  errorBoundariesMap: Record<string, MyReactFiberNode | undefined> = {};
+  errorBoundariesMap: Record<string, MyReactFiberNode | null> = {};
 
   keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
@@ -38,7 +39,10 @@ export class ServerDispatch implements FiberDispatch {
 
   eventMap: Record<string, Record<string, ((...args: any[]) => void) & { cb?: any[] | undefined }>> = {};
 
-  trigger(_fiber: MyReactFiberNode): void {
+  triggerUpdate(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  triggerError(_fiber: MyReactFiberNode, _error: Error): void {
     void 0;
   }
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
@@ -74,8 +78,10 @@ export class ServerDispatch implements FiberDispatch {
   resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
     return processHookNode(_fiber, _hookParams);
   }
+  resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
+    return null;
+  }
   resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
-    // throw new Error("Method not implemented.");
     void 0;
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {

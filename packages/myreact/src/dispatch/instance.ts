@@ -6,11 +6,12 @@ import type { FiberDispatch } from "./interface";
 import type { LinkTreeList } from "@my-react/react-shared";
 
 export class EmptyDispatch implements FiberDispatch {
+  
   strictMap: Record<string, boolean> = {};
 
-  scopeIdMap: Record<string, string | undefined> = {};
+  scopeIdMap: Record<string, string | null> = {};
 
-  errorBoundariesMap: Record<string, MyReactFiberNode | undefined> = {};
+  errorBoundariesMap: Record<string, MyReactFiberNode | null> = {};
 
   keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
@@ -26,7 +27,10 @@ export class EmptyDispatch implements FiberDispatch {
 
   eventMap: Record<string, Record<string, ((...args: any[]) => void) & { cb?: any[] | undefined }>> = {};
 
-  trigger(_fiber: MyReactFiberNode): void {
+  triggerUpdate(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+  triggerError(_fiber: MyReactFiberNode, _error: Error): void {
     void 0;
   }
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
@@ -72,6 +76,9 @@ export class EmptyDispatch implements FiberDispatch {
     return null;
   }
   resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
+    return null;
+  }
+  resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
     return null;
   }
   resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {

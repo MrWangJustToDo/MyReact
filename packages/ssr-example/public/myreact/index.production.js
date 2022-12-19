@@ -52,6 +52,7 @@
         UPDATE_TYPE[UPDATE_TYPE["__initial__"] = 0] = "__initial__";
         UPDATE_TYPE[UPDATE_TYPE["__update__"] = 1] = "__update__";
         UPDATE_TYPE[UPDATE_TYPE["__trigger__"] = 2] = "__trigger__";
+        UPDATE_TYPE[UPDATE_TYPE["__error__"] = 4] = "__error__";
     })(UPDATE_TYPE || (UPDATE_TYPE = {}));
 
     var HOOK_TYPE;
@@ -1507,7 +1508,9 @@
             this.unmountMap = {};
             this.eventMap = {};
         }
-        EmptyDispatch.prototype.trigger = function (_fiber) {
+        EmptyDispatch.prototype.triggerUpdate = function (_fiber) {
+        };
+        EmptyDispatch.prototype.triggerError = function (_fiber, _error) {
         };
         EmptyDispatch.prototype.resolveLazyElement = function (_fiber) {
             return null;
@@ -1546,6 +1549,9 @@
             return null;
         };
         EmptyDispatch.prototype.resolveContextValue = function (_fiber, _contextObject) {
+            return null;
+        };
+        EmptyDispatch.prototype.resolveErrorBoundaries = function (_fiber) {
             return null;
         };
         EmptyDispatch.prototype.resolveErrorBoundariesMap = function (_fiber) {
@@ -1649,9 +1655,8 @@
         }
         MyReactFiberNode.prototype.addChild = function (child) {
             var globalDispatch = this.root.globalDispatch;
-            if (!this.child) {
+            if (!this.child)
                 globalDispatch.resolveErrorBoundariesMap(this);
-            }
             var last = this.children[this.children.length - 1];
             if (last) {
                 last.sibling = child;
@@ -1734,7 +1739,10 @@
         MyReactFiberNode.prototype.update = function () {
             if (!this.isActivated || !this.isMounted)
                 return;
-            this.root.globalDispatch.trigger(this);
+            this.root.globalDispatch.triggerUpdate(this);
+        };
+        MyReactFiberNode.prototype.error = function (error) {
+            this.root.globalDispatch.triggerError(this, error);
         };
         MyReactFiberNode.prototype.unmount = function () {
             this.hookNodes.forEach(function (hook) { return hook.unmount(); });

@@ -47,13 +47,14 @@ import type {
 const { enableStrictLifeCycle } = __my_react_shared__;
 
 export class ClientDispatch implements FiberDispatch {
+  
   strictMap: Record<string, boolean> = {};
 
-  scopeIdMap: Record<string, string> = {};
+  scopeIdMap: Record<string, string | null> = {};
 
   keepLiveMap: Record<string, MyReactFiberNode[]> = {};
 
-  errorBoundariesMap: Record<string, MyReactFiberNode | undefined> = {};
+  errorBoundariesMap: Record<string, MyReactFiberNode | null> = {};
 
   effectMap: Record<string, (() => void)[]> = {};
 
@@ -71,8 +72,11 @@ export class ClientDispatch implements FiberDispatch {
 
   hydrateScope: Record<string, { start?: DomComment; end?: DomComment }> = {};
 
-  trigger(_fiber: MyReactFiberNode): void {
+  triggerUpdate(_fiber: MyReactFiberNode): void {
     triggerUpdate(_fiber);
+  }
+  triggerError(_fiber: MyReactFiberNode, _error: Error): void {
+    void 0;
   }
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
     return defaultResolveLazyElement(_fiber);
@@ -106,6 +110,9 @@ export class ClientDispatch implements FiberDispatch {
   }
   resolveStrictValue(_fiber: MyReactFiberNode): boolean {
     return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
+  }
+  resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
+    return this.errorBoundariesMap[_fiber.uid];
   }
   resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
     defaultGenerateErrorBoundariesMap(_fiber, this.errorBoundariesMap);

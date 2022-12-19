@@ -272,6 +272,7 @@
         UPDATE_TYPE[UPDATE_TYPE["__initial__"] = 0] = "__initial__";
         UPDATE_TYPE[UPDATE_TYPE["__update__"] = 1] = "__update__";
         UPDATE_TYPE[UPDATE_TYPE["__trigger__"] = 2] = "__trigger__";
+        UPDATE_TYPE[UPDATE_TYPE["__error__"] = 4] = "__error__";
     })(UPDATE_TYPE || (UPDATE_TYPE = {}));
 
     var HOOK_TYPE;
@@ -885,6 +886,9 @@
             if (parent) {
                 map[fiber.uid] = map[parent.uid];
             }
+            else {
+                map[fiber.uid] = null;
+            }
         }
     };
 
@@ -1032,7 +1036,7 @@
                 map[fiber.uid] = map[parent_1.uid];
             }
             else {
-                map[fiber.uid] = undefined;
+                map[fiber.uid] = null;
             }
         }
     };
@@ -2934,12 +2938,6 @@
             updateEntry(globalDispatch, globalScope);
         }
     };
-    // export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
-    //   const globalScope = fiber.root.globalScope as DomScope;
-    //   const globalDispatch = fiber.root.globalDispatch;
-    //   const errorBoundariesFiber = globalDispatch.errorBoundariesMap[fiber.uid];
-    //   if ()
-    // };
 
     var append$2 = function (fiber, parentFiberWithDom) {
         if (fiber.patch & PATCH_TYPE.__pendingAppend__) {
@@ -3738,8 +3736,10 @@
             this.eventMap = {};
             this.hydrateScope = {};
         }
-        ClientDispatch.prototype.trigger = function (_fiber) {
+        ClientDispatch.prototype.triggerUpdate = function (_fiber) {
             triggerUpdate(_fiber);
+        };
+        ClientDispatch.prototype.triggerError = function (_fiber, _error) {
         };
         ClientDispatch.prototype.resolveLazyElement = function (_fiber) {
             return defaultResolveLazyElement$1(_fiber);
@@ -3773,6 +3773,9 @@
         };
         ClientDispatch.prototype.resolveStrictValue = function (_fiber) {
             return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
+        };
+        ClientDispatch.prototype.resolveErrorBoundaries = function (_fiber) {
+            return this.errorBoundariesMap[_fiber.uid];
         };
         ClientDispatch.prototype.resolveErrorBoundariesMap = function (_fiber) {
             defaultGenerateErrorBoundariesMap(_fiber, this.errorBoundariesMap);
@@ -3981,6 +3984,7 @@
             delete this.suspenseMap[_fiber.uid];
             delete this.hydrateScope[_fiber.uid];
             delete this.layoutEffectMap[_fiber.uid];
+            delete this.errorBoundariesMap[_fiber.uid];
         };
         return ClientDispatch;
     }());
@@ -4813,7 +4817,9 @@
             this.unmountMap = {};
             this.eventMap = {};
         }
-        ServerDispatch.prototype.trigger = function (_fiber) {
+        ServerDispatch.prototype.triggerUpdate = function (_fiber) {
+        };
+        ServerDispatch.prototype.triggerError = function (_fiber, _error) {
         };
         ServerDispatch.prototype.resolveLazyElement = function (_fiber) {
             return defaultResolveLazyElement(_fiber);
@@ -4842,6 +4848,9 @@
         };
         ServerDispatch.prototype.resolveHook = function (_fiber, _hookParams) {
             return processHookNode(_fiber, _hookParams);
+        };
+        ServerDispatch.prototype.resolveErrorBoundaries = function (_fiber) {
+            return null;
         };
         ServerDispatch.prototype.resolveErrorBoundariesMap = function (_fiber) {
         };

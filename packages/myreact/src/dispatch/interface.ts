@@ -9,9 +9,9 @@ export interface FiberDispatch {
 
   strictMap: Record<string, boolean>;
 
-  scopeIdMap: Record<string, string | undefined>;
+  scopeIdMap: Record<string, string | null>;
 
-  errorBoundariesMap: Record<string, MyReactFiberNode | undefined>;
+  errorBoundariesMap: Record<string, MyReactFiberNode | null>;
 
   keepLiveMap: Record<string, MyReactFiberNode[]>;
 
@@ -25,7 +25,9 @@ export interface FiberDispatch {
 
   eventMap: Record<string, Record<string, ((...args: any[]) => void) & { cb?: any[] }>>;
 
-  trigger(_fiber: MyReactFiberNode): void;
+  triggerUpdate(_fiber: MyReactFiberNode): void;
+
+  triggerError(_fiber: MyReactFiberNode, _error: Error): void;
 
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode;
 
@@ -48,6 +50,8 @@ export interface FiberDispatch {
   resolveStrictValue(_fiber: MyReactFiberNode): boolean;
 
   resolveSuspenseMap(_fiber: MyReactFiberNode): void;
+
+  resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null;
 
   resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void;
 

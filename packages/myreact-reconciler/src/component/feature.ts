@@ -164,7 +164,7 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: 
   }
 };
 
-const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error: Error) => {
+const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error: Error, targetFiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
   const globalDispatch = fiber.root.globalDispatch;
@@ -173,7 +173,7 @@ const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error
     typedInstance.mode = Effect_TYPE.__pendingEffect__;
     globalDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
-      typedInstance.componentDidCatch(error, { componentStack: getFiberTree(fiber) });
+      typedInstance.componentDidCatch(error, { componentStack: getFiberTree(targetFiber) });
     });
   }
 };
@@ -358,12 +358,12 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const classComponentCatch = (fiber: MyReactFiberNode, error: Error) => {
+export const classComponentCatch = (fiber: MyReactFiberNode, error: Error, targetFiber: MyReactFiberNode) => {
   processComponentStateFromError(fiber, error);
 
   const children = processComponentRenderOnMountAndUpdate(fiber);
 
-  processComponentDidCatchOnMountAndUpdate(fiber, error);
+  processComponentDidCatchOnMountAndUpdate(fiber, error, targetFiber);
 
   return children;
 };

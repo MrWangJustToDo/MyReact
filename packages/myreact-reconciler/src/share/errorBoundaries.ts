@@ -20,7 +20,7 @@ export const isErrorBoundariesComponent = (fiber: MyReactFiberNode) => {
   return false;
 };
 
-export const defaultGenerateErrorBoundariesMap = (fiber: MyReactFiberNode, map: Record<string, MyReactFiberNode | undefined>) => {
+export const defaultGenerateErrorBoundariesMap = (fiber: MyReactFiberNode, map: Record<string, MyReactFiberNode | null>) => {
   if (isErrorBoundariesComponent(fiber)) {
     map[fiber.uid] = fiber;
   } else {
@@ -29,7 +29,7 @@ export const defaultGenerateErrorBoundariesMap = (fiber: MyReactFiberNode, map: 
     if (parent) {
       map[fiber.uid] = map[parent.uid];
     } else {
-      map[fiber.uid] = undefined;
+      map[fiber.uid] = null;
     }
   }
 };

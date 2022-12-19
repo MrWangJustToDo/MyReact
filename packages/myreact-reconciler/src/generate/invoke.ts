@@ -1,7 +1,7 @@
 import { ForwardRef, isValidElement, Reactive, __my_react_internal__ } from "@my-react/react";
 import { NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
-import { classComponentActive, classComponentMount, classComponentUpdate } from "../component";
+import { classComponentActive, classComponentCatch, classComponentMount, classComponentUpdate } from "../component";
 import { reactiveComponentActive, reactiveComponentMount, reactiveComponentUpdate } from "../reactive";
 import { isCommentElement } from "../share";
 
@@ -375,6 +375,44 @@ export const nextWorkAsync = (fiber: MyReactFiberNode, loopController: Reconcile
     else if (fiber.type & NODE_TYPE.__isObjectNode__) nextWorkObject(fiber);
     else if (fiber.type & NODE_TYPE.__isKeepLiveNode__) nextWorkKeepLive(fiber);
     else nextWorkNormal(fiber);
+
+    fiber.isInvoked = true;
+
+    fiber.isActivated = true;
+
+    currentRunningFiber.current = null;
+
+    if (fiber.children.length) {
+      return fiber.child;
+    }
+  }
+
+  let nextFiber: MyReactFiberNode | null = fiber;
+
+  while (nextFiber && nextFiber !== loopController.getTopLevel()) {
+    loopController.getUpdateList(nextFiber);
+
+    if (nextFiber.sibling) return nextFiber.sibling;
+
+    nextFiber = nextFiber.parent;
+  }
+
+  if (nextFiber === loopController.getTopLevel()) {
+    loopController.getUpdateList(nextFiber);
+  }
+
+  return null;
+};
+
+export const nextWorkError = (fiber: MyReactFiberNode, loopController: ReconcilerLoopController, error: Error, targetFiber: MyReactFiberNode) => {
+  if (!fiber.isMounted) return null;
+
+  if (fiber.mode & UPDATE_TYPE.__error__) {
+    currentRunningFiber.current = fiber;
+
+    const children = classComponentCatch(fiber, error, targetFiber);
+
+    nextWorkCommon(fiber, children);
 
     fiber.isInvoked = true;
 

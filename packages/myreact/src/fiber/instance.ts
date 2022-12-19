@@ -24,6 +24,13 @@ export type ComponentUpdateQueue = {
   callback?: () => void;
 };
 
+export type ComponentCatchQueue = {
+  type: "error";
+  trigger: MyReactComponent;
+  error: Error;
+  fiber?: MyReactFiberNode;
+};
+
 export type HookUpdateQueue = {
   type: "hook";
   trigger: MyReactHookNode;
@@ -75,6 +82,8 @@ export class MyReactFiberNode {
 
   updateQueue: UpdateQueue[] = [];
 
+  errorQueue: ComponentCatchQueue[] = [];
+
   pendingProps: MyReactElement["props"] = {};
 
   memoizedProps: MyReactElement["props"] | null = null;
@@ -89,15 +98,17 @@ export class MyReactFiberNode {
 
   addChild(child: MyReactFiberNode) {
     const globalDispatch = this.root.globalDispatch;
-    if (!this.child) {
-      globalDispatch.resolveErrorBoundariesMap(this);
-    }
+
+    if (!this.child) globalDispatch.resolveErrorBoundariesMap(this);
+
     const last = this.children[this.children.length - 1];
+
     if (last) {
       last.sibling = child;
     } else {
       this.child = child;
     }
+
     this.children.push(child);
   }
 
@@ -130,6 +141,13 @@ export class MyReactFiberNode {
     this.child = null;
     this.children = [];
     this.return = null;
+  }
+
+  triggerError() {
+    let errorSymbol = UPDATE_TYPE.__initial__;
+    errorSymbol |= UPDATE_TYPE.__update__;
+    errorSymbol |= UPDATE_TYPE.__error__;
+    this.mode = errorSymbol;
   }
 
   triggerUpdate() {
@@ -183,7 +201,11 @@ export class MyReactFiberNode {
 
   update() {
     if (!this.isActivated || !this.isMounted) return;
-    this.root.globalDispatch.trigger(this);
+    this.root.globalDispatch.triggerUpdate(this);
+  }
+
+  error(error: Error) {
+    this.root.globalDispatch.triggerError(this, error);
   }
 
   unmount() {

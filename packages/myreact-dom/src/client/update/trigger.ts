@@ -1,11 +1,11 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { generateReconcileUpdate } from "@my-react-dom-shared";
+import { ClientDispatch } from "@my-react-dom-client/dispatch";
+import { generateReconcileUpdate , DomScope } from "@my-react-dom-shared";
 
 import { generateUpdateControllerWithDispatch } from "./tool";
 import { updateAllAsync, updateAllSync } from "./update";
 
-import type { DomScope } from "@my-react-dom-shared";
 import type { MyReactFiberNode, FiberDispatch } from "@my-react/react";
 
 const { globalLoop } = __my_react_internal__;
@@ -50,12 +50,30 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
   }
 };
 
-// export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
-//   const globalScope = fiber.root.globalScope as DomScope;
+export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
+  const globalScope = fiber.root.globalScope as DomScope;
 
-//   const globalDispatch = fiber.root.globalDispatch;
+  const globalPlatform = fiber.root.globalPlatform;
 
-//   const errorBoundariesFiber = globalDispatch.errorBoundariesMap[fiber.uid];
+  const globalDispatch = fiber.root.globalDispatch;
 
-//   if ()
-// };
+  const errorBoundariesFiber = globalDispatch.resolveErrorBoundaries(fiber);
+
+  if (errorBoundariesFiber) {
+    const errorDispatch = new ClientDispatch();
+
+    const errorScope = new DomScope();
+
+    errorScope.modifyFiberArray.push(errorBoundariesFiber);
+
+    
+  } else {
+    if (globalScope.isAppCrash) return;
+
+    globalPlatform.log({ message: error, level: "error", fiber });
+
+    globalScope.isAppCrash = true;
+
+    throw new Error(error.message);
+  }
+};

@@ -36,6 +36,7 @@
         }
 
         render() {
+          console.log(this, 'xxxxxxxxxxxx');
           if (this.state.hasError)
             return (
               <pre>
@@ -48,7 +49,7 @@
       }
 
       const Bar = () => {
-        // console.log(foo);
+        console.log(foo);
 
         return <div onClick={() => console.log(foo)}>123456</div>;
       };

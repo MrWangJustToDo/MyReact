@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-reconciler",
   "description": "@my-react/react-reconciler",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",

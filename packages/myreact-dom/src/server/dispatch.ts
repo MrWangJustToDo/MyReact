@@ -43,7 +43,8 @@ export class ServerDispatch implements FiberDispatch {
     void 0;
   }
   triggerError(_fiber: MyReactFiberNode, _error: Error): void {
-    void 0;
+    // server side runtime error
+    throw _error;
   }
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
     return defaultResolveLazyElement(_fiber);

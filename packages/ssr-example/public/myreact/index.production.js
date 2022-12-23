@@ -52,7 +52,6 @@
         UPDATE_TYPE[UPDATE_TYPE["__initial__"] = 0] = "__initial__";
         UPDATE_TYPE[UPDATE_TYPE["__update__"] = 1] = "__update__";
         UPDATE_TYPE[UPDATE_TYPE["__trigger__"] = 2] = "__trigger__";
-        UPDATE_TYPE[UPDATE_TYPE["__error__"] = 4] = "__error__";
     })(UPDATE_TYPE || (UPDATE_TYPE = {}));
 
     var HOOK_TYPE;
@@ -2163,7 +2162,7 @@
 
     var Component = MyReactComponent;
     var PureComponent = MyReactPureComponent;
-    var version = "0.0.2";
+    var version = "0.0.3";
     var __my_react_shared__ = {
         getHookTree: getHookTree,
         getFiberTree: getFiberTree,

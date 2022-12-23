@@ -24,13 +24,6 @@ export type ComponentUpdateQueue = {
   callback?: () => void;
 };
 
-export type ComponentCatchQueue = {
-  type: "error";
-  trigger: MyReactComponent;
-  error: Error;
-  fiber?: MyReactFiberNode;
-};
-
 export type HookUpdateQueue = {
   type: "hook";
   trigger: MyReactHookNode;
@@ -81,8 +74,6 @@ export class MyReactFiberNode {
   mode: UPDATE_TYPE = UPDATE_TYPE.__initial__;
 
   updateQueue: UpdateQueue[] = [];
-
-  errorQueue: ComponentCatchQueue[] = [];
 
   pendingProps: MyReactElement["props"] = {};
 
@@ -141,13 +132,6 @@ export class MyReactFiberNode {
     this.child = null;
     this.children = [];
     this.return = null;
-  }
-
-  triggerError() {
-    let errorSymbol = UPDATE_TYPE.__initial__;
-    errorSymbol |= UPDATE_TYPE.__update__;
-    errorSymbol |= UPDATE_TYPE.__error__;
-    this.mode = errorSymbol;
   }
 
   triggerUpdate() {

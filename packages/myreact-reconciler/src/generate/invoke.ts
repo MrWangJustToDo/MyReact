@@ -407,7 +407,7 @@ export const nextWorkAsync = (fiber: MyReactFiberNode, loopController: Reconcile
 export const nextWorkError = (fiber: MyReactFiberNode, loopController: ReconcilerLoopController, error: Error, targetFiber: MyReactFiberNode) => {
   if (!fiber.isMounted) return null;
 
-  if (fiber.mode & UPDATE_TYPE.__error__) {
+  if (!fiber.isInvoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
     currentRunningFiber.current = fiber;
 
     const children = classComponentCatch(fiber, error, targetFiber);

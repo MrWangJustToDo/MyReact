@@ -1,7 +1,8 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { nextWorkError } from "@my-react/react-reconciler";
 
-import { ClientDispatch } from "@my-react-dom-client/dispatch";
-import { generateReconcileUpdate , DomScope } from "@my-react-dom-shared";
+import { ClientDispatch } from "@my-react-dom-client";
+import { generateReconcileUpdate, DomScope } from "@my-react-dom-shared";
 
 import { generateUpdateControllerWithDispatch } from "./tool";
 import { updateAllAsync, updateAllSync } from "./update";
@@ -51,10 +52,6 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
 };
 
 export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
-  const globalScope = fiber.root.globalScope as DomScope;
-
-  const globalPlatform = fiber.root.globalPlatform;
-
   const globalDispatch = fiber.root.globalDispatch;
 
   const errorBoundariesFiber = globalDispatch.resolveErrorBoundaries(fiber);
@@ -64,16 +61,18 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 
     const errorScope = new DomScope();
 
-    errorScope.modifyFiberArray.push(errorBoundariesFiber);
+    errorScope.modifyFiberRoot = errorBoundariesFiber;
 
-    
-  } else {
-    if (globalScope.isAppCrash) return;
+    errorBoundariesFiber.triggerUpdate();
 
-    globalPlatform.log({ message: error, level: "error", fiber });
+    const updateFiberController = generateUpdateControllerWithDispatch(errorDispatch, errorScope);
 
-    globalScope.isAppCrash = true;
+    const reconcileUpdate = generateReconcileUpdate(errorDispatch, errorScope);
 
-    throw new Error(error.message);
+    const nextFiber = nextWorkError(errorBoundariesFiber, updateFiberController, error, fiber);
+
+    updateFiberController.setYield(nextFiber);
+
+    updateAllSync(updateFiberController, reconcileUpdate);
   }
 };

@@ -52,7 +52,6 @@
         UPDATE_TYPE[UPDATE_TYPE["__initial__"] = 0] = "__initial__";
         UPDATE_TYPE[UPDATE_TYPE["__update__"] = 1] = "__update__";
         UPDATE_TYPE[UPDATE_TYPE["__trigger__"] = 2] = "__trigger__";
-        UPDATE_TYPE[UPDATE_TYPE["__error__"] = 4] = "__error__";
     })(UPDATE_TYPE || (UPDATE_TYPE = {}));
 
     var HOOK_TYPE;
@@ -927,7 +926,7 @@
                 var _a = source || {}, fileName = _a.fileName, lineNumber = _a.lineNumber;
                 preString = "".concat(preString, " (").concat(fileName, ":").concat(lineNumber, ")");
             }
-            if (!(fiber.type & NODE_TYPE.__isDynamicNode__) && owner) {
+            if (owner) {
                 var ownerElement = owner.element;
                 var ownerElementType = ownerElement.type;
                 if (typeof ownerElementType === "function") {
@@ -1030,7 +1029,7 @@
                 var parent_1 = fiber.parent;
                 var res = "".concat(preString).concat(getFiberNodeName(fiber));
                 while (parent_1) {
-                    res = "".concat(preString).concat(getFiberNodeName(parent_1), "\n").concat(res);
+                    res += "\n".concat(preString).concat(getFiberNodeName(parent_1));
                     parent_1 = parent_1.parent;
                 }
                 return "\n".concat(res);
@@ -2362,7 +2361,7 @@
 
     var Component = MyReactComponent;
     var PureComponent = MyReactPureComponent;
-    var version = "0.0.2";
+    var version = "0.0.3";
     var __my_react_shared__ = {
         getHookTree: getHookTree,
         getFiberTree: getFiberTree,

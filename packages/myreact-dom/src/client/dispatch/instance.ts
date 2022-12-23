@@ -19,7 +19,7 @@ import { LinkTreeList, NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
 import { generateSVGElementType, safeCallWithFiber, setRef } from "@my-react-dom-shared";
 
-import { triggerUpdate } from "../update";
+import { triggerUpdate, triggerError } from "../update";
 
 import { append } from "./append";
 import { context } from "./context";
@@ -47,7 +47,6 @@ import type {
 const { enableStrictLifeCycle } = __my_react_shared__;
 
 export class ClientDispatch implements FiberDispatch {
-  
   strictMap: Record<string, boolean> = {};
 
   scopeIdMap: Record<string, string | null> = {};
@@ -76,7 +75,8 @@ export class ClientDispatch implements FiberDispatch {
     triggerUpdate(_fiber);
   }
   triggerError(_fiber: MyReactFiberNode, _error: Error): void {
-    void 0;
+    // void 0;
+    triggerError(_fiber, _error);
   }
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
     return defaultResolveLazyElement(_fiber);
@@ -112,7 +112,7 @@ export class ClientDispatch implements FiberDispatch {
     return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
   }
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
-    return this.errorBoundariesMap[_fiber.uid];
+    return this.errorBoundariesMap[_fiber.uid] || this.errorBoundariesMap[_fiber.parent.uid];
   }
   resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
     defaultGenerateErrorBoundariesMap(_fiber, this.errorBoundariesMap);

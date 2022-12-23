@@ -105,7 +105,7 @@
     }());
 
     var currentRunningFiber$2 = react.__my_react_internal__.currentRunningFiber;
-    var getFiberTree = react.__my_react_shared__.getFiberTree;
+    var getFiberTree$1 = react.__my_react_shared__.getFiberTree;
     var debugWithDOM = function (fiber) {
         if (fiber.node) {
             var debugDOM = fiber.node;
@@ -122,7 +122,7 @@
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            var fiberTree = getFiberTree(currentRunningFiber$2.current);
+            var fiberTree = getFiberTree$1(currentRunningFiber$2.current);
             originalConsoleWarn.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
         };
         console.error = function () {
@@ -130,7 +130,7 @@
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            var fiberTree = getFiberTree(currentRunningFiber$2.current);
+            var fiberTree = getFiberTree$1(currentRunningFiber$2.current);
             originalConsoleError.apply(void 0, __spreadArray$1(__spreadArray$1([], args, false), [fiberTree], false));
         };
     };
@@ -141,7 +141,7 @@
     var cache = {};
     var log = function (_a) {
         var fiber = _a.fiber, message = _a.message, _b = _a.level, level = _b === void 0 ? "warn" : _b, _c = _a.triggerOnce, triggerOnce = _c === void 0 ? false : _c;
-        var tree = getFiberTree(fiber || currentRunningFiber$2.current);
+        var tree = getFiberTree$1(fiber || currentRunningFiber$2.current);
         if (triggerOnce) {
             var messageKey = message.toString();
             cache[messageKey] = cache[messageKey] || {};
@@ -166,12 +166,12 @@
         }
         catch (e) {
             var fiber = currentRunningFiber$2.current;
-            if (fiber && fiber.root.globalScope.isAppCrash)
-                return;
-            log({ message: e, level: "error" });
+            log({ message: e, level: "error", fiber: fiber });
             if (fiber)
-                fiber.root.globalScope.isAppCrash = true;
-            throw new Error(e.message);
+                fiber.error(e);
+            // if (fiber && fiber.root.globalScope.isAppCrash) return;
+            // if (fiber) fiber.root.globalScope.isAppCrash = true;
+            // throw new Error((e as Error).message);
         }
     };
     var safeCallAsync = function (action) {
@@ -190,12 +190,10 @@
                     case 2:
                         e_1 = _a.sent();
                         fiber = currentRunningFiber$2.current;
-                        if (fiber && fiber.root.globalScope.isAppCrash)
-                            return [2 /*return*/];
-                        log({ message: e_1, level: "error" });
+                        log({ message: e_1, level: "error", fiber: fiber });
                         if (fiber)
-                            fiber.root.globalScope.isAppCrash = true;
-                        throw new Error(e_1.message);
+                            fiber.error(e_1);
+                        return [3 /*break*/, 3];
                     case 3: return [2 /*return*/];
                 }
             });
@@ -272,7 +270,6 @@
         UPDATE_TYPE[UPDATE_TYPE["__initial__"] = 0] = "__initial__";
         UPDATE_TYPE[UPDATE_TYPE["__update__"] = 1] = "__update__";
         UPDATE_TYPE[UPDATE_TYPE["__trigger__"] = 2] = "__trigger__";
-        UPDATE_TYPE[UPDATE_TYPE["__error__"] = 4] = "__error__";
     })(UPDATE_TYPE || (UPDATE_TYPE = {}));
 
     var HOOK_TYPE;
@@ -1529,7 +1526,7 @@
         }
     };
 
-    react.__my_react_shared__.getFiberTree;
+    var getFiberTree = react.__my_react_shared__.getFiberTree;
     var DEFAULT_RESULT = {
         newState: null,
         isForce: false,
@@ -1557,6 +1554,18 @@
                 if (payloadState) {
                     typedDevInstance.state = Object.assign({}, typedInstance.state, payloadState);
                 }
+            }
+        }
+    };
+    var processComponentStateFromError = function (fiber, error) {
+        var typedElement = fiber.element;
+        var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
+        var typedComponent = Component;
+        var typedInstance = fiber.instance;
+        if (typeof typedComponent.getDerivedStateFromError === "function") {
+            var payloadState = typedComponent.getDerivedStateFromError(error);
+            if (payloadState) {
+                typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
             }
         }
     };
@@ -1624,6 +1633,17 @@
                 var _a;
                 typedInstance.mode = Effect_TYPE.__initial__;
                 (_a = typedInstance.componentDidMount) === null || _a === void 0 ? void 0 : _a.call(typedInstance);
+            });
+        }
+    };
+    var processComponentDidCatchOnMountAndUpdate = function (fiber, error, targetFiber) {
+        var typedInstance = fiber.instance;
+        var globalDispatch = fiber.root.globalDispatch;
+        if (typedInstance.componentDidCatch && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
+            typedInstance.mode = Effect_TYPE.__pendingEffect__;
+            globalDispatch.pendingLayoutEffect(fiber, function () {
+                typedInstance.mode = Effect_TYPE.__initial__;
+                typedInstance.componentDidCatch(error, { componentStack: getFiberTree(targetFiber) });
             });
         }
     };
@@ -1739,6 +1759,12 @@
         else {
             return { updated: false };
         }
+    };
+    var classComponentCatch = function (fiber, error, targetFiber) {
+        processComponentStateFromError(fiber, error);
+        var children = processComponentRenderOnMountAndUpdate(fiber);
+        processComponentDidCatchOnMountAndUpdate(fiber, error, targetFiber);
+        return children;
     };
 
     var jobs = new Set();
@@ -2160,6 +2186,32 @@
                 nextWorkKeepLive(fiber);
             else
                 nextWorkNormal(fiber);
+            fiber.isInvoked = true;
+            fiber.isActivated = true;
+            currentRunningFiber$1.current = null;
+            if (fiber.children.length) {
+                return fiber.child;
+            }
+        }
+        var nextFiber = fiber;
+        while (nextFiber && nextFiber !== loopController.getTopLevel()) {
+            loopController.getUpdateList(nextFiber);
+            if (nextFiber.sibling)
+                return nextFiber.sibling;
+            nextFiber = nextFiber.parent;
+        }
+        if (nextFiber === loopController.getTopLevel()) {
+            loopController.getUpdateList(nextFiber);
+        }
+        return null;
+    };
+    var nextWorkError = function (fiber, loopController, error, targetFiber) {
+        if (!fiber.isMounted)
+            return null;
+        if (!fiber.isInvoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
+            currentRunningFiber$1.current = fiber;
+            var children = classComponentCatch(fiber, error, targetFiber);
+            nextWorkCommon(fiber, children);
             fiber.isInvoked = true;
             fiber.isActivated = true;
             currentRunningFiber$1.current = null;
@@ -2936,6 +2988,21 @@
         }
         else {
             updateEntry(globalDispatch, globalScope);
+        }
+    };
+    var triggerError = function (fiber, error) {
+        var globalDispatch = fiber.root.globalDispatch;
+        var errorBoundariesFiber = globalDispatch.resolveErrorBoundaries(fiber);
+        if (errorBoundariesFiber) {
+            var errorDispatch = new ClientDispatch();
+            var errorScope = new DomScope();
+            errorScope.modifyFiberRoot = errorBoundariesFiber;
+            errorBoundariesFiber.triggerUpdate();
+            var updateFiberController = generateUpdateControllerWithDispatch(errorDispatch, errorScope);
+            var reconcileUpdate = generateReconcileUpdate(errorDispatch, errorScope);
+            var nextFiber = nextWorkError(errorBoundariesFiber, updateFiberController, error, fiber);
+            updateFiberController.setYield(nextFiber);
+            updateAllSync(updateFiberController, reconcileUpdate);
         }
     };
 
@@ -3740,6 +3807,8 @@
             triggerUpdate(_fiber);
         };
         ClientDispatch.prototype.triggerError = function (_fiber, _error) {
+            // void 0;
+            triggerError(_fiber, _error);
         };
         ClientDispatch.prototype.resolveLazyElement = function (_fiber) {
             return defaultResolveLazyElement$1(_fiber);
@@ -3775,7 +3844,7 @@
             return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
         };
         ClientDispatch.prototype.resolveErrorBoundaries = function (_fiber) {
-            return this.errorBoundariesMap[_fiber.uid];
+            return this.errorBoundariesMap[_fiber.uid] || this.errorBoundariesMap[_fiber.parent.uid];
         };
         ClientDispatch.prototype.resolveErrorBoundariesMap = function (_fiber) {
             defaultGenerateErrorBoundariesMap(_fiber, this.errorBoundariesMap);
@@ -4820,6 +4889,8 @@
         ServerDispatch.prototype.triggerUpdate = function (_fiber) {
         };
         ServerDispatch.prototype.triggerError = function (_fiber, _error) {
+            // server side runtime error
+            throw _error;
         };
         ServerDispatch.prototype.resolveLazyElement = function (_fiber) {
             return defaultResolveLazyElement(_fiber);
@@ -4998,7 +5069,7 @@
         }
     }
 
-    var version = "0.0.2";
+    var version = "0.0.3";
     var flushSync = safeCall;
     var unstable_batchedUpdates = safeCall;
     var ReactDOM = {

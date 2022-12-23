@@ -15,7 +15,7 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
       const { fileName, lineNumber } = source || {};
       preString = `${preString} (${fileName}:${lineNumber})`;
     }
-    if (!(fiber.type & NODE_TYPE.__isDynamicNode__) && owner) {
+    if (owner) {
       const ownerElement = owner.element as MyReactElement;
       const ownerElementType = ownerElement.type;
       if (typeof ownerElementType === "function") {
@@ -106,7 +106,7 @@ export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
       let parent = fiber.parent;
       let res = `${preString}${getFiberNodeName(fiber)}`;
       while (parent) {
-        res = `${preString}${getFiberNodeName(parent)}\n${res}`;
+        res += `\n${preString}${getFiberNodeName(parent)}`;
         parent = parent.parent;
       }
       return `\n${res}`;

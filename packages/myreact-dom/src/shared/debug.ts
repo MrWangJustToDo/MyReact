@@ -79,13 +79,15 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
   } catch (e) {
     const fiber = currentRunningFiber.current;
 
-    if (fiber && fiber.root.globalScope.isAppCrash) return;
+    log({ message: e as Error, level: "error", fiber });
 
-    log({ message: e as Error, level: "error" });
+    if (fiber) fiber.error(e);
 
-    if (fiber) fiber.root.globalScope.isAppCrash = true;
+    // if (fiber && fiber.root.globalScope.isAppCrash) return;
 
-    throw new Error((e as Error).message);
+    // if (fiber) fiber.root.globalScope.isAppCrash = true;
+
+    // throw new Error((e as Error).message);
   }
 };
 
@@ -95,13 +97,15 @@ export const safeCallAsync = async <T extends any[] = any[], K = any>(action: (.
   } catch (e) {
     const fiber = currentRunningFiber.current;
 
-    if (fiber && fiber.root.globalScope.isAppCrash) return;
+    log({ message: e as Error, level: "error", fiber });
 
-    log({ message: e as Error, level: "error" });
+    if (fiber) fiber.error(e);
 
-    if (fiber) fiber.root.globalScope.isAppCrash = true;
+    // if (fiber && fiber.root.globalScope.isAppCrash) return;
 
-    throw new Error((e as Error).message);
+    // if (fiber) fiber.root.globalScope.isAppCrash = true;
+
+    // throw new Error((e as Error).message);
   }
 };
 

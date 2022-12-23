@@ -193,6 +193,7 @@ export class MyReactFiberNode {
   }
 
   unmount() {
+    if (!this.isMounted) return;
     this.hookNodes.forEach((hook) => hook.unmount());
     this.instance && this.instance.unmount();
     this.isMounted = false;
@@ -202,6 +203,7 @@ export class MyReactFiberNode {
   }
 
   deactivate() {
+    if (!this.isActivated) return;
     this.hookNodes.forEach((hook) => hook.unmount());
     this.instance && this.instance.unmount();
     this.isActivated = false;

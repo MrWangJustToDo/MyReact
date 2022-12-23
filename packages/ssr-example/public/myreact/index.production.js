@@ -1744,6 +1744,8 @@
             this.root.globalDispatch.triggerError(this, error);
         };
         MyReactFiberNode.prototype.unmount = function () {
+            if (!this.isMounted)
+                return;
             this.hookNodes.forEach(function (hook) { return hook.unmount(); });
             this.instance && this.instance.unmount();
             this.isMounted = false;
@@ -1752,6 +1754,8 @@
             this.root.globalDispatch.removeFiber(this);
         };
         MyReactFiberNode.prototype.deactivate = function () {
+            if (!this.isActivated)
+                return;
             this.hookNodes.forEach(function (hook) { return hook.unmount(); });
             this.instance && this.instance.unmount();
             this.isActivated = false;

@@ -26,5 +26,5 @@ export const unmount = (fiber: MyReactFiberNode) => {
 
   unmountMap[fiber.uid] = [];
 
-  if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountFiber(l));
+  if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountList(l));
 };

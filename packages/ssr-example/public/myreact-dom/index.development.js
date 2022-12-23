@@ -2413,7 +2413,7 @@
     var defaultGenerateUnmountArrayMap = function (fiber, unmount, map) {
         var allUnmount = flatten(unmount);
         var exist = map[fiber.uid] || [];
-        map[fiber.uid] = __spreadArray(__spreadArray([], exist, true), allUnmount, true);
+        map[fiber.uid] = __spreadArray(__spreadArray([], exist, true), allUnmount.map(generateFiberToList), true);
     };
 
     var defaultGetContextMapFromMap = function (fiber, map) {
@@ -2615,7 +2615,7 @@
         var allUnmountFiber = unmountMap[fiber.uid] || [];
         unmountMap[fiber.uid] = [];
         if (allUnmountFiber.length)
-            allUnmountFiber.forEach(function (l) { return unmountFiber(l); });
+            allUnmountFiber.forEach(function (l) { return unmountList(l); });
     };
 
     var MyReactFiberNodeClass$1 = react.__my_react_internal__.MyReactFiberNode;

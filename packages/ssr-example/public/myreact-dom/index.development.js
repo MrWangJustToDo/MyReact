@@ -4033,12 +4033,13 @@
             if (_fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
                 if (_fiber.patch & PATCH_TYPE.__pendingRef__)
                     return;
-                _fiber.patch |= PATCH_TYPE.__pendingRef__;
-                if (_fiber.element.ref)
+                if (_fiber.element.ref) {
+                    _fiber.patch |= PATCH_TYPE.__pendingRef__;
                     this.pendingLayoutEffect(_fiber, function () {
                         _fiber.patch ^= PATCH_TYPE.__pendingRef__;
                         setRef(_fiber);
                     });
+                }
             }
         };
         ClientDispatch.prototype.removeFiber = function (_fiber) {

@@ -22,5 +22,8 @@ export const enableConcurrentMode = createRef(true);
 
 export const enableKeyDiff = createRef(true);
 
+// support unsafe_ lifecycle
+export const enableLegacyLifeCycle = createRef(true);
+
 // enable react-18 strict lifecycle method
 export const enableStrictLifeCycle = createRef(false);

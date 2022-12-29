@@ -410,6 +410,8 @@ export const nextWorkError = (fiber: MyReactFiberNode, loopController: Reconcile
   if (!fiber.isInvoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
     currentRunningFiber.current = fiber;
 
+    currentComponentFiber.current = fiber;
+
     const children = classComponentCatch(fiber, error, targetFiber);
 
     nextWorkCommon(fiber, children);
@@ -419,6 +421,11 @@ export const nextWorkError = (fiber: MyReactFiberNode, loopController: Reconcile
     fiber.isActivated = true;
 
     currentRunningFiber.current = null;
+
+    currentComponentFiber.current = null;
+
+    // reset currentFunctionFiber when a runtime error happen in a function component
+    currentFunctionFiber.current = null;
 
     if (fiber.children.length) {
       return fiber.child;

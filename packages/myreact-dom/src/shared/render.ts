@@ -9,7 +9,7 @@ import type { MyReactFiberNode } from "@my-react/react";
 
 const { globalLoop } = __my_react_internal__;
 
-const { enableStrictLifeCycle } = __my_react_shared__;
+const { enableStrictLifeCycle, enableLegacyLifeCycle } = __my_react_shared__;
 
 export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
   globalLoop.current = true;
@@ -26,6 +26,10 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
 
   if (__DEV__ && enableStrictLifeCycle.current) {
     console.warn("react-18 like lifecycle have been enabled!");
+  }
+
+  if (__DEV__ && enableLegacyLifeCycle.current) {
+    console.warn('legacy lifeCycle have been enabled!')
   }
 
   if (__DEV__) {
@@ -62,6 +66,10 @@ export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false)
 
   if (__DEV__ && enableStrictLifeCycle.current) {
     console.warn("react-18 like lifecycle have been enabled!");
+  }
+
+  if (__DEV__ && enableLegacyLifeCycle.current) {
+    console.warn('legacy lifeCycle have been enabled!')
   }
 
   if (__DEV__) {

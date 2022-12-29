@@ -1526,7 +1526,7 @@
         }
     };
 
-    var getFiberTree = react.__my_react_shared__.getFiberTree;
+    var getFiberTree = react.__my_react_shared__.getFiberTree, enableLegacyLifeCycle$1 = react.__my_react_shared__.enableLegacyLifeCycle;
     var DEFAULT_RESULT = {
         newState: null,
         isForce: false,
@@ -1705,9 +1705,56 @@
             });
         }
     };
+    var processComponentWillMountOnMount = function (fiber) {
+        var typedInstance = fiber.instance;
+        var globalPlatform = fiber.root.globalPlatform;
+        // const globalDispatch = fiber.root.globalDispatch;
+        // TODO setState
+        if (typedInstance.UNSAFE_componentWillMount && typeof typedInstance.UNSAFE_componentWillMount === "function") {
+            typedInstance.UNSAFE_componentWillMount();
+            {
+                globalPlatform.log({ message: "should not invoke legacy lifeCycle function `UNSAFE_componentWillMount`", fiber: fiber, level: "warn", triggerOnce: true });
+            }
+        }
+    };
+    var processComponentWillReceiveProps = function (fiber) {
+        var typedInstance = fiber.instance;
+        var globalPlatform = fiber.root.globalPlatform;
+        var newElement = fiber.element;
+        // only trigger on parent component update
+        if (fiber.mode & UPDATE_TYPE.__update__ && !(fiber.mode & UPDATE_TYPE.__trigger__)) {
+            if (typedInstance.UNSAFE_componentWillReceiveProps && typeof typedInstance.UNSAFE_componentWillReceiveProps === "function") {
+                var nextProps = Object.assign({}, typeof newElement === "object" ? newElement === null || newElement === void 0 ? void 0 : newElement["props"] : {});
+                typedInstance.UNSAFE_componentWillReceiveProps(nextProps);
+                {
+                    globalPlatform.log({
+                        message: "should not invoke legacy lifeCycle function `UNSAFE_componentWillReceiveProps`",
+                        fiber: fiber,
+                        level: "warn",
+                        triggerOnce: true,
+                    });
+                }
+            }
+        }
+    };
+    var processComponentWillUpdate = function (fiber, _a) {
+        var nextProps = _a.nextProps, nextState = _a.nextState;
+        var typedInstance = fiber.instance;
+        var globalPlatform = fiber.root.globalPlatform;
+        if (typedInstance.UNSAFE_componentWillUpdate && typeof typedInstance.UNSAFE_componentWillUpdate === "function") {
+            typedInstance.UNSAFE_componentWillUpdate(nextProps, nextState);
+            {
+                globalPlatform.log({ message: "should not invoke legacy lifeCycle function `UNSAFE_componentWillUpdate`", fiber: fiber, level: "warn", triggerOnce: true });
+            }
+        }
+    };
     var classComponentMount = function (fiber) {
         var devInstance = processComponentInstanceOnMount(fiber);
         processComponentStateFromProps(fiber, devInstance);
+        // legacy lifeCycle
+        if (enableLegacyLifeCycle$1.current) {
+            processComponentWillMountOnMount(fiber);
+        }
         var children = processComponentRenderOnMountAndUpdate(fiber, devInstance);
         processComponentDidMountOnMount(fiber, devInstance);
         return children;
@@ -1722,6 +1769,9 @@
     var classComponentUpdate = function (fiber) {
         processComponentFiberOnUpdate(fiber);
         processComponentStateFromProps(fiber);
+        if (enableLegacyLifeCycle$1.current) {
+            processComponentWillReceiveProps(fiber);
+        }
         fiber.root.globalDispatch.resolveComponentQueue(fiber);
         var typedInstance = fiber.instance;
         var newElement = fiber.element;
@@ -1741,6 +1791,9 @@
                 nextProps: nextProps,
                 nextContext: nextContext,
             });
+        }
+        if (shouldUpdate && enableLegacyLifeCycle$1.current) {
+            processComponentWillUpdate(fiber, { nextProps: nextProps, nextState: nextState });
         }
         typedInstance.state = nextState;
         typedInstance.props = nextProps;
@@ -2210,11 +2263,15 @@
             return null;
         if (!fiber.isInvoked || fiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__)) {
             currentRunningFiber$1.current = fiber;
+            currentComponentFiber.current = fiber;
             var children = classComponentCatch(fiber, error, targetFiber);
             nextWorkCommon(fiber, children);
             fiber.isInvoked = true;
             fiber.isActivated = true;
             currentRunningFiber$1.current = null;
+            currentComponentFiber.current = null;
+            // reset currentFunctionFiber when a runtime error happen in a function component
+            currentFunctionFiber.current = null;
             if (fiber.children.length) {
                 return fiber.child;
             }
@@ -2486,7 +2543,7 @@
     };
 
     var globalLoop$2 = react.__my_react_internal__.globalLoop;
-    var enableStrictLifeCycle$1 = react.__my_react_shared__.enableStrictLifeCycle;
+    var enableStrictLifeCycle$1 = react.__my_react_shared__.enableStrictLifeCycle, enableLegacyLifeCycle = react.__my_react_shared__.enableLegacyLifeCycle;
     var startRender = function (fiber, hydrate) {
         if (hydrate === void 0) { hydrate = false; }
         globalLoop$2.current = true;
@@ -2498,6 +2555,9 @@
         reconcileMount(fiber, hydrate);
         if (enableStrictLifeCycle$1.current) {
             console.warn("react-18 like lifecycle have been enabled!");
+        }
+        if (enableLegacyLifeCycle.current) {
+            console.warn('legacy lifeCycle have been enabled!');
         }
         {
             resetScopeLog();

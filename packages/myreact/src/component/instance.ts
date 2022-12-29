@@ -17,6 +17,9 @@ export interface MyReactComponentType<P, S, C> {
   componentDidUpdate?(this: MyReactComponent, prevProps: P, prevState: S, snapshot: any): void;
   componentDidCatch?(this: MyReactComponent, error: Error, errorInfo: ErrorInfo): void;
   componentWillUnmount?(): void;
+  UNSAFE_componentWillMount?(): void;
+  UNSAFE_componentWillReceiveProps?(nextProps: P): void;
+  UNSAFE_componentWillUpdate?(nextProps: P, nextState: S): void;
 }
 
 export const DEFAULT_RESULT = {

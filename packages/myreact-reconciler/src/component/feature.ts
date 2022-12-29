@@ -11,7 +11,7 @@ import type {
   MyReactComponent,
 } from "@my-react/react";
 
-const { getFiberTree } = __my_react_shared__;
+const { getFiberTree, enableLegacyLifeCycle } = __my_react_shared__;
 
 const DEFAULT_RESULT = {
   newState: null,
@@ -273,10 +273,68 @@ const processComponentDidUpdateOnUpdate = (
   }
 };
 
+const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
+  const typedInstance = fiber.instance as MixinMyReactComponentType;
+
+  const globalPlatform = fiber.root.globalPlatform;
+
+  // const globalDispatch = fiber.root.globalDispatch;
+
+  // TODO setState
+  if (typedInstance.UNSAFE_componentWillMount && typeof typedInstance.UNSAFE_componentWillMount === "function") {
+    typedInstance.UNSAFE_componentWillMount();
+    if (__DEV__) {
+      globalPlatform.log({ message: "should not invoke legacy lifeCycle function `UNSAFE_componentWillMount`", fiber, level: "warn", triggerOnce: true });
+    }
+  }
+};
+
+const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
+  const typedInstance = fiber.instance as MixinMyReactComponentType;
+
+  const globalPlatform = fiber.root.globalPlatform;
+
+  const newElement = fiber.element;
+
+  // only trigger on parent component update
+  if (fiber.mode & UPDATE_TYPE.__update__ && !(fiber.mode & UPDATE_TYPE.__trigger__)) {
+    if (typedInstance.UNSAFE_componentWillReceiveProps && typeof typedInstance.UNSAFE_componentWillReceiveProps === "function") {
+      const nextProps = Object.assign({}, typeof newElement === "object" ? newElement?.["props"] : {});
+      typedInstance.UNSAFE_componentWillReceiveProps(nextProps);
+      if (__DEV__) {
+        globalPlatform.log({
+          message: "should not invoke legacy lifeCycle function `UNSAFE_componentWillReceiveProps`",
+          fiber,
+          level: "warn",
+          triggerOnce: true,
+        });
+      }
+    }
+  }
+};
+
+const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextState }: { nextProps: unknown; nextState: unknown }) => {
+  const typedInstance = fiber.instance as MixinMyReactComponentType;
+
+  const globalPlatform = fiber.root.globalPlatform;
+
+  if (typedInstance.UNSAFE_componentWillUpdate && typeof typedInstance.UNSAFE_componentWillUpdate === "function") {
+    typedInstance.UNSAFE_componentWillUpdate(nextProps, nextState);
+    if (__DEV__) {
+      globalPlatform.log({ message: "should not invoke legacy lifeCycle function `UNSAFE_componentWillUpdate`", fiber, level: "warn", triggerOnce: true });
+    }
+  }
+};
+
 export const classComponentMount = (fiber: MyReactFiberNode) => {
   const devInstance = processComponentInstanceOnMount(fiber);
 
   processComponentStateFromProps(fiber, devInstance);
+
+  // legacy lifeCycle
+  if (enableLegacyLifeCycle.current) {
+    processComponentWillMountOnMount(fiber);
+  }
 
   const children = processComponentRenderOnMountAndUpdate(fiber, devInstance);
 
@@ -301,6 +359,10 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
 
   processComponentStateFromProps(fiber);
+
+  if (enableLegacyLifeCycle.current) {
+    processComponentWillReceiveProps(fiber);
+  }
 
   fiber.root.globalDispatch.resolveComponentQueue(fiber);
 
@@ -332,6 +394,10 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
       nextProps,
       nextContext,
     });
+  }
+
+  if (shouldUpdate && enableLegacyLifeCycle.current) {
+    processComponentWillUpdate(fiber, { nextProps, nextState });
   }
 
   typedInstance.state = nextState;

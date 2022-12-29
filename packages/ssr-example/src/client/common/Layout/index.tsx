@@ -19,6 +19,9 @@ export default class Layout extends Component<{ title: string }> {
   componentWillUnmount(): void {
     console.warn("unmount", this);
   }
+  UNSAFE_componentWillMount(): void {
+    console.warn('willMount', this);
+  }
   render(): ReactNode {
     console.warn("render");
     return (

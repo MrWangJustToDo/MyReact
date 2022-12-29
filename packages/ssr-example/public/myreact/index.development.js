@@ -1064,6 +1064,8 @@
     var enableDebugLog = createRef(false);
     var enableConcurrentMode = createRef(true);
     var enableKeyDiff = createRef(true);
+    // support unsafe_ lifecycle
+    var enableLegacyLifeCycle = createRef(true);
     // enable react-18 strict lifecycle method
     var enableStrictLifeCycle = createRef(false);
 
@@ -2378,6 +2380,7 @@
         getTypeFromElement: getTypeFromElement,
         enableKeyDiff: enableKeyDiff,
         enableConcurrentMode: enableConcurrentMode,
+        enableLegacyLifeCycle: enableLegacyLifeCycle,
         enableStrictLifeCycle: enableStrictLifeCycle,
     };
     var __my_react_internal__ = {

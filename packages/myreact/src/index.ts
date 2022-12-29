@@ -54,6 +54,7 @@ import {
   globalLoop,
   enableConcurrentMode,
   enableKeyDiff,
+  enableLegacyLifeCycle,
   enableStrictLifeCycle,
 } from "./share";
 
@@ -75,6 +76,7 @@ const __my_react_shared__ = {
   getTypeFromElement,
   enableKeyDiff,
   enableConcurrentMode,
+  enableLegacyLifeCycle,
   enableStrictLifeCycle,
 };
 

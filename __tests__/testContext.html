@@ -100,7 +100,7 @@
 
       const C = memo(() => {
         const value = useContext(Context);
-        console.log("run Context");
+        console.log("run Context", value);
         return [<p>context {value}</p>];
       });
 
@@ -143,10 +143,11 @@
 
       function TestContext() {
         const [value, add, del] = useCounter();
-        const time = useTime();
-        const [x] = usePosition();
+        // const time = useTime();
+        // const [x] = usePosition();
 
-        // const time = 100;
+        const time = 100;
+        const x = 0;
         // const value = "200";
 
         return (

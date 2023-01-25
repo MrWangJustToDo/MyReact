@@ -56,6 +56,8 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   container.setAttribute?.("render", "MyReact");
 
+  container.setAttribute?.("version", __VERSION__);
+
   container.__fiber__ = fiber;
 
   container.__scope__ = globalScope;

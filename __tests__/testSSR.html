@@ -24,17 +24,18 @@
         return (
           <div>
             <p>12</p>
+            <p>{text}</p>
           </div>
         );
       };
 
       const app = document.querySelector("#root");
-      const string = ReactDOM.renderToString(<App text="" />);
-      app.innerHTML = string;
+      const string = ReactDOM.render(<App text={0} />, app);
+      // app.innerHTML = string;
 
-      window.start = () => {
-        ReactDOM.hydrate(<App text="" />, app);
-      };
+      // window.start = () => {
+        // ReactDOM.hydrate(<App text={0} />, app);
+      // };
     </script>
   </body>
 </html>

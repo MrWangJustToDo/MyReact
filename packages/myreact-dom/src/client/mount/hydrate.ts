@@ -35,6 +35,8 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 
   container.setAttribute?.("hydrate", "MyReact");
 
+  container.setAttribute?.("version", __VERSION__);
+
   container.__fiber__ = fiber;
 
   container.__scope__ = globalScope;
@@ -72,6 +74,8 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
   globalScope.rootContainer = container;
 
   container.setAttribute?.("hydrate", "MyReact");
+
+  container.setAttribute?.("version", __VERSION__);
 
   container.__fiber__ = fiber;
 

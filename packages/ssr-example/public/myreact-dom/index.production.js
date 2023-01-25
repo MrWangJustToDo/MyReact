@@ -2376,12 +2376,13 @@
         map[id] = contextMap;
     };
     var defaultGetContextValue = function (fiber, ContextObject) {
+        var _a, _b;
         if (fiber) {
             var typedElement = fiber.element;
-            return typedElement.props["value"] || null;
+            return (_a = typedElement.props["value"]) !== null && _a !== void 0 ? _a : null;
         }
         else {
-            return (ContextObject === null || ContextObject === void 0 ? void 0 : ContextObject.Provider["value"]) || null;
+            return (_b = ContextObject === null || ContextObject === void 0 ? void 0 : ContextObject.Provider["value"]) !== null && _b !== void 0 ? _b : null;
         }
     };
 
@@ -3949,7 +3950,7 @@
     var MyReactFiberNodeClass = react.__my_react_internal__.MyReactFiberNode, MyReactFiberNodeRoot$2 = react.__my_react_internal__.MyReactFiberNodeRoot;
     var initialFiberNode$2 = react.__my_react_shared__.initialFiberNode;
     var render = function (element, container) {
-        var _a;
+        var _a, _b;
         var containerFiber = container.__fiber__;
         if (containerFiber instanceof MyReactFiberNodeClass) {
             containerFiber.root.globalScope.isAppCrash = false;
@@ -3974,6 +3975,7 @@
         globalScope.rootFiber = fiber;
         globalScope.rootContainer = container;
         (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "render", "MyReact");
+        (_b = container.setAttribute) === null || _b === void 0 ? void 0 : _b.call(container, "version", "0.0.3");
         container.__fiber__ = fiber;
         container.__scope__ = globalScope;
         container.__dispatch__ = globalDispatch;
@@ -3984,7 +3986,7 @@
     var MyReactFiberNodeRoot$1 = react.__my_react_internal__.MyReactFiberNodeRoot;
     var initialFiberNode$1 = react.__my_react_shared__.initialFiberNode;
     var hydrateSync = function (element, container) {
-        var _a;
+        var _a, _b;
         var globalDispatch = new ClientDispatch();
         var globalScope = new DomScope();
         var globalPlatform = new DomPlatform("myreact-dom");
@@ -3997,6 +3999,7 @@
         globalScope.rootFiber = fiber;
         globalScope.rootContainer = container;
         (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "hydrate", "MyReact");
+        (_b = container.setAttribute) === null || _b === void 0 ? void 0 : _b.call(container, "version", "0.0.3");
         container.__fiber__ = fiber;
         container.__scope__ = globalScope;
         container.__dispatch__ = globalDispatch;
@@ -4006,9 +4009,9 @@
     };
     var hydrateAsync = function (element, container) { return __awaiter$1(void 0, void 0, void 0, function () {
         var globalDispatch, globalScope, globalPlatform, fiber;
-        var _a;
-        return __generator$1(this, function (_b) {
-            switch (_b.label) {
+        var _a, _b;
+        return __generator$1(this, function (_c) {
+            switch (_c.label) {
                 case 0:
                     globalDispatch = new ClientDispatch();
                     globalScope = new DomScope();
@@ -4022,13 +4025,14 @@
                     globalScope.rootFiber = fiber;
                     globalScope.rootContainer = container;
                     (_a = container.setAttribute) === null || _a === void 0 ? void 0 : _a.call(container, "hydrate", "MyReact");
+                    (_b = container.setAttribute) === null || _b === void 0 ? void 0 : _b.call(container, "version", "0.0.3");
                     container.__fiber__ = fiber;
                     container.__scope__ = globalScope;
                     container.__dispatch__ = globalDispatch;
                     initialFiberNode$1(fiber);
                     return [4 /*yield*/, startRenderAsync(fiber, true)];
                 case 1:
-                    _b.sent();
+                    _c.sent();
                     globalScope.isHydrateRender = false;
                     return [2 /*return*/];
             }

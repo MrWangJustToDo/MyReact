@@ -38,7 +38,7 @@ export const jsx = (
   }
 
   // <div {...props} /> we can not make sure this usage will contain `key` of not
-  if (config?.key) {
+  if (config?.key !== undefined) {
     key = "" + config.key;
   }
 

@@ -2,8 +2,8 @@ import { checkFiberHook } from "../fiber";
 
 import { MyReactHookNode } from "./instance";
 
-import type { MyReactFiberNode } from "../fiber";
 import type { Reducer, Action, CreateHookParams } from "./instance";
+import type { MyReactFiberNode } from "../fiber";
 
 const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;

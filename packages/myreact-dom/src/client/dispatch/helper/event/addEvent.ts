@@ -2,8 +2,8 @@ import { enableControlComponent, enableEventSystem, safeCallWithFiber } from "@m
 
 import { getNativeEventName } from "./getEventName";
 
-import type { DomElement } from "@my-react-dom-shared";
 import type { MyReactElement, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
+import type { DomElement } from "@my-react-dom-shared";
 
 const controlElementTag: Record<string, boolean> = {
   input: true,

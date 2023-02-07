@@ -6,8 +6,8 @@ import { addEventListener, removeEventListener } from "../helper";
 
 import { HighLight } from "./highlight";
 
-import type { DomScope, DomElement, DomNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
+import type { DomScope, DomElement, DomNode } from "@my-react-dom-shared";
 
 export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (!fiber.node) throw new Error("update error, dom not exist");

@@ -4,8 +4,8 @@ import { isEvent, isProperty, isStyle, IS_UNIT_LESS_NUMBER, log } from "@my-reac
 
 import { addEventListener } from "../helper";
 
-import type { DomElement, DomNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
+import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 const domContentHydrate = (fiber: MyReactFiberNode) => {
   const node = fiber.node as DomElement | DomNode;

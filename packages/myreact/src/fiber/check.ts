@@ -2,9 +2,9 @@ import { HOOK_TYPE, NODE_TYPE } from "@my-react/react-shared";
 
 import { isValidElement } from "../element";
 
+import type { MyReactFiberNode } from "./instance";
 import type { forwardRef, memo } from "../element";
 import type { MyReactHookNode } from "../hook";
-import type { MyReactFiberNode } from "./instance";
 
 export const checkFiberElement = (fiber: MyReactFiberNode) => {
   const element = fiber.element;

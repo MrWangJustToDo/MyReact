@@ -2,8 +2,8 @@ import { MyReactInternalInstance } from "../internal";
 
 import { My_React_Consumer, My_React_Context, My_React_ForwardRef, My_React_Lazy, My_React_Memo, My_React_Provider } from "./symbol";
 
-import type { createReactive } from "../reactive";
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "./instance";
+import type { createReactive } from "../reactive";
 
 let contextId = 0;
 

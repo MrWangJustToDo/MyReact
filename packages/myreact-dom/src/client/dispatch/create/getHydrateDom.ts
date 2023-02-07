@@ -5,8 +5,8 @@ import { NODE_TYPE } from "@my-react/react-shared";
 import { commentE, commentS, IS_SINGLE_ELEMENT, log } from "@my-react-dom-shared";
 
 import type { ClientDispatch } from "../instance";
-import type { DomComment } from "@my-react-dom-shared";
 import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
+import type { DomComment } from "@my-react-dom-shared";
 
 export type HydrateDOM = Element & {
   __hydrate__: boolean;

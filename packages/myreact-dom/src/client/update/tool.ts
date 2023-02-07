@@ -1,6 +1,6 @@
-import type { DomScope } from "@my-react-dom-shared";
 import type { FiberDispatch, MyReactFiberNode } from "@my-react/react";
 import type { ReconcilerLoopController } from "@my-react/react-reconciler";
+import type { DomScope } from "@my-react-dom-shared";
 
 type ReconcilerLoopControllerWithCache = ReconcilerLoopController;
 

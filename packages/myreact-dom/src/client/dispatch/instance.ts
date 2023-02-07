@@ -32,7 +32,6 @@ import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
 
-import type { DomComment } from "@my-react-dom-shared";
 import type {
   MyReactFiberNode,
   FiberDispatch,
@@ -43,6 +42,7 @@ import type {
   RenderScope,
   MyReactElement,
 } from "@my-react/react";
+import type { DomComment } from "@my-react-dom-shared";
 
 const { enableStrictLifeCycle } = __my_react_shared__;
 

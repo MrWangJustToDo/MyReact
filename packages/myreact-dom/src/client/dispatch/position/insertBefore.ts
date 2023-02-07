@@ -1,7 +1,7 @@
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import type { DomElement, DomNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
+import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
   if (!fiber) throw new Error("position error, look like a bug");

@@ -1,7 +1,7 @@
 import { NODE_TYPE } from "@my-react/react-shared";
 
-import type { DomNode } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
+import type { DomNode } from "@my-react-dom-shared";
 
 export const clearFiberDom = (fiber: MyReactFiberNode) => {
   if (fiber.node) {

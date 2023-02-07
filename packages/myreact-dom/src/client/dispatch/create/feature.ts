@@ -7,8 +7,8 @@ import { nativeCreate } from "./nativeCreate";
 import { validDomNesting } from "./validDomNesting";
 
 import type { HydrateDOM } from "./getHydrateDom";
-import type { DomComment, DomElement, DomNode, DomScope } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
+import type { DomComment, DomElement, DomNode, DomScope } from "@my-react-dom-shared";
 
 export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWithDom: MyReactFiberNode, isSVG: boolean): boolean => {
   if (fiber.patch & PATCH_TYPE.__pendingCreate__) {

@@ -1,8 +1,8 @@
+import type { FiberDispatch } from "./interface";
 import type { createContext, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 import type { CreateHookParams, MyReactHookNode } from "../hook";
 import type { RenderScope } from "../scope";
-import type { FiberDispatch } from "./interface";
 import type { LinkTreeList } from "@my-react/react-shared";
 
 export class EmptyDispatch implements FiberDispatch {

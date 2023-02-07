@@ -2,8 +2,8 @@ import { isValidElement } from "../element";
 
 import { checkFiberElement } from "./check";
 
-import type { MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "./instance";
+import type { MyReactElementNode } from "../element";
 
 export const updateFiberNode = (
   {

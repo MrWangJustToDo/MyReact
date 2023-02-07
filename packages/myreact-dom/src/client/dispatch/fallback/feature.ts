@@ -1,8 +1,8 @@
 import { NODE_TYPE } from "@my-react/react-shared";
 
 import type { HydrateDOM } from "../create/getHydrateDom";
-import type { DomElement, DomNode, DomScope } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react";
+import type { DomElement, DomNode, DomScope } from "@my-react-dom-shared";
 
 // TODO use <Scope /> to avoid unnecessary fallback !
 export const fallback = (fiber: MyReactFiberNode) => {

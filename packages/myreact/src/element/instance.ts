@@ -4,12 +4,12 @@ import { currentComponentFiber } from "../share";
 import { My_React_Element } from "./symbol";
 import { checkArrayChildrenKey, checkSingleChildrenKey, isValidElement } from "./tool";
 
+import type { createContext, forwardRef, lazy, memo } from "./feature";
 import type { MyReactComponent } from "../component";
 import type { MyReactFiberNode } from "../fiber";
 import type { MyReactInternalInstance } from "../internal";
 import type { createReactive } from "../reactive";
 import type { createRef } from "../share";
-import type { createContext, forwardRef, lazy, memo } from "./feature";
 
 export type MyReactFunctionComponent<T extends any[] = any[]> = (...args: T) => MyReactElementNode;
 

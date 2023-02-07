@@ -3248,6 +3248,7 @@
     };
 
     var nativeCreate = function (fiber, isSVG) {
+        var _a, _b;
         if (fiber.type & NODE_TYPE.__isTextNode__) {
             fiber.node = document.createTextNode(fiber.element);
         }
@@ -3263,6 +3264,9 @@
         else if (fiber.type & NODE_TYPE.__isPortal__) {
             var typedElement = fiber.element;
             fiber.node = typedElement.props["container"];
+            {
+                (_b = (_a = fiber.node).setAttribute) === null || _b === void 0 ? void 0 : _b.call(_a, "portal", "MyReact");
+            }
         }
         else if (fiber.type & NODE_TYPE.__isCommentNode__) {
             if (isCommentStartElement(fiber)) {

@@ -240,6 +240,7 @@ export const nextWorkForwardRef = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
+  // for a comment element, will not have any children;
   if (isValidElement(fiber.element) && !isCommentElement(fiber)) {
     const { props } = fiber.element;
 

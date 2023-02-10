@@ -28,8 +28,6 @@ export const updateFiberNode = (
 
   if (__DEV__) checkFiberElement(fiber);
 
-  globalDispatch.resolveFiberUpdate;
-
   if (prevElement !== nextElement || !fiber.isActivated) {
     globalDispatch.resolveFiberUpdate(fiber);
     globalDispatch.resolveMemorizedProps(fiber);

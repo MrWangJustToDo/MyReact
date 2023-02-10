@@ -1990,6 +1990,7 @@
         return nextWorkCommon(fiber, children);
     };
     var nextWorkNormal = function (fiber) {
+        // for a comment element, will not have any children;
         if (react.isValidElement(fiber.element) && !isCommentElement(fiber)) {
             var props = fiber.element.props;
             var children = props.children;
@@ -2506,6 +2507,29 @@
         }
         else {
             fiber.children.forEach(clearFiberDom);
+        }
+    };
+    // when a fiber has been deactivate, all the children will unmount, but if there are a portal element, all the children need unmount, so for the next loop, we need append all the children to the portal
+    var clearFiberDomWhenDeactivate = function (fiber, needAppend) {
+        if (needAppend === void 0) { needAppend = false; }
+        if (fiber.node) {
+            if (!(fiber.type & NODE_TYPE.__isPortal__) && fiber !== fiber.root) {
+                var dom = fiber.node;
+                if (needAppend)
+                    fiber.root.globalDispatch.pendingAppend(fiber);
+                dom.parentElement.removeChild(dom);
+            }
+            else {
+                if (fiber.type & NODE_TYPE.__isPortal__) {
+                    fiber.children.forEach(function (f) { return clearFiberDomWhenDeactivate(f, true); });
+                }
+                else {
+                    fiber.children.forEach(function (f) { return clearFiberDomWhenDeactivate(f, needAppend); });
+                }
+            }
+        }
+        else {
+            fiber.children.forEach(function (f) { return clearFiberDomWhenDeactivate(f, needAppend); });
         }
     };
 
@@ -3162,8 +3186,8 @@
 
     var deactivateFiber = function (fiber) {
         var listTree = generateFiberToList(fiber);
-        clearFiberDom(fiber);
         listTree.listToHead(function (f) { return f.deactivate(); });
+        clearFiberDomWhenDeactivate(fiber);
     };
 
     var deactivate = function (fiber) {

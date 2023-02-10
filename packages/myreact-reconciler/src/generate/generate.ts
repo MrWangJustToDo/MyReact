@@ -286,7 +286,7 @@ export const transformKeepLiveChildrenFiber = (parentFiber: MyReactFiberNode, ch
     log({
       message: `you are using internal <KeepLive /> component to render different component by toggle logic, pls note this is a experimental feature, 
     1. <KeepLive /> component will not clean rendered tree state when render a different component, so it will keep dom(like <input /> value and so on), hook, state.
-    2. <KeepLive /> component currently can not contain any <Portal /> component, will cause some bug
+    2. <KeepLive /> component sometime will cause some bug, pls do not use on the production.
     `,
       fiber: parentFiber,
       triggerOnce: true,

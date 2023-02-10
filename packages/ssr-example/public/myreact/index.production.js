@@ -1836,7 +1836,6 @@
         fiber.installElement(nextElement);
         fiber.installParent(parent);
         var globalDispatch = fiber.root.globalDispatch;
-        globalDispatch.resolveFiberUpdate;
         if (prevElement !== nextElement || !fiber.isActivated) {
             globalDispatch.resolveFiberUpdate(fiber);
             globalDispatch.resolveMemorizedProps(fiber);

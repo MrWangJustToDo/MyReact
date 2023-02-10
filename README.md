@@ -97,7 +97,7 @@ you can see the `.env` file to learn how to switch render formwork `myreact or r
 
 ## more
 
-## KeepLive component (currently not work for portal)
+## KeepLive component
 
 ## Vue like reactive api
 

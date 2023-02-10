@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <div id="bar"></div>
+
+    <script type="text/babel">
+      const { KeepLive, useState, StrictMode, Component } = React;
+
+      const { createPortal } = ReactDOM;
+
+      class WrapperErrorCatch extends Component {
+        state = {
+          stack: "",
+          error: "",
+          hasError: false,
+        };
+
+        static getDerivedStateFromError() {
+          return { hasError: true };
+        }
+
+        componentDidCatch(error, info) {
+          this.setState({
+            error: error.message,
+            stack: info.componentStack,
+          });
+        }
+
+        render() {
+          // console.log(this, 'xxxxxxxxxxxx');
+          if (this.state.hasError)
+            return (
+              <pre>
+                <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
+                {this.state.stack}
+              </pre>
+            );
+          return this.props.children;
+        }
+      }
+
+      const Bar = () => <div>bar</div>;
+
+      const Foo = () => createPortal(<div>foo</div>, bar);
+
+      const App = () => {
+        const [i, setI] = useState(0);
+
+        return (
+          <WrapperErrorCatch>
+            <div>
+              <h2>test keeplive and portal</h2>
+
+              <KeepLive>{i % 2 === 0 ? <Bar /> : <Foo />}</KeepLive>
+
+              <button onClick={() => setI((i) => ++i)}>切换</button>
+            </div>
+          </WrapperErrorCatch>
+        );
+      };
+
+      ReactDOM.render(
+        <StrictMode>
+          <App />
+        </StrictMode>,
+        root
+      );
+    </script>
+  </body>
+</html>

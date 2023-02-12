@@ -1704,34 +1704,6 @@
         return children;
     };
 
-    var jobs = new Set();
-    var process$1 = false;
-    var queueJob = function (job) {
-        if (!jobs.has(job)) {
-            jobs.add(job);
-        }
-        Promise.resolve().then(flushQueue);
-    };
-    var flushQueue = function () {
-        if (!process$1) {
-            process$1 = true;
-            var all = [];
-            var iterate = jobs.values();
-            var res = null;
-            while ((res = iterate.next())) {
-                res.value && all.push(res.value);
-                if (res.done)
-                    break;
-            }
-            jobs.clear();
-            for (var _i = 0, all_1 = all; _i < all_1.length; _i++) {
-                var job = all_1[_i];
-                job();
-            }
-            process$1 = false;
-        }
-    };
-
     var MyReactReactiveInstance = react.__my_react_reactive__.MyReactReactiveInstance, _a = react.__my_react_reactive__.reactiveApi, pauseTracking = _a.pauseTracking, pauseTrigger = _a.pauseTrigger, resetTracking = _a.resetTracking, resetTrigger = _a.resetTrigger;
     var currentReactiveInstance = react.__my_react_internal__.currentReactiveInstance;
     var processReactiveInstanceOnMount = function (fiber) {
@@ -1747,7 +1719,9 @@
         // set global reactiveInstance, so in the `setup` function, we can get the current instance
         currentReactiveInstance.current = instance;
         instance.createSetupState(typedType.setup, typedType.render);
-        instance.createEffectUpdate(function () { return queueJob(function () { return instance._ownerFiber.update(); }); });
+        console.log(instance);
+        // instance.createEffectUpdate(() => queueJob(() => instance._ownerFiber.update()));
+        instance.createEffectUpdate(function () { return instance._ownerFiber.update(); });
         currentReactiveInstance.current = null;
         instance.props = props;
         instance.context = context;

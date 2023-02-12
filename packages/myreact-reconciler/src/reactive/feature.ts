@@ -1,7 +1,7 @@
 import { __my_react_reactive__, __my_react_internal__ } from "@my-react/react";
 import { Effect_TYPE, NODE_TYPE } from "@my-react/react-shared";
 
-import { queueJob } from "./scheduler";
+// import { queueJob } from "./scheduler";
 
 import type { createReactive, MyReactElement, MyReactFiberNode, MyReactReactiveInstance as MyReactReactiveInstanceType, memo } from "@my-react/react";
 
@@ -35,7 +35,9 @@ const processReactiveInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   instance.createSetupState(typedType.setup, typedType.render);
 
-  instance.createEffectUpdate(() => queueJob(() => instance._ownerFiber.update()));
+  // instance.createEffectUpdate(() => queueJob(() => instance._ownerFiber.update()));
+
+  instance.createEffectUpdate(() => instance._ownerFiber.update());
 
   currentReactiveInstance.current = null;
 

@@ -1835,7 +1835,6 @@
         // set global reactiveInstance, so in the `setup` function, we can get the current instance
         currentReactiveInstance.current = instance;
         instance.createSetupState(typedType.setup, typedType.render);
-        console.log(instance);
         // instance.createEffectUpdate(() => queueJob(() => instance._ownerFiber.update()));
         instance.createEffectUpdate(function () { return instance._ownerFiber.update(); });
         currentReactiveInstance.current = null;
@@ -1843,6 +1842,18 @@
         instance.context = context;
         fiber.installInstance(instance);
         instance.setOwner(fiber);
+        instance.setContext(ProviderFiber);
+    };
+    var processReactiveInstanceContextOnActive = function (fiber) {
+        var typedElement = fiber.element;
+        var globalDispatch = fiber.root.globalDispatch;
+        var typedType = fiber.type & NODE_TYPE.__isMemo__
+            ? typedElement.type["render"]
+            : typedElement.type;
+        var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
+        var context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
+        var instance = fiber.instance;
+        instance.context = context;
         instance.setContext(ProviderFiber);
     };
     var processBeforeMountHooks = function (fiber) {
@@ -1915,6 +1926,7 @@
     };
     var reactiveComponentActive = function (fiber) {
         processReactiveFiberOnUpdate(fiber);
+        processReactiveInstanceContextOnActive(fiber);
         processBeforeMountHooks(fiber);
         processReactivePropsAndContextOnActiveAndUpdate(fiber);
         var children = processReactiveRenderOnMountAndUpdate(fiber);

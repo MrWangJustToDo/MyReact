@@ -52,6 +52,27 @@ const processReactiveInstanceOnMount = (fiber: MyReactFiberNode) => {
   instance.setContext(ProviderFiber);
 };
 
+const processReactiveInstanceContextOnActive = (fiber: MyReactFiberNode) => {
+  const typedElement = fiber.element as MyReactElement;
+
+  const globalDispatch = fiber.root.globalDispatch;
+
+  const typedType =
+    fiber.type & NODE_TYPE.__isMemo__
+      ? ((typedElement.type as ReturnType<typeof memo>)["render"] as ReturnType<typeof createReactive>)
+      : (typedElement.type as ReturnType<typeof createReactive>);
+
+  const ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
+
+  const context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
+
+  const instance = fiber.instance as MyReactReactiveInstanceType;
+
+  instance.context = context;
+
+  instance.setContext(ProviderFiber);
+};
+
 const processBeforeMountHooks = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactReactiveInstanceType;
 
@@ -156,6 +177,8 @@ export const reactiveComponentMount = (fiber: MyReactFiberNode) => {
 
 export const reactiveComponentActive = (fiber: MyReactFiberNode) => {
   processReactiveFiberOnUpdate(fiber);
+
+  processReactiveInstanceContextOnActive(fiber);
 
   processBeforeMountHooks(fiber);
 

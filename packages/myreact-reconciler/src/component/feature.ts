@@ -189,18 +189,23 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
 
   const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
-  if (!typedInstance?._contextFiber || !typedInstance._contextFiber.isMounted) {
-    const ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
+  if (typedComponent.contextType) {
+    if (!typedInstance?._contextFiber || !typedInstance._contextFiber.isMounted) {
+      const ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
-    const context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
+      const context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
 
-    typedInstance?.setContext(ProviderFiber);
+      typedInstance?.setContext(ProviderFiber);
 
-    return context;
-  } else {
-    const context = globalDispatch.resolveContextValue(typedInstance._contextFiber, typedComponent.contextType);
+      return context;
+    } else {
+      const context = globalDispatch.resolveContextValue(typedInstance._contextFiber, typedComponent.contextType);
 
-    return context;
+      // for ReActive component, we need set context fiber again
+      typedInstance?.setContext(typedInstance._contextFiber);
+
+      return context;
+    }
   }
 };
 

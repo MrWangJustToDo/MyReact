@@ -1551,15 +1551,19 @@
         var Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? typedElement.type : typedElement.type.render;
         var typedInstance = fiber.instance;
         var typedComponent = Component;
-        if (!(typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance._contextFiber) || !typedInstance._contextFiber.isMounted) {
-            var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
-            var context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
-            typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance.setContext(ProviderFiber);
-            return context;
-        }
-        else {
-            var context = globalDispatch.resolveContextValue(typedInstance._contextFiber, typedComponent.contextType);
-            return context;
+        if (typedComponent.contextType) {
+            if (!(typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance._contextFiber) || !typedInstance._contextFiber.isMounted) {
+                var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedComponent.contextType);
+                var context = globalDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
+                typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance.setContext(ProviderFiber);
+                return context;
+            }
+            else {
+                var context = globalDispatch.resolveContextValue(typedInstance._contextFiber, typedComponent.contextType);
+                // for ReActive component, we need set context fiber again
+                typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance.setContext(typedInstance._contextFiber);
+                return context;
+            }
         }
     };
     var processComponentPropsAndContextOnActive = function (fiber) {
@@ -1728,18 +1732,6 @@
         instance.setOwner(fiber);
         instance.setContext(ProviderFiber);
     };
-    var processReactiveInstanceContextOnActive = function (fiber) {
-        var typedElement = fiber.element;
-        var globalDispatch = fiber.root.globalDispatch;
-        var typedType = fiber.type & NODE_TYPE.__isMemo__
-            ? typedElement.type["render"]
-            : typedElement.type;
-        var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
-        var context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
-        var instance = fiber.instance;
-        instance.context = context;
-        instance.setContext(ProviderFiber);
-    };
     var processBeforeMountHooks = function (fiber) {
         var typedInstance = fiber.instance;
         if (typedInstance.beforeMountHooks.length)
@@ -1757,11 +1749,21 @@
         var typedType = fiber.type & NODE_TYPE.__isMemo__
             ? typedElement.type["render"]
             : typedElement.type;
-        var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
-        var context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
+        if (typedType.contextType) {
+            if (!(typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance._contextFiber) || !typedInstance._contextFiber.isMounted) {
+                var ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
+                var context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
+                typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance.setContext(ProviderFiber);
+                typedInstance.context = context;
+            }
+            else {
+                var context = globalDispatch.resolveContextValue(typedInstance._contextFiber, typedType.contextType);
+                typedInstance === null || typedInstance === void 0 ? void 0 : typedInstance.setContext(typedInstance._contextFiber);
+                typedInstance.context = context;
+            }
+        }
         var props = Object.assign({}, typedElement.props);
         typedInstance.props = props;
-        typedInstance.context = context;
     };
     var processMountedHooks = function (fiber) {
         var typedInstance = fiber.instance;
@@ -1810,7 +1812,6 @@
     };
     var reactiveComponentActive = function (fiber) {
         processReactiveFiberOnUpdate(fiber);
-        processReactiveInstanceContextOnActive(fiber);
         processBeforeMountHooks(fiber);
         processReactivePropsAndContextOnActiveAndUpdate(fiber);
         var children = processReactiveRenderOnMountAndUpdate(fiber);

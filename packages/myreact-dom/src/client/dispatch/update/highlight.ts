@@ -77,30 +77,32 @@ export class HighLight {
       this.__pendingUpdate__ = [];
       const allWrapper: HTMLElement[] = [];
       allFiber.forEach((f) => {
-        f.type & NODE_TYPE.__isTextNode__ ? this.range.selectNodeContents(f.node as HighlightDOM) : this.range.selectNode(f.node as HighlightDOM);
-        const rect = this.range.getBoundingClientRect();
-        if (
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
-          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-        ) {
-          // in the viewport
-          const wrapperDom = this.getHighLight();
-          allWrapper.push(wrapperDom);
-          const width = rect.width + 4;
-          const height = rect.height + 4;
-          const positionLeft = rect.left - 2;
-          const positionTop = rect.top - 2;
-          wrapperDom.style.cssText = `
-          position: absolute;
-          width: ${width}px;
-          height: ${height}px;
-          left: ${positionLeft}px;
-          top: ${positionTop}px;
-          pointer-events: none;
-          box-shadow: 1px 1px 1px red, -1px -1px 1px red;
-          `;
+        if (f.isMounted && f.isActivated) {
+          f.type & NODE_TYPE.__isTextNode__ ? this.range.selectNodeContents(f.node as HighlightDOM) : this.range.selectNode(f.node as HighlightDOM);
+          const rect = this.range.getBoundingClientRect();
+          if (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+          ) {
+            // in the viewport
+            const wrapperDom = this.getHighLight();
+            allWrapper.push(wrapperDom);
+            const width = rect.width + 4;
+            const height = rect.height + 4;
+            const positionLeft = rect.left - 2;
+            const positionTop = rect.top - 2;
+            wrapperDom.style.cssText = `
+            position: absolute;
+            width: ${width}px;
+            height: ${height}px;
+            left: ${positionLeft}px;
+            top: ${positionTop}px;
+            pointer-events: none;
+            box-shadow: 1px 1px 1px red, -1px -1px 1px red;
+            `;
+          }
         }
       });
       setTimeout(() => {

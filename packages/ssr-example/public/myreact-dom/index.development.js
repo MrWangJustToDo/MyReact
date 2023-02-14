@@ -1393,6 +1393,7 @@
         }
         return createFiberNode({ parent: parentFiber }, newChild);
     };
+    // TODO
     var transformChildrenFiber = function (parentFiber, children) {
         var isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
         var globalDispatch = parentFiber.root.globalDispatch;
@@ -2904,6 +2905,12 @@
                         if (controlElementTag[typedElement.type] && typeof pendingProps_1["value"] !== "undefined") {
                             var typedDom = dom;
                             typedDom["value"] = pendingProps_1["value"];
+                            if (typedDom.__isControlled__) {
+                                typedDom.setAttribute("myReact_controlled_value", String(pendingProps_1["value"]));
+                            }
+                            if (typedDom.__isReadonly__) {
+                                typedDom.setAttribute("myReact_readonly_value", String(pendingProps_1["value"]));
+                            }
                         }
                     }
                 };
@@ -3700,20 +3707,22 @@
                     _this.__pendingUpdate__ = [];
                     var allWrapper = [];
                     allFiber.forEach(function (f) {
-                        f.type & NODE_TYPE.__isTextNode__ ? _this.range.selectNodeContents(f.node) : _this.range.selectNode(f.node);
-                        var rect = _this.range.getBoundingClientRect();
-                        if (rect.top >= 0 &&
-                            rect.left >= 0 &&
-                            rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
-                            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)) {
-                            // in the viewport
-                            var wrapperDom = _this.getHighLight();
-                            allWrapper.push(wrapperDom);
-                            var width = rect.width + 4;
-                            var height = rect.height + 4;
-                            var positionLeft = rect.left - 2;
-                            var positionTop = rect.top - 2;
-                            wrapperDom.style.cssText = "\n          position: absolute;\n          width: ".concat(width, "px;\n          height: ").concat(height, "px;\n          left: ").concat(positionLeft, "px;\n          top: ").concat(positionTop, "px;\n          pointer-events: none;\n          box-shadow: 1px 1px 1px red, -1px -1px 1px red;\n          ");
+                        if (f.isMounted && f.isActivated) {
+                            f.type & NODE_TYPE.__isTextNode__ ? _this.range.selectNodeContents(f.node) : _this.range.selectNode(f.node);
+                            var rect = _this.range.getBoundingClientRect();
+                            if (rect.top >= 0 &&
+                                rect.left >= 0 &&
+                                rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+                                rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)) {
+                                // in the viewport
+                                var wrapperDom = _this.getHighLight();
+                                allWrapper.push(wrapperDom);
+                                var width = rect.width + 4;
+                                var height = rect.height + 4;
+                                var positionLeft = rect.left - 2;
+                                var positionTop = rect.top - 2;
+                                wrapperDom.style.cssText = "\n            position: absolute;\n            width: ".concat(width, "px;\n            height: ").concat(height, "px;\n            left: ").concat(positionLeft, "px;\n            top: ").concat(positionTop, "px;\n            pointer-events: none;\n            box-shadow: 1px 1px 1px red, -1px -1px 1px red;\n            ");
+                            }
                         }
                     });
                     setTimeout(function () {

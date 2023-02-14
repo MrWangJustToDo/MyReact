@@ -18,8 +18,8 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     </>
     {preLoad.filter(Boolean).map((ele) => ele)}
     {link.filter(Boolean).map((ele) => ele)}
-    {emotionChunks?.styles.map((style) => (
-      <style data-server data-emotion={`${style.key} ${style.ids.join(" ")}`} key={style.key} dangerouslySetInnerHTML={{ __html: style.css }} />
+    {emotionChunks?.styles.map((style, index) => (
+      <style data-server data-emotion={`${style.key} ${style.ids.join(" ")}`} key={style.key + "_" + index} dangerouslySetInnerHTML={{ __html: style.css }} />
     ))}
     <script id="__preload_env__" type="application/json" dangerouslySetInnerHTML={{ __html: `${env}` }} />
     <script id="__preload_state__" type="application/json" dangerouslySetInnerHTML={{ __html: `${preloadedState}` }} />

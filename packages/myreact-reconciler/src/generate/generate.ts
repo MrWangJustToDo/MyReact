@@ -129,6 +129,7 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
   return createFiberNode({ parent: parentFiber }, newChild);
 };
 
+// TODO
 export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   const isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
 

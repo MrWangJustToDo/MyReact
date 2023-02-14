@@ -1,4 +1,4 @@
-import { Carousel, Slider, Switch, Calendar, Tree, Space, TimePicker, TreeSelect, Button, Dropdown, Tooltip, Menu, message, Select } from "antd";
+import { Carousel, Slider, Switch, Calendar, Tree, Space, TimePicker, TreeSelect, Button, Dropdown, Tooltip, Menu, message, Select, AutoComplete } from "antd";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 
@@ -95,6 +95,10 @@ const handleChange = (value: string[]) => {
   console.log(`selected ${value}`);
 };
 
+const mockVal = (str: string, repeat = 1) => ({
+  value: str.repeat(repeat),
+});
+
 const AntDesignComponent = () => {
   const [treeLine, setTreeLine] = useState(true);
   const [showLeafIcon, setShowLeafIcon] = useState(false);
@@ -102,6 +106,21 @@ const AntDesignComponent = () => {
   const [checkedKeys, setCheckedKeys] = useState<React.Key[]>(["0-0-0"]);
   const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
   const [autoExpandParent, setAutoExpandParent] = useState<boolean>(true);
+
+  const [value, setValue] = useState("");
+  const [options, setOptions] = useState<{ value: string }[]>([]);
+
+  const onSearch = (searchText: string) => {
+    setOptions(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
+  };
+
+  const onSelect_1 = (data: string) => {
+    console.log("onSelect", data);
+  };
+
+  const onChange_1 = (data: string) => {
+    setValue(data);
+  };
 
   const onExpand = (expandedKeysValue: React.Key[]) => {
     console.log("onExpand", expandedKeysValue);
@@ -127,6 +146,21 @@ const AntDesignComponent = () => {
     <>
       <h2>Ant Design</h2>
       <Switch />
+      <br />
+      <h2>AutoComplete 有bug  对于input的处理还存在问题</h2>
+      <AutoComplete options={options} style={{ width: 200 }} onSelect={onSelect_1} onSearch={onSearch} placeholder="input here" />
+      <br />
+      <br />
+      <AutoComplete
+        value={value}
+        options={options}
+        style={{ width: 200 }}
+        onSelect={onSelect_1}
+        onSearch={onSearch}
+        onChange={onChange_1}
+        placeholder="control mode"
+      />
+      <br />
       <br />
       <Space direction="vertical">
         <Switch checkedChildren="treeLine" unCheckedChildren="treeLine" checked={treeLine} onChange={() => setTreeLine(!treeLine)} />

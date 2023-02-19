@@ -3,7 +3,7 @@ import { UPDATE_TYPE } from "@my-react/react-shared";
 
 import { checkIsSameType } from "../share";
 
-import { createFiberNode, updateFiberNode } from "./tools";
+import { createFiberNodeDev, updateFiberNodeDev } from "./tools";
 
 import type {
   ArrayMyReactElementNode,
@@ -16,7 +16,7 @@ import type {
 
 const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
 
-const { enableKeyDiff } = __my_react_shared__;
+const { enableKeyDiff, createFiberNode, updateFiberNode } = __my_react_shared__;
 
 const getKeyMatchedChildren = (
   newChildren: ArrayMyReactElementNode | ArrayMyReactElementChildren,
@@ -98,6 +98,12 @@ const getNewFiberWithUpdate = (
       return newChild.map((v, index) => getNewFiberWithUpdate(v, parentFiber, prevFiberChild[index], assignPrevFiberChildren[index])) as MyReactFiberNode[];
     }
 
+    if (__DEV__)
+      return updateFiberNodeDev(
+        { fiber: assignPrevFiberChild as MyReactFiberNode, parent: parentFiber, prevFiber: prevFiberChild as MyReactFiberNode },
+        newChild as MyReactElementNode
+      );
+
     return updateFiberNode(
       {
         fiber: assignPrevFiberChild as MyReactFiberNode,
@@ -111,12 +117,14 @@ const getNewFiberWithUpdate = (
 
     if (Array.isArray(newChild)) return newChild.map((v) => getNewFiberWithUpdate(v, parentFiber)) as MyReactFiberNode[];
 
+    if (__DEV__) return createFiberNodeDev({ parent: parentFiber, type: "position" }, newChild as MyReactElementNode);
+
     return createFiberNode(
       {
         parent: parentFiber,
         type: "position",
       },
-      newChild
+      newChild as MyReactElementNode
     );
   }
 };
@@ -126,7 +134,9 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
     return newChild.map((v) => getNewFiberWithInitial(v, parentFiber)) as MyReactFiberNode[];
   }
 
-  return createFiberNode({ parent: parentFiber }, newChild);
+  if (__DEV__) return createFiberNodeDev({ parent: parentFiber }, newChild as MyReactElementNode);
+
+  return createFiberNode({ parent: parentFiber }, newChild as MyReactElementNode);
 };
 
 // TODO
@@ -305,9 +315,11 @@ export const transformKeepLiveChildrenFiber = (parentFiber: MyReactFiberNode, ch
   if (cachedFiber) {
     parentFiber.beforeUpdate();
 
-    const newChildFiber = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
-
-    parentFiber.return = newChildFiber;
+    if (__DEV__) {
+      parentFiber.return = updateFiberNodeDev({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
+    } else {
+      parentFiber.return = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
+    }
 
     parentFiber.afterUpdate();
 
@@ -320,9 +332,11 @@ export const transformKeepLiveChildrenFiber = (parentFiber: MyReactFiberNode, ch
     // not have cachedFiber, maybe it is a first time to run
     parentFiber.beforeUpdate();
 
-    const newChildFiber = createFiberNode({ parent: parentFiber, type: "position" }, children);
-
-    parentFiber.return = newChildFiber;
+    if (__DEV__) {
+      parentFiber.return = createFiberNodeDev({ parent: parentFiber, type: "position" }, children);
+    } else {
+      parentFiber.return = createFiberNode({ parent: parentFiber, type: "position" }, children);
+    }
 
     parentFiber.afterUpdate();
 

@@ -1262,56 +1262,52 @@
         fiber.updateQueue = __spreadArray(__spreadArray([], lastQueue, true), fiber.updateQueue, true);
     };
 
-    var _updateFiberNode = react.__my_react_shared__.updateFiberNode, _createFiberNode = react.__my_react_shared__.createFiberNode;
-    var createFiberNode = function () {
+    var updateFiberNode$1 = react.__my_react_shared__.updateFiberNode, createFiberNode$1 = react.__my_react_shared__.createFiberNode;
+    var createFiberNodeDev = function () {
         var props = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             props[_i] = arguments[_i];
         }
-        var fiber = _createFiberNode.apply(void 0, props);
-        {
-            var typedFiber = fiber;
-            var timeNow = Date.now();
-            typedFiber._debugRenderState = {
-                renderCount: 0,
-                mountTime: timeNow,
-                prevUpdateTime: timeNow,
-                updateTimeStep: 0,
-                currentUpdateTime: timeNow,
-            };
-            typedFiber._debugGlobalDispatch = typedFiber.root.globalDispatch;
-        }
+        var fiber = createFiberNode$1.apply(void 0, props);
+        var typedFiber = fiber;
+        var timeNow = Date.now();
+        typedFiber._debugRenderState = {
+            renderCount: 0,
+            mountTime: timeNow,
+            prevUpdateTime: timeNow,
+            updateTimeStep: 0,
+            currentUpdateTime: timeNow,
+        };
+        typedFiber._debugGlobalDispatch = typedFiber.root.globalDispatch;
         return fiber;
     };
-    var updateFiberNode = function () {
+    var updateFiberNodeDev = function () {
         var props = [];
         for (var _i = 0; _i < arguments.length; _i++) {
             props[_i] = arguments[_i];
         }
-        var fiber = _updateFiberNode.apply(void 0, props);
-        {
-            var typedFiber = fiber;
-            var prevState = typedFiber._debugRenderState || {
-                renderCount: 0,
-                mountTime: 0,
-                prevUpdateTime: 0,
-                updateTimeStep: 0,
-                currentUpdateTime: 0,
-            };
-            var timeNow = Date.now();
-            typedFiber._debugRenderState = {
-                renderCount: prevState.renderCount + 1,
-                mountTime: prevState.mountTime,
-                prevUpdateTime: prevState.currentUpdateTime,
-                updateTimeStep: timeNow - prevState.currentUpdateTime,
-                currentUpdateTime: timeNow,
-            };
-        }
+        var fiber = updateFiberNode$1.apply(void 0, props);
+        var typedFiber = fiber;
+        var prevState = typedFiber._debugRenderState || {
+            renderCount: 0,
+            mountTime: 0,
+            prevUpdateTime: 0,
+            updateTimeStep: 0,
+            currentUpdateTime: 0,
+        };
+        var timeNow = Date.now();
+        typedFiber._debugRenderState = {
+            renderCount: prevState.renderCount + 1,
+            mountTime: prevState.mountTime,
+            prevUpdateTime: prevState.currentUpdateTime,
+            updateTimeStep: timeNow - prevState.currentUpdateTime,
+            currentUpdateTime: timeNow,
+        };
         return fiber;
     };
 
     var MyReactFiberNodeClass$2 = react.__my_react_internal__.MyReactFiberNode;
-    var enableKeyDiff = react.__my_react_shared__.enableKeyDiff;
+    var enableKeyDiff = react.__my_react_shared__.enableKeyDiff; react.__my_react_shared__.createFiberNode; react.__my_react_shared__.updateFiberNode;
     var getKeyMatchedChildren = function (newChildren, prevFiberChildren) {
         if (!enableKeyDiff.current)
             return prevFiberChildren;
@@ -1370,28 +1366,21 @@
                     globalDispatch.pendingUnmount(parentFiber, assignPrevFiberChildren_1.slice(newChild.length));
                 return newChild.map(function (v, index) { return getNewFiberWithUpdate(v, parentFiber, prevFiberChild[index], assignPrevFiberChildren_1[index]); });
             }
-            return updateFiberNode({
-                fiber: assignPrevFiberChild,
-                parent: parentFiber,
-                prevFiber: prevFiberChild,
-            }, newChild);
+            return updateFiberNodeDev({ fiber: assignPrevFiberChild, parent: parentFiber, prevFiber: prevFiberChild }, newChild);
         }
         else {
             if (assignPrevFiberChild)
                 globalDispatch.pendingUnmount(parentFiber, assignPrevFiberChild);
             if (Array.isArray(newChild))
                 return newChild.map(function (v) { return getNewFiberWithUpdate(v, parentFiber); });
-            return createFiberNode({
-                parent: parentFiber,
-                type: "position",
-            }, newChild);
+            return createFiberNodeDev({ parent: parentFiber, type: "position" }, newChild);
         }
     };
     var getNewFiberWithInitial = function (newChild, parentFiber) {
         if (Array.isArray(newChild)) {
             return newChild.map(function (v) { return getNewFiberWithInitial(v, parentFiber); });
         }
-        return createFiberNode({ parent: parentFiber }, newChild);
+        return createFiberNodeDev({ parent: parentFiber }, newChild);
     };
     // TODO
     var transformChildrenFiber = function (parentFiber, children) {
@@ -1507,8 +1496,9 @@
         var cachedFiber = globalDispatch.resolveKeepLive(parentFiber, children);
         if (cachedFiber) {
             parentFiber.beforeUpdate();
-            var newChildFiber = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
-            parentFiber.return = newChildFiber;
+            {
+                parentFiber.return = updateFiberNodeDev({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
+            }
             parentFiber.afterUpdate();
             // it is a cachedFiber, so should deactivate prevFiber
             if (prevFiber !== cachedFiber) {
@@ -1519,8 +1509,9 @@
         else {
             // not have cachedFiber, maybe it is a first time to run
             parentFiber.beforeUpdate();
-            var newChildFiber = createFiberNode({ parent: parentFiber, type: "position" }, children);
-            parentFiber.return = newChildFiber;
+            {
+                parentFiber.return = createFiberNodeDev({ parent: parentFiber, type: "position" }, children);
+            }
             parentFiber.afterUpdate();
             globalDispatch.pendingDeactivate(parentFiber);
             return parentFiber.children;
@@ -2901,17 +2892,19 @@
                         fiber: fiber,
                     });
                     if (enableControlComponent.current) {
-                        var pendingProps_1 = fiber.pendingProps;
-                        if (controlElementTag[typedElement.type] && typeof pendingProps_1["value"] !== "undefined") {
-                            var typedDom = dom;
-                            typedDom["value"] = pendingProps_1["value"];
-                            if (typedDom.__isControlled__) {
-                                typedDom.setAttribute("myReact_controlled_value", String(pendingProps_1["value"]));
+                        requestAnimationFrame(function () {
+                            var pendingProps = fiber.pendingProps;
+                            if (controlElementTag[typedElement.type] && typeof pendingProps["value"] !== "undefined") {
+                                var typedDom = dom;
+                                typedDom["value"] = pendingProps["value"];
+                                if (typedDom.__isControlled__) {
+                                    typedDom.setAttribute("MyReact_controlled_value", String(pendingProps["value"]));
+                                }
+                                if (typedDom.__isReadonly__) {
+                                    typedDom.setAttribute("MyReact_readonly_value", String(pendingProps["value"]));
+                                }
                             }
-                            if (typedDom.__isReadonly__) {
-                                typedDom.setAttribute("myReact_readonly_value", String(pendingProps_1["value"]));
-                            }
-                        }
+                        });
                     }
                 };
                 if (enableControlComponent.current) {
@@ -2920,9 +2913,11 @@
                             var typedDom = dom;
                             if ("onChange" in typedElement.props) {
                                 typedDom.__isControlled__ = true;
+                                typedDom.setAttribute("MyReact_input", "controlled");
                             }
                             else {
                                 typedDom.__isReadonly__ = true;
+                                typedDom.setAttribute("MyReact_input", "readonly");
                             }
                         }
                     }

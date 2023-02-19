@@ -147,7 +147,7 @@ const AntDesignComponent = () => {
       <h2>Ant Design</h2>
       <Switch />
       <br />
-      <h2>AutoComplete 有bug  对于input的处理还存在问题</h2>
+      <h2>AutoComplete 有bug 需要debug 源码了</h2>
       <AutoComplete options={options} style={{ width: 200 }} onSelect={onSelect_1} onSearch={onSearch} placeholder="input here" />
       <br />
       <br />

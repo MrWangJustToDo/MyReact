@@ -5,7 +5,7 @@ import { getNativeEventName } from "./getEventName";
 import type { MyReactElement, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
 import type { DomElement } from "@my-react-dom-shared";
 
-const controlElementTag: Record<string, boolean> = {
+export const controlElementTag: Record<string, boolean> = {
   input: true,
   // textarea: true,
   // select: true,
@@ -48,20 +48,22 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
         });
 
         if (enableControlComponent.current) {
-          const pendingProps = fiber.pendingProps;
+          requestAnimationFrame(() => {
+            const pendingProps = fiber.pendingProps;
 
-          if (controlElementTag[typedElement.type as string] && typeof pendingProps["value"] !== "undefined") {
-            const typedDom = dom as ControlledElement;
+            if (controlElementTag[typedElement.type as string] && typeof pendingProps["value"] !== "undefined") {
+              const typedDom = dom as ControlledElement;
 
-            typedDom["value"] = pendingProps["value"] as string;
+              typedDom["value"] = pendingProps["value"] as string;
 
-            if (typedDom.__isControlled__) {
-              typedDom.setAttribute("myReact_controlled_value", String(pendingProps["value"]));
+              if (typedDom.__isControlled__) {
+                typedDom.setAttribute("MyReact_controlled_value", String(pendingProps["value"]));
+              }
+              if (typedDom.__isReadonly__) {
+                typedDom.setAttribute("MyReact_readonly_value", String(pendingProps["value"]));
+              }
             }
-            if (typedDom.__isReadonly__) {
-              typedDom.setAttribute("myReact_readonly_value", String(pendingProps["value"]));
-            }
-          }
+          });
         }
       };
 
@@ -71,8 +73,10 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
             const typedDom = dom as ControlledElement;
             if ("onChange" in typedElement.props) {
               typedDom.__isControlled__ = true;
+              typedDom.setAttribute("MyReact_input", "controlled");
             } else {
               typedDom.__isReadonly__ = true;
+              typedDom.setAttribute("MyReact_input", "readonly");
             }
           }
         }

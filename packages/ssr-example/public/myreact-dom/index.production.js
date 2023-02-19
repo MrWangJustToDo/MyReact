@@ -1207,26 +1207,10 @@
         fiber.updateQueue = __spreadArray(__spreadArray([], lastQueue, true), fiber.updateQueue, true);
     };
 
-    var _updateFiberNode = react.__my_react_shared__.updateFiberNode, _createFiberNode = react.__my_react_shared__.createFiberNode;
-    var createFiberNode = function () {
-        var props = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            props[_i] = arguments[_i];
-        }
-        var fiber = _createFiberNode.apply(void 0, props);
-        return fiber;
-    };
-    var updateFiberNode = function () {
-        var props = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            props[_i] = arguments[_i];
-        }
-        var fiber = _updateFiberNode.apply(void 0, props);
-        return fiber;
-    };
+    react.__my_react_shared__.updateFiberNode; react.__my_react_shared__.createFiberNode;
 
     var MyReactFiberNodeClass$2 = react.__my_react_internal__.MyReactFiberNode;
-    var enableKeyDiff = react.__my_react_shared__.enableKeyDiff;
+    var enableKeyDiff = react.__my_react_shared__.enableKeyDiff, createFiberNode = react.__my_react_shared__.createFiberNode, updateFiberNode = react.__my_react_shared__.updateFiberNode;
     var getKeyMatchedChildren = function (newChildren, prevFiberChildren) {
         if (!enableKeyDiff.current)
             return prevFiberChildren;
@@ -1411,8 +1395,9 @@
         var cachedFiber = globalDispatch.resolveKeepLive(parentFiber, children);
         if (cachedFiber) {
             parentFiber.beforeUpdate();
-            var newChildFiber = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
-            parentFiber.return = newChildFiber;
+            {
+                parentFiber.return = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
+            }
             parentFiber.afterUpdate();
             // it is a cachedFiber, so should deactivate prevFiber
             if (prevFiber !== cachedFiber) {
@@ -1423,8 +1408,9 @@
         else {
             // not have cachedFiber, maybe it is a first time to run
             parentFiber.beforeUpdate();
-            var newChildFiber = createFiberNode({ parent: parentFiber, type: "position" }, children);
-            parentFiber.return = newChildFiber;
+            {
+                parentFiber.return = createFiberNode({ parent: parentFiber, type: "position" }, children);
+            }
             parentFiber.afterUpdate();
             globalDispatch.pendingDeactivate(parentFiber);
             return parentFiber.children;
@@ -2745,17 +2731,19 @@
                         fiber: fiber,
                     });
                     if (enableControlComponent.current) {
-                        var pendingProps_1 = fiber.pendingProps;
-                        if (controlElementTag[typedElement.type] && typeof pendingProps_1["value"] !== "undefined") {
-                            var typedDom = dom;
-                            typedDom["value"] = pendingProps_1["value"];
-                            if (typedDom.__isControlled__) {
-                                typedDom.setAttribute("myReact_controlled_value", String(pendingProps_1["value"]));
+                        requestAnimationFrame(function () {
+                            var pendingProps = fiber.pendingProps;
+                            if (controlElementTag[typedElement.type] && typeof pendingProps["value"] !== "undefined") {
+                                var typedDom = dom;
+                                typedDom["value"] = pendingProps["value"];
+                                if (typedDom.__isControlled__) {
+                                    typedDom.setAttribute("MyReact_controlled_value", String(pendingProps["value"]));
+                                }
+                                if (typedDom.__isReadonly__) {
+                                    typedDom.setAttribute("MyReact_readonly_value", String(pendingProps["value"]));
+                                }
                             }
-                            if (typedDom.__isReadonly__) {
-                                typedDom.setAttribute("myReact_readonly_value", String(pendingProps_1["value"]));
-                            }
-                        }
+                        });
                     }
                 };
                 if (enableControlComponent.current) {
@@ -2764,9 +2752,11 @@
                             var typedDom = dom;
                             if ("onChange" in typedElement.props) {
                                 typedDom.__isControlled__ = true;
+                                typedDom.setAttribute("MyReact_input", "controlled");
                             }
                             else {
                                 typedDom.__isReadonly__ = true;
+                                typedDom.setAttribute("MyReact_input", "readonly");
                             }
                         }
                     }

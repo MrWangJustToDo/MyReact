@@ -1,18 +1,28 @@
-import { getIsAnimateRouter, getIsMiddleware, getIsSSR } from "@shared";
-
 import type { Middleware } from "../compose";
 
-export const globalEnv: Middleware = (next) => async (args) => {
-  const { PUBLIC_DEV_API_HOST, PUBLIC_PROD_API_HOST, REACT } = process.env;
-  args.env = {
-    isSSR: getIsSSR() || args.req.query.isSSR || false,
-    isPURE_CSR: false,
-    FORMWORK: REACT,
-    isDEVELOPMENT: __DEVELOPMENT__,
-    isMIDDLEWARE: getIsMiddleware(),
-    isANIMATE_ROUTER: getIsAnimateRouter(),
-    PUBLIC_API_HOST: __DEVELOPMENT__ ? PUBLIC_DEV_API_HOST : PUBLIC_PROD_API_HOST,
-  };
-
-  await next(args);
+type ENV = {
+  isSSR: boolean;
+  isSTATIC: boolean;
+  isPURE_CSR: boolean;
+  isMIDDLEWARE: boolean;
+  isDEVELOPMENT: boolean;
+  isANIMATE_ROUTER: boolean;
+  PUBLIC_API_HOST: string;
 };
+
+export const generateGlobalEnv =
+  ({ isSSR, isSTATIC, isPURE_CSR, isMIDDLEWARE, isDEVELOPMENT, isANIMATE_ROUTER, PUBLIC_API_HOST }: ENV): Middleware =>
+  (next) =>
+  async (args) => {
+    args.env = {
+      isSSR: isSSR || args.req.query.isSSR || false,
+      isSTATIC,
+      isPURE_CSR,
+      isDEVELOPMENT,
+      isMIDDLEWARE,
+      isANIMATE_ROUTER,
+      PUBLIC_API_HOST,
+    };
+
+    await next(args);
+  };

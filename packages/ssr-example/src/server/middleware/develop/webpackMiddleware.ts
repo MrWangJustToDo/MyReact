@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-
 import type { Express } from "express";
 
-const develop = (app: Express): Promise<void> => {
-  return new Promise((resolve) => {
+export const webpackMiddleware = (app: Express) => {
+  return new Promise<void>((resolve) => {
     if (__DEVELOPMENT__ && __MIDDLEWARE__ && process.env.CLIENT_ENTRY) {
       const webpack = require("webpack");
       const webpackHotMiddleware = require("webpack-hot-middleware");
@@ -26,5 +25,3 @@ const develop = (app: Express): Promise<void> => {
     }
   });
 };
-
-export { develop };

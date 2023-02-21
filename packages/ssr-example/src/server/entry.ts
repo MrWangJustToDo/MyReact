@@ -1,10 +1,14 @@
 import dotenv from "dotenv";
 import express from "express";
 
+import { getIsStaticGenerate } from "@shared";
+
 import { setApi } from "./api";
 import { generateHandler } from "./app";
+import { generateStaticPage } from "./generator";
 import { develop } from "./middleware/develop";
 import { serverLog } from "./util/serverLog";
+import { page } from "./static";
 
 let handlerRender = generateHandler;
 
@@ -17,12 +21,15 @@ const startApp = async () => {
 
   app.use(express.static(`${process.cwd()}/dist`));
 
+  page(app);
+
   setApi(app);
 
   await develop(app);
 
-  app.use((req, res, next) => {
-    handlerRender()(req, res, next);
+  app.use(async (req, res, next) => {
+    const render = await handlerRender();
+    await render(req, res, next);
   });
 
   if (__DEVELOPMENT__ && module.hot) {
@@ -36,7 +43,14 @@ const startApp = async () => {
   const port = __DEVELOPMENT__ ? process.env.DEV_PORT : process.env.PROD_PORT;
 
   app.listen(port, () => {
-    serverLog(`app is running, open http://localhost:${port}`, "info");
+    if (getIsStaticGenerate()) {
+      serverLog(`start static page generate, base on current router`, "info");
+      generateStaticPage().then(() => {
+        process.exit(0);
+      });
+    } else {
+      serverLog(`app is running, open http://localhost:${port}`, "info");
+    }
   });
 };
 

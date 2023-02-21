@@ -9,7 +9,9 @@ export const initLang: Middleware = (next) => async (args) => {
     throw new RenderError("env 没有初始化", 5000);
   }
   const { req, res } = args;
+
   const cookieLang = req.cookies?.site_lang;
+  
   const lang = cookieLang || defaultLang;
 
   res.cookie("site_lang", lang);

@@ -1,17 +1,14 @@
 import { ChunkExtractor } from "@loadable/server";
 import { renderToString } from "react-dom/server";
 
-import { manifestLoadableFile } from "@server/util/manifest";
+import { manifestLoadableFile } from "@server/util/loadableManifest";
 import { RenderError } from "@server/util/renderError";
 import { HTML } from "@shared";
 
-import { composeRender } from "./compose";
-import { globalEnv, initLang, initStore, loadLang, loadStore } from "./middleware";
-
-import type { AnyAction } from "./compose";
+import type { AnyAction } from "../compose";
 
 // 客户端渲染
-const targetRender: AnyAction = async ({ res, store, lang, env }) => {
+export const targetRender: AnyAction = async ({ res, store, lang, env }) => {
   if (!store || !lang || !env) {
     throw new RenderError("server 初始化失败", 500);
   }
@@ -37,5 +34,3 @@ const targetRender: AnyAction = async ({ res, store, lang, env }) => {
       )
   );
 };
-
-export const renderCSR = composeRender(globalEnv, initLang, initStore, loadStore, loadLang)(targetRender);

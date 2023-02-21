@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 
 import { useLoadingState } from "@client/common/WrapperLoading";
-import { getIsCSR } from "@shared";
+import { getIsP_CSR } from "@shared";
 import { clientActionName } from "@shared/store/action";
 import { setDataSuccess_client } from "@shared/store/reducer";
 
@@ -20,7 +20,7 @@ const usePreLoad: UsePreLoadType = ({ routes, preLoad }) => {
   const [query] = useSearchParams();
   const { setLoading } = useLoadingState();
   // for pure client render, need preload data
-  const firstLoad = useRef(getIsCSR() ? true : false);
+  const firstLoad = useRef(getIsP_CSR() ? true : false);
   const loadedPath = useRef<string | undefined>("");
   const loadingPath = useRef<string | null>("");
   const timer1 = useRef<NodeJS.Timeout | null>(null);
@@ -28,7 +28,7 @@ const usePreLoad: UsePreLoadType = ({ routes, preLoad }) => {
   const storeRef = useRef(store);
 
   // for pure client render, there are not exist loaded location
-  const [loadedLocation, setLoadedLocation] = useState(getIsCSR() ? undefined : { location, query });
+  const [loadedLocation, setLoadedLocation] = useState(getIsP_CSR() ? undefined : { location, query });
 
   loadingPath.current = `${location.pathname}?${query.toString()}`;
 

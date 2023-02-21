@@ -1,25 +1,26 @@
 import { ChakraProvider, cookieStorageManager } from "@chakra-ui/react";
 import { CacheProvider } from "@emotion/react";
-import createEmotionServer from "@emotion/server/create-instance";
+// import { extractCriticalToChunks } from "@emotion/server";
 import { ChunkExtractor } from "@loadable/server";
 import { renderToString } from "@my-react/react-dom";
-// import { renderToString } from "react-dom/server";
 import { HelmetProvider } from "react-helmet-async";
 import { Provider } from "react-redux";
 import { StaticRouter as Router } from "react-router-dom/server";
 
 import { App } from "@client/common/App";
-import { manifestLoadableFile } from "@server/util/manifest";
+import { manifestLoadableFile } from "@server/util/loadableManifest";
 import { createEmotionCache, HTML } from "@shared";
 
 import type { SafeAction } from "../compose";
 
 export const targetRender: SafeAction = async ({ req, res, store, lang, env }) => {
+  // has error for vite
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // const { StaticRouter: Router } = await import("react-router-dom/server.js");
+
   const helmetContext = {};
 
   const emotionCache = createEmotionCache();
-
-  const { extractCriticalToChunks } = createEmotionServer(emotionCache);
 
   const cookieStore = cookieStorageManager(req.headers.cookie || "");
 
@@ -43,7 +44,7 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
 
   const body = await renderToString(jsx as any, true);
 
-  const emotionChunks = extractCriticalToChunks(body);
+  // const emotionChunks = extractCriticalToChunks(body);
 
   const linkElements = webExtractor.getLinkElements();
 
@@ -60,7 +61,7 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
             lang={JSON.stringify(lang)}
             script={scriptElements}
             helmetContext={helmetContext}
-            emotionChunks={emotionChunks}
+            // emotionChunks={emotionChunks}
             link={linkElements.concat(styleElements)}
             preloadedState={JSON.stringify(store.getState())}
           >

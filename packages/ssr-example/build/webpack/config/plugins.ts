@@ -6,6 +6,7 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { DefinePlugin, HotModuleReplacementPlugin } from "webpack";
 import { WebpackManifestPlugin } from "webpack-manifest-plugin";
 
+import { WebpackPageDepsPlugin } from "../plugin/webpack-page-deps";
 import { MANIFEST } from "../utils";
 
 import type { SafeGenerateActionProps } from "../type";
@@ -18,6 +19,7 @@ export const pluginsConfig = ({ env, isDEV, isSSR, isCSR, isMIDDLEWARE }: SafeGe
         fileName: isDEV ? MANIFEST.manifest_dev : MANIFEST.manifest_prod,
       }),
     env === "client" && new LoadablePlugin({ filename: MANIFEST.manifest_loadable }),
+    env === "client" && new WebpackPageDepsPlugin(),
     new DefinePlugin({
       __SSR__: isSSR,
       __CSR__: isCSR,

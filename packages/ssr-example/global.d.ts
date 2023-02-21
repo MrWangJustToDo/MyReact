@@ -15,6 +15,7 @@ declare global {
     __ENV__: {
       LANG: string;
       isSSR: boolean;
+      isSTATIC: boolean;
       isPURE_CSR: boolean;
       isMIDDLEWARE: boolean;
       isDEVELOPMENT: boolean;

@@ -1640,6 +1640,7 @@
             this.effectMap = {};
             this.layoutEffectMap = {};
             this.contextMap = {};
+            this.deactivatedMap = {};
             this.unmountMap = {};
             this.eventMap = {};
         }
@@ -2355,11 +2356,10 @@
             }, scheduler);
         };
         MyReactReactiveInstance.prototype.unmount = function () {
-            var _this = this;
             _super.prototype.unmount.call(this);
-            this.beforeUnmountHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
+            // this.beforeUnmountHooks.forEach((f) => f?.());
             this.effect.stop();
-            Promise.resolve().then(function () { return _this.unmountedHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); }); });
+            this.unmountedHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
         };
         return MyReactReactiveInstance;
     }(MyReactInternalInstance));

@@ -1,6 +1,7 @@
 import { cloneElement, __my_react_shared__ } from "@my-react/react";
 import {
   defaultGenerateContextMap,
+  defaultGenerateDeactivatedArrayMap,
   defaultGenerateErrorBoundariesMap,
   defaultGenerateKeepLiveMap,
   defaultGenerateScopeMap,
@@ -64,6 +65,8 @@ export class ClientDispatch implements FiberDispatch {
   svgTypeMap: Record<string, boolean> = {};
 
   contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
+
+  deactivatedMap: Record<string, LinkTreeList<MyReactFiberNode>[]> = {};
 
   unmountMap: Record<string, LinkTreeList<MyReactFiberNode>[]> = {};
 
@@ -171,11 +174,17 @@ export class ClientDispatch implements FiberDispatch {
         _fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
         _fiber.patch & PATCH_TYPE.__pendingAppend__ ||
         _fiber.patch & PATCH_TYPE.__pendingContext__ ||
+        _fiber.patch & PATCH_TYPE.__pendingUnmount__ ||
         _fiber.patch & PATCH_TYPE.__pendingPosition__ ||
         _fiber.patch & PATCH_TYPE.__pendingDeactivate__
       ) {
         _scope.updateFiberList.append(_fiber);
-      } else if (this.effectMap[_fiber.uid]?.length || this.unmountMap[_fiber.uid]?.length || this.layoutEffectMap[_fiber.uid]?.length) {
+      } else if (
+        this.effectMap[_fiber.uid]?.length ||
+        this.unmountMap[_fiber.uid]?.length ||
+        this.deactivatedMap[_fiber.uid]?.length ||
+        this.layoutEffectMap[_fiber.uid]?.length
+      ) {
         _scope.updateFiberList.append(_fiber);
       }
     }
@@ -295,7 +304,7 @@ export class ClientDispatch implements FiberDispatch {
     _fiber.patch |= PATCH_TYPE.__pendingPosition__;
   }
   pendingDeactivate(_fiber: MyReactFiberNode): void {
-    _fiber.patch |= PATCH_TYPE.__pendingDeactivate__;
+    defaultGenerateDeactivatedArrayMap(_fiber, this.deactivatedMap);
   }
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void {
     defaultGenerateUnmountArrayMap(_fiber, _pendingUnmount, this.unmountMap);

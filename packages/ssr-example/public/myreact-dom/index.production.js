@@ -889,6 +889,138 @@
         }
     };
 
+    /******************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+
+    var __assign = function() {
+        __assign = Object.assign || function __assign(t) {
+            for (var s, i = 1, n = arguments.length; i < n; i++) {
+                s = arguments[i];
+                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+            }
+            return t;
+        };
+        return __assign.apply(this, arguments);
+    };
+
+    function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    }
+
+    function __generator(thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (g && (g = 0, op[0] && (_ = 0)), _) try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    }
+
+    function __spreadArray(to, from, pack) {
+        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+            if (ar || !(i in from)) {
+                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+                ar[i] = from[i];
+            }
+        }
+        return to.concat(ar || Array.prototype.slice.call(from));
+    }
+
+    var flatten = function (children) {
+        if (Array.isArray(children))
+            return flattenDeep_1(children);
+        return [children];
+    };
+
+    var _a$1 = react.__my_react_reactive__.reactiveApi, pauseTracking$1 = _a$1.pauseTracking, pauseTrigger$1 = _a$1.pauseTrigger, resetTracking$1 = _a$1.resetTracking, resetTrigger$1 = _a$1.resetTrigger;
+    var reactiveInstanceBeforeUnmount = function (list) {
+        pauseTracking$1();
+        pauseTrigger$1();
+        list.listToHead(function (f) {
+            if (f.type & NODE_TYPE.__isReactive__) {
+                var reactiveInstance = f.instance;
+                reactiveInstance.beforeUnmountHooks.forEach(function (f) { return f === null || f === void 0 ? void 0 : f(); });
+            }
+        });
+        resetTrigger$1();
+        resetTracking$1();
+    };
+    var defaultGenerateUnmountArrayMap = function (fiber, unmount, map) {
+        var allUnmount = flatten(unmount);
+        var exist = map[fiber.uid] || [];
+        var newPending = allUnmount.map(generateFiberToList);
+        newPending.forEach(reactiveInstanceBeforeUnmount);
+        map[fiber.uid] = __spreadArray(__spreadArray([], exist, true), newPending, true);
+    };
+
+    var getNext = function (fiber, root) {
+        if (fiber.child)
+            return fiber.child;
+        var nextFiber = fiber;
+        while (nextFiber && nextFiber !== root) {
+            if (nextFiber.sibling)
+                return nextFiber.sibling;
+            nextFiber = nextFiber.parent;
+        }
+        return null;
+    };
+    var generateFiberToList = function (fiber) {
+        var listTree = new LinkTreeList();
+        var temp = fiber;
+        listTree.append(temp);
+        while (temp) {
+            temp = getNext(temp, fiber);
+            if (temp)
+                listTree.append(temp);
+        }
+        return listTree;
+    };
+
+    var defaultGenerateDeactivatedArrayMap = function (fiber, map) {
+        var globalDispatch = fiber.root.globalDispatch;
+        var allDeactivateFibers = globalDispatch.keepLiveMap[fiber.uid] || [];
+        var pendingDeactivate = allDeactivateFibers.map(generateFiberToList);
+        pendingDeactivate.forEach(reactiveInstanceBeforeUnmount);
+        map[fiber.uid] = pendingDeactivate;
+    };
+
     var MyReactFiberNodeClass$1$1 = react.__my_react_internal__.MyReactFiberNode;
     var getTypeFromElement = react.__my_react_shared__.getTypeFromElement;
     function checkIsSameType(p, element) {
@@ -935,29 +1067,6 @@
             }
         }
     }
-
-    var getNext = function (fiber, root) {
-        if (fiber.child)
-            return fiber.child;
-        var nextFiber = fiber;
-        while (nextFiber && nextFiber !== root) {
-            if (nextFiber.sibling)
-                return nextFiber.sibling;
-            nextFiber = nextFiber.parent;
-        }
-        return null;
-    };
-    var generateFiberToList = function (fiber) {
-        var listTree = new LinkTreeList();
-        var temp = fiber;
-        listTree.append(temp);
-        while (temp) {
-            temp = getNext(temp, fiber);
-            if (temp)
-                listTree.append(temp);
-        }
-        return listTree;
-    };
 
     var isErrorBoundariesComponent = function (fiber) {
         if (fiber.type & NODE_TYPE.__isClassComponent__) {
@@ -1088,80 +1197,6 @@
         effect$1(fiber, currentHook);
         return currentHook;
     };
-
-    /******************************************************************************
-    Copyright (c) Microsoft Corporation.
-
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
-
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
-    ***************************************************************************** */
-
-    var __assign = function() {
-        __assign = Object.assign || function __assign(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign.apply(this, arguments);
-    };
-
-    function __awaiter(thisArg, _arguments, P, generator) {
-        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-        return new (P || (P = Promise))(function (resolve, reject) {
-            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-            step((generator = generator.apply(thisArg, _arguments || [])).next());
-        });
-    }
-
-    function __generator(thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-        function verb(n) { return function (v) { return step([n, v]); }; }
-        function step(op) {
-            if (f) throw new TypeError("Generator is already executing.");
-            while (g && (g = 0, op[0] && (_ = 0)), _) try {
-                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-                if (y = 0, t) op = [op[0] & 2, t.value];
-                switch (op[0]) {
-                    case 0: case 1: t = op; break;
-                    case 4: _.label++; return { value: op[1], done: false };
-                    case 5: _.label++; y = op[1]; op = [0]; continue;
-                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                    default:
-                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                        if (t[2]) _.ops.pop();
-                        _.trys.pop(); continue;
-                }
-                op = body.call(thisArg, _);
-            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-        }
-    }
-
-    function __spreadArray(to, from, pack) {
-        if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-            if (ar || !(i in from)) {
-                if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-                ar[i] = from[i];
-            }
-        }
-        return to.concat(ar || Array.prototype.slice.call(from));
-    }
 
     var processComponentUpdateQueue = function (fiber) {
         var allQueue = fiber.updateQueue.slice(0);
@@ -2316,18 +2351,6 @@
         }
     };
 
-    var flatten = function (children) {
-        if (Array.isArray(children))
-            return flattenDeep_1(children);
-        return [children];
-    };
-
-    var defaultGenerateUnmountArrayMap = function (fiber, unmount, map) {
-        var allUnmount = flatten(unmount);
-        var exist = map[fiber.uid] || [];
-        map[fiber.uid] = __spreadArray(__spreadArray([], exist, true), allUnmount.map(generateFiberToList), true);
-    };
-
     var defaultGetContextMapFromMap = function (fiber, map) {
         if (fiber) {
             return map[fiber.uid];
@@ -2512,7 +2535,7 @@
         unmountList(list);
     };
     var unmountList = function (list) {
-        list.listToFoot(function (f) { return f.unmount(); });
+        list.listToHead(function (f) { return f.unmount(); });
         list.head.value && clearFiberDom(list.head.value);
     };
     var unmount = function (fiber) {
@@ -3168,23 +3191,18 @@
         return hydrate;
     };
 
-    var deactivateFiber = function (fiber) {
-        var listTree = generateFiberToList(fiber);
-        listTree.listToHead(function (f) { return f.deactivate(); });
-        clearFiberDomWhenDeactivate(fiber);
+    var deactivateList = function (list) {
+        list.listToHead(function (f) { return f.deactivate(); });
+        list.head.value && clearFiberDomWhenDeactivate(list.head.value);
     };
 
     var deactivate = function (fiber) {
-        if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) {
-            var globalDispatch = fiber.root.globalDispatch;
-            var allDeactivateFibers = globalDispatch.keepLiveMap[fiber.uid];
-            allDeactivateFibers === null || allDeactivateFibers === void 0 ? void 0 : allDeactivateFibers.forEach(function (fiber) {
-                if (fiber.isActivated)
-                    deactivateFiber(fiber);
-            });
-            if (fiber.patch & PATCH_TYPE.__pendingDeactivate__)
-                fiber.patch ^= PATCH_TYPE.__pendingDeactivate__;
-        }
+        var globalDispatch = fiber.root.globalDispatch;
+        var deactivatedMap = globalDispatch.deactivatedMap;
+        var allDeactivated = deactivatedMap[fiber.uid] || [];
+        deactivatedMap[fiber.uid] = [];
+        if (allDeactivated.length)
+            allDeactivated.forEach(deactivateList);
     };
 
     var currentRunningFiber = react.__my_react_internal__.currentRunningFiber;
@@ -3697,6 +3715,7 @@
             this.suspenseMap = {};
             this.svgTypeMap = {};
             this.contextMap = {};
+            this.deactivatedMap = {};
             this.unmountMap = {};
             this.eventMap = {};
             this.hydrateScope = {};
@@ -3797,18 +3816,22 @@
             _scope.updateFiberList = null;
         };
         ClientDispatch.prototype.generateUpdateList = function (_fiber, _scope) {
-            var _a, _b, _c;
+            var _a, _b, _c, _d;
             if (_fiber) {
                 _scope.updateFiberList = _scope.updateFiberList || new LinkTreeList();
                 if (_fiber.patch & PATCH_TYPE.__pendingCreate__ ||
                     _fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
                     _fiber.patch & PATCH_TYPE.__pendingAppend__ ||
                     _fiber.patch & PATCH_TYPE.__pendingContext__ ||
+                    _fiber.patch & PATCH_TYPE.__pendingUnmount__ ||
                     _fiber.patch & PATCH_TYPE.__pendingPosition__ ||
                     _fiber.patch & PATCH_TYPE.__pendingDeactivate__) {
                     _scope.updateFiberList.append(_fiber);
                 }
-                else if (((_a = this.effectMap[_fiber.uid]) === null || _a === void 0 ? void 0 : _a.length) || ((_b = this.unmountMap[_fiber.uid]) === null || _b === void 0 ? void 0 : _b.length) || ((_c = this.layoutEffectMap[_fiber.uid]) === null || _c === void 0 ? void 0 : _c.length)) {
+                else if (((_a = this.effectMap[_fiber.uid]) === null || _a === void 0 ? void 0 : _a.length) ||
+                    ((_b = this.unmountMap[_fiber.uid]) === null || _b === void 0 ? void 0 : _b.length) ||
+                    ((_c = this.deactivatedMap[_fiber.uid]) === null || _c === void 0 ? void 0 : _c.length) ||
+                    ((_d = this.layoutEffectMap[_fiber.uid]) === null || _d === void 0 ? void 0 : _d.length)) {
                     _scope.updateFiberList.append(_fiber);
                 }
             }
@@ -3914,7 +3937,7 @@
             _fiber.patch |= PATCH_TYPE.__pendingPosition__;
         };
         ClientDispatch.prototype.pendingDeactivate = function (_fiber) {
-            _fiber.patch |= PATCH_TYPE.__pendingDeactivate__;
+            defaultGenerateDeactivatedArrayMap(_fiber, this.deactivatedMap);
         };
         ClientDispatch.prototype.pendingUnmount = function (_fiber, _pendingUnmount) {
             defaultGenerateUnmountArrayMap(_fiber, _pendingUnmount, this.unmountMap);
@@ -4785,6 +4808,7 @@
             this.layoutEffectMap = {};
             this.suspenseMap = {};
             this.contextMap = {};
+            this.deactivatedMap = {};
             this.unmountMap = {};
             this.eventMap = {};
         }

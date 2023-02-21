@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
+
+      const Bar = ({ i }) => {
+        const countRef = useRef(0);
+        useEffect(() => {
+          countRef.current++;
+        });
+
+        return (
+          <div>
+            {i} bar update count: {countRef.current}{" "}
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [arr1, setArr1] = useState([]);
+        const [arr2, setArr2] = useState([]);
+        const [arr3, setArr3] = useState([]);
+
+        return (
+          <>
+            <div>no key</div>
+            {arr1.map((i) => (
+              <Bar i={i}  />
+            ))}
+            <button onClick={() => setArr1((l) => [Math.random(), ...l])}>添加</button>
+            <div>has key</div>
+            {arr2.map((i) => (
+              <Bar i={i} key={i}  />
+            ))}
+            <button onClick={() => setArr2((l) => [Math.random(), ...l])}>添加</button>
+          </>
+        );
+      };
+
+      ReactDOM.render(<App />, root);
+    </script>
+  </body>
+</html>

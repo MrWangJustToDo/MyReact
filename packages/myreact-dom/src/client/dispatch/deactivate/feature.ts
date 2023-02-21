@@ -1,19 +1,15 @@
-import { PATCH_TYPE } from "@my-react/react-shared";
-
-import { deactivateFiber } from "./deactivate";
+import { deactivateList } from "./deactivate";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const deactivate = (fiber: MyReactFiberNode) => {
-  if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) {
-    const globalDispatch = fiber.root.globalDispatch;
+  const globalDispatch = fiber.root.globalDispatch;
 
-    const allDeactivateFibers = globalDispatch.keepLiveMap[fiber.uid];
+  const deactivatedMap = globalDispatch.deactivatedMap;
 
-    allDeactivateFibers?.forEach((fiber) => {
-      if (fiber.isActivated) deactivateFiber(fiber);
-    });
+  const allDeactivated = deactivatedMap[fiber.uid] || [];
 
-    if (fiber.patch & PATCH_TYPE.__pendingDeactivate__) fiber.patch ^= PATCH_TYPE.__pendingDeactivate__;
-  }
+  deactivatedMap[fiber.uid] = [];
+
+  if (allDeactivated.length) allDeactivated.forEach(deactivateList);
 };

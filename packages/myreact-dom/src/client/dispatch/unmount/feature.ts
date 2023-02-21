@@ -12,7 +12,7 @@ export const unmountFiber = (fiber: MyReactFiberNode) => {
 };
 
 export const unmountList = (list: LinkTreeList<MyReactFiberNode>) => {
-  list.listToFoot((f) => f.unmount());
+  list.listToHead((f) => f.unmount());
 
   list.head.value && clearFiberDom(list.head.value);
 };

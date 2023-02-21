@@ -6,7 +6,6 @@ import type { RenderScope } from "../scope";
 import type { LinkTreeList } from "@my-react/react-shared";
 
 export class EmptyDispatch implements FiberDispatch {
-  
   strictMap: Record<string, boolean> = {};
 
   scopeIdMap: Record<string, string | null> = {};
@@ -22,6 +21,8 @@ export class EmptyDispatch implements FiberDispatch {
   layoutEffectMap: Record<string, (() => void)[]> = {};
 
   contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
+
+  deactivatedMap: Record<string, LinkTreeList<MyReactFiberNode>[]> = {};
 
   unmountMap: Record<string, LinkTreeList<MyReactFiberNode>[]> = {};
 

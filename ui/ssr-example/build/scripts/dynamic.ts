@@ -49,7 +49,9 @@ export class DynamicRouter {
                     fallbackPath++;
                     config.path = `${prePath}*`;
                   } else {
-                    throw new Error(`can not add 404 page on the ${prePath}`);
+                    fallbackPath++;
+                    config.path = `/*`;
+                    // throw new Error(`can not add 404 page on the ${prePath}`);
                   }
                 } else {
                   config.path = `${prePath}${fileName}`;
@@ -113,11 +115,21 @@ export const dynamicRouteConfig: DynamicRouteConfig[] = ${routerResult};`;
     return fs.promises.writeFile(filePath, content);
   };
 
-  getDynamicRouter = async () => {
+  getDynamicRouter = async (basePath = "/") => {
     const pages = path.resolve(process.cwd(), "src", "client", "pages");
     const dynamicRouteFilename = path.resolve(process.cwd(), "src", "client", "router", "dynamicRoutes.ts");
     const routerConfig = await this.getRouterConfig("/", pages);
-    const routerResult = JSON.stringify(routerConfig);
+    const routerConfigWithBasePath =
+      basePath !== "/"
+        ? routerConfig.map(({ path, componentPath }) => {
+            if (path.startsWith("/") && basePath.endsWith("/")) {
+              return { path: basePath.slice(0, -1) + path, componentPath };
+            } else {
+              return { path: basePath + path, componentPath };
+            }
+          })
+        : routerConfig;
+    const routerResult = JSON.stringify(routerConfigWithBasePath);
     const cacheCheck = this.isNoChange(routerResult);
     if (!cacheCheck) {
       const currentTemplate = await this.getRouterFile(dynamicRouteFilename);

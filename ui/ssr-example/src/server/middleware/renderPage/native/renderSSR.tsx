@@ -9,7 +9,7 @@ import { StaticRouter as Router } from "react-router-dom/server";
 
 import { App } from "@client/common/App";
 import { manifestLoadableFile } from "@server/util/loadableManifest";
-import { createEmotionCache, HTML, theme } from "@shared";
+import { createEmotionCache, getIsStaticGenerate, HTML, theme } from "@shared";
 
 import type { SafeAction } from "../compose";
 
@@ -24,7 +24,7 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
     <CacheProvider value={emotionCache}>
       <ChakraProvider theme={theme} colorModeManager={cookieStore}>
         <Provider store={store}>
-          <Router location={req.url}>
+          <Router basename={getIsStaticGenerate() ? "/MyReact/" : ""} location={req.url}>
             <HelmetProvider context={helmetContext}>
               <App />
             </HelmetProvider>

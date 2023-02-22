@@ -14,12 +14,11 @@ const _Footer = () => {
     <Box textAlign="center">
       <Flex marginTop="6" justifyContent="center" alignItems="center">
         <Text fontSize={{ base: "medium", md: "xl" }} fontWeight="semibold" noOfLines={1} display="flex" alignItems="center">
-          {/* <Text as="span">source from</Text> */}
           <Link href={BLOG_SOURCE} target="_blank" color="blue.500" textDecoration="none" paddingLeft="0.2em">
             github
           </Link>
           <Icon as={AiFillHeart} color="red.600" mx="0.2em" />
-          <Text as="span">Next.js</Text>
+          <Text as="span">@my-react</Text>
         </Text>
       </Flex>
       <Text fontSize="sm" marginTop="2.5" marginBottom="9" color="lightTextColor">

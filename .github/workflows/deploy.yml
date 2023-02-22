@@ -28,12 +28,13 @@ jobs:
       
       - name: prepare
         run: |
+          pnpm install
           pnpm run gen:gql
-          pnpm run build
       
       - name: build site
         run: |
-          pnpm build:site
+          pnpm run build
+          pnpm run build:site
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3

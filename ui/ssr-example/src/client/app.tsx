@@ -5,7 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { Provider } from "react-redux";
 import { BrowserRouter as Router } from "react-router-dom";
 
-import { createEmotionCache, getIsStaticGenerate, theme } from "../shared";
+import { createEmotionCache, theme } from "../shared";
 
 import { App } from "./common/App";
 
@@ -22,7 +22,7 @@ const Root = ({ store }: { store: ReturnType<typeof createUniversalStore> }) => 
       <CacheProvider value={emotionCache}>
         <ChakraProvider theme={theme} colorModeManager={cookieStore}>
           <Provider store={store} serverState={store.getState()}>
-            <Router basename={getIsStaticGenerate() ? "/MyReact/" : ""}>
+            <Router>
               <HelmetProvider>
                 <App />
               </HelmetProvider>

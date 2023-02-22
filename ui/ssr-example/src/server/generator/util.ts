@@ -27,7 +27,8 @@ export const getPageManifestContent = () =>
 export const getAllStaticRouters = (allRouters: Record<string, boolean>) =>
   Object.keys(allRouters)
     .filter((path) => allRouters[path])
-    .map((p) => ({ url: `http://${process.env.PROD_HOST}:${process.env.PROD_PORT}/MyReact/${p.slice(1)}`, p }));
+    // TODO static generate need more clear
+    .map((p) => ({ url: `http://${process.env.PROD_HOST}:${process.env.PROD_PORT}/MyReact${p.slice(1)}`, p }));
 
 export const generateStaticPage = (pathConfig: {
   url: string;

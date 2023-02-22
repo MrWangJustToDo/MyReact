@@ -6,6 +6,7 @@
   "engines": {
     "node": ">=10"
   },
+  "packageManager": "pnpm@7.5.0",
   "scripts": {
     "prepare": "pnpm run clean",
     "dev:ssr": "cd ./ui/ssr-example && pnpm run dev",

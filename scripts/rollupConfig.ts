@@ -185,10 +185,10 @@ const transformBuildOptions = (
   return allOptions;
 };
 
-export const getRollupConfig = async (packageName: string) => {
+export const getRollupConfig = async (packageName: string, packageScope = 'packages') => {
   const modes: Mode[] = ["development", "production"];
 
-  const relativePath = resolve(process.cwd(), "packages", packageName);
+  const relativePath = resolve(process.cwd(), packageScope, packageName);
 
   const packageFilePath = resolve(relativePath, "package.json");
 

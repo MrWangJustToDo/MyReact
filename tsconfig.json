@@ -14,14 +14,14 @@
       "@my-react-dom-server/*": ["./packages/myreact-dom/src/server/*"],
       "@my-react-dom-client": ["./packages/myreact-dom/src/client"],
       "@my-react-dom-client/*": ["./packages/myreact-dom/src/client/*"],
-      "@build": ["./packages/ssr-example/build"],
-      "@build/*": ["./packages/ssr-example/build/*"],
-      "@server": ["./packages/ssr-example/src/server"],
-      "@server/*": ["./packages/ssr-example/src/server/*"],
-      "@client": ["./packages/ssr-example/src/client"],
-      "@client/*": ["./packages/ssr-example/src/client/*"],
-      "@shared": ["./packages/ssr-example/src/shared"],
-      "@shared/*": ["./packages/ssr-example/src/shared/*"]
+      "@build": ["./ui/ssr-example/build"],
+      "@build/*": ["./ui/ssr-example/build/*"],
+      "@server": ["./ui/ssr-example/src/server"],
+      "@server/*": ["./ui/ssr-example/src/server/*"],
+      "@client": ["./ui/ssr-example/src/client"],
+      "@client/*": ["./ui/ssr-example/src/client/*"],
+      "@shared": ["./ui/ssr-example/src/shared"],
+      "@shared/*": ["./ui/ssr-example/src/shared/*"]
     }
   }
 }

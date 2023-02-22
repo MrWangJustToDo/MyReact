@@ -1,1 +1,0 @@
-export { LazyComponent } from "./LazyComponent";

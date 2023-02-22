@@ -1,0 +1,7 @@
+this is plain txt file
+
+this project is a csr-example power by @my-react
+
+feel free to play!
+
+and welcome to create pr for this project to make it better!

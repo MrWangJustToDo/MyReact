@@ -1,0 +1,42 @@
+name: Deploy to Github Pages
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout branch
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: install pnpm
+        uses: pnpm/action-setup@v2
+
+      - name: setup node version
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+          cache: 'pnpm'
+      
+      - name: prepare
+        run: |
+          pnpm run gen:gql
+          pnpm run build
+      
+      - name: build site
+        run: |
+          pnpm build:site
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./ui/ssr-example/dist

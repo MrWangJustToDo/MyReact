@@ -2,7 +2,7 @@
 import { currentComponentFiber } from "../share";
 
 import { My_React_Element } from "./symbol";
-import { checkArrayChildrenKey, checkSingleChildrenKey, isValidElement } from "./tool";
+import { checkArrayChildrenKey, checkSingleChildrenKey } from "./tool";
 
 import type { createContext, forwardRef, lazy, memo } from "./feature";
 import type { MyReactComponent } from "../component";
@@ -151,68 +151,69 @@ export function createElement(type: CreateElementProps["type"], config?: CreateE
 }
 
 export function cloneElement(element: MyReactElementNode, config?: CreateElementConfig, children?: Props["children"]) {
-  if (isValidElement(element)) {
-    const props = Object.assign({}, element.props);
-    let key = element.key;
-    let ref = element.ref;
-    const type = element.type;
-    const self = element._self;
-    const source = element._source;
-    let owner = element._owner;
-    if (config !== null && config !== undefined) {
-      const { ref: _ref, key: _key, __self, __source, ...resProps } = config;
-      if (_ref !== undefined) {
-        ref = _ref;
-        owner = currentComponentFiber.current;
-      }
-      if (_key !== undefined) {
-        key = _key + "";
-      }
-      let defaultProps: Record<string, unknown> | undefined = {};
-      if (typeof element.type === "function" || typeof element.type === "object") {
-        const typedType = element.type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
-        defaultProps = typedType?.defaultProps;
-      }
-      for (const key in resProps) {
-        if (Object.prototype.hasOwnProperty.call(resProps, key)) {
-          if (resProps[key] === undefined && defaultProps) {
-            props[key] = defaultProps[key];
-          } else {
-            props[key] = resProps[key];
-          }
+  if (element === null || element === undefined) {
+    throw new Error("cloneElement(...) need a valid element as params");
+  }
+  // from react source code
+  element = element as MyReactElement;
+  const props = Object.assign({}, element.props);
+  let key = element.key;
+  let ref = element.ref;
+  const type = element.type;
+  const self = element._self;
+  const source = element._source;
+  let owner = element._owner;
+  if (config !== null && config !== undefined) {
+    const { ref: _ref, key: _key, __self, __source, ...resProps } = config;
+    if (_ref !== undefined) {
+      ref = _ref;
+      owner = currentComponentFiber.current;
+    }
+    if (_key !== undefined) {
+      key = _key + "";
+    }
+    let defaultProps: Record<string, unknown> | undefined = {};
+    if (typeof element.type === "function" || typeof element.type === "object") {
+      const typedType = element.type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
+      defaultProps = typedType?.defaultProps;
+    }
+    for (const key in resProps) {
+      if (Object.prototype.hasOwnProperty.call(resProps, key)) {
+        if (resProps[key] === undefined && defaultProps) {
+          props[key] = defaultProps[key];
+        } else {
+          props[key] = resProps[key];
         }
       }
     }
-
-    const childrenLength = arguments.length - 2;
-
-    if (childrenLength > 1) {
-      children = Array.from(arguments).slice(2);
-      if (__DEV__) {
-        checkArrayChildrenKey(children as ArrayMyReactElementNode);
-      }
-      props.children = children;
-    } else if (childrenLength === 1) {
-      if (__DEV__) {
-        checkSingleChildrenKey(children as MyReactElementNode);
-      }
-      props.children = children;
-    }
-
-    const clonedElement = createMyReactElement({
-      type,
-      key,
-      ref,
-      props,
-      _self: self,
-      _source: source,
-      _owner: owner,
-    });
-
-    clonedElement._store["clonedEle"] = true;
-
-    return clonedElement;
-  } else {
-    throw new Error("cloneElement() need valid element as args");
   }
+
+  const childrenLength = arguments.length - 2;
+
+  if (childrenLength > 1) {
+    children = Array.from(arguments).slice(2);
+    if (__DEV__) {
+      checkArrayChildrenKey(children as ArrayMyReactElementNode);
+    }
+    props.children = children;
+  } else if (childrenLength === 1) {
+    if (__DEV__) {
+      checkSingleChildrenKey(children as MyReactElementNode);
+    }
+    props.children = children;
+  }
+
+  const clonedElement = createMyReactElement({
+    type,
+    key,
+    ref,
+    props,
+    _self: self,
+    _source: source,
+    _owner: owner,
+  });
+
+  clonedElement._store["clonedEle"] = true;
+
+  return clonedElement;
 }

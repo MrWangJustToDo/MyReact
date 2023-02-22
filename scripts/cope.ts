@@ -21,19 +21,19 @@ export const copyMyReact = async () => {
   return Promise.all([
     copyContent(
       resolve(process.cwd(), "packages", "myreact", "dist/umd/index.development.js"),
-      resolve(process.cwd(), "packages", "ssr-example", "public/myreact/index.development.js")
+      resolve(process.cwd(), "ui", "ssr-example", "public/myreact/index.development.js")
     ),
     copyContent(
       resolve(process.cwd(), "packages", "myreact", "dist/umd/index.production.js"),
-      resolve(process.cwd(), "packages", "ssr-example", "public/myreact/index.production.js")
+      resolve(process.cwd(), "ui", "ssr-example", "public/myreact/index.production.js")
     ),
     copyContent(
       resolve(process.cwd(), "packages", "myreact", "dist/umd/index.development.js.map"),
-      resolve(process.cwd(), "packages", "ssr-example", "public/myreact/index.development.js.map")
+      resolve(process.cwd(), "ui", "ssr-example", "public/myreact/index.development.js.map")
     ),
     copyContent(
       resolve(process.cwd(), "packages", "myreact", "dist/umd/index.production.js.map"),
-      resolve(process.cwd(), "packages", "ssr-example", "public/myreact/index.production.js.map")
+      resolve(process.cwd(), "ui", "ssr-example", "public/myreact/index.production.js.map")
     ),
   ]).then(() => {
     myReactPending = false;
@@ -49,19 +49,19 @@ export const copyMyReactDOM = () => {
   return Promise.all([
     copyContent(
       resolve(process.cwd(), "packages", "myreact-dom", "dist/umd/index.development.js"),
-      resolve(process.cwd(), "packages", "ssr-example", "public/myreact-dom/index.development.js")
+      resolve(process.cwd(), "ui", "ssr-example", "public/myreact-dom/index.development.js")
     ),
     copyContent(
       resolve(process.cwd(), "packages", "myreact-dom", "dist/umd/index.production.js"),
-      resolve(process.cwd(), "packages", "ssr-example", "public/myreact-dom/index.production.js")
+      resolve(process.cwd(), "ui", "ssr-example", "public/myreact-dom/index.production.js")
     ),
     copyContent(
       resolve(process.cwd(), "packages", "myreact-dom", "dist/umd/index.development.js.map"),
-      resolve(process.cwd(), "packages", "ssr-example", "public/myreact-dom/index.development.js.map")
+      resolve(process.cwd(), "ui", "ssr-example", "public/myreact-dom/index.development.js.map")
     ),
     copyContent(
       resolve(process.cwd(), "packages", "myreact-dom", "dist/umd/index.production.js.map"),
-      resolve(process.cwd(), "packages", "ssr-example", "public/myreact-dom/index.production.js.map")
+      resolve(process.cwd(), "ui", "ssr-example", "public/myreact-dom/index.production.js.map")
     ),
   ]).then(() => {
     myReactDOMPending = false;

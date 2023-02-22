@@ -1,0 +1,66 @@
+schema: "site/graphql/schema.graphql"
+generates:
+  site/graphql/src/schema.ts:
+    plugins:
+      - add:
+          content: |
+            /* eslint-disable */
+            // @ts-nocheck
+      - typescript
+
+  # there are a bug for code-gen https://github.com/dotansimha/graphql-code-generator/discussions/7313
+  # packages/graphql/src/fragment.ts:
+  #   documents: 'packages/graphql/src/fragments/*.graphql'
+  #   preset: import-types
+  #   presetConfig:
+  #     typesPath: ./schema.ts
+  #   plugins:
+  #     - add:
+  #         content: |
+  #           /* eslint-disable */
+  #           // @ts-nocheck
+  #     - typescript-operations
+  #     - typed-document-node
+
+  # packages/graphql/src/document/:
+  #   documents: 'packages/graphql/src/document/**/*.graphql'
+  #   preset: near-operation-file
+  #   presetConfig:
+  #     extension: .generated.ts
+  #     baseTypesPath: ../schema.ts
+  #     importTypesNamespace: SchemaTypes
+  #     importAllFragmentsFrom: ../fragment.ts
+  #   plugins:
+  #     - add:
+  #         content: |
+  #           /* eslint-disable */
+  #           // @ts-nocheck
+  #     - typescript-operations
+  #     - typed-document-node
+  #   config:
+  #     skipTypename: true
+  #     dedupeFragments: true
+  #     useTypeImports: true
+
+  site/graphql/src/generated.ts:
+    documents:
+      - site/graphql/src/document/**/*.graphql
+    preset: import-types
+    presetConfig:
+      typesPath: ./schema
+      importTypesNamespace: SchemaTypes
+    plugins:
+      - add:
+          content: |
+            /* eslint-disable */
+            // @ts-nocheck
+      - typescript-operations
+      - typed-document-node
+    config:
+      skipTypename: true
+      dedupeFragments: true
+      useTypeImports: true
+
+hooks:
+  afterAllFileWrite:
+    - prettier --write

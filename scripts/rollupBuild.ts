@@ -1,10 +1,10 @@
 import { rollup } from "rollup";
 
-import { copyMyReact, copyMyReactDOM } from "./cope";
+// import { copyMyReact, copyMyReactDOM } from "./cope";
 import { getRollupConfig } from "./rollupConfig";
 
 import type { packages } from "./type";
-import type { OutputOptions, RollupOptions , RollupBuild } from "rollup";
+import type { OutputOptions, RollupOptions, RollupBuild } from "rollup";
 
 const build = async (packageName: string, rollupOptions: RollupOptions, mode: string, isUMD: boolean) => {
   console.log(`[build] start build package '${packageName}' with ${mode} mode ${isUMD ? "in umd format" : ""}`);
@@ -22,8 +22,8 @@ const build = async (packageName: string, rollupOptions: RollupOptions, mode: st
   console.log(`[build] build package '${packageName}' with ${mode} mode ${isUMD ? "in umd format success" : "success"}`);
 };
 
-const rollupBuild = async (packageName: packages) => {
-  const { allOtherDev, allOtherProd, allSingleOther, allSingleUMD, allUMDDev, allUMDProd } = await getRollupConfig(packageName);
+const rollupBuild = async (packageName: packages, packageScope?: string) => {
+  const { allOtherDev, allOtherProd, allSingleOther, allSingleUMD, allUMDDev, allUMDProd } = await getRollupConfig(packageName, packageScope);
 
   const all = [];
 
@@ -61,8 +61,8 @@ const start = async () => {
   await rollupBuild("myreact-jsx");
   await rollupBuild("myreact-reconciler");
   await rollupBuild("myreact-dom");
-  await copyMyReact();
-  await copyMyReactDOM();
+  await rollupBuild("axios", "site");
+  await rollupBuild("graphql", "site");
   process.exit(0);
 };
 

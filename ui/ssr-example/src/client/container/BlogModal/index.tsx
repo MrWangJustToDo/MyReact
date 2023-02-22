@@ -2,6 +2,7 @@ import React, { memo, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router";
 
 import { useOverlaysClose, useOverlaysOpen } from "@client/hooks";
+import { getIsStaticGenerate } from "@shared";
 
 import { DetailModalBody, DetailModalHeader } from "./DetailModal";
 
@@ -23,7 +24,7 @@ const _BlogModal = () => {
           query.delete("detailId");
           query.delete("overlay");
           const string = query.toString();
-          navigate(`/${string ? "?" + string : ""}`);
+          navigate(`${getIsStaticGenerate() ? "/MyReact/" : "/"}${string ? "?" + string : ""}`);
         },
       });
     } else {

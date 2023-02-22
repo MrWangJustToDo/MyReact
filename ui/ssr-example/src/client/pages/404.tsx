@@ -2,6 +2,8 @@ import { Code, useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
+import { getIsStaticGenerate } from "@shared";
+
 export default function Index() {
   const navigate = useNavigate();
   const open = useToast();
@@ -12,7 +14,7 @@ export default function Index() {
       description: "not found page, redirect to home page",
       status: "error",
     });
-    navigate("/");
+    navigate(`${getIsStaticGenerate() ? "/MyReact/" : "/"}`);
   }, [open, navigate]);
 
   return <Code>404 page</Code>;

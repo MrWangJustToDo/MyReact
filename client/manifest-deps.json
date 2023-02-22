@@ -1,0 +1,38 @@
+{
+  "./Animate": {
+    "path": [
+      "pages-Animate.js"
+    ],
+    "static": true
+  },
+  "./Antd": {
+    "path": [
+      "pages-Antd.js"
+    ],
+    "static": true
+  },
+  "./Foo": {
+    "path": [
+      "pages-Foo.js"
+    ],
+    "static": true
+  },
+  "./": {
+    "path": [
+      "pages-.js"
+    ],
+    "static": true
+  },
+  "./Bar": {
+    "path": [
+      "pages-Bar.js"
+    ],
+    "static": true
+  },
+  "./404": {
+    "path": [
+      "pages-404.js"
+    ],
+    "static": true
+  }
+}

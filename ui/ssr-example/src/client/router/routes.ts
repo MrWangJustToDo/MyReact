@@ -1,8 +1,6 @@
 import loadable from "@loadable/component";
 import { createElement } from "react";
 
-import { getIsStaticGenerate } from "@shared";
-
 import { AutoInjectProps } from "../common/AutoInjectProps";
 
 import { dynamicRouteConfig } from "./dynamicRoutes";
@@ -20,7 +18,8 @@ const baseRouter: PreLoadRouteConfig = {
 
 const dynamicRoutes = dynamicRouteConfig
   .map(({ path, componentPath }) => {
-    if (getIsStaticGenerate()) {
+    // just set true for current usage
+    if (__DEVELOPMENT__ ? false : true) {
       if (path.startsWith("/")) {
         return {
           path: `/MyReact/${path.slice(1)}`,

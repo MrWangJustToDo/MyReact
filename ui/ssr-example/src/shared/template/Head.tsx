@@ -10,7 +10,7 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     <meta name="power-by" content={`@my-react ꒰ঌ( ⌯' '⌯)໒꒱`} />
     <meta
       name="description"
-      content="@my-react is a React like package, it can be used to build a modern website just like this, welcome to use this, fell free to fire a issue if you have! link: https://github.com/MrWangJustToDo/MyReact"
+      content="@my-react is a React like package, it can be used to build a modern website just like this, feel free to use and fire a issue if you have! link: https://github.com/MrWangJustToDo/MyReact"
     />
     <meta name="keyword" content="react, react-dom, ssr, csr, ssg" />
     <base href={getIsStaticGenerate() ? "/MyReact/" : "/"} />

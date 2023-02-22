@@ -3,6 +3,7 @@ const path = require("path");
 
 dotenv.config();
 
+console.log(process.env.REACT, process.env.REACT === 'myreact');
 if (process.env.REACT === "myreact") {
   require("module-alias/register");
 }

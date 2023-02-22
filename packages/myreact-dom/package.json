@@ -3,7 +3,6 @@
   "description": "@my-react/react-dom",
   "version": "0.0.3",
   "main": "index.js",
-  "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
@@ -13,19 +12,16 @@
     ".": {
       "require": "./index.js",
       "node": "./index.js",
-      "import": "./dist/esm/index.js",
       "default": "./index.js"
     },
     "./client": {
       "require": "./index.js",
       "node": "./index.js",
-      "import": "./dist/esm/index.js",
       "default": "./index.js"
     },
     "./server": {
       "require": "./index.js",
       "node": "./index.js",
-      "import": "./dist/esm/index.js",
       "default": "./index.js"
     }
   },
@@ -36,9 +32,7 @@
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
         "format": "cjs",
-        "esModule": false,
         "multiple": true,
-        "exports": "named",
         "globals": {
           "@my-react/react": "React"
         },
@@ -48,7 +42,6 @@
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
-        "exports": "named",
         "globals": {
           "@my-react/react": "React"
         },
@@ -58,8 +51,6 @@
         "dir": "./dist",
         "entryFileNames": "umd/index.js",
         "format": "umd",
-        "esModule": false,
-        "exports": "named",
         "multiple": true,
         "globals": {
           "@my-react/react": "React"
@@ -70,11 +61,9 @@
     ]
   },
   "dependencies": {
+    "@my-react/react": "0.0.3",
+    "@my-react/react-shared": "0.0.3",
+    "@my-react/react-reconciler": "0.0.3",
     "lodash": "^4.17.21"
-  },
-  "peerDependencies": {
-    "@my-react/react": "workspace:*",
-    "@my-react/react-shared": "workspace:*",
-    "@my-react/react-reconciler": "workspace:*"
   }
 }

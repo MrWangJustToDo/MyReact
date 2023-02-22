@@ -8,17 +8,17 @@ const flushSync = safeCall;
 
 const unstable_batchedUpdates = safeCall;
 
-const ReactDOM = {
-  render,
-  hydrate,
-  findDOMNode,
-  createPortal,
-  renderToString,
-  flushSync,
-  unmountComponentAtNode,
-  unstable_batchedUpdates,
-  version,
-};
+// const ReactDOM = {
+//   render,
+//   hydrate,
+//   findDOMNode,
+//   createPortal,
+//   renderToString,
+//   flushSync,
+//   unmountComponentAtNode,
+//   unstable_batchedUpdates,
+//   version,
+// };
 
 export {
   render,
@@ -30,5 +30,4 @@ export {
   flushSync,
   unstable_batchedUpdates,
   version,
-  ReactDOM as default,
 };

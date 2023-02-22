@@ -266,24 +266,47 @@ importers:
       webpack-node-externals: 3.0.0
 
   packages/myreact:
-    specifiers: {}
+    specifiers:
+      '@my-react/react-reactive': 0.0.3
+      '@my-react/react-shared': 0.0.3
+    dependencies:
+      '@my-react/react-reactive': link:../myreact-reactivity
+      '@my-react/react-shared': link:../myreact-shared
 
   packages/myreact-dom:
     specifiers:
+      '@my-react/react': 0.0.3
+      '@my-react/react-reconciler': 0.0.3
+      '@my-react/react-shared': 0.0.3
       lodash: ^4.17.21
     dependencies:
+      '@my-react/react': link:../myreact
+      '@my-react/react-reconciler': link:../myreact-reconciler
+      '@my-react/react-shared': link:../myreact-shared
       lodash: 4.17.21
 
   packages/myreact-jsx:
-    specifiers: {}
+    specifiers:
+      '@my-react/react': 0.0.3
+      '@my-react/react-shared': 0.0.3
+    dependencies:
+      '@my-react/react': link:../myreact
+      '@my-react/react-shared': link:../myreact-shared
 
   packages/myreact-reactivity:
-    specifiers: {}
+    specifiers:
+      '@my-react/react-shared': 0.0.3
+    dependencies:
+      '@my-react/react-shared': link:../myreact-shared
 
   packages/myreact-reconciler:
     specifiers:
+      '@my-react/react': 0.0.3
+      '@my-react/react-shared': 0.0.3
       lodash: ^4.17.21
     dependencies:
+      '@my-react/react': link:../myreact
+      '@my-react/react-shared': link:../myreact-shared
       lodash: 4.17.21
 
   packages/myreact-shared:

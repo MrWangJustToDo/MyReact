@@ -14,9 +14,6 @@ import { createEmotionCache, HTML } from "@shared";
 import type { SafeAction } from "../compose";
 
 export const targetRender: SafeAction = async ({ req, res, store, lang, env }) => {
-  // has error for vite
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  // const { StaticRouter: Router } = await import("react-router-dom/server.js");
 
   const helmetContext = {};
 

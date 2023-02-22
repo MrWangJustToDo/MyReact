@@ -7,8 +7,8 @@ import { setApi } from "./api";
 import { generateHandler } from "./app";
 import { generateStaticPage } from "./generator";
 import { develop } from "./middleware/develop";
-import { serverLog } from "./util/serverLog";
 import { page } from "./static";
+import { serverLog } from "./util/serverLog";
 
 let handlerRender = generateHandler;
 

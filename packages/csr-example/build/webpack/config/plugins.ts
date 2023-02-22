@@ -3,6 +3,7 @@ import ESLintWebpackPlugin from "eslint-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { DefinePlugin, HotModuleReplacementPlugin } from "webpack";
+// import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import { WebpackManifestPlugin } from "webpack-manifest-plugin";
 
 import { MANIFEST } from "../utils";
@@ -40,4 +41,5 @@ export const pluginsConfig = ({ env, isDEV }: SafeGenerateActionProps): Configur
         extensions: ["js", "jsx", "ts", "tsx"],
         quiet: true,
       }),
+    // env === "client" && isDEV && new BundleAnalyzerPlugin(),
   ].filter(Boolean) as Configuration["plugins"];

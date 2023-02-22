@@ -3,7 +3,6 @@
   "description": "@my-react/react",
   "version": "0.0.3",
   "main": "index.js",
-  "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
@@ -13,7 +12,6 @@
     ".": {
       "require": "./index.js",
       "node": "./index.js",
-      "import": "./dist/esm/index.js",
       "default": "./index.js"
     }
   },
@@ -23,9 +21,7 @@
       {
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
-        "esModule": false,
         "format": "cjs",
-        "exports": "named",
         "multiple": true,
         "sourcemap": true
       },
@@ -33,23 +29,20 @@
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
-        "exports": "named",
         "sourcemap": true
       },
       {
         "dir": "./dist",
         "entryFileNames": "umd/index.js",
         "format": "umd",
-        "esModule": false,
-        "exports": "named",
         "multiple": true,
         "name": "React",
         "sourcemap": true
       }
     ]
   },
-  "peerDependencies": {
-    "@my-react/react-shared": "workspace:*",
-    "@my-react/react-reactive": "workspace:*"
+  "dependencies": {
+    "@my-react/react-shared": "0.0.3",
+    "@my-react/react-reactive": "0.0.3"
   }
 }

@@ -19,16 +19,16 @@
       "default": "./index.js"
     },
     "./jsx-runtime": {
-      "types": "./jsx-runtime.d.ts",
-      "node": "./index.js",
       "import": "./dist/esm/index.js",
-      "default": "./index.js"
+      "node": "./index.js",
+      "default": "./index.js",
+      "types": "./jsx-runtime.d.ts"
     },
     "./jsx-dev-runtime": {
-      "types": "./jsx-dev-runtime.d.ts",
-      "node": "./index.js",
       "import": "./dist/esm/index.js",
-      "default": "./index.js"
+      "node": "./index.js",
+      "default": "./index.js",
+      "types": "./jsx-dev-runtime.d.ts"
     }
   },
   "buildOptions": {
@@ -37,7 +37,6 @@
       {
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
-        "esModule": false,
         "format": "cjs",
         "multiple": true,
         "sourcemap": true
@@ -50,8 +49,8 @@
       }
     ]
   },
-  "peerDependencies": {
-    "@my-react/react": "workspace:*",
-    "@my-react/react-shared": "workspace:*"
+  "dependencies": {
+    "@my-react/react": "0.0.3",
+    "@my-react/react-shared": "0.0.3"
   }
 }

@@ -37,6 +37,8 @@ const jsRules = ({ isDEV }: SafeGenerateActionProps): RuleSetRule => {
       {
         loader: "babel-loader",
         options: {
+          // sor some reason, without this config will cause babel compiler all the @my-react package to esModule, which will cause client side import error
+          sourceType: "unambiguous",
           cacheDirectory: true,
           configFile: resolve(process.cwd(), "babel.config.js"),
         },

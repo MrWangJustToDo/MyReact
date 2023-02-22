@@ -8,8 +8,8 @@ import { logger } from "./log";
 
 import type { Compiler } from "webpack";
 
-const withCompiler = async () => {
-  await new DynamicRouter("universal").getDynamicRouter();
+const withCompiler = async (basePath?: string) => {
+  await new DynamicRouter("universal").getDynamicRouter(basePath);
   const multiConfig = definedWebpackConfig({
     serverEntry: process.env.SERVER_ENTRY,
     clientEntry: process.env.CLIENT_ENTRY,
@@ -28,4 +28,4 @@ const withCompiler = async () => {
   }
 };
 
-export const start = async () => await withCompiler();
+export const start = async (basePath?: string) => await withCompiler(basePath);

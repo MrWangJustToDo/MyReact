@@ -1,24 +1,24 @@
 {
   "name": "client",
-  "hash": "8f651d3068101af6a685",
+  "hash": "650337fbf3737d244509",
   "publicPath": "client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
   "assetsByChunkName": {
     "main": [
       "main-40b1cfae2302db36702a.css",
-      "main-6aaf8f93c35abde09550.js"
+      "main-90d20b0d5da7da3531b6.js"
     ],
     "runtime": [
-      "runtime-5adccc1c6111b6ec26dc.js"
+      "runtime-91a0f3afd00434fd3116.js"
     ],
     "common-Layout": [
       "common-Layout-a7550129868debf6663a.js"
     ],
     "pages-": [
-      "pages--e0cadefa73cee9e5b513.js"
+      "pages--949e83c49e6592b4bbf1.js"
     ],
     "pages-404": [
-      "pages-404-b1fbba19c3b25e15ee82.js"
+      "pages-404-300e71394fb865491714.js"
     ],
     "pages-Animate": [
       "pages-Animate-10035179d3c563b9d73f.js"
@@ -177,18 +177,18 @@
     },
     {
       "type": "asset",
-      "name": "main-6aaf8f93c35abde09550.js",
+      "name": "main-90d20b0d5da7da3531b6.js",
       "size": 175095,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "6aaf8f93c35abde09550",
+        "contenthash": "90d20b0d5da7da3531b6",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "main-6aaf8f93c35abde09550.js.map"
+          "sourceMap": "main-90d20b0d5da7da3531b6.js.map"
         }
       },
       "chunkNames": [
@@ -235,18 +235,18 @@
     },
     {
       "type": "asset",
-      "name": "pages--e0cadefa73cee9e5b513.js",
-      "size": 24572,
+      "name": "pages--949e83c49e6592b4bbf1.js",
+      "size": 24690,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "e0cadefa73cee9e5b513",
+        "contenthash": "949e83c49e6592b4bbf1",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "pages--e0cadefa73cee9e5b513.js.map"
+          "sourceMap": "pages--949e83c49e6592b4bbf1.js.map"
         }
       },
       "chunkNames": [
@@ -405,18 +405,18 @@
     },
     {
       "type": "asset",
-      "name": "runtime-5adccc1c6111b6ec26dc.js",
+      "name": "runtime-91a0f3afd00434fd3116.js",
       "size": 3644,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "5adccc1c6111b6ec26dc",
+        "contenthash": "91a0f3afd00434fd3116",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "runtime-5adccc1c6111b6ec26dc.js.map"
+          "sourceMap": "runtime-91a0f3afd00434fd3116.js.map"
         }
       },
       "chunkNames": [
@@ -518,33 +518,18 @@
     },
     {
       "type": "asset",
-      "name": "manifest-deps.json",
-      "size": 480,
-      "emitted": false,
-      "comparedForEmit": false,
-      "cached": true,
-      "info": {},
-      "chunkNames": [],
-      "chunkIdHints": [],
-      "auxiliaryChunkNames": [],
-      "auxiliaryChunkIdHints": [],
-      "chunks": [],
-      "auxiliaryChunks": []
-    },
-    {
-      "type": "asset",
-      "name": "pages-404-b1fbba19c3b25e15ee82.js",
-      "size": 443,
+      "name": "pages-404-300e71394fb865491714.js",
+      "size": 504,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "b1fbba19c3b25e15ee82",
+        "contenthash": "300e71394fb865491714",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "pages-404-b1fbba19c3b25e15ee82.js.map"
+          "sourceMap": "pages-404-300e71394fb865491714.js.map"
         }
       },
       "chunkNames": [
@@ -557,6 +542,21 @@
       "chunks": [
         751
       ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "manifest-deps.json",
+      "size": 480,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {},
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [],
       "auxiliaryChunks": []
     }
   ],
@@ -574,7 +574,7 @@
       ],
       "assets": [
         {
-          "name": "runtime-5adccc1c6111b6ec26dc.js"
+          "name": "runtime-91a0f3afd00434fd3116.js"
         },
         {
           "name": "vendor-ui-c1089cc90bc92c7803fa.js"
@@ -598,7 +598,7 @@
           "name": "main-40b1cfae2302db36702a.css"
         },
         {
-          "name": "main-6aaf8f93c35abde09550.js"
+          "name": "main-90d20b0d5da7da3531b6.js"
         }
       ],
       "filteredAssets": 0,
@@ -674,7 +674,7 @@
           "name": "vendor-lodash-cc359be90fb17dff7e03.js"
         },
         {
-          "name": "pages--e0cadefa73cee9e5b513.js"
+          "name": "pages--949e83c49e6592b4bbf1.js"
         }
       ],
       "filteredAssets": 0,
@@ -702,7 +702,7 @@
           "name": "vendor-88418c6e25fae1ae8fcd.js"
         },
         {
-          "name": "pages-404-b1fbba19c3b25e15ee82.js"
+          "name": "pages-404-300e71394fb865491714.js"
         }
       ],
       "filteredAssets": 0,
@@ -730,7 +730,7 @@
           "name": "vendor-88418c6e25fae1ae8fcd.js"
         },
         {
-          "name": "pages-404-b1fbba19c3b25e15ee82.js"
+          "name": "pages-404-300e71394fb865491714.js"
         }
       ],
       "filteredAssets": 0,
@@ -990,7 +990,7 @@
           "name": "vendor-lodash-cc359be90fb17dff7e03.js"
         },
         {
-          "name": "pages--e0cadefa73cee9e5b513.js"
+          "name": "pages--949e83c49e6592b4bbf1.js"
         }
       ],
       "filteredAssets": 0,
@@ -1030,7 +1030,7 @@
           "name": "vendor-lodash-cc359be90fb17dff7e03.js"
         },
         {
-          "name": "pages--e0cadefa73cee9e5b513.js"
+          "name": "pages--949e83c49e6592b4bbf1.js"
         }
       ],
       "filteredAssets": 0,
@@ -1047,13 +1047,13 @@
       "id": 179,
       "files": [
         "main-40b1cfae2302db36702a.css",
-        "main-6aaf8f93c35abde09550.js"
+        "main-90d20b0d5da7da3531b6.js"
       ]
     },
     {
       "id": 666,
       "files": [
-        "runtime-5adccc1c6111b6ec26dc.js"
+        "runtime-91a0f3afd00434fd3116.js"
       ]
     },
     {
@@ -1065,13 +1065,13 @@
     {
       "id": 617,
       "files": [
-        "pages--e0cadefa73cee9e5b513.js"
+        "pages--949e83c49e6592b4bbf1.js"
       ]
     },
     {
       "id": 751,
       "files": [
-        "pages-404-b1fbba19c3b25e15ee82.js"
+        "pages-404-300e71394fb865491714.js"
       ]
     },
     {

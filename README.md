@@ -1,103 +1,61 @@
-# MyReact -- a tiny library just like React 17, used to learn/debug the internal of react
+# MyReact -- a React like project
 
-# React api, see `@my-react/react` package
 
-## React.createElement
+``` shell
+// install
+pnpm add @my-react/react @my-react/react-dom
+```
+This project provider a react like formwork to build site, you can see this project github page which build by @my-react package
 
-## React.cloneElement
+---
 
-## React.isValidElement
+### if you want to debug this project
+```
+clone this project
 
-## React.Children (just like React)
-
-## React.component
-
-## React.PureComponent
-
-## React.Fragment
-
-## React.lazy
-
-## React.Suspense
-
-## React.createRef
-
-## React.forwardRef
-
-## React.createContext
-
-## React.StrictMode
-
-#
-
-# Hook api
-
-## useRef
-
-## useMemo
-
-## useState
-
-## useEffect
-
-## useReducer
-
-## useContext
-
-## useCallback
-
-## useDebugValue
-
-## useLayoutEffect
-
-## useImperativeHandle
-
-#
-
-# ReactDOM api, see `@my-react/react-dom` package
-
-## ReactDOM.render
-
-## ReactDOM.hydrate
-
-## ReactDOM.findDOMNode
-
-## ReactDOM.createPortal
-
-## ReactDOM.renderToString
-
-## ReactDOM.unmountComponentAtNode
-
-#
-
-# install and test
-
-```shell
 pnpm install
-pnpm run dev:ssr or pnpm run dev:csr
+
+pnpm gen:gql
+
+pnpm build
+
+pnpm dev:ssr / dev:csr
 ```
 
-you can see the `.env` file to learn how to switch render formwork `myreact or react`
+---
+## api
+|@my-react/react|@my-react/react-dom|
+|---------------|-------------------|
+|createELement  |render             |
+|cloneElement   |renderToString     |
+|isValidElement |findDOMNode        |
+|Children       |hydrate            |
+|lazy           |createPortal       |
+|forwardRef     |unmountComponentAtNode|
+|createContext  ||
+|createRef||
+|memo||
+|Component||
+|PureComponent||
+|StrictMode||
+|Fragment||
+|Suspense||
 
-#
+## hook api
+|@my-react/react|
+|---------------|
+|useState|
+|useEffect|
+|useLayoutEffect|
+|useRef|
+|useMemo|
+|useReducer|
+|useCallback|
+|useContext|
+|useImperativeHandle|
+|useDebugValue|
 
-# more ...
-
-## Redux
-
-## ReactRedux
-
-## thunkMiddleware
-
-## Build tools
-
-## zustand
-
-## ReduxToolKit
-
-## more
-
-## KeepLive component
+---
 
 ## Vue like reactive api
 

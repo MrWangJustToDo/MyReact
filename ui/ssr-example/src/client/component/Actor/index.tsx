@@ -14,13 +14,13 @@ interface ActorProps extends FlexProps {
 export const Actor = forwardRef<ActorProps, "div">(({ avatarUrl, login, time, avatarProps, children, ...resProps }, ref) => {
   return (
     <Flex {...resProps} ref={ref}>
-      <Flex alignItems="center">
+      <Flex alignItems="center" width="100%">
         <Avatar src={avatarUrl} title={login} name={login} size="sm" {...avatarProps} />
-        <Box marginLeft="2">
-          <Text fontWeight="semibold" fontSize="sm">
+        <Box marginLeft="2" maxWidth="200px">
+          <Text fontWeight="semibold" fontSize="sm" noOfLines={1}>
             {login}
           </Text>
-          <Text fontSize="x-small" color="lightTextColor">
+          <Text fontSize="x-small" color="lightTextColor" noOfLines={1}>
             {momentTo(time)}
           </Text>
         </Box>

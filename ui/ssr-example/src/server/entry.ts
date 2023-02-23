@@ -19,9 +19,9 @@ const startApp = async () => {
 
   app.use(express.static(`${process.cwd()}/public`));
 
-  app.use(express.static(`${process.cwd()}/dist`));
+  !__DEVELOPMENT__ && app.use(express.static(`${process.cwd()}/dist`));
 
-  page(app);
+  !__DEVELOPMENT__ && page(app);
 
   setApi(app);
 

@@ -66,7 +66,8 @@ export class PlainElement {
   serializeAttrs() {
     const attrsKeys = Object.keys(this.attrs);
     if (attrsKeys.length) {
-      return attrsKeys.map((key) => `${key}='${this.attrs[key]?.toString()}'`).reduce((p, c) => `${p} ${c}`);
+      // TODO
+      return attrsKeys.map((key) => `${key}="${this.attrs[key]?.toString()}"`).reduce((p, c) => `${p} ${c}`);
     } else {
       return "";
     }

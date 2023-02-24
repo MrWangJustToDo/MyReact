@@ -5,9 +5,10 @@ import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT }
 import { useDomSize, useGetResponseListLayout } from "@client/hooks";
 
 import { Card } from "../Card";
+import { Game } from "../Game";
 import { GridCard } from "../GridCard";
 import { ReactGridLayout } from "../GridLayout";
-import Reactive from "../Reactive";
+import { Reactive } from "../Reactive";
 
 import { Item } from "./Item";
 
@@ -48,6 +49,9 @@ const _BlogGrid = ({ data, disableGridLayout = true }: { data: GetBlogListQuery[
       <SimpleGrid width="100%" padding="2" columns={{ base: 1, lg: 2, xl: 3 }} spacing={3}>
         <Card>
           <Reactive />
+        </Card>
+        <Card>
+          <Game />
         </Card>
         {data.map((p, index) => (
           <Card key={p.id + index} maxHeight="96">

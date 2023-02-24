@@ -25,8 +25,8 @@ export const targetRender: AnyAction = async ({ res, store, lang, env }) => {
     "<!doctype html>" +
       renderToString(
         <HTML
+          lang={lang}
           env={JSON.stringify(env)}
-          lang={JSON.stringify(lang)}
           link={linkElements.concat(styleElements)}
           preloadedState={JSON.stringify(store.getState())}
           script={scriptElements}

@@ -53,8 +53,8 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
       renderToString(
         (
           <HTML
+            lang={lang}
             env={JSON.stringify(env)}
-            lang={JSON.stringify(lang)}
             script={scriptElements}
             helmetContext={helmetContext}
             // emotionChunks={emotionChunks}

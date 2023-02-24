@@ -45,29 +45,64 @@ type LogProps = {
 };
 
 export const log = ({ fiber, message, level = "warn", triggerOnce = false }: LogProps) => {
-  const tree = getFiberTree(fiber || currentRunningFiber.current);
+  if (__DEV__) {
+    const tree = getFiberTree(fiber || currentRunningFiber.current);
+    if (triggerOnce) {
+      const messageKey = message.toString();
+      cache[messageKey] = cache[messageKey] || {};
+      if (cache[messageKey][tree]) return;
+      cache[messageKey][tree] = true;
+    }
+    if (level === "warn") {
+      originalConsoleWarn(
+        `[${level}]:`,
+        "\n-----------------------------------------\n",
+        `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
+        "\n-----------------------------------------\n",
+        "Render Tree:",
+        tree
+      );
+      return;
+    }
+    if (level === "error") {
+      originalConsoleError(
+        `[${level}]:`,
+        "\n-----------------------------------------\n",
+        `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
+        "\n-----------------------------------------\n",
+        "Render Tree:",
+        tree
+      );
+    }
+    return;
+  }
+  const currentFiber = fiber || currentRunningFiber.current;
+  const tree = getFiberTree(currentFiber);
   if (triggerOnce) {
     const messageKey = message.toString();
     cache[messageKey] = cache[messageKey] || {};
-    if (cache[messageKey][tree]) return;
-    cache[messageKey][tree] = true;
+    if (cache[messageKey][currentFiber.uid || "max"]) return;
+    cache[messageKey][currentFiber.uid || "max"] = true;
   }
+  // look like a ts bug
   if (level === "warn") {
     originalConsoleWarn(
       `[${level}]:`,
       "\n-----------------------------------------\n",
-      `${typeof message === "string" ? message : message.stack || message.message}`,
+      `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
       "\n-----------------------------------------\n",
-      "Render Tree:",
+      "cause by:",
       tree
     );
-  } else if (level === "error") {
+    return;
+  }
+  if (level === "error") {
     originalConsoleError(
       `[${level}]:`,
       "\n-----------------------------------------\n",
-      `${typeof message === "string" ? message : message.stack || message.message}`,
+      `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
       "\n-----------------------------------------\n",
-      "Render Tree:",
+      "cause by:",
       tree
     );
   }

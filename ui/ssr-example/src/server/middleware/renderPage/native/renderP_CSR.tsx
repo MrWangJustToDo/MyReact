@@ -22,7 +22,6 @@ export const targetRender: AnyAction = async ({ res, env, lang }) => {
   const scriptElements = webExtractor.getScriptElements();
 
   res.send(
-    "<!doctype html>" +
-      renderToString(<HTML env={JSON.stringify(env)} lang={JSON.stringify(lang)} link={linkElements.concat(styleElements)} script={scriptElements} />)
+    "<!doctype html>" + renderToString(<HTML env={JSON.stringify(env)} lang={lang} link={linkElements.concat(styleElements)} script={scriptElements} />)
   );
 };

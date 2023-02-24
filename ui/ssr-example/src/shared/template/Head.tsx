@@ -5,14 +5,14 @@ import type { HTMLProps } from ".";
 export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}", helmetContext: { helmet } = {}, emotionChunks }: HTMLProps) => (
   <head>
     <meta charSet="utf-8" />
-    <meta name="theme-color" content="red" />
     <meta name="build-time" content={__BUILD_TIME__} />
     <meta name="power-by" content={`@my-react ꒰ঌ( ⌯' '⌯)໒꒱`} />
+    <meta name="author" content="MrWangJustToDo" />
     <meta
       name="description"
       content="@my-react is a React like package, it can be used to build a modern website just like this, feel free to use and fire a issue if you have! link: https://github.com/MrWangJustToDo/MyReact"
     />
-    <meta name="keyword" content="react, react-dom, ssr, csr, ssg" />
+    <meta name="keywords" content="react, react-dom, ssr, csr, ssg" />
     <base href={getIsStaticGenerate() ? "/MyReact/" : "/"} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     {/* a type issue for react-helmet-async  */}

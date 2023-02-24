@@ -18,13 +18,7 @@ export const generateRender = () => (_req: Request, res: Response) => {
   res.send(
     "<!doctype html>" +
       renderToString(
-        <HTML
-          env={JSON.stringify({})}
-          lang={JSON.stringify("en")}
-          link={linkElements.concat(styleElements)}
-          preloadedState={JSON.stringify({})}
-          script={scriptElements}
-        />
+        <HTML env={JSON.stringify({})} lang={"en"} link={linkElements.concat(styleElements)} preloadedState={JSON.stringify({})} script={scriptElements} />
       )
   );
 };

@@ -9,7 +9,7 @@ const { onMounted, onUnmounted, reactiveApi } = __my_react_reactive__;
 
 const { reactive, ref } = reactiveApi;
 
-const Reactive = createReactive({
+const _Reactive = createReactive({
   name: "testReactive",
   setup: () => {
     const countRef = ref(0);
@@ -53,4 +53,4 @@ const Reactive = createReactive({
   },
 });
 
-export default Reactive as unknown as FunctionComponent;
+export const Reactive = _Reactive as unknown as FunctionComponent;

@@ -17,8 +17,6 @@ import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext
 import type { LinkTreeList } from "@my-react/react-shared";
 
 export class ServerDispatch implements FiberDispatch {
- 
-  
   effectMap: Record<string, (() => void)[]> = {};
 
   strictMap: Record<string, boolean> = {};

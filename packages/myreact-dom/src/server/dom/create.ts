@@ -13,7 +13,6 @@ export const create = (fiber: MyReactFiberNode) => {
       const typedElement = fiber.element as MyReactElement;
       fiber.node = new PlainElement(typedElement.type as string);
     } else if (fiber.type & NODE_TYPE.__isCommentNode__) {
-      // const typedElement = fiber.element as MyReactElement;
       if (isCommentStartElement(fiber)) {
         fiber.node = new CommentStartElement();
       } else {

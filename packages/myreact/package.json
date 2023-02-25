@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react",
   "description": "@my-react/react",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [

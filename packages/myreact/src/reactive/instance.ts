@@ -66,7 +66,6 @@ export class MyReactReactiveInstance<
 
   unmount(): void {
     super.unmount();
-    // this.beforeUnmountHooks.forEach((f) => f?.());
     this.effect.stop();
     this.unmountedHooks.forEach((f) => f?.());
   }

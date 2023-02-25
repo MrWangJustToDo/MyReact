@@ -12,6 +12,3 @@ export const enableControlComponent = createRef(true);
 export const enableEventSystem = createRef(true);
 
 export const enableHighlight = createRef(false);
-
-// TODO
-export const enableFastLoop = createRef(false);

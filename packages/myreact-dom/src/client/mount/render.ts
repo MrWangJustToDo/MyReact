@@ -1,5 +1,6 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { checkIsSameType } from "@my-react/react-reconciler";
+import { once } from "@my-react/react-shared";
 
 import { DomPlatform, DomScope, startRender, unmountComponentAtNode } from "../../shared";
 import { ClientDispatch } from "../dispatch";
@@ -15,6 +16,10 @@ export type RenderContainer = Element & {
 const { MyReactFiberNode: MyReactFiberNodeClass, MyReactFiberNodeRoot } = __my_react_internal__;
 
 const { initialFiberNode } = __my_react_shared__;
+
+const onceLog = once(() => {
+  console.log('you are using @my-react to render this site, see https://github.com/MrWangJustToDo/MyReact')
+})
 
 export const render = (element: MyReactElement, container: RenderContainer) => {
   const containerFiber = container.__fiber__;
@@ -63,6 +68,8 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
   container.__scope__ = globalScope;
 
   container.__dispatch__ = globalDispatch;
+
+  onceLog();
 
   initialFiberNode(fiber);
 

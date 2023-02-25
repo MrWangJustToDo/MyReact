@@ -1,3 +1,5 @@
+import { resolve } from "path";
+
 import { manifestStaticPageFile } from "../util/webpackManifest";
 
 import {
@@ -9,6 +11,7 @@ import {
   writeContentToFilePath,
   getStaticPageOutputPath,
   getGithubPageOutputPath,
+  copyDir,
 } from "./util";
 
 export const generateStaticPage = async () => {
@@ -30,15 +33,16 @@ export const generateStaticPage = async () => {
       },
     }));
 
+  await copyDir(resolve(process.cwd(), "public"), resolve(process.cwd(), "dist"));
+
   const generateManifest = await Promise.all(
     allStaticRoutersPageWithFilePath.map((config) =>
       prepareOutputPath(config.pathConfig.filePath)
         .then(() => writeContentToFilePath(config.pathConfig.ghPagePath, config.rawData as string).catch((e) => console.log(e)))
-        .then(
-          () =>
-            writeContentToFilePath(config.pathConfig.filePath, config.rawData as string)
-              .then(() => ({ config, state: true }))
-              .catch(() => ({ config, state: false }))
+        .then(() =>
+          writeContentToFilePath(config.pathConfig.filePath, config.rawData as string)
+            .then(() => ({ config, state: true }))
+            .catch(() => ({ config, state: false }))
         )
     )
   );

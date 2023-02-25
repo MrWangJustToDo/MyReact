@@ -1,6 +1,8 @@
+import { createReadStream, createWriteStream } from "fs";
 import fs from "fs/promises";
 import http from "http";
 import path from "path";
+import { pipeline } from "stream/promises";
 
 import { getAllStateFileContent, manifestDepsFile } from "../util/webpackManifest";
 
@@ -57,6 +59,29 @@ export const getFileNameFromPath = (pathConfig: { p: string }) => {
   return { ...pathConfig, fileName };
 };
 
+export const copyDir = async (src: string, targetDir: string) => {
+  const srcState = await fs.stat(src);
+  if (srcState.isDirectory()) {
+    const allItem = await fs.readdir(src, { withFileTypes: true });
+    for (let i = 0; i < allItem.length; i++) {
+      const file = allItem[i];
+      if (file.isFile()) {
+        await pipCopy(path.resolve(src, file.name), path.resolve(targetDir, file.name));
+      }
+      if (file.isDirectory()) {
+        await copyDir(path.resolve(src, file.name), path.resolve(targetDir, file.name));
+      }
+    }
+  } else {
+    await pipCopy(path.resolve(src), path.resolve(targetDir, path.basename(src)));
+  }
+};
+
 export const prepareOutputPath = (p: string) => fs.mkdir(path.dirname(p), { recursive: true }).catch();
 
 export const writeContentToFilePath = (p: string, content: string) => fs.writeFile(p, content);
+
+export const pipCopy = async (src: string, target: string) => {
+  await prepareOutputPath(target);
+  await pipeline(createReadStream(src), createWriteStream(target));
+};

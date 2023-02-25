@@ -1,21 +1,21 @@
 {
   "name": "client",
-  "hash": "091f7e514e9f63f89c2f",
+  "hash": "6ad170da94b10f2bc16c",
   "publicPath": "client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
   "assetsByChunkName": {
     "main": [
       "main-40b1cfae2302db36702a.css",
-      "main-2c955d388740d9127f0b.js"
+      "main-ca184bae771fbbe1f67a.js"
     ],
     "runtime": [
-      "runtime-fe52fdf520cf6ebecb35.js"
+      "runtime-74c513fbf52e39dfeafe.js"
     ],
     "common-Layout": [
       "common-Layout-276e677ada78c1671963.js"
     ],
     "pages-": [
-      "pages--d3ff79fe96270a7ee56e.js"
+      "pages--3e5d94e74738bd5b9c2b.js"
     ],
     "pages-404": [
       "pages-404-300e71394fb865491714.js"
@@ -177,18 +177,18 @@
     },
     {
       "type": "asset",
-      "name": "main-2c955d388740d9127f0b.js",
+      "name": "main-ca184bae771fbbe1f67a.js",
       "size": 175188,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "2c955d388740d9127f0b",
+        "contenthash": "ca184bae771fbbe1f67a",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "main-2c955d388740d9127f0b.js.map"
+          "sourceMap": "main-ca184bae771fbbe1f67a.js.map"
         }
       },
       "chunkNames": [
@@ -235,18 +235,18 @@
     },
     {
       "type": "asset",
-      "name": "pages--d3ff79fe96270a7ee56e.js",
-      "size": 25317,
+      "name": "pages--3e5d94e74738bd5b9c2b.js",
+      "size": 26911,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "d3ff79fe96270a7ee56e",
+        "contenthash": "3e5d94e74738bd5b9c2b",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "pages--d3ff79fe96270a7ee56e.js.map"
+          "sourceMap": "pages--3e5d94e74738bd5b9c2b.js.map"
         }
       },
       "chunkNames": [
@@ -405,18 +405,18 @@
     },
     {
       "type": "asset",
-      "name": "runtime-fe52fdf520cf6ebecb35.js",
+      "name": "runtime-74c513fbf52e39dfeafe.js",
       "size": 3644,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "fe52fdf520cf6ebecb35",
+        "contenthash": "74c513fbf52e39dfeafe",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "runtime-fe52fdf520cf6ebecb35.js.map"
+          "sourceMap": "runtime-74c513fbf52e39dfeafe.js.map"
         }
       },
       "chunkNames": [
@@ -574,7 +574,7 @@
       ],
       "assets": [
         {
-          "name": "runtime-fe52fdf520cf6ebecb35.js"
+          "name": "runtime-74c513fbf52e39dfeafe.js"
         },
         {
           "name": "vendor-ui-c1089cc90bc92c7803fa.js"
@@ -598,7 +598,7 @@
           "name": "main-40b1cfae2302db36702a.css"
         },
         {
-          "name": "main-2c955d388740d9127f0b.js"
+          "name": "main-ca184bae771fbbe1f67a.js"
         }
       ],
       "filteredAssets": 0,
@@ -674,7 +674,7 @@
           "name": "vendor-lodash-cc359be90fb17dff7e03.js"
         },
         {
-          "name": "pages--d3ff79fe96270a7ee56e.js"
+          "name": "pages--3e5d94e74738bd5b9c2b.js"
         }
       ],
       "filteredAssets": 0,
@@ -990,7 +990,7 @@
           "name": "vendor-lodash-cc359be90fb17dff7e03.js"
         },
         {
-          "name": "pages--d3ff79fe96270a7ee56e.js"
+          "name": "pages--3e5d94e74738bd5b9c2b.js"
         }
       ],
       "filteredAssets": 0,
@@ -1030,7 +1030,7 @@
           "name": "vendor-lodash-cc359be90fb17dff7e03.js"
         },
         {
-          "name": "pages--d3ff79fe96270a7ee56e.js"
+          "name": "pages--3e5d94e74738bd5b9c2b.js"
         }
       ],
       "filteredAssets": 0,
@@ -1047,13 +1047,13 @@
       "id": 179,
       "files": [
         "main-40b1cfae2302db36702a.css",
-        "main-2c955d388740d9127f0b.js"
+        "main-ca184bae771fbbe1f67a.js"
       ]
     },
     {
       "id": 666,
       "files": [
-        "runtime-fe52fdf520cf6ebecb35.js"
+        "runtime-74c513fbf52e39dfeafe.js"
       ]
     },
     {
@@ -1065,7 +1065,7 @@
     {
       "id": 617,
       "files": [
-        "pages--d3ff79fe96270a7ee56e.js"
+        "pages--3e5d94e74738bd5b9c2b.js"
       ]
     },
     {

@@ -1,6 +1,7 @@
 export * from "./env";
 export * from "./scope";
 export * from "./strict";
+export * from "./signal";
 export * from "./isEquals";
 export * from "./suspense";
 export * from "./deactivate";

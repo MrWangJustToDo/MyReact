@@ -54,6 +54,7 @@ pnpm dev:ssr / dev:csr
 |useContext|
 |useImperativeHandle|
 |useDebugValue|
+|useSignal (new)|
 
 ---
 

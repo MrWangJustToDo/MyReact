@@ -1,7 +1,9 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
-import type { CreateHookParams, MyReactFiberNode , MyReactFiberNodeDev} from "@my-react/react";
+import { MyReactSignal } from "../share";
+
+import type { CreateHookParams, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
 
 const { createHookNode: _createHookNode } = __my_react_shared__;
 
@@ -43,6 +45,12 @@ export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode)
     hookNode.result = context;
 
     hookNode.context = context;
+
+    return hookNode;
+  }
+
+  if (hookNode.hookType === HOOK_TYPE.useSignal) {
+    hookNode.result = new MyReactSignal(hookNode.value.call(null));
 
     return hookNode;
   }

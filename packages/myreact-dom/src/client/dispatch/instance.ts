@@ -115,7 +115,7 @@ export class ClientDispatch implements FiberDispatch {
     return this.strictMap[_fiber.uid] && enableStrictLifeCycle.current;
   }
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
-    return this.errorBoundariesMap[_fiber.uid] || this.errorBoundariesMap[_fiber.parent.uid];
+    return this.errorBoundariesMap[_fiber.uid] || this.errorBoundariesMap[_fiber.parent?.uid];
   }
   resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
     defaultGenerateErrorBoundariesMap(_fiber, this.errorBoundariesMap);

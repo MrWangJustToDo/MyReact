@@ -181,6 +181,26 @@ export const useImperativeHandle = (ref: any, createHandle: Reducer, deps: any[]
   }) as MyReactHookNode;
 };
 
+export const useSignal = <T = any>(initial: T | (() => T)) => {
+  const currentFiber = currentFunctionFiber.current;
+
+  if (!currentFiber) throw new Error("can not use hook outside of component");
+
+  const globalDispatch = currentFiber.root.globalDispatch;
+
+  const currentIndex = currentHookDeepIndex.current++;
+
+  const currentHookNode = globalDispatch.resolveHook(currentFiber, {
+    hookIndex: currentIndex,
+    hookType: HOOK_TYPE.useSignal,
+    value: typeof initial === "function" ? initial : () => initial,
+    reducer: null,
+    deps: emptyDeps,
+  }) as MyReactHookNode;
+
+  return [currentHookNode.result.getValue, currentHookNode.result.setValue];
+};
+
 export const useDebugValue = (...args: any[]) => {
   if (enableDebugLog.current) {
     console.log(`[debug]: `, ...args, getFiberTree(currentFunctionFiber.current));

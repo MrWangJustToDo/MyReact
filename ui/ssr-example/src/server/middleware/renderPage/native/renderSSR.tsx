@@ -2,7 +2,7 @@ import { ChakraProvider, cookieStorageManager } from "@chakra-ui/react";
 import { CacheProvider } from "@emotion/react";
 // import { extractCriticalToChunks } from "@emotion/server";
 import { ChunkExtractor } from "@loadable/server";
-import { renderToString } from "@my-react/react-dom";
+import { renderToString } from "react-dom/server";
 import { HelmetProvider } from "react-helmet-async";
 import { Provider } from "react-redux";
 import { StaticRouter as Router } from "react-router-dom/server";
@@ -38,7 +38,7 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
 
   const jsx = webExtractor.collectChunks(content);
 
-  const body = await renderToString(jsx as any, true);
+  const body = renderToString(jsx);
 
   // const emotionChunks = extractCriticalToChunks(body);
 
@@ -51,19 +51,17 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
   res.status(200).send(
     "<!doctype html>" +
       renderToString(
-        (
-          <HTML
-            lang={lang}
-            env={JSON.stringify(env)}
-            script={scriptElements}
-            helmetContext={helmetContext}
-            // emotionChunks={emotionChunks}
-            link={linkElements.concat(styleElements)}
-            preloadedState={JSON.stringify(store.getState())}
-          >
-            {body}
-          </HTML>
-        ) as any
+        <HTML
+          lang={lang}
+          env={JSON.stringify(env)}
+          script={scriptElements}
+          helmetContext={helmetContext}
+          // emotionChunks={emotionChunks}
+          link={linkElements.concat(styleElements)}
+          preloadedState={JSON.stringify(store.getState())}
+        >
+          {body}
+        </HTML>
       )
   );
 };

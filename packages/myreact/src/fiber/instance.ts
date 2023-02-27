@@ -47,6 +47,8 @@ export class MyReactFiberNode {
 
   node: RenderNode | null = null;
 
+  ref: MyReactElement["ref"] = null;
+
   children: MyReactFiberNode[] = [];
 
   return: Array<MyReactFiberNode[] | MyReactFiberNode> | MyReactFiberNode | null = null;
@@ -160,6 +162,7 @@ export class MyReactFiberNode {
     const element = this.element;
     if (isValidElement(element)) {
       this.pendingProps = Object.assign({}, element.props);
+      this.ref = element.ref;
     } else {
       this.pendingProps = {};
     }
@@ -194,6 +197,13 @@ export class MyReactFiberNode {
 
   unmount() {
     if (!this.isMounted) return;
+    if (this.ref && this.type & NODE_TYPE.__isPlainNode__) {
+      if (typeof this.ref === "object") {
+        this.ref.current = null;
+      } else {
+        this.ref(null);
+      }
+    }
     this.hookNodes.forEach((hook) => hook.unmount());
     this.instance && this.instance.unmount();
     this.isMounted = false;

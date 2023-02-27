@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Code, Heading, Button, HStack, VStack } from "@chakra-ui/react";
 import { createReactive, __my_react_reactive__ } from "@my-react/react";
 import throttle from "lodash/throttle";
@@ -52,5 +53,7 @@ const _Reactive = createReactive({
     return Element as MyReactElement;
   },
 });
+
+// const _Reactive = () => <div>123</div>
 
 export const Reactive = _Reactive as unknown as FunctionComponent;

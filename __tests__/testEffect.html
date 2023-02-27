@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <script src="../bundle/react.development.js"></script>
+    <script src="../bundle/react-dom.development.js"></script>
+    <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
     <style>
       .movearea {
         transition: 0.3s background-color ease;
@@ -31,7 +31,7 @@
           console.log(id, "update");
         });
 
-        return <div>123</div>;
+        return <div ref={() => console.log(id, "ref")}>123</div>;
       };
 
       const useCounter = (init = 1) => {
@@ -53,8 +53,10 @@
           console.log("parent update");
         });
 
+        console.log('run app')
+
         return (
-          <div>
+          <div ref={() => console.log("app", "div")}>
             <Foo id="a" />
             <Foo id="b" />
             <>
@@ -63,7 +65,7 @@
                 <Foo id="d" />
               </>
             </>
-            <p>{i}</p>
+            <p ref={() => console.log("app", "p")}>{i}</p>
             <button onClick={add}>add</button>
           </div>
         );

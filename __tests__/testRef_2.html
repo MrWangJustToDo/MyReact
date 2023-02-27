@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useRef, useEffect, useState, useCallback, forwardRef } = React;
+
+      const useCount = () => {
+        const [state, setState] = useState(0);
+
+        return { state, add: () => setState((i) => i + 1) };
+      };
+
+      const Bar = forwardRef(({ id }, ref) => {
+        return (
+          <div
+            ref={(n) => {
+              console.log("run ref");
+              ref.current = n;
+            }}
+          >
+            {id}
+          </div>
+        );
+      });
+
+      const App = () => {
+        const ref = useRef();
+
+        const { state, add } = useCount();
+
+        const element = ref.current;
+
+        console.log(element);
+
+        useEffect(() => {
+          console.log("run effect", ref.current);
+        }, [element]);
+
+        return (
+          <div>
+            {state % 2 === 0 && <Bar ref={ref} id={state} />}
+            <button onClick={add}>add</button>
+          </div>
+        );
+      };
+
+      ReactDOM.render(<App />, root);
+    </script>
+  </body>
+</html>

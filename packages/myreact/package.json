@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react",
   "description": "@my-react/react",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
@@ -42,7 +42,7 @@
     ]
   },
   "dependencies": {
-    "@my-react/react-shared": "0.0.3",
-    "@my-react/react-reactive": "0.0.3"
+    "@my-react/react-shared": "latest",
+    "@my-react/react-reactive": "latest"
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-dom",
   "description": "@my-react/react-dom",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
@@ -61,9 +61,9 @@
     ]
   },
   "dependencies": {
-    "@my-react/react": "0.0.3",
-    "@my-react/react-shared": "0.0.3",
-    "@my-react/react-reconciler": "0.0.3",
+    "@my-react/react": "latest",
+    "@my-react/react-shared": "latest",
+    "@my-react/react-reconciler": "latest",
     "lodash": "^4.17.21"
   }
 }

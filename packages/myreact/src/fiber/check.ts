@@ -3,11 +3,10 @@ import { HOOK_TYPE, NODE_TYPE } from "@my-react/react-shared";
 import { isValidElement } from "../element";
 
 import type { MyReactFiberNode } from "./instance";
-import type { forwardRef, memo } from "../element";
+import type { forwardRef, memo, MyReactElementNode } from "../element";
 import type { MyReactHookNode } from "../hook";
 
-export const checkFiberElement = (fiber: MyReactFiberNode) => {
-  const element = fiber.element;
+export const checkFiberElement = (fiber: MyReactFiberNode, element: MyReactElementNode) => {
   if (isValidElement(element)) {
     const typedElement = element;
     if (!typedElement._store["validType"]) {
@@ -52,8 +51,7 @@ export const checkFiberElement = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const checkFiberHook = (fiber: MyReactFiberNode) => {
-  const hookNode = fiber.hookNodes[fiber.hookNodes.length - 1] as MyReactHookNode;
+export const checkFiberHook = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
   if (
     hookNode.hookType === HOOK_TYPE.useMemo ||
     hookNode.hookType === HOOK_TYPE.useEffect ||

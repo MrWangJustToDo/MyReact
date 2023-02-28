@@ -33,16 +33,7 @@ import { position } from "./position";
 import { unmount } from "./unmount";
 import { update } from "./update";
 
-import type {
-  MyReactFiberNode,
-  FiberDispatch,
-  MyReactElementNode,
-  createContext,
-  CreateHookParams,
-  MyReactHookNode,
-  RenderScope,
-  MyReactElement,
-} from "@my-react/react";
+import type { MyReactFiberNode, FiberDispatch, MyReactElementNode, createContext, CreateHookParams, RenderScope, MyReactElement } from "@my-react/react";
 import type { DomComment } from "@my-react-dom-shared";
 
 const { enableStrictLifeCycle } = __my_react_shared__;
@@ -90,7 +81,7 @@ export class ClientDispatch implements FiberDispatch {
   resolveRef(_fiber: MyReactFiberNode): void {
     setRef(_fiber);
   }
-  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
+  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): any | null {
     return processHookNode(_fiber, _hookParams);
   }
   resolveElementTypeMap(_fiber: MyReactFiberNode): void {
@@ -340,6 +331,7 @@ export class ClientDispatch implements FiberDispatch {
     delete this.keepLiveMap[_fiber.uid];
     delete this.suspenseMap[_fiber.uid];
     delete this.hydrateScope[_fiber.uid];
+    delete this.deactivatedMap[_fiber.uid];
     delete this.layoutEffectMap[_fiber.uid];
     delete this.errorBoundariesMap[_fiber.uid];
   }

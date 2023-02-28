@@ -26,7 +26,6 @@ import {
 } from "./element";
 import { MyReactFiberNode, MyReactFiberNodeRoot, createFiberNode, updateFiberNode, initialFiberNode } from "./fiber";
 import {
-  createHookNode,
   useRef,
   useMemo,
   useState,
@@ -38,6 +37,7 @@ import {
   useDebugValue,
   useLayoutEffect,
   useImperativeHandle,
+  MyReactHookNode,
 } from "./hook";
 import { MyReactInternalInstance } from "./internal";
 import { createReactive, MyReactReactiveInstance, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated } from "./reactive";
@@ -73,7 +73,6 @@ const __my_react_shared__ = {
   createFiberNode,
   updateFiberNode,
   initialFiberNode,
-  createHookNode,
   getTypeFromElement,
   enableKeyDiff,
   enableConcurrentMode,
@@ -82,6 +81,7 @@ const __my_react_shared__ = {
 };
 
 const __my_react_internal__ = {
+  MyReactHookNode,
   MyReactComponent,
   MyReactFiberNode,
   MyReactFiberNodeRoot,
@@ -163,7 +163,7 @@ export type { FiberDispatch } from "./dispatch";
 
 export type { RenderScope } from "./scope";
 
-export type { CreateHookParams, MyReactHookNode } from "./hook";
+export type { CreateHookParams, MyReactHookNode, Action, Reducer } from "./hook";
 
 export type {
   Props,

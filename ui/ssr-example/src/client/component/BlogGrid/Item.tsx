@@ -41,22 +41,15 @@ const ItemHeader = ({ title, externalUrl, detailNumber }: { title: string; exter
 };
 
 export const Item = (props: GetBlogListQuery["repository"]["issues"]["nodes"][0]) => {
-  const {
-    title,
-    number,
-    body,
-    publishedAt,
-    author: { avatarUrl, login },
-    url,
-  } = props;
+  const { title, number, body, publishedAt, author, url } = props;
   const renderedBody = useMemo(() => markNOLineNumber.render(body), [body]);
   return (
     <Flex flexDirection="column" height="100%">
       <Box padding="2" backgroundColor="cardBackgroundColor" borderTopRadius="md">
         <ItemHeader title={title} externalUrl={url} detailNumber={number} />
         <Actor
-          avatarUrl={avatarUrl}
-          login={login}
+          avatarUrl={author?.avatarUrl}
+          login={author?.login}
           time={publishedAt}
           marginTop="2"
           alignItems="center"

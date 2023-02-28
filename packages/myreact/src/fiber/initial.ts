@@ -1,11 +1,7 @@
-import { checkFiberElement } from "./check";
-
 import type { MyReactFiberNode } from "./instance";
 
 export const initialFiberNode = (fiber: MyReactFiberNode) => {
   fiber.initialType();
-
-  if (__DEV__) checkFiberElement(fiber);
 
   fiber.initialParent();
 

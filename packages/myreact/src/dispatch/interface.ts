@@ -1,6 +1,6 @@
 import type { createContext, MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "../fiber";
-import type { CreateHookParams, MyReactHookNode } from "../hook";
+import type { CreateHookParams } from "../hook";
 import type { RenderScope } from "../scope";
 import type { LinkTreeList } from "@my-react/react-shared";
 
@@ -35,7 +35,7 @@ export interface FiberDispatch {
 
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode>;
 
-  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null;
+  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): any | null;
 
   resolveKeepLiveMap(_fiber: MyReactFiberNode): void;
 

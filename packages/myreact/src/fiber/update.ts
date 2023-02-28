@@ -1,7 +1,5 @@
 import { isValidElement } from "../element";
 
-import { checkFiberElement } from "./check";
-
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactElementNode } from "../element";
 
@@ -25,8 +23,6 @@ export const updateFiberNode = (
   fiber.installParent(parent);
 
   const globalDispatch = fiber.root.globalDispatch;
-
-  if (__DEV__) checkFiberElement(fiber);
 
   if (prevElement !== nextElement || !fiber.isActivated) {
     globalDispatch.resolveFiberUpdate(fiber);

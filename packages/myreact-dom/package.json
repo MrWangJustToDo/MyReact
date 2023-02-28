@@ -1,13 +1,17 @@
 {
   "name": "@my-react/react-dom",
   "description": "@my-react/react-dom",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
     "index.js"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWangJustToDo/MyReact/tree/main/packages/myreact-dom"
+  },
   "exports": {
     ".": {
       "require": "./index.js",

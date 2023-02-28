@@ -5,6 +5,8 @@ import { getTypeFromElement, isValidElement } from "../element";
 import { EmptyPlatform } from "../platform";
 import { EmptyRenderScope } from "../scope";
 
+import { checkFiberElement, checkFiberHook } from "./check";
+
 import type { MyReactComponent } from "../component";
 import type { FiberDispatch } from "../dispatch";
 import type { MyReactElement, MyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
@@ -84,9 +86,10 @@ export class MyReactFiberNode {
   constructor(parent: MyReactFiberNode | null, element: MyReactElementNode) {
     this.uid = "fiber_" + fiberId++;
     this.parent = parent;
-    this.element = element;
+    // this.element = element;
     this.root = this.parent?.root || (this as unknown as MyReactFiberNodeRoot);
-    this.initialPops();
+    // this.initialPops();
+    this.installElement(element);
   }
 
   addChild(child: MyReactFiberNode) {
@@ -154,6 +157,7 @@ export class MyReactFiberNode {
   }
 
   installElement(element: MyReactElementNode) {
+    if (__DEV__) checkFiberElement(this, element);
     this.element = element;
     this.initialPops();
   }
@@ -175,6 +179,7 @@ export class MyReactFiberNode {
   }
 
   addHook(hookNode: MyReactHookNode) {
+    if (__DEV__) checkFiberHook(this, hookNode);
     this.hookNodes.push(hookNode);
   }
 
@@ -253,5 +258,5 @@ export class MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugEventMap: Record<string, ((...args: any[]) => void) & { cb?: any[] }> = {};
 
-  _debugKeepLiveCache: MyReactFiberNode[];
+  _debugKeepLiveCache: MyReactFiberNode[] = [];
 }

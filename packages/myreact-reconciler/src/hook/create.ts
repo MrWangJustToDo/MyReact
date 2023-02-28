@@ -1,24 +1,24 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { MyReactSignal } from "../share";
 
-import type { CreateHookParams, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
+import type { CreateHookParams, MyReactFiberNode, MyReactFiberNodeDev, Action, Reducer } from "@my-react/react";
 
-const { createHookNode: _createHookNode } = __my_react_shared__;
+const { MyReactHookNode } = __my_react_internal__;
+
+const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
+  return typeof action === "function" ? action(state) : action;
+};
 
 export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode) => {
   const globalDispatch = fiber.root.globalDispatch;
 
-  const hookNode = _createHookNode(props, fiber);
+  const hookNode = new MyReactHookNode(props.hookIndex, props.hookType, props.value, props.reducer || defaultReducer, props.deps);
 
-  if (__DEV__) {
-    const typedFiber = fiber as MyReactFiberNodeDev;
+  hookNode.setOwner(fiber);
 
-    typedFiber._debugHookTypes = typedFiber._debugHookTypes || [];
-
-    typedFiber._debugHookTypes.push(hookNode.hookType);
-  }
+  fiber.addHook(hookNode);
 
   if (hookNode.hookType === HOOK_TYPE.useMemo || hookNode.hookType === HOOK_TYPE.useState || hookNode.hookType === HOOK_TYPE.useReducer) {
     hookNode.result = hookNode.value.call(null);
@@ -53,6 +53,14 @@ export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode)
     hookNode.result = new MyReactSignal(hookNode.value.call(null));
 
     return hookNode;
+  }
+
+  if (__DEV__) {
+    const typedFiber = fiber as MyReactFiberNodeDev;
+
+    typedFiber._debugHookTypes = typedFiber._debugHookTypes || [];
+
+    typedFiber._debugHookTypes.push(hookNode.hookType);
   }
 
   return hookNode;

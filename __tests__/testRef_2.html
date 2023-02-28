@@ -14,7 +14,7 @@
   <body>
     <div id="root"></div>
 
-    <script type="text/babel">
+    <!-- <script type="text/babel">
       const { useRef, useEffect, useState, useCallback, forwardRef } = React;
 
       const useCount = () => {
@@ -55,6 +55,23 @@
             <button onClick={add}>add</button>
           </div>
         );
+      };
+
+      ReactDOM.render(<App />, root);
+    </script> -->
+    <script type="text/babel">
+      const { useRef, useState, useEffect } = React;
+      const App = () => {
+        const ref = useRef();
+        const [state, setState] = useState(false);
+        useEffect(() => {
+          console.log("render in hook", ref.current);
+          setState(true);
+        }, [ref.current]);
+
+        console.log("render in component", ref.current);
+
+        return <div ref={ref}>{state ? <p>hello</p> : <div>cool</div>}</div>;
       };
 
       ReactDOM.render(<App />, root);

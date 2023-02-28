@@ -105,7 +105,7 @@ const _BlogListWithInfinityScroll = () => {
       <Box ref={ref} overflow="auto" paddingRight="4" onScroll={onThrottleScroll} className="tour_blogList">
         <BlogGrid data={data.repository.issues.nodes} disableGridLayout={disableGridLayout || isMobileWidth} />
         {loading && data.repository.issues.nodes.length && (
-          <Center>
+          <Center height="100px">
             <Spinner />
           </Center>
         )}

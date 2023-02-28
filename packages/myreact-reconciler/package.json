@@ -1,13 +1,17 @@
 {
   "name": "@my-react/react-reconciler",
   "description": "@my-react/react-reconciler",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
     "index.js"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWangJustToDo/MyReact/tree/main/packages/myreact-reconciler"
+  },
   "exports": {
     "node": "./index.js",
     "require": "./index.js",

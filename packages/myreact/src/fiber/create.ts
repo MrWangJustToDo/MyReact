@@ -1,4 +1,3 @@
-import { checkFiberElement } from "./check";
 import { MyReactFiberNode } from "./instance";
 
 import type { MyReactElementNode } from "../element";
@@ -16,8 +15,6 @@ export const createFiberNode = (
   const newFiberNode = new MyReactFiberNode(parent, element);
 
   newFiberNode.initialType();
-
-  if (__DEV__) checkFiberElement(newFiberNode);
 
   newFiberNode.initialParent();
 

@@ -13,7 +13,7 @@ import { safeCallWithFiber } from "../shared";
 import { append, create, update } from "./dom";
 import { defaultResolveLazyElement, defaultResolveLazyElementAsync } from "./lazy";
 
-import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext, CreateHookParams, MyReactHookNode } from "@my-react/react";
+import type { FiberDispatch, MyReactFiberNode, MyReactElementNode, createContext, CreateHookParams } from "@my-react/react";
 import type { LinkTreeList } from "@my-react/react-shared";
 
 export class ServerDispatch implements FiberDispatch {
@@ -76,7 +76,7 @@ export class ServerDispatch implements FiberDispatch {
   resolveStrictValue(_fiber: MyReactFiberNode): boolean {
     return false;
   }
-  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): MyReactHookNode | null {
+  resolveHook(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): any | null {
     return processHookNode(_fiber, _hookParams);
   }
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {

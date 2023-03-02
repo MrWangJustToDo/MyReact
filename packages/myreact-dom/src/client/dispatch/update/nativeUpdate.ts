@@ -1,10 +1,11 @@
 import { NODE_TYPE } from "@my-react/react-shared";
 
-import { enableHighlight, isEvent, isGone, isNew, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
+import { enableHighlight, getHTMLAttrKey, getSVGAttrKey, isEvent, isGone, isNew, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
 
 import { addEventListener, removeEventListener } from "../helper";
 
 import { HighLight } from "./highlight";
+import { XLINK_NS, XML_NS, X_CHAR } from "./tool";
 
 import type { MyReactFiberNode } from "@my-react/react";
 import type { DomScope, DomElement, DomNode } from "@my-react-dom-shared";
@@ -28,7 +29,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
         if (isEvent(key)) {
           removeEventListener(fiber, node as DomElement, key);
         } else if (isProperty(key)) {
-          if (newProps[key] === null || newProps[key] === undefined || newProps[key] === false) {
+          if (newProps[key] === null || newProps[key] === undefined) {
             if (key === "className") {
               if (isSVG) {
                 dom.removeAttribute("class");
@@ -39,7 +40,8 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
               if (key in dom && !isSVG) {
                 dom[key] = "";
               } else {
-                dom.removeAttribute(key);
+                const attrKey = isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key) || key;
+                dom.removeAttribute(attrKey as string);
               }
             }
           }
@@ -57,7 +59,17 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
         if (isEvent(key)) {
           addEventListener(fiber, node as DomElement, key);
         } else if (isProperty(key)) {
-          if (newProps[key] !== null && newProps[key] !== undefined && newProps[key] !== false) {
+          // from million package
+          if (key.charCodeAt(0) === X_CHAR && isSVG) {
+            const typedDom = node as SVGElement;
+            if (key.startsWith("xmlns")) {
+              typedDom.setAttributeNS(XML_NS, key, String(newProps[key]));
+            } else if (key.startsWith("xlink")) {
+              typedDom.setAttributeNS(XLINK_NS, "href", String(newProps[key]));
+            }
+            return;
+          }
+          if (newProps[key] !== null && newProps[key] !== undefined) {
             if (key === "className") {
               if (isSVG) {
                 dom.setAttribute("class", (newProps[key] as string) || "");
@@ -68,7 +80,8 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
               if (key in dom && !isSVG) {
                 dom[key] = newProps[key];
               } else {
-                dom.setAttribute(key, String(newProps[key]));
+                const attrKey = isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key) || key;
+                dom.setAttribute(attrKey, String(newProps[key]));
               }
             }
             if ((key === "autofocus" || key === "autoFocus") && newProps[key]) {

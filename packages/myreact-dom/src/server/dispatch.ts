@@ -8,7 +8,7 @@ import {
 } from "@my-react/react-reconciler";
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { safeCallWithFiber } from "../shared";
+import { generateSVGElementType, safeCallWithFiber } from "../shared";
 
 import { append, create, update } from "./dom";
 import { defaultResolveLazyElement, defaultResolveLazyElementAsync } from "./lazy";
@@ -30,6 +30,8 @@ export class ServerDispatch implements FiberDispatch {
   layoutEffectMap: Record<string, (() => void)[]> = {};
 
   suspenseMap: Record<string, MyReactElementNode> = {};
+
+  svgTypeMap: Record<string, boolean> = {};
 
   contextMap: Record<string, Record<string, MyReactFiberNode>> = {};
 
@@ -56,7 +58,7 @@ export class ServerDispatch implements FiberDispatch {
     void 0;
   }
   resolveElementTypeMap(_fiber: MyReactFiberNode): void {
-    void 0;
+    generateSVGElementType(_fiber, this.svgTypeMap);
   }
   resolveKeepLive(_fiber: MyReactFiberNode, _element: MyReactElementNode): MyReactFiberNode | null {
     return null;
@@ -118,18 +120,25 @@ export class ServerDispatch implements FiberDispatch {
     void 0;
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean, _parentFiberWithDom: MyReactFiberNode): boolean {
+    const _isSVG = this.svgTypeMap[_fiber.uid];
+
     safeCallWithFiber({ fiber: _fiber, action: () => create(_fiber) });
-    safeCallWithFiber({ fiber: _fiber, action: () => update(_fiber) });
+
+    safeCallWithFiber({ fiber: _fiber, action: () => update(_fiber, _isSVG) });
+
     safeCallWithFiber({
       fiber: _fiber,
       action: () => append(_fiber, _parentFiberWithDom),
     });
+
     if (_fiber.child) {
       this.reconcileCommit(_fiber.child, _hydrate, _fiber.node ? _fiber : _parentFiberWithDom);
     }
+
     if (_fiber.sibling) {
       this.reconcileCommit(_fiber.sibling, _hydrate, _parentFiberWithDom);
     }
+
     return true;
   }
   reconcileUpdate(_list: LinkTreeList<MyReactFiberNode>): void {

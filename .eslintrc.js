@@ -6,7 +6,7 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint", "prettier", "import"],
   extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "prettier", "plugin:import/recommended", "plugin:import/typescript"],
-  ignorePatterns: ["dist", "dev", "lib", "__tests__", "bundle", "**/*.d.ts", "**/*.js", "node_modules"],
+  ignorePatterns: ["dist", "dev", "lib", "__tests__", "bundle", "**/*.d.ts", "**/*.js", "**/*.jsx", "node_modules"],
   rules: {
     "@typescript-eslint/interface-name-prefix": "off",
 

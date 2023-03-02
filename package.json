@@ -8,7 +8,6 @@
   },
   "packageManager": "pnpm@7.5.0",
   "scripts": {
-    "prepare": "pnpm run clean",
     "dev:ssr": "cd ./ui/ssr-example && pnpm run dev",
     "dev:csr": "cd ./ui/csr-example && pnpm run dev",
     "build:site": "cd ./ui/ssr-example && pnpm run build:static",

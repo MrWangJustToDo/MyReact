@@ -1,12 +1,15 @@
 {
   "name": "@my-react/react",
   "description": "@my-react/react",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
-    "index.js"
+    "index.js",
+    "jsx-main.js",
+    "jsx-runtime.d.ts",
+    "jsx-dev-runtime.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -17,6 +20,14 @@
       "require": "./index.js",
       "node": "./index.js",
       "default": "./index.js"
+    },
+    "./jsx-runtime": {
+      "require": "./jsx-main.js",
+      "types": "./jsx-runtime.d.ts"
+    },
+    "./jsx-dev-runtime": {
+      "require": "./jsx-main.js",
+      "types": "./jsx-dev-runtime.d.ts"
     }
   },
   "buildOptions": {
@@ -46,6 +57,7 @@
     ]
   },
   "dependencies": {
+    "@my-react/react-jsx": "latest",
     "@my-react/react-shared": "latest",
     "@my-react/react-reactive": "latest"
   }

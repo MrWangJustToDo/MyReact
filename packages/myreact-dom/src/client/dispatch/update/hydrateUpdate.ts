@@ -1,6 +1,6 @@
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { isEvent, isProperty, isStyle, IS_UNIT_LESS_NUMBER, log } from "@my-react-dom-shared";
+import { getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, IS_UNIT_LESS_NUMBER, log } from "@my-react-dom-shared";
 
 import { addEventListener } from "../helper";
 
@@ -25,7 +25,7 @@ const domContentHydrate = (fiber: MyReactFiberNode) => {
 const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, value: any) => {
   const node = fiber.node as DomElement | DomNode;
   const dom = node as Element;
-  if (value !== null && value !== false && value !== undefined) {
+  if (value !== null && value !== undefined) {
     if (key === "className") {
       if (isSVG) {
         const v = dom.getAttribute("class")?.toString();
@@ -55,13 +55,14 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
           dom[key] = value as string;
         }
       } else {
-        const v = dom.getAttribute(key);
+        const attrKey = isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key) || key;
+        const v = dom.getAttribute(attrKey);
         if (v?.toString() !== String(value)) {
           log({
             fiber,
-            message: `hydrate warning, dom ${v} attr not match from server. server: ${v}, client: ${value}`,
+            message: `hydrate warning, dom ${attrKey} attr not match from server. server: ${v}, client: ${value}`,
           });
-          dom.setAttribute(key, value as string);
+          dom.setAttribute(attrKey, value as string);
         }
       }
     }
@@ -97,7 +98,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
         if (isEvent(key)) {
           domEventHydrate(fiber, key);
         } else if (isStyle(key)) {
-          domStyleHydrate(fiber, key, props[key] as Record<string, unknown> || {});
+          domStyleHydrate(fiber, key, (props[key] as Record<string, unknown>) || {});
         } else if (isProperty(key)) {
           domPropsHydrate(fiber, isSVG, key, props[key]);
         }

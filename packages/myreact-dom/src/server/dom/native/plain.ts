@@ -1,6 +1,4 @@
-import kebabCase from "lodash/kebabCase";
-
-import { IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
+import { IS_SINGLE_ELEMENT, kebabCase } from "@my-react-dom-shared";
 
 import { CommentEndElement, CommentStartElement } from "./comment";
 import { TextElement } from "./text";
@@ -28,7 +26,7 @@ export class PlainElement {
     delete this.attrs[key];
   }
   setAttribute(key: string, value: string | boolean | null | undefined | number) {
-    if (value !== false && value !== null && value !== undefined) {
+    if (value !== null && value !== undefined) {
       this.attrs[key] = value.toString();
     }
   }

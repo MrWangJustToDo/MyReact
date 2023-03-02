@@ -1,13 +1,13 @@
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
+import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
 
 import { TextElement } from "./native";
 
 import type { PlainElement } from "./native/plain";
 import type { MyReactFiberNode } from "@my-react/react";
 
-export const update = (fiber: MyReactFiberNode) => {
+export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
   if (fiber.patch & PATCH_TYPE.__pendingUpdate__) {
     if (fiber.type & NODE_TYPE.__isPlainNode__) {
       const dom = fiber.node as PlainElement;
@@ -17,7 +17,8 @@ export const update = (fiber: MyReactFiberNode) => {
           if (key === "className") {
             dom[key] = props[key] as string;
           } else {
-            dom.setAttribute(key, props[key] as string);
+            const attrKey = isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key) || key;
+            dom.setAttribute(attrKey as string, props[key] as string);
           }
         }
         if (isStyle(key)) {

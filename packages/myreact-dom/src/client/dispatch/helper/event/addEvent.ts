@@ -57,10 +57,10 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
               typedDom["value"] = pendingProps["value"] as string;
 
               if (typedDom.__isControlled__) {
-                typedDom.setAttribute("MyReact_controlled_value", String(pendingProps["value"]));
+                typedDom.setAttribute("my_react_controlled_value", String(pendingProps["value"]));
               }
               if (typedDom.__isReadonly__) {
-                typedDom.setAttribute("MyReact_readonly_value", String(pendingProps["value"]));
+                typedDom.setAttribute("my_react_readonly_value", String(pendingProps["value"]));
               }
             }
           });
@@ -73,10 +73,10 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
             const typedDom = dom as ControlledElement;
             if ("onChange" in typedElement.props) {
               typedDom.__isControlled__ = true;
-              typedDom.setAttribute("MyReact_input", "controlled");
+              typedDom.setAttribute("my_react_input", "controlled");
             } else {
               typedDom.__isReadonly__ = true;
-              typedDom.setAttribute("MyReact_input", "readonly");
+              typedDom.setAttribute("my_react_input", "readonly");
             }
           }
         }

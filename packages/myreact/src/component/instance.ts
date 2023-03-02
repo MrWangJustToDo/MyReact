@@ -106,6 +106,7 @@ export class MyReactPureComponent<
   S extends Record<string, unknown> = any,
   C extends Record<string, unknown> = any
 > extends MyReactComponent<P, S, C> {
+  // for original react render, there are not a context judge for `shouldComponentUpdate` function
   shouldComponentUpdate(nextProps: P, nextState: S, nextContext: C) {
     return !isNormalEquals(nextProps, this.props) || !isNormalEquals(nextState, this.state) || !isNormalEquals(nextContext, this.context);
   }

@@ -38,15 +38,17 @@ export const updateAllAsync = (updateFiberController: ReconcilerLoopController, 
 
   safeCall(() => updateLoopAsync(updateFiberController, shouldPauseAsyncUpdate));
 
-  if (!updateFiberController.doesPause()) reconcileUpdate();
+  const doesPause = updateFiberController.doesPause();
+
+  if (!doesPause) reconcileUpdate();
 
   if (__DEV__) {
     resetScopeLog();
   }
 
-  globalLoop.current = false;
+  if (updateFiberController.hasNext()) {
+    Promise.resolve().then(() => updateAllAsync(updateFiberController, reconcileUpdate));
+  }
 
-  Promise.resolve().then(() => {
-    if (updateFiberController.hasNext()) updateAllAsync(updateFiberController, reconcileUpdate);
-  });
+  globalLoop.current = false;
 };

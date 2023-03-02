@@ -8,7 +8,7 @@ export const clearFiberDom = (fiber: MyReactFiberNode) => {
     if (!(fiber.type & NODE_TYPE.__isPortal__) && fiber !== fiber.root) {
       const dom = fiber.node as DomNode;
 
-      dom.parentElement.removeChild(dom);
+      dom.parentElement?.removeChild(dom);
     } else {
       fiber.children.forEach(clearFiberDom);
     }
@@ -25,7 +25,7 @@ export const clearFiberDomWhenDeactivate = (fiber: MyReactFiberNode, needAppend 
 
       if (needAppend) fiber.root.globalDispatch.pendingAppend(fiber);
 
-      dom.parentElement.removeChild(dom);
+      dom.parentElement?.removeChild(dom);
     } else {
       if (fiber.type & NODE_TYPE.__isPortal__) {
         fiber.children.forEach((f) => clearFiberDomWhenDeactivate(f, true));

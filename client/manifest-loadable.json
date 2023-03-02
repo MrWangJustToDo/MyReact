@@ -1,15 +1,15 @@
 {
   "name": "client",
-  "hash": "eff34da1282e8a562006",
+  "hash": "00c061f9af0bade2be04",
   "publicPath": "client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
   "assetsByChunkName": {
     "main": [
       "main-40b1cfae2302db36702a.css",
-      "main-361fbe48d8ef411d4bf7.js"
+      "main-61e31f94fe503bf294ca.js"
     ],
     "runtime": [
-      "runtime-3539d1324fc98be2a011.js"
+      "runtime-c7c7c581200a55e3dc5c.js"
     ],
     "common-Layout": [
       "common-Layout-d7697885257fb17322e3.js"
@@ -177,18 +177,18 @@
     },
     {
       "type": "asset",
-      "name": "main-361fbe48d8ef411d4bf7.js",
+      "name": "main-61e31f94fe503bf294ca.js",
       "size": 182472,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "361fbe48d8ef411d4bf7",
+        "contenthash": "61e31f94fe503bf294ca",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "main-361fbe48d8ef411d4bf7.js.map"
+          "sourceMap": "main-61e31f94fe503bf294ca.js.map"
         }
       },
       "chunkNames": [
@@ -405,18 +405,18 @@
     },
     {
       "type": "asset",
-      "name": "runtime-3539d1324fc98be2a011.js",
+      "name": "runtime-c7c7c581200a55e3dc5c.js",
       "size": 3644,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "3539d1324fc98be2a011",
+        "contenthash": "c7c7c581200a55e3dc5c",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "runtime-3539d1324fc98be2a011.js.map"
+          "sourceMap": "runtime-c7c7c581200a55e3dc5c.js.map"
         }
       },
       "chunkNames": [
@@ -574,7 +574,7 @@
       ],
       "assets": [
         {
-          "name": "runtime-3539d1324fc98be2a011.js"
+          "name": "runtime-c7c7c581200a55e3dc5c.js"
         },
         {
           "name": "vendor-ui-c1089cc90bc92c7803fa.js"
@@ -598,7 +598,7 @@
           "name": "main-40b1cfae2302db36702a.css"
         },
         {
-          "name": "main-361fbe48d8ef411d4bf7.js"
+          "name": "main-61e31f94fe503bf294ca.js"
         }
       ],
       "filteredAssets": 0,
@@ -1047,13 +1047,13 @@
       "id": 179,
       "files": [
         "main-40b1cfae2302db36702a.css",
-        "main-361fbe48d8ef411d4bf7.js"
+        "main-61e31f94fe503bf294ca.js"
       ]
     },
     {
       "id": 666,
       "files": [
-        "runtime-3539d1324fc98be2a011.js"
+        "runtime-c7c7c581200a55e3dc5c.js"
       ]
     },
     {

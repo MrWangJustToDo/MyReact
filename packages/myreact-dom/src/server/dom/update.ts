@@ -17,7 +17,7 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
           if (key === "className") {
             dom[key] = props[key] as string;
           } else {
-            const attrKey = isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key) || key;
+            const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || key;
             dom.setAttribute(attrKey as string, props[key] as string);
           }
         }

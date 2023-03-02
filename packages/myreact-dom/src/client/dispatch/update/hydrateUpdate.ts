@@ -55,7 +55,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
           dom[key] = value as string;
         }
       } else {
-        const attrKey = isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key) || key;
+        const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || key;
         const v = dom.getAttribute(attrKey);
         if (v?.toString() !== String(value)) {
           log({

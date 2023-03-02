@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-dom",
   "description": "@my-react/react-dom",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [

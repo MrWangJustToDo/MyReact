@@ -40,7 +40,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
               if (key in dom && !isSVG) {
                 dom[key] = "";
               } else {
-                const attrKey = isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key) || key;
+                const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || key;
                 dom.removeAttribute(attrKey as string);
               }
             }
@@ -80,7 +80,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
               if (key in dom && !isSVG) {
                 dom[key] = newProps[key];
               } else {
-                const attrKey = isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key) || key;
+                const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || key;
                 dom.setAttribute(attrKey, String(newProps[key]));
               }
             }

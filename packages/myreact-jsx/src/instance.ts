@@ -1,11 +1,9 @@
 import { __my_react_internal__ } from "@my-react/react";
+import { TYPEKEY, Element } from "@my-react/react-shared";
 
 import { checkSingleChildrenKey } from "./check";
-import { My_React_Element, My_React_Fragment } from "./symbol";
 
 import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement, MyReactElementType, Props } from "@my-react/react";
-
-export const Fragment = My_React_Fragment;
 
 const { currentComponentFiber, currentRunningFiber } = __my_react_internal__;
 
@@ -19,6 +17,8 @@ const RESERVED_PROPS = {
 type JSXMyReactElement = MyReactElement & {
   _jsx: boolean;
 };
+
+export { Fragment } from "@my-react/react-shared";
 
 // todo
 export const jsx = (
@@ -60,7 +60,7 @@ export const jsx = (
   }
 
   const element: JSXMyReactElement = {
-    ["$$typeof"]: My_React_Element,
+    [TYPEKEY]: Element,
     type,
     key,
     ref,
@@ -100,11 +100,11 @@ export const jsxDEV = (
         if (__DEV__) Object.freeze(children);
       } else {
         const fiber = currentRunningFiber.current;
-        fiber?.root.globalPlatform.log({ message: "Static children should always be an array.", level: "warn" });
+        fiber?.root.renderPlatform.log({ message: "Static children should always be an array.", level: "warn" });
       }
       if (!Array.isArray(children)) {
         const fiber = currentRunningFiber.current;
-        fiber?.root.globalPlatform.log({ message: "Static children should always be an array.", level: "warn" });
+        fiber?.root.renderPlatform.log({ message: "Static children should always be an array.", level: "warn" });
       }
     } else {
       checkSingleChildrenKey(children);

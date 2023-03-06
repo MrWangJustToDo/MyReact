@@ -7,16 +7,16 @@ import type { createContext } from "../element";
 
 const emptyDeps: unknown[] = [];
 
-export const useState = <T = any>(initial: T | (() => T)): [T, (t?: T) => void] => {
+export const useState = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) => T)) => void] => {
   const currentFiber = currentFunctionFiber.current;
 
   if (!currentFiber) throw new Error("can not use hook outside of component");
 
-  const globalDispatch = currentFiber.root.globalDispatch;
+  const renderDispatch = currentFiber.root.renderDispatch;
 
   const currentIndex = currentHookDeepIndex.current++;
 
-  return globalDispatch.resolveHook(currentFiber, {
+  return renderDispatch.resolveHookNode(currentFiber, {
     hookIndex: currentIndex,
     hookType: HOOK_TYPE.useState,
     value: typeof initial === "function" ? initial : () => initial,
@@ -30,11 +30,11 @@ export const useEffect = (action: () => any, deps: any[]) => {
 
   if (!currentFiber) throw new Error("can not use hook outside of component");
 
-  const globalDispatch = currentFiber.root.globalDispatch;
+  const renderDispatch = currentFiber.root.renderDispatch;
 
   const currentIndex = currentHookDeepIndex.current++;
 
-  globalDispatch.resolveHook(currentFiber, {
+  return renderDispatch.resolveHookNode(currentFiber, {
     hookIndex: currentIndex,
     hookType: HOOK_TYPE.useEffect,
     value: action,
@@ -48,11 +48,11 @@ export const useLayoutEffect = (action: () => any, deps: any[]) => {
 
   if (!currentFiber) throw new Error("can not use hook outside of component");
 
-  const globalDispatch = currentFiber.root.globalDispatch;
+  const renderDispatch = currentFiber.root.renderDispatch;
 
   const currentIndex = currentHookDeepIndex.current++;
 
-  globalDispatch.resolveHook(currentFiber, {
+  return renderDispatch.resolveHookNode(currentFiber, {
     hookIndex: currentIndex,
     hookType: HOOK_TYPE.useLayoutEffect,
     value: action,
@@ -66,11 +66,11 @@ export const useCallback = <T extends (...args: any[]) => any = (...args: any[])
 
   if (!currentFiber) throw new Error("can not use hook outside of component");
 
-  const globalDispatch = currentFiber.root.globalDispatch;
+  const renderDispatch = currentFiber.root.renderDispatch;
 
   const currentIndex = currentHookDeepIndex.current++;
 
-  return globalDispatch.resolveHook(currentFiber, {
+  return renderDispatch.resolveHookNode(currentFiber, {
     hookIndex: currentIndex,
     hookType: HOOK_TYPE.useCallback,
     value: callback,
@@ -84,11 +84,11 @@ export const useMemo = <T = any>(action: () => T, deps: any[]): T => {
 
   if (!currentFiber) throw new Error("can not use hook outside of component");
 
-  const globalDispatch = currentFiber.root.globalDispatch;
+  const renderDispatch = currentFiber.root.renderDispatch;
 
   const currentIndex = currentHookDeepIndex.current++;
 
-  return globalDispatch.resolveHook(currentFiber, {
+  return renderDispatch.resolveHookNode(currentFiber, {
     hookIndex: currentIndex,
     hookType: HOOK_TYPE.useMemo,
     value: action,
@@ -102,11 +102,11 @@ export const useRef = <T = any>(value: T): { current: T } => {
 
   if (!currentFiber) throw new Error("can not use hook outside of component");
 
-  const globalDispatch = currentFiber.root.globalDispatch;
+  const renderDispatch = currentFiber.root.renderDispatch;
 
   const currentIndex = currentHookDeepIndex.current++;
 
-  return globalDispatch.resolveHook(currentFiber, {
+  return renderDispatch.resolveHookNode(currentFiber, {
     hookIndex: currentIndex,
     hookType: HOOK_TYPE.useRef,
     value: createRef(value),
@@ -120,11 +120,11 @@ export const useContext = (Context: ReturnType<typeof createContext>) => {
 
   if (!currentFiber) throw new Error("can not use hook outside of component");
 
-  const globalDispatch = currentFiber.root.globalDispatch;
+  const renderDispatch = currentFiber.root.renderDispatch;
 
   const currentIndex = currentHookDeepIndex.current++;
 
-  return globalDispatch.resolveHook(currentFiber, {
+  return renderDispatch.resolveHookNode(currentFiber, {
     hookIndex: currentIndex,
     hookType: HOOK_TYPE.useContext,
     value: Context,
@@ -138,11 +138,11 @@ export const useReducer = (reducer: Reducer, initialArgs: any, init?: (...args: 
 
   if (!currentFiber) throw new Error("can not use hook outside of component");
 
-  const globalDispatch = currentFiber.root.globalDispatch;
+  const renderDispatch = currentFiber.root.renderDispatch;
 
   const currentIndex = currentHookDeepIndex.current++;
 
-  return globalDispatch.resolveHook(currentFiber, {
+  return renderDispatch.resolveHookNode(currentFiber, {
     hookIndex: currentIndex,
     hookType: HOOK_TYPE.useReducer,
     value: typeof init === "function" ? () => init(initialArgs) : () => initialArgs,
@@ -156,11 +156,11 @@ export const useImperativeHandle = (ref: any, createHandle: Reducer, deps: any[]
 
   if (!currentFiber) throw new Error("can not use hook outside of component");
 
-  const globalDispatch = currentFiber.root.globalDispatch;
+  const renderDispatch = currentFiber.root.renderDispatch;
 
   const currentIndex = currentHookDeepIndex.current++;
 
-  globalDispatch.resolveHook(currentFiber, {
+  return renderDispatch.resolveHookNode(currentFiber, {
     hookIndex: currentIndex,
     hookType: HOOK_TYPE.useImperativeHandle,
     value: ref,
@@ -174,11 +174,11 @@ export const useSignal = <T = any>(initial: T | (() => T)) => {
 
   if (!currentFiber) throw new Error("can not use hook outside of component");
 
-  const globalDispatch = currentFiber.root.globalDispatch;
+  const renderDispatch = currentFiber.root.renderDispatch;
 
   const currentIndex = currentHookDeepIndex.current++;
 
-  return globalDispatch.resolveHook(currentFiber, {
+  return renderDispatch.resolveHookNode(currentFiber, {
     hookIndex: currentIndex,
     hookType: HOOK_TYPE.useSignal,
     value: typeof initial === "function" ? initial : () => initial,

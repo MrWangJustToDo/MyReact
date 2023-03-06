@@ -1,9 +1,10 @@
-import type { FiberDispatch, RenderScope } from "@my-react/react";
+import type { RenderScope } from "@my-react/react";
+import type { RenderDispatch } from "@my-react/react-reconciler";
 
-export const generateReconcileUpdate = (globalDispatch: FiberDispatch, globalScope: RenderScope) => () => {
-  const allPendingList = globalScope.updateFiberListArray.slice(0);
+export const reconcileUpdate = (renderDispatch: RenderDispatch, renderScope: RenderScope) => {
+  const allPendingList = renderScope.pendingCommitFiberListArray.slice(0);
 
-  requestAnimationFrame(() => allPendingList.forEach((l) => globalDispatch.reconcileUpdate(l)));
+  requestAnimationFrame(() => allPendingList.forEach((l) => renderDispatch.reconcileUpdate(l)));
 
-  globalScope.updateFiberListArray = [];
+  renderScope.pendingCommitFiberListArray = [];
 };

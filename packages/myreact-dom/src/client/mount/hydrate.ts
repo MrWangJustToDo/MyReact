@@ -1,37 +1,47 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
+import { initialFiberNode } from "@my-react/react-reconciler";
+import { once } from "@my-react/react-shared";
 
-import { DomPlatform, DomScope, startRender, startRenderAsync } from "../../shared";
-import { ClientDispatch } from "../dispatch";
+import { CustomRenderController, CustomRenderDispatch, CustomRenderScope } from "@my-react-dom-client/render";
+import { startRender, startRenderAsync } from "@my-react-dom-shared";
+
+import { DomPlatform } from "../../shared/platform";
 
 import type { RenderContainer } from "./render";
-import type { MyReactElement } from "@my-react/react";
+import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
 
-const { MyReactFiberNodeRoot } = __my_react_internal__;
+const { MyReactFiberNode } = __my_react_internal__;
 
-const { initialFiberNode } = __my_react_shared__;
+const onceLog = once(() => {
+  console.log("you are using @my-react to render this site, see https://github.com/MrWangJustToDo/MyReact");
+});
 
 const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
-  const globalDispatch = new ClientDispatch();
+  onceLog();
 
-  const globalScope = new DomScope();
+  const fiber = new MyReactFiberNode(null, element);
 
-  const globalPlatform = new DomPlatform("myreact-dom");
+  const rootFiber = fiber as MyReactFiberNodeRoot;
 
-  globalScope.isHydrateRender = true;
+  const renderDispatch = new CustomRenderDispatch();
 
-  const fiber = new MyReactFiberNodeRoot(null, element);
+  const renderScope = new CustomRenderScope(rootFiber, container);
 
-  fiber.node = container;
+  const renderController = new CustomRenderController(renderScope);
 
-  fiber.globalScope = globalScope;
+  const renderPlatform = new DomPlatform("myreact-dom");
 
-  fiber.globalDispatch = globalDispatch;
+  rootFiber.node = container;
 
-  fiber.globalPlatform = globalPlatform;
+  rootFiber.renderScope = renderScope;
 
-  globalScope.rootFiber = fiber;
+  rootFiber.renderPlatform = renderPlatform;
 
-  globalScope.rootContainer = container;
+  rootFiber.renderDispatch = renderDispatch;
+
+  rootFiber.renderController = renderController;
+
+  renderScope.isHydrateRender = true;
 
   container.setAttribute?.("hydrate", "MyReact");
 
@@ -39,39 +49,43 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 
   container.__fiber__ = fiber;
 
-  container.__scope__ = globalScope;
+  container.__scope__ = renderScope;
 
-  container.__dispatch__ = globalDispatch;
+  container.__dispatch__ = renderDispatch;
 
   initialFiberNode(fiber);
 
   startRender(fiber, true);
 
-  globalScope.isHydrateRender = false;
+  renderScope.isHydrateRender = false;
 };
 
 const hydrateAsync = async (element: MyReactElement, container: RenderContainer) => {
-  const globalDispatch = new ClientDispatch();
+  onceLog();
 
-  const globalScope = new DomScope();
+  const fiber = new MyReactFiberNode(null, element);
 
-  const globalPlatform = new DomPlatform("myreact-dom");
+  const rootFiber = fiber as MyReactFiberNodeRoot;
 
-  globalScope.isHydrateRender = true;
+  const renderDispatch = new CustomRenderDispatch();
 
-  const fiber = new MyReactFiberNodeRoot(null, element);
+  const renderScope = new CustomRenderScope(rootFiber, container);
 
-  fiber.node = container;
+  const renderController = new CustomRenderController(renderScope);
 
-  fiber.globalScope = globalScope;
+  const renderPlatform = new DomPlatform("myreact-dom");
 
-  fiber.globalDispatch = globalDispatch;
+  rootFiber.node = container;
 
-  fiber.globalPlatform = globalPlatform;
+  rootFiber.renderScope = renderScope;
 
-  globalScope.rootFiber = fiber;
+  rootFiber.renderPlatform = renderPlatform;
 
-  globalScope.rootContainer = container;
+  rootFiber.renderDispatch = renderDispatch;
+
+  rootFiber.renderController = renderController;
+
+  renderScope.isHydrateRender = true;
 
   container.setAttribute?.("hydrate", "MyReact");
 
@@ -79,15 +93,15 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
 
   container.__fiber__ = fiber;
 
-  container.__scope__ = globalScope;
+  container.__scope__ = renderScope;
 
-  container.__dispatch__ = globalDispatch;
+  container.__dispatch__ = renderDispatch;
 
   initialFiberNode(fiber);
 
   await startRenderAsync(fiber, true);
 
-  globalScope.isHydrateRender = false;
+  renderScope.isHydrateRender = false;
 };
 
 export function hydrate(element: MyReactElement, container: Partial<RenderContainer>): void;

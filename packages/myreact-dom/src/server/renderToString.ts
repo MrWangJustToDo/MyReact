@@ -1,80 +1,83 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
+import { initialFiberNode } from "@my-react/react-reconciler";
 
-import { DomPlatform, DomScope, startRender, startRenderAsync } from "../shared";
+import { DomPlatform, startRender, startRenderAsync } from "../shared";
 
-import { ServerDispatch } from "./dispatch";
-import { PlainElement } from "./dom";
+import { PlainElement } from "./api";
+import { CustomRenderController, CustomRenderScope, ServerRenderDispatch } from "./render";
 
-import type { MyReactElement } from "@my-react/react";
+import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
 
-const { MyReactFiberNodeRoot } = __my_react_internal__;
-
-const { initialFiberNode } = __my_react_shared__;
+const { MyReactFiberNode } = __my_react_internal__;
 
 const renderToStringSync = (element: MyReactElement) => {
-  const globalDispatch = new ServerDispatch();
-
-  const globalScope = new DomScope();
-
-  const globalPlatform = new DomPlatform("myreact-dom/server");
-
-  globalScope.isServerRender = true;
+  const fiber = new MyReactFiberNode(null, element);
 
   const container = new PlainElement("");
 
-  const fiber = new MyReactFiberNodeRoot(null, element);
+  const rootFiber = fiber as MyReactFiberNodeRoot;
 
-  fiber.node = container;
+  const renderDispatch = new ServerRenderDispatch();
 
-  fiber.globalScope = globalScope;
+  const renderScope = new CustomRenderScope(rootFiber, container);
 
-  fiber.globalDispatch = globalDispatch;
+  const renderController = new CustomRenderController(renderScope);
 
-  fiber.globalPlatform = globalPlatform;
+  const renderPlatform = new DomPlatform("myreact-dom/server");
 
-  globalScope.rootFiber = fiber;
+  rootFiber.node = container;
 
-  globalScope.rootContainer = container;
+  rootFiber.renderScope = renderScope;
+
+  rootFiber.renderPlatform = renderPlatform;
+
+  rootFiber.renderDispatch = renderDispatch;
+
+  rootFiber.renderController = renderController;
+
+  renderScope.isServerRender = true;
 
   initialFiberNode(fiber);
 
-  startRender(fiber, false);
+  startRender(fiber);
 
-  globalScope.isServerRender = false;
+  renderScope.isServerRender = false;
 
   return container.toString();
 };
 
 const renderToStringAsync = async (element: MyReactElement) => {
-  const globalDispatch = new ServerDispatch();
-
-  const globalScope = new DomScope();
-
-  const globalPlatform = new DomPlatform("myreact-dom/server");
-
-  globalScope.isServerRender = true;
+  const fiber = new MyReactFiberNode(null, element);
 
   const container = new PlainElement("");
 
-  const fiber = new MyReactFiberNodeRoot(null, element);
+  const rootFiber = fiber as MyReactFiberNodeRoot;
 
-  fiber.node = container;
+  const renderDispatch = new ServerRenderDispatch();
 
-  fiber.globalScope = globalScope;
+  const renderScope = new CustomRenderScope(rootFiber, container);
 
-  fiber.globalDispatch = globalDispatch;
+  const renderController = new CustomRenderController(renderScope);
 
-  fiber.globalPlatform = globalPlatform;
+  const renderPlatform = new DomPlatform("myreact-dom/server");
 
-  globalScope.rootFiber = fiber;
+  rootFiber.node = container;
 
-  globalScope.rootContainer = container;
+  rootFiber.renderScope = renderScope;
+
+  rootFiber.renderPlatform = renderPlatform;
+
+  rootFiber.renderDispatch = renderDispatch;
+
+  rootFiber.renderController = renderController;
+
+  renderScope.isServerRender = true;
 
   initialFiberNode(fiber);
 
-  await startRenderAsync(fiber, false);
+  await startRenderAsync(fiber);
 
-  globalScope.isServerRender = false;
+  renderScope.isServerRender = false;
 
   return container.toString();
 };

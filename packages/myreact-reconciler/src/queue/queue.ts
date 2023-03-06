@@ -1,57 +1,76 @@
-import type { MixinMyReactComponentType, MyReactFiberNode, UpdateQueue } from "@my-react/react";
+import type { MixinMyReactComponentType, MyReactFiberNode } from "@my-react/react";
 
-export const processComponentUpdateQueue = (fiber: MyReactFiberNode) => {
-  const allQueue = fiber.updateQueue.slice(0);
-  const lastQueue: UpdateQueue[] = [];
-  fiber.updateQueue = [];
+export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
+  const allQueue = fiber.updateQueue;
+
+  let node = allQueue.head;
+
   const typedInstance = fiber.instance as MixinMyReactComponentType;
+
   const baseState = Object.assign({}, typedInstance.state);
+
   const baseProps = Object.assign({}, typedInstance.props);
-  allQueue.reduce<{
-    newState: Record<string, unknown>;
-    isForce: boolean;
-    callback: Array<() => void>;
-  }>(
-    (p, c) => {
-      if (c.type === "component") {
-        const result = {
-          newState: {
-            ...p.newState,
-            ...(typeof c.payLoad === "function" ? c.payLoad(baseState, baseProps) : c.payLoad),
-          },
-          isForce: p.isForce || c.isForce || false,
-          callback: c.callback ? p.callback.concat(c.callback) : p.callback,
-        };
-        if (__DEV__ && c.trigger !== typedInstance) {
-          throw new Error("current update not valid, look like a bug for MyReact");
-        }
-        typedInstance._result = result;
-        return result;
-      } else {
-        lastQueue.push(c);
-        return p;
+
+  const newResult = { newState: baseState, isForce: false, callback: [] };
+
+  while (node) {
+    const updater = node.value;
+
+    const nextNode = node.next;
+
+    if (updater.type === "component") {
+      if (__DEV__ && updater.trigger !== typedInstance) {
+        throw new Error("current update not valid, look like a bug for MyReact");
       }
-    },
-    { newState: { ...baseState }, isForce: false, callback: [] }
-  );
-  fiber.updateQueue = [...lastQueue, ...fiber.updateQueue];
+
+      allQueue.delete(node);
+
+      newResult.newState = Object.assign(newResult.newState, typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad);
+
+      newResult.isForce = newResult.isForce || updater.isForce;
+
+      updater.callback && newResult.callback.push(updater.callback);
+    }
+    node = nextNode;
+  }
+
+  typedInstance._result = newResult;
+
+  return true;
 };
 
-export const processHookUpdateQueue = (fiber: MyReactFiberNode) => {
-  const allQueue = fiber.updateQueue.slice(0);
-  const lastQueue: UpdateQueue[] = [];
-  fiber.updateQueue = [];
-  allQueue.forEach((updater) => {
+export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => {
+  const allQueue = fiber.updateQueue;
+
+  let node = allQueue.head;
+
+  let needUpdate = false;
+
+  while (node) {
+    const updater = node.value;
+
+    const nextNode = node.next;
+
     if (updater.type === "hook") {
-      const { trigger, payLoad } = updater;
-      const lastResult = trigger.result;
-      trigger.result = trigger.reducer(lastResult, payLoad);
-      if (!Object.is(lastResult, trigger.result)) {
-        fiber.update();
+      if (__DEV__ && updater.trigger._ownerFiber !== fiber) {
+        throw new Error("current update not valid, look like a bug for MyReact");
       }
-    } else {
-      lastQueue.push(updater);
+
+      allQueue.delete(node);
+
+      const { trigger, payLoad } = updater;
+
+      const lastResult = trigger.result;
+
+      trigger.result = trigger.reducer(lastResult, payLoad);
+
+      if (!Object.is(lastResult, trigger.result)) {
+        needUpdate = true;
+      }
     }
-  });
-  fiber.updateQueue = [...lastQueue, ...fiber.updateQueue];
+
+    node = nextNode;
+  }
+
+  return needUpdate;
 };

@@ -1,35 +1,35 @@
-import { MyReactInternalInstance } from "../internal";
+import { Consumer, Context, ForwardRef, Lazy, Memo, Provider, TYPEKEY } from "@my-react/react-shared";
 
-import { My_React_Consumer, My_React_Context, My_React_ForwardRef, My_React_Lazy, My_React_Memo, My_React_Provider } from "./symbol";
+import { MyReactInternalInstance } from "../internal";
 
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "./instance";
 import type { createReactive } from "../reactive";
 
 let contextId = 0;
 
-const defaultObject = { id: 0 };
+const defaultObject = { [TYPEKEY]: Context, contextId: 0 };
 
 export const createContext = <T = any>(value: T) => {
   const ContextObject = {
-    ["$$typeof"]: My_React_Context,
-    id: contextId++,
-    Provider: {} as typeof Provider,
-    Consumer: {} as typeof Consumer,
+    [TYPEKEY]: Context,
+    contextId: contextId++,
+    Provider: {} as typeof ProviderObject,
+    Consumer: {} as typeof ConsumerObject,
   };
 
-  const Provider = {
-    ["$$typeof"]: My_React_Provider,
+  const ProviderObject = {
+    [TYPEKEY]: Provider,
     value,
     Context: defaultObject,
   };
 
-  const Consumer = {
-    ["$$typeof"]: My_React_Consumer,
+  const ConsumerObject = {
+    [TYPEKEY]: Consumer,
     Internal: MyReactInternalInstance,
     Context: defaultObject,
   };
 
-  Object.defineProperty(Provider, "Context", {
+  Object.defineProperty(ProviderObject, "Context", {
     get() {
       return ContextObject;
     },
@@ -37,7 +37,7 @@ export const createContext = <T = any>(value: T) => {
     configurable: false,
   });
 
-  Object.defineProperty(Consumer, "Context", {
+  Object.defineProperty(ConsumerObject, "Context", {
     get() {
       return ContextObject;
     },
@@ -45,15 +45,15 @@ export const createContext = <T = any>(value: T) => {
     configurable: false,
   });
 
-  ContextObject.Provider = Provider;
-  ContextObject.Consumer = Consumer;
+  ContextObject.Provider = ProviderObject;
+  ContextObject.Consumer = ConsumerObject;
 
   return ContextObject;
 };
 
 export const forwardRef = (render: MixinMyReactFunctionComponent) => {
   return {
-    ["$$typeof"]: My_React_ForwardRef,
+    [TYPEKEY]: ForwardRef,
     render,
   };
 };
@@ -61,21 +61,21 @@ export const forwardRef = (render: MixinMyReactFunctionComponent) => {
 export const memo = (
   render: MixinMyReactFunctionComponent | MixinMyReactClassComponent | ReturnType<typeof forwardRef> | ReturnType<typeof createReactive>
 ) => {
-  return { ["$$typeof"]: My_React_Memo, render };
+  return { [TYPEKEY]: Memo, render };
 };
 
 export const lazy = (loader: () => Promise<{ default: MixinMyReactFunctionComponent | MixinMyReactClassComponent }>) => {
   return {
-    ["$$typeof"]: My_React_Lazy,
+    [TYPEKEY]: Lazy,
     loader,
     _loading: false,
     _loaded: false,
     render: null,
   } as {
-    ["$$typeof"]: typeof My_React_Lazy;
+    [TYPEKEY]: symbol;
     loader: () => Promise<{ default: MixinMyReactFunctionComponent | MixinMyReactClassComponent } | MixinMyReactFunctionComponent | MixinMyReactClassComponent>;
     _loading: boolean;
     _loaded: boolean;
-    render: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent | { ["$$typeof"]: symbol; [p: string]: unknown };
+    render: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent | { [TYPEKEY]: symbol; [p: string]: unknown };
   };
 };

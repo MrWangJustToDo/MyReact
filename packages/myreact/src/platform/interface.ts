@@ -8,7 +8,9 @@ export type LogProps = {
 };
 
 // TODO
-export interface RenderPlatform {
+interface DefaultRenderPlatform {
   name: string;
-  log: (p: LogProps) => void;
+  log(p: LogProps): void;
 }
+
+export type RenderPlatform<T = Record<string, any>> = DefaultRenderPlatform & T;

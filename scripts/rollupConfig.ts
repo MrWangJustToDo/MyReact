@@ -33,17 +33,18 @@ const checkFileExist = (path: string) =>
     .then(() => true)
     .catch(() => false);
 
-const tsConfig = (relativePath: string) =>
+const tsConfig = (relativePath: string, mode: Mode) =>
   typescript({
     clean: true,
     tsconfig: resolve(relativePath, "tsconfig.json"),
     useTsconfigDeclarationDir: true,
     tsconfigOverride: {
       compilerOptions: {
-        composite: true,
-        declaration: true,
-        declarationMap: true,
-        declarationDir: "dist/types",
+        composite: mode === "development" ? true : false,
+        sourceMap: mode === "development" ? true : false,
+        declaration: mode === "development" ? true : false,
+        declarationMap: mode === "development" ? true : false,
+        declarationDir: mode === "development" ? "dist/types" : null,
       },
     },
   });
@@ -117,7 +118,7 @@ const transformBuildOptions = (
             __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
             preventAssignment: true,
           }),
-          tsConfig(relativePath),
+          tsConfig(relativePath, mode),
         ],
       };
     }
@@ -137,7 +138,7 @@ const transformBuildOptions = (
             __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
             preventAssignment: true,
           }),
-          tsConfig(relativePath),
+          tsConfig(relativePath, mode),
         ],
       };
     }
@@ -155,7 +156,7 @@ const transformBuildOptions = (
             __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
             preventAssignment: true,
           }),
-          tsConfig(relativePath),
+          tsConfig(relativePath, mode),
         ],
       };
     }
@@ -176,7 +177,7 @@ const transformBuildOptions = (
             __VERSION__: JSON.stringify(packageFileObject["version"] || "0.0.1"),
             preventAssignment: true,
           }),
-          tsConfig(relativePath),
+          tsConfig(relativePath, mode),
         ],
       };
     }
@@ -185,7 +186,7 @@ const transformBuildOptions = (
   return allOptions;
 };
 
-export const getRollupConfig = async (packageName: string, packageScope = 'packages') => {
+export const getRollupConfig = async (packageName: string, packageScope = "packages") => {
   const modes: Mode[] = ["development", "production"];
 
   const relativePath = resolve(process.cwd(), packageScope, packageName);

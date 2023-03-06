@@ -1,22 +1,24 @@
-import type { MyReactFiberNode } from "../fiber";
-import type { LinkTreeList } from "@my-react/react-shared";
+import type { MyReactFiberNode, MyReactFiberNodeRoot } from "../fiber";
+import type { ListTree, UniqueArray } from "@my-react/react-shared";
 
-export interface DefaultRenderScope {
-  rootFiber: MyReactFiberNode | null;
+interface DefaultRenderScope {
+  rootFiber: MyReactFiberNodeRoot | null;
+
+  yieldFiber: MyReactFiberNode | null;
 
   rootContainer: { [p: string]: any };
 
   isAppMounted: boolean;
 
-  isAppCrash: boolean;
-
-  modifyFiberArray: MyReactFiberNode[];
+  isAppCrashed: boolean;
 
   modifyFiberRoot: MyReactFiberNode | null;
 
-  updateFiberListArray: LinkTreeList<MyReactFiberNode>[];
+  pendingProcessFiberArray: UniqueArray<MyReactFiberNode>;
 
-  updateFiberList: LinkTreeList<MyReactFiberNode> | null;
+  pendingCommitFiberListArray: ListTree<MyReactFiberNode>[];
+
+  pendingCommitFiberList: ListTree<MyReactFiberNode> | null;
 }
 
 export type RenderScope<T = Record<string, any>> = DefaultRenderScope & T;

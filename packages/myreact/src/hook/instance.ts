@@ -1,8 +1,7 @@
-import { HOOK_TYPE } from "@my-react/react-shared";
-
 import { MyReactInternalInstance } from "../internal";
 
 import type { HookUpdateQueue } from "../fiber";
+import type { HOOK_TYPE } from "@my-react/react-shared";
 
 export type Action = (s: any) => any | { type: string; payload: any };
 
@@ -48,11 +47,8 @@ export class MyReactHookNode extends MyReactInternalInstance {
 
   unmount() {
     super.unmount();
-    if (this.hookType === HOOK_TYPE.useEffect || this.hookType === HOOK_TYPE.useLayoutEffect) {
-      this.effect = false;
-      this.cancel && this.cancel();
-      return;
-    }
+    this.effect = false;
+    this.cancel && this.cancel();
   }
 
   dispatch = (action: Action) => {
@@ -64,11 +60,6 @@ export class MyReactHookNode extends MyReactInternalInstance {
 
     this._ownerFiber?.updateQueue.push(updater);
 
-    Promise.resolve().then(() => {
-      const fiber = this._ownerFiber;
-      if (fiber) {
-        fiber.root.globalDispatch.resolveHookQueue(fiber);
-      }
-    });
+    Promise.resolve().then(() => this._ownerFiber.root.renderDispatch.processFunctionComponentQueue(this._ownerFiber));
   };
 }

@@ -27,9 +27,7 @@ export class MyReactSignal<T = any> {
       this._depsSet.clear();
 
       if (allDeps.size) {
-        Promise.resolve().then(() => {
-          allDeps.forEach((f) => f.update());
-        });
+        Promise.resolve().then(() => allDeps.forEach((f) => f.update()));
       }
 
       this._value = newValue;

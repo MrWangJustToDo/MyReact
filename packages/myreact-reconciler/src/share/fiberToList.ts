@@ -1,4 +1,4 @@
-import { LinkTreeList } from "@my-react/react-shared";
+import { ListTree } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
@@ -17,7 +17,7 @@ const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
 };
 
 export const generateFiberToList = (fiber: MyReactFiberNode) => {
-  const listTree = new LinkTreeList<MyReactFiberNode>();
+  const listTree = new ListTree<MyReactFiberNode>();
 
   let temp = fiber;
 

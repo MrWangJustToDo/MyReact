@@ -1,4 +1,5 @@
-import { isValidElement, Portal, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { TYPEKEY, Portal } from "@my-react/react-shared";
 
 import type { MyReactElement, MyReactElementNode, MyReactFiberNode } from "@my-react/react";
 
@@ -16,7 +17,7 @@ export function checkIsSameType(p: MyReactFiberNode | MyReactElementNode, elemen
         const typedExistElement = p.element as MyReactElement;
         // todo check for object element
         if (typeof typedExistElement.type === "object") {
-          if (typedExistElement.type.$$typeof === Portal) return true;
+          if (typedExistElement.type[TYPEKEY] === Portal) return true;
         }
         return Object.is(typedIncomingElement.type, typedExistElement.type);
       } else {
@@ -33,7 +34,7 @@ export function checkIsSameType(p: MyReactFiberNode | MyReactElementNode, elemen
         const typedExistElement = p as MyReactElement;
         const typedIncomingElement = element as MyReactElement;
         if (typeof typedExistElement.type === "object") {
-          if (typedExistElement.type.$$typeof === Portal) return true;
+          if (typedExistElement.type[TYPEKEY] === Portal) return true;
         }
         return Object.is(typedIncomingElement.type, typedExistElement.type);
       } else {

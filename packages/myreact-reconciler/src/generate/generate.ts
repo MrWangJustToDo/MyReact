@@ -1,10 +1,10 @@
 import { isValidElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { UPDATE_TYPE } from "@my-react/react-shared";
 
+import { createFiberNode, updateFiberNode } from "../fiber";
 import { checkIsSameType } from "../share";
 
-import { createFiberNodeDev, updateFiberNodeDev } from "./tools";
-
+import type { RenderDispatch } from "../dispatch";
 import type {
   ArrayMyReactElementNode,
   MyReactElementNode,
@@ -16,17 +16,20 @@ import type {
 
 const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
 
-const { enableKeyDiff, createFiberNode, updateFiberNode } = __my_react_shared__;
+const { enableKeyDiff } = __my_react_shared__;
 
 const getKeyMatchedChildren = (
   newChildren: ArrayMyReactElementNode | ArrayMyReactElementChildren,
   prevFiberChildren: Array<MyReactFiberNode | MyReactFiberNode[]>
 ) => {
   if (!enableKeyDiff.current) return prevFiberChildren;
+
   if (!prevFiberChildren) return prevFiberChildren;
+
   if (prevFiberChildren.length === 0) return prevFiberChildren;
 
   const tempChildren = prevFiberChildren.slice(0);
+
   const assignPrevChildren: Array<MyReactFiberNode | MyReactFiberNode[]> = Array(tempChildren.length).fill(null);
 
   newChildren.forEach((element, index) => {
@@ -36,8 +39,10 @@ const getKeyMatchedChildren = (
           const targetIndex = tempChildren.findIndex(
             (fiber) => fiber instanceof MyReactFiberNodeClass && typeof fiber.element === "object" && fiber.element?.key === element.key
           );
+
           if (targetIndex !== -1) {
             assignPrevChildren[index] = tempChildren[targetIndex];
+
             tempChildren.splice(targetIndex, 1);
           }
         } else {
@@ -49,6 +54,7 @@ const getKeyMatchedChildren = (
 
   return assignPrevChildren.map((v) => {
     if (v) return v;
+
     return tempChildren.shift();
   });
 };
@@ -63,6 +69,8 @@ const getIsSameTypeNode = (newChild: MaybeArrayMyReactElementNode, prevFiberChil
   if (newChildIsArray) return false;
 
   if (prevElementChildIsArray) return false;
+
+  if ((newChild === null || newChild === undefined) && (prevFiberChild === null || prevFiberChild === undefined)) return false;
 
   const typedPrevFiberChild = prevFiberChild as MyReactFiberNode;
 
@@ -85,24 +93,18 @@ const getNewFiberWithUpdate = (
   prevFiberChild?: MyReactFiberNode | MyReactFiberNode[],
   assignPrevFiberChild?: MyReactFiberNode | MyReactFiberNode[]
 ): MyReactFiberNode | MyReactFiberNode[] => {
-  const globalDispatch = parentFiber.root.globalDispatch;
+  const renderDispatch = parentFiber.root.renderDispatch as RenderDispatch;
 
   const isSameType = getIsSameTypeNode(newChild, assignPrevFiberChild);
 
   if (isSameType) {
     if (Array.isArray(newChild) && Array.isArray(prevFiberChild) && Array.isArray(assignPrevFiberChild)) {
-      const assignPrevFiberChildren = getKeyMatchedChildren(newChild, assignPrevFiberChild) as MyReactFiberNode[];
+      const assignPrevFiberChildren = getKeyMatchedChildren(newChild, assignPrevFiberChild);
 
-      if (newChild.length < assignPrevFiberChildren.length) globalDispatch.pendingUnmount(parentFiber, assignPrevFiberChildren.slice(newChild.length));
+      if (newChild.length < assignPrevFiberChildren.length) renderDispatch.pendingUnmount(parentFiber, assignPrevFiberChildren.slice(newChild.length));
 
       return newChild.map((v, index) => getNewFiberWithUpdate(v, parentFiber, prevFiberChild[index], assignPrevFiberChildren[index])) as MyReactFiberNode[];
     }
-
-    if (__DEV__)
-      return updateFiberNodeDev(
-        { fiber: assignPrevFiberChild as MyReactFiberNode, parent: parentFiber, prevFiber: prevFiberChild as MyReactFiberNode },
-        newChild as MyReactElementNode
-      );
 
     return updateFiberNode(
       {
@@ -113,19 +115,11 @@ const getNewFiberWithUpdate = (
       newChild as MyReactElementNode
     );
   } else {
-    if (assignPrevFiberChild) globalDispatch.pendingUnmount(parentFiber, assignPrevFiberChild);
+    if (assignPrevFiberChild) renderDispatch.pendingUnmount(parentFiber, assignPrevFiberChild);
 
     if (Array.isArray(newChild)) return newChild.map((v) => getNewFiberWithUpdate(v, parentFiber)) as MyReactFiberNode[];
 
-    if (__DEV__) return createFiberNodeDev({ parent: parentFiber, type: "position" }, newChild as MyReactElementNode);
-
-    return createFiberNode(
-      {
-        parent: parentFiber,
-        type: "position",
-      },
-      newChild as MyReactElementNode
-    );
+    return createFiberNode({ parent: parentFiber, type: "position" }, newChild as MyReactElementNode);
   }
 };
 
@@ -134,16 +128,17 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
     return newChild.map((v) => getNewFiberWithInitial(v, parentFiber)) as MyReactFiberNode[];
   }
 
-  if (__DEV__) return createFiberNodeDev({ parent: parentFiber }, newChild as MyReactElementNode);
-
   return createFiberNode({ parent: parentFiber }, newChild as MyReactElementNode);
 };
 
 // TODO
+/**
+ * 目前这个步骤会在比较大的loop中成为性能瓶颈
+ */
 export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
-  const isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
+  const isUpdate = parentFiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__);
 
-  const globalDispatch = parentFiber.root.globalDispatch;
+  const renderDispatch = parentFiber.root.renderDispatch as RenderDispatch;
 
   if (isUpdate) {
     if (Array.isArray(children)) {
@@ -220,9 +215,9 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
   } else {
     if (parentFiber.return) {
       if (__DEV__) {
-        parentFiber.root.globalPlatform.log({ message: `unmount for current fiber children, look like a bug`, level: "warn" });
+        parentFiber.root.renderPlatform.log({ message: `unmount for current fiber children, look like a bug`, level: "warn" });
       }
-      globalDispatch.pendingUnmount(parentFiber, parentFiber.return);
+      renderDispatch.pendingUnmount(parentFiber, parentFiber.return);
     }
     if (Array.isArray(children)) {
       const newChildren = children as ArrayMyReactElementChildren;
@@ -255,93 +250,56 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
     }
   }
 
-  // const newChildren = children as ArrayMyReactElementChildren;
-
-  // const prevFiberReturn = isUpdate ? parentFiber.return : [];
-
-  // const prevFiberChildren = Array.isArray(prevFiberReturn) ? prevFiberReturn : [prevFiberReturn];
-
-  // const assignPrevFiberChildren = getKeyMatchedChildren(children, prevFiberChildren, renderScope.isAppMounted);
-
-  // parentFiber.beforeUpdate();
-
-  // let index = 0;
-
-  // while (index < newChildren.length || index < assignPrevFiberChildren.length) {
-  //   const newChild = newChildren[index];
-  //   const prevFiberChild = prevFiberChildren[index];
-  //   const assignPrevFiberChild = assignPrevFiberChildren[index];
-
-  //   const newFiber = isUpdate
-  //     ? getNewFiberWithUpdate(newChild, parentFiber, prevFiberChild, assignPrevFiberChild)
-  //     : getNewFiberWithInitial(newChild, parentFiber);
-
-  //   parentFiber.return = (parentFiber.return || []) as Array<MyReactFiberNode | MyReactFiberNode[]>;
-
-  //   parentFiber.return.push(newFiber);
-
-  //   index++;
-  // }
-
-  // parentFiber.afterUpdate();
-
   return parentFiber.children;
 };
 
-export const transformKeepLiveChildrenFiber = (parentFiber: MyReactFiberNode, children: MyReactElementNode) => {
-  const isUpdate = parentFiber.mode & UPDATE_TYPE.__update__;
+// TODO
+// export const transformKeepLiveChildrenFiber = (parentFiber: MyReactFiberNode, children: MyReactElementNode) => {
+//   const isUpdate = parentFiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__);
 
-  if (__DEV__) {
-    const log = parentFiber.root.globalPlatform.log;
+//   if (__DEV__) {
+//     const log = parentFiber.root.renderPlatform.log;
 
-    log({
-      message: `you are using internal <KeepLive /> component to render different component by toggle logic, pls note this is a experimental feature, 
-    1. <KeepLive /> component will not clean rendered tree state when render a different component, so it will keep dom(like <input /> value and so on), hook, state.
-    2. <KeepLive /> component sometime will cause some bug, pls do not use on the production.
-    `,
-      fiber: parentFiber,
-      triggerOnce: true,
-    });
-  }
+//     log({
+//       message: `you are using internal <KeepLive /> component to render different component by toggle logic, pls note this is a experimental feature, 
+//     1. <KeepLive /> component will not clean rendered tree state when render a different component, so it will keep dom(like <input /> value and so on), hook, state.
+//     2. <KeepLive /> component sometime will cause some bug, pls do not use on the production.
+//     `,
+//       fiber: parentFiber,
+//       triggerOnce: true,
+//     });
+//   }
 
-  if (!isUpdate) return transformChildrenFiber(parentFiber, children);
+//   if (!isUpdate) return transformChildrenFiber(parentFiber, children);
 
-  const globalDispatch = parentFiber.root.globalDispatch;
+//   const renderDispatch = parentFiber.root.renderDispatch as RenderDispatch;
 
-  const prevFiber = parentFiber.child;
+//   const prevFiber = parentFiber.child;
 
-  const cachedFiber = globalDispatch.resolveKeepLive(parentFiber, children);
+//   const cachedFiber = renderDispatch.resolveKeepLive(parentFiber, children);
 
-  if (cachedFiber) {
-    parentFiber.beforeUpdate();
+//   if (cachedFiber) {
+//     parentFiber.beforeUpdate();
 
-    if (__DEV__) {
-      parentFiber.return = updateFiberNodeDev({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
-    } else {
-      parentFiber.return = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
-    }
+//     parentFiber.return = updateFiberNode({ fiber: cachedFiber, parent: parentFiber, prevFiber: prevFiber }, children);
 
-    parentFiber.afterUpdate();
+//     parentFiber.afterUpdate();
 
-    // it is a cachedFiber, so should deactivate prevFiber
-    if (prevFiber !== cachedFiber) {
-      globalDispatch.pendingDeactivate(parentFiber);
-    }
-    return parentFiber.children;
-  } else {
-    // not have cachedFiber, maybe it is a first time to run
-    parentFiber.beforeUpdate();
+//     // it is a cachedFiber, so should deactivate prevFiber
+//     if (prevFiber !== cachedFiber) {
+//       renderDispatch.pendingDeactivate(parentFiber);
+//     }
+//     return parentFiber.children;
+//   } else {
+//     // not have cachedFiber, maybe it is a first time to run
+//     parentFiber.beforeUpdate();
 
-    if (__DEV__) {
-      parentFiber.return = createFiberNodeDev({ parent: parentFiber, type: "position" }, children);
-    } else {
-      parentFiber.return = createFiberNode({ parent: parentFiber, type: "position" }, children);
-    }
+//     parentFiber.return = createFiberNode({ parent: parentFiber, type: "position" }, children);
 
-    parentFiber.afterUpdate();
+//     parentFiber.afterUpdate();
 
-    globalDispatch.pendingDeactivate(parentFiber);
+//     renderDispatch.pendingDeactivate(parentFiber);
 
-    return parentFiber.children;
-  }
-};
+//     return parentFiber.children;
+//   }
+// };

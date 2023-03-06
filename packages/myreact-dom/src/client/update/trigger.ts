@@ -1,82 +1,69 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { nextWorkError } from "@my-react/react-reconciler";
+import { performToNextFiberOnError } from "@my-react/react-reconciler";
 
-import { ClientDispatch } from "@my-react-dom-client";
-import { generateReconcileUpdate, DomScope } from "@my-react-dom-shared";
+import { CustomRenderController, CustomRenderDispatch, CustomRenderScope } from "@my-react-dom-client/render";
+import { asyncUpdateTimeStep } from "@my-react-dom-shared";
 
-import { generateUpdateControllerWithDispatch } from "./tool";
-import { updateAllAsync, updateAllSync } from "./update";
+import { updateAll, updateAllWithConcurrent } from "./update";
 
-import type { MyReactFiberNode, FiberDispatch } from "@my-react/react";
+import type { MyReactFiberNode, RenderScope, RenderController } from "@my-react/react";
+import type { RenderDispatch } from "@my-react/react-reconciler";
 
 const { globalLoop } = __my_react_internal__;
 
 const { enableConcurrentMode } = __my_react_shared__;
 
-const updateEntry = (globalDispatch: FiberDispatch, globalScope: DomScope) => {
+const updateEntry = (renderController: RenderController, renderDispatch: RenderDispatch, renderScope: RenderScope) => {
   if (globalLoop.current) return;
 
-  const updateFiberController = generateUpdateControllerWithDispatch(globalDispatch, globalScope);
-
-  const reconcileUpdate = generateReconcileUpdate(globalDispatch, globalScope);
+  asyncUpdateTimeStep.current = Date.now();
 
   if (enableConcurrentMode.current) {
-    updateAllAsync(updateFiberController, reconcileUpdate);
+    updateAllWithConcurrent(renderController, renderDispatch, renderScope);
   } else {
-    updateAllSync(updateFiberController, reconcileUpdate);
+    updateAll(renderController, renderDispatch, renderScope);
   }
 };
 
-const asyncUpdate = (globalDispatch: FiberDispatch, globalScope: DomScope) => Promise.resolve().then(() => updateEntry(globalDispatch, globalScope));
+const asyncUpdate = (renderController: RenderController, renderDispatch: RenderDispatch, renderScope: RenderScope) =>
+  Promise.resolve().then(() => updateEntry(renderController, renderDispatch, renderScope));
 
 export const triggerUpdate = (fiber: MyReactFiberNode) => {
-  const globalScope = fiber.root.globalScope as DomScope;
+  const renderScope = fiber.root.renderScope;
 
-  const globalDispatch = fiber.root.globalDispatch;
+  const renderController = fiber.root.renderController;
 
-  if (globalScope.isHydrateRender || globalScope.isServerRender) {
+  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+
+  if (renderScope.isHydrateRender || renderScope.isServerRender) {
     if (__DEV__) console.log("can not update component");
     setTimeout(() => triggerUpdate(fiber));
     return;
   }
 
-  fiber.triggerUpdate();
+  renderScope.pendingProcessFiberArray.push(fiber);
 
-  if (globalScope.modifyFiberArray.some((f) => f === fiber)) {
-    return;
-  }
-
-  globalScope.modifyFiberArray.push(fiber);
-
-  if (enableConcurrentMode.current) {
-    asyncUpdate(globalDispatch, globalScope);
-  } else {
-    updateEntry(globalDispatch, globalScope);
-  }
+  asyncUpdate(renderController, renderDispatch, renderScope);
 };
 
 export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
-  const globalDispatch = fiber.root.globalDispatch;
+  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
-  const errorBoundariesFiber = globalDispatch.resolveErrorBoundaries(fiber);
+  const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
 
   if (errorBoundariesFiber) {
-    const errorDispatch = new ClientDispatch();
+    const errorDispatch = new CustomRenderDispatch();
 
-    const errorScope = new DomScope();
+    const errorScope = new CustomRenderScope(errorBoundariesFiber.root, errorBoundariesFiber.root.node);
 
-    errorScope.modifyFiberRoot = errorBoundariesFiber;
+    const errorController = new CustomRenderController(errorScope);
 
     errorBoundariesFiber.triggerUpdate();
 
-    const updateFiberController = generateUpdateControllerWithDispatch(errorDispatch, errorScope);
+    const nextFiber = performToNextFiberOnError(errorBoundariesFiber, error, fiber);
 
-    const reconcileUpdate = generateReconcileUpdate(errorDispatch, errorScope);
+    errorController.setYield(nextFiber);
 
-    const nextFiber = nextWorkError(errorBoundariesFiber, updateFiberController, error, fiber);
-
-    updateFiberController.setYield(nextFiber);
-
-    updateAllSync(updateFiberController, reconcileUpdate);
+    updateAllWithConcurrent(errorController, errorDispatch, errorScope);
   }
 };

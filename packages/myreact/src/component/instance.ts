@@ -75,7 +75,7 @@ export class MyReactComponent<P extends Record<string, unknown> = any, S extends
 
     this._ownerFiber?.updateQueue.push(updater);
 
-    Promise.resolve().then(() => this._ownerFiber?.update());
+    Promise.resolve().then(() => this._ownerFiber?.root.renderDispatch.processClassComponentQueue(this._ownerFiber));
   };
 
   forceUpdate = () => {
@@ -87,11 +87,11 @@ export class MyReactComponent<P extends Record<string, unknown> = any, S extends
 
     this._ownerFiber?.updateQueue.push(updater);
 
-    Promise.resolve().then(() => this._ownerFiber?.update());
+    Promise.resolve().then(() => this._ownerFiber?.root.renderDispatch.processClassComponentQueue(this._ownerFiber));
   };
 
-  render() {
-    return void 0;
+  render(): MyReactElementNode {
+    return null;
   }
 
   unmount() {

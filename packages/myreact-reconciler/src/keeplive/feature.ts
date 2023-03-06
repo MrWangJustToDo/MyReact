@@ -1,40 +1,46 @@
+import { NODE_TYPE } from "@my-react/react-shared";
+
 import { checkIsSameType } from "../share";
 
-import type { MyReactElementNode, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react";
+import type { MyReactFiberNodeDev } from "../fiber";
+import type { MyReactElementNode, MyReactFiberNode } from "@my-react/react";
 
-export const defaultGenerateKeepLiveMap = (fiber: MyReactFiberNode, map: Record<string, MyReactFiberNode[]>) => {
-  const cacheArray = map[fiber.uid] || [];
+export const defaultGenerateKeepLiveMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, MyReactFiberNode[]>) => {
+  if (fiber.type & NODE_TYPE.__isKeepLiveNode__) {
+    const cacheArray = map.get(fiber) || [];
 
-  map[fiber.uid] = cacheArray;
+    map.set(fiber, cacheArray);
 
-  if (__DEV__) {
-    const typedFiber = fiber as MyReactFiberNodeDev;
+    if (__DEV__) {
+      const typedFiber = fiber as MyReactFiberNodeDev;
 
-    typedFiber._debugKeepLiveCache = cacheArray;
+      typedFiber._debugKeepLiveCache = cacheArray;
+    }
   }
 };
 
-export const defaultGetKeepLiveFiber = (fiber: MyReactFiberNode, map: Record<string, MyReactFiberNode[]>, element: MyReactElementNode) => {
-  const cacheArray = map[fiber.uid] || [];
+export const defaultGetKeepLiveFiber = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, MyReactFiberNode[]>, element: MyReactElementNode) => {
+  const cacheArray = map.get(fiber) || [];
   // <KeepLive> component only have one child;
   const currentChild = fiber.child;
-  // set cache map
-  map[fiber.uid] = cacheArray;
+  // TODO
   // just a normal update
   if (checkIsSameType(currentChild, element)) return currentChild;
 
-  if (cacheArray.every((f) => f.uid !== currentChild.uid)) {
+  if (cacheArray.every((f) => f !== currentChild)) {
     cacheArray.push(currentChild);
   }
 
   const cachedFiber = cacheArray.find((f) => checkIsSameType(f, element));
 
-  map[fiber.uid] = cacheArray.filter((f) => f !== cachedFiber);
+  const newCacheArray = cacheArray.filter((f) => f !== cachedFiber);
+
+  map.set(fiber, newCacheArray);
 
   if (__DEV__) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
-    typedFiber._debugKeepLiveCache = map[fiber.uid];
+    typedFiber._debugKeepLiveCache = newCacheArray;
   }
 
   return cachedFiber || null;

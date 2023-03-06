@@ -1,10 +1,9 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { mountLoopSync, mountLoopSyncAwait } from "@my-react/react-reconciler";
+import { mountLoop, mountLoopAsync } from "@my-react/react-reconciler";
 
 import { resetScopeLog, safeCall, safeCallAsync, setScopeLog } from "./debug";
 import { reconcileMount } from "./reconcileMount";
 
-import type { DomScope } from "./scope";
 import type { MyReactFiberNode } from "@my-react/react";
 
 const { globalLoop } = __my_react_internal__;
@@ -20,7 +19,7 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
     setScopeLog();
   }
 
-  safeCall(() => mountLoopSync(fiber));
+  safeCall(() => mountLoop(fiber));
 
   reconcileMount(fiber, hydrate);
 
@@ -29,7 +28,7 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
   }
 
   if (__DEV__ && enableLegacyLifeCycle.current) {
-    console.warn('legacy lifeCycle have been enabled!')
+    console.warn("legacy lifeCycle have been enabled!");
   }
 
   if (__DEV__) {
@@ -38,14 +37,14 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
 
   const endTime = Date.now();
 
-  const globalScope = fiber.root.globalScope as DomScope;
+  const renderScope = fiber.root.renderScope;
 
-  globalScope.isAppMounted = true;
+  renderScope.isAppMounted = true;
 
   if (hydrate) {
-    globalScope.hydrateTime = endTime - startTime;
+    renderScope.hydrateTime = endTime - startTime;
   } else {
-    globalScope.renderTime = endTime - startTime;
+    renderScope.renderTime = endTime - startTime;
   }
 
   globalLoop.current = false;
@@ -60,7 +59,7 @@ export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false)
     setScopeLog();
   }
 
-  await safeCallAsync(() => mountLoopSyncAwait(fiber));
+  await safeCallAsync(() => mountLoopAsync(fiber));
 
   reconcileMount(fiber, hydrate);
 
@@ -69,7 +68,7 @@ export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false)
   }
 
   if (__DEV__ && enableLegacyLifeCycle.current) {
-    console.warn('legacy lifeCycle have been enabled!')
+    console.warn("legacy lifeCycle have been enabled!");
   }
 
   if (__DEV__) {
@@ -78,14 +77,14 @@ export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false)
 
   const endTime = Date.now();
 
-  const globalScope = fiber.root.globalScope as DomScope;
+  const renderScope = fiber.root.renderScope;
 
-  globalScope.isAppMounted = true;
+  renderScope.isAppMounted = true;
 
   if (hydrate) {
-    globalScope.hydrateTime = endTime - startTime;
+    renderScope.hydrateTime = endTime - startTime;
   } else {
-    globalScope.renderTime = endTime - startTime;
+    renderScope.renderTime = endTime - startTime;
   }
 
   globalLoop.current = false;

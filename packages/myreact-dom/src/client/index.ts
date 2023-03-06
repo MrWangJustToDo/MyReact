@@ -1,2 +1,2 @@
-export * from "./dispatch";
+export * from "./api";
 export * from "./mount";

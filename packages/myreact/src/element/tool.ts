@@ -1,23 +1,24 @@
-import { NODE_TYPE, once } from "@my-react/react-shared";
+import {
+  once,
+  NODE_TYPE,
+  TYPEKEY,
+  ForwardRef,
+  Consumer,
+  Provider,
+  Fragment,
+  Element,
+  Comment,
+  KeepLive,
+  Reactive,
+  Suspense,
+  Strict,
+  Portal,
+  Scope,
+  Lazy,
+  Memo,
+} from "@my-react/react-shared";
 
 import { currentRunningFiber } from "../share";
-
-import {
-  My_React_Consumer,
-  My_React_Element,
-  My_React_ForwardRef,
-  My_React_Fragment,
-  My_React_KeepLive,
-  My_React_Lazy,
-  My_React_Memo,
-  My_React_Portal,
-  My_React_Provider,
-  My_React_Reactive,
-  My_React_Strict,
-  My_React_Suspense,
-  My_React_Scope,
-  My_React_Comment,
-} from "./symbol";
 
 import type {
   MaybeArrayMyReactElementNode,
@@ -29,7 +30,7 @@ import type {
 } from "./instance";
 
 export function isValidElement(element?: MyReactElementNode | any): element is MyReactElement {
-  return typeof element === "object" && !Array.isArray(element) && element?.$$typeof === My_React_Element;
+  return typeof element === "object" && !Array.isArray(element) && element?.[TYPEKEY] === Element;
 }
 
 export function getTypeFromElement(element: MyReactElementNode) {
@@ -39,30 +40,30 @@ export function getTypeFromElement(element: MyReactElementNode) {
     // object node
     if (typeof rawType === "object") {
       const typedRawType = rawType as MyReactObjectComponent;
-      switch (typedRawType["$$typeof"]) {
-        case My_React_Provider:
+      switch (typedRawType[TYPEKEY]) {
+        case Provider:
           nodeTypeSymbol |= NODE_TYPE.__isContextProvider__;
           break;
-        case My_React_Consumer:
+        case Consumer:
           nodeTypeSymbol |= NODE_TYPE.__isContextConsumer__;
           break;
-        case My_React_Portal:
+        case Portal:
           nodeTypeSymbol |= NODE_TYPE.__isPortal__;
           break;
-        case My_React_Memo:
+        case Memo:
           nodeTypeSymbol |= NODE_TYPE.__isMemo__;
           break;
-        case My_React_ForwardRef:
+        case ForwardRef:
           nodeTypeSymbol |= NODE_TYPE.__isForwardRef__;
           break;
-        case My_React_Lazy:
+        case Lazy:
           nodeTypeSymbol |= NODE_TYPE.__isLazy__;
           break;
-        case My_React_Reactive:
+        case Reactive:
           nodeTypeSymbol |= NODE_TYPE.__isReactive__;
           break;
         default:
-          throw new Error(`invalid object element type ${typedRawType["$$typeof"]?.toString()}`);
+          throw new Error(`invalid object element type ${typedRawType[TYPEKEY]?.toString()}`);
       }
     } else if (typeof rawType === "function") {
       if (rawType.prototype?.isMyReactComponent) {
@@ -72,22 +73,22 @@ export function getTypeFromElement(element: MyReactElementNode) {
       }
     } else if (typeof rawType === "symbol") {
       switch (rawType) {
-        case My_React_KeepLive:
+        case KeepLive:
           nodeTypeSymbol |= NODE_TYPE.__isKeepLiveNode__;
           break;
-        case My_React_Fragment:
+        case Fragment:
           nodeTypeSymbol |= NODE_TYPE.__isFragmentNode__;
           break;
-        case My_React_Strict:
+        case Strict:
           nodeTypeSymbol |= NODE_TYPE.__isStrictNode__;
           break;
-        case My_React_Suspense:
+        case Suspense:
           nodeTypeSymbol |= NODE_TYPE.__isSuspenseNode__;
           break;
-        case My_React_Scope:
+        case Scope:
           nodeTypeSymbol |= NODE_TYPE.__isScopeNode__;
           break;
-        case My_React_Comment:
+        case Comment:
           nodeTypeSymbol |= NODE_TYPE.__isCommentNode__;
           break;
         default:
@@ -98,7 +99,7 @@ export function getTypeFromElement(element: MyReactElementNode) {
     } else {
       if (__DEV__) {
         const fiber = currentRunningFiber.current;
-        fiber?.root.globalPlatform.log({ message: `invalid element type ${String(rawType)}`, level: "warn", triggerOnce: true });
+        fiber?.root.renderPlatform.log({ message: `invalid element type ${String(rawType)}`, level: "warn", triggerOnce: true });
       }
       nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
     }
@@ -106,7 +107,7 @@ export function getTypeFromElement(element: MyReactElementNode) {
     if (typeof element === "object" && element !== null) {
       if (__DEV__) {
         const fiber = currentRunningFiber.current;
-        fiber?.root.globalPlatform.log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
+        fiber?.root.renderPlatform.log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
       }
       nodeTypeSymbol |= NODE_TYPE.__isEmptyNode__;
     } else if (element === null || element === undefined || typeof element === "boolean") {
@@ -122,8 +123,8 @@ export function getTypeFromElement(element: MyReactElementNode) {
 export const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
   const fiber = currentRunningFiber.current;
-  const onceWarnDuplicate = once(fiber?.root.globalPlatform.log);
-  const onceWarnUndefined = once(fiber?.root.globalPlatform.log);
+  const onceWarnDuplicate = once(fiber?.root.renderPlatform.log);
+  const onceWarnUndefined = once(fiber?.root.renderPlatform.log);
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
   if (validElement.length > 1) {
     validElement.forEach((c) => {

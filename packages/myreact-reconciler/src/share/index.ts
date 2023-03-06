@@ -1,4 +1,3 @@
-export * from "./env";
 export * from "./scope";
 export * from "./strict";
 export * from "./signal";

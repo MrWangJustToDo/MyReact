@@ -1,11 +1,12 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { checkIsSameType } from "@my-react/react-reconciler";
+import { __my_react_internal__ } from "@my-react/react";
+import { checkIsSameType, initialFiberNode } from "@my-react/react-reconciler";
 import { once } from "@my-react/react-shared";
 
-import { DomPlatform, DomScope, startRender, unmountComponentAtNode } from "../../shared";
-import { ClientDispatch } from "../dispatch";
+import { CustomRenderScope, CustomRenderDispatch, CustomRenderController } from "@my-react-dom-client/render";
 
-import type { MyReactElement, MyReactFiberNode, FiberDispatch, RenderScope } from "@my-react/react";
+import { DomPlatform, startRender, unmountComponentAtNode } from "../../shared";
+
+import type { MyReactElement, MyReactFiberNode, FiberDispatch, RenderScope, MyReactFiberNodeRoot } from "@my-react/react";
 
 export type RenderContainer = Element & {
   __scope__: RenderScope;
@@ -13,19 +14,17 @@ export type RenderContainer = Element & {
   __dispatch__: FiberDispatch;
 };
 
-const { MyReactFiberNode: MyReactFiberNodeClass, MyReactFiberNodeRoot } = __my_react_internal__;
-
-const { initialFiberNode } = __my_react_shared__;
+const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
 
 const onceLog = once(() => {
-  console.log('you are using @my-react to render this site, see https://github.com/MrWangJustToDo/MyReact')
-})
+  console.log("you are using @my-react to render this site, see https://github.com/MrWangJustToDo/MyReact");
+});
 
 export const render = (element: MyReactElement, container: RenderContainer) => {
   const containerFiber = container.__fiber__;
 
   if (containerFiber instanceof MyReactFiberNodeClass) {
-    containerFiber.root.globalScope.isAppCrash = false;
+    containerFiber.root.renderScope.isAppCrash = false;
 
     if (checkIsSameType(containerFiber, element)) {
       containerFiber.installElement(element);
@@ -37,27 +36,31 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
       unmountComponentAtNode(container);
     }
   }
-  const globalDispatch = new ClientDispatch();
+  onceLog();
 
-  const globalScope = new DomScope();
+  const fiber = new MyReactFiberNodeClass(null, element);
 
-  const globalPlatform = new DomPlatform("myreact-dom");
+  const rootFiber = fiber as MyReactFiberNodeRoot;
+
+  const renderDispatch = new CustomRenderDispatch();
+
+  const renderScope = new CustomRenderScope(rootFiber, container);
+
+  const renderController = new CustomRenderController(renderScope);
+
+  const renderPlatform = new DomPlatform("myreact-dom");
 
   Array.from(container.children).forEach((n) => n.remove?.());
 
-  const fiber = new MyReactFiberNodeRoot(null, element);
+  rootFiber.node = container;
 
-  fiber.node = container;
+  rootFiber.renderScope = renderScope;
 
-  fiber.globalScope = globalScope;
+  rootFiber.renderPlatform = renderPlatform;
 
-  fiber.globalDispatch = globalDispatch;
+  rootFiber.renderDispatch = renderDispatch;
 
-  fiber.globalPlatform = globalPlatform;
-
-  globalScope.rootFiber = fiber;
-
-  globalScope.rootContainer = container;
+  rootFiber.renderController = renderController;
 
   container.setAttribute?.("render", "MyReact");
 
@@ -65,11 +68,9 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   container.__fiber__ = fiber;
 
-  container.__scope__ = globalScope;
+  container.__scope__ = renderScope;
 
-  container.__dispatch__ = globalDispatch;
-
-  onceLog();
+  container.__dispatch__ = renderDispatch;
 
   initialFiberNode(fiber);
 

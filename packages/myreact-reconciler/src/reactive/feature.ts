@@ -3,7 +3,8 @@ import { Effect_TYPE, NODE_TYPE } from "@my-react/react-shared";
 
 // import { queueJob } from "./scheduler";
 
-import type { createReactive, MyReactElement, MyReactFiberNode, MyReactReactiveInstance as MyReactReactiveInstanceType, memo } from "@my-react/react";
+import type { RenderDispatch } from "../dispatch";
+import type { createReactive, MyReactFiberNode, MyReactReactiveInstance as MyReactReactiveInstanceType, memo } from "@my-react/react";
 
 const {
   MyReactReactiveInstance,
@@ -13,20 +14,18 @@ const {
 const { currentReactiveInstance } = __my_react_internal__;
 
 const processReactiveInstanceOnMount = (fiber: MyReactFiberNode) => {
-  const typedElement = fiber.element as MyReactElement;
-
-  const globalDispatch = fiber.root.globalDispatch;
+  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
   const typedType =
     fiber.type & NODE_TYPE.__isMemo__
-      ? ((typedElement.type as ReturnType<typeof memo>)["render"] as ReturnType<typeof createReactive>)
-      : (typedElement.type as ReturnType<typeof createReactive>);
+      ? ((fiber.elementType as ReturnType<typeof memo>)["render"] as ReturnType<typeof createReactive>)
+      : (fiber.elementType as ReturnType<typeof createReactive>);
 
-  const ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
+  const ProviderFiber = renderDispatch.resolveContextFiber(fiber, typedType.contextType);
 
-  const context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
+  const context = renderDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
 
-  const props = Object.assign({}, typedElement.props);
+  const props = Object.assign({}, fiber.pendingProps);
 
   const instance = new MyReactReactiveInstance(props, context);
 
@@ -34,8 +33,6 @@ const processReactiveInstanceOnMount = (fiber: MyReactFiberNode) => {
   currentReactiveInstance.current = instance;
 
   instance.createSetupState(typedType.setup, typedType.render);
-
-  // instance.createEffectUpdate(() => queueJob(() => instance._ownerFiber.update()));
 
   instance.createEffectUpdate(() => instance._ownerFiber.update());
 
@@ -67,28 +64,26 @@ const processReactiveRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
 };
 
 const processReactivePropsAndContextOnActiveAndUpdate = (fiber: MyReactFiberNode) => {
-  const typedElement = fiber.element as MyReactElement;
-
-  const globalDispatch = fiber.root.globalDispatch;
+  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
   const typedInstance = fiber.instance as MyReactReactiveInstanceType;
 
   const typedType =
     fiber.type & NODE_TYPE.__isMemo__
-      ? ((typedElement.type as ReturnType<typeof memo>)["render"] as ReturnType<typeof createReactive>)
-      : (typedElement.type as ReturnType<typeof createReactive>);
+      ? ((fiber.elementType as ReturnType<typeof memo>)["render"] as ReturnType<typeof createReactive>)
+      : (fiber.elementType as ReturnType<typeof createReactive>);
 
   if (typedType.contextType) {
     if (!typedInstance?._contextFiber || !typedInstance._contextFiber.isMounted) {
-      const ProviderFiber = globalDispatch.resolveContextFiber(fiber, typedType.contextType);
+      const ProviderFiber = renderDispatch.resolveContextFiber(fiber, typedType.contextType);
 
-      const context = globalDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
+      const context = renderDispatch.resolveContextValue(ProviderFiber, typedType.contextType);
 
       typedInstance?.setContext(ProviderFiber);
 
       typedInstance.context = context;
     } else {
-      const context = globalDispatch.resolveContextValue(typedInstance._contextFiber, typedType.contextType);
+      const context = renderDispatch.resolveContextValue(typedInstance._contextFiber, typedType.contextType);
 
       typedInstance?.setContext(typedInstance._contextFiber);
 
@@ -96,7 +91,7 @@ const processReactivePropsAndContextOnActiveAndUpdate = (fiber: MyReactFiberNode
     }
   }
 
-  const props = Object.assign({}, typedElement.props);
+  const props = Object.assign({}, fiber.pendingProps);
 
   typedInstance.props = props;
 };
@@ -104,12 +99,12 @@ const processReactivePropsAndContextOnActiveAndUpdate = (fiber: MyReactFiberNode
 const processMountedHooks = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactReactiveInstanceType;
 
-  const globalDispatch = fiber.root.globalDispatch;
+  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
   if (typedInstance.mountedHooks.length && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
     typedInstance.mode = Effect_TYPE.__pendingEffect__;
 
-    globalDispatch.pendingLayoutEffect(fiber, () => {
+    renderDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
 
       typedInstance.mountedHooks.forEach((f) => f?.());
@@ -133,12 +128,12 @@ const processBeforeUpdateHooks = (fiber: MyReactFiberNode) => {
 const processUpdatedHooks = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactReactiveInstanceType;
 
-  const globalDispatch = fiber.root.globalDispatch;
+  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
   if (typedInstance.updatedHooks.length && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
     typedInstance.mode = Effect_TYPE.__pendingEffect__;
 
-    globalDispatch.pendingLayoutEffect(fiber, () => {
+    renderDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
 
       typedInstance.updatedHooks.forEach((f) => f?.());

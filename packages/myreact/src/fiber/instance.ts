@@ -1,20 +1,17 @@
-import { NODE_TYPE, PATCH_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
+import { NODE_TYPE, PATCH_TYPE, UPDATE_TYPE, ListTree } from "@my-react/react-shared";
 
-import { EmptyDispatch } from "../dispatch";
 import { getTypeFromElement, isValidElement } from "../element";
-import { EmptyPlatform } from "../platform";
-import { EmptyRenderScope } from "../scope";
 
-import { checkFiberElement, checkFiberHook } from "./check";
+import { checkFiberElement, checkFiberHook, checkFiberInstance } from "./check";
 
 import type { MyReactComponent } from "../component";
+import type { RenderController } from "../controller";
 import type { FiberDispatch } from "../dispatch";
-import type { MyReactElement, MyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
+import type { MyReactElement, MyReactElementNode } from "../element";
 import type { Action, MyReactHookNode } from "../hook";
 import type { MyReactInternalInstance } from "../internal";
 import type { RenderPlatform } from "../platform";
 import type { RenderScope } from "../scope";
-import type { HOOK_TYPE } from "@my-react/react-shared";
 
 type RenderNode = { [p: string]: any };
 
@@ -36,14 +33,14 @@ export type HookUpdateQueue = {
 
 export type UpdateQueue = ComponentUpdateQueue | HookUpdateQueue;
 
-let fiberId = 0;
+const emptyObj = {};
 
 export class MyReactFiberNode {
-  uid: string;
-
   isMounted = true;
 
-  isActivated = true;
+  // rollback current version of keepLive logic
+  // TODO
+  // isActivated = true;
 
   isInvoked = false;
 
@@ -65,11 +62,13 @@ export class MyReactFiberNode {
 
   instance: MyReactInternalInstance | null = null;
 
-  dependence: MyReactInternalInstance[] = [];
+  dependence: Set<MyReactInternalInstance> = new Set();
 
   hookNodes: MyReactHookNode[] = [];
 
   element: MyReactElementNode;
+
+  elementType: MyReactElement["type"] | null = null;
 
   type: NODE_TYPE = NODE_TYPE.__initial__;
 
@@ -77,26 +76,21 @@ export class MyReactFiberNode {
 
   mode: UPDATE_TYPE = UPDATE_TYPE.__initial__;
 
-  updateQueue: UpdateQueue[] = [];
+  updateQueue: ListTree<UpdateQueue> = new ListTree();
 
-  pendingProps: MyReactElement["props"] = {};
+  pendingProps: MyReactElement["props"] = emptyObj;
 
   memoizedProps: MyReactElement["props"] | null = null;
 
   constructor(parent: MyReactFiberNode | null, element: MyReactElementNode) {
-    this.uid = "fiber_" + fiberId++;
-    this.parent = parent;
-    // this.element = element;
-    this.root = this.parent?.root || (this as unknown as MyReactFiberNodeRoot);
-    // this.initialPops();
-    this.installElement(element);
+    this.root = parent?.root || (this as unknown as MyReactFiberNodeRoot);
+
+    this.initialElement(element);
+
+    this.installParent(parent);
   }
 
   addChild(child: MyReactFiberNode) {
-    const globalDispatch = this.root.globalDispatch;
-
-    if (!this.child) globalDispatch.resolveErrorBoundariesMap(this);
-
     const last = this.children[this.children.length - 1];
 
     if (last) {
@@ -108,57 +102,57 @@ export class MyReactFiberNode {
     this.children.push(child);
   }
 
-  initialParent() {
-    if (this.parent) this.parent.addChild(this);
-    const globalDispatch = this.root.globalDispatch;
-    globalDispatch.resolveElementTypeMap(this);
-    globalDispatch.resolveSuspenseMap(this);
-    globalDispatch.resolveContextMap(this);
-    globalDispatch.resolveStrictMap(this);
-    globalDispatch.resolveScopeIdMap(this);
-  }
-
-  // TODO change name to `updateParent`
-  installParent(parent: MyReactFiberNode) {
+  installParent(parent: MyReactFiberNode | null) {
     this.parent = parent;
+
     this.sibling = null;
+
     this.parent?.addChild(this);
   }
 
   addDependence(node: MyReactInternalInstance) {
-    if (this.dependence.every((n) => n !== node)) this.dependence.push(node);
+    this.dependence.add(node);
   }
 
   removeDependence(node: MyReactInternalInstance) {
-    this.dependence = this.dependence.filter((n) => n !== node);
+    this.dependence.delete(node);
   }
 
   beforeUpdate() {
     this.child = null;
+
     this.children = [];
+
     this.return = null;
   }
 
+  // current fiber call .update() function
   triggerUpdate() {
-    let updateSymbol = UPDATE_TYPE.__initial__;
-    updateSymbol |= UPDATE_TYPE.__update__;
-    updateSymbol |= UPDATE_TYPE.__trigger__;
-    this.mode = updateSymbol;
+    this.mode |= UPDATE_TYPE.__trigger__;
   }
 
+  // parent fiber update, then child need update too
   prepareUpdate() {
-    let updateSymbol = UPDATE_TYPE.__initial__;
-    updateSymbol |= UPDATE_TYPE.__update__;
-    this.mode = updateSymbol;
+    this.mode |= UPDATE_TYPE.__update__;
   }
 
   afterUpdate() {
     this.mode = UPDATE_TYPE.__initial__;
   }
 
+  initialElement(element: MyReactElementNode) {
+    this.element = element;
+
+    this.initialType();
+
+    this.initialPops();
+  }
+
   installElement(element: MyReactElementNode) {
     if (__DEV__) checkFiberElement(this, element);
+
     this.element = element;
+
     this.initialPops();
   }
 
@@ -167,6 +161,7 @@ export class MyReactFiberNode {
     if (isValidElement(element)) {
       this.pendingProps = Object.assign({}, element.props);
       this.ref = element.ref;
+      this.elementType = element.type;
     } else {
       this.pendingProps = {};
     }
@@ -183,80 +178,54 @@ export class MyReactFiberNode {
     this.hookNodes.push(hookNode);
   }
 
-  applyElement() {
+  applyProps() {
     this.memoizedProps = Object.assign({}, this.pendingProps);
   }
 
   installInstance(instance: MyReactInternalInstance) {
+    if (__DEV__) checkFiberInstance(this, instance);
     this.instance = instance;
   }
 
+  // force update current fiber and loop to the end
   update() {
-    if (!this.isActivated || !this.isMounted) return;
-    this.root.globalDispatch.triggerUpdate(this);
+    if (!this.isMounted) return;
+    this.root.renderDispatch.triggerUpdate(this);
   }
 
   error(error: Error) {
-    this.root.globalDispatch.triggerError(this, error);
+    if (!this.isMounted) return;
+    this.root.renderDispatch.triggerError(this, error);
   }
 
   unmount() {
     if (!this.isMounted) return;
-    if (this.ref && this.type & NODE_TYPE.__isPlainNode__) {
-      if (typeof this.ref === "object") {
-        this.ref.current = null;
-      } else {
-        this.ref(null);
-      }
-    }
-    this.hookNodes.forEach((hook) => hook.unmount());
+    this.hookNodes.forEach((h) => h.unmount());
     this.instance && this.instance.unmount();
-    this.isMounted = false;
-    this.mode = UPDATE_TYPE.__initial__;
-    this.patch = PATCH_TYPE.__initial__;
-    this.root.globalDispatch.removeFiber(this);
-  }
-
-  deactivate() {
-    if (!this.isActivated) return;
-    this.hookNodes.forEach((hook) => hook.unmount());
-    this.instance && this.instance.unmount();
-    this.isActivated = false;
     this.mode = UPDATE_TYPE.__initial__;
     this.patch = PATCH_TYPE.__initial__;
   }
+
+  // clear() {
+  //   this.node = null;
+  //   this.child = null;
+  //   this.return = null;
+  //   this.parent = null;
+  //   this.sibling = null;
+  //   this.children = null;
+  //   this.instance = null;
+  //   this.hookNodes = null;
+  //   this.dependence = null;
+  //   this.isMounted = false;
+  // }
 }
 
-export class MyReactFiberNodeRoot extends MyReactFiberNode {
-  globalDispatch: FiberDispatch = new EmptyDispatch();
+export interface MyReactFiberNodeRoot extends MyReactFiberNode {
+  renderScope: RenderScope;
 
-  globalScope: RenderScope = new EmptyRenderScope();
+  renderDispatch: FiberDispatch;
 
-  globalPlatform: RenderPlatform = new EmptyPlatform();
-}
+  renderPlatform: RenderPlatform;
 
-export class MyReactFiberNodeDev extends MyReactFiberNode {
-  _debugRenderState = {
-    renderCount: 0,
-    mountTime: 0,
-    prevUpdateTime: 0,
-    updateTimeStep: 0,
-    currentUpdateTime: 0,
-  };
-
-  _debugHookTypes: HOOK_TYPE[] = [];
-
-  _debugContextMap: Record<string, MyReactFiberNode> = {};
-
-  _debugDynamicChildren: MaybeArrayMyReactElementNode;
-
-  _debugGlobalDispatch: FiberDispatch | null = null;
-
-  _debugSuspense: MyReactElementNode;
-
-  _debugStrict = false;
-
-  _debugEventMap: Record<string, ((...args: any[]) => void) & { cb?: any[] }> = {};
-
-  _debugKeepLiveCache: MyReactFiberNode[] = [];
+  renderController: RenderController;
 }

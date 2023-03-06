@@ -1,7 +1,8 @@
-import { createElement, Scope, Comment } from "@my-react/react";
-import { NODE_TYPE } from "@my-react/react-shared";
+import { createElement } from "@my-react/react";
+import { NODE_TYPE, Scope, Comment } from "@my-react/react-shared";
 
-import type { MyReactElementNode, MyReactFiberNode, MyReactElement } from "@my-react/react";
+import type { MyReactFiberNodeDev } from "../fiber";
+import type { MyReactElementNode, MyReactFiberNode } from "@my-react/react";
 
 export const WrapperByScope = (children: MyReactElementNode) =>
   createElement(Scope, null, createElement(Comment, { mode: "s" }), children, createElement(Comment, { mode: "e" }));
@@ -10,9 +11,7 @@ export const isCommentElement = (fiber: MyReactFiberNode) => fiber.type & NODE_T
 
 export const isCommentStartElement = (fiber: MyReactFiberNode) => {
   if (isCommentElement(fiber)) {
-    const typedElement = fiber.element as MyReactElement;
-
-    return typedElement.props["mode"] === "s";
+    return fiber.pendingProps["mode"] === "s";
   }
 
   return false;
@@ -20,23 +19,30 @@ export const isCommentStartElement = (fiber: MyReactFiberNode) => {
 
 export const isCommentEndElement = (fiber: MyReactFiberNode) => {
   if (isCommentElement(fiber)) {
-    const typedElement = fiber.element as MyReactElement;
-
-    return typedElement.props["mode"] === "e";
+    return fiber.pendingProps["mode"] === "e";
   }
 
   return false;
 };
 
-export const defaultGenerateScopeMap = (fiber: MyReactFiberNode, map: Record<string, string | null>) => {
+export const defaultGenerateScopeMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, MyReactFiberNode>) => {
   const parent = fiber.parent;
-  if (fiber.type & NODE_TYPE.__isScopeNode__) {
-    map[fiber.uid] = fiber.uid;
-  } else {
-    if (parent) {
-      map[fiber.uid] = map[parent.uid];
+
+  if (parent) {
+    if (parent.type & NODE_TYPE.__isScopeNode__) {
+      map.set(fiber, parent);
     } else {
-      map[fiber.uid] = null;
+      const parentScopeFiber = map.get(parent);
+
+      parentScopeFiber && map.set(fiber, parentScopeFiber);
     }
+  }
+
+  if (__DEV__) {
+    const typedFiber = fiber as MyReactFiberNodeDev;
+
+    const scopeFiber = map.get(fiber);
+
+    scopeFiber && (typedFiber._debugScope = scopeFiber);
   }
 };

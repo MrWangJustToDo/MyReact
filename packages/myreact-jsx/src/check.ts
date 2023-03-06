@@ -1,22 +1,20 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { once } from "@my-react/react-shared";
-
-import { My_React_Element } from "./symbol";
+import { once, TYPEKEY, Element } from "@my-react/react-shared";
 
 import type { MyReactElementNode, MyReactElement, MaybeArrayMyReactElementNode } from "@my-react/react";
 
 const { currentRunningFiber } = __my_react_internal__;
 
 export function isValidElement(element?: MyReactElementNode): element is MyReactElement {
-  return typeof element === "object" && !Array.isArray(element) && element?.$$typeof === My_React_Element;
+  return typeof element === "object" && !Array.isArray(element) && element?.[TYPEKEY] === Element;
 }
 
 export const checkValidKey = (children: MyReactElementNode[]) => {
   const obj: Record<string, boolean> = {};
 
-  const onceWarnDuplicate = once(currentRunningFiber.current?.root.globalPlatform.log);
+  const onceWarnDuplicate = once(currentRunningFiber.current?.root.renderPlatform.log);
 
-  const onceWarnUndefined = once(currentRunningFiber.current?.root.globalPlatform.log);
+  const onceWarnUndefined = once(currentRunningFiber.current?.root.renderPlatform.log);
 
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
 

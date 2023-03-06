@@ -1,7 +1,6 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { performToNextFiberOnError } from "@my-react/react-reconciler";
 
-import { CustomRenderController, CustomRenderDispatch, CustomRenderScope } from "@my-react-dom-client/render";
 import { asyncUpdateTimeStep } from "@my-react-dom-shared";
 
 import { updateAll, updateAllWithConcurrent } from "./update";
@@ -52,18 +51,23 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
   const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
 
   if (errorBoundariesFiber) {
-    const errorDispatch = new CustomRenderDispatch();
-
-    const errorScope = new CustomRenderScope(errorBoundariesFiber.root, errorBoundariesFiber.root.node);
-
-    const errorController = new CustomRenderController(errorScope);
-
     errorBoundariesFiber.triggerUpdate();
+
+    // clear current scope
+    const renderDispatch = errorBoundariesFiber.root.renderDispatch as RenderDispatch;
+
+    const renderController = errorBoundariesFiber.root.renderController;
+
+    const renderScope = errorBoundariesFiber.root.renderScope;
+
+    renderController.reset();
+
+    renderController.setTopLevel(errorBoundariesFiber);
 
     const nextFiber = performToNextFiberOnError(errorBoundariesFiber, error, fiber);
 
-    errorController.setYield(nextFiber);
+    renderController.setYield(nextFiber);
 
-    updateAllWithConcurrent(errorController, errorDispatch, errorScope);
+    updateAllWithConcurrent(renderController, renderDispatch, renderScope);
   }
 };

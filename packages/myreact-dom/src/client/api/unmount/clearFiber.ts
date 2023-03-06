@@ -13,7 +13,6 @@ export const clearFiberDom = (fiber: MyReactFiberNode) => {
       fiber.children.forEach(clearFiberDom);
     }
   } else {
-    console.log(fiber, fiber.children);
     fiber.children.forEach(clearFiberDom);
   }
 };

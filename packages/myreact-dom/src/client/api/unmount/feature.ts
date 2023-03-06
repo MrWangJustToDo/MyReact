@@ -1,4 +1,5 @@
 import { generateFiberToList } from "@my-react/react-reconciler";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { unsetRef } from "@my-react-dom-shared";
 
@@ -6,7 +7,7 @@ import { clearFiberDom, clearFiberNode } from "./clearFiber";
 
 import type { MyReactFiberNode } from "@my-react/react";
 import type { RenderDispatch } from "@my-react/react-reconciler";
-import type { ListTree } from "@my-react/react-shared";
+import type { ListTree} from "@my-react/react-shared";
 
 export const unmountFiber = (fiber: MyReactFiberNode) => {
   const list = generateFiberToList(fiber);
@@ -25,13 +26,17 @@ export const unmountList = (list: ListTree<MyReactFiberNode>) => {
 };
 
 export const unmount = (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  if (fiber.patch & PATCH_TYPE.__pendingUnmount__) {
+    const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  
+    const unmountMap = renderDispatch.unmountMap;
+  
+    const allUnmountFiber = unmountMap.get(fiber) || [];
+  
+    unmountMap.delete(fiber);
+  
+    if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountList(l));
 
-  const unmountMap = renderDispatch.unmountMap;
-
-  const allUnmountFiber = unmountMap.get(fiber) || [];
-
-  unmountMap.set(fiber, []);
-
-  if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountList(l));
+    if (fiber.patch & PATCH_TYPE.__pendingUnmount__) fiber.patch ^= PATCH_TYPE.__pendingUnmount__
+  }
 };

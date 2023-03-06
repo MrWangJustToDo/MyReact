@@ -18,6 +18,10 @@ interface DefaultRenderController {
 
   getTopLevel(): MyReactFiberNode | null;
 
+  setTopLevel(_fiber: MyReactFiberNode): void;
+
+  reset(): void;
+
   performToNextFiber(_fiber: MyReactFiberNode): MyReactFiberNode | null;
 }
 

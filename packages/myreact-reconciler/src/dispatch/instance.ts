@@ -62,25 +62,9 @@ export const createRender = ({
     if (fiber && fiber.isMounted) {
       const renderScope = fiber.root.renderScope;
 
-      const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
-
       renderScope.pendingCommitFiberList = renderScope.pendingCommitFiberList || new ListTree();
 
-      if (
-        fiber.patch & PATCH_TYPE.__pendingRef__ ||
-        fiber.patch & PATCH_TYPE.__pendingCreate__ ||
-        fiber.patch & PATCH_TYPE.__pendingUpdate__ ||
-        fiber.patch & PATCH_TYPE.__pendingAppend__ ||
-        fiber.patch & PATCH_TYPE.__pendingContext__ ||
-        fiber.patch & PATCH_TYPE.__pendingUnmount__ ||
-        fiber.patch & PATCH_TYPE.__pendingPosition__
-      ) {
-        renderScope.pendingCommitFiberList.append(fiber);
-      } else if (
-        renderDispatch.effectMap.get(fiber)?.length ||
-        renderDispatch.unmountMap.get(fiber)?.length ||
-        renderDispatch.layoutEffectMap.get(fiber)?.length
-      ) {
+      if (fiber.patch & PATCH_TYPE.__pendingGenerateUpdateList__) {
         renderScope.pendingCommitFiberList.append(fiber);
       }
     }
@@ -182,6 +166,10 @@ export const createRender = ({
       return this.renderScope.modifyFiberRoot;
     }
 
+    setTopLevel(_fiber: MyReactFiberNode): void {
+      this.renderScope.modifyFiberRoot = _fiber;
+    }
+
     setYield(_fiber: MyReactFiberNode | null) {
       if (_fiber) {
         this.renderScope.yieldFiber = _fiber;
@@ -208,6 +196,22 @@ export const createRender = ({
         throw new Error("runtime error for @my-react");
       }
       return performToNextFiber(_fiber);
+    }
+
+    reset(): void {
+      const renderScope = this.renderScope;
+
+      renderScope.isAppCrashed = false;
+
+      renderScope.yieldFiber = null;
+
+      renderScope.modifyFiberRoot = null;
+
+      renderScope.pendingCommitFiberList = null;
+
+      renderScope.pendingCommitFiberListArray = [];
+
+      renderScope.pendingProcessFiberArray = new UniqueArray();
     }
   }
 
@@ -317,14 +321,17 @@ export const createRender = ({
       }
     }
     pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | (MyReactFiberNode | MyReactFiberNode[])[]): void {
+      _fiber.patch |= PATCH_TYPE.__pendingUnmount__;
       defaultGenerateUnmountArrayMap(_fiber, _pendingUnmount, this.unmountMap);
     }
     pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
+      _fiber.patch |= PATCH_TYPE.__pendingEffect__;
       const exist = this.effectMap.get(_fiber) || [];
       exist.push(_effect);
       this.effectMap.set(_fiber, exist);
     }
     pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
+      _fiber.patch |= PATCH_TYPE.__pendingLayoutEffect__;
       const exist = this.layoutEffectMap.get(_fiber) || [];
       exist.push(_layoutEffect);
       this.layoutEffectMap.set(_fiber, exist);

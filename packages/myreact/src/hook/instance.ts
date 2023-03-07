@@ -45,21 +45,29 @@ export class MyReactHookNode extends MyReactInternalInstance {
     return true;
   }
 
-  unmount() {
-    super.unmount();
+  _unmount() {
+    super._unmount();
     this.effect = false;
     this.cancel && this.cancel();
   }
 
-  dispatch = (action: Action) => {
+  _dispatch = (action: Action) => {
     const updater: HookUpdateQueue = {
       type: "hook",
       trigger: this,
       payLoad: action,
     };
 
-    this._ownerFiber?.updateQueue.push(updater);
+    const ownerFiber = this._ownerFiber;
 
-    Promise.resolve().then(() => this._ownerFiber.root.renderDispatch.processFunctionComponentQueue(this._ownerFiber));
+    if (ownerFiber && ownerFiber.isMounted) {
+      const renderPlatform = ownerFiber.root.renderPlatform;
+
+      const renderDispatch = ownerFiber.root.renderDispatch;
+
+      ownerFiber.updateQueue.push(updater);
+
+      renderPlatform.microTask(() => renderDispatch.processFunctionComponentQueue(ownerFiber));
+    }
   };
 }

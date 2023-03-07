@@ -73,9 +73,17 @@ export class MyReactComponent<P extends Record<string, unknown> = any, S extends
       trigger: this,
     };
 
-    this._ownerFiber?.updateQueue.push(updater);
+    const ownerFiber = this._ownerFiber;
 
-    Promise.resolve().then(() => this._ownerFiber?.root.renderDispatch.processClassComponentQueue(this._ownerFiber));
+    if (ownerFiber && ownerFiber.isMounted) {
+      const renderPlatform = ownerFiber.root.renderPlatform;
+
+      const renderDispatch = ownerFiber.root.renderDispatch;
+
+      ownerFiber.updateQueue.push(updater);
+
+      renderPlatform.microTask(() => renderDispatch.processClassComponentQueue(ownerFiber));
+    }
   };
 
   forceUpdate = () => {
@@ -85,17 +93,25 @@ export class MyReactComponent<P extends Record<string, unknown> = any, S extends
       trigger: this,
     };
 
-    this._ownerFiber?.updateQueue.push(updater);
+    const ownerFiber = this._ownerFiber;
 
-    Promise.resolve().then(() => this._ownerFiber?.root.renderDispatch.processClassComponentQueue(this._ownerFiber));
+    if (ownerFiber && ownerFiber.isMounted) {
+      const renderPlatform = ownerFiber.root.renderPlatform;
+
+      const renderDispatch = ownerFiber.root.renderDispatch;
+
+      ownerFiber.updateQueue.push(updater);
+
+      renderPlatform.microTask(() => renderDispatch.processClassComponentQueue(ownerFiber));
+    }
   };
 
   render(): MyReactElementNode {
     return null;
   }
 
-  unmount() {
-    super.unmount();
+  _unmount() {
+    super._unmount();
     const instance = this as MixinMyReactComponentType;
     instance.componentWillUnmount?.();
   }

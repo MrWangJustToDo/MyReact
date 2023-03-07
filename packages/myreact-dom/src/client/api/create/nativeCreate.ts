@@ -3,7 +3,7 @@ import { NODE_TYPE } from "@my-react/react-shared";
 
 import { commentS, commentE } from "@my-react-dom-shared";
 
-import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react";
 
 const SVG = "http://www.w3.org/2000/svg";
 
@@ -11,17 +11,15 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (fiber.type & NODE_TYPE.__isTextNode__) {
     fiber.node = document.createTextNode(fiber.element as string);
   } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
-    const typedElement = fiber.element as MyReactElement;
+    const typedElementType = fiber.elementType as string;
 
     if (isSVG) {
-      fiber.node = document.createElementNS(SVG, typedElement.type as string);
+      fiber.node = document.createElementNS(SVG, typedElementType);
     } else {
-      fiber.node = document.createElement(typedElement.type as string);
+      fiber.node = document.createElement(typedElementType);
     }
   } else if (fiber.type & NODE_TYPE.__isPortal__) {
-    const typedElement = fiber.element as MyReactElement;
-
-    fiber.node = typedElement.props["container"] as Element;
+    fiber.node = fiber.pendingProps["container"] as Element;
 
     if (__DEV__) {
       (fiber.node as Element).setAttribute?.("portal", "MyReact");

@@ -1,27 +1,20 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { mountLoop, mountLoopAsync } from "@my-react/react-reconciler";
+import { __my_react_shared__ } from "@my-react/react";
+import { mountAll, mountAllAsync } from "@my-react/react-reconciler";
 
-import { resetScopeLog, safeCall, safeCallAsync, setScopeLog } from "./debug";
-import { reconcileMount } from "./reconcileMount";
+import { resetScopeLog, setScopeLog } from "./debug";
 
 import type { MyReactFiberNode } from "@my-react/react";
-
-const { globalLoop } = __my_react_internal__;
 
 const { enableStrictLifeCycle, enableLegacyLifeCycle } = __my_react_shared__;
 
 export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
-  globalLoop.current = true;
-
   const startTime = Date.now();
 
   if (__DEV__) {
     setScopeLog();
   }
 
-  safeCall(() => mountLoop(fiber));
-
-  reconcileMount(fiber, hydrate);
+  mountAll(fiber, hydrate);
 
   if (__DEV__ && enableStrictLifeCycle.current) {
     console.warn("react-18 like lifecycle have been enabled!");
@@ -46,22 +39,16 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
   } else {
     renderScope.renderTime = endTime - startTime;
   }
-
-  globalLoop.current = false;
 };
 
 export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false) => {
-  globalLoop.current = true;
-
   const startTime = Date.now();
 
   if (__DEV__) {
     setScopeLog();
   }
 
-  await safeCallAsync(() => mountLoopAsync(fiber));
-
-  reconcileMount(fiber, hydrate);
+  await mountAllAsync(fiber, hydrate);
 
   if (__DEV__ && enableStrictLifeCycle.current) {
     console.warn("react-18 like lifecycle have been enabled!");
@@ -86,6 +73,4 @@ export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false)
   } else {
     renderScope.renderTime = endTime - startTime;
   }
-
-  globalLoop.current = false;
 };

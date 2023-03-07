@@ -1,25 +1,22 @@
 // for invalid dom structure
 import { NODE_TYPE } from "@my-react/react-shared";
 
-import { enableAllCheck, log } from "@my-react-dom-shared";
+import { log } from "@my-react-dom-shared";
 
-import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
-
+import type { MyReactFiberNode } from "@my-react/react";
 
 // TODO
 export const validDomNesting = (fiber: MyReactFiberNode) => {
-  if (!enableAllCheck.current) return;
+  if (__DEV__ && fiber.type & NODE_TYPE.__isPlainNode__) {
+    const typedElementType = fiber.elementType;
 
-  if (fiber.type & NODE_TYPE.__isPlainNode__) {
-    const typedElement = fiber.element as MyReactElement;
-
-    if (typedElement.type === "p") {
+    if (typedElementType === "p") {
       let parent = fiber.parent;
 
       while (parent && parent.type & NODE_TYPE.__isPlainNode__) {
-        const typedParentElement = parent.element as MyReactElement;
+        const typedParentElementType = parent.elementType;
 
-        if (typedParentElement.type === "p") {
+        if (typedParentElementType === "p") {
           log({
             fiber,
             level: "warn",

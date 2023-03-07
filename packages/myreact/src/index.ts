@@ -123,13 +123,13 @@ export {
   version,
 };
 
-export type { RenderScope } from "./scope";
+export type { RenderScope } from "./renderScope";
 
-export type { RenderPlatform } from "./platform";
+export type { RenderPlatform } from "./renderPlatform";
 
-export type { FiberDispatch } from "./dispatch";
+export type { RenderDispatch } from "./renderDispatch";
 
-export type { RenderController } from "./controller";
+export type { RenderController } from "./renderController";
 
 export type { CreateHookParams, MyReactHookNode, Action, Reducer } from "./hook";
 

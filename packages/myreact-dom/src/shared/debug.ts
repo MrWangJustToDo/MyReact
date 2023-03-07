@@ -107,37 +107,3 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
     );
   }
 };
-
-export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T) => {
-  try {
-    return action.call(null, ...args);
-  } catch (e) {
-    const fiber = currentRunningFiber.current;
-
-    log({ message: e as Error, level: "error", fiber });
-
-    if (fiber) fiber.error(e);
-  }
-};
-
-export const safeCallAsync = async <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T) => {
-  try {
-    return await action.call(null, ...args);
-  } catch (e) {
-    const fiber = currentRunningFiber.current;
-
-    log({ message: e as Error, level: "error", fiber });
-
-    if (fiber) fiber.error(e);
-  }
-};
-
-export const safeCallWithFiber = <T extends any[] = any[], K = any>({ action, fiber }: { action: (...args: T) => K; fiber: MyReactFiberNode }, ...args: T) => {
-  try {
-    return action.call(null, ...args);
-  } catch (e) {
-    log({ message: e as Error, level: "error", fiber });
-
-    fiber.error(e);
-  }
-};

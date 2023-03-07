@@ -2,16 +2,17 @@ import { __my_react_internal__ } from "@my-react/react";
 import { checkIsSameType, initialFiberNode } from "@my-react/react-reconciler";
 import { once } from "@my-react/react-shared";
 
-import { CustomRenderScope, CustomRenderDispatch, CustomRenderController } from "@my-react-dom-client/render";
+import { ClientDomPlatform, ClientDomScope, ClientDomDispatch, CustomRenderController } from "@my-react-dom-client";
+import { startRender, unmountComponentAtNode } from "@my-react-dom-shared";
 
-import { DomPlatform, startRender, unmountComponentAtNode } from "../../shared";
-
-import type { MyReactElement, MyReactFiberNode, FiberDispatch, RenderScope, MyReactFiberNodeRoot } from "@my-react/react";
+import type { MyReactElement, MyReactFiberNode, RenderScope, MyReactFiberNodeRoot } from "@my-react/react";
+import type { RenderDispatch, RenderPlatform } from "@my-react/react-reconciler";
 
 export type RenderContainer = Element & {
   __scope__: RenderScope;
   __fiber__: MyReactFiberNode;
-  __dispatch__: FiberDispatch;
+  __dispatch__: RenderDispatch;
+  __platform__: RenderPlatform;
 };
 
 const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
@@ -27,9 +28,9 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
     containerFiber.root.renderScope.isAppCrash = false;
 
     if (checkIsSameType(containerFiber, element)) {
-      containerFiber.installElement(element);
+      containerFiber._installElement(element);
 
-      containerFiber.update();
+      containerFiber._update();
 
       return;
     } else {
@@ -42,13 +43,13 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   const rootFiber = fiber as MyReactFiberNodeRoot;
 
-  const renderDispatch = new CustomRenderDispatch();
+  const renderPlatform = new ClientDomPlatform();
 
-  const renderScope = new CustomRenderScope(rootFiber, container);
+  const renderDispatch = new ClientDomDispatch(renderPlatform);
+
+  const renderScope = new ClientDomScope(rootFiber, container);
 
   const renderController = new CustomRenderController(renderScope);
-
-  const renderPlatform = new DomPlatform("myreact-dom");
 
   Array.from(container.children).forEach((n) => n.remove?.());
 
@@ -69,6 +70,8 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
   container.__fiber__ = fiber;
 
   container.__scope__ = renderScope;
+
+  container.__platform__ = renderPlatform;
 
   container.__dispatch__ = renderDispatch;
 

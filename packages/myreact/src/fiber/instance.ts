@@ -5,13 +5,13 @@ import { getTypeFromElement, isValidElement } from "../element";
 import { checkFiberElement, checkFiberHook, checkFiberInstance } from "./check";
 
 import type { MyReactComponent } from "../component";
-import type { RenderController } from "../controller";
-import type { FiberDispatch } from "../dispatch";
 import type { MyReactElement, MyReactElementNode } from "../element";
 import type { Action, MyReactHookNode } from "../hook";
 import type { MyReactInternalInstance } from "../internal";
-import type { RenderPlatform } from "../platform";
-import type { RenderScope } from "../scope";
+import type { RenderController } from "../renderController";
+import type { RenderDispatch } from "../renderDispatch";
+import type { RenderPlatform } from "../renderPlatform";
+import type { RenderScope } from "../renderScope";
 
 type RenderNode = { [p: string]: any };
 
@@ -38,7 +38,6 @@ const emptyObj = {};
 export class MyReactFiberNode {
   isMounted = true;
 
-  // rollback current version of keepLive logic
   // TODO
   // isActivated = true;
 
@@ -85,12 +84,12 @@ export class MyReactFiberNode {
   constructor(parent: MyReactFiberNode | null, element: MyReactElementNode) {
     this.root = parent?.root || (this as unknown as MyReactFiberNodeRoot);
 
-    this.initialElement(element);
+    this._initialElement(element);
 
-    this.installParent(parent);
+    this._installParent(parent);
   }
 
-  addChild(child: MyReactFiberNode) {
+  _addChild(child: MyReactFiberNode) {
     const last = this.children[this.children.length - 1];
 
     if (last) {
@@ -102,23 +101,23 @@ export class MyReactFiberNode {
     this.children.push(child);
   }
 
-  installParent(parent: MyReactFiberNode | null) {
+  _installParent(parent: MyReactFiberNode | null) {
     this.parent = parent;
 
     this.sibling = null;
 
-    this.parent?.addChild(this);
+    this.parent?._addChild(this);
   }
 
-  addDependence(node: MyReactInternalInstance) {
+  _addDependence(node: MyReactInternalInstance) {
     this.dependence.add(node);
   }
 
-  removeDependence(node: MyReactInternalInstance) {
+  _removeDependence(node: MyReactInternalInstance) {
     this.dependence.delete(node);
   }
 
-  beforeUpdate() {
+  _beforeUpdate() {
     this.child = null;
 
     this.children = [];
@@ -127,36 +126,36 @@ export class MyReactFiberNode {
   }
 
   // current fiber call .update() function
-  triggerUpdate() {
+  _triggerUpdate() {
     this.mode |= UPDATE_TYPE.__trigger__;
   }
 
   // parent fiber update, then child need update too
-  prepareUpdate() {
+  _prepareUpdate() {
     this.mode |= UPDATE_TYPE.__update__;
   }
 
-  afterUpdate() {
+  _afterUpdate() {
     this.mode = UPDATE_TYPE.__initial__;
   }
 
-  initialElement(element: MyReactElementNode) {
+  _initialElement(element: MyReactElementNode) {
     this.element = element;
 
-    this.initialType();
+    this._initialType();
 
-    this.initialPops();
+    this._initialPops();
   }
 
-  installElement(element: MyReactElementNode) {
+  _installElement(element: MyReactElementNode) {
     if (__DEV__) checkFiberElement(this, element);
 
     this.element = element;
 
-    this.initialPops();
+    this._initialPops();
   }
 
-  initialPops() {
+  _initialPops() {
     const element = this.element;
     if (isValidElement(element)) {
       this.pendingProps = Object.assign({}, element.props);
@@ -167,63 +166,50 @@ export class MyReactFiberNode {
     }
   }
 
-  initialType() {
+  _initialType() {
     const element = this.element;
     const type = getTypeFromElement(element);
     this.type = type;
   }
 
-  addHook(hookNode: MyReactHookNode) {
+  _addHook(hookNode: MyReactHookNode) {
     if (__DEV__) checkFiberHook(this, hookNode);
     this.hookNodes.push(hookNode);
   }
 
-  applyProps() {
+  _applyProps() {
     this.memoizedProps = Object.assign({}, this.pendingProps);
   }
 
-  installInstance(instance: MyReactInternalInstance) {
+  _installInstance(instance: MyReactInternalInstance) {
     if (__DEV__) checkFiberInstance(this, instance);
     this.instance = instance;
   }
 
   // force update current fiber and loop to the end
-  update() {
+  _update() {
     if (!this.isMounted) return;
     this.root.renderDispatch.triggerUpdate(this);
   }
 
-  error(error: Error) {
+  _error(error: Error) {
     if (!this.isMounted) return;
     this.root.renderDispatch.triggerError(this, error);
   }
 
-  unmount() {
+  _unmount() {
     if (!this.isMounted) return;
-    this.hookNodes.forEach((h) => h.unmount());
-    this.instance && this.instance.unmount();
+    this.hookNodes.forEach((h) => h._unmount());
+    this.instance && this.instance._unmount();
     this.mode = UPDATE_TYPE.__initial__;
     this.patch = PATCH_TYPE.__initial__;
   }
-
-  // clear() {
-  //   this.node = null;
-  //   this.child = null;
-  //   this.return = null;
-  //   this.parent = null;
-  //   this.sibling = null;
-  //   this.children = null;
-  //   this.instance = null;
-  //   this.hookNodes = null;
-  //   this.dependence = null;
-  //   this.isMounted = false;
-  // }
 }
 
 export interface MyReactFiberNodeRoot extends MyReactFiberNode {
   renderScope: RenderScope;
 
-  renderDispatch: FiberDispatch;
+  renderDispatch: RenderDispatch;
 
   renderPlatform: RenderPlatform;
 

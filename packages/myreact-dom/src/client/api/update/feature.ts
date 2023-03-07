@@ -19,7 +19,7 @@ export const update = (fiber: MyReactFiberNode, hydrate: boolean, isSVG: boolean
       debugWithDOM(fiber);
     }
 
-    fiber.applyProps();
+    fiber._applyProps();
 
     if (fiber.patch & PATCH_TYPE.__pendingUpdate__) fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
   }

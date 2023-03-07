@@ -15,19 +15,19 @@ export class MyReactInternalInstance {
 
   _ownerFiber: MyReactFiberNode | null = null;
 
-  setContext(fiber: MyReactFiberNode | null) {
-    this._contextFiber?.removeDependence(this);
+  _setContext(fiber: MyReactFiberNode | null) {
+    this._contextFiber?._removeDependence(this);
     this._contextFiber = fiber;
-    this._contextFiber?.addDependence(this);
+    this._contextFiber?._addDependence(this);
   }
 
-  setOwner(fiber: MyReactFiberNode) {
+  _setOwner(fiber: MyReactFiberNode) {
     this._ownerFiber = fiber;
   }
 
-  unmount() {
+  _unmount() {
     this.mode = Effect_TYPE.__initial__;
-    this._contextFiber?.removeDependence(this);
+    this._contextFiber?._removeDependence(this);
     this._ownerFiber = null;
     this._contextFiber = null;
   }

@@ -1,7 +1,5 @@
 import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
 
-import { enableAllCheck } from "@my-react-dom-shared";
-
 import { hydrateCreate } from "./hydrateCreate";
 import { nativeCreate } from "./nativeCreate";
 import { validDomNesting } from "./validDomNesting";
@@ -35,7 +33,7 @@ export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWit
 
       typedDom.__hydrate__ = true;
 
-      if (enableAllCheck.current && fiber.type & NODE_TYPE.__isPlainNode__) {
+      if (__DEV__ && fiber.type & NODE_TYPE.__isPlainNode__) {
         if (!re) {
           typedDom.setAttribute("debug_hydrate", "fail");
         } else {

@@ -1,8 +1,10 @@
-import { enableControlComponent, enableEventSystem, safeCallWithFiber } from "@my-react-dom-shared";
+import { safeCallWithFiber } from "@my-react/react-reconciler";
+
+import { enableControlComponent, enableEventSystem } from "@my-react-dom-shared";
 
 import { getNativeEventName } from "./getEventName";
 
-import type { MyReactElement, MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react";
 import type { MyReactFiberNodeDev, RenderDispatch } from "@my-react/react-reconciler";
 import type { DomElement } from "@my-react-dom-shared";
 
@@ -20,13 +22,13 @@ type ControlledElement = HTMLInputElement & {
 export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
-  const typedElement = fiber.element as MyReactElement;
+  const typedElementType = fiber.elementType as string;
 
   const pendingProps = fiber.pendingProps;
 
   const callback = pendingProps[key] as (...args: any[]) => void;
 
-  const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElement.type as string, typedElement.props);
+  const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElementType, pendingProps);
 
   if (enableEventSystem.current) {
     const eventMap = renderDispatch.eventMap;
@@ -52,7 +54,7 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
           requestAnimationFrame(() => {
             const pendingProps = fiber.pendingProps;
 
-            if (controlElementTag[typedElement.type as string] && typeof pendingProps["value"] !== "undefined") {
+            if (controlElementTag[typedElementType] && typeof pendingProps["value"] !== "undefined") {
               const typedDom = dom as ControlledElement;
 
               typedDom["value"] = pendingProps["value"] as string;
@@ -69,10 +71,10 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
       };
 
       if (enableControlComponent.current) {
-        if (controlElementTag[typedElement.type as string]) {
-          if ("value" in typedElement.props) {
+        if (controlElementTag[typedElementType]) {
+          if ("value" in pendingProps) {
             const typedDom = dom as ControlledElement;
-            if ("onChange" in typedElement.props) {
+            if ("onChange" in pendingProps) {
               typedDom.__isControlled__ = true;
               typedDom.setAttribute("my_react_input", "controlled");
             } else {

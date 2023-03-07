@@ -1,6 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-
-import { unmountFiber } from "@my-react-dom-client/api/unmount";
+import { unmountFiber } from "@my-react/react-reconciler";
 
 import type { DomNode } from "./dom";
 

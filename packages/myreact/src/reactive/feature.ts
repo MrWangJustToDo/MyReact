@@ -1,4 +1,4 @@
-import { My_React_Reactive } from "../element";
+import { Reactive, TYPEKEY } from "@my-react/react-shared";
 
 import type { createContext, MyReactElementNode } from "../element";
 import type { UnwrapRef } from "@my-react/react-reactive";
@@ -6,7 +6,7 @@ import type { UnwrapRef } from "@my-react/react-reactive";
 export function createReactive<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any>(
   props?: (p: P) => S
 ): {
-  ["$$typeof"]: symbol;
+  [TYPEKEY]: symbol;
   contextType: null;
   name: string;
   render: null;
@@ -22,7 +22,7 @@ export function createReactive<
   name?: string;
   render?: (s: UnwrapRef<S>, p: UnwrapRef<P>, c?: C) => MyReactElementNode;
 }): {
-  ["$$typeof"]: symbol;
+  [TYPEKEY]: symbol;
   contextType: null | ReturnType<typeof createContext>;
   name: string;
   render: (s: UnwrapRef<S>, p: UnwrapRef<P>, c?: C) => MyReactElementNode;
@@ -39,7 +39,7 @@ export function createReactive<P extends Record<string, unknown> = any, S extend
       }
 ) {
   return {
-    ["$$typeof"]: My_React_Reactive,
+    [TYPEKEY]: Reactive,
     name: typeof props === "function" ? props.name : props?.name,
     setup: typeof props === "function" ? props : props?.setup,
     render: typeof props === "function" ? null : props?.render,

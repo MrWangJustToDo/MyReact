@@ -1,9 +1,9 @@
 import type { MyReactFiberNode } from "@my-react/react";
 
-export const getFiberWithDom = (fiber: MyReactFiberNode | null, transform: (f: MyReactFiberNode) => MyReactFiberNode | null): MyReactFiberNode | null => {
+export const getFiberWithNativeDom = (fiber: MyReactFiberNode | null, transform: (f: MyReactFiberNode) => MyReactFiberNode | null): MyReactFiberNode | null => {
   if (fiber) {
     if (fiber.node) return fiber;
-    return getFiberWithDom(transform(fiber), transform);
+    return getFiberWithNativeDom(transform(fiber), transform);
   }
   return null;
 };

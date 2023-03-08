@@ -1,8 +1,7 @@
-import { HOOK_TYPE } from "@my-react/react-shared";
-
 import { MyReactInternalInstance } from "../internal";
 
 import type { HookUpdateQueue } from "../fiber";
+import type { HOOK_TYPE } from "@my-react/react-shared";
 
 export type Action = (s: any) => any | { type: string; payload: any };
 
@@ -46,29 +45,29 @@ export class MyReactHookNode extends MyReactInternalInstance {
     return true;
   }
 
-  unmount() {
-    super.unmount();
-    if (this.hookType === HOOK_TYPE.useEffect || this.hookType === HOOK_TYPE.useLayoutEffect) {
-      this.effect = false;
-      this.cancel && this.cancel();
-      return;
-    }
+  _unmount() {
+    super._unmount();
+    this.effect = false;
+    this.cancel && this.cancel();
   }
 
-  dispatch = (action: Action) => {
+  _dispatch = (action: Action) => {
     const updater: HookUpdateQueue = {
       type: "hook",
       trigger: this,
       payLoad: action,
     };
 
-    this._ownerFiber?.updateQueue.push(updater);
+    const ownerFiber = this._ownerFiber;
 
-    Promise.resolve().then(() => {
-      const fiber = this._ownerFiber;
-      if (fiber) {
-        fiber.root.globalDispatch.resolveHookQueue(fiber);
-      }
-    });
+    if (ownerFiber && ownerFiber.isMounted) {
+      const renderPlatform = ownerFiber.root.renderPlatform;
+
+      const renderDispatch = ownerFiber.root.renderDispatch;
+
+      ownerFiber.updateQueue.push(updater);
+
+      renderPlatform.microTask(() => renderDispatch.processFunctionComponentQueue(ownerFiber));
+    }
   };
 }

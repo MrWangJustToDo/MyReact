@@ -1,11 +1,13 @@
 import { __my_react_internal__ } from "@my-react/react";
 
+import type { RenderPlatform } from "../runtimePlatform";
 import type { MyReactFiberNode } from "@my-react/react";
 
 const { currentFunctionFiber } = __my_react_internal__;
 
 export class MyReactSignal<T = any> {
   private _value: T;
+  private _fiber: MyReactFiberNode | null;
   public readonly _depsSet: Set<MyReactFiberNode> = new Set();
 
   constructor(_rawValue: T) {
@@ -14,6 +16,7 @@ export class MyReactSignal<T = any> {
 
   getValue = () => {
     if (currentFunctionFiber.current) {
+      this._fiber = currentFunctionFiber.current;
       this._depsSet.add(currentFunctionFiber.current);
     }
 
@@ -24,12 +27,14 @@ export class MyReactSignal<T = any> {
     if (!Object.is(this._value, newValue)) {
       const allDeps = new Set(this._depsSet);
 
+      const renderPlatform = this._fiber.root.renderPlatform as RenderPlatform;
+
       this._depsSet.clear();
 
-      if (allDeps.size) {
-        Promise.resolve().then(() => {
-          allDeps.forEach((f) => f.update());
-        });
+      if (renderPlatform) {
+        this._fiber = null;
+
+        renderPlatform.microTask(() => allDeps.forEach((f) => f._update()));
       }
 
       this._value = newValue;

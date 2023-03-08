@@ -6,6 +6,7 @@ import { OverlayArrayContext, OverlayCloseContext, OverlayOpenContext, useOverla
 import { DesktopOverlay } from "./DesktopOverlay";
 import { MobileOverlay } from "./MobileOverlay";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const ModuleManager = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
   const { overlays, open, close } = useOverlaysProps();
   const overlaysObj = useBreakpointValue(
@@ -14,9 +15,10 @@ export const ModuleManager = ({ children }: { children: JSX.Element | JSX.Elemen
         base: { mobile: overlays, desktop: [] },
         md: { mobile: [], desktop: overlays },
       }),
-      [overlays],
-    ),
+      [overlays]
+    )
   );
+
   return (
     <OverlayArrayContext.Provider value={overlaysObj}>
       <OverlayCloseContext.Provider value={close}>

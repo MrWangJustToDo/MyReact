@@ -1,7 +1,9 @@
 /* eslint-disable prefer-rest-params */
+
+import { TYPEKEY, Element } from "@my-react/react-shared";
+
 import { currentComponentFiber } from "../share";
 
-import { My_React_Element } from "./symbol";
 import { checkArrayChildrenKey, checkSingleChildrenKey } from "./tool";
 
 import type { createContext, forwardRef, lazy, memo } from "./feature";
@@ -22,7 +24,7 @@ export type MyReactObjectComponent =
   | ReturnType<typeof forwardRef>
   | ReturnType<typeof memo>
   | ReturnType<typeof lazy>
-  | { ["$$typeof"]: symbol; [p: string]: unknown };
+  | { [TYPEKEY]: symbol; [p: string]: unknown };
 
 export type MixinMyReactClassComponent = MyReactClassComponent & {
   displayName?: string;
@@ -78,7 +80,7 @@ export type CreateElementConfig = {
 
 export const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps) => {
   const element = {
-    ["$$typeof"]: My_React_Element,
+    [TYPEKEY]: Element,
     type,
     key,
     ref,

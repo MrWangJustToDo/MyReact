@@ -20,10 +20,6 @@ const watch = (packageName: string, rollupOptions: RollupOptions, mode: string, 
       console.log(`[watch] start build package ${packageName} with ${mode} mode ${isUMD ? "in umd format" : ""}`);
     }
     if (event.code === "BUNDLE_END") {
-      // if (packageName === "myreact") copyMyReact();
-
-      // if (packageName === "myreact-dom") copyMyReactDOM();
-
       if (event.result) event.result.close();
 
       console.log(`[watch] package ${packageName} with ${mode} mode ${isUMD ? "in umd format" : ""} build success!`);

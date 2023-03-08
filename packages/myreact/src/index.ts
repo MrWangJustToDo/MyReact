@@ -1,30 +1,10 @@
 import * as reactiveApi from "@my-react/react-reactive";
+import { Strict as StrictMode, Fragment, Suspense } from "@my-react/react-shared";
 
 import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
-import {
-  My_React_Portal as Portal,
-  My_React_Element as Element,
-  My_React_Strict as StrictMode,
-  My_React_Fragment as Fragment,
-  My_React_Provider as Provider,
-  My_React_Consumer as Consumer,
-  My_React_Suspense as Suspense,
-  My_React_ForwardRef as ForwardRef,
-  My_React_KeepLive as KeepLive,
-  My_React_Reactive as Reactive,
-  My_React_Scope as Scope,
-  My_React_Comment as Comment,
-  createElement,
-  cloneElement,
-  isValidElement,
-  getTypeFromElement,
-  forwardRef,
-  createContext,
-  memo,
-  lazy,
-} from "./element";
-import { MyReactFiberNode, MyReactFiberNodeRoot, createFiberNode, updateFiberNode, initialFiberNode } from "./fiber";
+import { createElement, cloneElement, isValidElement, getTypeFromElement, forwardRef, createContext, memo, lazy } from "./element";
+import { MyReactFiberNode } from "./fiber";
 import {
   useRef,
   useMemo,
@@ -70,9 +50,6 @@ const __my_react_shared__ = {
   getFiberTree,
   getElementName,
   getFiberNodeName,
-  createFiberNode,
-  updateFiberNode,
-  initialFiberNode,
   getTypeFromElement,
   enableKeyDiff,
   enableConcurrentMode,
@@ -84,7 +61,6 @@ const __my_react_internal__ = {
   MyReactHookNode,
   MyReactComponent,
   MyReactFiberNode,
-  MyReactFiberNodeRoot,
   MyReactInternalInstance,
   globalLoop,
   currentRunningFiber,
@@ -127,18 +103,9 @@ export {
   forwardRef,
   createContext,
   createReactive,
-  Scope,
-  Portal,
-  Element,
-  Provider,
-  Consumer,
   Fragment,
   Suspense,
-  Reactive,
-  KeepLive,
   StrictMode,
-  ForwardRef,
-  Comment,
   useRef,
   useMemo,
   useState,
@@ -157,11 +124,13 @@ export {
   version,
 };
 
-export type { RenderPlatform } from "./platform";
+export type { RenderScope } from "./renderScope";
 
-export type { FiberDispatch } from "./dispatch";
+export type { RenderPlatform } from "./renderPlatform";
 
-export type { RenderScope } from "./scope";
+export type { RenderDispatch } from "./renderDispatch";
+
+export type { RenderController } from "./renderController";
 
 export type { CreateHookParams, MyReactHookNode, Action, Reducer } from "./hook";
 
@@ -183,7 +152,7 @@ export type {
 
 export type { MyReactInternalInstance } from "./internal";
 
-export type { MyReactFiberNode, MyReactFiberNodeDev, MyReactFiberNodeRoot, UpdateQueue } from "./fiber";
+export type { MyReactFiberNode, MyReactFiberNodeRoot, UpdateQueue } from "./fiber";
 
 export type { MyReactComponent, MyReactComponentStaticType, MixinMyReactComponentType } from "./component";
 

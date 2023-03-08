@@ -1,39 +1,50 @@
-import type { MyReactFiberNode, RenderScope } from "@my-react/react";
-import type { LinkTreeList } from "@my-react/react-shared";
+import { UniqueArray } from "@my-react/react-shared";
+
+import type { MyReactFiberNode, MyReactFiberNodeRoot, RenderScope } from "@my-react/react";
+import type { ListTree } from "@my-react/react-shared";
 
 export class DomScope
   implements
     RenderScope<{
-      isHydrateRender: boolean;
       isServerRender: boolean;
-      currentYield: MyReactFiberNode | null;
+
+      isHydrateRender: boolean;
+
       renderTime: number | null;
+
       hydrateTime: number | null;
     }>
 {
-  rootFiber: MyReactFiberNode | null = null;
+  rootFiber: MyReactFiberNodeRoot;
 
-  rootContainer: { [p: string]: any } = {};
+  yieldFiber: MyReactFiberNode | null = null;
+
+  rootContainer: { [p: string]: any };
 
   isAppMounted = false;
 
-  isAppCrash = false;
+  isAppCrashed = false;
 
-  renderTime = null;
-
-  hydrateTime = null;
-
-  modifyFiberArray: MyReactFiberNode[] = [];
+  isPending = false;
 
   modifyFiberRoot: MyReactFiberNode | null = null;
 
-  updateFiberListArray: LinkTreeList<MyReactFiberNode>[] = [];
+  pendingProcessFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray();
 
-  updateFiberList: LinkTreeList<MyReactFiberNode> | null = null;
+  pendingCommitFiberListArray: ListTree<MyReactFiberNode>[] = [];
 
-  currentYield: MyReactFiberNode | null = null;
+  pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
+
+  isServerRender = false;
 
   isHydrateRender = false;
 
-  isServerRender = false;
+  renderTime: number | null;
+
+  hydrateTime: number | null;
+
+  constructor(fiber: MyReactFiberNodeRoot, container: any) {
+    this.rootFiber = fiber;
+    this.rootContainer = container;
+  }
 }

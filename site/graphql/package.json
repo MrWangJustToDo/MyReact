@@ -39,15 +39,15 @@
     "cross-fetch": "3.1.5"
   },
   "peerDependencies": {
-    "@apollo/client": "^3.7.6",
-    "@graphql-codegen/add": "^3.2.3",
-    "@graphql-codegen/cli": "^2.16.5",
+    "@apollo/client": "^3.7.10",
+    "@graphql-codegen/add": "^4.0.1",
+    "@graphql-codegen/cli": "^3.2.2",
     "@graphql-codegen/import-types-preset": "^2.2.6",
     "@graphql-codegen/near-operation-file-preset": "^2.5.0",
-    "@graphql-codegen/typed-document-node": "^2.3.13",
-    "@graphql-codegen/typescript": "^2.8.8",
-    "@graphql-codegen/typescript-operations": "^2.5.13",
-    "@graphql-typed-document-node/core": "^3.1.1",
+    "@graphql-codegen/typed-document-node": "^3.0.2",
+    "@graphql-codegen/typescript": "^3.0.2",
+    "@graphql-codegen/typescript-operations": "^3.0.2",
+    "@graphql-typed-document-node/core": "^3.1.2",
     "graphql": "^16.6.0",
     "lodash": "^4.17.21",
     "react": ">=16.8"

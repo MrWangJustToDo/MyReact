@@ -52,7 +52,7 @@
     <script type="text/babel">
       const { Component, createRef, useState, useEffect, PureComponent } = React;
 
-      class Item extends Component {
+      class Item extends PureComponent {
         static createDiv = (props = {}) =>
           React.createElement("div", {
             ...props,
@@ -236,7 +236,7 @@
           const { list } = this.props;
           const { allLength, paddingTop, allHeight } = this.state;
           const currentList = list.slice(0, allLength);
-          // console.log(currentList, this)
+          // console.log(currentList, this, list);
           return (
             <>
               <h3>{this.avarageHeight}</h3>
@@ -267,6 +267,7 @@
       const Test = () => {
         const [list, setList] = useState(data);
         useEffect(() => {
+          // console.log('run')
           setInterval(() => {
             if (a > 0) {
               a--;
@@ -274,6 +275,8 @@
             }
           }, 1000);
         }, []);
+
+        // console.log(list);
 
         return <List list={list} />;
       };

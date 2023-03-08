@@ -1,4 +1,5 @@
-import { createElement, Portal } from "@my-react/react";
+import { createElement } from "@my-react/react";
+import { Portal } from "@my-react/react-shared";
 
 import type { MyReactElement } from "@my-react/react";
 

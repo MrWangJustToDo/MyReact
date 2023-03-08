@@ -1,6 +1,8 @@
+import { safeCall } from "@my-react/react-reconciler";
+
 import { render, hydrate } from "./client";
 import { renderToString } from "./server";
-import { createPortal, findDOMNode, safeCall, unmountComponentAtNode } from "./shared";
+import { createPortal, findDOMNode, unmountComponentAtNode } from "./shared";
 
 const version = __VERSION__;
 

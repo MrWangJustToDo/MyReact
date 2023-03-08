@@ -81,8 +81,8 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
   if (triggerOnce) {
     const messageKey = message.toString();
     cache[messageKey] = cache[messageKey] || {};
-    if (cache[messageKey][currentFiber.uid || "max"]) return;
-    cache[messageKey][currentFiber.uid || "max"] = true;
+    if (cache[messageKey][tree]) return;
+    cache[messageKey][tree] = true;
   }
   // look like a ts bug
   if (level === "warn") {
@@ -105,55 +105,5 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
       "cause by:",
       tree
     );
-  }
-};
-
-export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T) => {
-  try {
-    return action.call(null, ...args);
-  } catch (e) {
-    const fiber = currentRunningFiber.current;
-
-    log({ message: e as Error, level: "error", fiber });
-
-    if (fiber) fiber.error(e);
-
-    // if (fiber && fiber.root.globalScope.isAppCrash) return;
-
-    // if (fiber) fiber.root.globalScope.isAppCrash = true;
-
-    // throw new Error((e as Error).message);
-  }
-};
-
-export const safeCallAsync = async <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T) => {
-  try {
-    return await action.call(null, ...args);
-  } catch (e) {
-    const fiber = currentRunningFiber.current;
-
-    log({ message: e as Error, level: "error", fiber });
-
-    if (fiber) fiber.error(e);
-
-    // if (fiber && fiber.root.globalScope.isAppCrash) return;
-
-    // if (fiber) fiber.root.globalScope.isAppCrash = true;
-
-    // throw new Error((e as Error).message);
-  }
-};
-
-export const safeCallWithFiber = <T extends any[] = any[], K = any>({ action, fiber }: { action: (...args: T) => K; fiber: MyReactFiberNode }, ...args: T) => {
-  try {
-    return action.call(null, ...args);
-  } catch (e) {
-    if (fiber.root.globalScope.isAppCrash) return;
-
-    log({ message: e as Error, level: "error", fiber });
-
-    fiber.root.globalScope.isAppCrash = true;
-
-    throw new Error((e as Error).message);
   }
 };

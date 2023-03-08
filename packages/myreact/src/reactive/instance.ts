@@ -49,7 +49,7 @@ export class MyReactReactiveInstance<
     return true;
   }
 
-  createSetupState(setup?: (props: P, context?: C) => S, render?: (s: S, p: P, c?: C) => MyReactElementNode) {
+  _createSetupState(setup?: (props: P, context?: C) => S, render?: (s: S, p: P, c?: C) => MyReactElementNode) {
     const { props, context } = this;
     this.setup = setup;
     this.staticRender = render;
@@ -57,15 +57,15 @@ export class MyReactReactiveInstance<
     this.state = proxyRefs(data) as S;
   }
 
-  createEffectUpdate(scheduler: () => void) {
+  _createEffectUpdate(scheduler: () => void) {
     this.effect = new ReactiveEffect(() => {
       const render = this.staticRender ? this.staticRender : typeof this.props.children === "function" ? this.props.children : () => null;
       return render(this.state, this.props, this.context);
     }, scheduler);
   }
 
-  unmount(): void {
-    super.unmount();
+  _unmount(): void {
+    super._unmount();
     this.effect.stop();
     this.unmountedHooks.forEach((f) => f?.());
   }

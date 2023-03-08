@@ -4,6 +4,7 @@ export * from "./dom";
 export * from "./attrs";
 export * from "./tools";
 export * from "./debug";
+export * from "./scope";
 export * from "./portal";
 export * from "./render";
 export * from "./comment";

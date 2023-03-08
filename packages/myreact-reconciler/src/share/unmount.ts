@@ -9,13 +9,13 @@ import type { MyReactFiberNode } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
 export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: RenderDispatch, renderPlatform: RenderPlatform) => {
-  list.listToHead((f) => f._unmount());
+  list.listToFoot((f) => f._unmount());
 
-  list.listToHead((f) => unsetRef(f));
+  list.listToFoot((f) => unsetRef(f));
 
   if (list.head.value) renderPlatform.unmount(list.head.value);
 
-  list.listToHead((f) => renderDispatch.processFiberUnmount(f));
+  list.listToFoot((f) => renderDispatch.processFiberUnmount(f));
 };
 
 export const unmountFiber = (fiber: MyReactFiberNode) => {
@@ -37,6 +37,8 @@ export const unmount = (fiber: MyReactFiberNode) => {
     const unmountMap = renderDispatch.unmountMap;
 
     const allUnmountFiber = unmountMap.get(fiber) || [];
+
+    unmountMap.delete(fiber);
 
     if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountList(l, renderDispatch, renderPlatform));
 

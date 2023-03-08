@@ -4,13 +4,7 @@ import { Effect_TYPE, NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 import type { RenderDispatch } from "../runtimeDispatch";
 import type { MyReactFiberNode, memo, MixinMyReactComponentType, MyReactClassComponent, MyReactComponentStaticType, MyReactComponent } from "@my-react/react";
 
-const { enableLegacyLifeCycle } = __my_react_shared__;
-
-const DEFAULT_RESULT = {
-  newState: null,
-  isForce: false,
-  callback: [],
-};
+const { enableLegacyLifeCycle, enableStrictLifeCycle } = __my_react_shared__;
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
   const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? fiber.elementType : (fiber.elementType as ReturnType<typeof memo>).render;
@@ -62,7 +56,7 @@ const processComponentStateFromError = (fiber: MyReactFiberNode, error: Error) =
 const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
-  const strictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) : false;
+  const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
 
   const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? fiber.elementType : (fiber.elementType as ReturnType<typeof memo>).render;
 
@@ -88,7 +82,7 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   let devInstance: null | MyReactComponent = null;
 
-  if (__DEV__ && strictMod) {
+  if (ReactNewStrictMod) {
     const props = Object.assign({}, fiber.pendingProps);
 
     devInstance = new typedComponent(props, context);
@@ -353,16 +347,20 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
 
   processComponentStateFromProps(fiber);
 
-  if (enableLegacyLifeCycle.current) {
-    processComponentWillReceiveProps(fiber);
-  }
+  if (enableLegacyLifeCycle.current) processComponentWillReceiveProps(fiber);
 
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
+  // when a class component update, need flash all the queueUpdater
+  // processClassComponentUpdateQueue(fiber);
+
   const { newState, isForce, callback } = typedInstance._result;
 
-  // maybe could improve here
-  typedInstance._result = DEFAULT_RESULT;
+  typedInstance._result = {
+    newState: null,
+    isForce: false,
+    callback: [],
+  };
 
   const baseState = typedInstance.state;
 

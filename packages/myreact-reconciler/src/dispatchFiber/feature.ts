@@ -48,6 +48,8 @@ export const defaultInitialFiberNode = (fiber: MyReactFiberNode) => {
 };
 
 export const defaultUnmountFiberNode = (fiber: MyReactFiberNode) => {
+  if (!fiber.isMounted) return;
+
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
   renderDispatch.suspenseMap.delete(fiber);
@@ -71,8 +73,6 @@ export const defaultUnmountFiberNode = (fiber: MyReactFiberNode) => {
   fiber.child = null;
 
   fiber.return = null;
-
-  fiber.parent = null;
 
   fiber.sibling = null;
 

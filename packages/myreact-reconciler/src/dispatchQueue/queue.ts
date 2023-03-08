@@ -11,7 +11,11 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
   const baseProps = Object.assign({}, typedInstance.props);
 
-  const newResult = { newState: baseState, isForce: false, callback: [] };
+  const newResult = typedInstance._result;
+
+  // there are not a updateQueue
+  
+  if (!node) return false;
 
   while (node) {
     const updater = node.value;
@@ -25,7 +29,10 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
       allQueue.delete(node);
 
-      newResult.newState = Object.assign(newResult.newState, typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad);
+      newResult.newState = Object.assign(
+        newResult.newState || baseState,
+        typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad
+      );
 
       newResult.isForce = newResult.isForce || updater.isForce;
 

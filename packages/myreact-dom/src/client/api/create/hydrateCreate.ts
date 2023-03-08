@@ -7,9 +7,9 @@ import type { DomElement } from "@my-react-dom-shared";
 
 export const hydrateCreate = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode): boolean => {
   if (fiber.type & (NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__)) {
-    const element = parentFiberWithDom.node as DomElement;
+    const parentDom = parentFiberWithDom.node as DomElement;
 
-    const { result } = getHydrateDom(fiber, element);
+    const { result } = getHydrateDom(fiber, parentDom);
 
     return result;
   }

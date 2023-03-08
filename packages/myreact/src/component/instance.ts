@@ -22,12 +22,6 @@ export interface MyReactComponentType<P, S, C> {
   UNSAFE_componentWillUpdate?(nextProps: P, nextState: S): void;
 }
 
-export const DEFAULT_RESULT = {
-  newState: null,
-  isForce: false,
-  callback: [],
-};
-
 export type MyReactComponentStaticType<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any> = {
   contextType: null | ReturnType<typeof createContext>;
   getDerivedStateFromProps(props: P, state: S): S;
@@ -49,7 +43,11 @@ export class MyReactComponent<P extends Record<string, unknown> = any, S extends
   context: C | null = null;
 
   // for queue update
-  _result: { newState: unknown; isForce: boolean; callback: Array<() => void> } = DEFAULT_RESULT;
+  _result: { newState: unknown; isForce: boolean; callback: Array<() => void> } = {
+    newState: null,
+    isForce: false,
+    callback: [],
+  };
 
   constructor(props?: P, context?: C | null) {
     super();

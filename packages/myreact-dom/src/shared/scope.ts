@@ -3,7 +3,7 @@ import { UniqueArray } from "@my-react/react-shared";
 import type { MyReactFiberNode, MyReactFiberNodeRoot, RenderScope } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
-export class ClientDomScope
+export class DomScope
   implements
     RenderScope<{
       isServerRender: boolean;

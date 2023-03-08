@@ -30,6 +30,8 @@ export const setRef = (_fiber: MyReactFiberNode) => {
 };
 
 export const unsetRef = (_fiber: MyReactFiberNode) => {
+  if (!_fiber.isMounted) return;
+
   if (_fiber.ref && _fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
     const ref = _fiber.ref;
     if (typeof ref === "object" && ref !== null) {

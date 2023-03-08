@@ -1,7 +1,10 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE } from "@my-react/react-shared";
 
 import type { RenderDispatch } from "../runtimeDispatch";
 import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react";
+
+const { enableStrictLifeCycle } = __my_react_shared__;
 
 export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
@@ -9,7 +12,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
   if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
     hookNode.mode = Effect_TYPE.__pendingEffect__;
 
-    const strictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) : false;
+    const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
 
     if (hookNode.hookType === "useEffect") {
       const update = () => {
@@ -22,7 +25,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
         hookNode.mode = Effect_TYPE.__initial__;
       };
       renderDispatch.pendingEffect(fiber, () => {
-        if (__DEV__ && strictMod) {
+        if (ReactNewStrictMod) {
           update();
           update();
         } else {
@@ -42,7 +45,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
         hookNode.mode = Effect_TYPE.__initial__;
       };
       renderDispatch.pendingLayoutEffect(fiber, () => {
-        if (__DEV__ && strictMod) {
+        if (ReactNewStrictMod) {
           update();
           update();
         } else {

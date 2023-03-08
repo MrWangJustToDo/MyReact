@@ -85,7 +85,7 @@ export const createRender = ({ patchToFiberInitial, patchToFiberUpdate, patchToF
       renderScope.modifyFiberRoot = null;
 
       while (renderScope.pendingProcessFiberArray.length) {
-        const nextProcessFiber = renderScope.pendingProcessFiberArray.shift();
+        const nextProcessFiber = renderScope.pendingProcessFiberArray.uniShift();
 
         if (nextProcessFiber?.isMounted) {
           nextProcessFiber._triggerUpdate();
@@ -235,7 +235,7 @@ export const createRender = ({ patchToFiberInitial, patchToFiberUpdate, patchToF
 
       patchToFiberUnmount?.(_fiber);
     }
-    reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): void {
+    reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
       const renderPlatform = this.renderPlatform;
 
       const mountLoop = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
@@ -275,7 +275,7 @@ export const createRender = ({ patchToFiberInitial, patchToFiberUpdate, patchToF
         }
       };
 
-      mountLoop(_fiber, _hydrate);
+      return mountLoop(_fiber, _hydrate);
     }
     reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
       const renderPlatform = this.renderPlatform;
@@ -297,6 +297,11 @@ export const createRender = ({ patchToFiberInitial, patchToFiberUpdate, patchToF
             action: () => unmount(_fiber),
           });
 
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: () => setRef(_fiber),
+          });
+
           safeCallWithFiber({ fiber: _fiber, action: () => context(_fiber) });
         }
       });
@@ -316,12 +321,11 @@ export const createRender = ({ patchToFiberInitial, patchToFiberUpdate, patchToF
             fiber: _fiber,
             action: () => renderPlatform.append(_fiber),
           });
+        }
+      });
 
-          safeCallWithFiber({
-            fiber: _fiber,
-            action: () => setRef(_fiber),
-          });
-
+      _list.listToFoot((_fiber) => {
+        if (_fiber.isMounted) {
           safeCallWithFiber({
             fiber: _fiber,
             action: () => layoutEffect(_fiber),
@@ -355,7 +359,7 @@ export const createRender = ({ patchToFiberInitial, patchToFiberUpdate, patchToF
       _fiber.patch |= PATCH_TYPE.__pendingPosition__;
     }
     pendingRef(_fiber: MyReactFiberNode): void {
-      if (_fiber.type & this.renderPlatform.refType) {
+      if (_fiber.ref && _fiber.type & this.renderPlatform.refType) {
         _fiber.patch |= PATCH_TYPE.__pendingRef__;
       }
     }

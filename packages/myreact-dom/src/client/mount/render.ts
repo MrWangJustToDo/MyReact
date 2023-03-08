@@ -2,8 +2,8 @@ import { __my_react_internal__ } from "@my-react/react";
 import { checkIsSameType, initialFiberNode } from "@my-react/react-reconciler";
 import { once } from "@my-react/react-shared";
 
-import { ClientDomPlatform, ClientDomScope, ClientDomDispatch, CustomRenderController } from "@my-react-dom-client";
-import { startRender, unmountComponentAtNode } from "@my-react-dom-shared";
+import { ClientDomPlatform, ClientDomDispatch, CustomRenderController } from "@my-react-dom-client";
+import { startRender, unmountComponentAtNode, DomScope } from "@my-react-dom-shared";
 
 import type { MyReactElement, MyReactFiberNode, RenderScope, MyReactFiberNodeRoot } from "@my-react/react";
 import type { RenderDispatch, RenderPlatform } from "@my-react/react-reconciler";
@@ -17,7 +17,7 @@ export type RenderContainer = Element & {
 
 const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
 
-const onceLog = once(() => {
+export const onceLog = once(() => {
   console.log("you are using @my-react to render this site, see https://github.com/MrWangJustToDo/MyReact");
 });
 
@@ -47,7 +47,7 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   const renderDispatch = new ClientDomDispatch(renderPlatform);
 
-  const renderScope = new ClientDomScope(rootFiber, container);
+  const renderScope = new DomScope(rootFiber, container);
 
   const renderController = new CustomRenderController(renderScope);
 

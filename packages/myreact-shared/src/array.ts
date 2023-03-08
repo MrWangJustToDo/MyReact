@@ -1,31 +1,34 @@
-export class UniqueArray<T> extends Array<T> {
-  set = new Set();
+export class UniqueArray<T> {
+  set = new Set<T>();
+  arr = new Array<T>();
 
-  constructor(...args) {
-    super(...args);
-  }
+  length = 0;
 
-  pop() {
-    const v = super.pop();
+  uniPop() {
+    const v = this.arr.pop();
     this.set.delete(v);
+    this.length--;
     return v;
   }
 
-  push(v: T) {
+  uniPush(v: T) {
     if (this.set.has(v)) return 0;
     this.set.add(v);
-    super.push(v);
+    this.arr.push(v);
+    this.length++;
   }
 
-  shift() {
-    const v = super.shift();
+  uniShift() {
+    const v = this.arr.shift();
     this.set.delete(v);
+    this.length--;
     return v;
   }
 
-  unshift(v: T) {
+  uniUnshift(v: T) {
     if (this.set.has(v)) return 0;
     this.set.add(v);
-    super.unshift(v);
+    this.arr.unshift(v);
+    this.length++;
   }
 }

@@ -8,6 +8,8 @@ export const getFiberWithDom = (
 ): MyReactFiberNode | null => {
   if (!fiber) return null;
 
+  if (fiber.isInvoked && !fiber.isMounted) return getFiberWithDom(transform(fiber) as MyReactFiberNode | null, transform);
+
   if (fiber.type & NODE_TYPE.__isPortal__) return null;
 
   if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentNode__)) return fiber;

@@ -1,18 +1,15 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { initialFiberNode } from "@my-react/react-reconciler";
-import { once } from "@my-react/react-shared";
 
-import { ClientDomPlatform, ClientDomScope, CustomRenderController, ClientDomDispatch } from "@my-react-dom-client";
-import { startRender, startRenderAsync } from "@my-react-dom-shared";
+import { ClientDomPlatform, CustomRenderController, ClientDomDispatch } from "@my-react-dom-client";
+import { startRender, startRenderAsync, DomScope } from "@my-react-dom-shared";
+
+import { onceLog } from "./render";
 
 import type { RenderContainer } from "./render";
 import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
 
 const { MyReactFiberNode } = __my_react_internal__;
-
-const onceLog = once(() => {
-  console.log("you are using @my-react to render this site, see https://github.com/MrWangJustToDo/MyReact");
-});
 
 const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
   onceLog();
@@ -25,7 +22,7 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 
   const renderDispatch = new ClientDomDispatch(renderPlatform);
 
-  const renderScope = new ClientDomScope(rootFiber, container);
+  const renderScope = new DomScope(rootFiber, container);
 
   const renderController = new CustomRenderController(renderScope);
 
@@ -75,7 +72,7 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
 
   const renderDispatch = new ClientDomDispatch(renderPlatform);
 
-  const renderScope = new ClientDomScope(rootFiber, container);
+  const renderScope = new DomScope(rootFiber, container);
 
   const renderController = new CustomRenderController(renderScope);
 
@@ -107,7 +104,7 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
 
   await startRenderAsync(fiber, true);
 
-  renderScope.isPending = true;
+  renderScope.isPending = false;
 
   renderScope.isHydrateRender = false;
 };

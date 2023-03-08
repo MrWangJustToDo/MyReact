@@ -49,9 +49,9 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 
     updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform);
   } else {
-    renderScope.isAppCrashed = true;
-
     renderController.reset();
+
+    renderScope.isAppCrashed = true;
   }
 };
 
@@ -64,6 +64,8 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
 
   const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
 
+  if (renderScope.isAppCrashed) return;
+
   if (renderScope.isPending) {
     if (__DEV__) console.log("pending, can not update component");
 
@@ -72,7 +74,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
     return;
   }
 
-  renderScope.pendingProcessFiberArray.push(fiber);
+  renderScope.pendingProcessFiberArray.uniPush(fiber);
 
   asyncUpdate(renderController, renderDispatch, renderScope, renderPlatform);
 };

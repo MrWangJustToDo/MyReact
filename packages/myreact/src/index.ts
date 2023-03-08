@@ -1,5 +1,5 @@
 import * as reactiveApi from "@my-react/react-reactive";
-import { Strict as StrictMode, Fragment } from "@my-react/react-shared";
+import { Strict as StrictMode, Fragment, Suspense } from "@my-react/react-shared";
 
 import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
@@ -104,6 +104,7 @@ export {
   createContext,
   createReactive,
   Fragment,
+  Suspense,
   StrictMode,
   useRef,
   useMemo,

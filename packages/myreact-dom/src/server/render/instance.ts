@@ -1,17 +1,15 @@
 import { createRender } from "@my-react/react-reconciler";
 
-import { asyncUpdateTimeStep, shouldPauseAsyncUpdate } from "@my-react-dom-shared";
-
 import type { MyReactFiberNode } from "@my-react/react";
-import type { ClientDomPlatform } from "@my-react-dom-client/renderPlatform";
+import type { ServerDomPlatform } from "@my-react-dom-server/renderPlatform";
 
-const { CustomRenderController, CustomRenderDispatch } = createRender({
+const { CustomRenderDispatch, CustomRenderController } = createRender({
   patchToFiberInitial(_fiber) {
     let isSVG = _fiber.elementType === "svg";
 
     let parentFiberWithNode = null;
 
-    const renderPlatform = _fiber.root.renderPlatform as ClientDomPlatform;
+    const renderPlatform = _fiber.root.renderPlatform as ServerDomPlatform;
     if (!isSVG) {
       isSVG = renderPlatform.elementMap.get(_fiber.parent)?.isSVG || false;
     }
@@ -29,32 +27,39 @@ const { CustomRenderController, CustomRenderDispatch } = createRender({
     renderPlatform.elementMap.set(_fiber, { isSVG, parentFiberWithNode });
   },
   patchToFiberUnmount(_fiber) {
-    const renderPlatform = _fiber.root.renderPlatform as ClientDomPlatform;
-
-    // update parentFiberWithDom
+    const renderPlatform = _fiber.root.renderPlatform as ServerDomPlatform;
 
     renderPlatform.elementMap.delete(_fiber);
   },
-  shouldYield() {
-    return shouldPauseAsyncUpdate();
-  },
 });
 
-export class ClientDomDispatch extends CustomRenderDispatch {
+export class ServerDomDispatch extends CustomRenderDispatch {
   triggerUpdate(_fiber: MyReactFiberNode): void {
-    asyncUpdateTimeStep.current = Date.now();
-
-    super.triggerUpdate(_fiber);
+    void 0;
   }
 
-  reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
-    const result = super.reconcileCommit(_fiber, _hydrate);
+  triggerError(_fiber: MyReactFiberNode, _error: Error): void {
+    throw _error;
+  }
 
-    if (_hydrate && Boolean(result)) {
-      // have a hydrate error, loop all the element and delete the error element
-    }
+  pendingPosition(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
 
-    return result;
+  pendingContext(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | (MyReactFiberNode | MyReactFiberNode[])[]): void {
+    void 0;
+  }
+
+  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
+    void 0;
+  }
+
+  pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
+    void 0;
   }
 }
 

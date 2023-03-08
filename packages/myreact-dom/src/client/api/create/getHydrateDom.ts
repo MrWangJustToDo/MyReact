@@ -1,12 +1,12 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { isCommentStartElement } from "@my-react/react-reconciler";
+// import { isCommentStartElement } from "@my-react/react-reconciler";
 import { NODE_TYPE } from "@my-react/react-shared";
 
 import { commentE, commentS, IS_SINGLE_ELEMENT, log } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react";
-import type { RenderDispatch } from "@my-react/react-reconciler";
-import type { DomComment } from "@my-react-dom-shared";
+// import type { RenderDispatch } from "@my-react/react-reconciler";
+// import type { DomComment } from "@my-react-dom-shared";
 
 export type HydrateDOM = Element & {
   __hydrate__: boolean;
@@ -33,46 +33,46 @@ const getNextHydrateDom = (parentDom: Element) => {
   });
 };
 
-const getNextHydrateScope = (parentDom: Element) => {
-  const children = Array.from(parentDom.childNodes);
+// const getNextHydrateScope = (parentDom: Element) => {
+//   const children = Array.from(parentDom.childNodes);
 
-  let start: DomComment | null = null;
-  let index = 0;
-  let end: DomComment | null = null;
+//   let start: DomComment | null = null;
+//   let index = 0;
+//   let end: DomComment | null = null;
 
-  for (let i = 0; i < children.length; i++) {
-    const typedDom = children[i] as HydrateDOM;
-    if (!typedDom.__hydrate__) {
-      if (typedDom.nodeType === Node.COMMENT_NODE) {
-        if (typedDom.textContent === commentS) {
-          start = start || (typedDom as unknown as DomComment);
-          index++;
-        }
-        if (typedDom.textContent === commentE) {
-          index--;
-          if (index === 0) {
-            end = typedDom as unknown as DomComment;
-          }
-        }
-      } else {
-        // there are some not match error, just break.
-        if (!start) break;
-      }
-    }
-    if (start && end) break;
-  }
+//   for (let i = 0; i < children.length; i++) {
+//     const typedDom = children[i] as HydrateDOM;
+//     if (!typedDom.__hydrate__) {
+//       if (typedDom.nodeType === Node.COMMENT_NODE) {
+//         if (typedDom.textContent === commentS) {
+//           start = start || (typedDom as unknown as DomComment);
+//           index++;
+//         }
+//         if (typedDom.textContent === commentE) {
+//           index--;
+//           if (index === 0) {
+//             end = typedDom as unknown as DomComment;
+//           }
+//         }
+//       } else {
+//         // there are some not match error, just break.
+//         if (!start) break;
+//       }
+//     }
+//     if (start && end) break;
+//   }
 
-  return { start, end };
-};
+//   return { start, end };
+// };
 
-const generateHydrateScope = (fiber: MyReactFiberNode, scope: ReturnType<typeof getNextHydrateScope>) => {
-  const globalDispatch = fiber.root.renderDispatch as RenderDispatch;
+// const generateHydrateScope = (fiber: MyReactFiberNode, scope: ReturnType<typeof getNextHydrateScope>) => {
+//   const globalDispatch = fiber.root.renderDispatch as RenderDispatch;
 
-  const scopeFiber = globalDispatch.resolveScope(fiber);
+//   const scopeFiber = globalDispatch.resolveScope(fiber);
 
-  // TODO 如果scope不存在，回退到更上层的scope
-  console.log(scopeFiber, scope);
-};
+//   // TODO 如果scope不存在，回退到更上层的scope
+//   console.log(scopeFiber, scope);
+// };
 
 const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
   if (!dom) {
@@ -130,33 +130,33 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
 export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
   if (IS_SINGLE_ELEMENT[parentDom.tagName.toLowerCase() as keyof typeof IS_SINGLE_ELEMENT]) return { result: true };
 
-  if (isCommentStartElement(fiber)) {
-    const scope = getNextHydrateScope(parentDom);
+  // if (isCommentStartElement(fiber)) {
+  //   const scope = getNextHydrateScope(parentDom);
 
-    generateHydrateScope(fiber, scope);
+  //   generateHydrateScope(fiber, scope);
 
-    const dom = scope.start;
+  //   const dom = scope.start;
 
-    if (dom) {
-      fiber.node = dom;
+  //   if (dom) {
+  //     fiber.node = dom;
 
-      return { dom, result: true };
-    } else {
-      return { dom, result: false };
-    }
+  //     return { dom, result: true };
+  //   } else {
+  //     return { dom, result: false };
+  //   }
+  // } else {
+  const dom = getNextHydrateDom(parentDom);
+
+  const result = checkHydrateDom(fiber, dom);
+
+  if (result) {
+    const typedDom = dom as HydrateDOM;
+
+    fiber.node = typedDom;
+
+    return { dom: typedDom, result };
   } else {
-    const dom = getNextHydrateDom(parentDom);
-
-    const result = checkHydrateDom(fiber, dom);
-
-    if (result) {
-      const typedDom = dom as HydrateDOM;
-
-      fiber.node = typedDom;
-
-      return { dom: typedDom, result };
-    } else {
-      return { dom, result };
-    }
+    return { dom, result };
   }
+  // }
 };

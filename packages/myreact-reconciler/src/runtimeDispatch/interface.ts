@@ -55,7 +55,7 @@ export type RenderDispatch = OriginalRenderDispatch<{
 
   processFiberUnmount(_fiber: MyReactFiberNode): void;
 
-  reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): void;
+  reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean;
 
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void;
 

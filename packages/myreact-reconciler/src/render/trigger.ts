@@ -12,17 +12,12 @@ const { globalLoop } = __my_react_internal__;
 const { enableConcurrentMode } = __my_react_shared__;
 
 const updateEntry = (renderController: RenderController, renderDispatch: RenderDispatch, renderScope: RenderScope, renderPlatform: RenderPlatform) => {
-  if (globalLoop.current) return;
-
   if (enableConcurrentMode.current) {
     updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform);
   } else {
     updateAll(renderController, renderDispatch, renderScope, renderPlatform);
   }
 };
-
-const asyncUpdate = (renderController: RenderController, renderDispatch: RenderDispatch, renderScope: RenderScope, renderPlatform: RenderPlatform) =>
-  renderPlatform.microTask(() => updateEntry(renderController, renderDispatch, renderScope, renderPlatform));
 
 export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
   const renderScope = fiber.root.renderScope;
@@ -76,5 +71,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
 
   renderScope.pendingProcessFiberArray.uniPush(fiber);
 
-  asyncUpdate(renderController, renderDispatch, renderScope, renderPlatform);
+  if (globalLoop.current) return;
+
+  updateEntry(renderController, renderDispatch, renderScope, renderPlatform);
 };

@@ -6,10 +6,6 @@ interface DefaultRenderDispatch {
 
   triggerError(_fiber: MyReactFiberNode, _error: Error): void;
 
-  initialFiberNode(_fiber: MyReactFiberNode): void;
-
-  updateFiberNode(_fiber: MyReactFiberNode): void;
-
   resolveHookNode(_fiber: MyReactFiberNode | null, _hookParams: CreateHookParams): any | null;
 
   processClassComponentQueue(_fiber: MyReactFiberNode): void;

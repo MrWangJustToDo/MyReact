@@ -392,12 +392,6 @@ export const createRender = ({ patchToFiberInitial, patchToFiberUpdate, patchToF
     triggerError(_fiber: MyReactFiberNode, _error: Error): void {
       triggerError(_fiber, _error);
     }
-    initialFiberNode(_fiber: MyReactFiberNode): void {
-      defaultInitialFiberNode(_fiber);
-    }
-    updateFiberNode(_fiber: MyReactFiberNode): void {
-      defaultUpdateFiberNode(_fiber);
-    }
     resolveHookNode(_fiber: MyReactFiberNode, _hookParams: CreateHookParams) {
       return processHookNode(_fiber, _hookParams);
     }

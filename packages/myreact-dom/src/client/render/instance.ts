@@ -1,9 +1,10 @@
 import { createRender } from "@my-react/react-reconciler";
 
+import { fallback } from "@my-react-dom-client";
 import { asyncUpdateTimeStep, shouldPauseAsyncUpdate } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react";
-import type { ClientDomPlatform } from "@my-react-dom-client/renderPlatform";
+import type { ClientDomPlatform } from "@my-react-dom-client";
 
 const { CustomRenderController, CustomRenderDispatch } = createRender({
   patchToFiberInitial(_fiber) {
@@ -31,8 +32,6 @@ const { CustomRenderController, CustomRenderDispatch } = createRender({
   patchToFiberUnmount(_fiber) {
     const renderPlatform = _fiber.root.renderPlatform as ClientDomPlatform;
 
-    // update parentFiberWithDom
-
     renderPlatform.elementMap.delete(_fiber);
   },
   shouldYield() {
@@ -50,8 +49,9 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
     const result = super.reconcileCommit(_fiber, _hydrate);
 
-    if (_hydrate && Boolean(result)) {
-      // have a hydrate error, loop all the element and delete the error element
+    // always check if there are any hydrate error, maybe could improve hydrate flow to avoid this
+    if (_hydrate) {
+      fallback(_fiber);
     }
 
     return result;

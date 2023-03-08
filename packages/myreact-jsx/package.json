@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-jsx",
   "description": "@my-react/react-jsx",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",

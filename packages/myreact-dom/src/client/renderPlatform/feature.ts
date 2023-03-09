@@ -17,6 +17,10 @@ export type LogProps = {
 
 const { getFiberTree, getHookTree } = __my_react_shared__;
 
+const microTask = typeof queueMicrotask === "undefined" ? (task: () => void) => Promise.resolve().then(task) : queueMicrotask;
+
+const macroTask = typeof requestAnimationFrame === "function" ? requestAnimationFrame : (task: () => void) => setTimeout(task);
+
 export class ClientDomPlatform implements RenderPlatform {
   name: "@my-react/react-dom";
 
@@ -45,11 +49,11 @@ export class ClientDomPlatform implements RenderPlatform {
   }
 
   microTask(_task: () => void): void {
-    Promise.resolve().then(_task);
+    microTask(_task);
   }
 
   macroTask(_task: () => void): void {
-    requestAnimationFrame(_task);
+    macroTask(_task);
   }
 
   getFiberTree(fiber: MyReactFiberNode): string {

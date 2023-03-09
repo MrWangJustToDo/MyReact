@@ -9,10 +9,12 @@ import type { RenderDispatch } from "@my-react/react-reconciler";
 
 const { globalLoop } = __my_react_internal__;
 
-const reconcileUpdate = (renderDispatch: RenderDispatch, renderScope: RenderScope, _renderPlatform: RenderPlatform) => {
+const reconcileUpdate = (renderDispatch: RenderDispatch, renderScope: RenderScope, renderPlatform: RenderPlatform) => {
   const allPendingList = renderScope.pendingCommitFiberListArray.slice(0);
 
-  allPendingList.forEach((l) => renderDispatch.reconcileUpdate(l));
+  if (allPendingList.length) {
+    renderPlatform.microTask(() => allPendingList.forEach((l) => renderDispatch.reconcileUpdate(l)));
+  }
 
   renderScope.pendingCommitFiberListArray = [];
 };
@@ -40,8 +42,8 @@ export const updateAllWithConcurrent = (
   if (!renderController.doesPause()) reconcileUpdate(renderDispatch, renderScope, renderPlatform);
 
   if (renderController.hasNext()) {
-    renderPlatform.macroTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));
+    renderPlatform.microTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));
+  } else {
+    globalLoop.current = false;
   }
-
-  globalLoop.current = false;
 };

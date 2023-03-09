@@ -100,6 +100,8 @@ const _BlogListWithInfinityScroll = () => {
       </>
     );
 
+  console.log(disableGridLayout, isMobileWidth);
+
   return (
     <Flex flexDirection="column" height="100%">
       <Box ref={ref} overflow="auto" paddingRight="4" onScroll={onThrottleScroll} className="tour_blogList">

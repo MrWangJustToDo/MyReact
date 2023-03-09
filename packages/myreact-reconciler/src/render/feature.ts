@@ -1,4 +1,4 @@
-import { ListTree, PATCH_TYPE, UniqueArray } from "@my-react/react-shared";
+import { ListTree, PATCH_TYPE, UniqueArray, UPDATE_TYPE } from "@my-react/react-shared";
 
 import { defaultGenerateContextMap, defaultGetContextValue } from "../dispatchContext";
 import { defaultGenerateErrorBoundariesMap } from "../dispatchErrorBoundaries";
@@ -87,15 +87,14 @@ export const createRender = ({ patchToFiberInitial, patchToFiberUpdate, patchToF
       while (renderScope.pendingProcessFiberArray.length) {
         const nextProcessFiber = renderScope.pendingProcessFiberArray.uniShift();
 
-        if (nextProcessFiber?.isMounted) {
-          nextProcessFiber._triggerUpdate();
+        // current fiber has updated, skip
+        if (!nextProcessFiber.isMounted || nextProcessFiber.mode === UPDATE_TYPE.__initial__) continue;
 
-          beginCommitFiberList(renderScope);
+        beginCommitFiberList(renderScope);
 
-          renderScope.modifyFiberRoot = nextProcessFiber;
+        renderScope.modifyFiberRoot = nextProcessFiber;
 
-          return nextProcessFiber;
-        }
+        return nextProcessFiber;
       }
 
       return null;
@@ -343,8 +342,6 @@ export const createRender = ({ patchToFiberInitial, patchToFiberUpdate, patchToF
     pendingUpdate(_fiber: MyReactFiberNode): void {
       if (_fiber.type & this.renderPlatform.updateType) {
         _fiber.patch |= PATCH_TYPE.__pendingUpdate__;
-      } else {
-        _fiber._applyProps();
       }
     }
     pendingAppend(_fiber: MyReactFiberNode): void {

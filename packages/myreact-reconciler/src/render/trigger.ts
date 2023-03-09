@@ -69,7 +69,19 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
     return;
   }
 
+  if (__DEV__) {
+    renderScope.__globalLoop__ = globalLoop;
+  }
+
+  fiber._triggerUpdate();
+
+  const beforeLength = renderScope.pendingProcessFiberArray.length;
+
   renderScope.pendingProcessFiberArray.uniPush(fiber);
+
+  const afterLength = renderScope.pendingProcessFiberArray.length;
+
+  if (beforeLength === afterLength) return;
 
   if (globalLoop.current) return;
 

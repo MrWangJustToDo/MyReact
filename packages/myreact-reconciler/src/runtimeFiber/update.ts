@@ -1,4 +1,5 @@
 import { isValidElement } from "@my-react/react";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNodeDev } from "./interface";
 import type { RenderDispatch } from "../runtimeDispatch";
@@ -34,6 +35,10 @@ export const updateFiberNode = (
 
   if (fiber !== prevFiber) {
     renderDispatch.pendingPosition(fiber);
+  }
+
+  if (!(fiber.patch & PATCH_TYPE.__pendingUpdate__)) {
+    fiber._applyProps();
   }
 
   if (__DEV__) {

@@ -1,4 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNodeDev } from "./interface";
 import type { RenderDispatch } from "../runtimeDispatch";
@@ -33,6 +34,10 @@ export const createFiberNode = (
   renderDispatch.pendingRef(newFiberNode);
 
   renderDispatch.processFiberInitial(newFiberNode);
+
+  if (!(newFiberNode.patch & PATCH_TYPE.__pendingUpdate__)) {
+    newFiberNode._applyProps();
+  }
 
   if (__DEV__) {
     const typedFiber = newFiberNode as MyReactFiberNodeDev;

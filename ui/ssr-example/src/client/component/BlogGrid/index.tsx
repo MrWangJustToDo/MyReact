@@ -44,7 +44,6 @@ const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"
 };
 
 const _BlogGrid = ({ data, disableGridLayout = true }: { data: GetBlogListQuery["repository"]["issues"]["nodes"]; disableGridLayout?: boolean }) => {
-  console.log(disableGridLayout);
 
   if (disableGridLayout) {
     return (

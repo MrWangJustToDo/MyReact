@@ -16,10 +16,12 @@ import {
 import { GetBlogListDocument, IssueOrderField, OrderDirection } from "@site/graphql";
 import { throttle } from "lodash-es";
 import { memo, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 
 import { BlogGrid } from "@client/component/BlogGrid";
 import { ErrorCom } from "@client/component/Error";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "@client/config/source";
+import { getIsStaticGenerate } from "@shared";
 
 import { BlogModal } from "../BlogModal";
 
@@ -47,6 +49,8 @@ const BASIC_VARIABLE = {
 
 const _BlogListWithInfinityScroll = () => {
   const ref = useRef<HTMLDivElement>();
+
+  const navigate = useNavigate();
 
   const [disableGridLayout, setDisableGridLayout] = useState(true);
 
@@ -100,8 +104,6 @@ const _BlogListWithInfinityScroll = () => {
       </>
     );
 
-  console.log(disableGridLayout, isMobileWidth);
-
   return (
     <Flex flexDirection="column" height="100%">
       <Box ref={ref} overflow="auto" paddingRight="4" onScroll={onThrottleScroll} className="tour_blogList">
@@ -116,6 +118,9 @@ const _BlogListWithInfinityScroll = () => {
         <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
           <Button color="purple.500" textTransform="capitalize" onClick={() => refetch()}>
             refresh
+          </Button>
+          <Button color="purple.500" textTransform="capitalize" onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/Antd" : "/Antd")}>
+            Antd
           </Button>
           <Button color="purple.500" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
             {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}

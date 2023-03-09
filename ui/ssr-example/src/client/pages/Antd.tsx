@@ -1,7 +1,12 @@
+import { Container, Heading } from "@chakra-ui/react";
 import { Carousel, Slider, Switch, Calendar, Tree, Space, TimePicker, TreeSelect, Button, Dropdown, Tooltip, Menu, message, Select, AutoComplete } from "antd";
 import dayjs from "dayjs";
 import React, { useState } from "react";
 
+import { CONTAINER_WIDTH } from "@client/config/container";
+import { delay } from "@client/utils";
+
+import type { GetInitialStateType } from "@client/types/common";
 import type { MenuProps } from "antd/lib/menu";
 import type { DataNode, TreeProps } from "antd/lib/tree";
 import type { Dayjs } from "dayjs";
@@ -99,7 +104,7 @@ const mockVal = (str: string, repeat = 1) => ({
   value: str.repeat(repeat),
 });
 
-const AntDesignComponent = () => {
+const AntDesignComponent = ({ data }: { data: string }) => {
   const [treeLine, setTreeLine] = useState(true);
   const [showLeafIcon, setShowLeafIcon] = useState(false);
   const [expandedKeys, setExpandedKeys] = useState<React.Key[]>(["0-0-0", "0-0-1"]);
@@ -143,14 +148,12 @@ const AntDesignComponent = () => {
   };
 
   return (
-    <>
-      <h2>Ant Design</h2>
+    <Container maxWidth={CONTAINER_WIDTH}>
+      <Heading>{data}</Heading>
+      <br />
       <Switch />
       <br />
-      <h2>AutoComplete 有bug 需要debug 源码了</h2>
-      <AutoComplete options={options} style={{ width: 200 }} onSelect={onSelect_1} onSearch={onSearch} placeholder="input here" />
-      <br />
-      <br />
+      <h2>AutoComplete</h2>
       <AutoComplete
         value={value}
         options={options}
@@ -290,10 +293,17 @@ const AntDesignComponent = () => {
           </div>
         </Carousel>
       </div>
-    </>
+    </Container>
   );
 };
 
 export default AntDesignComponent;
+
+export const getInitialState: GetInitialStateType = async () => {
+  console.log("start loading");
+  await delay(1000);
+  console.log("end loading");
+  return { props: { data: "this page ui component from Antd !" } };
+};
 
 export const isStatic = true;

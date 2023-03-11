@@ -8,8 +8,6 @@ export enum PATCH_TYPE {
   __pendingEffect__ = 1 << 5,
   __pendingLayoutEffect__ = 1 << 6,
   __pendingUnmount__ = 1 << 7,
-  // TODO
-  // __pendingDeactivate__ = 1 << 8,
   __pendingRef__ = 1 << 8,
 
   __pendingGenerateUpdateList__ = PATCH_TYPE.__pendingCreate__ |

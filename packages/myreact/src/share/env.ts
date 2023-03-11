@@ -1,7 +1,6 @@
 import { createRef } from "./createRef";
 
 import type { MyReactFiberNode } from "../fiber";
-import type { MyReactHookNode } from "../hook";
 import type { MyReactReactiveInstance } from "../reactive";
 
 export const globalLoop = createRef(false);
@@ -14,8 +13,6 @@ export const currentFunctionFiber = createRef<MyReactFiberNode | null>(null);
 
 export const currentReactiveInstance = createRef<MyReactReactiveInstance | null>(null);
 
-export const currentHookInstance = createRef<MyReactHookNode | null>(null);
-
 export const currentHookDeepIndex = createRef(0);
 
 // ==== feature ==== //
@@ -25,7 +22,7 @@ export const enableConcurrentMode = createRef(true);
 
 export const enableKeyDiff = createRef(true);
 
-// support unsafe_ lifecycle
+// support "unsafe_" lifecycle
 export const enableLegacyLifeCycle = createRef(true);
 
 // enable react-18 strict lifecycle method

@@ -1,7 +1,9 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { Effect_TYPE, NODE_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
+import { Effect_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
-import type { RenderDispatch } from "../runtimeDispatch";
+import { NODE_TYPE } from "../share";
+
+import type { RenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode, memo, MixinMyReactComponentType, MyReactClassComponent, MyReactComponentStaticType, MyReactComponent } from "@my-react/react";
 
 const { enableLegacyLifeCycle, enableStrictLifeCycle } = __my_react_shared__;
@@ -210,7 +212,7 @@ const processComponentShouldUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
-  if (fiber.mode & UPDATE_TYPE.__trigger__) return true;
+  if (fiber.mode & UPDATE_TYPE.__triggerUpdate__) return true;
 
   if (typedInstance.shouldComponentUpdate) {
     return typedInstance.shouldComponentUpdate?.(nextProps, nextState, nextContext);
@@ -280,7 +282,7 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 
   // only trigger on parent component update
-  if (fiber.mode & UPDATE_TYPE.__update__) {
+  if (fiber.mode & UPDATE_TYPE.__inheritUpdate__) {
     if (typedInstance.UNSAFE_componentWillReceiveProps) {
       const nextProps = Object.assign({}, fiber.pendingProps);
       typedInstance.UNSAFE_componentWillReceiveProps?.(nextProps);
@@ -350,9 +352,6 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   if (enableLegacyLifeCycle.current) processComponentWillReceiveProps(fiber);
 
   const typedInstance = fiber.instance as MixinMyReactComponentType;
-
-  // when a class component update, need flash all the queueUpdater
-  // processClassComponentUpdateQueue(fiber);
 
   const { newState, isForce, callback } = typedInstance._result;
 

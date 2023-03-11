@@ -1,4 +1,4 @@
-import { NODE_TYPE } from "@my-react/react-shared";
+import { NODE_TYPE } from "@my-react/react-reconciler";
 
 import type { MyReactFiberNode } from "@my-react/react";
 

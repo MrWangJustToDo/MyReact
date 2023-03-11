@@ -1,31 +1,35 @@
-import { NODE_TYPE } from "@my-react/react-shared";
+import { NODE_TYPE } from "@my-react/react-reconciler";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
 export const setRef = (_fiber: MyReactFiberNode) => {
-  if (_fiber.type & NODE_TYPE.__isPlainNode__) {
-    if (_fiber.node) {
-      const ref = _fiber.ref;
-      if (typeof ref === "object" && ref !== null) {
-        ref.current = _fiber.node;
-      } else if (typeof ref === "function") {
-        ref(_fiber.node);
+  if (_fiber.patch & PATCH_TYPE.__pendingRef__) {
+    if (_fiber.type & NODE_TYPE.__isPlainNode__) {
+      if (_fiber.node) {
+        const ref = _fiber.ref;
+        if (typeof ref === "object" && ref !== null) {
+          ref.current = _fiber.node;
+        } else if (typeof ref === "function") {
+          ref(_fiber.node);
+        }
+      } else {
+        throw new Error("plain element do not have a native node");
       }
-    } else {
-      throw new Error("plain element do not have a native node");
     }
-  }
-  if (_fiber.type & NODE_TYPE.__isClassComponent__) {
-    if (_fiber.instance) {
-      const ref = _fiber.ref;
-      if (typeof ref === "object" && ref !== null) {
-        ref.current = _fiber.instance;
-      } else if (typeof ref === "function") {
-        ref(_fiber.instance);
+    if (_fiber.type & NODE_TYPE.__isClassComponent__) {
+      if (_fiber.instance) {
+        const ref = _fiber.ref;
+        if (typeof ref === "object" && ref !== null) {
+          ref.current = _fiber.instance;
+        } else if (typeof ref === "function") {
+          ref(_fiber.instance);
+        }
+      } else {
+        throw new Error("class component do not have a instance");
       }
-    } else {
-      throw new Error("class component do not have a instance");
     }
+    if (_fiber.patch & PATCH_TYPE.__pendingRef__) _fiber.patch ^= PATCH_TYPE.__pendingRef__;
   }
 };
 

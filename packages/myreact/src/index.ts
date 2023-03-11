@@ -3,7 +3,7 @@ import { Strict as StrictMode, Fragment, Suspense } from "@my-react/react-shared
 
 import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
-import { createElement, cloneElement, isValidElement, getTypeFromElement, forwardRef, createContext, memo, lazy } from "./element";
+import { createElement, cloneElement, isValidElement, forwardRef, createContext, memo, lazy } from "./element";
 import { MyReactFiberNode } from "./fiber";
 import {
   useRef,
@@ -22,10 +22,6 @@ import {
 import { MyReactInternalInstance } from "./internal";
 import { createReactive, MyReactReactiveInstance, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated } from "./reactive";
 import {
-  getElementName,
-  getFiberNodeName,
-  getFiberTree,
-  getHookTree,
   createRef,
   currentRunningFiber,
   currentFunctionFiber,
@@ -33,8 +29,9 @@ import {
   currentHookDeepIndex,
   currentReactiveInstance,
   globalLoop,
-  enableConcurrentMode,
   enableKeyDiff,
+  enableDebugLog,
+  enableConcurrentMode,
   enableLegacyLifeCycle,
   enableStrictLifeCycle,
 } from "./share";
@@ -46,12 +43,8 @@ const PureComponent = MyReactPureComponent;
 const version = __VERSION__;
 
 const __my_react_shared__ = {
-  getHookTree,
-  getFiberTree,
-  getElementName,
-  getFiberNodeName,
-  getTypeFromElement,
   enableKeyDiff,
+  enableDebugLog,
   enableConcurrentMode,
   enableLegacyLifeCycle,
   enableStrictLifeCycle,

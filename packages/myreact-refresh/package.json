@@ -1,0 +1,28 @@
+{
+  "name": "@my-react/react-refresh",
+  "description": "@my-react/react-refresh",
+  "version": "0.0.1",
+  "main": "index.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "index.js"
+  ],
+  "exports": {
+    "node": "./index.js",
+    "require": "./index.js",
+    "default": "./index.js"
+  },
+  "buildOptions": {
+    "input": "./src/index.ts",
+    "output": [
+      {
+        "dir": "./dist",
+        "entryFileNames": "cjs/index.js",
+        "format": "cjs",
+        "multiple": true,
+        "sourcemap": true
+      }
+    ]
+  }
+}

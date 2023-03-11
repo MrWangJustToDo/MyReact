@@ -1,9 +1,11 @@
 import { __my_react_reactive__, __my_react_internal__ } from "@my-react/react";
-import { Effect_TYPE, NODE_TYPE } from "@my-react/react-shared";
+import { Effect_TYPE } from "@my-react/react-shared";
 
 // import { queueJob } from "./scheduler";
 
-import type { RenderDispatch } from "../runtimeDispatch";
+import { NODE_TYPE } from "../share";
+
+import type { RenderDispatch } from "../renderDispatch";
 import type { createReactive, MyReactFiberNode, MyReactReactiveInstance as MyReactReactiveInstanceType, memo } from "@my-react/react";
 
 const {

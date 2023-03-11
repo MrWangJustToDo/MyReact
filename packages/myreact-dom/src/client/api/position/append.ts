@@ -1,4 +1,5 @@
-import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
+import { NODE_TYPE } from "@my-react/react-reconciler";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react";
 import type { DomElement, DomNode } from "@my-react-dom-shared";

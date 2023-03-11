@@ -1,4 +1,4 @@
-import { NODE_TYPE } from "@my-react/react-shared";
+import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "../runtimeFiber";
 import type { memo, MixinMyReactComponentType, MyReactClassComponent, MyReactComponentStaticType, MyReactFiberNode } from "@my-react/react";

@@ -1,9 +1,9 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
-import { MyReactSignal } from "../share";
+import { checkHook, MyReactSignal } from "../share";
 
-import type { RenderDispatch } from "../runtimeDispatch";
+import type { RenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNodeDev } from "../runtimeFiber";
 import type { CreateHookParams, MyReactFiberNode, Action, Reducer } from "@my-react/react";
 
@@ -21,6 +21,10 @@ export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode)
   hookNode._setOwner(fiber);
 
   fiber._addHook(hookNode);
+
+  if (__DEV__) {
+    checkHook(hookNode);
+  }
 
   if (hookNode.hookType === HOOK_TYPE.useMemo || hookNode.hookType === HOOK_TYPE.useState || hookNode.hookType === HOOK_TYPE.useReducer) {
     hookNode.result = hookNode.value.call(null);

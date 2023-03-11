@@ -4,21 +4,33 @@ import type { RenderScope } from "../renderScope";
 interface DefaultRenderController {
   renderScope: RenderScope;
 
-  getNext(): MyReactFiberNode | null;
-
   shouldYield(): boolean;
-
-  setYield(_fiber: MyReactFiberNode | null): void;
-
-  getUpdateList(_fiber: MyReactFiberNode): void;
 
   hasNext(): boolean;
 
   doesPause(): boolean;
 
-  getTopLevel(): MyReactFiberNode | null;
+  generateUpdateList(_fiber: MyReactFiberNode): void;
 
-  setTopLevel(_fiber: MyReactFiberNode): void;
+  getTopLevelFiber(): MyReactFiberNode | null;
+
+  setTopLevelFiber(_fiber: MyReactFiberNode): void;
+
+  getNextFiber(): MyReactFiberNode | null;
+
+  setYieldFiber(_fiber: MyReactFiberNode | null): void;
+
+  performToNextFiber(_fiber: MyReactFiberNode): MyReactFiberNode | null;
+
+  performToNextFiberAsync(_fiber: MyReactFiberNode): Promise<MyReactFiberNode | null>;
+
+  performToNextArray(_fiber: MyReactFiberNode): MyReactFiberNode[];
+
+  performToNextArrayAsync(_fiber: MyReactFiberNode): Promise<MyReactFiberNode[]>;
+
+  performToNextArrayOnError(_fiber: MyReactFiberNode, _error: Error, _targetFiber: MyReactFiberNode): MyReactFiberNode[];
+
+  performToNextFiberOnError(_fiber: MyReactFiberNode, _error: Error, _targetFiber: MyReactFiberNode): MyReactFiberNode | null;
 
   reset(): void;
 }

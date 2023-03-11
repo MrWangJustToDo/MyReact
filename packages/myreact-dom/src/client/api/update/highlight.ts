@@ -1,4 +1,4 @@
-import { NODE_TYPE } from "@my-react/react-shared";
+import { NODE_TYPE } from "@my-react/react-reconciler";
 
 import type { MyReactFiberNode } from "@my-react/react";
 
@@ -110,7 +110,11 @@ export class HighLight {
           wrapperDom.style.boxShadow = "none";
           this.map.push(wrapperDom);
         });
-        allFiber.forEach((f) => ((f.node as HighlightDOM).__pendingHighLight__ = false));
+        allFiber.forEach((f) => {
+          if (f.isMounted) {
+            (f.node as HighlightDOM).__pendingHighLight__ = false;
+          }
+        });
       }, 100);
     });
   };

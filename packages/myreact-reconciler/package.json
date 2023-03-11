@@ -38,6 +38,7 @@
   "dependencies": {
     "@my-react/react": "latest",
     "@my-react/react-shared": "latest",
+    "@my-react/react-reactive": "latest",
     "lodash": "^4.17.21"
   }
 }

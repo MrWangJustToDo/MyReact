@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { initialFiberNode } from "@my-react/react-reconciler";
+import { CustomRenderController, getTypeFromElement, initialFiberNode } from "@my-react/react-reconciler";
 
-import { CustomRenderController, PlainElement, ServerDomDispatch, ServerDomPlatform } from "@my-react-dom-server";
+import { PlainElement, ServerDomDispatch, ServerDomPlatform } from "@my-react-dom-server";
 import { DomScope, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
@@ -9,7 +9,11 @@ import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
 const { MyReactFiberNode } = __my_react_internal__;
 
 const renderToStringSync = (element: MyReactElement) => {
-  const fiber = new MyReactFiberNode(null, element);
+  const fiber = new MyReactFiberNode(null);
+
+  fiber._installElement(element);
+
+  fiber.type = getTypeFromElement(element);
 
   const container = new PlainElement("");
 
@@ -47,7 +51,11 @@ const renderToStringSync = (element: MyReactElement) => {
 };
 
 const renderToStringAsync = async (element: MyReactElement) => {
-  const fiber = new MyReactFiberNode(null, element);
+  const fiber = new MyReactFiberNode(null);
+
+  fiber._installElement(element);
+
+  fiber.type = getTypeFromElement(element);
 
   const container = new PlainElement("");
 

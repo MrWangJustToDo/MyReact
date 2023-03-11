@@ -59,7 +59,12 @@ export const forwardRef = (render: MixinMyReactFunctionComponent) => {
 };
 
 export const memo = (
-  render: MixinMyReactFunctionComponent | MixinMyReactClassComponent | ReturnType<typeof forwardRef> | ReturnType<typeof createReactive>
+  render:
+    | MixinMyReactFunctionComponent
+    | MixinMyReactClassComponent
+    | ReturnType<typeof forwardRef>
+    | ReturnType<typeof createReactive>
+    | { [TYPEKEY]: symbol; [p: string]: unknown }
 ) => {
   return { [TYPEKEY]: Memo, render };
 };

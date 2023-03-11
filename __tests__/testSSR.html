@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <script src="../bundle/react.development.js"></script>
+    <script src="../bundle/react-dom.development.js"></script>
+    <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
   </head>
   <body>
     <div id="root"></div>
@@ -30,8 +30,14 @@
       };
 
       const app = document.querySelector("#root");
-      const string = ReactDOM.render(<App text={0} />, app);
+      // const string = ReactDOM.render(<App text={0} />, app);
       // app.innerHTML = string;
+
+      console.log(ReactDOM.createPortal(<div></div>, root))
+
+      const B = React.lazy(() => <div>123</div>)
+
+      console.log(<B />)
 
       // window.start = () => {
         // ReactDOM.hydrate(<App text={0} />, app);

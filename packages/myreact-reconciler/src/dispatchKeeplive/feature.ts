@@ -1,6 +1,4 @@
-import { NODE_TYPE } from "@my-react/react-shared";
-
-import { checkIsSameType } from "../share";
+import { checkIsSameType, NODE_TYPE } from "../share";
 
 import type { MyReactElementNode, MyReactFiberNode } from "@my-react/react";
 

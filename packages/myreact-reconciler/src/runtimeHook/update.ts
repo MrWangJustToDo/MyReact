@@ -1,19 +1,18 @@
-import { __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { isArrayEquals } from "../share";
 
-import type { RenderDispatch } from "../runtimeDispatch";
+import type { RenderDispatch } from "../renderDispatch";
 import type { CreateHookParams, MyReactFiberNode } from "@my-react/react";
-
-const { getHookTree } = __my_react_shared__;
 
 export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: CreateHookParams, fiber: MyReactFiberNode) => {
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
+  const renderPlatform = fiber.root.renderPlatform;
+
   const currentHook = fiber.hookNodes[hookIndex];
 
-  if (hookType !== currentHook.hookType) throw new Error(getHookTree(fiber.hookNodes, hookIndex, hookType));
+  if (hookType !== currentHook.hookType) throw new Error(renderPlatform.getHookTree(fiber.hookNodes, hookIndex, hookType));
 
   currentHook._setOwner(fiber);
 

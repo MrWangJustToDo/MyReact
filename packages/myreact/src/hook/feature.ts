@@ -1,6 +1,6 @@
 import { HOOK_TYPE } from "@my-react/react-shared";
 
-import { createRef, currentFunctionFiber, currentHookDeepIndex, enableDebugLog, getFiberTree } from "../share";
+import { createRef, currentFunctionFiber, currentHookDeepIndex, enableDebugLog } from "../share";
 
 import type { Reducer } from "./instance";
 import type { createContext } from "../element";
@@ -188,7 +188,13 @@ export const useSignal = <T = any>(initial: T | (() => T)) => {
 };
 
 export const useDebugValue = (...args: any[]) => {
+  const currentFiber = currentFunctionFiber.current;
+
+  if (!currentFiber) throw new Error("can not use hook outside of component");
+
+  const renderPlatform = currentFiber.root.renderPlatform;
+
   if (enableDebugLog.current) {
-    console.log(`[debug]: `, ...args, getFiberTree(currentFunctionFiber.current));
+    console.log(`[debug]: `, ...args, renderPlatform.getFiberTree(currentFiber));
   }
 };

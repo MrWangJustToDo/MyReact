@@ -4,7 +4,7 @@ import { UPDATE_TYPE } from "@my-react/react-shared";
 import { createFiberNode, updateFiberNode } from "../runtimeFiber";
 import { checkIsSameType } from "../share";
 
-import type { RenderDispatch } from "../runtimeDispatch";
+import type { RenderDispatch } from "../renderDispatch";
 import type {
   ArrayMyReactElementNode,
   MyReactElementNode,
@@ -136,7 +136,7 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
  * 目前这个步骤会在比较大的loop中成为性能瓶颈
  */
 export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
-  const isUpdate = parentFiber.mode & (UPDATE_TYPE.__update__ | UPDATE_TYPE.__trigger__);
+  const isUpdate = parentFiber.mode & UPDATE_TYPE.__needUpdate__;
 
   const renderDispatch = parentFiber.root.renderDispatch as RenderDispatch;
 

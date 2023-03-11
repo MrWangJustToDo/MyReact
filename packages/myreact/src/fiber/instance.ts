@@ -1,8 +1,4 @@
-import { NODE_TYPE, PATCH_TYPE, UPDATE_TYPE, ListTree } from "@my-react/react-shared";
-
-import { getTypeFromElement, isValidElement } from "../element";
-
-import { checkFiberElement, checkFiberHook, checkFiberInstance } from "./check";
+import { PATCH_TYPE, UPDATE_TYPE, ListTree } from "@my-react/react-shared";
 
 import type { MyReactComponent } from "../component";
 import type { MyReactElement, MyReactElementNode } from "../element";
@@ -38,9 +34,6 @@ const emptyObj = {};
 export class MyReactFiberNode {
   isMounted = true;
 
-  // TODO
-  // isActivated = true;
-
   isInvoked = false;
 
   node: RenderNode | null = null;
@@ -69,7 +62,7 @@ export class MyReactFiberNode {
 
   elementType: MyReactElement["type"] | null = null;
 
-  type: NODE_TYPE = NODE_TYPE.__initial__;
+  type: any = 0;
 
   patch: PATCH_TYPE = PATCH_TYPE.__initial__;
 
@@ -81,10 +74,8 @@ export class MyReactFiberNode {
 
   memoizedProps: MyReactElement["props"] | null = null;
 
-  constructor(parent: MyReactFiberNode | null, element: MyReactElementNode) {
+  constructor(parent: MyReactFiberNode | null) {
     this.root = parent?.root || (this as unknown as MyReactFiberNodeRoot);
-
-    this._initialElement(element);
 
     this._installParent(parent);
   }
@@ -127,29 +118,19 @@ export class MyReactFiberNode {
 
   // current fiber call .update() function
   _triggerUpdate() {
-    this.mode |= UPDATE_TYPE.__trigger__;
+    this.mode |= UPDATE_TYPE.__triggerUpdate__;
   }
 
   // parent fiber update, then child need update too
   _prepareUpdate() {
-    this.mode |= UPDATE_TYPE.__update__;
+    this.mode |= UPDATE_TYPE.__inheritUpdate__;
   }
 
   _afterUpdate() {
     this.mode = UPDATE_TYPE.__initial__;
   }
 
-  _initialElement(element: MyReactElementNode) {
-    this.element = element;
-
-    this._initialType();
-
-    this._initialPops();
-  }
-
   _installElement(element: MyReactElementNode) {
-    if (__DEV__) checkFiberElement(this, element);
-
     this.element = element;
 
     this._initialPops();
@@ -157,7 +138,7 @@ export class MyReactFiberNode {
 
   _initialPops() {
     const element = this.element;
-    if (isValidElement(element)) {
+    if (typeof element === "object" && element !== null) {
       this.pendingProps = Object.assign({}, element.props);
       this.ref = element.ref;
       this.elementType = element.type;
@@ -166,23 +147,15 @@ export class MyReactFiberNode {
     }
   }
 
-  _initialType() {
-    const element = this.element;
-    const type = getTypeFromElement(element);
-    this.type = type;
-  }
-
   _addHook(hookNode: MyReactHookNode) {
-    if (__DEV__) checkFiberHook(this, hookNode);
     this.hookNodes.push(hookNode);
   }
 
   _applyProps() {
-    this.memoizedProps = Object.assign({}, this.pendingProps);
+    this.memoizedProps = this.pendingProps;
   }
 
   _installInstance(instance: MyReactInternalInstance) {
-    if (__DEV__) checkFiberInstance(this, instance);
     this.instance = instance;
   }
 

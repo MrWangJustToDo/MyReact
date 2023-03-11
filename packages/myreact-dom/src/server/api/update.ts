@@ -1,4 +1,5 @@
-import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
+import { NODE_TYPE } from "@my-react/react-reconciler";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
 

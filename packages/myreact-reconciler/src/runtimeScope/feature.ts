@@ -1,5 +1,7 @@
 import { createElement } from "@my-react/react";
-import { NODE_TYPE, Scope, Comment } from "@my-react/react-shared";
+import { Scope, Comment } from "@my-react/react-shared";
+
+import { NODE_TYPE } from "../share";
 
 import type { MyReactElementNode, MyReactFiberNode } from "@my-react/react";
 

@@ -1,6 +1,6 @@
 import { createRef } from "@my-react/react";
 
-export const asyncUpdateTimeLimit = 8;
+export const asyncUpdateTimeLimit = createRef<number>(8);
 
 export const asyncUpdateTimeStep = createRef<number | null>(null);
 

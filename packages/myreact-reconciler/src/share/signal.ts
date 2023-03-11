@@ -34,7 +34,7 @@ export class MyReactSignal<T = any> {
       if (renderPlatform) {
         this._fiber = null;
 
-        renderPlatform.microTask(() => allDeps.forEach((f) => f._update()));
+        renderPlatform.macroTask(() => allDeps.forEach((f) => f._update()));
       }
 
       this._value = newValue;

@@ -50,6 +50,10 @@ export class ServerDomPlatform implements RenderPlatform {
     void 0;
   }
 
+  yieldTask(_task: () => void): void {
+    void 0;
+  }
+
   getFiberTree(fiber: MyReactFiberNode): string {
     return getFiberTree(fiber);
   }

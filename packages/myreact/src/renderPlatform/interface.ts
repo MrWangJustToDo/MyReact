@@ -18,6 +18,8 @@ interface DefaultRenderPlatform {
 
   macroTask(task: () => void): void;
 
+  yieldTask(task: () => void): void;
+
   getFiberTree(fiber: MyReactFiberNode): string;
 
   getHookTree(hook: MyReactHookNode[], currentIndex: number, newHookType: MyReactHookNode["hookType"]): string;

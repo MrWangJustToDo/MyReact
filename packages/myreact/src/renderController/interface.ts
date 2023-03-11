@@ -4,11 +4,11 @@ import type { RenderScope } from "../renderScope";
 interface DefaultRenderController {
   renderScope: RenderScope;
 
+  hasUiUpdate: boolean;
+
   shouldYield(): boolean;
 
   hasNext(): boolean;
-
-  doesPause(): boolean;
 
   generateUpdateList(_fiber: MyReactFiberNode): void;
 

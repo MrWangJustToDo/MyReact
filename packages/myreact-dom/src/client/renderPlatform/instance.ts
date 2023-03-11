@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createElement } from "@my-react/react";
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
 import { append, create, position, unmount, update } from "@my-react-dom-client";
-import { getFiberTree, getHookTree, log, setRef, unsetRef } from "@my-react-dom-shared";
+import { asyncUpdateTimeLimit, getFiberTree, getHookTree, log, setRef, unsetRef } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode, MyReactHookNode, MyReactElementNode, lazy, MyReactClassComponent, MyReactFunctionComponent } from "@my-react/react";
 import type { RenderDispatch, RenderPlatform } from "@my-react/react-reconciler";
@@ -17,7 +18,33 @@ export type LogProps = {
 
 const microTask = typeof queueMicrotask === "undefined" ? (task: () => void) => Promise.resolve().then(task) : queueMicrotask;
 
-const macroTask = typeof requestAnimationFrame === "function" ? requestAnimationFrame : (task: () => void) => setTimeout(task);
+const yieldTask = typeof requestIdleCallback === "function" ? requestIdleCallback : (task: () => void) => setTimeout(task);
+
+const set = new Set<() => void>();
+
+let pending = false;
+
+const macroTask = (task: () => void) => {
+  set.add(task);
+
+  flashTask();
+};
+
+const flashTask = () => {
+  if (pending) return;
+
+  pending = true;
+
+  microTask(() => {
+    const allTask = new Set(set);
+
+    set.clear();
+
+    allTask.forEach((f) => f());
+
+    pending = false;
+  });
+};
 
 export class ClientDomPlatform implements RenderPlatform {
   name: "@my-react/react-dom";
@@ -47,11 +74,19 @@ export class ClientDomPlatform implements RenderPlatform {
   }
 
   microTask(_task: () => void): void {
+    // reset yield time limit
+    asyncUpdateTimeLimit.current = 8;
     microTask(_task);
   }
 
   macroTask(_task: () => void): void {
     macroTask(_task);
+  }
+
+  yieldTask(_task: () => void): void {
+    // increase current yield time limit
+    asyncUpdateTimeLimit.current += 6;
+    yieldTask(_task);
   }
 
   getFiberTree(fiber: MyReactFiberNode): string {

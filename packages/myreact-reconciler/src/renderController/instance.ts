@@ -67,6 +67,8 @@ const generatePendingCommitFiberList = (fiber: MyReactFiberNode) => {
 export class CustomRenderController implements RenderController {
   renderScope: RenderScope;
 
+  hasUiUpdate = false;
+
   constructor(scope: RenderScope) {
     this.renderScope = scope;
   }
@@ -85,13 +87,13 @@ export class CustomRenderController implements RenderController {
     return this.renderScope.pendingProcessFiberArray.length > 0;
   }
 
-  doesPause(): boolean {
-    return this.renderScope.yieldFiber !== null;
-  }
-
   generateUpdateList(_fiber: MyReactFiberNode): void {
     if (__DEV__ && _fiber.root.renderScope !== this.renderScope) {
       throw new Error("runtime error for @my-react");
+    }
+
+    if (_fiber.patch & PATCH_TYPE.__pendingUpdate__) {
+      this.hasUiUpdate = true;
     }
 
     generatePendingCommitFiberList(_fiber);

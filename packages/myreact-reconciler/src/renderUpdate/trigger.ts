@@ -84,5 +84,5 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
 
   if (globalLoop.current) return;
 
-  updateEntry(renderController, renderDispatch, renderScope, renderPlatform);
+  renderPlatform.microTask(() => updateEntry(renderController, renderDispatch, renderScope, renderPlatform));
 };

@@ -9,12 +9,10 @@ import type { RenderController, RenderScope } from "@my-react/react";
 
 const { globalLoop } = __my_react_internal__;
 
-const reconcileUpdate = (renderDispatch: RenderDispatch, renderScope: RenderScope, renderPlatform: RenderPlatform) => {
+const reconcileUpdate = (renderDispatch: RenderDispatch, renderScope: RenderScope, _renderPlatform: RenderPlatform) => {
   const allPendingList = renderScope.pendingCommitFiberListArray.slice(0);
 
-  if (allPendingList.length) {
-    renderPlatform.microTask(() => allPendingList.forEach((l) => renderDispatch.reconcileUpdate(l)));
-  }
+  allPendingList.forEach((l) => renderDispatch.reconcileUpdate(l));
 
   renderScope.pendingCommitFiberListArray = [];
 };
@@ -39,11 +37,19 @@ export const updateAllWithConcurrent = (
 
   safeCall(() => updateLoopWithConcurrent(renderController));
 
-  if (!renderController.doesPause()) reconcileUpdate(renderDispatch, renderScope, renderPlatform);
+  const hasUpdate = !!renderScope.pendingCommitFiberListArray.length;
 
   if (renderController.hasNext()) {
-    renderPlatform.microTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));
+    if (hasUpdate && renderController.hasUiUpdate) {
+      renderPlatform.yieldTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));
+    } else {
+      renderPlatform.microTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));
+    }
   } else {
     globalLoop.current = false;
   }
+
+  renderController.hasUiUpdate = false;
+
+  hasUpdate && reconcileUpdate(renderDispatch, renderScope, renderPlatform);
 };

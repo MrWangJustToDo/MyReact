@@ -42,7 +42,7 @@ export const context = (fiber: MyReactFiberNode) => {
 
     const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
 
-    renderPlatform.microTask(() => set.forEach((i) => i._ownerFiber?._update()));
+    renderPlatform.macroTask(() => set.forEach((i) => i._ownerFiber?._update()));
 
     if (fiber.patch & PATCH_TYPE.__pendingContext__) fiber.patch ^= PATCH_TYPE.__pendingContext__;
   }

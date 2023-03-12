@@ -37,18 +37,12 @@
         "entryFileNames": "cjs/index.js",
         "format": "cjs",
         "multiple": true,
-        "globals": {
-          "@my-react/react": "React"
-        },
         "sourcemap": true
       },
       {
         "dir": "./dist",
         "entryFileNames": "esm/index.js",
         "format": "esm",
-        "globals": {
-          "@my-react/react": "React"
-        },
         "sourcemap": true
       },
       {
@@ -57,7 +51,8 @@
         "format": "umd",
         "multiple": true,
         "globals": {
-          "@my-react/react": "React"
+          "@my-react/react": "React",
+          "@my-react/react-reactive": "ReactReactive"
         },
         "name": "ReactDOM",
         "sourcemap": true
@@ -67,6 +62,7 @@
   "dependencies": {
     "@my-react/react": "latest",
     "@my-react/react-shared": "latest",
+    "@my-react/react-reactive": "latest",
     "@my-react/react-reconciler": "latest"
   }
 }

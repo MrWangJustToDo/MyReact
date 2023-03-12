@@ -9,34 +9,17 @@
     <!-- <script src="../bundle/react.development.js"></script> -->
     <!-- <script src="../bundle/react-dom.development.js"></script> -->
     <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-reactivity/dist/umd/index.development.js"></script>
     <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
   </head>
 
   <body>
     <div id="root"></div>
     <script type="text/babel">
-      const {
-        memo,
-        useState,
-        useCallback,
-        useEffect,
-        useReducer,
-        useRef,
-        useMemo,
-        map,
-        cloneElement,
-        createContext,
-        KeepLive,
-        Component,
-        StrictMode,
-        createReactive,
-        __my_react_reactive__,
-      } = React;
+      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, KeepLive, Component, StrictMode } = React;
 
       // reactive api just like `vue`
-      const { reactiveApi, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } = __my_react_reactive__;
-
-      const { reactive, ref } = reactiveApi;
+      const { createReactive, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted, reactive, ref } = ReactReactive;
 
       const Context = createContext();
 

@@ -1,7 +1,7 @@
 import { Reactive, TYPEKEY } from "@my-react/react-shared";
 
-import type { createContext, MyReactElementNode } from "../element";
-import type { UnwrapRef } from "@my-react/react-reactive";
+import type { UnwrapRef } from "../api";
+import type { createContext, MyReactElementNode } from "@my-react/react";
 
 export function createReactive<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any>(
   props?: (p: P) => S

@@ -58,7 +58,6 @@
   },
   "dependencies": {
     "@my-react/react-jsx": "latest",
-    "@my-react/react-shared": "latest",
-    "@my-react/react-reactive": "latest"
+    "@my-react/react-shared": "latest"
   }
 }

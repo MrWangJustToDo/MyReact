@@ -8,21 +8,26 @@ import { flatten } from "./tools";
 
 import type { RenderDispatch } from "../renderDispatch";
 import type { RenderPlatform } from "../runtimePlatform";
-import type { MyReactFiberNode, MyReactReactiveInstance } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactReactiveInstance } from "@my-react/react-reactive";
 import type { ListTree } from "@my-react/react-shared";
 
 export const reactiveInstanceBeforeUnmount = (list: ListTree<MyReactFiberNode>) => {
-  pauseTracking();
-  pauseTrigger();
   list.listToHead((f) => {
     if (f.type & NODE_TYPE.__isReactive__) {
+      pauseTracking();
+
+      pauseTrigger();
+
       const reactiveInstance = f.instance as MyReactReactiveInstance;
 
       reactiveInstance.beforeUnmountHooks.forEach((f) => f?.());
+
+      resetTrigger();
+
+      resetTracking();
     }
   });
-  resetTrigger();
-  resetTracking();
 };
 
 export const defaultGenerateUnmountArrayMap = (

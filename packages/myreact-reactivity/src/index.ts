@@ -45,3 +45,11 @@ export {
   RefFlags,
   ComputedFlags,
 } from "./api";
+
+export { createReactive, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated, MyReactReactiveInstance } from "./reactive";
+
+export { currentReactiveInstance } from "./share";
+
+const version = __VERSION__;
+
+export { version };

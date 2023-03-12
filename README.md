@@ -1,15 +1,16 @@
 # MyReact -- a React like project
 
-
-``` shell
+```shell
 // install
 pnpm add @my-react/react @my-react/react-dom
 ```
+
 This project provider a react like formwork to build site, you can see this project github page which build by @my-react package
 
 ---
 
 ### if you want to debug this project
+
 ```
 clone this project
 
@@ -23,48 +24,48 @@ pnpm dev:ssr / dev:csr
 ```
 
 ---
+
 ## api
-|@my-react/react|@my-react/react-dom|
-|---------------|-------------------|
-|createELement  |render             |
-|cloneElement   |renderToString     |
-|isValidElement |findDOMNode        |
-|Children       |hydrate            |
-|lazy           |createPortal       |
-|forwardRef     |unmountComponentAtNode|
-|createContext  ||
-|createRef||
-|memo||
-|Component||
-|PureComponent||
-|StrictMode||
-|Fragment||
-|Suspense||
+
+| @my-react/react | @my-react/react-dom    | @my-react/react-reactive |
+| --------------- | ---------------------- | ------------------------ |
+| createELement   | render                 | createReactive           |
+| cloneElement    | renderToString         | reactive                 |
+| isValidElement  | findDOMNode            | ref                      |
+| Children        | hydrate                | computed                 |
+| lazy            | createPortal           | watch                    |
+| forwardRef      | unmountComponentAtNode | onBeforeMount            |
+| createContext   |                        | onBeforeUnmount          |
+| createRef       |                        | onBeforeUpdate           |
+| memo            |                        | onMounted                |
+| Component       |                        | onUnmounted              |
+| PureComponent   |                        | onUpdated                |
+| StrictMode      |                        |
+| Fragment        |                        |
+| Suspense        |                        |
 
 ## hook api
-|@my-react/react|
-|---------------|
-|useState|
-|useEffect|
-|useLayoutEffect|
-|useRef|
-|useMemo|
-|useReducer|
-|useCallback|
-|useContext|
-|useImperativeHandle|
-|useDebugValue|
-|useSignal (new)|
+
+| @my-react/react     |
+| ------------------- |
+| useState            |
+| useEffect           |
+| useLayoutEffect     |
+| useRef              |
+| useMemo             |
+| useReducer          |
+| useCallback         |
+| useContext          |
+| useImperativeHandle |
+| useDebugValue       |
+| useSignal (new)     |
 
 ---
 
 ## Vue like reactive api
 
 ```tsx
-import { reactive } from "@my-react/react-reactive";
-import { createReactive, __my_react_reactive__ } from "@my-react/react";
-
-const { onMounted, onUnmounted } = __my_react_reactive__;
+import { reactive, createReactive, onMounted, onUnmounted } from "@my-react/react-reactive";
 
 const useReactiveApi_Position = () => {
   const position = reactive({ x: 0, y: 0 });

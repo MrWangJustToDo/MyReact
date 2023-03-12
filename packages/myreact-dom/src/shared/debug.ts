@@ -11,8 +11,8 @@ import type {
   memo,
   lazy,
   forwardRef,
-  createReactive,
 } from "@my-react/react";
+import type { createReactive } from "@my-react/react-reactive";
 
 const { currentRunningFiber } = __my_react_internal__;
 

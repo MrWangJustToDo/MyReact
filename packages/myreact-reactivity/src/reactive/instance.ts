@@ -1,8 +1,10 @@
-import { ReactiveFlags, ReactiveEffect, proxyRefs } from "@my-react/react-reactive";
+import { __my_react_internal__ } from "@my-react/react";
 
-import { MyReactInternalInstance } from "../internal";
+import { proxyRefs, ReactiveEffect, ReactiveFlags } from "../api";
 
-import type { createContext, MyReactElementNode, Props } from "../element";
+import type { createContext, Props, MyReactElementNode } from "@my-react/react";
+
+const { MyReactInternalInstance } = __my_react_internal__;
 
 export class MyReactReactiveInstance<
   P extends Props = any,

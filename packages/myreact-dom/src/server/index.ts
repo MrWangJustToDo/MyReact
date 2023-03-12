@@ -1,4 +1,4 @@
 export * from "./api";
 export * from "./mount";
-export * from "./render";
+export * from "./renderDispatch";
 export * from "./renderPlatform";

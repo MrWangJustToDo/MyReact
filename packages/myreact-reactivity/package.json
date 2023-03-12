@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-reactive",
   "description": "@my-react/react-reactive",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
@@ -28,10 +28,22 @@
         "entryFileNames": "esm/index.js",
         "format": "esm",
         "sourcemap": true
+      },
+      {
+        "dir": "./dist",
+        "entryFileNames": "umd/index.js",
+        "format": "umd",
+        "multiple": true,
+        "globals": {
+          "@my-react/react": "React"
+        },
+        "name": "ReactReactive",
+        "sourcemap": true
       }
     ]
   },
   "dependencies": {
+    "@my-react/react": "latest",
     "@my-react/react-shared": "latest"
   }
 }

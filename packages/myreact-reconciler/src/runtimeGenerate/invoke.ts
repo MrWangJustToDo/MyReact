@@ -1,13 +1,14 @@
 import { isValidElement, __my_react_internal__ } from "@my-react/react";
-import { ForwardRef, NODE_TYPE, Reactive, TYPEKEY } from "@my-react/react-shared";
+import { ForwardRef, Reactive, TYPEKEY } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { reactiveComponentMount, reactiveComponentUpdate } from "../runtimeReactive";
 import { isCommentElement } from "../runtimeScope";
+import { NODE_TYPE } from "../share";
 
 import { transformChildrenFiber } from "./generate";
 
-import type { RenderDispatch } from "../runtimeDispatch";
+import type { RenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNodeDev } from "../runtimeFiber";
 import type {
   MyReactFiberNode,
@@ -276,7 +277,8 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
   return nextWorkCommon(fiber, children);
 };
 
-export const nextWorkObject = (fiber: MyReactFiberNode) => {
+export const runtimeNextWork = (fiber: MyReactFiberNode) => {
+  if (fiber.type & NODE_TYPE.__isDynamicNode__) return nextWorkComponent(fiber);
   if (fiber.type & NODE_TYPE.__isMemo__) return nextWorkMemo(fiber);
   if (fiber.type & NODE_TYPE.__isLazy__) return nextWorkLazy(fiber);
   if (fiber.type & NODE_TYPE.__isPortal__) return nextWorkNormal(fiber);
@@ -284,5 +286,17 @@ export const nextWorkObject = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isForwardRef__) return nextWorkForwardRef(fiber);
   if (fiber.type & NODE_TYPE.__isContextProvider__) return nextWorkNormal(fiber);
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);
-  throw new Error(`unknown element ${fiber.element}`);
+  return nextWorkNormal(fiber);
+};
+
+export const runtimeNextWorkAsync = async (fiber: MyReactFiberNode) => {
+  if (fiber.type & NODE_TYPE.__isDynamicNode__) return nextWorkComponent(fiber);
+  if (fiber.type & NODE_TYPE.__isMemo__) return nextWorkMemo(fiber);
+  if (fiber.type & NODE_TYPE.__isLazy__) return await nextWorkLazySync(fiber);
+  if (fiber.type & NODE_TYPE.__isPortal__) return nextWorkNormal(fiber);
+  if (fiber.type & NODE_TYPE.__isReactive__) return nextWorkReactiveComponent(fiber);
+  if (fiber.type & NODE_TYPE.__isForwardRef__) return nextWorkForwardRef(fiber);
+  if (fiber.type & NODE_TYPE.__isContextProvider__) return nextWorkNormal(fiber);
+  if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);
+  return nextWorkNormal(fiber);
 };

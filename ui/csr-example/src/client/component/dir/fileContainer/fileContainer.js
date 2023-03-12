@@ -5,7 +5,6 @@ import FileContainerHead from "./fileContainerHead";
 import FileTable from "./table/fileTable";
 import FileBlock from "./block/fileBlock";
 import FileMenu from "../menu/fileMenu";
-import { createReactive, createRef, KeepLive, __my_react_reactive__ } from "@my-react/react";
 
 function FileContainer() {
   let ref = useRef();
@@ -27,10 +26,6 @@ function FileContainer() {
     </div>
   );
 }
-
-const { onMounted, onBeforeUpdate, onUnmounted, reactiveApi } = __my_react_reactive__;
-
-const { ref, reactive, watch } = reactiveApi;
 
 // const FileContainer = createReactive({
 //   // myreact context type not same as react...

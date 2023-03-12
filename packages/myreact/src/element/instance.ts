@@ -10,7 +10,6 @@ import type { createContext, forwardRef, lazy, memo } from "./feature";
 import type { MyReactComponent } from "../component";
 import type { MyReactFiberNode } from "../fiber";
 import type { MyReactInternalInstance } from "../internal";
-import type { createReactive } from "../reactive";
 import type { createRef } from "../share";
 
 export type MyReactFunctionComponent<T extends any[] = any[]> = (...args: T) => MyReactElementNode;
@@ -20,7 +19,6 @@ export type MyReactClassComponent = typeof MyReactComponent;
 export type MyReactObjectComponent =
   | ReturnType<typeof createContext>["Consumer"]
   | ReturnType<typeof createContext>["Provider"]
-  | ReturnType<typeof createReactive>
   | ReturnType<typeof forwardRef>
   | ReturnType<typeof memo>
   | ReturnType<typeof lazy>

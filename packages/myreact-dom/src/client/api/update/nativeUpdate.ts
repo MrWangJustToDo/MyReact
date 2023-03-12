@@ -1,4 +1,4 @@
-import { NODE_TYPE } from "@my-react/react-shared";
+import { NODE_TYPE } from "@my-react/react-reconciler";
 
 import { enableHighlight, getHTMLAttrKey, getSVGAttrKey, isEvent, isGone, isNew, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
 

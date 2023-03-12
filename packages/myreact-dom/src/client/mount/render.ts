@@ -1,8 +1,8 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { checkIsSameType, initialFiberNode } from "@my-react/react-reconciler";
+import { checkIsSameType, getTypeFromElement, initialFiberNode } from "@my-react/react-reconciler";
 import { once } from "@my-react/react-shared";
 
-import { ClientDomPlatform, ClientDomDispatch, CustomRenderController } from "@my-react-dom-client";
+import { ClientDomPlatform, ClientDomDispatch, ClientDomController } from "@my-react-dom-client";
 import { startRender, unmountComponentAtNode, DomScope } from "@my-react-dom-shared";
 
 import type { MyReactElement, MyReactFiberNode, RenderScope, MyReactFiberNodeRoot } from "@my-react/react";
@@ -39,7 +39,11 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
   }
   onceLog();
 
-  const fiber = new MyReactFiberNodeClass(null, element);
+  const fiber = new MyReactFiberNodeClass(null);
+
+  fiber._installElement(element);
+
+  fiber.type = getTypeFromElement(element);
 
   const rootFiber = fiber as MyReactFiberNodeRoot;
 
@@ -49,7 +53,7 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   const renderScope = new DomScope(rootFiber, container);
 
-  const renderController = new CustomRenderController(renderScope);
+  const renderController = new ClientDomController(renderScope);
 
   Array.from(container.children).forEach((n) => n.remove?.());
 

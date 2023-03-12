@@ -1,10 +1,11 @@
-import { isValidElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_internal__ } from "@my-react/react";
 import { TYPEKEY, Portal } from "@my-react/react-shared";
+
+import { getTypeFromElement } from "./elementType";
 
 import type { MyReactElement, MyReactElementNode, MyReactFiberNode } from "@my-react/react";
 
 const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
-const { getTypeFromElement } = __my_react_shared__;
 
 export function checkIsSameType(p: MyReactFiberNode, element: MyReactElementNode): boolean;
 export function checkIsSameType(p: MyReactElementNode, element: MyReactElementNode): boolean;
@@ -17,6 +18,7 @@ export function checkIsSameType(p: MyReactFiberNode | MyReactElementNode, elemen
         const typedExistElement = p.element as MyReactElement;
         // todo check for object element
         if (typeof typedExistElement.type === "object") {
+          // TODO, currently implement portal just like builtin object node
           if (typedExistElement.type[TYPEKEY] === Portal) return true;
         }
         return Object.is(typedIncomingElement.type, typedExistElement.type);

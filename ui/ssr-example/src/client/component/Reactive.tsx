@@ -1,14 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Code, Heading, Button, HStack, VStack } from "@chakra-ui/react";
-import { createReactive, __my_react_reactive__ } from "@my-react/react";
+import { createReactive, ref, onMounted, reactive, onUnmounted } from "@my-react/react-reactive";
 import throttle from "lodash/throttle";
 
 import type { MyReactElement } from "@my-react/react";
 import type { FunctionComponent } from "react";
-
-const { onMounted, onUnmounted, reactiveApi } = __my_react_reactive__;
-
-const { reactive, ref } = reactiveApi;
 
 const _Reactive = createReactive({
   name: "testReactive",
@@ -53,7 +49,5 @@ const _Reactive = createReactive({
     return Element as MyReactElement;
   },
 });
-
-// const _Reactive = () => <div>123</div>
 
 export const Reactive = _Reactive as unknown as FunctionComponent;

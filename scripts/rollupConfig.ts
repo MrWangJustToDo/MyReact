@@ -128,7 +128,8 @@ const transformBuildOptions = (
         ...options,
         output: singleUMDConfig,
         external: (id) => {
-          if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react");
+          if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react") || id.endsWith("@my-react/react-reactive");
+          if (packageFileObject["name"] === "@my-react/react-reactive") return id.endsWith("@my-react/react");
         },
         plugins: [
           nodeResolve(),
@@ -166,7 +167,8 @@ const transformBuildOptions = (
         ...options,
         output: multipleUMDConfig,
         external: (id) => {
-          if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react");
+          if (packageFileObject["name"] === "@my-react/react-dom") return id.endsWith("@my-react/react") || id.endsWith("@my-react/react-reactive");
+          if (packageFileObject["name"] === "@my-react/react-reactive") return id.endsWith("@my-react/react");
         },
         plugins: [
           nodeResolve(),

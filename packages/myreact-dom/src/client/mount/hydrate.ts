@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { initialFiberNode } from "@my-react/react-reconciler";
+import { getTypeFromElement, initialFiberNode } from "@my-react/react-reconciler";
 
-import { ClientDomPlatform, CustomRenderController, ClientDomDispatch } from "@my-react-dom-client";
+import { ClientDomPlatform, ClientDomDispatch, ClientDomController } from "@my-react-dom-client";
 import { startRender, startRenderAsync, DomScope } from "@my-react-dom-shared";
 
 import { onceLog } from "./render";
@@ -14,7 +14,11 @@ const { MyReactFiberNode } = __my_react_internal__;
 const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
   onceLog();
 
-  const fiber = new MyReactFiberNode(null, element);
+  const fiber = new MyReactFiberNode(null);
+
+  fiber._installElement(element);
+
+  fiber.type = getTypeFromElement(element);
 
   const rootFiber = fiber as MyReactFiberNodeRoot;
 
@@ -24,7 +28,7 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 
   const renderScope = new DomScope(rootFiber, container);
 
-  const renderController = new CustomRenderController(renderScope);
+  const renderController = new ClientDomController(renderScope);
 
   rootFiber.node = container;
 
@@ -64,7 +68,11 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 const hydrateAsync = async (element: MyReactElement, container: RenderContainer) => {
   onceLog();
 
-  const fiber = new MyReactFiberNode(null, element);
+  const fiber = new MyReactFiberNode(null);
+
+  fiber._installElement(element);
+
+  fiber.type = getTypeFromElement(element);
 
   const rootFiber = fiber as MyReactFiberNodeRoot;
 
@@ -74,7 +82,7 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
 
   const renderScope = new DomScope(rootFiber, container);
 
-  const renderController = new CustomRenderController(renderScope);
+  const renderController = new ClientDomController(renderScope);
 
   rootFiber.node = container;
 

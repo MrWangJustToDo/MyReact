@@ -1,4 +1,5 @@
 export {
+  // reactive
   reactive,
   readonly,
   shallowReactive,
@@ -11,8 +12,7 @@ export {
   toReadonly,
   toReactive,
   markRaw,
-} from "./reactive";
-export {
+  // effect
   effect,
   ReactiveEffect,
   pauseTracking,
@@ -23,8 +23,33 @@ export {
   resetTrigger,
   shouldTrackRef,
   shouldTriggerRef,
-} from "./effect";
-export { computed, ComputedGetter, ComputedSetter, WritableComputedOptions } from "./computed";
-export { watch, WatchSource, WatchCallback } from "./watch";
-export { ref, toRef, toRefs, proxyRefs, isRef, UnwrapRef } from "./ref";
-export { EffectFlags, ReactiveFlags, RefFlags, ComputedFlags } from "./symbol";
+  // computed
+  computed,
+  ComputedGetter,
+  ComputedSetter,
+  WritableComputedOptions,
+  // watch
+  watch,
+  WatchSource,
+  WatchCallback,
+  // ref
+  ref,
+  toRef,
+  toRefs,
+  proxyRefs,
+  isRef,
+  UnwrapRef,
+  // symbol
+  EffectFlags,
+  ReactiveFlags,
+  RefFlags,
+  ComputedFlags,
+} from "./api";
+
+export { createReactive, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated, MyReactReactiveInstance } from "./reactive";
+
+export { currentReactiveInstance } from "./share";
+
+const version = __VERSION__;
+
+export { version };

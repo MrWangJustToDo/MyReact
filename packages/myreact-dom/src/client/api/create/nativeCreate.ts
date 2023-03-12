@@ -1,5 +1,4 @@
-import { isCommentStartElement } from "@my-react/react-reconciler";
-import { NODE_TYPE } from "@my-react/react-shared";
+import { isCommentStartElement, NODE_TYPE } from "@my-react/react-reconciler";
 
 import { commentS, commentE } from "@my-react-dom-shared";
 

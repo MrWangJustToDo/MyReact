@@ -3,7 +3,6 @@ import { Consumer, Context, ForwardRef, Lazy, Memo, Provider, TYPEKEY } from "@m
 import { MyReactInternalInstance } from "../internal";
 
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "./instance";
-import type { createReactive } from "../reactive";
 
 let contextId = 0;
 
@@ -59,7 +58,11 @@ export const forwardRef = (render: MixinMyReactFunctionComponent) => {
 };
 
 export const memo = (
-  render: MixinMyReactFunctionComponent | MixinMyReactClassComponent | ReturnType<typeof forwardRef> | ReturnType<typeof createReactive>
+  render:
+    | MixinMyReactFunctionComponent
+    | MixinMyReactClassComponent
+    | ReturnType<typeof forwardRef>
+    | { [TYPEKEY]: symbol; [p: string]: unknown }
 ) => {
   return { [TYPEKEY]: Memo, render };
 };

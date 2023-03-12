@@ -21,6 +21,7 @@
     "@loadable/component": "^5.15.3",
     "@loadable/server": "^5.15.3",
     "@my-react/react": "workspace:*",
+    "@my-react/react-reactive": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "@my-react/react-jsx": "workspace:*",
     "@site/graphql": "workspace: *",

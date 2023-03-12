@@ -1,6 +1,7 @@
 export * from "./env";
 export * from "./ref";
 export * from "./dom";
+export * from "./check";
 export * from "./attrs";
 export * from "./tools";
 export * from "./debug";

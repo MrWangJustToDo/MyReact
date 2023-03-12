@@ -1,5 +1,5 @@
-import { isCommentStartElement } from "@my-react/react-reconciler";
-import { NODE_TYPE, PATCH_TYPE } from "@my-react/react-shared";
+import { isCommentStartElement, NODE_TYPE } from "@my-react/react-reconciler";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
 

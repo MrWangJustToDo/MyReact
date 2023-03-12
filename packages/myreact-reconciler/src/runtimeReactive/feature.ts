@@ -1,17 +1,11 @@
-import { __my_react_reactive__, __my_react_internal__ } from "@my-react/react";
-import { Effect_TYPE, NODE_TYPE } from "@my-react/react-shared";
+import { MyReactReactiveInstance, currentReactiveInstance, pauseTracking, pauseTrigger, resetTrigger, resetTracking } from "@my-react/react-reactive";
+import { Effect_TYPE } from "@my-react/react-shared";
 
-// import { queueJob } from "./scheduler";
+import { NODE_TYPE } from "../share";
 
-import type { RenderDispatch } from "../runtimeDispatch";
-import type { createReactive, MyReactFiberNode, MyReactReactiveInstance as MyReactReactiveInstanceType, memo } from "@my-react/react";
-
-const {
-  MyReactReactiveInstance,
-  reactiveApi: { pauseTracking, pauseTrigger, resetTracking, resetTrigger },
-} = __my_react_reactive__;
-
-const { currentReactiveInstance } = __my_react_internal__;
+import type { RenderDispatch } from "../renderDispatch";
+import type { MyReactFiberNode, memo } from "@my-react/react";
+import type { createReactive } from "@my-react/react-reactive";
 
 const processReactiveInstanceOnMount = (fiber: MyReactFiberNode) => {
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
@@ -50,13 +44,13 @@ const processReactiveInstanceOnMount = (fiber: MyReactFiberNode) => {
 };
 
 const processBeforeMountHooks = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MyReactReactiveInstanceType;
+  const typedInstance = fiber.instance as MyReactReactiveInstance;
 
   if (typedInstance.beforeMountHooks.length) typedInstance.beforeMountHooks.forEach((f) => f?.());
 };
 
 const processReactiveRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MyReactReactiveInstanceType;
+  const typedInstance = fiber.instance as MyReactReactiveInstance;
 
   const children = typedInstance.effect.run();
 
@@ -66,7 +60,7 @@ const processReactiveRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
 const processReactivePropsAndContextOnActiveAndUpdate = (fiber: MyReactFiberNode) => {
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
-  const typedInstance = fiber.instance as MyReactReactiveInstanceType;
+  const typedInstance = fiber.instance as MyReactReactiveInstance;
 
   const typedType =
     fiber.type & NODE_TYPE.__isMemo__
@@ -97,7 +91,7 @@ const processReactivePropsAndContextOnActiveAndUpdate = (fiber: MyReactFiberNode
 };
 
 const processMountedHooks = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MyReactReactiveInstanceType;
+  const typedInstance = fiber.instance as MyReactReactiveInstance;
 
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
@@ -113,7 +107,7 @@ const processMountedHooks = (fiber: MyReactFiberNode) => {
 };
 
 const processBeforeUpdateHooks = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MyReactReactiveInstanceType;
+  const typedInstance = fiber.instance as MyReactReactiveInstance;
 
   if (typedInstance.beforeUpdateHooks.length) {
     // disable reactive for beforeUpdate hook
@@ -126,7 +120,7 @@ const processBeforeUpdateHooks = (fiber: MyReactFiberNode) => {
 };
 
 const processUpdatedHooks = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MyReactReactiveInstanceType;
+  const typedInstance = fiber.instance as MyReactReactiveInstance;
 
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
@@ -142,7 +136,7 @@ const processUpdatedHooks = (fiber: MyReactFiberNode) => {
 };
 
 const processReactiveFiberOnUpdate = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MyReactReactiveInstanceType;
+  const typedInstance = fiber.instance as MyReactReactiveInstance;
 
   typedInstance.effect.active();
 

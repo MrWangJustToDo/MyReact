@@ -33,7 +33,7 @@
     };
 
     const LazyBar1 = lazy(async () => {
-      await delay(1000);
+      await delay(1200);
       // throw new Error('hhhh')
       return { default: Bar }
     });
@@ -78,7 +78,7 @@
     a.innerHTML = aString;
 
     const hydrate1 = () => {
-      ReactDOM.hydrate(<App1 />, a, true);
+      ReactDOM.hydrate(<App1 />, a);
     }
 
     ReactDOM.renderToString(<App2 />, true).then((string) => b.innerHTML = string);

@@ -3,6 +3,10 @@ export const isNormalEquals = (
   target: Record<string, unknown> | string | number | boolean | null,
   isSkipKey?: (key: string) => boolean
 ) => {
+  const isEquals = Object.is(src, target);
+
+  if (isEquals) return true;
+
   if (typeof src === "object" && typeof target === "object" && src !== null && target !== null) {
     const srcKeys = Object.keys(src);
     const targetKeys = Object.keys(target);
@@ -27,5 +31,5 @@ export const isNormalEquals = (
     return res;
   }
 
-  return Object.is(src, target);
+  return false;
 };

@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE } from "@my-react/react-shared";
 
-import type { RenderDispatch } from "../runtimeDispatch";
+import type { RenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react";
 
 const { enableStrictLifeCycle } = __my_react_shared__;

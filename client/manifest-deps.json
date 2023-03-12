@@ -1,4 +1,10 @@
 {
+  "./Hot": {
+    "path": [
+      "pages-Hot.js"
+    ],
+    "static": true
+  },
   "./Animate": {
     "path": [
       "pages-Animate.js"
@@ -20,12 +26,6 @@
   "./": {
     "path": [
       "pages-.js"
-    ],
-    "static": true
-  },
-  "./Bar": {
-    "path": [
-      "pages-Bar.js"
     ],
     "static": true
   },

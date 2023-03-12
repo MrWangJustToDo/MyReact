@@ -123,7 +123,7 @@ const _BlogListWithInfinityScroll = () => {
             Antd
           </Button>
           <Button color="red" textTransform="capitalize" onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/Hot" : "/Hot")}>
-            Hot
+            Hmr
           </Button>
           <Button color="purple" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
             {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}

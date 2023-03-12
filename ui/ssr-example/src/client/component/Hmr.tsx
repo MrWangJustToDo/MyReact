@@ -14,7 +14,9 @@ export const Hmr = () => {
     <Container maxWidth={CONTAINER_WIDTH} minHeight="90vh">
       <Heading key={1}>test: hot module replacement page</Heading>
       <br />
-      <div style={{ border: "1px solid red", height: "100px" }}>hahaha</div>
+      <div style={{ fontSize: "20px" }}>you can edit this page in the develop mode then the page will update without full reload</div>
+      <br />
+      <div style={{ border: "1px solid red", height: "100px" }}>hmr</div>
       <br />
       <Code key={2}>hmr just works</Code>
       <br />
@@ -35,7 +37,6 @@ if (__CLIENT__ && __DEVELOPMENT__ && module.hot) {
     fiber._installElement(newElement);
 
     fiber._update();
-
-    module.hot.accept();
   }
+  module.hot.accept();
 }

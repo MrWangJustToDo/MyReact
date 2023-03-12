@@ -1,11 +1,10 @@
-import { Code, Heading } from "@chakra-ui/react";
 import { Component } from "react";
+
+import { Hmr } from "@client/component/Hmr";
 
 import { delay, initialStateWrapper } from "../utils";
 
 import type { ReactNode } from "react";
-
-// current page will generate static page
 
 @initialStateWrapper<{ bar: string }>(async () => {
   await delay(2000);
@@ -16,12 +15,7 @@ export default class Bar extends Component<{ bar: string }> {
     super(p);
   }
   render(): ReactNode {
-    return (
-      <>
-        <Heading>bar page</Heading>
-        <Code>props: bar {this.props.bar}</Code>
-      </>
-    );
+    return <Hmr />;
   }
 }
 

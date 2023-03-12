@@ -1,7 +1,7 @@
 import LoadablePlugin from "@loadable/webpack-plugin";
 import ReactRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin";
-import ESLintWebpackPlugin from "eslint-webpack-plugin";
-import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
+// import ESLintWebpackPlugin from "eslint-webpack-plugin";
+// import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import { DefinePlugin, HotModuleReplacementPlugin } from "webpack";
 // import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
@@ -39,16 +39,16 @@ export const pluginsConfig = ({ env, isDEV, isSSR, isCSR, isMIDDLEWARE }: SafeGe
     process.env.REACT === "react" ? env === "client" && isDEV && new ReactRefreshPlugin() : false,
     process.env.REACT === "react" && env === "client" && isDEV && isMIDDLEWARE && new HotModuleReplacementPlugin(),
     env === "server" && isDEV && !isMIDDLEWARE && new HotModuleReplacementPlugin(),
-    env === "client" &&
-      isDEV &&
-      new ForkTsCheckerWebpackPlugin({
-        async: false,
-      }),
-    env === "client" &&
-      isDEV &&
-      new ESLintWebpackPlugin({
-        extensions: ["js", "jsx", "ts", "tsx"],
-        quiet: true,
-      }),
+    // env === "client" &&
+    //   isDEV &&
+    //   new ForkTsCheckerWebpackPlugin({
+    //     async: false,
+    //   }),
+    // env === "client" &&
+    //   isDEV &&
+    //   new ESLintWebpackPlugin({
+    //     extensions: ["js", "jsx", "ts", "tsx"],
+    //     quiet: true,
+    //   }),
     // env === "client" && isDEV && new BundleAnalyzerPlugin(),
   ].filter(Boolean) as Configuration["plugins"];

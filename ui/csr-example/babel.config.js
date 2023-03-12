@@ -1,5 +1,3 @@
-const test = require("./testBabel");
-
 function isWebTarget(caller) {
   return Boolean(caller && caller.target === "web");
 }
@@ -41,7 +39,6 @@ module.exports = (api) => {
   plugins.push("@babel/plugin-transform-runtime");
   plugins.push("@babel/plugin-proposal-export-default-from");
   plugins.push("@loadable/babel-plugin");
-  plugins.push([test, { legacy: true, hahaha: true }]);
 
   return {
     presets,

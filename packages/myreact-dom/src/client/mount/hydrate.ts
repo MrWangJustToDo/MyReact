@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { getTypeFromElement, initialFiberNode } from "@my-react/react-reconciler";
+import { initialPropsFromELement, initialTypeFromElement, initialFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomPlatform, ClientDomDispatch, ClientDomController } from "@my-react-dom-client";
 import { startRender, startRenderAsync, DomScope } from "@my-react-dom-shared";
@@ -16,9 +16,11 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 
   const fiber = new MyReactFiberNode(null);
 
-  fiber._installElement(element);
+  initialTypeFromElement(fiber, element);
 
-  fiber.type = getTypeFromElement(element);
+  initialPropsFromELement(fiber, element);
+
+  fiber._installElement(element);
 
   const rootFiber = fiber as MyReactFiberNodeRoot;
 
@@ -70,9 +72,11 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
 
   const fiber = new MyReactFiberNode(null);
 
-  fiber._installElement(element);
+  initialTypeFromElement(fiber, element);
 
-  fiber.type = getTypeFromElement(element);
+  initialPropsFromELement(fiber, element);
+
+  fiber._installElement(element);
 
   const rootFiber = fiber as MyReactFiberNodeRoot;
 

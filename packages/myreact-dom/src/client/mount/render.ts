@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { checkIsSameType, getTypeFromElement, initialFiberNode } from "@my-react/react-reconciler";
+import { checkIsSameType, initialPropsFromELement, initialTypeFromElement, initialFiberNode } from "@my-react/react-reconciler";
 import { once } from "@my-react/react-shared";
 
 import { ClientDomPlatform, ClientDomDispatch, ClientDomController } from "@my-react-dom-client";
@@ -41,9 +41,11 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
 
   const fiber = new MyReactFiberNodeClass(null);
 
-  fiber._installElement(element);
+  initialTypeFromElement(fiber, element);
 
-  fiber.type = getTypeFromElement(element);
+  initialPropsFromELement(fiber, element);
+
+  fiber._installElement(element);
 
   const rootFiber = fiber as MyReactFiberNodeRoot;
 

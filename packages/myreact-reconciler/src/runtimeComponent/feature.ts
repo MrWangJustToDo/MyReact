@@ -1,15 +1,13 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
-import { NODE_TYPE } from "../share";
-
 import type { RenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode, memo, MixinMyReactComponentType, MyReactClassComponent, MyReactComponentStaticType, MyReactComponent } from "@my-react/react";
+import type { MyReactFiberNode, MixinMyReactComponentType, MyReactClassComponent, MyReactComponentStaticType, MyReactComponent } from "@my-react/react";
 
 const { enableLegacyLifeCycle, enableStrictLifeCycle } = __my_react_shared__;
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
-  const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? fiber.elementType : (fiber.elementType as ReturnType<typeof memo>).render;
+  const Component = fiber.elementType;
 
   const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
@@ -41,7 +39,7 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: M
 };
 
 const processComponentStateFromError = (fiber: MyReactFiberNode, error: Error) => {
-  const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? fiber.elementType : (fiber.elementType as ReturnType<typeof memo>).render;
+  const Component = fiber.elementType;
 
   const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
@@ -60,7 +58,7 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
 
-  const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? fiber.elementType : (fiber.elementType as ReturnType<typeof memo>).render;
+  const Component = fiber.elementType;
 
   const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
 
@@ -168,7 +166,7 @@ const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error
 const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
-  const Component = fiber.type & NODE_TYPE.__isDynamicNode__ ? fiber.elementType : (fiber.elementType as ReturnType<typeof memo>).render;
+  const Component = fiber.elementType;
 
   const typedInstance = fiber.instance as MixinMyReactComponentType;
 

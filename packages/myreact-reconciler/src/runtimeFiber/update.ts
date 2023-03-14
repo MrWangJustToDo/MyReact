@@ -1,7 +1,7 @@
 import { isValidElement } from "@my-react/react";
 import { isNormalEquals, PATCH_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
-import { NODE_TYPE } from "../share";
+import { initialPropsFromELement, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
 import type { RenderDispatch } from "../renderDispatch";
@@ -21,6 +21,8 @@ export const updateFiberNode = (
   nextElement: MyReactElementNode
 ) => {
   const prevElement = fiber.element;
+
+  initialPropsFromELement(fiber, nextElement);
 
   fiber._installElement(nextElement);
 

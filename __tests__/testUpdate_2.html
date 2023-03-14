@@ -1,108 +1,128 @@
 <!DOCTYPE html>
 <html lang="zh_cn">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>测试react框架</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  <style>
-    .red {
-      color: red;
-      font-size: 20px;
-    }
-
-    .box {
-      width: 100px;
-      height: 100px;
-      border: 1px solid red;
-      border-radius: 3px;
-    }
-
-    .green {
-      color: green;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="root"></div>
-
-  <script type="text/babel" async>
-    const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, Component } = React;
-
-    const useCounter = (init = 1) => {
-      const [count, setCount] = useState(init);
-      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
-      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
-
-      return [count, i, j];
-    };
-
-    const useTime = () => {
-      const [c, setC] = useState(100);
-      const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
-      useEffect(() => {
-        console.log("init");
-        const id = setInterval(() => {
-          setCurrentTime(new Date().toLocaleString());
-        }, 1000);
-        return () => clearInterval(id);
-      }, []);
-
-      return currentTime;
-    };
-
-    const usePosition = () => {
-      const [currentPosition, setCurrentPosition] = useState({
-        x: 0,
-        y: 0,
-      });
-
-      useEffect(() => {
-        const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
-        window.addEventListener("mousemove", action);
-        return () => window.removeEventListener("mousemove", action);
-      }, []);
-
-      return [currentPosition.x, currentPosition.y];
-    };
-
-    const b = {a: 1};
-
-    class Bar extends Component {
-      state = b;
-
-      componentDidUpdate() {
-        console.log('update');
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <script src="../bundle/babel.min.js"></script>
+    <script src="../bundle/react.development.js"></script>
+    <script src="../bundle/react-dom.development.js"></script>
+    <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
       }
 
-      render() {
-        return <div>
-          <p>{this.state.a}</p>
-          <button onClick={() => this.setState(b)}>add</button>
-        </div>
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
       }
-    }
 
-    const App = () => {
-      const [a, setA] = useState(true);
-      useEffect(() => console.log('update'))
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
 
-      return <div>
-        <p>{a}</p>
-        <button onClick={() => setA(() => true)}>add</button>
-        <Bar />
-      </div>
-    }
+  <body>
+    <div id="root"></div>
 
-    const container = document.getElementById("root");
-    ReactDOM.render(<App />, container);
-  </script>
-</body>
+    <script type="text/babel" async>
+      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, Component } = React;
 
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+        return [count, i, j];
+      };
+
+      const useTime = () => {
+        const [c, setC] = useState(100);
+        const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
+        useEffect(() => {
+          console.log("init");
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, []);
+
+        return currentTime;
+      };
+
+      const usePosition = () => {
+        const [currentPosition, setCurrentPosition] = useState({
+          x: 0,
+          y: 0,
+        });
+
+        useEffect(() => {
+          const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPosition.x, currentPosition.y];
+      };
+
+      const b = { a: 1 };
+
+      class Bar extends Component {
+        state = b;
+
+        componentDidUpdate() {
+          console.log("update");
+        }
+
+        render() {
+          return (
+            <div>
+              <p>{this.state.a}</p>
+              <button onClick={() => this.setState(b)}>add</button>
+            </div>
+          );
+        }
+      }
+
+      const App = () => {
+        const [a, setA] = useState(true);
+        useEffect(() => console.log("update"));
+
+        return (
+          <div>
+            <p>{a}</p>
+            <button onClick={() => setA(() => true)}>add</button>
+            <Bar />
+          </div>
+        );
+      };
+
+      const Baz = () => {
+        console.log("run");
+
+        return <div>baz</div>;
+      };
+
+      const Foo = () => {
+        const [state, add] = useCounter();
+
+        return (
+          <div>
+            {state}
+            <button onClick={add}>add</button>
+            <Baz />
+          </div>
+        );
+      };
+
+      const container = document.getElementById("root");
+      ReactDOM.render(<Foo />, container);
+    </script>
+  </body>
 </html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试宏任务微任务浏览器绘制时机</title>
+  </head>
+  <body>
+    <div>
+      <p id="text">123</p>
+    </div>
+
+    <script>
+      addEventListener("load", () => {
+        let count = 1;
+        window.update = () => {
+          setTimeout(() => {
+            text.textContent = count++;
+            update();
+          });
+        };
+      });
+    </script>
+  </body>
+</html>

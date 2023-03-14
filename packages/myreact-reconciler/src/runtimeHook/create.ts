@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
-import { checkHook, MyReactSignal } from "../share";
+import { checkHookValid, MyReactSignal } from "../share";
 
 import type { RenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNodeDev } from "../runtimeFiber";
@@ -22,9 +22,7 @@ export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode)
 
   fiber._addHook(hookNode);
 
-  if (__DEV__) {
-    checkHook(hookNode);
-  }
+  if (__DEV__) checkHookValid(hookNode);
 
   if (hookNode.hookType === HOOK_TYPE.useMemo || hookNode.hookType === HOOK_TYPE.useState || hookNode.hookType === HOOK_TYPE.useReducer) {
     hookNode.result = hookNode.value.call(null);

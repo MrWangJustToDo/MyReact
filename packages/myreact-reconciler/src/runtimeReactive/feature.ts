@@ -1,19 +1,14 @@
 import { MyReactReactiveInstance, currentReactiveInstance, pauseTracking, pauseTrigger, resetTrigger, resetTracking } from "@my-react/react-reactive";
 import { Effect_TYPE } from "@my-react/react-shared";
 
-import { NODE_TYPE } from "../share";
-
 import type { RenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode, memo } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react";
 import type { createReactive } from "@my-react/react-reactive";
 
 const processReactiveInstanceOnMount = (fiber: MyReactFiberNode) => {
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
-  const typedType =
-    fiber.type & NODE_TYPE.__isMemo__
-      ? ((fiber.elementType as ReturnType<typeof memo>)["render"] as ReturnType<typeof createReactive>)
-      : (fiber.elementType as ReturnType<typeof createReactive>);
+  const typedType = fiber.elementType as ReturnType<typeof createReactive>;
 
   const ProviderFiber = renderDispatch.resolveContextFiber(fiber, typedType.contextType);
 
@@ -62,10 +57,7 @@ const processReactivePropsAndContextOnActiveAndUpdate = (fiber: MyReactFiberNode
 
   const typedInstance = fiber.instance as MyReactReactiveInstance;
 
-  const typedType =
-    fiber.type & NODE_TYPE.__isMemo__
-      ? ((fiber.elementType as ReturnType<typeof memo>)["render"] as ReturnType<typeof createReactive>)
-      : (fiber.elementType as ReturnType<typeof createReactive>);
+  const typedType = fiber.elementType as ReturnType<typeof createReactive>;
 
   if (typedType.contextType) {
     if (!typedInstance?._contextFiber || !typedInstance._contextFiber.isMounted) {

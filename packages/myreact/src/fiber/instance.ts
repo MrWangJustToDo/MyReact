@@ -38,8 +38,6 @@ export class MyReactFiberNode {
 
   node: RenderNode | null = null;
 
-  ref: MyReactElement["ref"] = null;
-
   children: MyReactFiberNode[] = [];
 
   return: Array<MyReactFiberNode[] | MyReactFiberNode> | MyReactFiberNode | null = null;
@@ -59,6 +57,10 @@ export class MyReactFiberNode {
   hookNodes: MyReactHookNode[] = [];
 
   element: MyReactElementNode;
+
+  ref: MyReactElement["ref"] = null;
+
+  key: MyReactElement["key"] = undefined;
 
   elementType: MyReactElement["type"] | null = null;
 
@@ -132,19 +134,6 @@ export class MyReactFiberNode {
 
   _installElement(element: MyReactElementNode) {
     this.element = element;
-
-    this._initialPops();
-  }
-
-  _initialPops() {
-    const element = this.element;
-    if (typeof element === "object" && element !== null) {
-      this.pendingProps = Object.assign({}, element.props);
-      this.ref = element.ref;
-      this.elementType = element.type;
-    } else {
-      this.pendingProps = {};
-    }
   }
 
   _addHook(hookNode: MyReactHookNode) {

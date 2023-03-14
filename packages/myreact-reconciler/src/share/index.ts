@@ -1,5 +1,6 @@
 export * from "./check";
 export * from "./signal";
+export * from "./initial";
 export * from "./isEquals";
 export * from "./safeCall";
 export * from "./fiberType";

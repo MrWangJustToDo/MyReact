@@ -1,56 +1,93 @@
 import { isValidElement } from "@my-react/react";
-import { HOOK_TYPE } from "@my-react/react-shared";
+import { Consumer, ForwardRef, HOOK_TYPE, Lazy, Memo, Reactive, TYPEKEY } from "@my-react/react-shared";
 
-import { NODE_TYPE } from "./fiberType";
+import type { forwardRef, memo, MyReactElementNode, MyReactHookNode, MyReactObjectComponent, lazy } from "@my-react/react";
+import type { createReactive } from "@my-react/react-reactive";
 
-import type { forwardRef, memo, MyReactElementNode, MyReactFiberNode, MyReactHookNode } from "@my-react/react";
-
-export const checkFiberElement = (_fiber: MyReactFiberNode, _element: MyReactElementNode) => {
-  if (isValidElement(_element)) {
-    const typedElement = _element;
-    if (!typedElement._store["validType"]) {
-      if (_fiber.type & NODE_TYPE.__isContextConsumer__) {
-        if (typeof typedElement.props.children !== "function") {
-          throw new Error(`Consumer need a function children`);
+export const checkElementValid = (element: MyReactElementNode) => {
+  if (isValidElement(element)) {
+    if (!element._store["validType"]) {
+      const rawType = element.type;
+      if (typeof rawType === "object") {
+        const typedRawType = rawType as MyReactObjectComponent;
+        // check <Consumer /> usage
+        if (typedRawType[TYPEKEY] === Consumer) {
+          if (typeof element.props.children !== "function") {
+            throw new Error(`@my-react <Consumer /> need a render function as children`);
+          }
+        }
+        // check forward function
+        if (typedRawType[TYPEKEY] === ForwardRef) {
+          const CurrentTypedRawType = rawType as ReturnType<typeof forwardRef>;
+          const targetRender = CurrentTypedRawType.render;
+          if (typeof targetRender !== "function") {
+            throw new Error(`invalid render function 'forwardRef()' element`);
+          }
+          if (targetRender.prototype?.isMyReactComponent) {
+            throw new Error(`invalid render type for 'forwardRef()', expect a render function, but got a element class`);
+          }
+        }
+        // check memo function
+        if (typedRawType[TYPEKEY] === Memo) {
+          const CurrentTypedRawType = rawType as ReturnType<typeof memo>;
+          if (typeof CurrentTypedRawType.render !== "function") {
+            if (isValidElement(CurrentTypedRawType.render)) {
+              throw new Error(`look like you are using memo like memo(<Foo />), this is not a support usage, pls change to memo(Foo)`);
+            }
+            if (CurrentTypedRawType.render[TYPEKEY] === Memo) {
+              throw new Error(`look like you are using like memo(memo(<Foo />)), pls do not wrapper memo more than once`);
+            }
+            if (CurrentTypedRawType.render[TYPEKEY] === Lazy) {
+              throw new Error(`for now, the memo(lazy(loader fun)) is unSupport usage`);
+            }
+          }
+        }
+        // check createReactive
+        if (typedRawType[TYPEKEY] === Reactive) {
+          const CurrentTypedRawType = rawType as ReturnType<typeof createReactive>;
+          if (element.props.children && typeof element.props.children !== "function") {
+            throw new Error("invalid type of children for <Reactive /> element");
+          }
+          if (CurrentTypedRawType.render && CurrentTypedRawType.render?.prototype.isMyReactComponent) {
+            throw new Error(`invalid render type for 'createReactive()', expect a render function, bug got a Element class`);
+          }
+        }
+        // check lazy
+        if (typedRawType[TYPEKEY] === Lazy) {
+          const CurrentTypedRawType = rawType as ReturnType<typeof lazy>;
+          if (typeof CurrentTypedRawType.loader !== "function") {
+            throw new Error(`invalid argument for lazy(loader), the loader expect a function, but got a ${CurrentTypedRawType.loader}`);
+          }
+          if (CurrentTypedRawType.loader.prototype?.isMyReactComponent) {
+            throw new Error(`invalid argument for lazy(loader), the loader expect a function, but got a element class`);
+          }
         }
       }
-      if (_fiber.type & (NODE_TYPE.__isMemo__ | NODE_TYPE.__isForwardRef__)) {
-        const typedType = typedElement.type as ReturnType<typeof forwardRef> | ReturnType<typeof memo>;
-        if (typeof typedType.render !== "function" && typeof typedType.render !== "object") {
-          throw new Error("invalid render type");
-        }
-        if (_fiber.type & NODE_TYPE.__isForwardRef__ && typeof typedType.render !== "function") {
-          throw new Error("forwardRef() need a function component");
-        }
-      }
-      if (_fiber.type & NODE_TYPE.__isKeepLiveNode__) {
-        if (Array.isArray(_element.props.children)) throw new Error("<KeepLive /> expected to receive a single MyReact _element child");
-      }
-      if (typedElement.ref) {
-        if (typeof typedElement.ref !== "object" && typeof typedElement.ref !== "function") {
+      if (element.ref) {
+        if (typeof element.ref !== "object" && typeof element.ref !== "function") {
           throw new Error("unSupport ref usage, should be a function or a object like `{current: any}`");
         }
       }
-      if (typedElement.key && typeof typedElement.key !== "string") {
-        throw new Error(`invalid key type, ${typedElement.key}`);
+      if (element.key && typeof element.key !== "string") {
+        throw new Error(`invalid key type, ${element.key}`);
       }
-      if (typedElement.props.children && typedElement.props["dangerouslySetInnerHTML"]) {
-        throw new Error("can not render contain `children` and `dangerouslySetInnerHTML` for current _element");
+      if (element.props.children && element.props["dangerouslySetInnerHTML"]) {
+        throw new Error("can not render contain `children` and `dangerouslySetInnerHTML` for current element");
       }
-      if (typedElement.props["dangerouslySetInnerHTML"]) {
+      if (element.props["dangerouslySetInnerHTML"]) {
         if (
-          typeof typedElement.props["dangerouslySetInnerHTML"] !== "object" ||
-          !Object.prototype.hasOwnProperty.call(typedElement.props["dangerouslySetInnerHTML"], "__html")
+          typeof element.props["dangerouslySetInnerHTML"] !== "object" ||
+          !Object.prototype.hasOwnProperty.call(element.props["dangerouslySetInnerHTML"], "__html")
         ) {
           throw new Error("invalid dangerouslySetInnerHTML props, should like {__html: string}");
         }
       }
-      typedElement._store["validType"] = true;
     }
+    element._store["validType"] = true;
   }
 };
 
-export const checkHook = (_hookNode: MyReactHookNode) => {
+export const checkHookValid = (_hookNode: MyReactHookNode) => {
   if (
     _hookNode.hookType === HOOK_TYPE.useMemo ||
     _hookNode.hookType === HOOK_TYPE.useEffect ||

@@ -1,5 +1,5 @@
 import { Code, Container, Heading } from "@chakra-ui/react";
-import { cloneElement, createElement, __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 
 import { CONTAINER_WIDTH } from "@client/config/container";
 
@@ -32,9 +32,7 @@ if (__CLIENT__) {
 if (__CLIENT__ && __DEVELOPMENT__ && module.hot) {
   const fiber = (window as any).__fiberMap__.get("Hmr_component_hash_id");
   if (fiber) {
-    const newElement = Object.assign({}, cloneElement(fiber.element), createElement(Hmr as any));
-
-    fiber._installElement(newElement);
+    fiber.elementType = Hmr;
 
     fiber._update();
   }

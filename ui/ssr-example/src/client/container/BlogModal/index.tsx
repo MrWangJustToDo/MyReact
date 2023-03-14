@@ -20,12 +20,13 @@ const _BlogModal = () => {
       open({
         head: <DetailModalHeader id={blogId as string} />,
         body: <DetailModalBody id={blogId as string} />,
-        closeComplete: () => {
-          query.delete("detailId");
-          query.delete("overlay");
-          const string = query.toString();
-          navigate(`${getIsStaticGenerate() ? "/MyReact/" : "/"}${string ? "?" + string : ""}`);
-        },
+        closeComplete: () =>
+          setTimeout(() => {
+            query.delete("detailId");
+            query.delete("overlay");
+            const string = query.toString();
+            navigate(`${getIsStaticGenerate() ? "/MyReact/" : "/"}${string ? "?" + string : ""}`);
+          }),
       });
     } else {
       close();

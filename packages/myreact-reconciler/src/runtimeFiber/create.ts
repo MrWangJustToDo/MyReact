@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { checkFiberElement, getTypeFromElement } from "../share";
+import { checkElementValid, initialPropsFromELement, initialTypeFromElement } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
 import type { RenderDispatch } from "../renderDispatch";
@@ -20,15 +20,15 @@ export const createFiberNode = (
   },
   element: MyReactElementNode
 ) => {
+  if (__DEV__) checkElementValid(element);
+
   const newFiberNode = new MyReactFiberNodeClass(parent);
 
-  newFiberNode.type = getTypeFromElement(element);
+  initialTypeFromElement(newFiberNode, element);
+
+  initialPropsFromELement(newFiberNode, element);
 
   newFiberNode._installElement(element);
-
-  if (__DEV__) {
-    checkFiberElement(newFiberNode, element);
-  }
 
   const renderDispatch = newFiberNode.root.renderDispatch as RenderDispatch;
 

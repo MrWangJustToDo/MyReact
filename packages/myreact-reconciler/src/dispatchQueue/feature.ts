@@ -1,6 +1,8 @@
 import type { MixinMyReactComponentType, MyReactFiberNode } from "@my-react/react";
 
 export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
+  if (!fiber.isMounted) return;
+
   const allQueue = fiber.updateQueue;
 
   let node = allQueue.head;
@@ -47,6 +49,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 };
 
 export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => {
+  if (!fiber.isMounted) return;
+
   const allQueue = fiber.updateQueue;
 
   let node = allQueue.head;

@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <script src="../bundle/react.development.js"></script>
+    <script src="../bundle/react-dom.development.js"></script>
+    <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
   </head>
   <body>
     <div id="root"></div>
     <script type="text/babel">
-      const { useRef, useState, useEffect, useLayoutEffect } = React;
+      const { useRef, useState, useEffect, useLayoutEffect, forwardRef } = React;
 
       const App = () => {
         const [state, setState] = useState();
@@ -28,7 +28,13 @@
         return <div ref={ref}></div>;
       };
 
-      ReactDOM.render(<App />, root);
+      const Foo = forwardRef(() => {
+        const [s, setS] = useState();
+
+        return <div>123</div>;
+      });
+
+      ReactDOM.render(<Foo />, root);
     </script>
   </body>
 </html>

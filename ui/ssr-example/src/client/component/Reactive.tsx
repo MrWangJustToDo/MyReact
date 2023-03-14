@@ -50,4 +50,6 @@ const _Reactive = createReactive({
   },
 });
 
+// const _Reactive = () => <>div</>
+
 export const Reactive = _Reactive as unknown as FunctionComponent;

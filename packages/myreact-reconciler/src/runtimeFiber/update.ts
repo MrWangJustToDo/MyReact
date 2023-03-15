@@ -1,7 +1,7 @@
 import { isValidElement } from "@my-react/react";
 import { isNormalEquals, PATCH_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
-import { initialPropsFromELement, NODE_TYPE } from "../share";
+import { debugWithNode, initialPropsFromELement, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
 import type { RenderDispatch } from "../renderDispatch";
@@ -89,6 +89,10 @@ export const updateFiberNode = (
       prevUpdateTime: prevRenderState.currentUpdateTime,
       currentUpdateTime: timeNow,
     };
+
+    if (typedFiber.type & renderPlatform.hasNodeType) {
+      renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
+    }
   }
 
   return fiber;

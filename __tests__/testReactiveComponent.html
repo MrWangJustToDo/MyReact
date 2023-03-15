@@ -34,8 +34,20 @@
       } = React;
 
       // reactive api just like `vue`
-      const { createReactive, reactive, ref, shouldTriggerRef, onMounted, onBeforeMount, onBeforeUpdate, onUpdated, onBeforeUnmount, onUnmounted } =
-        ReactReactive;
+      const {
+        createReactive,
+        reactive,
+        ref,
+        computed,
+        watch,
+        shouldTriggerRef,
+        onMounted,
+        onBeforeMount,
+        onBeforeUpdate,
+        onUpdated,
+        onBeforeUnmount,
+        onUnmounted,
+      } = ReactReactive;
 
       const usePosition = () => {
         const [currentPosition, setCurrentPosition] = useState({
@@ -105,6 +117,45 @@
         ),
       });
 
+      const Baz = createReactive({
+        setup() {
+          const updateCount = ref(0);
+
+          const another = ref("");
+
+          const computedUpdateCount = computed(() => updateCount.value + 1);
+
+          console.log(computedUpdateCount);
+
+          let id;
+
+          watch(
+            () => updateCount.value,
+            (newValue, oldValue) => (another.value = newValue + "-" + oldValue)
+          );
+
+          onMounted(() => {
+            id = setInterval(() => updateCount.value++, 1000);
+          });
+
+          onBeforeUnmount(() => {
+            clearInterval(id);
+          });
+
+          return { another };
+        },
+
+        render({ another }) {
+          return (
+            <div>
+              Baz
+              <br />
+              <div>{another}</div>
+            </div>
+          );
+        },
+      });
+
       const MemoBar = memo(Bar);
 
       const Foo = createReactive(() => {
@@ -119,18 +170,21 @@
 
       const App = () => {
         return (
-          <Foo>
-            {({ foo, addA, addB }) => (
-              <>
-                {foo.a}
-                <br />
-                <button onClick={addA}>add</button>
-                <br />
-                <MemoBar foo={foo} />
-                <MemoBar foo={obj} />
-              </>
-            )}
-          </Foo>
+          <>
+            <Foo>
+              {({ foo, addA, addB }) => (
+                <>
+                  {foo.a}
+                  <br />
+                  <button onClick={addA}>add</button>
+                  <br />
+                  <MemoBar foo={foo} />
+                  <MemoBar foo={obj} />
+                </>
+              )}
+            </Foo>
+            <Baz />
+          </>
         );
       };
 

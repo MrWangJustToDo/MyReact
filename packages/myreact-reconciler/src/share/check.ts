@@ -1,7 +1,7 @@
 import { isValidElement } from "@my-react/react";
 import { Consumer, ForwardRef, HOOK_TYPE, Lazy, Memo, Reactive, TYPEKEY } from "@my-react/react-shared";
 
-import type { forwardRef, memo, MyReactElementNode, MyReactHookNode, MyReactObjectComponent, lazy } from "@my-react/react";
+import type { forwardRef, memo, MyReactElementNode, MyReactHookNode, MyReactObjectComponent, lazy, MyReactFiberNode } from "@my-react/react";
 import type { createReactive } from "@my-react/react-reactive";
 
 export const checkElementValid = (element: MyReactElementNode) => {
@@ -87,20 +87,29 @@ export const checkElementValid = (element: MyReactElementNode) => {
   }
 };
 
-export const checkHookValid = (_hookNode: MyReactHookNode) => {
+export const checkHookValid = (hookNode: MyReactHookNode) => {
   if (
-    _hookNode.hookType === HOOK_TYPE.useMemo ||
-    _hookNode.hookType === HOOK_TYPE.useEffect ||
-    _hookNode.hookType === HOOK_TYPE.useCallback ||
-    _hookNode.hookType === HOOK_TYPE.useLayoutEffect
+    hookNode.hookType === HOOK_TYPE.useMemo ||
+    hookNode.hookType === HOOK_TYPE.useEffect ||
+    hookNode.hookType === HOOK_TYPE.useCallback ||
+    hookNode.hookType === HOOK_TYPE.useLayoutEffect
   ) {
-    if (typeof _hookNode.value !== "function") {
-      throw new Error(`${_hookNode.hookType} initial error`);
+    if (typeof hookNode.value !== "function") {
+      throw new Error(`${hookNode.hookType} initial error`);
     }
   }
-  if (_hookNode.hookType === HOOK_TYPE.useContext) {
-    if (typeof _hookNode.value !== "object" || _hookNode.value === null) {
-      throw new Error(`${_hookNode.hookType} initial error`);
+  if (hookNode.hookType === HOOK_TYPE.useContext) {
+    if (typeof hookNode.value !== "object" || hookNode.value === null) {
+      throw new Error(`${hookNode.hookType} initial error`);
     }
+  }
+};
+
+export const debugWithNode = (fiber: MyReactFiberNode) => {
+  if (fiber.node) {
+    const node = fiber.node as any;
+    node.__fiber__ = fiber;
+    node.__element__ = fiber.element;
+    node.__children__ = fiber.children;
   }
 };

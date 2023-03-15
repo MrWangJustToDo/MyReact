@@ -1,20 +1,10 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import type { DomElement, DomNode } from "./dom";
 import type { MyReactElement, MyReactHookNode, MyReactFiberNode, MixinMyReactClassComponent, MixinMyReactFunctionComponent, lazy } from "@my-react/react";
 import type { createReactive } from "@my-react/react-reactive";
 
 const { currentRunningFiber } = __my_react_internal__;
-
-export const debugWithDOM = (fiber: MyReactFiberNode) => {
-  if (fiber.node) {
-    const debugDOM = fiber.node as DomElement | DomNode;
-    debugDOM["__fiber__"] = fiber;
-    debugDOM["__element__"] = fiber.element;
-    debugDOM["__children__"] = fiber.children;
-  }
-};
 
 const getTrackDevLog = (fiber: MyReactFiberNode) => {
   if (__DEV__) {

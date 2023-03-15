@@ -1,4 +1,4 @@
-import { Container, Flex, Text } from "@chakra-ui/react";
+import { Button, Container, Flex, HStack, Text } from "@chakra-ui/react";
 import { memo } from "react";
 import { useIntl } from "react-intl";
 
@@ -7,6 +7,8 @@ import { CONTAINER_WIDTH } from "@client/config/container";
 import { ColorMode } from "../ColorMode";
 
 import { GlobalStyle } from "./GlobalStyle";
+
+let highLightUpdate = false;
 
 const _Header = () => {
   const { formatMessage } = useIntl();
@@ -17,7 +19,19 @@ const _Header = () => {
         <Text as="h1" fontSize={{ base: "3xl", md: "6xl" }} fontWeight={{ base: "bold", md: "extrabold" }}>
           {formatMessage({ id: "blog" })} <small>{formatMessage({ id: "power" })}</small>
         </Text>
-        <ColorMode />
+        <HStack gap="10px">
+          <Button
+            onClick={() => {
+              highLightUpdate = !highLightUpdate;
+              (window as any).__highlight__ = highLightUpdate;
+            }}
+            variant="ghost"
+            size="sm"
+          >
+            Toggle highlight
+          </Button>
+          <ColorMode />
+        </HStack>
       </Flex>
     </Container>
   );

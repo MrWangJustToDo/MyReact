@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { checkElementValid, initialPropsFromELement, initialTypeFromElement } from "../share";
+import { checkElementValid, debugWithNode, initialPropsFromELement, initialTypeFromElement } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
 import type { RenderDispatch } from "../renderDispatch";
@@ -75,6 +75,10 @@ export const createFiberNode = (
       prevUpdateTime: 0,
       currentUpdateTime: timeNow,
     };
+
+    if (typedFiber.type & renderPlatform.hasNodeType) {
+      renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
+    }
   }
 
   return newFiberNode;

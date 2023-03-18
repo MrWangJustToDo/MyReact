@@ -9,13 +9,13 @@
     "path": [
       "pages-Blog.js"
     ],
-    "static": false
+    "static": true
   },
   "./": {
     "path": [
       "pages-.js"
     ],
-    "static": false
+    "static": true
   },
   "./404": {
     "path": [

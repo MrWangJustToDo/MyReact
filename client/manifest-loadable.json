@@ -1,18 +1,18 @@
 {
   "name": "client",
-  "hash": "feb10a439e39c64c51b3",
+  "hash": "cb16a5fedfd1fb930f83",
   "publicPath": "client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
   "assetsByChunkName": {
     "main": [
       "main-b732355469cc45238877.css",
-      "main-47a2df72d8c108b01800.js"
+      "main-50abc32dbdf9bf740675.js"
     ],
     "runtime": [
-      "runtime-5a107fc84722b63110b2.js"
+      "runtime-c7d63f66e99daff9b473.js"
     ],
     "common-Layout": [
-      "common-Layout-f73c5d5c242772eeee6b.js"
+      "common-Layout-3590aebdce9c8edd2625.js"
     ],
     "pages-": [
       "pages--754aab8d98566c3503f7.js"
@@ -77,18 +77,18 @@
     },
     {
       "type": "asset",
-      "name": "main-47a2df72d8c108b01800.js",
+      "name": "main-50abc32dbdf9bf740675.js",
       "size": 181686,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "47a2df72d8c108b01800",
+        "contenthash": "50abc32dbdf9bf740675",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "main-47a2df72d8c108b01800.js.map"
+          "sourceMap": "main-50abc32dbdf9bf740675.js.map"
         }
       },
       "chunkNames": [
@@ -255,18 +255,18 @@
     },
     {
       "type": "asset",
-      "name": "common-Layout-f73c5d5c242772eeee6b.js",
-      "size": 13492,
+      "name": "common-Layout-3590aebdce9c8edd2625.js",
+      "size": 13620,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "f73c5d5c242772eeee6b",
+        "contenthash": "3590aebdce9c8edd2625",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "common-Layout-f73c5d5c242772eeee6b.js.map"
+          "sourceMap": "common-Layout-3590aebdce9c8edd2625.js.map"
         }
       },
       "chunkNames": [
@@ -338,18 +338,18 @@
     },
     {
       "type": "asset",
-      "name": "runtime-5a107fc84722b63110b2.js",
+      "name": "runtime-c7d63f66e99daff9b473.js",
       "size": 3507,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "5a107fc84722b63110b2",
+        "contenthash": "c7d63f66e99daff9b473",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "runtime-5a107fc84722b63110b2.js.map"
+          "sourceMap": "runtime-c7d63f66e99daff9b473.js.map"
         }
       },
       "chunkNames": [
@@ -452,7 +452,7 @@
     {
       "type": "asset",
       "name": "manifest-deps.json",
-      "size": 316,
+      "size": 314,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
@@ -479,7 +479,7 @@
       ],
       "assets": [
         {
-          "name": "runtime-5a107fc84722b63110b2.js"
+          "name": "runtime-c7d63f66e99daff9b473.js"
         },
         {
           "name": "vendor-ui-cda5a7c8258f28a54091.js"
@@ -503,7 +503,7 @@
           "name": "main-b732355469cc45238877.css"
         },
         {
-          "name": "main-47a2df72d8c108b01800.js"
+          "name": "main-50abc32dbdf9bf740675.js"
         }
       ],
       "filteredAssets": 0,
@@ -539,7 +539,7 @@
           "name": "vendor-babel-ddaa7e4b2abbff8bf2db.js"
         },
         {
-          "name": "common-Layout-f73c5d5c242772eeee6b.js"
+          "name": "common-Layout-3590aebdce9c8edd2625.js"
         }
       ],
       "filteredAssets": 0,
@@ -842,19 +842,19 @@
       "id": 179,
       "files": [
         "main-b732355469cc45238877.css",
-        "main-47a2df72d8c108b01800.js"
+        "main-50abc32dbdf9bf740675.js"
       ]
     },
     {
       "id": 666,
       "files": [
-        "runtime-5a107fc84722b63110b2.js"
+        "runtime-c7d63f66e99daff9b473.js"
       ]
     },
     {
       "id": 497,
       "files": [
-        "common-Layout-f73c5d5c242772eeee6b.js"
+        "common-Layout-3590aebdce9c8edd2625.js"
       ]
     },
     {

@@ -113,9 +113,9 @@ export class WebpackPageDepsPlugin {
 
           const files = getFiles(reducedStats.chunkIdToFileNameMap, reducedStats.chunkIdToChildrenIds, childrenIds);
 
-          const [lastModule] = modules.slice(-1);
+          const mainModule = modules.find((item) => !item.dependent);
 
-          const lastModuleExport = lastModule?.providedExports || [];
+          const mainExport = mainModule?.providedExports || [];
 
           const path = locName;
 
@@ -123,7 +123,7 @@ export class WebpackPageDepsPlugin {
 
           mutableAcc[path] = {
             path: [chunkName, ...files],
-            static: isDynamicPage ? false : lastModuleExport.some((name) => name === STATIC_PAGE_EXPORT),
+            static: isDynamicPage ? false : mainExport.some((name) => name === STATIC_PAGE_EXPORT),
           };
 
           return mutableAcc;

@@ -8,11 +8,20 @@ import { Header } from "@client/component/Header";
 import { LockBody } from "@client/component/LockBody";
 import { ModuleManager } from "@client/component/ModuleManager";
 import { initialStateWrapper } from "@client/utils";
+import { getIsStaticGenerate } from "@shared";
 
 import type { ReactNode } from "react";
 
 // TODO
-@initialStateWrapper<{ title: string }>(({ relativePathname }) => ({ props: { title: relativePathname } }))
+@initialStateWrapper<{ title: string }>(({ relativePathname }) => {
+  const isStatic = getIsStaticGenerate();
+  if (isStatic) {
+    const [, path] = relativePathname.split("/");
+    return { props: { title: path || "/" } };
+  } else {
+    return { props: { title: relativePathname } };
+  }
+})
 export default class Layout extends Component<{ title: string }, { isMounted: boolean }> {
   state = {
     isMounted: false,
@@ -38,7 +47,7 @@ export default class Layout extends Component<{ title: string }, { isMounted: bo
     const { isMounted } = this.state;
     return (
       <>
-        <Helmet title={(title === "/" ? "@my-react" : title.slice(1)) + " | @my-react"} />
+        <Helmet title={(title === "/" ? "@my-react" : title.slice(1).toLowerCase()) + " | @my-react"} />
         <LockBody />
         <ModuleManager>
           <Box id="page-header" position="sticky" top="0" backgroundColor={isMounted ? "bannerBackgroundColor" : undefined} zIndex="banner">

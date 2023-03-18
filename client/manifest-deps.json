@@ -5,29 +5,17 @@
     ],
     "static": true
   },
-  "./Animate": {
+  "./Blog": {
     "path": [
-      "pages-Animate.js"
+      "pages-Blog.js"
     ],
-    "static": true
-  },
-  "./Antd": {
-    "path": [
-      "pages-Antd.js"
-    ],
-    "static": true
-  },
-  "./Foo": {
-    "path": [
-      "pages-Foo.js"
-    ],
-    "static": true
+    "static": false
   },
   "./": {
     "path": [
       "pages-.js"
     ],
-    "static": true
+    "static": false
   },
   "./404": {
     "path": [

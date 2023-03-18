@@ -1,3 +1,4 @@
+import { Box } from "@chakra-ui/react";
 import { Component } from "react";
 import { Helmet } from "react-helmet-async";
 import { Outlet } from "react-router";
@@ -12,13 +13,18 @@ import type { ReactNode } from "react";
 
 // TODO
 @initialStateWrapper<{ title: string }>(({ relativePathname }) => ({ props: { title: relativePathname } }))
-export default class Layout extends Component<{ title: string }> {
+export default class Layout extends Component<{ title: string }, { isMounted: boolean }> {
+  state = {
+    isMounted: false,
+  };
+
   constructor(props) {
     super(props);
     console.warn("create", this);
   }
   componentDidMount(): void {
     console.warn("mounted", this);
+    this.setState({ isMounted: true });
   }
   componentWillUnmount(): void {
     console.warn("unmount", this);
@@ -28,24 +34,22 @@ export default class Layout extends Component<{ title: string }> {
   }
   render(): ReactNode {
     console.warn("render", this);
+    const { title } = this.props;
+    const { isMounted } = this.state;
     return (
       <>
-        <Helmet title={"path: " + this.props.title} />
+        <Helmet title={(title === "/" ? "@my-react" : title.slice(1)) + " | @my-react"} />
         <LockBody />
         <ModuleManager>
-          {!this.props.title.toLowerCase().includes("/foo") && (
-            <div id="page-header">
-              <Header />
-            </div>
-          )}
+          <Box id="page-header" position="sticky" top="0" backgroundColor={isMounted ? "bannerBackgroundColor" : undefined} zIndex="banner">
+            <Header />
+          </Box>
           <div id="page-content">
             <Outlet />
           </div>
-          {!this.props.title.toLowerCase().includes("/foo") && (
-            <div id="page-footer">
-              <Footer />
-            </div>
-          )}
+          <div id="page-footer">
+            <Footer />
+          </div>
         </ModuleManager>
       </>
     );

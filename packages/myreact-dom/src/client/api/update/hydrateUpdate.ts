@@ -5,6 +5,7 @@ import { getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, IS_UNIT_LE
 
 import { addEventListener } from "../helper";
 
+import type { HydrateDOM } from "../create/getHydrateDom";
 import type { MyReactFiberNode } from "@my-react/react";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
@@ -88,6 +89,21 @@ const domEventHydrate = (fiber: MyReactFiberNode, key: string) => {
   addEventListener(fiber, node as DomElement, key);
 };
 
+const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
+  const props = fiber.pendingProps;
+  if (props["dangerouslySetInnerHTML"]) {
+    const typedDOM = fiber.node as HydrateDOM;
+    const typedProps = props["dangerouslySetInnerHTML"] as Record<string, unknown>;
+    const existInnerHTML = typedDOM.innerHTML;
+    const incomingInnerHTML = typedProps.__html as string;
+    if (existInnerHTML !== incomingInnerHTML) {
+      log({ fiber, level: "error", message: `hydrate error, innerHTML not match from server.` });
+      typedDOM.innerHTML = typedProps.__html as string;
+    }
+    typedDOM.__skipChildren__ = true;
+  }
+};
+
 export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   const node = fiber.node as DomElement | DomNode;
 
@@ -104,6 +120,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
           domPropsHydrate(fiber, isSVG, key, props[key]);
         }
       });
+      domInnerHTMLHydrate(fiber);
     }
 
     if (fiber.type & NODE_TYPE.__isTextNode__) {

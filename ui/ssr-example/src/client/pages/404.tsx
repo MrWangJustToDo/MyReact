@@ -1,4 +1,4 @@
-import { Code, useToast } from "@chakra-ui/react";
+import { Box, useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
@@ -11,13 +11,13 @@ export default function Index() {
   useEffect(() => {
     open({
       title: "404",
-      description: "not found page, redirect to home page",
+      description: "404 not found, redirect to home page",
       status: "error",
     });
     navigate(`${getIsStaticGenerate() ? "/MyReact/" : "/"}`);
   }, [open, navigate]);
 
-  return <Code>404 page</Code>;
+  return <Box minHeight="100vh" />;
 }
 
 export const isStatic = true;

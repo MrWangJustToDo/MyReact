@@ -20,7 +20,7 @@ const ItemHeader = ({ title, externalUrl, detailNumber }: { title: string; exter
     const search = new URLSearchParams(location.search);
     search.append("overlay", "open");
     search.append("detailId", detailNumber + "");
-    navigate(`${getIsStaticGenerate() ? "/MyReact/" : "/"}?${search.toString()}`);
+    navigate(`${getIsStaticGenerate() ? "/MyReact/Blog" : "/Blog"}?${search.toString()}`);
   };
 
   const openExternal = () => window.open(externalUrl, "_blank");

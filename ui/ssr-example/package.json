@@ -26,7 +26,6 @@
     "@my-react/react-jsx": "workspace:*",
     "@site/graphql": "workspace: *",
     "@site/axios": "workspace: *",
-    "antd": "^5.3.0",
     "cookie-parser": "^1.4.6",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.0",

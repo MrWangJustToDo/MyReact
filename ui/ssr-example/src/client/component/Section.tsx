@@ -11,7 +11,7 @@ export const _Section = ({ children }: { children: ReactNode }) => {
   const { ref } = useScrollSection();
   const { scrollYProgress } = useScroll({ target: ref, axis: "y", offset: ["0 0.45", "1 0.6"] });
   const opacity = useTransform(scrollYProgress, [1, 0.5, 0], [0, 1, 0]);
-  const y = useTransform(scrollYProgress, [1, 0.5, 0], [-150, 0, 150]);
+  const y = useTransform(scrollYProgress, [1, 0.45, 0], [-150, 0, 150]);
 
   useEffect(() => {
     scrollYProgress.onChange(console.log);

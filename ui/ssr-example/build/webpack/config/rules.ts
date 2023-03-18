@@ -41,20 +41,7 @@ const jsRules = ({ env, isDEV }: SafeGenerateActionProps): RuleSetRule => {
           sourceType: "unambiguous",
           cacheDirectory: true,
           configFile: resolve(process.cwd(), "babel.config.js"),
-          plugins:
-            env === "client"
-              ? [
-                  isDEV && process.env.REACT === "react" && "react-refresh/babel",
-                  // [
-                  //   "import",
-                  //   {
-                  //     libraryName: "antd",
-                  //     libraryDirectory: "lib",
-                  //     style: "css", // 样式按需加载
-                  //   },
-                  // ],
-                ].filter(Boolean)
-              : [],
+          plugins: env === "client" ? [isDEV && process.env.REACT === "react" && "react-refresh/babel"].filter(Boolean) : [],
         },
       },
     ],

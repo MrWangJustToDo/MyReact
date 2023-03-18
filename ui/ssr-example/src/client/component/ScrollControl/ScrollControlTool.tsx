@@ -23,6 +23,8 @@ export const ScrollControlTool = ({
 
   const array = useMemo(() => Array(totalSection).fill(0) as number[], [totalSection]);
 
+  if (totalSection <= 1) return null;
+
   return (
     <Flex
       height="100vh"

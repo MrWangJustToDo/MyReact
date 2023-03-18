@@ -5,6 +5,11 @@ export const fallback = (fiber: MyReactFiberNode) => {
   const pendingDeleteArray: Element[] = [];
 
   const clearHydrate = (dom: HydrateDOM) => {
+    if (dom.__skipChildren__) {
+      delete dom.__skipChildren__;
+      return;
+    }
+
     const children = Array.from(dom.childNodes);
 
     children.forEach((node) => {

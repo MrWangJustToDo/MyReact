@@ -25,7 +25,7 @@ const _BlogModal = () => {
             query.delete("detailId");
             query.delete("overlay");
             const string = query.toString();
-            navigate(`${getIsStaticGenerate() ? "/MyReact/" : "/"}${string ? "?" + string : ""}`);
+            navigate(`${getIsStaticGenerate() ? "/MyReact/Blog" : "/Blog"}${string ? "?" + string : ""}`);
           }),
       });
     } else {

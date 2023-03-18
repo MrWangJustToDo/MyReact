@@ -10,6 +10,7 @@ import type { MyReactFiberNode } from "@my-react/react";
 
 export type HydrateDOM = Element & {
   __hydrate__: boolean;
+  __skipChildren__: boolean;
 };
 
 const getNextHydrateDom = (parentDom: Element) => {

@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { checkIsSameType, initialPropsFromELement, initialTypeFromElement, initialFiberNode } from "@my-react/react-reconciler";
 import { once } from "@my-react/react-shared";
 
@@ -17,8 +17,22 @@ export type RenderContainer = Element & {
 
 const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
 
+const { enableStrictLifeCycle, enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
+
 export const onceLog = once(() => {
-  console.log("you are using @my-react to render this site, see https://github.com/MrWangJustToDo/MyReact");
+  console.log(`you are using @my-react to render this site, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`);
+});
+
+export const onceLogConcurrentMode = once(() => {
+  console.log("[@my-react] concurrent mode have been enabled!");
+});
+
+export const onceLogNewStrictMode = once(() => {
+  console.log("[@my-react] react-18 like lifecycle have been enabled!");
+});
+
+export const onceLogLegacyLifeCycleMode = once(() => {
+  console.log("[@my-react] legacy 'UNSAFE_' lifeCycle have been enabled!");
 });
 
 export const render = (element: MyReactElement, container: RenderContainer) => {
@@ -38,6 +52,18 @@ export const render = (element: MyReactElement, container: RenderContainer) => {
     }
   }
   onceLog();
+
+  if (enableConcurrentMode.current) {
+    onceLogConcurrentMode();
+  }
+
+  if (enableStrictLifeCycle.current) {
+    onceLogNewStrictMode();
+  }
+
+  if (enableLegacyLifeCycle.current) {
+    onceLogLegacyLifeCycleMode();
+  }
 
   const fiber = new MyReactFiberNodeClass(null);
 

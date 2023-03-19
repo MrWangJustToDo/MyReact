@@ -1,6 +1,7 @@
 import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
+// import terser from "@rollup/plugin-terser";
 import fs from "fs";
 import { readFile, access } from "fs/promises";
 import cloneDeep from "lodash/cloneDeep";
@@ -119,6 +120,7 @@ const transformBuildOptions = (
             preventAssignment: true,
           }),
           tsConfig(relativePath, mode),
+          // mode === "production" ? terser() : null,
         ],
       };
     }
@@ -158,6 +160,7 @@ const transformBuildOptions = (
             preventAssignment: true,
           }),
           tsConfig(relativePath, mode),
+          // mode === "production" ? terser() : null,
         ],
       };
     }

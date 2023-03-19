@@ -1,18 +1,32 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { initialPropsFromELement, initialTypeFromElement, initialFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomPlatform, ClientDomDispatch, ClientDomController } from "@my-react-dom-client";
 import { startRender, startRenderAsync, DomScope } from "@my-react-dom-shared";
 
-import { onceLog } from "./render";
+import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogNewStrictMode } from "./render";
 
 import type { RenderContainer } from "./render";
 import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
 
 const { MyReactFiberNode } = __my_react_internal__;
 
+const { enableStrictLifeCycle, enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
+
 const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
   onceLog();
+
+  if (enableConcurrentMode.current) {
+    onceLogConcurrentMode();
+  }
+
+  if (enableStrictLifeCycle.current) {
+    onceLogNewStrictMode();
+  }
+
+  if (enableLegacyLifeCycle.current) {
+    onceLogLegacyLifeCycleMode();
+  }
 
   const fiber = new MyReactFiberNode(null);
 
@@ -69,6 +83,18 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 
 const hydrateAsync = async (element: MyReactElement, container: RenderContainer) => {
   onceLog();
+
+  if (enableConcurrentMode.current) {
+    onceLogConcurrentMode();
+  }
+
+  if (enableStrictLifeCycle.current) {
+    onceLogNewStrictMode();
+  }
+
+  if (enableLegacyLifeCycle.current) {
+    onceLogLegacyLifeCycleMode();
+  }
 
   const fiber = new MyReactFiberNode(null);
 

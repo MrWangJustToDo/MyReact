@@ -1,3 +1,7 @@
+.no-select {
+  user-select: none;
+}
+
 .react-grid-item.react-grid-placeholder {
   background-color: var(--chakra-colors-gray-300);
 }

@@ -49,7 +49,7 @@ export const MainSection = () => {
           </Heading>
           <Text fontSize={{ base: "xl", md: "3xl", lg: "4xl" }}>{formatMessage({ id: "description" })}</Text>
           <Text fontSize="sm" color="lightTextColor" marginY="2">
-            this site power by @my-react
+            This website is built with @my-react
           </Text>
           <HStack marginTop="14" spacing="8" display={{ base: "none", md: "flex" }}>
             <Button variant="solid" borderRadius="full" colorScheme="messenger" onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/Blog" : "/Blog")}>

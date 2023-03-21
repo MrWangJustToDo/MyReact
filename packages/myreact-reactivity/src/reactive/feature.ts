@@ -1,4 +1,4 @@
-import { Component, createElement, useState, useCallback } from "@my-react/react";
+import { Component, createElement, useState, useCallback, useMemo } from "@my-react/react";
 
 import { proxyRefs, ReactiveEffect } from "../api";
 
@@ -40,12 +40,6 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
 
   const render = typeof props === "function" ? null : props.render;
 
-  globalInstance = instance;
-
-  const state = proxyRefs(setup());
-
-  globalInstance = null;
-
   let canUpdate = true;
 
   class ForBeforeUnmount extends Component<{ children: MyReactElementNode }> {
@@ -68,7 +62,9 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     }
   }
 
-  class Render extends Component<{ ["__trigger__"]: () => void; children: (props: UnwrapRef<S> & P) => MyReactElementNode } & P> {
+  class Render extends Component<
+    { ["$$__trigger__$$"]: () => void; ["$$__reactiveState__$$"]: UnwrapRef<S>; children: (props: UnwrapRef<S> & P) => MyReactElementNode } & P
+  > {
     componentDidMount(): void {
       instance.onMounted.forEach((f) => f());
     }
@@ -89,11 +85,11 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     }
 
     effect = new ReactiveEffect(() => {
-      const { children, __trigger__, ...last } = this.props;
+      const { children, $$__trigger__$$, $$__reactiveState__$$, ...last } = this.props;
       const targetRender = (render || children) as (props: UnwrapRef<S> & P) => MyReactElementNode;
-      const element = targetRender?.({ ...last, ...state } as UnwrapRef<S> & P) || null;
+      const element = targetRender?.({ ...last, ...$$__reactiveState__$$ } as UnwrapRef<S> & P) || null;
       return element;
-    }, this.props.__trigger__);
+    }, this.props.$$__trigger__$$);
 
     render() {
       return createElement(ForBeforeMount, { children: this.effect.run() });
@@ -101,6 +97,16 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
   }
 
   const MyReactReactiveComponent = (props: P) => {
+    const state = useMemo(() => {
+      globalInstance = instance;
+
+      const state = proxyRefs(setup());
+
+      globalInstance = null;
+
+      return state;
+    }, []);
+
     if (__DEV__) {
       for (const key in props) {
         if (key in state) {
@@ -120,7 +126,9 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
       }
     }, []);
 
-    return createElement(ForBeforeUnmount, { children: createElement(Render, { ...props, ["__trigger__"]: updateCallback }) });
+    return createElement(ForBeforeUnmount, {
+      children: createElement(Render, { ...props, ["$$__trigger__$$"]: updateCallback, ["$$__reactiveState__$$"]: state }),
+    });
   };
 
   return MyReactReactiveComponent;

@@ -2,7 +2,7 @@ import { Consumer, Context, ForwardRef, Lazy, Memo, Provider, TYPEKEY } from "@m
 
 import { MyReactInternalInstance } from "../internal";
 
-import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "./instance";
+import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "./instance";
 
 let contextId = 0;
 
@@ -50,7 +50,9 @@ export const createContext = <T = any>(value: T) => {
   return ContextObject;
 };
 
-export const forwardRef = (render: MixinMyReactFunctionComponent) => {
+export const forwardRef = <P extends Record<string, unknown> = any, T extends CreateElementConfig["ref"] = any>(
+  render: (props: P, ref?: T) => MyReactElement
+) => {
   return {
     [TYPEKEY]: ForwardRef,
     render,
@@ -58,11 +60,7 @@ export const forwardRef = (render: MixinMyReactFunctionComponent) => {
 };
 
 export const memo = (
-  render:
-    | MixinMyReactFunctionComponent
-    | MixinMyReactClassComponent
-    | ReturnType<typeof forwardRef>
-    | { [TYPEKEY]: symbol; [p: string]: unknown }
+  render: MixinMyReactFunctionComponent | MixinMyReactClassComponent | ReturnType<typeof forwardRef> | { [TYPEKEY]: symbol; [p: string]: unknown }
 ) => {
   return { [TYPEKEY]: Memo, render };
 };

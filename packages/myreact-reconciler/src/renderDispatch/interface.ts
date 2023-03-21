@@ -49,12 +49,6 @@ export type RenderDispatch = OriginalRenderDispatch<{
 
   resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null;
 
-  // processFiberInitial(_fiber: MyReactFiberNode, type?: "append" | "position"): void;
-
-  // processFiberUpdate(_fiber: MyReactFiberNode): void;
-
-  // processFiberUnmount(_fiber: MyReactFiberNode): void;
-
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean;
 
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void;

@@ -9,38 +9,28 @@ type ErrorInfo = {
   componentStack: string;
 };
 
-export type MyReactComponentType<P, S, C> = {
-  render(this: MyReactComponent): MyReactElementNode;
-  componentDidMount?(this: MyReactComponent): void;
+export class MyReactComponent<
+  P extends Record<string, unknown> = any,
+  S extends Record<string, unknown> = any,
+  C extends Record<string, unknown> = any
+> extends MyReactInternalInstance {
+  static contextType: null | ReturnType<typeof createContext>;
+  static getDerivedStateFromProps?(props: any, state: any): any;
+  static getDerivedStateFromError?(error: Error): any;
+
+  state: S | null = null;
+  props: P | null = null;
+  context: C | null = null;
+
   getSnapshotBeforeUpdate?(this: MyReactComponent, prevProps: P, prevState: S): void;
   shouldComponentUpdate?(this: MyReactComponent, nextProps: P, nextState: S, nextContext: C): boolean;
+  componentDidMount?(this: MyReactComponent): void;
   componentDidUpdate?(this: MyReactComponent, prevProps: P, prevState: S, snapshot: any): void;
   componentDidCatch?(this: MyReactComponent, error: Error, errorInfo: ErrorInfo): void;
   componentWillUnmount?(): void;
   UNSAFE_componentWillMount?(): void;
   UNSAFE_componentWillReceiveProps?(nextProps: P): void;
   UNSAFE_componentWillUpdate?(nextProps: P, nextState: S): void;
-};
-
-export type MyReactComponentStaticType<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any> = {
-  contextType: null | ReturnType<typeof createContext>;
-  getDerivedStateFromProps(props: P, state: S): S;
-  getDerivedStateFromError(error: Error): S;
-};
-
-export type MixinMyReactComponentType<
-  P extends Record<string, unknown> = any,
-  S extends Record<string, unknown> = any,
-  C extends Record<string, unknown> = any
-> = MyReactComponent<P, S, C> & MyReactComponentType<P, S, C>;
-
-export class MyReactComponent<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>
-  extends MyReactInternalInstance
-  implements MyReactComponentType<P, S, C>
-{
-  state: S | null = null;
-  props: P | null = null;
-  context: C | null = null;
 
   // for queue update
   _result: { newState: unknown; isForce: boolean; callback: Array<() => void> } = {
@@ -110,8 +100,7 @@ export class MyReactComponent<P extends Record<string, unknown> = any, S extends
 
   _unmount() {
     super._unmount();
-    const instance = this as MixinMyReactComponentType;
-    instance.componentWillUnmount?.();
+    this.componentWillUnmount?.();
   }
 }
 

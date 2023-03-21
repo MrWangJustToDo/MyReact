@@ -2,16 +2,16 @@ import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import type { RenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode, MixinMyReactComponentType, MyReactClassComponent, MyReactComponentStaticType, MyReactComponent } from "@my-react/react";
+import type { MyReactFiberNode, MyReactComponent , MixinMyReactClassComponent} from "@my-react/react";
 
 const { enableLegacyLifeCycle, enableStrictLifeCycle } = __my_react_shared__;
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
   const Component = fiber.elementType;
 
-  const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
+  const typedComponent = Component as MixinMyReactClassComponent;
 
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   const pendingProps = Object.assign({}, fiber.pendingProps);
   const currentState = Object.assign({}, typedInstance.state);
@@ -24,7 +24,7 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: M
   }
 
   if (devInstance) {
-    const typedDevInstance = devInstance as MixinMyReactComponentType;
+    const typedDevInstance = devInstance as MyReactComponent;
 
     const pendingProps = Object.assign({}, fiber.pendingProps);
     const currentState = Object.assign({}, typedInstance.state);
@@ -41,9 +41,9 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: M
 const processComponentStateFromError = (fiber: MyReactFiberNode, error: Error) => {
   const Component = fiber.elementType;
 
-  const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
+  const typedComponent = Component as MixinMyReactClassComponent;
 
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedComponent.getDerivedStateFromError) {
     const payloadState = typedComponent.getDerivedStateFromError?.(error);
@@ -60,7 +60,7 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   const Component = fiber.elementType;
 
-  const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
+  const typedComponent = Component as MixinMyReactClassComponent;
 
   const ProviderFiber = renderDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
@@ -96,12 +96,12 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 };
 
 const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
   typedInstance._setOwner(fiber);
 };
 
 const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   if (devInstance) {
     const cached = Object.assign({}, typedInstance);
@@ -122,7 +122,7 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInst
 };
 
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
@@ -148,7 +148,7 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: 
 };
 
 const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error: Error, targetFiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
@@ -168,9 +168,9 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
 
   const Component = fiber.elementType;
 
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedComponent = Component as MixinMyReactClassComponent;
 
-  const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedComponent.contextType) {
     if (!typedInstance?._contextFiber || !typedInstance._contextFiber.isMounted) {
@@ -197,7 +197,7 @@ const processComponentPropsAndContextOnActive = (fiber: MyReactFiberNode) => {
 
   const context = processComponentContextOnUpdate(fiber);
 
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   typedInstance.props = props;
 
@@ -208,7 +208,7 @@ const processComponentShouldUpdateOnUpdate = (
   fiber: MyReactFiberNode,
   { nextState, nextProps, nextContext }: { nextState: unknown; nextProps: unknown; nextContext: unknown }
 ) => {
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   if (fiber.mode & UPDATE_TYPE.__triggerUpdate__) return true;
 
@@ -220,7 +220,7 @@ const processComponentShouldUpdateOnUpdate = (
 };
 
 const processComponentGetSnapshotOnUpdate = (fiber: MyReactFiberNode, { baseState, baseProps }: { baseState: unknown; baseProps: unknown }) => {
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedInstance.getSnapshotBeforeUpdate) {
     return typedInstance.getSnapshotBeforeUpdate?.(baseProps, baseState);
@@ -243,7 +243,7 @@ const processComponentDidUpdateOnUpdate = (
     callback: Array<() => void>;
   }
 ) => {
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
@@ -260,7 +260,7 @@ const processComponentDidUpdateOnUpdate = (
 };
 
 const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   // TODO setState
   if (typedInstance.UNSAFE_componentWillMount) {
@@ -277,7 +277,7 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
 };
 
 const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   // only trigger on parent component update
   if (fiber.mode & UPDATE_TYPE.__inheritUpdate__) {
@@ -297,7 +297,7 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
 };
 
 const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextState }: { nextProps: unknown; nextState: unknown }) => {
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedInstance.UNSAFE_componentWillUpdate) {
     typedInstance.UNSAFE_componentWillUpdate(nextProps, nextState);
@@ -349,7 +349,7 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
 
   if (enableLegacyLifeCycle.current) processComponentWillReceiveProps(fiber);
 
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   const { newState, isForce, callback } = typedInstance._result;
 

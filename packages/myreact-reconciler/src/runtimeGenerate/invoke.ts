@@ -8,7 +8,7 @@ import { transformChildrenFiber } from "./generate";
 
 import type { RenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MyReactFiberNode, MyReactElementNode, MyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext } from "@my-react/react";
+import type { MyReactFiberNode, MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext , forwardRef} from "@my-react/react";
 
 const { currentHookDeepIndex, currentFunctionFiber, currentComponentFiber } = __my_react_internal__;
 
@@ -47,12 +47,13 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
 
   currentFunctionFiber.current = fiber;
 
-  const typedElementType = fiber.elementType as MyReactFunctionComponent;
+  const typedElementType = fiber.elementType as MixinMyReactFunctionComponent;
 
   let children: MyReactElementNode = null;
 
   if (fiber.type & NODE_TYPE.__isForwardRef__) {
-    children = typedElementType(fiber.pendingProps, fiber.ref);
+    const typedElementTypeWithRef = typedElementType as ReturnType<typeof forwardRef>["render"];
+    children = typedElementTypeWithRef(fiber.pendingProps, fiber.ref);
   } else {
     children = typedElementType(fiber.pendingProps);
   }

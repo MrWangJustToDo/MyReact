@@ -1,15 +1,15 @@
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MixinMyReactComponentType, MyReactClassComponent, MyReactComponentStaticType, MyReactFiberNode } from "@my-react/react";
+import type { MixinMyReactClassComponent, MyReactComponent, MyReactFiberNode } from "@my-react/react";
 
 export const isErrorBoundariesComponent = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isClassComponent__) {
     const Component = fiber.elementType;
 
-    const typedComponent = Component as MyReactClassComponent & MyReactComponentStaticType;
+    const typedComponent = Component as MixinMyReactClassComponent;
 
-    const typedInstance = fiber.instance as MixinMyReactComponentType;
+    const typedInstance = fiber.instance as MyReactComponent;
 
     if (typeof typedComponent.getDerivedStateFromError === "function" || typeof typedInstance.componentDidCatch === "function") {
       return true;

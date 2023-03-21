@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-reactive",
   "description": "@my-react/react-reactive",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "unpkg": "./dist/umd/index.development.js",

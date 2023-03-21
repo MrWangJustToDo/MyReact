@@ -118,8 +118,6 @@ export type {
   ArrayMyReactElementChildren,
   MaybeArrayMyReactElementNode,
   MyReactObjectComponent,
-  MyReactClassComponent,
-  MyReactFunctionComponent,
   MixinMyReactClassComponent,
   MixinMyReactFunctionComponent,
 } from "./element";
@@ -128,4 +126,4 @@ export type { MyReactInternalInstance } from "./internal";
 
 export type { MyReactFiberNode, MyReactFiberNodeRoot, UpdateQueue } from "./fiber";
 
-export type { MyReactComponent, MyReactComponentStaticType, MixinMyReactComponentType } from "./component";
+export type { MyReactComponent } from "./component";

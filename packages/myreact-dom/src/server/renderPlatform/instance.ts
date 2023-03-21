@@ -4,7 +4,7 @@ import { NODE_TYPE } from "@my-react/react-reconciler";
 import { append, create, update } from "@my-react-dom-server";
 import { getFiberTree, getHookTree, log } from "@my-react-dom-shared";
 
-import type { MyReactFiberNode, MyReactHookNode, MyReactElementNode, lazy, MyReactClassComponent, MyReactFunctionComponent } from "@my-react/react";
+import type { MyReactFiberNode, MyReactHookNode, MyReactElementNode, lazy } from "@my-react/react";
 import type { RenderDispatch, RenderPlatform } from "@my-react/react-reconciler";
 import type { HOOK_TYPE } from "@my-react/react-shared";
 
@@ -76,7 +76,7 @@ export class ServerDomPlatform implements RenderPlatform {
     return typedElementType.loader().then((loaded) => {
       const render = typeof loaded === "object" && typeof loaded?.default === "function" ? loaded.default : loaded;
 
-      typedElementType.render = render as MyReactClassComponent | MyReactFunctionComponent;
+      typedElementType.render = render as ReturnType<typeof lazy>["render"];
 
       typedElementType._loaded = true;
 

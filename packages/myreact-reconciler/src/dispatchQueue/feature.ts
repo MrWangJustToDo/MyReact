@@ -1,4 +1,4 @@
-import type { MixinMyReactComponentType, MyReactFiberNode } from "@my-react/react";
+import type { MyReactComponent, MyReactFiberNode } from "@my-react/react";
 
 export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
   if (!fiber.isMounted) return;
@@ -7,7 +7,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
   let node = allQueue.head;
 
-  const typedInstance = fiber.instance as MixinMyReactComponentType;
+  const typedInstance = fiber.instance as MyReactComponent;
 
   const baseState = Object.assign({}, typedInstance.state);
 

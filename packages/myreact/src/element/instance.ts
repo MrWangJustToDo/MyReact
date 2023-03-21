@@ -6,15 +6,15 @@ import { currentComponentFiber } from "../share";
 
 import { checkArrayChildrenKey, checkSingleChildrenKey } from "./tool";
 
-import type { createContext, forwardRef, lazy, memo } from "./feature";
+import type { createContext, lazy } from "./feature";
 import type { MyReactComponent } from "../component";
 import type { MyReactFiberNode } from "../fiber";
 import type { MyReactInternalInstance } from "../internal";
 import type { createRef } from "../share";
 
-export type MyReactFunctionComponent<T extends Record<string, unknown> = any> = (...args: T[]) => MyReactElementNode;
+type MyReactFunctionComponent<P extends Record<string, unknown> = any> = (props: P) => MyReactElementNode;
 
-export type MyReactClassComponent<
+type MyReactClassComponent<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,
   C extends Record<string, unknown> = any
@@ -23,8 +23,9 @@ export type MyReactClassComponent<
 export type MyReactObjectComponent =
   | ReturnType<typeof createContext>["Consumer"]
   | ReturnType<typeof createContext>["Provider"]
-  | ReturnType<typeof forwardRef>
-  | ReturnType<typeof memo>
+  // type error
+  // | ReturnType<typeof forwardRef>
+  // | ReturnType<typeof memo>
   | ReturnType<typeof lazy>
   | { [TYPEKEY]: symbol; [p: string]: unknown };
 
@@ -46,8 +47,6 @@ export type MyReactElementType<P extends Record<string, unknown> = any, S extend
   | symbol
   | string
   | MyReactObjectComponent
-  | MyReactClassComponent<P, S, C>
-  | MyReactFunctionComponent<P>
   | MixinMyReactClassComponent<P, S, C>
   | MixinMyReactFunctionComponent<P>;
 

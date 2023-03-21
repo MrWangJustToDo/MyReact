@@ -5,7 +5,7 @@ import { NODE_TYPE } from "@my-react/react-reconciler";
 import { append, create, position, unmount, update } from "@my-react-dom-client";
 import { asyncUpdateTimeLimit, getFiberTree, getHookTree, log, setRef, unsetRef } from "@my-react-dom-shared";
 
-import type { MyReactFiberNode, MyReactHookNode, MyReactElementNode, lazy, MyReactClassComponent, MyReactFunctionComponent } from "@my-react/react";
+import type { MyReactFiberNode, MyReactHookNode, MyReactElementNode, lazy } from "@my-react/react";
 import type { RenderDispatch, RenderPlatform } from "@my-react/react-reconciler";
 import type { HOOK_TYPE } from "@my-react/react-shared";
 
@@ -102,7 +102,7 @@ export class ClientDomPlatform implements RenderPlatform {
 
     const typedElementType = fiber.elementType as ReturnType<typeof lazy>;
     if (typedElementType._loaded === true) {
-      const render = typedElementType.render as MyReactClassComponent | MyReactFunctionComponent;
+      const render = typedElementType.render as ReturnType<typeof lazy>["render"];
 
       return createElement(render, fiber.pendingProps);
     } else if (typedElementType._loading === false) {
@@ -112,11 +112,12 @@ export class ClientDomPlatform implements RenderPlatform {
         .then(() => typedElementType.loader())
         .then((re) => {
           const render = typeof re === "object" && typeof re?.default === "function" ? re.default : re;
+
           typedElementType._loaded = true;
 
           typedElementType._loading = false;
 
-          typedElementType.render = render as MyReactClassComponent | MyReactFunctionComponent;
+          typedElementType.render = render as ReturnType<typeof lazy>["render"];
 
           fiber._update();
         });
@@ -133,7 +134,7 @@ export class ClientDomPlatform implements RenderPlatform {
     return typedElementType.loader().then((loaded) => {
       const render = typeof loaded === "object" && typeof loaded?.default === "function" ? loaded.default : loaded;
 
-      typedElementType.render = render as MyReactClassComponent | MyReactFunctionComponent;
+      typedElementType.render = render as ReturnType<typeof lazy>["render"];
 
       typedElementType._loaded = true;
 

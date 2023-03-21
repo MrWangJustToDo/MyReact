@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-reactive",
   "description": "@my-react/react-reactive",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [

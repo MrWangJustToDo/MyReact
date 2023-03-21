@@ -7,7 +7,6 @@ import type { MyReactElement } from "@my-react/react";
 import type { FunctionComponent } from "react";
 
 const _Reactive = createReactive({
-  name: "testReactive",
   setup: () => {
     const countRef = ref(0);
     const changeRef = ref(0);

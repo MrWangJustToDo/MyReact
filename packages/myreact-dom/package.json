@@ -62,7 +62,6 @@
   "dependencies": {
     "@my-react/react": "latest",
     "@my-react/react-shared": "latest",
-    "@my-react/react-reactive": "latest",
     "@my-react/react-reconciler": "latest"
   }
 }

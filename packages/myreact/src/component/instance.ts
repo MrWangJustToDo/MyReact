@@ -9,7 +9,7 @@ type ErrorInfo = {
   componentStack: string;
 };
 
-export interface MyReactComponentType<P, S, C> {
+export type MyReactComponentType<P, S, C> = {
   render(this: MyReactComponent): MyReactElementNode;
   componentDidMount?(this: MyReactComponent): void;
   getSnapshotBeforeUpdate?(this: MyReactComponent, prevProps: P, prevState: S): void;
@@ -20,7 +20,7 @@ export interface MyReactComponentType<P, S, C> {
   UNSAFE_componentWillMount?(): void;
   UNSAFE_componentWillReceiveProps?(nextProps: P): void;
   UNSAFE_componentWillUpdate?(nextProps: P, nextState: S): void;
-}
+};
 
 export type MyReactComponentStaticType<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any> = {
   contextType: null | ReturnType<typeof createContext>;

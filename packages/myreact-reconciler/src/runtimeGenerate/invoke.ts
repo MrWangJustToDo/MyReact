@@ -1,7 +1,6 @@
 import { isValidElement, __my_react_internal__ } from "@my-react/react";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
-import { reactiveComponentMount, reactiveComponentUpdate } from "../runtimeReactive";
 import { isCommentElement } from "../runtimeScope";
 import { NODE_TYPE } from "../share";
 
@@ -101,26 +100,6 @@ export const nextWorkLazySync = async (fiber: MyReactFiberNode) => {
   return nextWorkCommon(fiber, children);
 };
 
-export const nextWorkReactiveComponent = (fiber: MyReactFiberNode) => {
-  currentComponentFiber.current = fiber;
-
-  let res: MyReactFiberNode[] = [];
-
-  if (!fiber.instance) {
-    const children = reactiveComponentMount(fiber);
-
-    res = nextWorkCommon(fiber, children);
-  } else {
-    const children = reactiveComponentUpdate(fiber);
-
-    res = nextWorkCommon(fiber, children);
-  }
-
-  currentComponentFiber.current = null;
-
-  return res;
-};
-
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
   // for a comment element, will not have any children;
   if (isValidElement(fiber.element) && !isCommentElement(fiber)) {
@@ -176,7 +155,6 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 export const runtimeNextWork = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isDynamicNode__) return nextWorkComponent(fiber);
   if (fiber.type & NODE_TYPE.__isLazy__) return nextWorkLazy(fiber);
-  if (fiber.type & NODE_TYPE.__isReactive__) return nextWorkReactiveComponent(fiber);
   if (fiber.type & NODE_TYPE.__isContextProvider__) return nextWorkNormal(fiber);
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);
   return nextWorkNormal(fiber);
@@ -185,7 +163,6 @@ export const runtimeNextWork = (fiber: MyReactFiberNode) => {
 export const runtimeNextWorkAsync = async (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isDynamicNode__) return nextWorkComponent(fiber);
   if (fiber.type & NODE_TYPE.__isLazy__) return await nextWorkLazySync(fiber);
-  if (fiber.type & NODE_TYPE.__isReactive__) return nextWorkReactiveComponent(fiber);
   if (fiber.type & NODE_TYPE.__isContextProvider__) return nextWorkNormal(fiber);
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);
   return nextWorkNormal(fiber);

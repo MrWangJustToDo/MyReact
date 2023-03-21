@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { Component, useEffect, useState, useCallback } = React;
+
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+        return [count, i, j];
+      };
+
+      const useUnmount = (cb) => {
+        useEffect(() => cb, []);
+      };
+
+      const A = (props) => {
+        useEffect(() => {
+          console.log("a mount");
+        });
+
+        useUnmount(() => {
+          console.log("a unmount");
+        });
+
+        return props.children;
+      };
+      const B = (props) => {
+        useEffect(() => {
+          console.log("b mount");
+        });
+
+        useUnmount(() => {
+          console.log("b unmount");
+        });
+
+        return props.children;
+      };
+      const C = (props) => {
+        useEffect(() => {
+          console.log("c mount");
+        });
+
+        useUnmount(() => {
+          console.log("c unmount");
+        });
+
+        return props.children;
+      };
+
+      class AC extends Component {
+        componentDidMount() {
+          console.log("AC mount");
+        }
+
+        componentWillUnmount() {
+          console.log("AC unmount");
+        }
+
+        render() {
+          return this.props.children;
+        }
+      }
+      class BC extends Component {
+        componentDidMount() {
+          console.log("BC mount");
+        }
+
+        componentWillUnmount() {
+          console.log("BC unmount");
+        }
+
+        render() {
+          return this.props.children;
+        }
+      }
+      class CC extends Component {
+        componentDidMount() {
+          console.log("CC mount");
+        }
+
+        componentWillUnmount() {
+          console.log("CC unmount");
+        }
+
+        render() {
+          return this.props.children;
+        }
+      }
+
+      const App = () => {
+        const [c, add] = useCounter();
+
+        return (
+          <div>
+            {c % 2 === 0 ? (
+              <A>
+                <B>
+                  <C>1</C>
+                </B>
+              </A>
+            ) : (
+              <AC>
+                <BC>
+                  <CC>2</CC>
+                </BC>
+              </AC>
+            )}
+            <br />
+            <button onClick={add}>add</button>
+          </div>
+        );
+      };
+
+      ReactDOM.render(<App />, root);
+    </script>
+  </body>
+</html>

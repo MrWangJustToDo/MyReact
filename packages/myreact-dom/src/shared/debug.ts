@@ -2,7 +2,6 @@ import { __my_react_internal__ } from "@my-react/react";
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
 import type { MyReactElement, MyReactHookNode, MyReactFiberNode, MixinMyReactClassComponent, MixinMyReactFunctionComponent, lazy } from "@my-react/react";
-import type { createReactive } from "@my-react/react-reactive";
 
 const { currentRunningFiber } = __my_react_internal__;
 
@@ -33,13 +32,10 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
 
 export const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isMemo__) {
-    const targetRender = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent | ReturnType<typeof createReactive>;
+    const targetRender = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
     let name = "";
     if (typeof targetRender === "function") {
       name = targetRender?.displayName || targetRender?.name || name;
-    }
-    if (typeof targetRender === "object") {
-      name = targetRender?.name || name;
     }
     return name ? `<Memo - (${name}) />` : `<Memo />`;
   }
@@ -48,11 +44,6 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     const typedRender = typedElementType?.render;
     const name = typedRender?.displayName || typedRender?.name || "";
     return name ? `<Lazy - (${name}) />` : `<Lazy />`;
-  }
-  if (fiber.type & NODE_TYPE.__isReactive__) {
-    const typedElementType = fiber.elementType as ReturnType<typeof createReactive>;
-    const name = typedElementType?.name || "";
-    return name ? `<Reactive - (${name}) />` : `<Reactive />`;
   }
   if (fiber.type & NODE_TYPE.__isPortal__) return `<Portal />`;
   if (fiber.type & NODE_TYPE.__isNullNode__) return `<Null />`;

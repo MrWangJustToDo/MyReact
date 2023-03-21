@@ -1,56 +1,50 @@
-import { currentReactiveInstance } from "../share";
+import { globalInstance } from "./feature";
 
 // hook api like `Vue`
 
 export const onBeforeMount = (cb: () => void) => {
-  const reactiveInstance = currentReactiveInstance.current;
-  if (reactiveInstance) {
-    reactiveInstance.beforeMountHooks.push(cb);
+  if (globalInstance) {
+    globalInstance.onBeforeMount.push(cb);
   } else {
     throw new Error("can not use hook without setup function");
   }
 };
 
 export const onMounted = (cb: () => void) => {
-  const reactiveInstance = currentReactiveInstance.current;
-  if (reactiveInstance) {
-    reactiveInstance.mountedHooks.push(cb);
+  if (globalInstance) {
+    globalInstance.onMounted.push(cb);
   } else {
     throw new Error("can not use hook without setup function");
   }
 };
 
 export const onBeforeUpdate = (cb: () => void) => {
-  const reactiveInstance = currentReactiveInstance.current;
-  if (reactiveInstance) {
-    reactiveInstance.beforeUpdateHooks.push(cb);
+  if (globalInstance) {
+    globalInstance.onBeforeUpdate.push(cb);
   } else {
     throw new Error("can not use hook without setup function");
   }
 };
 
 export const onUpdated = (cb: () => void) => {
-  const reactiveInstance = currentReactiveInstance.current;
-  if (reactiveInstance) {
-    reactiveInstance.updatedHooks.push(cb);
+  if (globalInstance) {
+    globalInstance.onUpdated.push(cb);
   } else {
     throw new Error("can not use hook without setup function");
   }
 };
 
 export const onBeforeUnmount = (cb: () => void) => {
-  const reactiveInstance = currentReactiveInstance.current;
-  if (reactiveInstance) {
-    reactiveInstance.beforeUnmountHooks.push(cb);
+  if (globalInstance) {
+    globalInstance.onBeforeUnmount.push(cb);
   } else {
     throw new Error("can not use hook without setup function");
   }
 };
 
 export const onUnmounted = (cb: () => void) => {
-  const reactiveInstance = currentReactiveInstance.current;
-  if (reactiveInstance) {
-    reactiveInstance.unmountedHooks.push(cb);
+  if (globalInstance) {
+    globalInstance.onUnmounted.push(cb);
   } else {
     throw new Error("can not use hook without setup function");
   }

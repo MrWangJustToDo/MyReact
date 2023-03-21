@@ -1,8 +1,7 @@
 import { isValidElement } from "@my-react/react";
-import { Consumer, ForwardRef, HOOK_TYPE, Lazy, Memo, Reactive, TYPEKEY } from "@my-react/react-shared";
+import { Consumer, ForwardRef, HOOK_TYPE, Lazy, Memo, TYPEKEY } from "@my-react/react-shared";
 
 import type { forwardRef, memo, MyReactElementNode, MyReactHookNode, MyReactObjectComponent, lazy, MyReactFiberNode } from "@my-react/react";
-import type { createReactive } from "@my-react/react-reactive";
 
 export const checkElementValid = (element: MyReactElementNode) => {
   if (isValidElement(element)) {
@@ -40,16 +39,6 @@ export const checkElementValid = (element: MyReactElementNode) => {
             if (CurrentTypedRawType.render[TYPEKEY] === Lazy) {
               throw new Error(`for now, the memo(lazy(loader fun)) is unSupport usage`);
             }
-          }
-        }
-        // check createReactive
-        if (typedRawType[TYPEKEY] === Reactive) {
-          const CurrentTypedRawType = rawType as ReturnType<typeof createReactive>;
-          if (element.props.children && typeof element.props.children !== "function") {
-            throw new Error("invalid type of children for <Reactive /> element");
-          }
-          if (CurrentTypedRawType.render && CurrentTypedRawType.render?.prototype.isMyReactComponent) {
-            throw new Error(`invalid render type for 'createReactive()', expect a render function, bug got a Element class`);
           }
         }
         // check lazy

@@ -46,9 +46,7 @@ export {
   ComputedFlags,
 } from "./api";
 
-export { createReactive, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated, MyReactReactiveInstance } from "./reactive";
-
-export { currentReactiveInstance } from "./share";
+export { createReactive, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated } from "./reactive";
 
 const version = __VERSION__;
 

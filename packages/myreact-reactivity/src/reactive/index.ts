@@ -48,4 +48,4 @@
  */
 export * from "./hook";
 export * from "./feature";
-export * from "./instance";
+// export * from "./instance";

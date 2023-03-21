@@ -25,7 +25,8 @@ export const Strict = Symbol.for("react.strict");
 // TODO
 export const KeepLive = Symbol.for("react.keep_live");
 
-export const Reactive = Symbol.for("react.reactive");
+// REMOVE
+// export const Reactive = Symbol.for("react.reactive");
 
 export const Scope = Symbol.for("react.scope");
 

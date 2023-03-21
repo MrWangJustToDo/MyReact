@@ -22,6 +22,5 @@ export * from "./runtimeGenerate";
 export * from "./runtimeHook";
 export * from "./runtimeMount";
 export * from "./runtimePlatform";
-export * from "./runtimeReactive";
 export * from "./runtimeScope";
 export * from "./runtimeUpdate";

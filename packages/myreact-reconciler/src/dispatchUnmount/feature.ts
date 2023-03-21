@@ -1,34 +1,14 @@
-import { pauseTracking, pauseTrigger, resetTracking, resetTrigger } from "@my-react/react-reactive";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { unmountFiberNode } from "../runtimeFiber";
-import { generateFiberToList, NODE_TYPE } from "../share";
+import { generateFiberToList } from "../share";
 
 import { flatten } from "./tools";
 
 import type { RenderDispatch } from "../renderDispatch";
 import type { RenderPlatform } from "../runtimePlatform";
 import type { MyReactFiberNode } from "@my-react/react";
-import type { MyReactReactiveInstance } from "@my-react/react-reactive";
 import type { ListTree } from "@my-react/react-shared";
-
-export const reactiveInstanceBeforeUnmount = (list: ListTree<MyReactFiberNode>) => {
-  list.listToHead((f) => {
-    if (f.type & NODE_TYPE.__isReactive__) {
-      pauseTracking();
-
-      pauseTrigger();
-
-      const reactiveInstance = f.instance as MyReactReactiveInstance;
-
-      reactiveInstance.beforeUnmountHooks.forEach((f) => f?.());
-
-      resetTrigger();
-
-      resetTracking();
-    }
-  });
-};
 
 export const defaultGenerateUnmountArrayMap = (
   fiber: MyReactFiberNode,
@@ -40,8 +20,6 @@ export const defaultGenerateUnmountArrayMap = (
   const exist = map.get(fiber) || [];
 
   const newPending = allUnmount.map(generateFiberToList);
-
-  newPending.forEach(reactiveInstanceBeforeUnmount);
 
   exist.push(...newPending);
 

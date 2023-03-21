@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-reconciler",
   "description": "@my-react/react-reconciler",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
@@ -38,7 +38,6 @@
   "dependencies": {
     "@my-react/react": "latest",
     "@my-react/react-shared": "latest",
-    "@my-react/react-reactive": "latest",
     "lodash": "^4.17.21"
   }
 }

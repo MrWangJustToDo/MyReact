@@ -2,6 +2,7 @@ import { checkIsSameType, NODE_TYPE } from "../share";
 
 import type { MyReactElementNode, MyReactFiberNode } from "@my-react/react";
 
+// TODO
 export const defaultGenerateKeepLiveMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, MyReactFiberNode[]>) => {
   if (fiber.type & NODE_TYPE.__isKeepLiveNode__) {
     const cacheArray = map.get(fiber) || [];
@@ -14,7 +15,6 @@ export const defaultGetKeepLiveFiber = (fiber: MyReactFiberNode, map: WeakMap<My
   const cacheArray = map.get(fiber) || [];
   // <KeepLive> component only have one child;
   const currentChild = fiber.child;
-  // TODO
   // just a normal update
   if (checkIsSameType(currentChild, element)) return currentChild;
 

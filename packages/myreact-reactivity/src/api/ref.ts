@@ -2,7 +2,7 @@ import { isObject, isArray } from "@my-react/react-shared";
 
 import { trackEffects, triggerEffects } from "./effect";
 import { isReactive, reactive } from "./reactive";
-import { RefFlags } from "./symbol";
+import { ReactiveFlags, RefFlags } from "./symbol";
 
 import type { ReactiveEffect } from "./effect";
 
@@ -50,7 +50,10 @@ export function unRef<T>(refObject: Ref<T> | T) {
   return refObject;
 }
 
-export const unwrapRefGerHandler = (target: Record<string, unknown>, key: string, receiver: unknown) => unRef(Reflect.get(target, key, receiver));
+export const unwrapRefGerHandler = (target: Record<string, unknown>, key: string, receiver: unknown) => {
+  if (key === ReactiveFlags.Reactive_key) return true;
+  return unRef(Reflect.get(target, key, receiver));
+};
 
 export const unwrapRefSetHandler = (target: Record<string, unknown>, key: string, value: unknown, receiver: unknown) => {
   const oldValue = target[key as string];
@@ -64,13 +67,13 @@ export const unwrapRefSetHandler = (target: Record<string, unknown>, key: string
   }
 };
 
-export function proxyRefs(objectWithRefs: Record<string, unknown>) {
+export function proxyRefs<T extends Record<string, unknown> = any>(objectWithRefs: T): UnwrapRef<T> {
   if (isObject(objectWithRefs)) {
-    if (isReactive(objectWithRefs)) return objectWithRefs;
+    if (isReactive(objectWithRefs)) return objectWithRefs as UnwrapRef<T>;
     return new Proxy(objectWithRefs, {
       get: unwrapRefGerHandler,
       set: unwrapRefSetHandler,
-    });
+    }) as UnwrapRef<T>;
   }
   throw new Error("expect a object but received a plain value");
 }

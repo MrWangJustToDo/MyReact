@@ -102,15 +102,18 @@
       };
 
       const Bar = createReactive({
-        setup(p) {
-          console.log(p);
+        setup() {
           const updateCount = ref(0);
           onBeforeUpdate(() => {
+            console.log("before update");
             updateCount.value++;
+          });
+          onUpdated(() => {
+            console.log("updated", updateCount.value);
           });
           return { updateCount };
         },
-        render: ({ updateCount }, { foo }) => (
+        render: ({ updateCount, foo }) => (
           <div>
             props: {foo.a}, update: {updateCount}
           </div>
@@ -178,7 +181,7 @@
                   <br />
                   <button onClick={addA}>add</button>
                   <br />
-                  <MemoBar foo={foo} />
+                  <Bar foo={foo} />
                   <MemoBar foo={obj} />
                 </>
               )}

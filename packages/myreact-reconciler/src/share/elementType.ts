@@ -1,30 +1,15 @@
 import { isValidElement, __my_react_internal__ } from "@my-react/react";
-import {
-  Consumer,
-  ForwardRef,
-  Fragment,
-  KeepLive,
-  Lazy,
-  Memo,
-  Portal,
-  Provider,
-  Reactive,
-  Scope,
-  Strict,
-  Suspense,
-  Comment,
-  TYPEKEY,
-} from "@my-react/react-shared";
+import { Consumer, ForwardRef, Fragment, KeepLive, Lazy, Memo, Portal, Provider, Scope, Strict, Suspense, Comment, TYPEKEY } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "./fiberType";
 
-import type { MyReactElementNode, MyReactObjectComponent, forwardRef, memo } from "@my-react/react";
+import type { MyReactElementNode, MyReactObjectComponent, forwardRef, memo, MyReactElementType } from "@my-react/react";
 
 const { currentRunningFiber } = __my_react_internal__;
 
 export function getElementTypeFromElement(element: MyReactElementNode) {
   let nodeType = NODE_TYPE.__initial__;
-  let elementType = undefined;
+  let elementType: MyReactElementType = undefined;
   if (isValidElement(element)) {
     const rawType = element.type;
     elementType = rawType;
@@ -51,9 +36,6 @@ export function getElementTypeFromElement(element: MyReactElementNode) {
         case Lazy:
           nodeType |= NODE_TYPE.__isLazy__;
           break;
-        case Reactive:
-          nodeType |= NODE_TYPE.__isReactive__;
-          break;
         default:
           throw new Error(`invalid object element type ${typedRawType[TYPEKEY]?.toString()}`);
       }
@@ -61,8 +43,6 @@ export function getElementTypeFromElement(element: MyReactElementNode) {
         if (elementType[TYPEKEY] === ForwardRef) {
           nodeType |= NODE_TYPE.__isForwardRef__;
           elementType = (elementType as ReturnType<typeof forwardRef>).render;
-        } else if (elementType[TYPEKEY] === Reactive) {
-          nodeType |= NODE_TYPE.__isReactive__;
         }
       }
       if (typeof elementType === "function") {

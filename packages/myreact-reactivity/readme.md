@@ -2,7 +2,6 @@
 
 this package provider a Vue like api for @my-react, you can use it to create reactive hook and component
 
-
 ```tsx
 import { reactive, createReactive, onMounted, onUnmounted } from "@my-react/react-reactive";
 
@@ -22,7 +21,6 @@ const useReactiveApi_Position = () => {
 };
 
 const Reactive1 = createReactive({
-  contextType: null,
   setup(props, context) {
     const position = useReactiveApi_Position();
     const data = reactive({ a: 1 });
@@ -35,7 +33,7 @@ const Reactive1 = createReactive({
 const App = () => {
   return (
     <Reactive1 title="hello">
-      {({ data, click, position }, { title }) => (
+      {({ data, click, position, title }) => (
         <>
           <p>{data.a}</p>
           <button onClick={click}>click</button>

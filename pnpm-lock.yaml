@@ -117,12 +117,10 @@ importers:
   packages/myreact-dom:
     specifiers:
       '@my-react/react': latest
-      '@my-react/react-reactive': latest
       '@my-react/react-reconciler': latest
       '@my-react/react-shared': latest
     dependencies:
       '@my-react/react': link:../myreact
-      '@my-react/react-reactive': link:../myreact-reactivity
       '@my-react/react-reconciler': link:../myreact-reconciler
       '@my-react/react-shared': link:../myreact-shared
 
@@ -145,12 +143,10 @@ importers:
   packages/myreact-reconciler:
     specifiers:
       '@my-react/react': latest
-      '@my-react/react-reactive': latest
       '@my-react/react-shared': latest
       lodash: ^4.17.21
     dependencies:
       '@my-react/react': link:../myreact
-      '@my-react/react-reactive': link:../myreact-reactivity
       '@my-react/react-shared': link:../myreact-shared
       lodash: 4.17.21
 

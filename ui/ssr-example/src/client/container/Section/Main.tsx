@@ -51,14 +51,28 @@ export const MainSection = () => {
           <Text fontSize="sm" color="lightTextColor" marginY="2">
             This website is built with @my-react
           </Text>
-          <HStack marginTop="14" spacing="8" display={{ base: "none", md: "flex" }}>
-            <Button variant="solid" borderRadius="full" colorScheme="messenger" onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/Blog" : "/Blog")}>
+          <HStack marginTop="14" spacing="8" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "14px", xl: "16px" }}>
+            <Button
+              variant="solid"
+              fontSize="inherit"
+              borderRadius="full"
+              colorScheme="messenger"
+              onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/Blog" : "/Blog")}
+            >
               View Example
             </Button>
-            <Button variant="solid" borderRadius="full" colorScheme="whatsapp" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
+            <Button
+              variant="solid"
+              fontSize="inherit"
+              borderRadius="full"
+              colorScheme="whatsapp"
+              as="a"
+              href="https://github.com/MrWangJustToDo/MyReact"
+              target="_blank"
+            >
               View on GitHub
             </Button>
-            <Button variant="solid" borderRadius="full" as="a" href="https://www.npmjs.com/search?q=%40my-react" target="_blank">
+            <Button variant="solid" fontSize="inherit" borderRadius="full" as="a" href="https://www.npmjs.com/search?q=%40my-react" target="_blank">
               View on NPM
             </Button>
           </HStack>

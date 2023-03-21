@@ -107,6 +107,9 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
           console.warn(`duplicate key ${key} in Component props and reactive state, please fix this usage`);
         }
       }
+      if (props["children"] && typeof props["children"] !== "function") {
+        throw new Error("the component which return from createReactive() expect a function children");
+      }
     }
 
     const [, setState] = useState(() => 0);

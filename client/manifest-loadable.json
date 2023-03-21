@@ -1,15 +1,15 @@
 {
   "name": "client",
-  "hash": "0694443a790b5cb633bb",
+  "hash": "009758713c06e959b989",
   "publicPath": "client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
   "assetsByChunkName": {
     "main": [
       "main-b92f61c69cc226694525.css",
-      "main-9af5e21cbdd9ceb83365.js"
+      "main-680ea8c52abdc6ce0e61.js"
     ],
     "runtime": [
-      "runtime-97a172452e3c13bd5432.js"
+      "runtime-f88d8c3069136bf92e98.js"
     ],
     "common-Layout": [
       "common-Layout-81a575c573ab41d69e41.js"
@@ -21,7 +21,7 @@
       "pages-404-64fe3388a337fbc3e034.js"
     ],
     "pages-Blog": [
-      "pages-Blog-823d123c42da1ef219fb.js"
+      "pages-Blog-aa650b9aee8cbbc731bf.js"
     ],
     "pages-Hot": [
       "pages-Hot-b14cecb89539f6c18719.js"
@@ -107,18 +107,18 @@
     },
     {
       "type": "asset",
-      "name": "main-9af5e21cbdd9ceb83365.js",
-      "size": 167378,
+      "name": "main-680ea8c52abdc6ce0e61.js",
+      "size": 167379,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "9af5e21cbdd9ceb83365",
+        "contenthash": "680ea8c52abdc6ce0e61",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "main-9af5e21cbdd9ceb83365.js.map"
+          "sourceMap": "main-680ea8c52abdc6ce0e61.js.map"
         }
       },
       "chunkNames": [
@@ -196,18 +196,18 @@
     },
     {
       "type": "asset",
-      "name": "pages-Blog-823d123c42da1ef219fb.js",
-      "size": 37363,
+      "name": "pages-Blog-aa650b9aee8cbbc731bf.js",
+      "size": 37490,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "823d123c42da1ef219fb",
+        "contenthash": "aa650b9aee8cbbc731bf",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "pages-Blog-823d123c42da1ef219fb.js.map"
+          "sourceMap": "pages-Blog-aa650b9aee8cbbc731bf.js.map"
         }
       },
       "chunkNames": [
@@ -338,18 +338,18 @@
     },
     {
       "type": "asset",
-      "name": "runtime-97a172452e3c13bd5432.js",
+      "name": "runtime-f88d8c3069136bf92e98.js",
       "size": 3507,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "97a172452e3c13bd5432",
+        "contenthash": "f88d8c3069136bf92e98",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "runtime-97a172452e3c13bd5432.js.map"
+          "sourceMap": "runtime-f88d8c3069136bf92e98.js.map"
         }
       },
       "chunkNames": [
@@ -479,7 +479,7 @@
       ],
       "assets": [
         {
-          "name": "runtime-97a172452e3c13bd5432.js"
+          "name": "runtime-f88d8c3069136bf92e98.js"
         },
         {
           "name": "vendor-ui-b0caa2ee0d210024b238.js"
@@ -503,7 +503,7 @@
           "name": "main-b92f61c69cc226694525.css"
         },
         {
-          "name": "main-9af5e21cbdd9ceb83365.js"
+          "name": "main-680ea8c52abdc6ce0e61.js"
         }
       ],
       "filteredAssets": 0,
@@ -675,7 +675,7 @@
           "name": "vendor-lodash-0fe738f8eb535feacc71.js"
         },
         {
-          "name": "pages-Blog-823d123c42da1ef219fb.js"
+          "name": "pages-Blog-aa650b9aee8cbbc731bf.js"
         }
       ],
       "filteredAssets": 0,
@@ -715,7 +715,7 @@
           "name": "vendor-lodash-0fe738f8eb535feacc71.js"
         },
         {
-          "name": "pages-Blog-823d123c42da1ef219fb.js"
+          "name": "pages-Blog-aa650b9aee8cbbc731bf.js"
         }
       ],
       "filteredAssets": 0,
@@ -854,13 +854,13 @@
       "id": 179,
       "files": [
         "main-b92f61c69cc226694525.css",
-        "main-9af5e21cbdd9ceb83365.js"
+        "main-680ea8c52abdc6ce0e61.js"
       ]
     },
     {
       "id": 666,
       "files": [
-        "runtime-97a172452e3c13bd5432.js"
+        "runtime-f88d8c3069136bf92e98.js"
       ]
     },
     {
@@ -884,7 +884,7 @@
     {
       "id": 587,
       "files": [
-        "pages-Blog-823d123c42da1ef219fb.js"
+        "pages-Blog-aa650b9aee8cbbc731bf.js"
       ]
     },
     {

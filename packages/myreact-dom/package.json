@@ -4,6 +4,7 @@
   "version": "0.1.4",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
+  "unpkg": "./dist/umd/index.development.js",
   "files": [
     "dist",
     "index.js"
@@ -59,6 +60,10 @@
       }
     ]
   },
+  "keywords": [
+    "react-dom",
+    "react-dom like"
+  ],
   "dependencies": {
     "@my-react/react": "latest",
     "@my-react/react-shared": "latest",

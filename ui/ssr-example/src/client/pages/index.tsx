@@ -1,5 +1,5 @@
 import { ScrollContent, ScrollControl, ScrollControlTool, ScrollSection, ScrollToTop } from "@client/component";
-import { MainSection } from "@client/container/Section";
+import { ApiSection, MainSection } from "@client/container/Section";
 
 const Page = () => {
   return (
@@ -8,6 +8,10 @@ const Page = () => {
         <ScrollContent>
           <ScrollSection>
             <MainSection />
+          </ScrollSection>
+
+          <ScrollSection>
+            <ApiSection />
           </ScrollSection>
 
           {/* <ScrollSection>

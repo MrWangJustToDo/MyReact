@@ -44,7 +44,7 @@ const _Header = () => {
               Home
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/Blog" : "/Blog")}>
-              Blog
+              Example
             </Button>
             <ColorMode />
             <Button variant="ghost" size="sm" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">

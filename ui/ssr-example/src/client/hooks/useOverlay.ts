@@ -8,7 +8,7 @@ import { useUpdate } from "./useUpdate";
 
 import type React from "react";
 
-const ROOT_BODY = "__next";
+const ROOT_BODY = "__content__";
 
 const OVERLAY_TIMER = "__overlay_back";
 

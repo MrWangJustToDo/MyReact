@@ -19,6 +19,8 @@ type LifeCycle = {
   onUnmounted: Array<() => void>;
 
   hasHookInstall: boolean;
+
+  canUpdateComponent: boolean;
 };
 
 export let globalInstance: LifeCycle | null = null;
@@ -27,24 +29,13 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
   setup: () => S;
   render?: (props: UnwrapRef<S> & P) => MyReactElementNode;
 }) {
-  const instance: LifeCycle = {
-    onBeforeMount: [],
-    onBeforeUpdate: [],
-    onBeforeUnmount: [],
-    onMounted: [],
-    onUpdated: [],
-    onUnmounted: [],
-    hasHookInstall: false,
-  };
   const setup = typeof props === "function" ? props : props.setup;
 
   const render = typeof props === "function" ? null : props.render;
 
-  let canUpdate = true;
-
-  class ForBeforeUnmount extends Component<{ children: MyReactElementNode }> {
+  class ForBeforeUnmount extends Component<{ ["$$__instance__$$"]: LifeCycle; children: MyReactElementNode }> {
     componentWillUnmount(): void {
-      instance.onBeforeUnmount.forEach((f) => f());
+      this.props.$$__instance__$$.onBeforeUnmount.forEach((f) => f());
     }
 
     render() {
@@ -52,9 +43,9 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     }
   }
 
-  class ForBeforeMount extends Component<{ children: MyReactElementNode }> {
+  class ForBeforeMount extends Component<{ ["$$__instance__$$"]: LifeCycle; children: MyReactElementNode }> {
     componentDidMount(): void {
-      instance.onBeforeMount.forEach((f) => f());
+      this.props.$$__instance__$$.onBeforeMount.forEach((f) => f());
     }
 
     render() {
@@ -63,40 +54,56 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
   }
 
   class Render extends Component<
-    { ["$$__trigger__$$"]: () => void; ["$$__reactiveState__$$"]: UnwrapRef<S>; children: (props: UnwrapRef<S> & P) => MyReactElementNode } & P
+    {
+      ["$$__trigger__$$"]: () => void;
+      ["$$__instance__$$"]: LifeCycle;
+      ["$$__reactiveState__$$"]: UnwrapRef<S>;
+      children: (props: UnwrapRef<S> & P) => MyReactElementNode;
+    } & P
   > {
     componentDidMount(): void {
-      instance.onMounted.forEach((f) => f());
+      this.props.$$__instance__$$.onMounted.forEach((f) => f());
     }
 
     componentDidUpdate(): void {
-      instance.onUpdated.forEach((f) => f());
+      this.props.$$__instance__$$.onUpdated.forEach((f) => f());
     }
 
     componentWillUnmount(): void {
-      instance.onUnmounted.forEach((f) => f());
+      this.props.$$__instance__$$.onUnmounted.forEach((f) => f());
     }
 
     shouldComponentUpdate(): boolean {
-      canUpdate = false;
-      instance.onBeforeUpdate.forEach((f) => f());
-      canUpdate = true;
+      this.props.$$__instance__$$.canUpdateComponent = false;
+      this.props.$$__instance__$$.onBeforeUpdate.forEach((f) => f());
+      this.props.$$__instance__$$.canUpdateComponent = true;
       return true;
     }
 
     effect = new ReactiveEffect(() => {
-      const { children, $$__trigger__$$, $$__reactiveState__$$, ...last } = this.props;
+      const { children, $$__trigger__$$, $$__reactiveState__$$, $$__instance__$$, ...last } = this.props;
       const targetRender = (render || children) as (props: UnwrapRef<S> & P) => MyReactElementNode;
       const element = targetRender?.({ ...last, ...$$__reactiveState__$$ } as UnwrapRef<S> & P) || null;
       return element;
     }, this.props.$$__trigger__$$);
 
     render() {
-      return createElement(ForBeforeMount, { children: this.effect.run() });
+      return createElement(ForBeforeMount, { ["$$__instance__$$"]: this.props.$$__instance__$$, children: this.effect.run() });
     }
   }
 
   const MyReactReactiveComponent = (props: P) => {
+    const [instance] = useState(() => ({
+      onBeforeMount: [],
+      onBeforeUpdate: [],
+      onBeforeUnmount: [],
+      onMounted: [],
+      onUpdated: [],
+      onUnmounted: [],
+      hasHookInstall: false,
+      canUpdateComponent: true,
+    }));
+
     const state = useMemo(() => {
       globalInstance = instance;
 
@@ -121,13 +128,14 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     const [, setState] = useState(() => 0);
 
     const updateCallback = useCallback(() => {
-      if (canUpdate) {
+      if (instance.canUpdateComponent) {
         setState((i) => i + 1);
       }
     }, []);
 
     return createElement(ForBeforeUnmount, {
-      children: createElement(Render, { ...props, ["$$__trigger__$$"]: updateCallback, ["$$__reactiveState__$$"]: state }),
+      ["$$__instance__$$"]: instance,
+      children: createElement(Render, { ...props, ["$$__trigger__$$"]: updateCallback, ["$$__reactiveState__$$"]: state, ["$$__instance__$$"]: instance }),
     });
   };
 

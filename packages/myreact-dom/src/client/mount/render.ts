@@ -5,7 +5,7 @@ import { once } from "@my-react/react-shared";
 import { ClientDomPlatform, ClientDomDispatch, ClientDomController } from "@my-react-dom-client";
 import { startRender, unmountComponentAtNode, DomScope } from "@my-react-dom-shared";
 
-import type { MyReactElement, MyReactFiberNode, RenderScope, MyReactFiberNodeRoot } from "@my-react/react";
+import type { MyReactElement, MyReactFiberNode, RenderScope, MyReactFiberNodeRoot, LikeJSX } from "@my-react/react";
 import type { RenderDispatch, RenderPlatform } from "@my-react/react-reconciler";
 
 export type RenderContainer = Element & {
@@ -35,8 +35,12 @@ export const onceLogLegacyLifeCycleMode = once(() => {
   console.log("[@my-react] legacy 'UNSAFE_' lifeCycle have been enabled!");
 });
 
-export const render = (element: MyReactElement, container: RenderContainer) => {
+export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) => {
+  const container = _container as RenderContainer;
+
   const containerFiber = container.__fiber__;
+
+  const element = _element as MyReactElement;
 
   if (containerFiber instanceof MyReactFiberNodeClass) {
     containerFiber.root.renderScope.isAppCrash = false;

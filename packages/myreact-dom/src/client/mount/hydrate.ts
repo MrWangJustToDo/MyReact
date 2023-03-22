@@ -7,7 +7,7 @@ import { startRender, startRenderAsync, DomScope } from "@my-react-dom-shared";
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogNewStrictMode } from "./render";
 
 import type { RenderContainer } from "./render";
-import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
+import type { MyReactElement, MyReactFiberNodeRoot , LikeJSX} from "@my-react/react";
 
 const { MyReactFiberNode } = __my_react_internal__;
 
@@ -147,9 +147,10 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
   renderScope.isHydrateRender = false;
 };
 
-export function hydrate(element: MyReactElement, container: Partial<RenderContainer>): void;
-export function hydrate(element: MyReactElement, container: Partial<RenderContainer>, asyncRender: true): Promise<void>;
-export function hydrate(element: MyReactElement, container: Partial<RenderContainer>, asyncRender?: boolean) {
+export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>): void;
+export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>, asyncRender: true): Promise<void>;
+export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>, asyncRender?: boolean) {
+  const element = _element as MyReactElement;
   if (asyncRender) {
     return hydrateAsync(element, container as RenderContainer);
   } else {

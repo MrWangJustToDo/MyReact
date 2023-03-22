@@ -109,6 +109,7 @@ export type { RenderController } from "./renderController";
 export type { CreateHookParams, MyReactHookNode, Action, Reducer } from "./hook";
 
 export type {
+  LikeJSX,
   Props,
   CreateElementProps,
   MyReactElement,

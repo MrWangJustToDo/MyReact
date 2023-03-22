@@ -50,6 +50,17 @@ export type MyReactElementType<P extends Record<string, unknown> = any, S extend
   | MixinMyReactClassComponent<P, S, C>
   | MixinMyReactFunctionComponent<P>;
 
+export interface LikeJSX<T extends MyReactElementType = any, P extends Record<string, unknown> = any, Key extends string | number = any> {
+  type: T;
+  props: P;
+  key: Key | null;
+  ref?: CreateElementProps["ref"];
+  _owner?: CreateElementProps["_owner"];
+  _self?: CreateElementProps["_self"];
+  _source?: CreateElementProps["_source"];
+  _store?: Record<string, unknown>;
+}
+
 export type MyReactElement = ReturnType<typeof createMyReactElement>;
 
 export type MyReactElementNode = MyReactElement | ((p: any) => MyReactElementNode) | string | number | boolean | null | undefined;

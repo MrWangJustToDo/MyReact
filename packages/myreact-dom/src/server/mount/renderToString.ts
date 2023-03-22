@@ -4,7 +4,7 @@ import { CustomRenderController, initialFiberNode, initialPropsFromELement, init
 import { PlainElement, ServerDomDispatch, ServerDomPlatform } from "@my-react-dom-server";
 import { DomScope, startRender, startRenderAsync } from "@my-react-dom-shared";
 
-import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
+import type { MyReactElement, MyReactFiberNodeRoot, LikeJSX } from "@my-react/react";
 
 const { MyReactFiberNode } = __my_react_internal__;
 
@@ -96,9 +96,11 @@ const renderToStringAsync = async (element: MyReactElement) => {
   return container.toString();
 };
 
-export function renderToString(element: MyReactElement): string;
-export function renderToString(element: MyReactElement, asyncRender: true): Promise<string>;
-export function renderToString(element: MyReactElement, asyncRender?: boolean) {
+export function renderToString(_element: LikeJSX): string;
+export function renderToString(_element: LikeJSX, asyncRender: true): Promise<string>;
+export function renderToString(_element: LikeJSX, asyncRender?: boolean) {
+  const element = _element as MyReactElement;
+
   if (asyncRender) {
     return renderToStringAsync(element);
   } else {

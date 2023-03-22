@@ -4,7 +4,7 @@ import { CustomRenderController, initialFiberNode, initialPropsFromELement, init
 import { ServerStreamDispatch, ServerStreamPlatform } from "@my-react-dom-server";
 import { DomScope, startRender, startRenderAsync } from "@my-react-dom-shared";
 
-import type { MyReactElement, MyReactFiberNodeRoot } from "@my-react/react";
+import type { MyReactElement, MyReactFiberNodeRoot , LikeJSX} from "@my-react/react";
 import type { SimpleReadable } from "@my-react-dom-server";
 import type { Readable } from "stream";
 
@@ -94,13 +94,15 @@ const renderToStreamAsync = <T extends SimpleReadable>(element: MyReactElement, 
   return stream;
 };
 
-export function renderToNodeStream(element: MyReactElement): Readable;
-export function renderToNodeStream(element: MyReactElement, asyncRender: true): Readable;
-export function renderToNodeStream(element: MyReactElement, asyncRender?: boolean) {
+export function renderToNodeStream(_element: LikeJSX): Readable;
+export function renderToNodeStream(_element: LikeJSX, asyncRender: true): Readable;
+export function renderToNodeStream(_element: LikeJSX, asyncRender?: boolean) {
   const temp = [];
   (temp as any).destroy = () => {
     void 0;
   };
+
+  const element = _element as MyReactElement;
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-empty-function
   const stream = typeof window === "undefined" ? new (require("stream").Readable)({ read() {} }) : temp;

@@ -4,6 +4,8 @@ export const getIsMiddleware = memoize(() => (__SERVER__ ? JSON.parse(process.en
 
 export const getIsSSR = memoize(() => (__SERVER__ ? JSON.parse(process.env.SSR || "false") : window.__ENV__.isSSR));
 
+export const getIsStream = memoize(() => (__SERVER__ ? JSON.parse(process.env.STREAM || "false") : window.__ENV__.isSTREAM));
+
 export const getIsAnimateRouter = memoize(() => (__SERVER__ ? JSON.parse(process.env.ANIMATE_ROUTER || "false") : window.__ENV__.isANIMATE_ROUTER));
 
 export const getIsP_CSR = memoize(() => (__SERVER__ ? false : window.__ENV__.isPURE_CSR));

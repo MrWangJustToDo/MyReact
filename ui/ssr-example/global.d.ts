@@ -15,6 +15,7 @@ declare global {
     __ENV__: {
       LANG: string;
       isSSR: boolean;
+      isSTREAM: boolean;
       isSTATIC: boolean;
       isPURE_CSR: boolean;
       isMIDDLEWARE: boolean;
@@ -32,6 +33,7 @@ declare global {
       DEV_PORT: string;
       WDS_PORT: string;
       PROD_PORT: string;
+      STREAM: string;
       SSR: string;
       CSR: string;
       REACT: "react" | "myreact";

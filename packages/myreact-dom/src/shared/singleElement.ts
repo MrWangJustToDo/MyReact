@@ -6,4 +6,5 @@ export const IS_SINGLE_ELEMENT = {
   param: true,
   meta: true,
   link: true,
+  base: true,
 };

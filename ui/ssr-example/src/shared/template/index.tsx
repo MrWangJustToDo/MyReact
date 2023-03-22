@@ -8,7 +8,7 @@ import type { HelmetServerState } from "react-helmet-async";
 export type HTMLProps = {
   env?: string;
   lang?: string;
-  children?: string;
+  children?: string | JSX.Element;
   preloadedState?: string;
   link?: ReactElement[];
   script?: ReactElement[];

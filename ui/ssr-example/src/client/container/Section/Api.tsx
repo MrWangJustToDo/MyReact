@@ -12,7 +12,7 @@ const data = [
   { "@my-react/react": "Children", "@my-react/react-dom": "findDOMNode", "@my-react/react-reactive": "computed" },
   { "@my-react/react": "forwardRef", "@my-react/react-dom": "createPortal", "@my-react/react-reactive": "watch" },
   { "@my-react/react": "lazy", "@my-react/react-dom": "unmountComponentAtNode", "@my-react/react-reactive": "onBeforeMount" },
-  { "@my-react/react": "createContext", "@my-react/react-dom": "renderToStream(TODO)", "@my-react/react-reactive": "onBeforeUnmount" },
+  { "@my-react/react": "createContext", "@my-react/react-dom": "renderToNodeStream", "@my-react/react-reactive": "onBeforeUnmount" },
   { "@my-react/react": "createRef", "@my-react/react-dom": "", "@my-react/react-reactive": "onBeforeUpdate" },
   { "@my-react/react": "memo", "@my-react/react-dom": "", "@my-react/react-reactive": "onMounted" },
   { "@my-react/react": "Component", "@my-react/react-dom": "", "@my-react/react-reactive": "onUnmounted" },

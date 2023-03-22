@@ -21,7 +21,7 @@ export const generateStyleElements = (paths: GenerateType[]) => {
 export const generateScriptElements = (paths: GenerateType[]) =>
   paths.map((s, i) =>
     typeof s === "string"
-      ? createElement("script", { key: i, src: s, async: true })
+      ? createElement("script", { key: i, src: s, defer: true })
       : createElement("script", {
           key: i,
           src: s.path,

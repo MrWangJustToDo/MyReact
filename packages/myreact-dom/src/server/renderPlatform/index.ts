@@ -1,1 +1,2 @@
-export * from "./instance";
+export * from "./serverDomPlatform";
+export * from './serverStreamPlatform';

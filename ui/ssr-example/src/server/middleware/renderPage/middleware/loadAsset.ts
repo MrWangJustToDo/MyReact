@@ -12,7 +12,6 @@ import {
 } from "@server/util/webpackManifest";
 import { getIsSSR } from "@shared";
 
-
 import type { Middleware } from "../compose";
 
 export const loadAsset: Middleware = (next) => async (args) => {
@@ -36,7 +35,7 @@ export const loadAsset: Middleware = (next) => async (args) => {
 
   assets.stylesPath = mainStyles;
 
-  const allScriptsPath = mainScripts.concat(runtimeScripts);
+  const allScriptsPath = runtimeScripts.concat(mainScripts);
 
   assets.preloadScriptsPath = allScriptsPath;
 
@@ -70,7 +69,7 @@ export const loadAsset: Middleware = (next) => async (args) => {
 
     assets.stylesPath = assets.stylesPath.concat(dynamicStylesPath);
 
-    assets.scriptsPath = assets.scriptsPath.concat(dynamicScriptsPath);
+    assets.scriptsPath = dynamicScriptsPath.concat(assets.scriptsPath);
 
     assets.preloadScriptsPath = assets.preloadScriptsPath.concat(dynamicScriptsPath);
   }

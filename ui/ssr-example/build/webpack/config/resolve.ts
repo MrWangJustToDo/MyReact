@@ -20,6 +20,7 @@ export const resolveConfig = ({ env }: SafeGenerateActionProps): Configuration["
       ? {
           path: false,
           fs: false,
+          stream: false,
         }
       : undefined,
 });

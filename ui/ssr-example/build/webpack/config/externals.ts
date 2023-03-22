@@ -1,3 +1,4 @@
+import path from "path";
 import nodeExternals from "webpack-node-externals";
 
 import type { SafeGenerateActionProps } from "../type";
@@ -21,6 +22,7 @@ export const externalsConfig = ({ env }: SafeGenerateActionProps) =>
             // "@my-react/react-dom",
             // "@my-react/react-jsx",
           ],
+          additionalModuleDirs: [path.resolve(process.cwd(), "..", "..", "node_modules")],
         }),
       ]
     : [

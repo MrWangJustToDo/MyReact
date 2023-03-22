@@ -29,15 +29,21 @@ const baseStylesPath = (content: Record<string, string>, judge: (f: string) => b
     .filter(judge)
     .map((key) => content[key]);
 
-const baseScriptsPath = (content: Record<string, string>, judge: (f: string) => boolean) =>
+const baseScriptsPath = (content: Record<string, string>, judge: (f: string) => boolean, sort: (f: string) => number = () => 0) =>
   Object.keys(content)
     .filter((file) => content[file].endsWith(".js"))
     .filter(judge)
+    .sort(sort)
     .map((key) => content[key]);
 
 const mainStylesPath = (content: Record<string, string>) => baseStylesPath(content, (file) => file.startsWith("main") || file.startsWith("vendor"));
 
-const mainScriptsPath = (content: Record<string, string>) => baseScriptsPath(content, (f) => f.startsWith("main") || f.startsWith("vendor"));
+const mainScriptsPath = (content: Record<string, string>) =>
+  baseScriptsPath(
+    content,
+    (f) => f.startsWith("main") || f.startsWith("vendor"),
+    (f) => (f.startsWith("main") ? 0 : -1)
+  );
 
 const runtimeScriptsPath = (content: Record<string, string>) => baseScriptsPath(content, (f) => f.startsWith("runtime"));
 

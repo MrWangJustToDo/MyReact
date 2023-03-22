@@ -5,11 +5,10 @@ import { TextElement } from "./text";
 
 export class PlainElement {
   type: string;
-  className: string | null = null;
-  // attrs
   style: Record<string, string | null | undefined> = {};
   attrs: Record<string, string | boolean | null | undefined> = {};
   children: Array<TextElement | PlainElement | CommentStartElement | CommentEndElement | string> = [];
+
   constructor(type: string) {
     this.type = type;
   }
@@ -71,14 +70,9 @@ export class PlainElement {
     }
   }
 
-  serializeProps() {
-    if (this.className !== undefined && this.className !== null) return `class="${this.className}"`;
-    return "";
-  }
-
   serialize() {
-    const arr = [this.serializeProps(), this.serializeStyle(), this.serializeAttrs()].filter((i) => i.length);
-    if (arr.length) return " " + arr.reduce((p, c) => `${p} ${c}`) + " ";
+    const arr = [this.serializeStyle(), this.serializeAttrs()].filter((i) => i.length);
+    if (arr.length) return " " + arr.reduce((p, c) => `${p} ${c}`);
     return "";
   }
 

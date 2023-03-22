@@ -57,3 +57,23 @@ export const renderP_CSR = composeRender(
   const targetRender = webpackRender({ mode: "P_CSR" });
   await targetRender(args);
 });
+
+export const renderStreamSSR = composeRender(
+  generateGlobalEnv({
+    isSSR: true,
+    isSTREAM: true,
+    isSTATIC: getIsStaticGenerate(),
+    isPURE_CSR: false,
+    isMIDDLEWARE: getIsMiddleware(),
+    isDEVELOPMENT: __DEVELOPMENT__,
+    isANIMATE_ROUTER: getIsAnimateRouter(),
+    PUBLIC_API_HOST: __DEVELOPMENT__ ? process.env.PUBLIC_DEV_API_HOST : process.env.PUBLIC_PROD_API_HOST,
+  }),
+  initLang,
+  initStore,
+  loadStore,
+  loadLang
+)(async (args) => {
+  const targetRender = webpackRender({ mode: "StreamSSR" });
+  await targetRender(args);
+});

@@ -92,3 +92,8 @@ export const getSVGAttrKey = generateGetRawAttrKey(
     `xlink:href,xlink:role,xlink:show,xlink:title,xlink:type,xml:base,xml:lang,` +
     `xml:space,y,y1,y2,yChannelSelector,z,zoomAndPan`
 );
+
+export const propsToAttrMap: Record<string, string | undefined> = {
+  className: "class",
+  htmlFor: "for",
+};

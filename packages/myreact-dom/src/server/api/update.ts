@@ -1,7 +1,7 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
+import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, IS_UNIT_LESS_NUMBER, kebabCase, propsToAttrMap } from "@my-react-dom-shared";
 
 import { TextElement } from "./native";
 
@@ -15,12 +15,8 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       const props = fiber.pendingProps || {};
       Object.keys(props).forEach((key) => {
         if (isProperty(key)) {
-          if (key === "className") {
-            dom[key] = props[key] as string;
-          } else {
-            const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || key;
-            dom.setAttribute(attrKey as string, props[key] as string);
-          }
+          const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || propsToAttrMap[key] || key;
+          dom.setAttribute(attrKey as string, props[key] as string);
         }
         if (isStyle(key)) {
           const typedProps = (props[key] as Record<string, unknown>) || {};
@@ -42,5 +38,40 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
     }
 
     if (fiber.patch & PATCH_TYPE.__pendingUpdate__) fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
+  }
+};
+
+export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
+  if (fiber.type & NODE_TYPE.__isPlainNode__) {
+    const props = fiber.pendingProps || {};
+    const attrs = {};
+    const styles = {};
+    Object.keys(props).forEach((key) => {
+      if (props[key] === null || props[key] === undefined) return;
+      if (isProperty(key)) {
+        const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || propsToAttrMap[key] || key;
+        attrs[attrKey] = props[key];
+      }
+      if (isStyle(key)) {
+        const typedProps = (props[key] as Record<string, unknown>) || {};
+        Object.keys(typedProps).forEach((styleName) => {
+          if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedProps[styleName] === "number") {
+            styles[kebabCase(styleName)] = `${typedProps[styleName]}px`;
+            return;
+          }
+          styles[kebabCase(styleName)] = typedProps[styleName];
+        });
+      }
+    });
+    const serializedAttrs = Object.keys(attrs)
+      .map((key) => `${key}="${attrs[key]?.toString()}"`)
+      .reduce((p, c) => `${p} ${c}`, "");
+    let serializedStyles = Object.keys(styles)
+      .map((key) => `${key}: ${styles[key]?.toString()}`)
+      .reduce((p, c) => p + c, "");
+    serializedStyles = serializedStyles.length ? `style=${serializedStyles}` : "";
+    const arr = [serializedAttrs, serializedStyles].filter((i) => i.length);
+    if (arr.length) return arr.reduce((p, c) => `${p} ${c}`);
+    return "";
   }
 };

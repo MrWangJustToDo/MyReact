@@ -1,4 +1,4 @@
-import type { MyReactElement, MyReactElementNode, ArrayMyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
+import type { MyReactElementNode, ArrayMyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
 
 export const flatten = (children: MaybeArrayMyReactElementNode): ArrayMyReactElementNode => {
   if (Array.isArray(children)) {
@@ -10,13 +10,13 @@ export const flatten = (children: MaybeArrayMyReactElementNode): ArrayMyReactEle
 export const mapByJudge = <T extends MaybeArrayMyReactElementNode>(
   arrayLike: T,
   judge: (t: MyReactElementNode) => boolean,
-  action: (v: MyReactElement, index: number, array: ArrayMyReactElementNode) => MyReactElement
-) => {
+  action: (v: MyReactElementNode, index: number, array: ArrayMyReactElementNode) => MyReactElementNode
+): ArrayMyReactElementNode => {
   const arrayChildren = flatten(arrayLike);
 
   return arrayChildren.map((v, index) => {
     if (judge(v)) {
-      return action.call(null, v as MyReactElement, index, arrayChildren);
+      return action.call(null, v, index, arrayChildren);
     } else {
       return v;
     }

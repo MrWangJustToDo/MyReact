@@ -4,14 +4,26 @@ import { mapByJudge } from "./tool";
 
 import type { MyReactElement, MyReactElementNode, ArrayMyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
 
-export const map = (arrayLike: MaybeArrayMyReactElementNode, action: (child: MyReactElement, index: number) => MyReactElement) =>
-  mapByJudge(arrayLike, (v) => v !== undefined && v !== null, action);
+// TODO there are still some error for `map`/`toArray` key props
+export const map = (
+  arrayLike: MaybeArrayMyReactElementNode,
+  action: (child: MyReactElementNode, index: number, children: ArrayMyReactElementNode) => MyReactElementNode
+) => {
+  return mapByJudge(
+    arrayLike,
+    (v) => v !== undefined && v !== null,
+    (child, index, children) => {
+      const element = action(child, index, children);
+      return cloneElement(element, { key: typeof element === "object" ? (typeof element.key === "string" ? `${element.key}` : `.$${index}`) : null });
+    }
+  );
+};
 
 export const toArray = (arrayLike: MaybeArrayMyReactElementNode) => {
-  return map(arrayLike, (element, index) =>
-    cloneElement(element, {
-      key: typeof element?.key === "string" ? `.$${element.key}` : `.${index}`,
-    })
+  return mapByJudge(
+    arrayLike,
+    (v) => v !== undefined && v !== null,
+    (child, index) => cloneElement(child, { key: typeof child === "object" ? (typeof child?.key === "string" ? `${child.key}` : `.$${index}`) : null })
   );
 };
 

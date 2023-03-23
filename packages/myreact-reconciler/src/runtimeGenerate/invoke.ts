@@ -8,7 +8,14 @@ import { transformChildrenFiber } from "./generate";
 
 import type { RenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MyReactFiberNode, MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext , forwardRef} from "@my-react/react";
+import type {
+  MyReactFiberNode,
+  MyReactElementNode,
+  MixinMyReactFunctionComponent,
+  MaybeArrayMyReactElementNode,
+  createContext,
+  forwardRef,
+} from "@my-react/react";
 
 const { currentHookDeepIndex, currentFunctionFiber, currentComponentFiber } = __my_react_internal__;
 
@@ -103,7 +110,8 @@ export const nextWorkLazySync = async (fiber: MyReactFiberNode) => {
 
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
   // for a comment element, will not have any children;
-  if (isValidElement(fiber.element) && !isCommentElement(fiber)) {
+  // empty node normally a invalid node
+  if (isValidElement(fiber.element) && !(fiber.type & NODE_TYPE.__isEmptyNode__) && !isCommentElement(fiber)) {
     const { children } = fiber.pendingProps;
 
     const childrenFiber = transformChildrenFiber(fiber, children);
@@ -156,7 +164,6 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 export const runtimeNextWork = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isDynamicNode__) return nextWorkComponent(fiber);
   if (fiber.type & NODE_TYPE.__isLazy__) return nextWorkLazy(fiber);
-  if (fiber.type & NODE_TYPE.__isContextProvider__) return nextWorkNormal(fiber);
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);
   return nextWorkNormal(fiber);
 };
@@ -164,7 +171,6 @@ export const runtimeNextWork = (fiber: MyReactFiberNode) => {
 export const runtimeNextWorkAsync = async (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isDynamicNode__) return nextWorkComponent(fiber);
   if (fiber.type & NODE_TYPE.__isLazy__) return await nextWorkLazySync(fiber);
-  if (fiber.type & NODE_TYPE.__isContextProvider__) return nextWorkNormal(fiber);
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);
   return nextWorkNormal(fiber);
 };

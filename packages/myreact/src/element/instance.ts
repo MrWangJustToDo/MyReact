@@ -192,6 +192,7 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
   if (element === null || element === undefined) {
     throw new Error("cloneElement(...) need a valid element as params");
   }
+  if (typeof element !== "object") return element;
   // from react source code
   element = element as MyReactElement;
   const props = Object.assign({}, element.props);
@@ -203,18 +204,24 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
   let owner = element._owner;
   if (config !== null && config !== undefined) {
     const { ref: _ref, key: _key, __self, __source, ...resProps } = config;
+
     if (_ref !== undefined) {
       ref = _ref;
       owner = currentComponentFiber.current;
     }
+
     if (_key !== undefined) {
       key = _key + "";
     }
+
     let defaultProps: Record<string, unknown> | undefined = {};
+
     if (typeof element.type === "function" || typeof element.type === "object") {
       const typedType = element.type as MixinMyReactClassComponent<P, S, C> | MixinMyReactFunctionComponent<P>;
+
       defaultProps = typedType?.defaultProps;
     }
+
     for (const key in resProps) {
       if (Object.prototype.hasOwnProperty.call(resProps, key)) {
         if (resProps[key] === undefined && defaultProps) {
@@ -230,14 +237,13 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
 
   if (childrenLength > 1) {
     children = Array.from(arguments).slice(2);
-    if (__DEV__) {
-      checkArrayChildrenKey(children as ArrayMyReactElementNode);
-    }
+
+    if (__DEV__) checkArrayChildrenKey(children as ArrayMyReactElementNode);
+
     props.children = children;
   } else if (childrenLength === 1) {
-    if (__DEV__) {
-      checkSingleChildrenKey(children as MyReactElementNode);
-    }
+    if (__DEV__) checkSingleChildrenKey(children as MyReactElementNode);
+
     props.children = children;
   }
 
@@ -251,9 +257,7 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
     _owner: owner,
   });
 
-  if (__DEV__) {
-    clonedElement._store["clonedEle"] = true;
-  }
+  if (__DEV__) clonedElement._store["clonedEle"] = true;
 
   return clonedElement;
 }

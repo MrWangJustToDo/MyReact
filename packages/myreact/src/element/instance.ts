@@ -61,7 +61,7 @@ export interface LikeJSX<T extends MyReactElementType = any, P extends Record<st
   _store?: Record<string, unknown>;
 }
 
-export type MyReactElement = ReturnType<typeof createMyReactElement>;
+export type MyReactElement = LikeJSX & { [TYPEKEY]: symbol };
 
 export type MyReactElementNode = MyReactElement | ((p: any) => MyReactElementNode) | string | number | boolean | null | undefined;
 
@@ -94,26 +94,38 @@ export type CreateElementConfig = {
   [key: string]: unknown;
 };
 
-export const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps) => {
-  const element = {
-    [TYPEKEY]: Element,
-    type,
-    key,
-    ref,
-    props,
+export const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps): MyReactElement => {
+  if (__DEV__) {
+    const element = {
+      [TYPEKEY]: Element,
+      type,
+      key,
+      ref,
+      props,
 
-    _owner,
-    _self,
-    _source,
-    _store: {} as Record<string, unknown>,
-  };
+      _owner,
+      _self,
+      _source,
+      _store: {} as Record<string, unknown>,
+    };
 
-  if (__DEV__ && typeof Object.freeze === "function") {
-    Object.freeze(element.props);
-    Object.freeze(element);
+    if (typeof Object.freeze === "function") {
+      Object.freeze(element.props);
+      Object.freeze(element);
+    }
+
+    return element;
+  } else {
+    const element = {
+      [TYPEKEY]: Element,
+      type,
+      key,
+      ref,
+      props,
+    };
+
+    return element;
   }
-
-  return element;
 };
 
 export function createElement<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>(

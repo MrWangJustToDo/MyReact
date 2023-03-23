@@ -14,7 +14,11 @@ const RESERVED_PROPS = {
   __source: true,
 };
 
-type JSXMyReactElement = MyReactElement & {
+type JSXMyReactElementDev = MyReactElement & {
+  _jsx: boolean;
+};
+
+type JSXMyReactElement = Partial<MyReactElement> & {
   _jsx: boolean;
 };
 
@@ -59,25 +63,38 @@ export const jsx = (
     });
   }
 
-  const element: JSXMyReactElement = {
-    [TYPEKEY]: Element,
-    type,
-    key,
-    ref,
-    props,
-    _jsx: true,
-    _self: self,
-    _source: source,
-    _owner: currentComponentFiber.current,
-    _store: {} as Record<string, unknown>,
-  };
+  if (__DEV__) {
+    const element: JSXMyReactElementDev = {
+      [TYPEKEY]: Element,
+      type,
+      key,
+      ref,
+      props,
+      _jsx: true,
+      _self: self,
+      _source: source,
+      _owner: currentComponentFiber.current,
+      _store: {} as Record<string, unknown>,
+    };
 
-  if (__DEV__ && typeof Object.freeze === "function") {
-    Object.freeze(element.props);
-    Object.freeze(element);
+    if (typeof Object.freeze === "function") {
+      Object.freeze(element.props);
+      Object.freeze(element);
+    }
+
+    return element;
+  } else {
+    const element: JSXMyReactElement = {
+      [TYPEKEY]: Element,
+      type,
+      key,
+      ref,
+      props,
+      _jsx: true,
+    };
+
+    return element;
   }
-
-  return element;
 };
 
 export const jsxDEV = (

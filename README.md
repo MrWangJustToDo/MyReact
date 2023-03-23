@@ -5,7 +5,7 @@
 pnpm add @my-react/react @my-react/react-dom
 ```
 
-This project provider a react like formwork to build site, you can see this project github page which build by @my-react package
+This project provide a react like framework to build site, you can see this project github page which build by @my-react package
 
 ---
 

@@ -1,0 +1,6 @@
+query getStarCount($name: String!, $owner: String!) {
+  repository(name: $name, owner: $owner) {
+    id
+    stargazerCount
+  }
+}

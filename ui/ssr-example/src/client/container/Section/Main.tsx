@@ -51,7 +51,7 @@ export const MainSection = () => {
           <Text fontSize="sm" color="lightTextColor" marginY="2">
             This website is built with @my-react
           </Text>
-          <HStack marginTop="14" spacing="8" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "14px", xl: "16px" }}>
+          <HStack marginTop="14" spacing="4" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "14px", xl: "16px" }}>
             <Button
               variant="solid"
               fontSize="inherit"
@@ -71,6 +71,17 @@ export const MainSection = () => {
               target="_blank"
             >
               View on GitHub
+            </Button>
+            <Button
+              variant="solid"
+              fontSize="inherit"
+              borderRadius="full"
+              colorScheme="teal"
+              as="a"
+              href="https://mrwangjusttodo.github.io/MrWangJustToDo.io?overlay=open&playGround=MyReact"
+              target="_blank"
+            >
+              Online play
             </Button>
             <Button variant="solid" fontSize="inherit" borderRadius="full" as="a" href="https://www.npmjs.com/search?q=%40my-react" target="_blank">
               View on NPM

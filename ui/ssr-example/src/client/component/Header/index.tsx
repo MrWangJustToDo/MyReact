@@ -1,6 +1,9 @@
-import { Button, Container, Flex, HStack, Icon, Text } from "@chakra-ui/react";
+import { useQuery } from "@apollo/client";
+import { Button, Container, Flex, HStack, Icon, Tag, TagLabel, TagLeftIcon, Text } from "@chakra-ui/react";
+import { GetStarCountDocument } from "@site/graphql";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { memo } from "react";
+import { FaStar } from "react-icons/fa";
 import { SiGithub } from "react-icons/si";
 import { useIntl } from "react-intl";
 import { useLocation, useNavigate } from "react-router";
@@ -31,6 +34,13 @@ const _Header = () => {
 
   const id = (map[location.pathname.toLowerCase()] as string) || "@my-react";
 
+  const { data, loading } = useQuery(GetStarCountDocument, {
+    variables: {
+      name: "MyReact",
+      owner: "MrWangJustToDo",
+    },
+  });
+
   return (
     <>
       <Container maxWidth={CONTAINER_WIDTH} paddingX={{ base: "3", lg: "6" }}>
@@ -47,8 +57,14 @@ const _Header = () => {
               Example
             </Button>
             <ColorMode />
-            <Button variant="ghost" size="sm" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
+            <Button variant="outline" size="sm" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
               <Icon as={SiGithub} />
+              {loading ? null : (
+                <Tag variant="subtle" colorScheme="orange" marginLeft="3">
+                  <TagLeftIcon as={FaStar} color="orange.300" />
+                  <TagLabel>{data?.repository?.stargazerCount}</TagLabel>
+                </Tag>
+              )}
             </Button>
           </HStack>
         </Flex>

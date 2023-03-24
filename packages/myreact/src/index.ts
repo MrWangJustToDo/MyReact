@@ -28,6 +28,7 @@ import {
   globalLoop,
   enableKeyDiff,
   enableDebugLog,
+  enableSyncFlush,
   enableConcurrentMode,
   enableLegacyLifeCycle,
   enableStrictLifeCycle,
@@ -42,6 +43,7 @@ const version = __VERSION__;
 const __my_react_shared__ = {
   enableKeyDiff,
   enableDebugLog,
+  enableSyncFlush,
   enableConcurrentMode,
   enableLegacyLifeCycle,
   enableStrictLifeCycle,

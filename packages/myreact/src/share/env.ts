@@ -19,6 +19,8 @@ export const enableConcurrentMode = createRef(true);
 
 export const enableKeyDiff = createRef(true);
 
+export const enableSyncFlush = createRef(false);
+
 // support "unsafe_" lifecycle
 export const enableLegacyLifeCycle = createRef(true);
 

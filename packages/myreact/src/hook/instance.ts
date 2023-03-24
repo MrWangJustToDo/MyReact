@@ -1,4 +1,5 @@
 import { MyReactInternalInstance } from "../internal";
+import { enableSyncFlush } from "../share";
 
 import type { HookUpdateQueue } from "../fiber";
 import type { HOOK_TYPE } from "@my-react/react-shared";
@@ -67,7 +68,11 @@ export class MyReactHookNode extends MyReactInternalInstance {
 
       ownerFiber.updateQueue.push(updater);
 
-      renderPlatform.microTask(() => renderDispatch.processFunctionComponentQueue(ownerFiber));
+      if (enableSyncFlush.current) {
+        renderDispatch.processFunctionComponentQueue(ownerFiber);
+      } else {
+        renderPlatform.microTask(() => renderDispatch.processFunctionComponentQueue(ownerFiber));
+      }
     }
   };
 }

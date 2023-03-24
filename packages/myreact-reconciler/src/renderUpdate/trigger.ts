@@ -8,7 +8,7 @@ import type { MyReactFiberNode, RenderController, RenderScope } from "@my-react/
 
 const { globalLoop } = __my_react_internal__;
 
-const { enableConcurrentMode } = __my_react_shared__;
+const { enableConcurrentMode, enableSyncFlush } = __my_react_shared__;
 
 const updateEntry = (renderController: RenderController, renderDispatch: RenderDispatch, renderScope: RenderScope, renderPlatform: RenderPlatform) => {
   if (enableConcurrentMode.current) {
@@ -84,5 +84,9 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
 
   if (globalLoop.current) return;
 
-  renderPlatform.microTask(() => updateEntry(renderController, renderDispatch, renderScope, renderPlatform));
+  if (enableSyncFlush.current) {
+    updateAll(renderController, renderDispatch, renderScope, renderPlatform);
+  } else {
+    renderPlatform.microTask(() => updateEntry(renderController, renderDispatch, renderScope, renderPlatform));
+  }
 };

@@ -1,6 +1,7 @@
 import { isNormalEquals } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
+import { enableSyncFlush } from "../share";
 
 import type { MyReactElementNode, createContext } from "../element";
 import type { ComponentUpdateQueue } from "../fiber";
@@ -70,7 +71,11 @@ export class MyReactComponent<
 
       ownerFiber.updateQueue.push(updater);
 
-      renderPlatform.microTask(() => renderDispatch.processClassComponentQueue(ownerFiber));
+      if (enableSyncFlush.current) {
+        renderDispatch.processClassComponentQueue(ownerFiber);
+      } else {
+        renderPlatform.microTask(() => renderDispatch.processClassComponentQueue(ownerFiber));
+      }
     }
   };
 
@@ -90,7 +95,11 @@ export class MyReactComponent<
 
       ownerFiber.updateQueue.push(updater);
 
-      renderPlatform.microTask(() => renderDispatch.processClassComponentQueue(ownerFiber));
+      if (enableSyncFlush.current) {
+        renderDispatch.processClassComponentQueue(ownerFiber);
+      } else {
+        renderPlatform.microTask(() => renderDispatch.processClassComponentQueue(ownerFiber));
+      }
     }
   };
 

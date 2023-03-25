@@ -39,8 +39,6 @@ const renderToStringSync = (element: MyReactElement) => {
 
   rootFiber.renderController = renderController;
 
-  renderScope.isPending = true;
-
   renderScope.isServerRender = true;
 
   initialFiberNode(fiber);
@@ -82,8 +80,6 @@ const renderToStringAsync = async (element: MyReactElement) => {
   rootFiber.renderDispatch = renderDispatch;
 
   rootFiber.renderController = renderController;
-
-  renderScope.isPending = true;
 
   renderScope.isServerRender = true;
 

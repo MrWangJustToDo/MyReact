@@ -14,7 +14,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
 
     const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
 
-    if (hookNode.hookType === "useEffect") {
+    if (hookNode.type === "useEffect") {
       const update = () => {
         hookNode.cancel && hookNode.cancel();
 
@@ -34,7 +34,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       });
     }
 
-    if (hookNode.hookType === "useLayoutEffect") {
+    if (hookNode.type === "useLayoutEffect") {
       const update = () => {
         hookNode.cancel && hookNode.cancel();
 
@@ -54,7 +54,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       });
     }
 
-    if (hookNode.hookType === "useImperativeHandle") {
+    if (hookNode.type === "useImperativeHandle") {
       renderDispatch.pendingLayoutEffect(fiber, () => {
         // ref obj
         if (hookNode.value && typeof hookNode.value === "object") hookNode.value.current = hookNode.reducer.call(null);

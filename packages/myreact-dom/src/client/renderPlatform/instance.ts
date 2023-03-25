@@ -7,7 +7,7 @@ import { asyncUpdateTimeLimit, getFiberTree, getHookTree, log, setRef, unsetRef 
 
 import type { MyReactFiberNode, MyReactHookNode, MyReactElementNode, lazy } from "@my-react/react";
 import type { RenderDispatch, RenderPlatform } from "@my-react/react-reconciler";
-import type { HOOK_TYPE } from "@my-react/react-shared";
+import type { ListTreeNode } from "@my-react/react-shared";
 
 export type LogProps = {
   message: string | Error;
@@ -93,8 +93,8 @@ export class ClientDomPlatform implements RenderPlatform {
     return getFiberTree(fiber);
   }
 
-  getHookTree(hook: MyReactHookNode[], currentIndex: number, newHookType: HOOK_TYPE): string {
-    return getHookTree(hook, currentIndex, newHookType);
+  getHookTree(treeHookNode: ListTreeNode<MyReactHookNode>, errorType: { lastRender: MyReactHookNode["type"]; nextRender: MyReactHookNode["type"] }): string {
+    return getHookTree(treeHookNode, errorType);
   }
 
   resolveLazy(fiber: MyReactFiberNode): MyReactElementNode {

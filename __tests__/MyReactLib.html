@@ -224,7 +224,7 @@
             <h1>{props.name}</h1>
             <p>{time}</p>
             <button onClick={() => setVal(Math.random())}>{num}</button>
-            {val < 0.5 ? (
+            {val > 0.5 ? (
               <p className="red" style={{ border: "1px solid red" }}>
                 {props.children}
               </p>
@@ -271,9 +271,9 @@
         // console.log("del", del);
         return (
           <div
-            ref={(dom) => {
-              console.log(dom);
-            }}
+            // ref={(dom) => {
+            //   console.log(dom);
+            // }}
           >
             <h1>{time}</h1>
             <InvalidDom />

@@ -1,6 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-import type { RenderPlatform } from "../runtimePlatform";
 import type { MyReactFiberNode } from "@my-react/react";
 
 const { currentFunctionFiber } = __my_react_internal__;
@@ -27,15 +26,17 @@ export class MyReactSignal<T = any> {
     if (!Object.is(this._value, newValue)) {
       const allDeps = new Set(this._depsSet);
 
-      const renderPlatform = this._fiber.root.renderPlatform as RenderPlatform;
+      // const renderPlatform = this._fiber.root.renderPlatform as RenderPlatform;
 
       this._depsSet.clear();
 
-      if (renderPlatform) {
-        this._fiber = null;
+      // if (renderPlatform) {
+      this._fiber = null;
 
-        renderPlatform.macroTask(() => allDeps.forEach((f) => f._update()));
-      }
+      allDeps.forEach((f) => f._update());
+
+      // renderPlatform.microTask(() => allDeps.forEach((f) => f._update()));
+      // }
 
       this._value = newValue;
     }

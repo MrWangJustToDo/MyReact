@@ -24,9 +24,8 @@ import {
   currentRunningFiber,
   currentFunctionFiber,
   currentComponentFiber,
-  currentHookDeepIndex,
+  currentHookTreeNode,
   globalLoop,
-  enableKeyDiff,
   enableDebugLog,
   enableSyncFlush,
   enableConcurrentMode,
@@ -41,7 +40,6 @@ const PureComponent = MyReactPureComponent;
 const version = __VERSION__;
 
 const __my_react_shared__ = {
-  enableKeyDiff,
   enableDebugLog,
   enableSyncFlush,
   enableConcurrentMode,
@@ -56,7 +54,7 @@ const __my_react_internal__ = {
   MyReactInternalInstance,
   globalLoop,
   currentRunningFiber,
-  currentHookDeepIndex,
+  currentHookTreeNode,
   currentFunctionFiber,
   currentComponentFiber,
 };

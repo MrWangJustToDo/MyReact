@@ -1,3 +1,4 @@
+import { __my_react_internal__ } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { isArrayEquals } from "../share";
@@ -5,23 +6,32 @@ import { isArrayEquals } from "../share";
 import type { RenderDispatch } from "../renderDispatch";
 import type { CreateHookParams, MyReactFiberNode } from "@my-react/react";
 
-export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: CreateHookParams, fiber: MyReactFiberNode) => {
+const { currentHookTreeNode } = __my_react_internal__;
+
+export const updateHookNode = ({ type, value, reducer, deps }: CreateHookParams, fiber: MyReactFiberNode) => {
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
   const renderPlatform = fiber.root.renderPlatform;
 
-  const currentHook = fiber.hookNodes[hookIndex];
+  const currentHook = currentHookTreeNode.current.value;
 
-  if (hookType !== currentHook.hookType) throw new Error(renderPlatform.getHookTree(fiber.hookNodes, hookIndex, hookType));
+  if (type !== currentHook?.type) {
+    // change the hook type, TODO for hmr
+    throw new Error(
+      renderPlatform.getHookTree(currentHookTreeNode.current.prev, { lastRender: currentHook?.type || ("undefined" as HOOK_TYPE), nextRender: type })
+    );
+  }
 
   currentHook._setOwner(fiber);
 
+  currentHookTreeNode.current = currentHookTreeNode.current.next;
+
   if (
-    currentHook.hookType === HOOK_TYPE.useMemo ||
-    currentHook.hookType === HOOK_TYPE.useEffect ||
-    currentHook.hookType === HOOK_TYPE.useCallback ||
-    currentHook.hookType === HOOK_TYPE.useLayoutEffect ||
-    currentHook.hookType === HOOK_TYPE.useImperativeHandle
+    currentHook.type === HOOK_TYPE.useMemo ||
+    currentHook.type === HOOK_TYPE.useEffect ||
+    currentHook.type === HOOK_TYPE.useCallback ||
+    currentHook.type === HOOK_TYPE.useLayoutEffect ||
+    currentHook.type === HOOK_TYPE.useImperativeHandle
   ) {
     if (deps && !currentHook.deps) {
       throw new Error("deps state change");
@@ -31,11 +41,7 @@ export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: Cr
     }
   }
 
-  if (
-    currentHook.hookType === HOOK_TYPE.useEffect ||
-    currentHook.hookType === HOOK_TYPE.useLayoutEffect ||
-    currentHook.hookType === HOOK_TYPE.useImperativeHandle
-  ) {
+  if (currentHook.type === HOOK_TYPE.useEffect || currentHook.type === HOOK_TYPE.useLayoutEffect || currentHook.type === HOOK_TYPE.useImperativeHandle) {
     if (!deps) {
       currentHook.value = value;
 
@@ -56,7 +62,7 @@ export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: Cr
     return currentHook;
   }
 
-  if (currentHook.hookType === HOOK_TYPE.useCallback) {
+  if (currentHook.type === HOOK_TYPE.useCallback) {
     if (!isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
@@ -67,7 +73,7 @@ export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: Cr
     return currentHook;
   }
 
-  if (currentHook.hookType === HOOK_TYPE.useMemo) {
+  if (currentHook.type === HOOK_TYPE.useMemo) {
     if (!isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
@@ -78,7 +84,7 @@ export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: Cr
     return currentHook;
   }
 
-  if (currentHook.hookType === HOOK_TYPE.useContext) {
+  if (currentHook.type === HOOK_TYPE.useContext) {
     if (!currentHook._contextFiber || !currentHook._contextFiber.isMounted || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
 
@@ -101,7 +107,7 @@ export const updateHookNode = ({ hookIndex, hookType, value, reducer, deps }: Cr
     return currentHook;
   }
 
-  if (currentHook.hookType === HOOK_TYPE.useReducer) {
+  if (currentHook.type === HOOK_TYPE.useReducer) {
     currentHook.value = value;
 
     currentHook.reducer = reducer;

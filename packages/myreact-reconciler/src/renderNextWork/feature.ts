@@ -1,44 +1,11 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { UPDATE_TYPE } from "@my-react/react-shared";
 
-import { classComponentCatch } from "../runtimeComponent";
-import { nextWorkCommon, runtimeNextWork, runtimeNextWorkAsync } from "../runtimeGenerate";
+import { runtimeNextWork, runtimeNextWorkAsync } from "../runtimeGenerate";
 
-import type { MyReactFiberNode, RenderController } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react";
 
-const { currentFunctionFiber, currentRunningFiber, currentComponentFiber } = __my_react_internal__;
-
-export const performToNextArray = (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return [];
-
-  if (fiber.isInvoked && !(fiber.mode & UPDATE_TYPE.__needUpdate__)) return [];
-
-  currentRunningFiber.current = fiber;
-
-  const children = runtimeNextWork(fiber);
-
-  fiber.isInvoked = true;
-
-  currentRunningFiber.current = null;
-
-  return children;
-};
-
-export const performToNextArrayAsync = async (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return [];
-
-  if (fiber.isInvoked && !(fiber.mode & UPDATE_TYPE.__needUpdate__)) return [];
-
-  currentRunningFiber.current = fiber;
-
-  const children = runtimeNextWorkAsync(fiber);
-
-  fiber.isInvoked = true;
-
-  currentRunningFiber.current = null;
-
-  return children;
-};
+const { currentRunningFiber } = __my_react_internal__;
 
 export const performToNextFiber = (fiber: MyReactFiberNode) => {
   if (!fiber.isMounted) return null;
@@ -52,12 +19,10 @@ export const performToNextFiber = (fiber: MyReactFiberNode) => {
 
     currentRunningFiber.current = null;
 
-    if (fiber.children.length) {
-      return fiber.child;
-    }
+    if (fiber.child) return fiber.child;
   }
 
-  const renderController = fiber.root.renderController as RenderController;
+  const renderController = fiber.root.renderController;
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
@@ -82,15 +47,13 @@ export const performToNextFiberAsync = async (fiber: MyReactFiberNode) => {
   if (!fiber.isInvoked || fiber.mode & UPDATE_TYPE.__needUpdate__) {
     currentRunningFiber.current = fiber;
 
-    runtimeNextWorkAsync(fiber);
+    await runtimeNextWorkAsync(fiber);
 
     fiber.isInvoked = true;
 
     currentRunningFiber.current = null;
 
-    if (fiber.children.length) {
-      return fiber.child;
-    }
+    if (fiber.child) return fiber.child;
   }
 
   const renderController = fiber.root.renderController;
@@ -112,69 +75,53 @@ export const performToNextFiberAsync = async (fiber: MyReactFiberNode) => {
   return null;
 };
 
-export const performToNextArrayOnError = (fiber: MyReactFiberNode, error: Error, targetFiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return null;
-
-  if (fiber.isInvoked && !(fiber.mode & UPDATE_TYPE.__needUpdate__)) return [];
-
-  currentRunningFiber.current = fiber;
-
-  currentComponentFiber.current = fiber;
-
-  const childrenNode = classComponentCatch(fiber, error, targetFiber);
-
-  const children = nextWorkCommon(fiber, childrenNode);
-
-  fiber.isInvoked = true;
-
-  currentRunningFiber.current = null;
-
-  currentFunctionFiber.current = null;
-
-  currentComponentFiber.current = null;
-
-  return children;
-};
-
-export const performToNextFiberOnError = (fiber: MyReactFiberNode, error: Error, targetFiber: MyReactFiberNode) => {
+export const performToNextFiberOnMount = (fiber: MyReactFiberNode) => {
   if (!fiber.isMounted) return null;
 
   if (!fiber.isInvoked || fiber.mode & UPDATE_TYPE.__needUpdate__) {
     currentRunningFiber.current = fiber;
 
-    currentComponentFiber.current = fiber;
-
-    const children = classComponentCatch(fiber, error, targetFiber);
-
-    nextWorkCommon(fiber, children);
+    runtimeNextWork(fiber);
 
     fiber.isInvoked = true;
 
     currentRunningFiber.current = null;
 
-    currentFunctionFiber.current = null;
-
-    currentComponentFiber.current = null;
-
-    if (fiber.children.length) {
-      return fiber.child;
-    }
+    if (fiber.child) return fiber.child;
   }
-
-  const renderController = fiber.root.renderController;
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
-  while (nextFiber && nextFiber !== renderController.getTopLevelFiber()) {
-    renderController.generateUpdateList(nextFiber);
-
+  while (nextFiber) {
     if (nextFiber.sibling) return nextFiber.sibling;
 
     nextFiber = nextFiber.parent;
   }
 
-  if (nextFiber === renderController.getTopLevelFiber()) {
-    renderController.generateUpdateList(nextFiber);
+  return null;
+};
+
+export const performToNextFiberOnMountAsync = async (fiber: MyReactFiberNode) => {
+  if (!fiber.isMounted) return null;
+
+  if (!fiber.isInvoked || fiber.mode & UPDATE_TYPE.__needUpdate__) {
+    currentRunningFiber.current = fiber;
+
+    await runtimeNextWorkAsync(fiber);
+
+    fiber.isInvoked = true;
+
+    currentRunningFiber.current = null;
+
+    if (fiber.child) return fiber.child;
+  }
+
+  let nextFiber: MyReactFiberNode | null = fiber;
+
+  while (nextFiber) {
+    if (nextFiber.sibling) return nextFiber.sibling;
+
+    nextFiber = nextFiber.parent;
   }
 
   return null;

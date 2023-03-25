@@ -11,7 +11,7 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFibe
     const renderPlatform = fiber.root.renderPlatform as ClientDomPlatform;
 
     // will never happen
-    if (!parentFiberWithDom.isMounted) {
+    if (!parentFiberWithDom?.isMounted) {
       parentFiberWithDom = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
       const elementObj = renderPlatform.elementMap.get(fiber);

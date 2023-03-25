@@ -6,7 +6,7 @@ import { currentComponentFiber } from "../share";
 
 import { checkArrayChildrenKey, checkSingleChildrenKey } from "./tool";
 
-import type { createContext, lazy } from "./feature";
+import type { createContext, forwardRef, lazy, memo } from "./feature";
 import type { MyReactComponent } from "../component";
 import type { MyReactFiberNode } from "../fiber";
 import type { MyReactInternalInstance } from "../internal";
@@ -24,8 +24,8 @@ export type MyReactObjectComponent =
   | ReturnType<typeof createContext>["Consumer"]
   | ReturnType<typeof createContext>["Provider"]
   // type error
-  // | ReturnType<typeof forwardRef>
-  // | ReturnType<typeof memo>
+  | ReturnType<typeof forwardRef>
+  | ReturnType<typeof memo>
   | ReturnType<typeof lazy>
   | { [TYPEKEY]: symbol; [p: string]: unknown };
 

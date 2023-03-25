@@ -6,7 +6,7 @@ import type { CreateHookParams, MyReactFiberNode, MyReactHookNode } from "@my-re
 
 const resolveHookValue = (hookNode: MyReactHookNode) => {
   if (hookNode) {
-    switch (hookNode.hookType) {
+    switch (hookNode.type) {
       case HOOK_TYPE.useState:
       case HOOK_TYPE.useReducer:
         return [hookNode.result, hookNode._dispatch];
@@ -21,19 +21,17 @@ const resolveHookValue = (hookNode: MyReactHookNode) => {
   }
 };
 
-export const processHookNode = (fiber: MyReactFiberNode | null, { hookIndex, hookType, reducer, value, deps }: CreateHookParams) => {
+export const processHookNode = (fiber: MyReactFiberNode | null, { type, reducer, value, deps }: CreateHookParams) => {
   if (!fiber) throw new Error("can not use hook outside of component");
-
-  const renderPlatform = fiber.root.renderPlatform;
 
   let currentHook: MyReactHookNode | null = null;
 
-  if (fiber.hookNodes.length > hookIndex) {
-    currentHook = updateHookNode({ hookIndex, hookType, reducer, value, deps }, fiber);
-  } else if (!fiber.isInvoked) {
-    currentHook = createHookNode({ hookIndex, hookType, reducer, value, deps }, fiber);
+  // initial
+  if (!fiber.isInvoked) {
+    currentHook = createHookNode({ type, reducer, value, deps }, fiber);
   } else {
-    throw new Error(renderPlatform.getHookTree(fiber.hookNodes, hookIndex, hookType));
+    // update
+    currentHook = updateHookNode({ type, reducer, value, deps }, fiber);
   }
 
   effectHookNode(fiber, currentHook);

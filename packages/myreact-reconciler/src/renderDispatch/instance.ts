@@ -215,7 +215,7 @@ export class CustomRenderDispatch implements RenderDispatch {
       _fiber.patch |= PATCH_TYPE.__pendingRef__;
     }
   }
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | (MyReactFiberNode | MyReactFiberNode[])[]): void {
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
     _fiber.patch |= PATCH_TYPE.__pendingUnmount__;
 
     defaultGenerateUnmountArrayMap(_fiber, _pendingUnmount, this.unmountMap);

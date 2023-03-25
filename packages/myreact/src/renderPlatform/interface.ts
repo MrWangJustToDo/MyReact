@@ -1,6 +1,7 @@
 import type { MyReactElementNode } from "../element";
 import type { MyReactFiberNode } from "../fiber";
 import type { MyReactHookNode } from "../hook";
+import type { ListTreeNode } from "@my-react/react-shared";
 
 export type LogProps = {
   message: string | Error;
@@ -22,7 +23,7 @@ interface DefaultRenderPlatform {
 
   getFiberTree(fiber: MyReactFiberNode): string;
 
-  getHookTree(hook: MyReactHookNode[], currentIndex: number, newHookType: MyReactHookNode["hookType"]): string;
+  getHookTree(treeHookNode: ListTreeNode<MyReactHookNode>, errorType: { lastRender: MyReactHookNode["type"]; nextRender: MyReactHookNode["type"] }): string;
 
   resolveLazy(fiber: MyReactFiberNode): MyReactElementNode;
 

@@ -238,8 +238,6 @@
             background: `#eee`,
           };
 
-          console.log('run')
-
           return (
             <div style={{ ...containerStyle, transform }}>
               <TimeDisplay x={100} y={200} size={30} seconds={Math.floor(elapsed / 1000)} />
@@ -265,7 +263,9 @@
       //   container);
 
       const update = () => {
-        ReactDOM.render(<App elapsed={new Date().getTime() - start} />, document.querySelector("#react-mount"));
+        const ddd = new Date().getTime() - start;
+
+        ReactDOM.render(<App elapsed={ddd} />, document.querySelector("#react-mount"));
 
         requestAnimationFrame(update);
       };

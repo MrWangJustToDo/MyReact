@@ -7,7 +7,7 @@ import { startRender, startRenderAsync, DomScope } from "@my-react-dom-shared";
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogNewStrictMode } from "./render";
 
 import type { RenderContainer } from "./render";
-import type { MyReactElement, MyReactFiberNodeRoot , LikeJSX} from "@my-react/react";
+import type { MyReactElement, MyReactFiberNodeRoot, LikeJSX } from "@my-react/react";
 
 const { MyReactFiberNode } = __my_react_internal__;
 
@@ -56,8 +56,6 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 
   rootFiber.renderController = renderController;
 
-  renderScope.isPending = true;
-
   renderScope.isHydrateRender = true;
 
   container.setAttribute?.("hydrate", "MyReact");
@@ -75,8 +73,6 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
   initialFiberNode(fiber);
 
   startRender(fiber, true);
-
-  renderScope.isPending = false;
 
   renderScope.isHydrateRender = false;
 };
@@ -124,8 +120,6 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
 
   rootFiber.renderController = renderController;
 
-  renderScope.isPending = true;
-
   renderScope.isHydrateRender = true;
 
   container.setAttribute?.("hydrate", "MyReact");
@@ -141,8 +135,6 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
   initialFiberNode(fiber);
 
   await startRenderAsync(fiber, true);
-
-  renderScope.isPending = false;
 
   renderScope.isHydrateRender = false;
 };

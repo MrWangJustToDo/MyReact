@@ -12,8 +12,6 @@ interface DefaultRenderScope {
 
   isAppCrashed: boolean;
 
-  isPending: boolean;
-
   modifyFiberRoot: MyReactFiberNode | null;
 
   pendingProcessFiberArray: UniqueArray<MyReactFiberNode>;

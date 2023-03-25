@@ -33,7 +33,7 @@ const watch = (packageName: string, rollupOptions: RollupOptions, mode: string, 
 };
 
 const rollupWatch = async (packageName: packages) => {
-  const { allOtherDev, allUMDDev, allSingleOther } = await getRollupConfig(packageName);
+  const { allOtherDev, allSingleOther } = await getRollupConfig(packageName);
 
   if (allOtherDev) {
     watch(packageName, allOtherDev, "development", false);
@@ -43,18 +43,18 @@ const rollupWatch = async (packageName: packages) => {
     watch(packageName, allSingleOther, "process.env", false);
   }
 
-  if (allUMDDev) {
-    watch(packageName, allUMDDev, "development", true);
-  }
+  // if (allUMDDev) {
+  //   watch(packageName, allUMDDev, "development", true);
+  // }
 };
 
-rollupWatch("myreact-shared");
+// rollupWatch("myreact-shared");
 
 rollupWatch("myreact");
 
-rollupWatch("myreact-jsx");
+// rollupWatch("myreact-jsx");
 
-rollupWatch("myreact-reactivity");
+// rollupWatch("myreact-reactivity");
 
 rollupWatch("myreact-reconciler");
 

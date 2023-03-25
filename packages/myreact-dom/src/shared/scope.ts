@@ -25,8 +25,6 @@ export class DomScope
 
   isAppCrashed = false;
 
-  isPending = false;
-
   modifyFiberRoot: MyReactFiberNode | null = null;
 
   pendingProcessFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray();

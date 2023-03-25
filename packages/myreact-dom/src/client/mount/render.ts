@@ -46,6 +46,8 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
     containerFiber.root.renderScope.isAppCrash = false;
 
     if (checkIsSameType(containerFiber, element)) {
+      initialPropsFromELement(containerFiber, element);
+
       containerFiber._installElement(element);
 
       containerFiber._update();

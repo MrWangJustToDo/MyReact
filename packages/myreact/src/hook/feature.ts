@@ -1,6 +1,6 @@
 import { HOOK_TYPE } from "@my-react/react-shared";
 
-import { createRef, currentFunctionFiber, currentHookDeepIndex, enableDebugLog } from "../share";
+import { createRef, currentFunctionFiber, enableDebugLog } from "../share";
 
 import type { Reducer } from "./instance";
 import type { createContext } from "../element";
@@ -14,11 +14,8 @@ export const useState = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) 
 
   const renderDispatch = currentFiber.root.renderDispatch;
 
-  const currentIndex = currentHookDeepIndex.current++;
-
   return renderDispatch.resolveHookNode(currentFiber, {
-    hookIndex: currentIndex,
-    hookType: HOOK_TYPE.useState,
+    type: HOOK_TYPE.useState,
     value: typeof initial === "function" ? initial : () => initial,
     reducer: null,
     deps: emptyDeps,
@@ -32,11 +29,8 @@ export const useEffect = (action: () => any, deps: any[]) => {
 
   const renderDispatch = currentFiber.root.renderDispatch;
 
-  const currentIndex = currentHookDeepIndex.current++;
-
   return renderDispatch.resolveHookNode(currentFiber, {
-    hookIndex: currentIndex,
-    hookType: HOOK_TYPE.useEffect,
+    type: HOOK_TYPE.useEffect,
     value: action,
     reducer: null,
     deps,
@@ -50,11 +44,8 @@ export const useLayoutEffect = (action: () => any, deps: any[]) => {
 
   const renderDispatch = currentFiber.root.renderDispatch;
 
-  const currentIndex = currentHookDeepIndex.current++;
-
   return renderDispatch.resolveHookNode(currentFiber, {
-    hookIndex: currentIndex,
-    hookType: HOOK_TYPE.useLayoutEffect,
+    type: HOOK_TYPE.useLayoutEffect,
     value: action,
     reducer: null,
     deps,
@@ -68,11 +59,8 @@ export const useCallback = <T extends (...args: any[]) => any = (...args: any[])
 
   const renderDispatch = currentFiber.root.renderDispatch;
 
-  const currentIndex = currentHookDeepIndex.current++;
-
   return renderDispatch.resolveHookNode(currentFiber, {
-    hookIndex: currentIndex,
-    hookType: HOOK_TYPE.useCallback,
+    type: HOOK_TYPE.useCallback,
     value: callback,
     reducer: null,
     deps,
@@ -86,11 +74,8 @@ export const useMemo = <T = any>(action: () => T, deps: any[]): T => {
 
   const renderDispatch = currentFiber.root.renderDispatch;
 
-  const currentIndex = currentHookDeepIndex.current++;
-
   return renderDispatch.resolveHookNode(currentFiber, {
-    hookIndex: currentIndex,
-    hookType: HOOK_TYPE.useMemo,
+    type: HOOK_TYPE.useMemo,
     value: action,
     reducer: null,
     deps,
@@ -104,11 +89,8 @@ export const useRef = <T = any>(value: T): { current: T } => {
 
   const renderDispatch = currentFiber.root.renderDispatch;
 
-  const currentIndex = currentHookDeepIndex.current++;
-
   return renderDispatch.resolveHookNode(currentFiber, {
-    hookIndex: currentIndex,
-    hookType: HOOK_TYPE.useRef,
+    type: HOOK_TYPE.useRef,
     value: createRef(value),
     reducer: null,
     deps: emptyDeps,
@@ -122,11 +104,8 @@ export const useContext = (Context: ReturnType<typeof createContext>) => {
 
   const renderDispatch = currentFiber.root.renderDispatch;
 
-  const currentIndex = currentHookDeepIndex.current++;
-
   return renderDispatch.resolveHookNode(currentFiber, {
-    hookIndex: currentIndex,
-    hookType: HOOK_TYPE.useContext,
+    type: HOOK_TYPE.useContext,
     value: Context,
     reducer: null,
     deps: emptyDeps,
@@ -140,11 +119,8 @@ export const useReducer = (reducer: Reducer, initialArgs: any, init?: (...args: 
 
   const renderDispatch = currentFiber.root.renderDispatch;
 
-  const currentIndex = currentHookDeepIndex.current++;
-
   return renderDispatch.resolveHookNode(currentFiber, {
-    hookIndex: currentIndex,
-    hookType: HOOK_TYPE.useReducer,
+    type: HOOK_TYPE.useReducer,
     value: typeof init === "function" ? () => init(initialArgs) : () => initialArgs,
     reducer,
     deps: emptyDeps,
@@ -158,11 +134,8 @@ export const useImperativeHandle = (ref: any, createHandle: Reducer, deps: any[]
 
   const renderDispatch = currentFiber.root.renderDispatch;
 
-  const currentIndex = currentHookDeepIndex.current++;
-
   return renderDispatch.resolveHookNode(currentFiber, {
-    hookIndex: currentIndex,
-    hookType: HOOK_TYPE.useImperativeHandle,
+    type: HOOK_TYPE.useImperativeHandle,
     value: ref,
     reducer: createHandle,
     deps,
@@ -176,11 +149,8 @@ export const useSignal = <T = any>(initial: T | (() => T)) => {
 
   const renderDispatch = currentFiber.root.renderDispatch;
 
-  const currentIndex = currentHookDeepIndex.current++;
-
   return renderDispatch.resolveHookNode(currentFiber, {
-    hookIndex: currentIndex,
-    hookType: HOOK_TYPE.useSignal,
+    type: HOOK_TYPE.useSignal,
     value: typeof initial === "function" ? initial : () => initial,
     reducer: null,
     deps: emptyDeps,

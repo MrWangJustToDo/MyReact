@@ -4,7 +4,7 @@ import { MyReactInternalInstance } from "../internal";
 import { enableSyncFlush } from "../share";
 
 import type { MyReactElementNode, createContext } from "../element";
-import type { ComponentUpdateQueue } from "../fiber";
+import type { ComponentUpdateQueue, MyReactFiberNode } from "../fiber";
 
 type ErrorInfo = {
   componentStack: string;
@@ -38,6 +38,13 @@ export class MyReactComponent<
     newState: null,
     isForce: false,
     callback: [],
+  };
+
+  // error catch component
+  _error: { error: Error | null; trigger: MyReactFiberNode | null; hasError: boolean } = {
+    error: null,
+    trigger: null,
+    hasError: false,
   };
 
   constructor(props?: P, context?: C | null) {

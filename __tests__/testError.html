@@ -1,89 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-</head>
+  <body>
+    <div id="root"></div>
 
-<body>
-  <div id="root"></div>
+    <script type="text/babel">
+      const { Component, useEffect } = React;
 
-  <script type="text/babel">
-    const { Component, useEffect } = React;
+      class WrapperErrorCatch extends Component {
+        state = {
+          stack: "",
+          error: "",
+          hasError: false,
+        };
 
-    class WrapperErrorCatch extends Component {
-      state = {
-        stack: "",
-        error: "",
-        hasError: false,
+        static getDerivedStateFromError() {
+          return { hasError: true };
+        }
+
+        componentDidCatch(error, info) {
+          this.setState({
+            error: error.message,
+            stack: info.componentStack,
+          });
+        }
+
+        render() {
+          console.log(this, "xxxxxxxxxxxx");
+          if (this.state.hasError)
+            return (
+              <pre>
+                <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
+                {this.state.stack}
+              </pre>
+            );
+          return this.props.children;
+        }
+      }
+
+      const Bar = () => {
+        console.log(foo);
+
+        return <div onClick={() => console.log(foo)}>123456</div>;
       };
 
-      static getDerivedStateFromError() {
-        return { hasError: true };
-      }
+      const Foo = () => {
+        useEffect(() => {
+          console.log("mounted");
+        }, []);
 
-      componentDidCatch(error, info) {
-        this.setState({
-          error: error.message,
-          stack: info.componentStack,
-        });
-      }
+        return (
+          <div>
+            <Bar />
+          </div>
+        );
+      };
 
-      render() {
-        console.log(this, 'xxxxxxxxxxxx');
-        if (this.state.hasError)
-          return (
-            <pre>
-              <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
-              {this.state.stack}
-            </pre>
-          );
-        return this.props.children;
-      }
-    }
+      const BBB = () => {
+        useEffect(() => {
+          console.log("mounted BBB");
+        }, []);
 
-    const Bar = () => {
-      console.log(foo);
+        return <Foo />;
+      };
 
-      return <div onClick={() => console.log(foo)}>123456</div>;
-    };
+      const Baz = () => (
+        <div id="hhhh">
+          <WrapperErrorCatch>
+            <BBB />
+          </WrapperErrorCatch>
+        </div>
+      );
 
-    const Foo = () => {
-      useEffect(() => {
-        console.log('mounted');
-      }, []);
+      const App = () => {
+        return <Baz />;
+      };
 
-      return <div><Bar /></div>
-    }
-
-    const BBB = () => {
-      useEffect(() => {
-        console.log('mounted BBB')
-      }, []);
-
-      return <Foo />
-    }
-
-    const Baz = () => (
-      <WrapperErrorCatch>
-        <BBB />
-      </WrapperErrorCatch>
-    );
-
-    const App = () => {
-      return <Baz />;
-    };
-
-    ReactDOM.render(<App />, document.querySelector("#root"));
-  </script>
-</body>
-
+      ReactDOM.render(<App />, document.querySelector("#root"));
+    </script>
+  </body>
 </html>

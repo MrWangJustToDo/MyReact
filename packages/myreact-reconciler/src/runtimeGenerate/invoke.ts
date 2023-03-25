@@ -2,7 +2,7 @@ import { isValidElement, __my_react_internal__ } from "@my-react/react";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { isCommentElement } from "../runtimeScope";
-import { NODE_TYPE } from "../share";
+import { NODE_TYPE, safeCallWithFiber } from "../share";
 
 import { transformChildrenFiber } from "./generate";
 
@@ -58,9 +58,9 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
 
   if (fiber.type & NODE_TYPE.__isForwardRef__) {
     const typedElementTypeWithRef = typedElementType as ReturnType<typeof forwardRef>["render"];
-    children = typedElementTypeWithRef(fiber.pendingProps, fiber.ref);
+    children = safeCallWithFiber({ fiber, action: () => typedElementTypeWithRef(fiber.pendingProps, fiber.ref) });
   } else {
-    children = typedElementType(fiber.pendingProps);
+    children = safeCallWithFiber({ fiber, action: () => typedElementType(fiber.pendingProps) });
   }
 
   currentFunctionFiber.current = null;

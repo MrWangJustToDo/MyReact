@@ -28,8 +28,6 @@ interface DefaultRenderController {
 
   performToNextFiberOnMountAsync(_fiber: MyReactFiberNode): Promise<MyReactFiberNode | null>;
 
-  performToNextFiberOnError(_fiber: MyReactFiberNode, _error: Error, _targetFiber: MyReactFiberNode): MyReactFiberNode | null;
-
   reset(): void;
 }
 

@@ -18,7 +18,7 @@ const reconcileUpdate = (renderDispatch: RenderDispatch, renderScope: RenderScop
 };
 
 export const updateAll = (renderController: RenderController, renderDispatch: RenderDispatch, renderScope: RenderScope, renderPlatform: RenderPlatform) => {
-  globalLoop.current = true;
+  // globalLoop.current = true;
 
   safeCall(() => updateLoop(renderController));
 
@@ -33,14 +33,14 @@ export const updateAllWithConcurrent = (
   renderScope: RenderScope,
   renderPlatform: RenderPlatform
 ) => {
-  globalLoop.current = true;
+  // globalLoop.current = true;
 
   safeCall(() => updateLoopWithConcurrent(renderController));
 
   const hasUpdate = !!renderScope.pendingCommitFiberListArray.length;
 
   if (renderController.hasNext()) {
-    if (hasUpdate) {
+    if (hasUpdate && renderController.hasUiUpdate) {
       renderPlatform.yieldTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));
     } else {
       renderPlatform.microTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));

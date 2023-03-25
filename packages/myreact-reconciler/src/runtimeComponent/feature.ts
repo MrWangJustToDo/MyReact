@@ -1,6 +1,8 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
+import { safeCallWithFiber } from "../share";
+
 import type { RenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode, MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
@@ -104,21 +106,16 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInst
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (devInstance) {
-    const cached = Object.assign({}, typedInstance);
-
-    const children = typedInstance.render();
-
-    // reset
-    Object.assign(typedInstance, cached);
-
-    typedInstance.render();
-
-    return children;
-  } else {
-    const children = typedInstance.render();
-
-    return children;
+    try {
+      devInstance.render();
+    } catch (e) {
+      void 0;
+    }
   }
+
+  const children = safeCallWithFiber({ fiber, action: () => typedInstance.render() });
+
+  return children;
 };
 
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
@@ -341,7 +338,7 @@ export const classComponentActive = (fiber: MyReactFiberNode) => {
   return children;
 };
 
-export const classComponentUpdate = (fiber: MyReactFiberNode) => {
+const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
 
   processComponentStateFromProps(fiber);
@@ -407,12 +404,28 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const classComponentCatch = (fiber: MyReactFiberNode, error: Error, targetFiber: MyReactFiberNode) => {
+const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
+  const typedInstance = fiber.instance as MyReactComponent;
+
+  const { error, trigger } = typedInstance._error;
+
   processComponentStateFromError(fiber, error);
 
   const children = processComponentRenderOnMountAndUpdate(fiber);
 
-  processComponentDidCatchOnMountAndUpdate(fiber, error, targetFiber);
+  processComponentDidCatchOnMountAndUpdate(fiber, error, trigger);
 
-  return children;
+  typedInstance._error = { hasError: false, error: null, trigger: null };
+
+  return { updated: true, children };
+};
+
+export const classComponentUpdate = (fiber: MyReactFiberNode) => {
+  const typedInstance = fiber.instance as MyReactComponent;
+
+  if (typedInstance._error.hasError) {
+    return classComponentUpdateFromError(fiber);
+  } else {
+    return classComponentUpdateFromNormal(fiber);
+  }
 };

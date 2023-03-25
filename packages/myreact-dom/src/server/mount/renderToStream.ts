@@ -41,8 +41,6 @@ const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, s
 
   rootFiber.renderController = renderController;
 
-  renderScope.isPending = true;
-
   renderScope.isServerRender = true;
 
   initialFiberNode(fiber);
@@ -82,8 +80,6 @@ const renderToStreamAsync = <T extends SimpleReadable>(element: MyReactElement, 
   rootFiber.renderDispatch = renderDispatch;
 
   rootFiber.renderController = renderController;
-
-  renderScope.isPending = true;
 
   renderScope.isServerRender = true;
 

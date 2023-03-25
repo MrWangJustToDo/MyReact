@@ -52,7 +52,10 @@ export const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__isScopeNode__) return `<Scope />`;
   if (fiber.type & NODE_TYPE.__isStrictNode__) return `<Strict />`;
   if (fiber.type & NODE_TYPE.__isSuspenseNode__) return `<Suspense />`;
-  if (fiber.type & NODE_TYPE.__isFragmentNode__) return `<Fragment />`;
+  if (fiber.type & NODE_TYPE.__isFragmentNode__) {
+    if (fiber.pendingProps["wrap"]) return `<Fragment - (wrap) />`;
+    return `<Fragment />`;
+  }
   if (fiber.type & NODE_TYPE.__isKeepLiveNode__) return `<KeepAlive />`;
   if (fiber.type & NODE_TYPE.__isContextProvider__) return `<Provider />`;
   if (fiber.type & NODE_TYPE.__isContextConsumer__) return `<Consumer />`;

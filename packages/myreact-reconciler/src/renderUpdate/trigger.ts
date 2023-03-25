@@ -4,7 +4,7 @@ import { updateAll, updateAllWithConcurrent } from "./feature";
 
 import type { RenderDispatch } from "../renderDispatch";
 import type { RenderPlatform } from "../runtimePlatform";
-import type { MyReactFiberNode, RenderController, RenderScope } from "@my-react/react";
+import type { MyReactFiberNode, RenderController, RenderScope, MyReactComponent } from "@my-react/react";
 
 const { globalLoop } = __my_react_internal__;
 
@@ -18,7 +18,6 @@ const updateEntry = (renderController: RenderController, renderDispatch: RenderD
   }
 };
 
-// TODO trigger error need a full update
 export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
   const renderScope = fiber.root.renderScope;
 
@@ -26,23 +25,18 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
-  const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
-
   const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
 
   if (errorBoundariesFiber) {
-    errorBoundariesFiber._triggerUpdate();
+    const typedInstance = errorBoundariesFiber.instance as MyReactComponent;
 
-    // clear current scope
-    renderController.reset();
+    typedInstance._error = {
+      error: error,
+      trigger: fiber,
+      hasError: true,
+    };
 
-    renderController.setTopLevelFiber(errorBoundariesFiber);
-
-    const nextFiber = renderController.performToNextFiberOnError(errorBoundariesFiber, error, fiber);
-
-    renderController.setYieldFiber(nextFiber);
-
-    updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform);
+    errorBoundariesFiber._update();
   } else {
     renderController.reset();
 
@@ -61,7 +55,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
 
   if (renderScope.isAppCrashed) return;
 
-  if (renderScope.isPending) {
+  if (!renderScope.isAppMounted) {
     if (__DEV__) console.log("pending, can not update component");
 
     renderPlatform.macroTask(() => triggerUpdate(fiber));
@@ -84,6 +78,8 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
   if (beforeLength === afterLength) return;
 
   if (globalLoop.current) return;
+
+  globalLoop.current = true;
 
   if (enableSyncFlush.current) {
     updateAll(renderController, renderDispatch, renderScope, renderPlatform);

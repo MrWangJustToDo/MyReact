@@ -1,12 +1,6 @@
 import { ListTree, PATCH_TYPE, UniqueArray, UPDATE_TYPE } from "@my-react/react-shared";
 
-import {
-  performToNextFiber,
-  performToNextFiberAsync,
-  performToNextFiberOnError,
-  performToNextFiberOnMount,
-  performToNextFiberOnMountAsync,
-} from "../renderNextWork";
+import { performToNextFiber, performToNextFiberAsync, performToNextFiberOnMount, performToNextFiberOnMountAsync } from "../renderNextWork";
 
 import type { MyReactFiberNode, RenderController, RenderScope } from "@my-react/react";
 
@@ -91,9 +85,9 @@ export class CustomRenderController implements RenderController {
       throw new Error("runtime error for @my-react");
     }
 
-    // if (_fiber.patch & (PATCH_TYPE.__pendingUpdate__ | PATCH_TYPE.__pendingPosition__ | PATCH_TYPE.__pendingUnmount__)) {
-    //   this.hasUiUpdate = true;
-    // }
+    if (_fiber.patch & (PATCH_TYPE.__pendingUpdate__ | PATCH_TYPE.__pendingPosition__ | PATCH_TYPE.__pendingUnmount__)) {
+      this.hasUiUpdate = true;
+    }
 
     generatePendingCommitFiberList(_fiber);
   }
@@ -142,10 +136,6 @@ export class CustomRenderController implements RenderController {
 
   performToNextFiberOnMountAsync(_fiber: MyReactFiberNode): Promise<MyReactFiberNode | null> {
     return performToNextFiberOnMountAsync(_fiber);
-  }
-
-  performToNextFiberOnError(_fiber: MyReactFiberNode, _error: Error, _targetFiber: MyReactFiberNode): MyReactFiberNode | null {
-    return performToNextFiberOnError(_fiber, _error, _targetFiber);
   }
 
   reset(): void {

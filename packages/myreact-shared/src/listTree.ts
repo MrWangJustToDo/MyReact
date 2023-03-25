@@ -15,18 +15,17 @@ export class ListTree<T> {
   foot: ListTreeNode<T> | null = null;
 
   append(node: T) {
-    this.length++;
     const listNode = new ListTreeNode(node);
     this._push(listNode);
   }
 
   push(node: T) {
-    this.length++;
     const listNode = new ListTreeNode(node);
     this._push(listNode);
   }
 
   _push(node: ListTreeNode<T>) {
+    this.length++;
     if (!this.foot) {
       this.head = node;
       this.foot = node;
@@ -43,6 +42,7 @@ export class ListTree<T> {
   }
 
   _unshift(node: ListTreeNode<T>) {
+    this.length++;
     if (!this.head) {
       this.head = node;
       this.foot = node;
@@ -64,6 +64,7 @@ export class ListTree<T> {
         this.head = null;
         this.foot = null;
       }
+      this.length--;
       return re.value;
     } else {
       return null;
@@ -81,6 +82,7 @@ export class ListTree<T> {
         this.head = null;
         this.foot = null;
       }
+      this.length--;
       return re.value;
     } else {
       return null;

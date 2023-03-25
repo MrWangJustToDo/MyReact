@@ -1,5 +1,5 @@
 import { createElement, isValidElement } from "@my-react/react";
-import { Fragment, UPDATE_TYPE } from "@my-react/react-shared";
+import { Fragment, ListTree, UPDATE_TYPE } from "@my-react/react-shared";
 
 import { createFiberNode, updateFiberNode } from "../runtimeFiber";
 import { checkIsSameType, NODE_TYPE } from "../share";
@@ -18,7 +18,7 @@ const getIsSameTypeNode = (newChild: MyReactElementNode, draftFiber?: MyReactFib
 };
 
 const getExistingChildren = (parentFiber: MyReactFiberNode) => {
-  const existingChildrenMap = new Map<string | number, MyReactFiberNode>();
+  const existingChildrenMap = new Map<string | number, ListTree<MyReactFiberNode>>();
 
   const existingChildrenArray: MyReactFiberNode[] = [];
 
@@ -29,7 +29,11 @@ const getExistingChildren = (parentFiber: MyReactFiberNode) => {
   while (child) {
     const key = typeof child.key === "string" ? child.key : index;
 
-    existingChildrenMap.set(key, child);
+    const existingChild = existingChildrenMap.get(key) || new ListTree();
+
+    existingChild.push(child);
+
+    existingChildrenMap.set(key, existingChild);
 
     existingChildrenArray.push(child);
 
@@ -60,25 +64,30 @@ const createFragmentWithUpdate = (newChild: ArrayMyReactElementChildren, parentF
   return newFiber;
 };
 
-const deleteIfNeed = (parentFiber: MyReactFiberNode, existingChildren: Map<string | number, MyReactFiberNode>) => {
+const deleteIfNeed = (parentFiber: MyReactFiberNode, existingChildren: Map<string | number, ListTree<MyReactFiberNode>>) => {
   const renderDispatch = parentFiber.root.renderDispatch as RenderDispatch;
 
-  if (existingChildren.size) existingChildren.forEach((f) => renderDispatch.pendingUnmount(parentFiber, f));
+  if (existingChildren.size) existingChildren.forEach((list) => list.listToFoot((f) => renderDispatch.pendingUnmount(parentFiber, f)));
 };
 
 const getNewFiberWithUpdate = (
   newChild: MaybeArrayMyReactElementNode,
   parentFiber: MyReactFiberNode,
-  existingChildren: Map<string | number, MyReactFiberNode>,
+  existingChildren: Map<string | number, ListTree<MyReactFiberNode>>,
   prevFiberChild: MyReactFiberNode | null,
   index: number
 ): MyReactFiberNode => {
   const renderDispatch = parentFiber.root.renderDispatch as RenderDispatch;
 
   if (Array.isArray(newChild)) {
-    const draftFiber = existingChildren.get(index);
+    const draftList = existingChildren.get(index);
 
-    existingChildren.delete(index);
+    // TODO try to get the same type node?
+    const draftFiber = draftList?.shift();
+
+    if (draftList && !draftList.size()) {
+      existingChildren.delete(index);
+    }
 
     // same type
     if (draftFiber?.type & NODE_TYPE.__isFragmentNode__) {
@@ -94,9 +103,13 @@ const getNewFiberWithUpdate = (
 
   const keyToGet = isValidElement(newChild) && typeof newChild.key === "string" ? newChild.key : index;
 
-  const draftFiber = existingChildren.get(keyToGet);
+  const draftList = existingChildren.get(keyToGet);
 
-  existingChildren.delete(keyToGet);
+  const draftFiber = draftList?.shift();
+
+  if (draftList && !draftList.size()) {
+    existingChildren.delete(keyToGet);
+  }
 
   const isSameType = getIsSameTypeNode(newChild, draftFiber);
 
@@ -110,7 +123,8 @@ const getNewFiberWithUpdate = (
 };
 
 const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFiber: MyReactFiberNode): MyReactFiberNode => {
-  // cool !
+  // wrapper array child item as a Fragment fiber node, so all of the children will be a fiber node
+  // and could be add to the child list
   if (Array.isArray(newChild)) return createFragmentWithInitial(newChild, parentFiber);
 
   return createFiberNode({ parent: parentFiber }, newChild as MyReactElementNode);

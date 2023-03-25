@@ -3,8 +3,6 @@ import { PATCH_TYPE } from "@my-react/react-shared";
 import { unmountFiberNode } from "../runtimeFiber";
 import { generateFiberToList } from "../share";
 
-import { flatten } from "./tools";
-
 import type { RenderDispatch } from "../renderDispatch";
 import type { RenderPlatform } from "../runtimePlatform";
 import type { MyReactFiberNode } from "@my-react/react";
@@ -12,16 +10,14 @@ import type { ListTree } from "@my-react/react-shared";
 
 export const defaultGenerateUnmountArrayMap = (
   fiber: MyReactFiberNode,
-  unmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>,
+  unmount: MyReactFiberNode,
   map: WeakMap<MyReactFiberNode, Array<ListTree<MyReactFiberNode>>>
 ) => {
-  const allUnmount = flatten(unmount);
-
   const exist = map.get(fiber) || [];
 
-  const newPending = allUnmount.map(generateFiberToList);
+  const newPending = generateFiberToList(unmount);
 
-  exist.push(...newPending);
+  exist.push(newPending);
 
   map.set(fiber, exist);
 };

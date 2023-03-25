@@ -20,9 +20,7 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   } else if (fiber.type & NODE_TYPE.__isPortal__) {
     fiber.node = fiber.pendingProps["container"] as Element;
 
-    if (__DEV__) {
-      (fiber.node as Element).setAttribute?.("portal", "MyReact");
-    }
+    if (__DEV__) (fiber.node as Element).setAttribute?.("portal", "MyReact");
   } else if (fiber.type & NODE_TYPE.__isCommentNode__) {
     if (isCommentStartElement(fiber)) {
       fiber.node = document.createComment(commentS);

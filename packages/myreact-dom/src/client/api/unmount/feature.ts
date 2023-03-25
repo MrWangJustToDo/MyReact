@@ -10,10 +10,18 @@ const clearFiberDom = (fiber: MyReactFiberNode) => {
 
       dom.parentElement?.removeChild(dom);
     } else {
-      fiber.children.forEach(clearFiberDom);
+      let child = fiber.child;
+      while (child) {
+        clearFiberDom(child);
+        child = child.sibling;
+      }
     }
   } else {
-    fiber.children.forEach(clearFiberDom);
+    let child = fiber.child;
+    while (child) {
+      clearFiberDom(child);
+      child = child.sibling;
+    }
   }
 };
 

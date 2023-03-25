@@ -9,17 +9,14 @@ export type Action = (s: any) => any | { type: string; payload: any };
 export type Reducer = (state?: any, action?: Action) => any;
 
 export type CreateHookParams = {
-  hookIndex: number;
-  hookType: HOOK_TYPE;
+  type: HOOK_TYPE;
   value: unknown;
   reducer: Reducer | null;
   deps: unknown[];
 };
 
 export class MyReactHookNode extends MyReactInternalInstance {
-  hookIndex = 0;
-
-  hookType: HOOK_TYPE;
+  type: HOOK_TYPE;
 
   cancel: (() => void) | null = null;
 
@@ -33,13 +30,12 @@ export class MyReactHookNode extends MyReactInternalInstance {
 
   result: any = null;
 
-  constructor(hookIndex: number, hookType: HOOK_TYPE, value: any, reducer: Reducer, deps: any[]) {
+  constructor(type: HOOK_TYPE, value: any, reducer: Reducer, deps: any[]) {
     super();
+    this.type = type;
     this.deps = deps;
     this.value = value;
     this.reducer = reducer;
-    this.hookType = hookType;
-    this.hookIndex = hookIndex;
   }
 
   get isMyReactHook() {

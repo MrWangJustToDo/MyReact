@@ -2,7 +2,7 @@ import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
 
 import type { RenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode, MyReactComponent , MixinMyReactClassComponent} from "@my-react/react";
+import type { MyReactFiberNode, MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
 const { enableLegacyLifeCycle, enableStrictLifeCycle } = __my_react_shared__;
 
@@ -184,7 +184,6 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
     } else {
       const context = renderDispatch.resolveContextValue(typedInstance._contextFiber, typedComponent.contextType);
 
-      // for ReActive component, we need set context fiber again
       typedInstance?._setContext(typedInstance._contextFiber);
 
       return context;

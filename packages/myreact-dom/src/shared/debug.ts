@@ -2,6 +2,7 @@ import { __my_react_internal__ } from "@my-react/react";
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
 import type { MyReactElement, MyReactHookNode, MyReactFiberNode, MixinMyReactClassComponent, MixinMyReactFunctionComponent, lazy } from "@my-react/react";
+import type { ListTreeNode } from "@my-react/react-shared";
 
 const { currentRunningFiber } = __my_react_internal__;
 
@@ -98,19 +99,20 @@ export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   }
 };
 
-export const getHookTree = (hookNodes: MyReactHookNode[], currentIndex: number, newHookType: MyReactHookNode["hookType"]) => {
-  let re = "\n" + "".padEnd(6) + "Prev render:".padEnd(20) + "Next render:".padEnd(10) + "\n";
-  for (let index = 0; index <= currentIndex; index++) {
-    if (index < currentIndex) {
-      const currentType = hookNodes[index]?.hookType || "undefined";
-      re += (index + 1).toString().padEnd(6) + currentType.padEnd(20) + currentType.padEnd(10) + "\n";
-    } else {
-      const currentType = hookNodes[index]?.hookType || "undefined";
-      re += (index + 1).toString().padEnd(6) + currentType.padEnd(20) + newHookType.padEnd(10) + "\n";
-    }
+export const getHookTree = (
+  treeHookNode: ListTreeNode<MyReactHookNode>,
+  errorType: { lastRender: MyReactHookNode["type"]; nextRender: MyReactHookNode["type"] }
+) => {
+  const pre = "".toString().padEnd(5);
+  const re = "\n" + pre + "Last render:".padEnd(20) + "Next render:".padEnd(10) + "\n";
+  let stack = pre + errorType.lastRender.padEnd(20) + errorType.nextRender.padEnd(10) + "\n";
+  while (treeHookNode && treeHookNode.value) {
+    const t = treeHookNode.value.type;
+    stack = pre + t.padEnd(20) + t.padEnd(10) + "\n" + stack;
+    treeHookNode = treeHookNode.prev;
   }
-  re += "".padEnd(6) + "^".repeat(30) + "\n";
-  return re;
+  stack += pre + "^".repeat(30) + "\n";
+  return re + stack;
 };
 
 const cache: Record<string, Record<string, boolean>> = {};
@@ -149,7 +151,10 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
         `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
         "\n-----------------------------------------\n",
         "Render Tree:",
-        tree
+        tree,
+        "\n-----------------------------------------\n",
+        "fiber: ",
+        fiber
       );
     }
     return;

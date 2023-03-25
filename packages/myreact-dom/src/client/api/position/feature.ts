@@ -1,7 +1,8 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
+import { getFiberWithNativeDom } from "@my-react-dom-shared";
+
 import { append } from "./append";
-import { getFiberWithDom } from "./getFiberWithDom";
 import { getInsertBeforeDomFromSiblingAndParent } from "./getInsertBeforeDom";
 import { insertBefore } from "./insertBefore";
 
@@ -13,7 +14,7 @@ export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFib
     const renderPlatform = fiber.root.renderPlatform as ClientDomPlatform;
 
     if (!parentFiberWithDom.isMounted) {
-      parentFiberWithDom = getFiberWithDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
+      parentFiberWithDom = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
       const elementObj = renderPlatform.elementMap.get(fiber);
 
@@ -22,7 +23,7 @@ export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFib
       renderPlatform.elementMap.set(fiber, elementObj);
     }
 
-    if (!parentFiberWithDom.node) throw new Error("position error, dom not exist");
+    if (!parentFiberWithDom?.node) throw new Error("position error, dom not exist");
 
     const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithDom);
 

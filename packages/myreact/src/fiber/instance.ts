@@ -38,10 +38,6 @@ export class MyReactFiberNode {
 
   node: RenderNode | null = null;
 
-  children: MyReactFiberNode[] = [];
-
-  return: Array<MyReactFiberNode[] | MyReactFiberNode> | MyReactFiberNode | null = null;
-
   child: MyReactFiberNode | null = null;
 
   root: MyReactFiberNodeRoot;
@@ -54,7 +50,7 @@ export class MyReactFiberNode {
 
   dependence: Set<MyReactInternalInstance> = new Set();
 
-  hookNodes: MyReactHookNode[] = [];
+  hookList: ListTree<MyReactHookNode> = new ListTree();
 
   element: MyReactElementNode;
 
@@ -83,15 +79,9 @@ export class MyReactFiberNode {
   }
 
   _addChild(child: MyReactFiberNode) {
-    const last = this.children[this.children.length - 1];
-
-    if (last) {
-      last.sibling = child;
-    } else {
+    if (!this.child) {
       this.child = child;
     }
-
-    this.children.push(child);
   }
 
   _installParent(parent: MyReactFiberNode | null) {
@@ -112,10 +102,6 @@ export class MyReactFiberNode {
 
   _beforeUpdate() {
     this.child = null;
-
-    this.children = [];
-
-    this.return = null;
   }
 
   // current fiber call .update() function
@@ -137,7 +123,7 @@ export class MyReactFiberNode {
   }
 
   _addHook(hookNode: MyReactHookNode) {
-    this.hookNodes.push(hookNode);
+    this.hookList.push(hookNode);
   }
 
   _applyProps() {
@@ -161,7 +147,7 @@ export class MyReactFiberNode {
 
   _unmount() {
     if (!this.isMounted) return;
-    this.hookNodes.forEach((h) => h._unmount());
+    this.hookList.listToFoot((h) => h._unmount());
     this.instance && this.instance._unmount();
     this.mode = UPDATE_TYPE.__initial__;
     this.patch = PATCH_TYPE.__initial__;

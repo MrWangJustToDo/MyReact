@@ -24,11 +24,9 @@ interface DefaultRenderController {
 
   performToNextFiberAsync(_fiber: MyReactFiberNode): Promise<MyReactFiberNode | null>;
 
-  performToNextArray(_fiber: MyReactFiberNode): MyReactFiberNode[];
+  performToNextFiberOnMount(_fiber: MyReactFiberNode): MyReactFiberNode | null;
 
-  performToNextArrayAsync(_fiber: MyReactFiberNode): Promise<MyReactFiberNode[]>;
-
-  performToNextArrayOnError(_fiber: MyReactFiberNode, _error: Error, _targetFiber: MyReactFiberNode): MyReactFiberNode[];
+  performToNextFiberOnMountAsync(_fiber: MyReactFiberNode): Promise<MyReactFiberNode | null>;
 
   performToNextFiberOnError(_fiber: MyReactFiberNode, _error: Error, _targetFiber: MyReactFiberNode): MyReactFiberNode | null;
 

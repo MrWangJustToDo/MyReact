@@ -65,7 +65,7 @@ export type RenderDispatch = OriginalRenderDispatch<{
 
   pendingRef(_fiber: MyReactFiberNode): void;
 
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | Array<MyReactFiberNode | MyReactFiberNode[]>): void;
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void;
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void;
 

@@ -13,10 +13,10 @@ const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;
 };
 
-export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode) => {
+export const createHookNode = ({ type, value, reducer, deps }: CreateHookParams, fiber: MyReactFiberNode) => {
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
-  const hookNode = new MyReactHookNode(props.hookIndex, props.hookType, props.value, props.reducer || defaultReducer, props.deps);
+  const hookNode = new MyReactHookNode(type, value, reducer || defaultReducer, deps);
 
   hookNode._setOwner(fiber);
 
@@ -24,19 +24,19 @@ export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode)
 
   if (__DEV__) checkHookValid(hookNode);
 
-  if (hookNode.hookType === HOOK_TYPE.useMemo || hookNode.hookType === HOOK_TYPE.useState || hookNode.hookType === HOOK_TYPE.useReducer) {
+  if (hookNode.type === HOOK_TYPE.useMemo || hookNode.type === HOOK_TYPE.useState || hookNode.type === HOOK_TYPE.useReducer) {
     hookNode.result = hookNode.value.call(null);
   }
 
-  if (hookNode.hookType === HOOK_TYPE.useEffect || hookNode.hookType === HOOK_TYPE.useLayoutEffect || hookNode.hookType === HOOK_TYPE.useImperativeHandle) {
+  if (hookNode.type === HOOK_TYPE.useEffect || hookNode.type === HOOK_TYPE.useLayoutEffect || hookNode.type === HOOK_TYPE.useImperativeHandle) {
     hookNode.effect = true;
   }
 
-  if (hookNode.hookType === HOOK_TYPE.useRef || hookNode.hookType === HOOK_TYPE.useCallback) {
+  if (hookNode.type === HOOK_TYPE.useRef || hookNode.type === HOOK_TYPE.useCallback) {
     hookNode.result = hookNode.value;
   }
 
-  if (hookNode.hookType === HOOK_TYPE.useContext) {
+  if (hookNode.type === HOOK_TYPE.useContext) {
     const ProviderFiber = renderDispatch.resolveContextFiber(hookNode._ownerFiber as MyReactFiberNode, hookNode.value);
 
     const context = renderDispatch.resolveContextValue(ProviderFiber, hookNode.value);
@@ -48,7 +48,7 @@ export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode)
     hookNode.context = context;
   }
 
-  if (hookNode.hookType === HOOK_TYPE.useSignal) {
+  if (hookNode.type === HOOK_TYPE.useSignal) {
     hookNode.result = new MyReactSignal(hookNode.value.call(null));
   }
 
@@ -57,7 +57,7 @@ export const createHookNode = (props: CreateHookParams, fiber: MyReactFiberNode)
 
     typedFiber._debugHookTypes = typedFiber._debugHookTypes || [];
 
-    typedFiber._debugHookTypes.push(hookNode.hookType);
+    typedFiber._debugHookTypes.push(hookNode.type);
   }
 
   return hookNode;

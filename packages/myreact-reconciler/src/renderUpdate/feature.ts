@@ -40,8 +40,7 @@ export const updateAllWithConcurrent = (
   const hasUpdate = !!renderScope.pendingCommitFiberListArray.length;
 
   if (renderController.hasNext()) {
-    // for a large render change, this step cause the UI change have a little slow
-    if (hasUpdate && renderController.hasUiUpdate) {
+    if (hasUpdate) {
       renderPlatform.yieldTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));
     } else {
       renderPlatform.microTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));

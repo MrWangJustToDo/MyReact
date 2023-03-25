@@ -18,6 +18,7 @@ const updateEntry = (renderController: RenderController, renderDispatch: RenderD
   }
 };
 
+// TODO trigger error need a full update
 export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
   const renderScope = fiber.root.renderScope;
 

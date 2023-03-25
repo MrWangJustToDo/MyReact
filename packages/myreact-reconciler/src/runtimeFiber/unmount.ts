@@ -5,6 +5,8 @@ import type { MyReactFiberNode } from "@my-react/react";
 export const unmountFiberNode = (fiber: MyReactFiberNode) => {
   if (!fiber.isMounted) return;
 
+  fiber.isMounted = false;
+
   const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
 
   const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
@@ -27,21 +29,17 @@ export const unmountFiberNode = (fiber: MyReactFiberNode) => {
 
   renderDispatch.eventMap.delete(fiber);
 
-  fiber.node = null;
+  if (!`${__DEV__}`) {
+    fiber.node = null;
 
-  fiber.child = null;
+    fiber.child = null;
 
-  fiber.return = null;
+    fiber.sibling = null;
 
-  fiber.sibling = null;
+    fiber.instance = null;
 
-  fiber.children = null;
+    fiber.hookList = null;
 
-  fiber.instance = null;
-
-  fiber.hookNodes = null;
-
-  fiber.dependence = null;
-
-  fiber.isMounted = false;
+    fiber.dependence = null;
+  }
 };

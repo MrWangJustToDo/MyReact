@@ -10,6 +10,8 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugDynamicChildren: MaybeArrayMyReactElementNode;
 
+  _debugChildren: MyReactFiberNode[];
+
   _debugSuspense: MyReactElementNode;
 
   _debugStrict: boolean;

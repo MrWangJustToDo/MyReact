@@ -66,6 +66,20 @@
         );
       };
 
+      const GGGG = ({ children }) => {
+        console.log(children);
+
+        return children;
+      };
+
+      const BBGG = () => {
+        const re = <GGGG>{[[[<div>1</div>, <div>2</div>]]]}</GGGG>;
+
+        console.log(re);
+
+        return re;
+      };
+
       ReactDOM.render(<F />, document.querySelector("#root"));
     </script>
   </body>

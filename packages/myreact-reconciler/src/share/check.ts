@@ -78,18 +78,18 @@ export const checkElementValid = (element: MyReactElementNode) => {
 
 export const checkHookValid = (hookNode: MyReactHookNode) => {
   if (
-    hookNode.hookType === HOOK_TYPE.useMemo ||
-    hookNode.hookType === HOOK_TYPE.useEffect ||
-    hookNode.hookType === HOOK_TYPE.useCallback ||
-    hookNode.hookType === HOOK_TYPE.useLayoutEffect
+    hookNode.type === HOOK_TYPE.useMemo ||
+    hookNode.type === HOOK_TYPE.useEffect ||
+    hookNode.type === HOOK_TYPE.useCallback ||
+    hookNode.type === HOOK_TYPE.useLayoutEffect
   ) {
     if (typeof hookNode.value !== "function") {
-      throw new Error(`${hookNode.hookType} initial error`);
+      throw new Error(`${hookNode.type} initial error`);
     }
   }
-  if (hookNode.hookType === HOOK_TYPE.useContext) {
+  if (hookNode.type === HOOK_TYPE.useContext) {
     if (typeof hookNode.value !== "object" || hookNode.value === null) {
-      throw new Error(`${hookNode.hookType} initial error`);
+      throw new Error(`${hookNode.type} initial error`);
     }
   }
 };
@@ -98,7 +98,6 @@ export const debugWithNode = (fiber: MyReactFiberNode) => {
   if (fiber.node) {
     const node = fiber.node as any;
     node.__fiber__ = fiber;
-    node.__element__ = fiber.element;
-    node.__children__ = fiber.children;
+    node.__props__ = fiber.pendingProps;
   }
 };

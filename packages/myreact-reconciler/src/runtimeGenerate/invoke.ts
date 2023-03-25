@@ -17,18 +17,16 @@ import type {
   forwardRef,
 } from "@my-react/react";
 
-const { currentHookDeepIndex, currentFunctionFiber, currentComponentFiber } = __my_react_internal__;
+const { currentHookTreeNode, currentFunctionFiber, currentComponentFiber } = __my_react_internal__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
-  const childrenFiber = transformChildrenFiber(fiber, children);
+  transformChildrenFiber(fiber, children);
 
   if (__DEV__) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
     typedFiber._debugDynamicChildren = children;
   }
-
-  return childrenFiber;
 };
 
 export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
@@ -44,13 +42,13 @@ export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
     } else {
       fiber._afterUpdate();
 
-      return [];
+      return void 0;
     }
   }
 };
 
 export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
-  currentHookDeepIndex.current = 0;
+  currentHookTreeNode.current = fiber.hookList.head;
 
   currentFunctionFiber.current = fiber;
 
@@ -67,7 +65,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
 
   currentFunctionFiber.current = null;
 
-  currentHookDeepIndex.current = 0;
+  currentHookTreeNode.current = null;
 
   return nextWorkCommon(fiber, children);
 };
@@ -137,7 +135,6 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   currentComponentFiber.current = fiber;
 
-  // for deactivated context fiber, maybe will not update children context, but all the children has deactivated, so it will not matter
   if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.isMounted) {
     const ProviderFiber = renderDispatch.resolveContextFiber(fiber, Context);
 

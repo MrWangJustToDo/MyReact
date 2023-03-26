@@ -1,8 +1,10 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
+import type { RenderPlatform } from "../runtimePlatform";
 import type { MyReactFiberNode } from "@my-react/react";
 
 const { currentFunctionFiber } = __my_react_internal__;
+const { enableSyncFlush } = __my_react_shared__;
 
 export class MyReactSignal<T = any> {
   private _value: T;
@@ -26,17 +28,19 @@ export class MyReactSignal<T = any> {
     if (!Object.is(this._value, newValue)) {
       const allDeps = new Set(this._depsSet);
 
-      // const renderPlatform = this._fiber.root.renderPlatform as RenderPlatform;
+      const renderPlatform = this._fiber.root.renderPlatform as RenderPlatform;
 
       this._depsSet.clear();
 
-      // if (renderPlatform) {
-      this._fiber = null;
+      if (renderPlatform) {
+        this._fiber = null;
 
-      allDeps.forEach((f) => f._update());
-
-      // renderPlatform.microTask(() => allDeps.forEach((f) => f._update()));
-      // }
+        renderPlatform.microTask(() => {
+          // enableSyncFlush.current = true;
+          allDeps.forEach((f) => f._update());
+          // enableSyncFlush.current = false;
+        });
+      }
 
       this._value = newValue;
     }

@@ -1,9 +1,13 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MyReactFiberNode, createContext } from "@my-react/react";
+import type { RenderPlatform } from "../runtimePlatform";
+import type { MyReactFiberNode, createContext} from "@my-react/react";
+
+const { enableSyncFlush } = __my_react_shared__;
 
 const emptyObj = {};
 
@@ -40,11 +44,14 @@ export const context = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__pendingContext__) {
     const set = new Set(fiber.dependence);
 
-    // const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
+    const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
 
-    set.forEach((i) => i._ownerFiber?._update());
-
-    // renderPlatform.microTask(() => set.forEach((i) => i._ownerFiber?._update()));
+    // TODO flush on root
+    renderPlatform.microTask(() => {
+      // enableSyncFlush.current = true;
+      set.forEach((i) => i._ownerFiber?._update());
+      // enableSyncFlush.current = false;
+    });
 
     if (fiber.patch & PATCH_TYPE.__pendingContext__) fiber.patch ^= PATCH_TYPE.__pendingContext__;
   }

@@ -18,13 +18,15 @@ const reconcileUpdate = (renderDispatch: RenderDispatch, renderScope: RenderScop
 };
 
 export const updateAll = (renderController: RenderController, renderDispatch: RenderDispatch, renderScope: RenderScope, renderPlatform: RenderPlatform) => {
-  // globalLoop.current = true;
-
   safeCall(() => updateLoop(renderController));
 
   reconcileUpdate(renderDispatch, renderScope, renderPlatform);
 
-  globalLoop.current = false;
+  if (renderController.hasNext()) {
+    renderPlatform.yieldTask(() => updateAll(renderController, renderDispatch, renderScope, renderPlatform));
+  } else {
+    globalLoop.current = false;
+  }
 };
 
 export const updateAllWithConcurrent = (
@@ -33,11 +35,11 @@ export const updateAllWithConcurrent = (
   renderScope: RenderScope,
   renderPlatform: RenderPlatform
 ) => {
-  // globalLoop.current = true;
-
   safeCall(() => updateLoopWithConcurrent(renderController));
 
   const hasUpdate = !!renderScope.pendingCommitFiberListArray.length;
+
+  hasUpdate && reconcileUpdate(renderDispatch, renderScope, renderPlatform);
 
   if (renderController.hasNext()) {
     if (hasUpdate && renderController.hasUiUpdate) {
@@ -50,6 +52,4 @@ export const updateAllWithConcurrent = (
   }
 
   renderController.hasUiUpdate = false;
-
-  hasUpdate && reconcileUpdate(renderDispatch, renderScope, renderPlatform);
 };

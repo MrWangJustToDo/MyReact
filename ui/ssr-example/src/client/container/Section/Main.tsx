@@ -77,6 +77,7 @@ export const MainSection = () => {
               fontSize="inherit"
               borderRadius="full"
               colorScheme="teal"
+              display={{ base: "none", lg: "inline-flex" }}
               as="a"
               href="https://mrwangjusttodo.github.io/MrWangJustToDo.io?overlay=open&playGround=MyReact"
               target="_blank"

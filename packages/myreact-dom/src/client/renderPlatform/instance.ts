@@ -35,7 +35,7 @@ const flashTask = () => {
 
   pending = true;
 
-  microTask(() => {
+  setTimeout(() => {
     const allTask = new Set(set);
 
     set.clear();

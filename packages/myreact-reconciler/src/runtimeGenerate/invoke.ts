@@ -118,7 +118,7 @@ export const nextWorkNormal = (fiber: MyReactFiberNode) => {
   } else {
     fiber._afterUpdate();
 
-    return [];
+    return void 0;
   }
 };
 

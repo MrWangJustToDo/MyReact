@@ -28,6 +28,7 @@ import {
   globalLoop,
   enableDebugLog,
   enableSyncFlush,
+  enableUpdateFromRoot,
   enableConcurrentMode,
   enableLegacyLifeCycle,
   enableStrictLifeCycle,
@@ -43,6 +44,7 @@ const __my_react_shared__ = {
   enableDebugLog,
   enableSyncFlush,
   enableConcurrentMode,
+  enableUpdateFromRoot,
   enableLegacyLifeCycle,
   enableStrictLifeCycle,
 };

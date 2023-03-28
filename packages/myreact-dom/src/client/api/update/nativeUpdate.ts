@@ -7,15 +7,16 @@ import { addEventListener, removeEventListener } from "../helper";
 import { HighLight } from "./highlight";
 import { XLINK_NS, XML_NS, X_CHAR } from "./tool";
 
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { ClientDomContainer } from "@my-react-dom-client/renderContainer";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
-  if (!fiber.node) throw new Error("update error, dom not exist");
+  if (!fiber.nativeNode) throw new Error("update error, dom not exist");
 
-  const renderScope = fiber.root.renderScope;
+  const renderContainer = fiber.container as ClientDomContainer;
 
-  const node = fiber.node as DomElement | DomNode;
+  const node = fiber.nativeNode as DomElement | DomNode;
 
   if (fiber.type & NODE_TYPE.__isTextNode__) {
     node.textContent = fiber.element as string;
@@ -112,7 +113,12 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     }
   }
 
-  if (renderScope.isAppMounted && !renderScope.isHydrateRender && !renderScope.isServerRender && (enableHighlight.current || (window as any).__highlight__)) {
+  if (
+    renderContainer.isAppMounted &&
+    !renderContainer.isHydrateRender &&
+    !renderContainer.isServerRender &&
+    (enableHighlight.current || (window as any).__highlight__)
+  ) {
     HighLight.getHighLightInstance().highLight(fiber);
   }
 };

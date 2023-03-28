@@ -1,5 +1,5 @@
 import type { HydrateDOM } from "../create/getHydrateDom";
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const fallback = (fiber: MyReactFiberNode) => {
   const pendingDeleteArray: Element[] = [];
@@ -27,7 +27,7 @@ export const fallback = (fiber: MyReactFiberNode) => {
     });
   };
 
-  const container = fiber.root.node as HTMLElement;
+  const container = fiber.container.rootNode as HTMLElement;
 
   Array.from(container.childNodes).forEach(clearHydrate);
 

@@ -3,22 +3,26 @@ import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { isArrayEquals } from "../share";
 
-import type { RenderDispatch } from "../renderDispatch";
-import type { CreateHookParams, MyReactFiberNode } from "@my-react/react";
+import type { MyReactHookNode } from "./instance";
+import type { MyReactFiberNode } from "../runtimeFiber";
+import type { RenderHook } from "@my-react/react";
+import type { ListTreeNode } from "@my-react/react-shared";
 
 const { currentHookTreeNode } = __my_react_internal__;
 
-export const updateHookNode = ({ type, value, reducer, deps }: CreateHookParams, fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber: MyReactFiberNode) => {
+  const renderPlatform = fiber.container.renderPlatform;
 
-  const renderPlatform = fiber.root.renderPlatform;
+  const renderDispatch = fiber.container.renderDispatch;
 
-  const currentHook = currentHookTreeNode.current.value;
+  const currentHook = currentHookTreeNode.current.value as MyReactHookNode;
 
   if (type !== currentHook?.type) {
-    // change the hook type, TODO for hmr
     throw new Error(
-      renderPlatform.getHookTree(currentHookTreeNode.current.prev, { lastRender: currentHook?.type || ("undefined" as HOOK_TYPE), nextRender: type })
+      renderPlatform.getHookTree(currentHookTreeNode.current.prev as ListTreeNode<MyReactHookNode>, {
+        lastRender: currentHook?.type || ("undefined" as HOOK_TYPE),
+        nextRender: type,
+      })
     );
   }
 
@@ -98,7 +102,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: CreateHookParams,
 
       currentHook.context = context;
     } else {
-      const context = renderDispatch.resolveContextValue(currentHook._contextFiber, currentHook.value);
+      const context = renderDispatch.resolveContextValue(currentHook._contextFiber as MyReactFiberNode, currentHook.value);
 
       currentHook.result = context;
 

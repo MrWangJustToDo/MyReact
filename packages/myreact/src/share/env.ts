@@ -1,18 +1,20 @@
+
 import { createRef } from "./createRef";
 
-import type { MyReactFiberNode } from "../fiber";
-import type { MyReactHookNode } from "../hook";
+import type { RenderFiber } from "../renderFiber";
+import type { RenderHook } from "../renderHook";
+import type { RenderPlatform } from "../renderPlatform";
 import type { ListTreeNode } from "@my-react/react-shared";
 
 export const globalLoop = createRef(false);
 
-export const currentRunningFiber = createRef<MyReactFiberNode | null>(null);
+export const currentRunningFiber = createRef<RenderFiber | null>(null);
 
-export const currentComponentFiber = createRef<MyReactFiberNode | null>(null);
+export const currentComponentFiber = createRef<RenderFiber | null>(null);
 
-export const currentFunctionFiber = createRef<MyReactFiberNode | null>(null);
+export const currentRenderPlatform = createRef<RenderPlatform | null>(null);
 
-export const currentHookTreeNode = createRef<ListTreeNode<MyReactHookNode> | null>(null);
+export const currentHookTreeNode = createRef<ListTreeNode<RenderHook> | null>(null);
 
 // ==== feature ==== //
 export const enableDebugLog = createRef(false);

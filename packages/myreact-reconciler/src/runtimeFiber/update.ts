@@ -1,12 +1,11 @@
 import { isValidElement } from "@my-react/react";
-import { isNormalEquals, PATCH_TYPE, UPDATE_TYPE } from "@my-react/react-shared";
+import { isNormalEquals, PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
-import { debugWithNode, initialPropsFromELement, NODE_TYPE } from "../share";
+import { debugWithNode, getTypeFromElementNode, NODE_TYPE } from "../share";
 
+import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
-import type { RenderDispatch } from "../renderDispatch";
-import type { RenderPlatform } from "../runtimePlatform";
-import type { MyReactElementNode, MyReactFiberNode } from "@my-react/react";
+import type { MyReactElementNode } from "@my-react/react";
 
 export const updateFiberNode = (
   {
@@ -22,27 +21,35 @@ export const updateFiberNode = (
 ) => {
   const prevElement = fiber.element;
 
-  initialPropsFromELement(fiber, nextElement);
+  fiber.parent = parent;
 
-  fiber._installElement(nextElement);
+  fiber.sibling = null;
 
-  fiber._installParent(parent);
+  fiber.element = nextElement;
 
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  fiber.container = parent.container;
 
-  const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
+  parent.child = parent.child || fiber;
+
+  const { pendingProps, ref } = getTypeFromElementNode(nextElement);
+
+  fiber.ref = ref;
+
+  fiber.pendingProps = pendingProps;
+
+  const renderDispatch = fiber.container.renderDispatch;
 
   if (prevElement !== nextElement) {
     if (fiber.type & NODE_TYPE.__isMemo__) {
-      if (!(fiber.mode & UPDATE_TYPE.__triggerUpdate__) && isNormalEquals(fiber.pendingProps, fiber.memoizedProps)) {
-        fiber._afterUpdate();
+      if (!(fiber.state & STATE_TYPE.__trigger__) && isNormalEquals(fiber.pendingProps, fiber.memoizedProps)) {
+        fiber.state = STATE_TYPE.__stable__;
       } else {
-        fiber._prepareUpdate();
+        fiber.state = STATE_TYPE.__inherit__;
 
-        renderPlatform.patchToFiberUpdate?.(fiber);
+        renderDispatch.patchToFiberUpdate?.(fiber);
       }
     } else {
-      fiber._prepareUpdate();
+      fiber.state = STATE_TYPE.__inherit__;
 
       if (fiber.type & NODE_TYPE.__isContextProvider__) {
         if (!isNormalEquals(fiber.pendingProps.value as Record<string, unknown>, fiber.memoizedProps.value as Record<string, unknown>)) {
@@ -60,7 +67,7 @@ export const updateFiberNode = (
         renderDispatch.pendingUpdate(fiber);
       }
 
-      renderPlatform.patchToFiberUpdate?.(fiber);
+      renderDispatch.patchToFiberUpdate?.(fiber);
     }
   }
 
@@ -72,8 +79,8 @@ export const updateFiberNode = (
     renderDispatch.pendingPosition(fiber);
   }
 
-  if (!(fiber.patch & PATCH_TYPE.__pendingUpdate__)) {
-    fiber._applyProps();
+  if (!(fiber.patch & PATCH_TYPE.__update__)) {
+    fiber.memoizedProps = fiber.pendingProps;
   }
 
   if (__DEV__) {
@@ -90,7 +97,7 @@ export const updateFiberNode = (
       currentUpdateTime: timeNow,
     };
 
-    if (typedFiber.type & renderPlatform.hasNodeType) {
+    if (typedFiber.type & renderDispatch.hasNodeType) {
       renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
     }
   }

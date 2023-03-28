@@ -1,26 +1,24 @@
-import { __my_react_internal__ } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
-import { checkHookValid, MyReactSignal } from "../share";
+import { checkHookValid } from "./check";
+import { MyReactHookNode } from "./instance";
+import { MyReactSignal } from "./signal";
 
-import type { RenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNodeDev } from "../runtimeFiber";
-import type { CreateHookParams, MyReactFiberNode, Action, Reducer } from "@my-react/react";
-
-const { MyReactHookNode } = __my_react_internal__;
+import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
+import type { Action, Reducer, RenderHook } from "@my-react/react";
 
 const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;
 };
 
-export const createHookNode = ({ type, value, reducer, deps }: CreateHookParams, fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber: MyReactFiberNode) => {
+  const renderDispatch = fiber.container.renderDispatch;
 
   const hookNode = new MyReactHookNode(type, value, reducer || defaultReducer, deps);
 
   hookNode._setOwner(fiber);
 
-  fiber._addHook(hookNode);
+  fiber.hookList.push(hookNode);
 
   if (__DEV__) checkHookValid(hookNode);
 

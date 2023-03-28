@@ -1,27 +1,74 @@
-import type { RenderPlatform } from "../runtimePlatform";
-import type { createContext, RenderDispatch as OriginalRenderDispatch, MyReactElementNode, MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "../runtimeFiber";
+import type { NODE_TYPE } from "../share";
+import type { createContext, MyReactElementNode } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
-export type RenderDispatch = OriginalRenderDispatch<{
-  renderPlatform: RenderPlatform;
+type DefaultRenderDispatch = {
+  refType: NODE_TYPE;
+
+  createType: NODE_TYPE;
+
+  updateType: NODE_TYPE;
+
+  appendType: NODE_TYPE;
+
+  hasNodeType: NODE_TYPE;
 
   suspenseMap: WeakMap<MyReactFiberNode, MyReactElementNode>;
 
   strictMap: WeakMap<MyReactFiberNode, boolean>;
 
-  scopeMap: WeakMap<MyReactFiberNode, MyReactFiberNode | null>;
+  scopeMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
 
-  errorBoundariesMap: WeakMap<MyReactFiberNode, MyReactFiberNode | null>;
+  errorBoundariesMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
 
-  effectMap: WeakMap<MyReactFiberNode, Array<() => void>>;
+  effectMap: WeakMap<MyReactFiberNode, (() => void)[]>;
 
-  layoutEffectMap: WeakMap<MyReactFiberNode, Array<() => void>>;
+  layoutEffectMap: WeakMap<MyReactFiberNode, (() => void)[]>;
 
   contextMap: WeakMap<MyReactFiberNode, Record<string, MyReactFiberNode>>;
 
   unmountMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>[]>;
 
   eventMap: WeakMap<MyReactFiberNode, Record<string, ((...args: any[]) => void) & { cb?: any[] }>>;
+
+  pendingCreate(_fiber: MyReactFiberNode): void;
+
+  pendingUpdate(_fiber: MyReactFiberNode): void;
+
+  pendingAppend(_fiber: MyReactFiberNode): void;
+
+  pendingContext(_fiber: MyReactFiberNode): void;
+
+  pendingPosition(_fiber: MyReactFiberNode): void;
+
+  pendingRef(_fiber: MyReactFiberNode): void;
+
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void;
+
+  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void;
+
+  pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void;
+
+  patchToFiberInitial?: (_fiber: MyReactFiberNode) => void;
+
+  patchToFiberUpdate?: (_fiber: MyReactFiberNode) => void;
+
+  patchToFiberUnmount?: (_fiber: MyReactFiberNode) => void;
+
+  commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean;
+
+  commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void;
+
+  commitAppend(_fiber: MyReactFiberNode): void;
+
+  commitPosition(_fiber: MyReactFiberNode): void;
+
+  commitSetRef(_fiber: MyReactFiberNode): void;
+
+  commitUnsetRef(_fiber: MyReactFiberNode): void;
+
+  commitClearNode(_fiber: MyReactFiberNode): void;
 
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode;
 
@@ -49,25 +96,11 @@ export type RenderDispatch = OriginalRenderDispatch<{
 
   resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null;
 
-  reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean;
+  reconcileCommit(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean;
 
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void;
 
-  pendingCreate(_fiber: MyReactFiberNode): void;
+  shouldYield(): boolean;
+};
 
-  pendingUpdate(_fiber: MyReactFiberNode): void;
-
-  pendingAppend(_fiber: MyReactFiberNode): void;
-
-  pendingContext(_fiber: MyReactFiberNode): void;
-
-  pendingPosition(_fiber: MyReactFiberNode): void;
-
-  pendingRef(_fiber: MyReactFiberNode): void;
-
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void;
-
-  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void;
-
-  pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void;
-}>;
+export type RenderDispatch<T extends Record<string, any> = any> = DefaultRenderDispatch & T;

@@ -1,30 +1,22 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { checkIsSameType, initialPropsFromELement, initialTypeFromElement, initialFiberNode } from "@my-react/react-reconciler";
+import { __my_react_shared__ } from "@my-react/react";
+import { checkIsSameType, getTypeFromElementNode, initialFiberNode, MyReactFiberNode, MyReactFiberRoot } from "@my-react/react-reconciler";
 import { once } from "@my-react/react-shared";
 
-import { ClientDomPlatform, ClientDomDispatch, ClientDomController } from "@my-react-dom-client";
-import { startRender, unmountComponentAtNode, DomScope } from "@my-react-dom-shared";
+import { ClientDomContainer, ClientDomDispatch } from "@my-react-dom-client";
+import { MyReactDomPlatform, startRender, unmountComponentAtNode } from "@my-react-dom-shared";
 
-import type { MyReactElement, MyReactFiberNode, RenderScope, MyReactFiberNodeRoot, LikeJSX } from "@my-react/react";
-import type { RenderDispatch, RenderPlatform } from "@my-react/react-reconciler";
+import type { MyReactElement, LikeJSX } from "@my-react/react";
+import type { MyReactContainer } from "@my-react/react-reconciler";
 
 export type RenderContainer = Element & {
-  __scope__: RenderScope;
   __fiber__: MyReactFiberNode;
-  __dispatch__: RenderDispatch;
-  __platform__: RenderPlatform;
+  __container__: MyReactContainer;
 };
 
-const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
-
-const { enableStrictLifeCycle, enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
+const { enableStrictLifeCycle, enableLegacyLifeCycle } = __my_react_shared__;
 
 export const onceLog = once(() => {
   console.log(`you are using @my-react to render this site, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`);
-});
-
-export const onceLogConcurrentMode = once(() => {
-  console.log("[@my-react] concurrent mode have been enabled!");
 });
 
 export const onceLogNewStrictMode = once(() => {
@@ -42,13 +34,19 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
   const element = _element as MyReactElement;
 
-  if (containerFiber instanceof MyReactFiberNodeClass) {
-    containerFiber.root.renderScope.isAppCrash = false;
+  if (containerFiber instanceof MyReactFiberNode) {
+    const renderContainer = container.__container__;
+
+    renderContainer.isAppCrashed = false;
 
     if (checkIsSameType(containerFiber, element)) {
-      initialPropsFromELement(containerFiber, element);
+      const { pendingProps, ref } = getTypeFromElementNode(element);
 
-      containerFiber._installElement(element);
+      containerFiber.ref = ref;
+
+      containerFiber.element = element;
+
+      containerFiber.pendingProps = pendingProps;
 
       containerFiber._update();
 
@@ -59,10 +57,6 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
   }
   onceLog();
 
-  if (enableConcurrentMode.current) {
-    onceLogConcurrentMode();
-  }
-
   if (enableStrictLifeCycle.current) {
     onceLogNewStrictMode();
   }
@@ -71,35 +65,15 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
     onceLogLegacyLifeCycleMode();
   }
 
-  const fiber = new MyReactFiberNodeClass(null);
+  const fiber = new MyReactFiberRoot(element, container);
 
-  initialTypeFromElement(fiber, element);
+  const renderDispatch = new ClientDomDispatch();
 
-  initialPropsFromELement(fiber, element);
+  const renderContainer = new ClientDomContainer(container, fiber, MyReactDomPlatform, renderDispatch);
 
-  fiber._installElement(element);
-
-  const rootFiber = fiber as MyReactFiberNodeRoot;
-
-  const renderPlatform = new ClientDomPlatform();
-
-  const renderDispatch = new ClientDomDispatch(renderPlatform);
-
-  const renderScope = new DomScope(rootFiber, container);
-
-  const renderController = new ClientDomController(renderScope);
+  fiber.container = renderContainer;
 
   Array.from(container.children).forEach((n) => n.remove?.());
-
-  rootFiber.node = container;
-
-  rootFiber.renderScope = renderScope;
-
-  rootFiber.renderPlatform = renderPlatform;
-
-  rootFiber.renderDispatch = renderDispatch;
-
-  rootFiber.renderController = renderController;
 
   container.setAttribute?.("render", "MyReact");
 
@@ -107,11 +81,7 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
   container.__fiber__ = fiber;
 
-  container.__scope__ = renderScope;
-
-  container.__platform__ = renderPlatform;
-
-  container.__dispatch__ = renderDispatch;
+  container.__container__ = renderContainer;
 
   initialFiberNode(fiber);
 

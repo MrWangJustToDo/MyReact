@@ -1,33 +1,32 @@
-import type { MyReactElementNode } from "../element";
-import type { MyReactFiberNode } from "../fiber";
-import type { MyReactHookNode } from "../hook";
+import type { RenderFiber } from "../renderFiber";
+import type { RenderHook } from "../renderHook";
 import type { ListTreeNode } from "@my-react/react-shared";
 
 export type LogProps = {
   message: string | Error;
-  fiber?: MyReactFiberNode;
+  fiber?: RenderFiber;
   triggerOnce?: boolean;
   level?: "warn" | "error";
 };
 
 interface DefaultRenderPlatform {
-  name: string;
+  log(_props: LogProps): void;
 
-  log(props: LogProps): void;
+  microTask(_task: () => void): void;
 
-  microTask(task: () => void): void;
+  macroTask(_task: () => void): void;
 
-  macroTask(task: () => void): void;
+  yieldTask(_task: () => void): void;
 
-  yieldTask(task: () => void): void;
+  getFiberTree(_fiber: RenderFiber): string;
 
-  getFiberTree(fiber: MyReactFiberNode): string;
+  getHookTree(_treeHookNode: ListTreeNode<RenderHook>, _errorType: { lastRender: RenderHook["type"]; nextRender: RenderHook["type"] }): string;
 
-  getHookTree(treeHookNode: ListTreeNode<MyReactHookNode>, errorType: { lastRender: MyReactHookNode["type"]; nextRender: MyReactHookNode["type"] }): string;
+  dispatchHook(_params: RenderHook): unknown;
 
-  resolveLazy(fiber: MyReactFiberNode): MyReactElementNode;
+  triggerClassComponent(_fiber: RenderFiber): void;
 
-  resolveLazyAsync(fiber: MyReactFiberNode): Promise<MyReactElementNode>;
+  triggerFunctionComponent(_fiber: RenderFiber): void;
 }
 
 export type RenderPlatform<T = Record<string, any>> = DefaultRenderPlatform & T;

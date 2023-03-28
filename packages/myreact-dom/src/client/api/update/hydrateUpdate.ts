@@ -6,11 +6,11 @@ import { getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, IS_UNIT_LE
 import { addEventListener } from "../helper";
 
 import type { HydrateDOM } from "../create/getHydrateDom";
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 const domContentHydrate = (fiber: MyReactFiberNode) => {
-  const node = fiber.node as DomElement | DomNode;
+  const node = fiber.nativeNode as DomElement | DomNode;
   if (node.textContent !== String(fiber.element)) {
     if (node.textContent === " " && fiber.element === "") {
       node.textContent = "";
@@ -25,7 +25,7 @@ const domContentHydrate = (fiber: MyReactFiberNode) => {
 };
 
 const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, value: any) => {
-  const node = fiber.node as DomElement | DomNode;
+  const node = fiber.nativeNode as DomElement | DomNode;
   const dom = node as Element;
   if (value !== null && value !== undefined) {
     if (key === "className") {
@@ -72,7 +72,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
 };
 
 const domStyleHydrate = (fiber: MyReactFiberNode, key: string, value: Record<string, unknown>) => {
-  const node = fiber.node as DomElement | DomNode;
+  const node = fiber.nativeNode as DomElement | DomNode;
   Object.keys(value).forEach((styleName) => {
     if (Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof value[styleName] === "number") {
       node[key][styleName] = `${value[styleName]}px`;
@@ -85,14 +85,14 @@ const domStyleHydrate = (fiber: MyReactFiberNode, key: string, value: Record<str
 };
 
 const domEventHydrate = (fiber: MyReactFiberNode, key: string) => {
-  const node = fiber.node;
+  const node = fiber.nativeNode;
   addEventListener(fiber, node as DomElement, key);
 };
 
 const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
   const props = fiber.pendingProps;
   if (props["dangerouslySetInnerHTML"]) {
-    const typedDOM = fiber.node as HydrateDOM;
+    const typedDOM = fiber.nativeNode as HydrateDOM;
     const typedProps = props["dangerouslySetInnerHTML"] as Record<string, unknown>;
     const existInnerHTML = typedDOM.innerHTML;
     const incomingInnerHTML = typedProps.__html as string;
@@ -105,7 +105,7 @@ const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
 };
 
 export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
-  const node = fiber.node as DomElement | DomNode;
+  const node = fiber.nativeNode as DomElement | DomNode;
 
   if (node) {
     const props = fiber.pendingProps;
@@ -128,7 +128,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     }
   }
 
-  if (fiber.patch & PATCH_TYPE.__pendingUpdate__) fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
+  if (fiber.patch & PATCH_TYPE.__update__) fiber.patch ^= PATCH_TYPE.__update__;
 
-  if (fiber.patch & PATCH_TYPE.__pendingAppend__) fiber.patch ^= PATCH_TYPE.__pendingAppend__;
+  if (fiber.patch & PATCH_TYPE.__append__) fiber.patch ^= PATCH_TYPE.__append__;
 };

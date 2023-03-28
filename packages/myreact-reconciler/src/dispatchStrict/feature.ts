@@ -1,7 +1,6 @@
 import { NODE_TYPE } from "../share";
 
-import type { MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 
 export const defaultGenerateStrictMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, boolean>) => {
   const parent = fiber.parent;

@@ -1,4 +1,4 @@
-import { PATCH_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { getFiberWithNativeDom } from "@my-react-dom-shared";
 
@@ -6,24 +6,26 @@ import { append } from "./append";
 import { getInsertBeforeDomFromSiblingAndParent } from "./getInsertBeforeDom";
 import { insertBefore } from "./insertBefore";
 
-import type { MyReactFiberNode } from "@my-react/react";
-import type { ClientDomPlatform } from "@my-react-dom-client";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
-  if (fiber.patch & PATCH_TYPE.__pendingPosition__) {
-    const renderPlatform = fiber.root.renderPlatform as ClientDomPlatform;
+  if (fiber.patch & PATCH_TYPE.__position__) {
+    const renderContainer = fiber.container;
 
-    if (!parentFiberWithDom.isMounted) {
+    const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
+
+    if (parentFiberWithDom.state & STATE_TYPE.__unmount__) {
       parentFiberWithDom = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
-      const elementObj = renderPlatform.elementMap.get(fiber);
+      const elementObj = renderDispatch.elementMap.get(fiber);
 
       elementObj.parentFiberWithNode = parentFiberWithDom;
 
-      renderPlatform.elementMap.set(fiber, elementObj);
+      renderDispatch.elementMap.set(fiber, elementObj);
     }
 
-    if (!parentFiberWithDom?.node) throw new Error("position error, dom not exist");
+    if (!parentFiberWithDom?.nativeNode) throw new Error("position error, dom not exist");
 
     const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithDom);
 
@@ -33,6 +35,6 @@ export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFib
       append(fiber, parentFiberWithDom);
     }
 
-    if (fiber.patch & PATCH_TYPE.__pendingPosition__) fiber.patch ^= PATCH_TYPE.__pendingPosition__;
+    if (fiber.patch & PATCH_TYPE.__position__) fiber.patch ^= PATCH_TYPE.__position__;
   }
 };

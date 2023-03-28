@@ -1,7 +1,8 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import type { MyReactElement, MyReactHookNode, MyReactFiberNode, MixinMyReactClassComponent, MixinMyReactFunctionComponent, lazy } from "@my-react/react";
+import type { MyReactElement, MixinMyReactClassComponent, MixinMyReactFunctionComponent, lazy , LogProps} from "@my-react/react";
+import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react-reconciler";
 import type { ListTreeNode } from "@my-react/react-shared";
 
 const { currentRunningFiber } = __my_react_internal__;
@@ -120,16 +121,10 @@ export const getHookTree = (
 
 const cache: Record<string, Record<string, boolean>> = {};
 
-type LogProps = {
-  message: string | Error;
-  fiber?: MyReactFiberNode;
-  triggerOnce?: boolean;
-  level?: "warn" | "error";
-};
-
 export const log = ({ fiber, message, level = "warn", triggerOnce = false }: LogProps) => {
   if (__DEV__) {
-    const tree = getFiberTree(fiber || currentRunningFiber.current);
+    const currentFiber = fiber || currentRunningFiber.current;
+    const tree = getFiberTree(currentFiber as MyReactFiberNode);
     if (triggerOnce) {
       const messageKey = message.toString();
       cache[messageKey] = cache[messageKey] || {};
@@ -163,7 +158,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
     return;
   }
   const currentFiber = fiber || currentRunningFiber.current;
-  const tree = getFiberTree(currentFiber);
+  const tree = getFiberTree(currentFiber as MyReactFiberNode);
   if (triggerOnce) {
     const messageKey = message.toString();
     cache[messageKey] = cache[messageKey] || {};

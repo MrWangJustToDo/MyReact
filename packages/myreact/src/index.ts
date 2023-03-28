@@ -3,7 +3,6 @@ import { Strict as StrictMode, Fragment, Suspense } from "@my-react/react-shared
 import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
 import { createElement, cloneElement, isValidElement, forwardRef, createContext, memo, lazy } from "./element";
-import { MyReactFiberNode } from "./fiber";
 import {
   useRef,
   useMemo,
@@ -16,15 +15,15 @@ import {
   useDebugValue,
   useLayoutEffect,
   useImperativeHandle,
-  MyReactHookNode,
 } from "./hook";
 import { MyReactInternalInstance } from "./internal";
 import {
   createRef,
   currentRunningFiber,
-  currentFunctionFiber,
-  currentComponentFiber,
   currentHookTreeNode,
+  currentComponentFiber,
+  currentRenderPlatform,
+  setRenderPlatform,
   globalLoop,
   enableDebugLog,
   enableSyncFlush,
@@ -50,15 +49,13 @@ const __my_react_shared__ = {
 };
 
 const __my_react_internal__ = {
-  MyReactHookNode,
-  MyReactComponent,
-  MyReactFiberNode,
   MyReactInternalInstance,
   globalLoop,
+  setRenderPlatform,
   currentRunningFiber,
   currentHookTreeNode,
-  currentFunctionFiber,
   currentComponentFiber,
+  currentRenderPlatform,
 };
 
 const Children = {
@@ -100,15 +97,13 @@ export {
   version,
 };
 
-export type { RenderScope } from "./renderScope";
+export type { Action, Reducer, RenderHook } from "./renderHook";
 
-export type { RenderPlatform } from "./renderPlatform";
+export type { RenderPlatform, LogProps } from "./renderPlatform";
 
-export type { RenderDispatch } from "./renderDispatch";
+export type { RenderFiber } from "./renderFiber";
 
-export type { RenderController } from "./renderController";
-
-export type { CreateHookParams, MyReactHookNode, Action, Reducer } from "./hook";
+export type { UpdateQueue, ComponentUpdateQueue, HookUpdateQueue } from "./renderQueue";
 
 export type {
   LikeJSX,
@@ -126,7 +121,5 @@ export type {
 } from "./element";
 
 export type { MyReactInternalInstance } from "./internal";
-
-export type { MyReactFiberNode, MyReactFiberNodeRoot, UpdateQueue } from "./fiber";
 
 export type { MyReactComponent } from "./component";

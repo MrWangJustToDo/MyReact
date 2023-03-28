@@ -1,6 +1,6 @@
 import { Effect_TYPE } from "@my-react/react-shared";
 
-import type { MyReactFiberNode } from "../fiber";
+import type { RenderFiber } from "../renderFiber";
 
 export class MyReactInternalInstance {
   get isMyReactInstance() {
@@ -11,17 +11,17 @@ export class MyReactInternalInstance {
 
   context: null | unknown = null;
 
-  _contextFiber: MyReactFiberNode | null = null;
+  _contextFiber: RenderFiber | null = null;
 
-  _ownerFiber: MyReactFiberNode | null = null;
+  _ownerFiber: RenderFiber | null = null;
 
-  _setContext(fiber: MyReactFiberNode | null) {
+  _setContext(fiber: RenderFiber | null) {
     this._contextFiber?._removeDependence(this);
     this._contextFiber = fiber;
     this._contextFiber?._addDependence(this);
   }
 
-  _setOwner(fiber: MyReactFiberNode) {
+  _setOwner(fiber: RenderFiber) {
     this._ownerFiber = fiber;
   }
 

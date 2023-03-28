@@ -1,22 +1,22 @@
 export enum PATCH_TYPE {
   __initial__ = 0,
-  __pendingCreate__ = 1 << 0,
-  __pendingUpdate__ = 1 << 1,
-  __pendingAppend__ = 1 << 2,
-  __pendingPosition__ = 1 << 3,
-  __pendingContext__ = 1 << 4,
-  __pendingEffect__ = 1 << 5,
-  __pendingLayoutEffect__ = 1 << 6,
-  __pendingUnmount__ = 1 << 7,
-  __pendingRef__ = 1 << 8,
+  __create__ = 1 << 0,
+  __update__ = 1 << 1,
+  __append__ = 1 << 2,
+  __position__ = 1 << 3,
+  __context__ = 1 << 4,
+  __effect__ = 1 << 5,
+  __layoutEffect__ = 1 << 6,
+  __unmount__ = 1 << 7,
+  __ref__ = 1 << 8,
 
-  __pendingGenerateUpdateList__ = PATCH_TYPE.__pendingCreate__ |
-    PATCH_TYPE.__pendingUpdate__ |
-    PATCH_TYPE.__pendingAppend__ |
-    PATCH_TYPE.__pendingPosition__ |
-    PATCH_TYPE.__pendingContext__ |
-    PATCH_TYPE.__pendingEffect__ |
-    PATCH_TYPE.__pendingLayoutEffect__ |
-    PATCH_TYPE.__pendingUnmount__ |
-    PATCH_TYPE.__pendingRef__,
+  __needCommit__ = PATCH_TYPE.__create__ |
+    PATCH_TYPE.__update__ |
+    PATCH_TYPE.__append__ |
+    PATCH_TYPE.__position__ |
+    PATCH_TYPE.__context__ |
+    PATCH_TYPE.__effect__ |
+    PATCH_TYPE.__layoutEffect__ |
+    PATCH_TYPE.__unmount__ |
+    PATCH_TYPE.__ref__,
 }

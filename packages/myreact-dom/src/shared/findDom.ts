@@ -1,14 +1,14 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { Component } from "@my-react/react";
+import { STATE_TYPE } from "@my-react/react-shared";
 
 import type { DomNode } from "./dom";
-import type { MyReactFiberNode, MyReactInternalInstance } from "@my-react/react";
-
-const { MyReactComponent } = __my_react_internal__;
+import type { MyReactInternalInstance } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const findDOMFromFiber = (fiber: MyReactFiberNode | null) => {
-  if (!fiber || !fiber.isMounted) return;
+  if (!fiber || fiber.state & STATE_TYPE.__unmount__) return;
 
-  if (fiber.node) return fiber.node as DomNode;
+  if (fiber.nativeNode) return fiber.nativeNode as DomNode;
 
   let child = fiber.child;
 
@@ -24,8 +24,8 @@ export const findDOMFromFiber = (fiber: MyReactFiberNode | null) => {
 };
 
 export const findDOMNode = (instance: MyReactInternalInstance) => {
-  if (instance instanceof MyReactComponent && instance._ownerFiber) {
-    return findDOMFromFiber(instance._ownerFiber);
+  if (instance instanceof Component && instance._ownerFiber) {
+    return findDOMFromFiber(instance._ownerFiber as MyReactFiberNode);
   } else {
     return null;
   }

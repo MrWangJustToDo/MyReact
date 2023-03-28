@@ -45,6 +45,7 @@ export const createContext = <T = any>(value: T) => {
   });
 
   ContextObject.Provider = ProviderObject;
+
   ContextObject.Consumer = ConsumerObject;
 
   return ContextObject;

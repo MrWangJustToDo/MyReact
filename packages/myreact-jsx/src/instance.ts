@@ -1,11 +1,11 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { TYPEKEY, Element } from "@my-react/react-shared";
 
-import { checkSingleChildrenKey } from "./check";
+import { checkSingleChildrenKey, checkValidElement, checkValidProps } from "./check";
 
 import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement, MyReactElementType, Props } from "@my-react/react";
 
-const { currentComponentFiber, currentRunningFiber } = __my_react_internal__;
+const { currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
 
 const RESERVED_PROPS = {
   key: true,
@@ -14,17 +14,12 @@ const RESERVED_PROPS = {
   __source: true,
 };
 
-type JSXMyReactElementDev = MyReactElement & {
-  _jsx: boolean;
-};
-
-type JSXMyReactElement = Partial<MyReactElement> & {
+type JSXMyReactElement = MyReactElement & {
   _jsx: boolean;
 };
 
 export { Fragment } from "@my-react/react-shared";
 
-// todo
 export const jsx = (
   type: MyReactElementType,
   config: Props,
@@ -35,6 +30,7 @@ export const jsx = (
   const props: Props = {};
 
   let key: string | null = null;
+
   let ref: CreateElementProps["ref"] = null;
 
   if (maybeKey !== undefined) {
@@ -58,43 +54,37 @@ export const jsx = (
 
   if (type && (typeof type === "function" || typeof type === "object")) {
     const typedType = type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
+
     Object.keys(typedType?.defaultProps || {}).forEach((key) => {
       props[key] = props[key] === undefined ? typedType.defaultProps?.[key] : props[key];
     });
   }
 
+  const element: JSXMyReactElement = {
+    [TYPEKEY]: Element,
+    type,
+    key,
+    ref,
+    props,
+    _jsx: true,
+  };
+
   if (__DEV__) {
-    const element: JSXMyReactElementDev = {
-      [TYPEKEY]: Element,
-      type,
-      key,
-      ref,
-      props,
-      _jsx: true,
-      _self: self,
-      _source: source,
-      _owner: currentComponentFiber.current,
-      _store: {} as Record<string, unknown>,
-    };
+    element._owner = currentComponentFiber.current;
+
+    element._self = self;
+
+    element._source = source;
+
+    element._store = {};
 
     if (typeof Object.freeze === "function") {
       Object.freeze(element.props);
       Object.freeze(element);
     }
-
-    return element;
-  } else {
-    const element: JSXMyReactElement = {
-      [TYPEKEY]: Element,
-      type,
-      key,
-      ref,
-      props,
-      _jsx: true,
-    };
-
-    return element;
   }
+
+  return element;
 };
 
 export const jsxDEV = (
@@ -114,19 +104,25 @@ export const jsxDEV = (
       if (Array.isArray(children)) {
         children.forEach((c) => checkSingleChildrenKey(c));
 
-        if (__DEV__) Object.freeze(children);
+        Object.freeze(children);
       } else {
-        const fiber = currentRunningFiber.current;
-        fiber?.root.renderPlatform.log({ message: "Static children should always be an array.", level: "warn" });
+        const renderPlatform = currentRenderPlatform.current;
+
+        renderPlatform?.log({ message: "Static children should always be an array.", level: "warn" });
       }
       if (!Array.isArray(children)) {
-        const fiber = currentRunningFiber.current;
-        fiber?.root.renderPlatform.log({ message: "Static children should always be an array.", level: "warn" });
+        const renderPlatform = currentRenderPlatform.current;
+
+        renderPlatform?.log({ message: "Static children should always be an array.", level: "warn" });
       }
     } else {
       checkSingleChildrenKey(children);
     }
   }
+
+  checkValidElement(element);
+
+  checkValidProps(element);
 
   return element;
 };

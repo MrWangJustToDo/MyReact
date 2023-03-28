@@ -1,7 +1,11 @@
-import type { MyReactComponent, MyReactFiberNode } from "@my-react/react";
+import { STATE_TYPE } from "@my-react/react-shared";
+
+import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactHookNode } from "../runtimeHook";
+import type { MyReactComponent } from "@my-react/react";
 
 export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return;
+  if (fiber.state & STATE_TYPE.__unmount__) return;
 
   const allQueue = fiber.updateQueue;
 
@@ -14,8 +18,6 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
   const baseProps = Object.assign({}, typedInstance.props);
 
   const newResult = typedInstance._result;
-
-  // there are not a updateQueue
 
   if (!node) return false;
 
@@ -49,7 +51,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 };
 
 export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return;
+  if (fiber.state & STATE_TYPE.__unmount__) return;
 
   const allQueue = fiber.updateQueue;
 
@@ -71,11 +73,13 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
 
       const { trigger, payLoad } = updater;
 
-      const lastResult = trigger.result;
+      const typedTrigger = trigger as MyReactHookNode;
 
-      trigger.result = trigger.reducer(lastResult, payLoad);
+      const lastResult = typedTrigger.result;
 
-      if (!Object.is(lastResult, trigger.result)) {
+      typedTrigger.result = typedTrigger.reducer(lastResult, payLoad);
+
+      if (!Object.is(lastResult, typedTrigger.result)) {
         needUpdate = true;
       }
     }

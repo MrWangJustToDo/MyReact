@@ -1,14 +1,13 @@
-import { PATCH_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { unmountFiberNode } from "../runtimeFiber";
 import { generateFiberToList } from "../share";
 
-import type { RenderDispatch } from "../renderDispatch";
-import type { RenderPlatform } from "../runtimePlatform";
-import type { MyReactFiberNode } from "@my-react/react";
+import type { CustomRenderDispatch } from "../renderDispatch";
+import type { MyReactFiberNode } from "../runtimeFiber";
 import type { ListTree } from "@my-react/react-shared";
 
-export const defaultGenerateUnmountArrayMap = (
+export const defaultGenerateUnmountMap = (
   fiber: MyReactFiberNode,
   unmount: MyReactFiberNode,
   map: WeakMap<MyReactFiberNode, Array<ListTree<MyReactFiberNode>>>
@@ -22,31 +21,27 @@ export const defaultGenerateUnmountArrayMap = (
   map.set(fiber, exist);
 };
 
-export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: RenderDispatch, renderPlatform: RenderPlatform) => {
+export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: CustomRenderDispatch) => {
   list.listToFoot((f) => f._unmount());
 
-  list.listToFoot((f) => renderPlatform.unsetRef(f));
-
-  if (list.head.value) renderPlatform.clearNode(list.head.value);
+  if (list.head.value) renderDispatch.commitClearNode(list.head.value);
 
   list.listToFoot((f) => unmountFiberNode(f));
 };
 
 export const unmountFiber = (fiber: MyReactFiberNode) => {
+  if (fiber.state & STATE_TYPE.__unmount__) return;
+
   const list = generateFiberToList(fiber);
 
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
-
-  const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
-
-  unmountList(list, renderDispatch, renderPlatform);
+  unmountList(list, fiber.container.renderDispatch);
 };
 
 export const unmount = (fiber: MyReactFiberNode) => {
-  if (fiber.patch & PATCH_TYPE.__pendingUnmount__) {
-    const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  if (fiber.patch & PATCH_TYPE.__unmount__) {
+    const renderContainer = fiber.container;
 
-    const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
+    const renderDispatch = renderContainer.renderDispatch;
 
     const unmountMap = renderDispatch.unmountMap;
 
@@ -54,8 +49,8 @@ export const unmount = (fiber: MyReactFiberNode) => {
 
     unmountMap.delete(fiber);
 
-    if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountList(l, renderDispatch, renderPlatform));
+    if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountList(l, renderDispatch));
 
-    if (fiber.patch & PATCH_TYPE.__pendingUnmount__) fiber.patch ^= PATCH_TYPE.__pendingUnmount__;
+    if (fiber.patch & PATCH_TYPE.__unmount__) fiber.patch ^= PATCH_TYPE.__unmount__;
   }
 };

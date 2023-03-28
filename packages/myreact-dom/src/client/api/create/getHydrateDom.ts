@@ -1,8 +1,8 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import { commentE, commentS, getElementName, IS_SINGLE_ELEMENT, log } from "@my-react-dom-shared";
+import { commentE, commentS, getElementName, IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export type HydrateDOM = Element & {
   __hydrate__: boolean;
@@ -29,6 +29,8 @@ const getNextHydrateDom = (parentDom: Element) => {
 };
 
 const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
+  const log = fiber.container.renderPlatform.log;
+
   if (!dom) {
     log({
       fiber,
@@ -91,7 +93,7 @@ export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
   if (result) {
     const typedDom = dom as HydrateDOM;
 
-    fiber.node = typedDom;
+    fiber.nativeNode = typedDom;
 
     return { dom: typedDom, result };
   } else {

@@ -1,15 +1,11 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
+import type { MyReactFiberRoot } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
-import type { RenderDispatch } from "../renderDispatch";
-import type { RenderPlatform } from "../runtimePlatform";
-import type { MyReactFiberNode } from "@my-react/react";
 
 // just used for rootFiber
-export const initialFiberNode = (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
-
-  const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
+export const initialFiberNode = (fiber: MyReactFiberRoot) => {
+  const renderDispatch = fiber.container.renderDispatch;
 
   renderDispatch.pendingCreate(fiber);
 
@@ -21,10 +17,10 @@ export const initialFiberNode = (fiber: MyReactFiberNode) => {
     renderDispatch.pendingRef(fiber);
   }
 
-  renderPlatform.patchToFiberInitial?.(fiber);
+  renderDispatch.patchToFiberInitial?.(fiber);
 
-  if (!(fiber.patch & PATCH_TYPE.__pendingUpdate__)) {
-    fiber._applyProps();
+  if (!(fiber.patch & PATCH_TYPE.__update__)) {
+    fiber.memoizedProps = fiber.pendingProps;
   }
 
   if (__DEV__) {

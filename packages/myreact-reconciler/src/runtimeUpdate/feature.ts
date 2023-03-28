@@ -1,21 +1,18 @@
-import type { RenderController } from "@my-react/react";
+import { performToNextFiber } from "../renderNextWork";
 
-export const updateLoop = (renderController: RenderController) => {
-  while (renderController.hasNext()) {
-    const fiber = renderController.getNextFiber();
-    if (fiber) {
-      const nextFiber = renderController.performToNextFiber(fiber);
-      renderController.setYieldFiber(nextFiber);
-    }
+import type { MyReactContainer } from "../runtimeFiber";
+
+export const updateLoop = (renderContainer: MyReactContainer) => {
+  while (renderContainer.nextWorkingFiber) {
+    const nextFiber = performToNextFiber(renderContainer.nextWorkingFiber);
+    renderContainer.nextWorkingFiber = nextFiber;
   }
 };
 
-export const updateLoopWithConcurrent = (renderController: RenderController) => {
-  while (renderController.hasNext() && !renderController.shouldYield()) {
-    const fiber = renderController.getNextFiber();
-    if (fiber) {
-      const nextFiber = renderController.performToNextFiber(fiber);
-      renderController.setYieldFiber(nextFiber);
-    }
+export const updateLoopWithConcurrent = (renderContainer: MyReactContainer) => {
+  const renderDispatch = renderContainer.renderDispatch;
+  while (renderContainer.nextWorkingFiber && !renderDispatch.shouldYield()) {
+    const nextFiber = performToNextFiber(renderContainer.nextWorkingFiber);
+    renderContainer.nextWorkingFiber = nextFiber;
   }
 };

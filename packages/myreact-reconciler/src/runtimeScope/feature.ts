@@ -3,7 +3,8 @@ import { Scope, Comment } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
-import type { MyReactElementNode, MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactElementNode } from "@my-react/react";
 
 export const WrapperByScope = (children: MyReactElementNode) =>
   createElement(Scope, null, createElement(Comment, { mode: "s" }), children, createElement(Comment, { mode: "e" }));

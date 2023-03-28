@@ -1,10 +1,11 @@
 import { isNormalEquals } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
-import { enableSyncFlush } from "../share";
+import { currentRenderPlatform } from "../share";
 
 import type { MyReactElementNode, createContext } from "../element";
-import type { ComponentUpdateQueue, MyReactFiberNode } from "../fiber";
+import type { RenderFiber } from "../renderFiber";
+import type { ComponentUpdateQueue } from "../renderQueue";
 
 type ErrorInfo = {
   componentStack: string;
@@ -16,21 +17,33 @@ export class MyReactComponent<
   C extends Record<string, unknown> = any
 > extends MyReactInternalInstance {
   static contextType: null | ReturnType<typeof createContext>;
+
   static getDerivedStateFromProps?(props: any, state: any): any;
+
   static getDerivedStateFromError?(error: Error): any;
 
   state: S | null = null;
+
   props: P | null = null;
+
   context: C | null = null;
 
   getSnapshotBeforeUpdate?(this: MyReactComponent, prevProps: P, prevState: S): void;
+
   shouldComponentUpdate?(this: MyReactComponent, nextProps: P, nextState: S, nextContext: C): boolean;
+
   componentDidMount?(this: MyReactComponent): void;
+
   componentDidUpdate?(this: MyReactComponent, prevProps: P, prevState: S, snapshot: any): void;
+
   componentDidCatch?(this: MyReactComponent, error: Error, errorInfo: ErrorInfo): void;
+
   componentWillUnmount?(): void;
+
   UNSAFE_componentWillMount?(): void;
+
   UNSAFE_componentWillReceiveProps?(nextProps: P): void;
+
   UNSAFE_componentWillUpdate?(nextProps: P, nextState: S): void;
 
   // for queue update
@@ -41,7 +54,7 @@ export class MyReactComponent<
   };
 
   // error catch component
-  _error: { error: Error | null; trigger: MyReactFiberNode | null; hasError: boolean } = {
+  _error: { error: Error | null; trigger: RenderFiber | null; hasError: boolean } = {
     error: null,
     trigger: null,
     hasError: false,
@@ -71,19 +84,11 @@ export class MyReactComponent<
 
     const ownerFiber = this._ownerFiber;
 
-    if (ownerFiber && ownerFiber.isMounted) {
-      const renderPlatform = ownerFiber.root.renderPlatform;
+    ownerFiber.updateQueue.push(updater);
 
-      const renderDispatch = ownerFiber.root.renderDispatch;
+    const renderPlatform = currentRenderPlatform.current;
 
-      ownerFiber.updateQueue.push(updater);
-
-      if (enableSyncFlush.current) {
-        renderDispatch.processClassComponentQueue(ownerFiber);
-      } else {
-        renderPlatform.microTask(() => renderDispatch.processClassComponentQueue(ownerFiber));
-      }
-    }
+    renderPlatform.triggerClassComponent(ownerFiber);
   };
 
   forceUpdate = () => {
@@ -95,19 +100,11 @@ export class MyReactComponent<
 
     const ownerFiber = this._ownerFiber;
 
-    if (ownerFiber && ownerFiber.isMounted) {
-      const renderPlatform = ownerFiber.root.renderPlatform;
+    ownerFiber.updateQueue.push(updater);
 
-      const renderDispatch = ownerFiber.root.renderDispatch;
+    const renderPlatform = currentRenderPlatform.current;
 
-      ownerFiber.updateQueue.push(updater);
-
-      if (enableSyncFlush.current) {
-        renderDispatch.processClassComponentQueue(ownerFiber);
-      } else {
-        renderPlatform.microTask(() => renderDispatch.processClassComponentQueue(ownerFiber));
-      }
-    }
+    renderPlatform.triggerClassComponent(ownerFiber);
   };
 
   render(): MyReactElementNode {

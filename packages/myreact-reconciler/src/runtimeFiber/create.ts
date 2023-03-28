@@ -1,14 +1,11 @@
-import { __my_react_internal__ } from "@my-react/react";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { checkElementValid, debugWithNode, initialPropsFromELement, initialTypeFromElement } from "../share";
+import { debugWithNode } from "../share";
+
+import { MyReactFiberNode } from "./instance";
 
 import type { MyReactFiberNodeDev } from "./interface";
-import type { RenderDispatch } from "../renderDispatch";
-import type { RenderPlatform } from "../runtimePlatform";
-import type { MyReactElementNode, MyReactFiberNode } from "@my-react/react";
-
-const { MyReactFiberNode: MyReactFiberNodeClass } = __my_react_internal__;
+import type { MyReactElementNode } from "@my-react/react";
 
 export const createFiberNode = (
   {
@@ -20,19 +17,15 @@ export const createFiberNode = (
   },
   element: MyReactElementNode
 ) => {
-  if (__DEV__) checkElementValid(element);
+  const newFiberNode = new MyReactFiberNode(element);
 
-  const newFiberNode = new MyReactFiberNodeClass(parent);
+  newFiberNode.parent = parent;
 
-  initialTypeFromElement(newFiberNode, element);
+  parent.child = parent.child || newFiberNode;
 
-  initialPropsFromELement(newFiberNode, element);
+  newFiberNode.container = parent.container;
 
-  newFiberNode._installElement(element);
-
-  const renderDispatch = newFiberNode.root.renderDispatch as RenderDispatch;
-
-  const renderPlatform = newFiberNode.root.renderPlatform as RenderPlatform;
+  const renderDispatch = parent.container.renderDispatch;
 
   renderDispatch.pendingCreate(newFiberNode);
 
@@ -58,10 +51,10 @@ export const createFiberNode = (
 
   renderDispatch.resolveErrorBoundariesMap(newFiberNode);
 
-  renderPlatform.patchToFiberInitial?.(newFiberNode);
+  renderDispatch.patchToFiberInitial?.(newFiberNode);
 
-  if (!(newFiberNode.patch & PATCH_TYPE.__pendingUpdate__)) {
-    newFiberNode._applyProps();
+  if (!(newFiberNode.patch & PATCH_TYPE.__update__)) {
+    newFiberNode.memoizedProps = newFiberNode.pendingProps;
   }
 
   if (__DEV__) {
@@ -76,7 +69,7 @@ export const createFiberNode = (
       currentUpdateTime: timeNow,
     };
 
-    if (typedFiber.type & renderPlatform.hasNodeType) {
+    if (typedFiber.type & renderDispatch.hasNodeType) {
       renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
     }
   }

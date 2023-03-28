@@ -6,18 +6,10 @@ import { NODE_TYPE, safeCallWithFiber } from "../share";
 
 import { transformChildrenFiber } from "./generate";
 
-import type { RenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNodeDev } from "../runtimeFiber";
-import type {
-  MyReactFiberNode,
-  MyReactElementNode,
-  MixinMyReactFunctionComponent,
-  MaybeArrayMyReactElementNode,
-  createContext,
-  forwardRef,
-} from "@my-react/react";
+import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
+import type { MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext, forwardRef } from "@my-react/react";
 
-const { currentHookTreeNode, currentFunctionFiber, currentComponentFiber } = __my_react_internal__;
+const { currentHookTreeNode, currentComponentFiber } = __my_react_internal__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   transformChildrenFiber(fiber, children);
@@ -40,8 +32,6 @@ export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
     if (updated) {
       return nextWorkCommon(fiber, children);
     } else {
-      fiber._afterUpdate();
-
       return void 0;
     }
   }
@@ -50,7 +40,7 @@ export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
 export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
   currentHookTreeNode.current = fiber.hookList.head;
 
-  currentFunctionFiber.current = fiber;
+  currentComponentFiber.current = fiber;
 
   const typedElementType = fiber.elementType as MixinMyReactFunctionComponent;
 
@@ -63,7 +53,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
     children = safeCallWithFiber({ fiber, action: () => typedElementType(fiber.pendingProps) });
   }
 
-  currentFunctionFiber.current = null;
+  currentComponentFiber.current = null;
 
   currentHookTreeNode.current = null;
 
@@ -91,7 +81,7 @@ export const nextWorkComponent = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkLazy = (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  const renderDispatch = fiber.container.renderDispatch;
 
   const children = renderDispatch.resolveLazyElement(fiber);
 
@@ -99,7 +89,7 @@ export const nextWorkLazy = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkLazySync = async (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  const renderDispatch = fiber.container.renderDispatch;
 
   const children = await renderDispatch.resolveLazyElementAsync(fiber);
 
@@ -116,14 +106,12 @@ export const nextWorkNormal = (fiber: MyReactFiberNode) => {
 
     return childrenFiber;
   } else {
-    fiber._afterUpdate();
-
     return void 0;
   }
 };
 
 export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  const renderDispatch = fiber.container.renderDispatch;
 
   const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
 
@@ -144,7 +132,7 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
     fiber.instance._setContext(ProviderFiber);
   } else {
-    const context = renderDispatch.resolveContextValue(fiber.instance._contextFiber, Context);
+    const context = renderDispatch.resolveContextValue(fiber.instance._contextFiber as MyReactFiberNode, Context);
 
     fiber.instance.context = context;
   }

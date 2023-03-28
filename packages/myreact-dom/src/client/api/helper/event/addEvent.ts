@@ -4,8 +4,7 @@ import { enableControlComponent, enableEventSystem } from "@my-react-dom-shared"
 
 import { getNativeEventName } from "./getEventName";
 
-import type { MyReactFiberNode } from "@my-react/react";
-import type { MyReactFiberNodeDev, RenderDispatch } from "@my-react/react-reconciler";
+import type { MyReactFiberNodeDev, MyReactFiberNode } from "@my-react/react-reconciler";
 import type { DomElement } from "@my-react-dom-shared";
 
 export const controlElementTag: Record<string, boolean> = {
@@ -20,7 +19,9 @@ type ControlledElement = HTMLInputElement & {
 };
 
 export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  const renderContainer = fiber.container;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   const typedElementType = fiber.elementType as string;
 

@@ -6,51 +6,52 @@ import { IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
 
 import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
 
-import type { MyReactFiberNode } from "@my-react/react";
-import type { ServerStreamPlatform } from "@my-react-dom-server";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { ServerStreamContainer } from "@my-react-dom-server";
 
 export const create = (fiber: MyReactFiberNode) => {
-  if (fiber.patch & PATCH_TYPE.__pendingCreate__) {
+  if (fiber.patch & PATCH_TYPE.__create__) {
     if (fiber.type & NODE_TYPE.__isTextNode__) {
-      fiber.node = new TextElement(fiber.element as string);
+      fiber.nativeNode = new TextElement(fiber.element as string);
     } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
       const typedElementType = fiber.elementType as string;
 
-      fiber.node = new PlainElement(typedElementType);
+      fiber.nativeNode = new PlainElement(typedElementType);
     } else if (fiber.type & NODE_TYPE.__isCommentNode__) {
       if (isCommentStartElement(fiber)) {
-        fiber.node = new CommentStartElement();
+        fiber.nativeNode = new CommentStartElement();
       } else {
-        fiber.node = new CommentEndElement();
+        fiber.nativeNode = new CommentEndElement();
       }
     } else {
       throw new Error("createPortal() can not call on the server");
     }
 
-    if (fiber.patch & PATCH_TYPE.__pendingCreate__) fiber.patch ^= PATCH_TYPE.__pendingCreate__;
+    if (fiber.patch & PATCH_TYPE.__create__) fiber.patch ^= PATCH_TYPE.__create__;
   }
 };
 
 export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolean) => {
-  if (fiber.patch & PATCH_TYPE.__pendingCreate__) {
-    const renderPlatform = fiber.root.renderPlatform as ServerStreamPlatform;
+  if (fiber.patch & PATCH_TYPE.__create__) {
+    const renderContainer = fiber.container as ServerStreamContainer;
 
-    const stream = renderPlatform.stream;
+    const stream = renderContainer.stream;
     if (fiber.type & NODE_TYPE.__isTextNode__) {
-      if (renderPlatform.lastIsStringNode) {
+      if (renderContainer.lastIsStringNode) {
         stream.push("<!-- -->");
       }
       stream.push(fiber.element as string);
 
-      renderPlatform.lastIsStringNode = true;
+      renderContainer.lastIsStringNode = true;
 
       fiber.patch = PATCH_TYPE.__initial__;
     } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
-      renderPlatform.lastIsStringNode = false;
+      renderContainer.lastIsStringNode = false;
 
       if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, fiber.elementType as string)) {
         stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}/>`);
 
+        // TODO
         fiber.patch = PATCH_TYPE.__initial__;
       } else {
         stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}>`);
@@ -62,7 +63,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolea
         }
       }
     } else if (fiber.type & NODE_TYPE.__isCommentNode__) {
-      renderPlatform.lastIsStringNode = false;
+      renderContainer.lastIsStringNode = false;
 
       if (isCommentStartElement(fiber)) {
         stream.push("<!-- [ -->");
@@ -78,12 +79,12 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolea
 };
 
 export const createCloseTagWithStream = (fiber: MyReactFiberNode) => {
-  if (fiber.patch & PATCH_TYPE.__pendingCreate__) {
-    const renderPlatform = fiber.root.renderPlatform as ServerStreamPlatform;
+  if (fiber.patch & PATCH_TYPE.__create__) {
+    const renderContainer = fiber.container as ServerStreamContainer;
 
-    const stream = renderPlatform.stream;
+    const stream = renderContainer.stream;
     if (fiber.type & NODE_TYPE.__isPlainNode__) {
-      renderPlatform.lastIsStringNode = false;
+      renderContainer.lastIsStringNode = false;
 
       stream.push(`</${fiber.elementType as string}>`);
 

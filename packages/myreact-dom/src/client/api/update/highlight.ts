@@ -1,6 +1,7 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
+import { STATE_TYPE } from "@my-react/react-shared";
 
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 type HighlightDOM = HTMLElement & {
   __pendingHighLight__: boolean;
@@ -57,8 +58,8 @@ export class HighLight {
   };
 
   highLight = (fiber: MyReactFiberNode) => {
-    if (fiber.node) {
-      const typedDom = fiber.node as HighlightDOM;
+    if (fiber.nativeNode) {
+      const typedDom = fiber.nativeNode as HighlightDOM;
       if (!typedDom.__pendingHighLight__) {
         typedDom.__pendingHighLight__ = true;
         this.startHighLight(fiber);
@@ -77,8 +78,8 @@ export class HighLight {
       this.__pendingUpdate__ = [];
       const allWrapper: HTMLElement[] = [];
       allFiber.forEach((f) => {
-        if (f.isMounted) {
-          f.type & NODE_TYPE.__isTextNode__ ? this.range.selectNodeContents(f.node as HighlightDOM) : this.range.selectNode(f.node as HighlightDOM);
+        if (!(f.state & STATE_TYPE.__unmount__)) {
+          f.type & NODE_TYPE.__isTextNode__ ? this.range.selectNodeContents(f.nativeNode as HighlightDOM) : this.range.selectNode(f.nativeNode as HighlightDOM);
           const rect = this.range.getBoundingClientRect();
           if (
             rect.top >= 0 &&
@@ -111,8 +112,8 @@ export class HighLight {
           this.map.push(wrapperDom);
         });
         allFiber.forEach((f) => {
-          if (f.isMounted) {
-            (f.node as HighlightDOM).__pendingHighLight__ = false;
+          if (!(f.state & STATE_TYPE.__unmount__)) {
+            (f.nativeNode as HighlightDOM).__pendingHighLight__ = false;
           }
         });
       }, 100);

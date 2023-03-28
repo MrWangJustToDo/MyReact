@@ -1,6 +1,6 @@
 import { generateFiberToList } from "../share";
 
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "../runtimeFiber";
 import type { ListTree } from "@my-react/react-shared";
 
 // TODO

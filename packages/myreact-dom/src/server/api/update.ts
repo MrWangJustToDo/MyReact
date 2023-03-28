@@ -6,12 +6,12 @@ import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, IS_UNIT_LESS_NUMBER
 import { TextElement } from "./native";
 
 import type { PlainElement } from "./native/plain";
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
-  if (fiber.patch & PATCH_TYPE.__pendingUpdate__) {
+  if (fiber.patch & PATCH_TYPE.__update__) {
     if (fiber.type & NODE_TYPE.__isPlainNode__) {
-      const dom = fiber.node as PlainElement;
+      const dom = fiber.nativeNode as PlainElement;
       const props = fiber.pendingProps || {};
       Object.keys(props).forEach((key) => {
         if (isProperty(key)) {
@@ -37,7 +37,7 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       }
     }
 
-    if (fiber.patch & PATCH_TYPE.__pendingUpdate__) fiber.patch ^= PATCH_TYPE.__pendingUpdate__;
+    if (fiber.patch & PATCH_TYPE.__update__) fiber.patch ^= PATCH_TYPE.__update__;
   }
 };
 

@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { context, defaultGenerateContextMap, defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
 import { defaultGenerateEffectMap, effect, layoutEffect } from "../dispatchEffect";
@@ -213,12 +213,12 @@ export class CustomRenderDispatch implements RenderDispatch {
   }
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
     _list.listToFoot((_fiber) => {
-      if (_fiber.state !== STATE_TYPE.__unmount__) {
+      if (_fiber.isMounted) {
         safeCallWithFiber({ fiber: _fiber, action: () => unmount(_fiber) });
       }
     });
     _list.listToFoot((_fiber) => {
-      if (_fiber.state !== STATE_TYPE.__unmount__) {
+      if (_fiber.isMounted) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => this.commitCreate(_fiber),
@@ -226,7 +226,7 @@ export class CustomRenderDispatch implements RenderDispatch {
       }
     });
     _list.listToHead((_fiber) => {
-      if (_fiber.state !== STATE_TYPE.__unmount__) {
+      if (_fiber.isMounted) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => this.commitPosition(_fiber),
@@ -234,7 +234,7 @@ export class CustomRenderDispatch implements RenderDispatch {
       }
     });
     _list.listToFoot((_fiber) => {
-      if (_fiber.state !== STATE_TYPE.__unmount__) {
+      if (_fiber.isMounted) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => {

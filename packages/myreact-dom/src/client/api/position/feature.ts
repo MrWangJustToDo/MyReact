@@ -1,4 +1,4 @@
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { getFiberWithNativeDom } from "@my-react-dom-shared";
 
@@ -15,7 +15,7 @@ export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFib
 
     const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
 
-    if (parentFiberWithDom.state & STATE_TYPE.__unmount__) {
+    if (!parentFiberWithDom?.isMounted) {
       parentFiberWithDom = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
       const elementObj = renderDispatch.elementMap.get(fiber);

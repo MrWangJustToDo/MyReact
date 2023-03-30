@@ -21,9 +21,9 @@ export const createFiberNode = (
 
   newFiberNode.parent = parent;
 
-  parent.child = parent.child || newFiberNode;
-
   newFiberNode.container = parent.container;
+
+  parent.child = parent.child || newFiberNode;
 
   const renderDispatch = parent.container.renderDispatch;
 

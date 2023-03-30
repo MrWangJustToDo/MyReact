@@ -30,8 +30,6 @@ export const ScrollContent = ({ children }: { children: ReactElement | ReactElem
     setInViewArray(Array(count).fill(false));
   }, [count]);
 
-  console.log(inViewArray.slice(0));
-
   const setCurrentView = useCallbackRef((inView: boolean, index: number) => {
     setInViewArray((last) => {
       if (last[index] !== inView) {
@@ -42,12 +40,6 @@ export const ScrollContent = ({ children }: { children: ReactElement | ReactElem
         return last;
       }
     });
-    // console.log(inView, index, inViewArray.slice(0));
-    // if (inViewArray[index] !== inView) {
-    //   const newInViewArray = [...inViewArray];
-    //   newInViewArray[index] = inView;
-    //   setInViewArray(newInViewArray);
-    // }
   });
 
   const context = useMemo(() => ({ inViewArray, setCurrentView }), [inViewArray, setCurrentView]);

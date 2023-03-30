@@ -1,11 +1,7 @@
-import { STATE_TYPE } from "@my-react/react-shared";
-
 import type { MyReactFiberNode } from "./instance";
 
 export const unmountFiberNode = (fiber: MyReactFiberNode) => {
-  if (fiber.state & STATE_TYPE.__unmount__) return;
-
-  fiber.state = STATE_TYPE.__unmount__;
+  if (!fiber.isMounted) return;
 
   const renderDispatch = fiber.container.renderDispatch;
 
@@ -31,6 +27,8 @@ export const unmountFiberNode = (fiber: MyReactFiberNode) => {
 
   fiber.child = null;
 
+  fiber.parent = null;
+
   fiber.sibling = null;
 
   fiber.instance = null;
@@ -44,4 +42,6 @@ export const unmountFiberNode = (fiber: MyReactFiberNode) => {
   fiber.nativeNode = null;
 
   fiber.updateQueue = null;
+
+  fiber.isMounted = false;
 };

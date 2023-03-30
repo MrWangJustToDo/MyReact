@@ -62,7 +62,7 @@ export const context = (fiber: MyReactFiberNode) => {
 
     renderPlatform.microTask(() => {
       set.forEach((i) => {
-        if (i._ownerFiber && i._ownerFiber.state !== STATE_TYPE.__unmount__) {
+        if (i._ownerFiber && (i._ownerFiber as MyReactFiberNode).isMounted) {
           i._ownerFiber.state = STATE_TYPE.__triggerConcurrent__;
         }
       })

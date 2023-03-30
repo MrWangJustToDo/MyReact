@@ -1,5 +1,5 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { Effect_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { Effect_TYPE } from "@my-react/react-shared";
 
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -18,7 +18,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       const update = () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (hookNode._ownerFiber?.state !== STATE_TYPE.__unmount__) hookNode.cancel = hookNode.value();
+        if ((hookNode._ownerFiber as MyReactFiberNode).isMounted) hookNode.cancel = hookNode.value();
 
         hookNode.effect = false;
 
@@ -38,7 +38,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       const update = () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (hookNode._ownerFiber?.state !== STATE_TYPE.__unmount__) hookNode.cancel = hookNode.value();
+        hookNode.cancel = hookNode.value();
 
         hookNode.effect = false;
 

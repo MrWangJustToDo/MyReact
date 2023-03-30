@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { HOOK_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { createHookNode, effectHookNode, updateHookNode } from "../runtimeHook";
 
@@ -34,7 +34,7 @@ export const processHookNode = ({ type, reducer, value, deps }: RenderHook) => {
   let currentHook: MyReactHookNode | null = null;
 
   // initial
-  if (fiber.state & STATE_TYPE.__initial__) {
+  if (!fiber.isInvoked) {
     currentHook = createHookNode({ type, reducer, value, deps }, fiber);
   } else {
     // update

@@ -14,12 +14,34 @@ export const controlElementTag: Record<string, boolean> = {
   // select: true,
 };
 
+const { enableSyncFlush } = __my_react_shared__;
+
 type ControlledElement = HTMLInputElement & {
   __isControlled__: boolean;
   __isReadonly__: boolean;
 };
 
-const { enableSyncFlush } = __my_react_shared__;
+// TODO
+const syncUpdateEvent = {
+  scroll: true,
+  mousedown: true,
+};
+
+let prev = true;
+
+const beforeEvent = (event: string) => {
+  if (syncUpdateEvent[event]) {
+    prev = enableSyncFlush.current;
+
+    enableSyncFlush.current = true;
+  }
+};
+
+const afterEvent = (event: string) => {
+  if (syncUpdateEvent[event]) {
+    enableSyncFlush.current = prev;
+  }
+};
 
 export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
   const renderContainer = fiber.container;
@@ -49,16 +71,14 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
 
         e.nativeEvent = e;
 
-        const lastFlag = enableSyncFlush.current;
-
-        nativeName === "scroll" && (enableSyncFlush.current = true);
+        beforeEvent(nativeName);
 
         safeCallWithFiber({
           action: () => handler.cb?.forEach((cb) => typeof cb === "function" && cb.call(null, ...args)),
           fiber,
         });
 
-        nativeName === "scroll" && (enableSyncFlush.current = lastFlag);
+        afterEvent(nativeName);
 
         if (enableControlComponent.current) {
           requestAnimationFrame(() => {

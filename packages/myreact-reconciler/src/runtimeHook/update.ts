@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { HOOK_TYPE, isArrayEquals, STATE_TYPE } from "@my-react/react-shared";
+import { HOOK_TYPE, isArrayEquals } from "@my-react/react-shared";
 
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -44,15 +44,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
   }
 
   if (currentHook.type === HOOK_TYPE.useEffect || currentHook.type === HOOK_TYPE.useLayoutEffect || currentHook.type === HOOK_TYPE.useImperativeHandle) {
-    if (!deps) {
-      currentHook.value = value;
-
-      currentHook.reducer = reducer || currentHook.reducer;
-
-      currentHook.deps = deps;
-
-      currentHook.effect = true;
-    } else if (!isArrayEquals(currentHook.deps, deps)) {
+    if (!deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
       currentHook.reducer = reducer || currentHook.reducer;
@@ -65,7 +57,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
   }
 
   if (currentHook.type === HOOK_TYPE.useCallback) {
-    if (!isArrayEquals(currentHook.deps, deps)) {
+    if (!deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
       currentHook.result = value;
@@ -76,7 +68,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
   }
 
   if (currentHook.type === HOOK_TYPE.useMemo) {
-    if (!isArrayEquals(currentHook.deps, deps)) {
+    if (!deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
       currentHook.result = (value as () => unknown).call(null);
@@ -87,7 +79,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
   }
 
   if (currentHook.type === HOOK_TYPE.useContext) {
-    if (!currentHook._contextFiber || currentHook._contextFiber.state & STATE_TYPE.__unmount__ || !Object.is(currentHook.value, value)) {
+    if (!currentHook._contextFiber || !(currentHook._contextFiber as MyReactFiberNode).isMounted || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
 
       const ProviderFiber = renderDispatch.resolveContextFiber(currentHook._ownerFiber as MyReactFiberNode, currentHook.value);

@@ -42,7 +42,7 @@ export const scheduleUpdate = (container: MyReactContainer) => {
   while (!nextWorkFiber && container.pendingFiberArray.length) {
     const tempFiber = container.pendingFiberArray.uniShift();
 
-    if (tempFiber.state & (STATE_TYPE.__unmount__ | STATE_TYPE.__stable__)) continue;
+    if (!tempFiber.isMounted || tempFiber.state === STATE_TYPE.__stable__) continue;
 
     nextWorkFiber = tempFiber;
   }

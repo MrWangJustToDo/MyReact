@@ -1,11 +1,9 @@
-import { STATE_TYPE } from "@my-react/react-shared";
-
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { MyReactComponent } from "@my-react/react";
 
 export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
-  if (fiber.state & STATE_TYPE.__unmount__) return;
+  if (!fiber.isMounted) return;
 
   const allQueue = fiber.updateQueue;
 
@@ -49,7 +47,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 };
 
 export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => {
-  if (fiber.state & STATE_TYPE.__unmount__) return;
+  if (!fiber.isMounted) return;
 
   const allQueue = fiber.updateQueue;
 

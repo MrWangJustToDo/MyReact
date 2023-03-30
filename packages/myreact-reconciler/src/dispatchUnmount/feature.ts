@@ -1,4 +1,4 @@
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { unmountFiberNode } from "../runtimeFiber";
 import { generateFiberToList } from "../share";
@@ -30,7 +30,7 @@ export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: Cu
 };
 
 export const unmountFiber = (fiber: MyReactFiberNode) => {
-  if (fiber.state & STATE_TYPE.__unmount__) return;
+  if (!fiber.isMounted) return;
 
   const list = generateFiberToList(fiber);
 

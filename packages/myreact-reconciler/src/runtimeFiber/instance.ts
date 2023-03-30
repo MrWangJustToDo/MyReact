@@ -1,6 +1,4 @@
-import {
-  __my_react_shared__,
-} from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react";
 import { ListTree, PATCH_TYPE, STATE_TYPE, UniqueArray } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
@@ -9,14 +7,7 @@ import { getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { CustomRenderPlatform } from "../renderPlatform";
-import type {
-  MyReactElement,
-  MyReactElementNode,
-  MyReactElementType,
-  MyReactInternalInstance,
-  RenderFiber,
-  RenderHook,
-  UpdateQueue} from "@my-react/react";
+import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
 
 type NativeNode = Record<string, any>;
 
@@ -36,6 +27,10 @@ export class MyReactFiberNode implements RenderFiber {
   type: NODE_TYPE = NODE_TYPE.__initial__;
 
   nativeNode: Record<string, any> = null;
+
+  isMounted = true;
+
+  isInvoked = false;
 
   container: MyReactContainer;
 
@@ -84,13 +79,15 @@ export class MyReactFiberNode implements RenderFiber {
     this.dependence.delete(instance);
   }
   _unmount(): void {
-    if (this.state & STATE_TYPE.__unmount__) return;
+    if (!this.isMounted) return;
 
     this.hookList.listToFoot((h) => h._unmount());
 
     this.instance && this.instance._unmount();
 
     this.patch = PATCH_TYPE.__initial__;
+
+    this.state = STATE_TYPE.__initial__;
   }
   _prepare(): void {
     const currentIsSync = enableSyncFlush.current;
@@ -106,11 +103,13 @@ export class MyReactFiberNode implements RenderFiber {
     renderPlatform.microTask(callBack);
   }
   _update(state: STATE_TYPE) {
-    if (this.state & STATE_TYPE.__unmount__) return;
+    if (!this.isMounted) return;
+
     triggerUpdate(this, state);
   }
   _error(error: Error) {
-    if (this.state & STATE_TYPE.__unmount__) return;
+    if (!this.isMounted) return;
+
     triggerError(this, error);
   }
 }

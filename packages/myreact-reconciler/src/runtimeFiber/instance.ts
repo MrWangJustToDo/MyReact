@@ -102,10 +102,10 @@ export class MyReactFiberNode implements RenderFiber {
 
     renderPlatform.microTask(callBack);
   }
-  _update(state: STATE_TYPE) {
+  _update(state?: STATE_TYPE) {
     if (!this.isMounted) return;
 
-    triggerUpdate(this, state);
+    triggerUpdate(this, state || STATE_TYPE.__triggerSync__);
   }
   _error(error: Error) {
     if (!this.isMounted) return;

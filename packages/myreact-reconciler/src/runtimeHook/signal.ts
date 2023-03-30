@@ -1,5 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
+import { STATE_TYPE } from "@my-react/react-shared";
 
+import type { MyReactFiberNode } from "../runtimeFiber";
 import type { RenderFiber } from "@my-react/react";
 
 const { currentComponentFiber } = __my_react_internal__;
@@ -28,7 +30,7 @@ export class MyReactSignal<T = any> {
 
       this._value = newValue;
 
-      allDeps.forEach((f) => f._update());
+      allDeps.forEach((f) => (f as MyReactFiberNode)._update(STATE_TYPE.__triggerConcurrent__));
     }
   };
 }

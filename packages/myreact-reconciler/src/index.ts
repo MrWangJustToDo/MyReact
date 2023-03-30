@@ -2,7 +2,7 @@ export * from "./dispatchContext";
 export * from "./dispatchDeactivated";
 export * from "./dispatchEffect";
 export * from "./dispatchErrorBoundaries";
-export * from "./dispatchHook";
+export * from "./processHook";
 export * from "./dispatchKeeplive";
 export * from "./dispatchQueue";
 export * from "./dispatchScope";

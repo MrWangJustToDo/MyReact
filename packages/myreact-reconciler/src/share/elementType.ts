@@ -29,11 +29,11 @@ export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeF
       if (__DEV__) {
         renderPlatform?.log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
       }
-      nodeType |= NODE_TYPE.__isEmptyNode__;
+      nodeType |= NODE_TYPE.__empty__;
     } else if (element === null || element === undefined || typeof element === "boolean") {
-      nodeType |= NODE_TYPE.__isNullNode__;
+      nodeType |= NODE_TYPE.__null__;
     } else {
-      nodeType |= NODE_TYPE.__isTextNode__;
+      nodeType |= NODE_TYPE.__text__;
     }
   }
 
@@ -57,77 +57,77 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
     const typedElementType = elementType as MyReactObjectComponent;
     switch (typedElementType[TYPEKEY]) {
       case Provider:
-        nodeType |= NODE_TYPE.__isContextProvider__;
+        nodeType |= NODE_TYPE.__provider__;
         break;
       case Consumer:
-        nodeType |= NODE_TYPE.__isContextConsumer__;
+        nodeType |= NODE_TYPE.__consumer__;
         break;
       case Memo:
-        nodeType |= NODE_TYPE.__isMemo__;
+        nodeType |= NODE_TYPE.__memo__;
         elementType = (typedElementType as ReturnType<typeof memo>).render;
         break;
       case ForwardRef:
-        nodeType |= NODE_TYPE.__isForwardRef__;
+        nodeType |= NODE_TYPE.__forwardRef__;
         elementType = (typedElementType as ReturnType<typeof forwardRef>).render;
         break;
       case Lazy:
-        nodeType |= NODE_TYPE.__isLazy__;
+        nodeType |= NODE_TYPE.__lazy__;
         break;
       default:
         throw new Error(`invalid object element type ${typedElementType[TYPEKEY]?.toString()}`);
     }
     if (typeof elementType === "object") {
       if (elementType[TYPEKEY] === ForwardRef) {
-        nodeType |= NODE_TYPE.__isForwardRef__;
+        nodeType |= NODE_TYPE.__forwardRef__;
         elementType = (elementType as ReturnType<typeof forwardRef>).render;
       }
     }
     if (typeof elementType === "function") {
       if (elementType.prototype?.isMyReactComponent) {
-        nodeType |= NODE_TYPE.__isClassComponent__;
+        nodeType |= NODE_TYPE.__class__;
       } else {
-        nodeType |= NODE_TYPE.__isFunctionComponent__;
+        nodeType |= NODE_TYPE.__function__;
       }
     }
   } else if (typeof elementType === "function") {
     if (elementType.prototype?.isMyReactComponent) {
-      nodeType |= NODE_TYPE.__isClassComponent__;
+      nodeType |= NODE_TYPE.__class__;
     } else {
-      nodeType |= NODE_TYPE.__isFunctionComponent__;
+      nodeType |= NODE_TYPE.__function__;
     }
   } else if (typeof elementType === "symbol") {
     switch (elementType) {
       case KeepLive:
-        nodeType |= NODE_TYPE.__isKeepLiveNode__;
+        nodeType |= NODE_TYPE.__keepLive__;
         break;
       case Fragment:
-        nodeType |= NODE_TYPE.__isFragmentNode__;
+        nodeType |= NODE_TYPE.__fragment__;
         break;
       case Strict:
-        nodeType |= NODE_TYPE.__isStrictNode__;
+        nodeType |= NODE_TYPE.__strict__;
         break;
       case Suspense:
-        nodeType |= NODE_TYPE.__isSuspenseNode__;
+        nodeType |= NODE_TYPE.__suspense__;
         break;
       case Scope:
-        nodeType |= NODE_TYPE.__isScopeNode__;
+        nodeType |= NODE_TYPE.__scope__;
         break;
       case Comment:
-        nodeType |= NODE_TYPE.__isCommentNode__;
+        nodeType |= NODE_TYPE.__comment__;
         break;
       case Portal:
-        nodeType |= NODE_TYPE.__isPortal__;
+        nodeType |= NODE_TYPE.__portal__;
         break;
       default:
         throw new Error(`invalid symbol element type ${elementType?.toString()}`);
     }
   } else if (typeof elementType === "string") {
-    nodeType |= NODE_TYPE.__isPlainNode__;
+    nodeType |= NODE_TYPE.__plain__;
   } else {
     if (__DEV__) {
       renderPlatform?.log({ message: `invalid element type ${elementType?.toString()}`, level: "warn", triggerOnce: true });
     }
-    nodeType |= NODE_TYPE.__isEmptyNode__;
+    nodeType |= NODE_TYPE.__empty__;
   }
 
   return { key, ref, nodeType, elementType, pendingProps };

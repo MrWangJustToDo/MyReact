@@ -11,9 +11,9 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReac
 
   if (fiber.patch & PATCH_TYPE.__position__) fiber.patch ^= PATCH_TYPE.__position__;
 
-  if (fiber.type & NODE_TYPE.__isPortal__) return;
+  if (fiber.type & NODE_TYPE.__portal__) return;
 
-  if (fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isTextNode__ | NODE_TYPE.__isCommentNode__)) {
+  if (fiber.type & (NODE_TYPE.__plain__ | NODE_TYPE.__text__ | NODE_TYPE.__comment__)) {
     const parentDOM = parentFiberWithDom.nativeNode as DomElement;
 
     const beforeDOM = beforeFiberWithDom.nativeNode as DomNode;

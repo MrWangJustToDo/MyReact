@@ -40,30 +40,30 @@ export const updateFiberNode = (
   const renderDispatch = fiber.container.renderDispatch;
 
   if (prevElement !== nextElement) {
-    if (fiber.type & NODE_TYPE.__isMemo__) {
-      if (!(fiber.state & STATE_TYPE.__trigger__) && isNormalEquals(fiber.pendingProps, fiber.memoizedProps)) {
+    if (fiber.type & NODE_TYPE.__memo__) {
+      if (!(fiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) && isNormalEquals(fiber.pendingProps, fiber.memoizedProps)) {
         fiber.state = STATE_TYPE.__stable__;
       } else {
-        fiber.state = STATE_TYPE.__inherit__;
+        fiber.state |= STATE_TYPE.__inherit__;
 
         renderDispatch.patchToFiberUpdate?.(fiber);
       }
     } else {
-      fiber.state = STATE_TYPE.__inherit__;
+      fiber.state |= STATE_TYPE.__inherit__;
 
-      if (fiber.type & NODE_TYPE.__isContextProvider__) {
+      if (fiber.type & NODE_TYPE.__provider__) {
         if (!isNormalEquals(fiber.pendingProps.value as Record<string, unknown>, fiber.memoizedProps.value as Record<string, unknown>)) {
           renderDispatch.pendingContext(fiber);
         }
       }
 
-      if (fiber.type & NODE_TYPE.__isPlainNode__) {
+      if (fiber.type & NODE_TYPE.__plain__) {
         if (!isNormalEquals(fiber.pendingProps, fiber.memoizedProps, (key: string) => key === "children")) {
           renderDispatch.pendingUpdate(fiber);
         }
       }
 
-      if (fiber.type & NODE_TYPE.__isTextNode__) {
+      if (fiber.type & NODE_TYPE.__text__) {
         renderDispatch.pendingUpdate(fiber);
       }
 

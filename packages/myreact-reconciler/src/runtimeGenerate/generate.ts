@@ -8,8 +8,7 @@ import type { MyReactFiberNodeDev, MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactElementNode, MaybeArrayMyReactElementNode, ArrayMyReactElementChildren } from "@my-react/react";
 
 const getIsSameTypeNode = (newChild: MyReactElementNode, draftFiber?: MyReactFiberNode) => {
-  // TODO ?
-  if ((newChild === null || newChild === undefined) && (draftFiber === null || draftFiber === undefined)) return false;
+  if (!draftFiber) return false;
 
   const result = checkIsSameType(draftFiber, newChild);
 
@@ -89,7 +88,7 @@ const getNewFiberWithUpdate = (
     }
 
     // same type
-    if (draftFiber?.type & NODE_TYPE.__isFragmentNode__) {
+    if (draftFiber?.type & NODE_TYPE.__fragment__) {
       const newElement = createElement(Fragment, null, newChild);
 
       return updateFiberNode({ fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newElement);

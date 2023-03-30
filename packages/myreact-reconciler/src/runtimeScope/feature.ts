@@ -9,7 +9,7 @@ import type { MyReactElementNode } from "@my-react/react";
 export const WrapperByScope = (children: MyReactElementNode) =>
   createElement(Scope, null, createElement(Comment, { mode: "s" }), children, createElement(Comment, { mode: "e" }));
 
-export const isCommentElement = (fiber: MyReactFiberNode) => fiber.type & NODE_TYPE.__isCommentNode__;
+export const isCommentElement = (fiber: MyReactFiberNode) => fiber.type & NODE_TYPE.__comment__;
 
 export const isCommentStartElement = (fiber: MyReactFiberNode) => {
   if (isCommentElement(fiber)) {

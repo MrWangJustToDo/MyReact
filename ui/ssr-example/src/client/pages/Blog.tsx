@@ -68,7 +68,8 @@ const Page = () => {
         draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
       >
         <GridCard key="a" contentProps={{ overflow: "auto" }}>
-          <User />
+          {/* <User /> */}
+          <div></div>
         </GridCard>
         <GridCard key="b" className="grid-card-list">
           <BlogGridWithInfinityScroll />

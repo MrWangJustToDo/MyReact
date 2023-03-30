@@ -1,6 +1,8 @@
 export class ListTreeNode<T> {
   value: T;
+
   prev: ListTreeNode<T> | null = null;
+
   next: ListTreeNode<T> | null = null;
 
   constructor(value: T) {
@@ -12,6 +14,7 @@ export class ListTree<T> {
   length = 0;
 
   head: ListTreeNode<T> | null = null;
+
   foot: ListTreeNode<T> | null = null;
 
   push(node: T) {

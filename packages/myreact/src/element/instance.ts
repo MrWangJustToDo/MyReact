@@ -1,5 +1,4 @@
 /* eslint-disable prefer-rest-params */
-
 import { TYPEKEY, Element } from "@my-react/react-shared";
 
 import { currentComponentFiber } from "../share";
@@ -218,16 +217,14 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
       owner = currentComponentFiber.current;
     }
 
-    if (_key !== undefined) {
-      key = _key + "";
-    }
+    if (_key !== undefined) key = _key + "";
 
     let defaultProps: Record<string, unknown> | undefined = {};
 
     if (typeof element.type === "function" || typeof element.type === "object") {
       const typedType = element.type as MixinMyReactClassComponent<P, S, C> | MixinMyReactFunctionComponent<P>;
 
-      defaultProps = typedType?.defaultProps;
+      defaultProps = typedType?.defaultProps || {};
     }
 
     Object.keys(resProps).forEach((key) => (props[key] = resProps[key] === undefined ? defaultProps[key] : resProps[key]));

@@ -1,5 +1,6 @@
 import { createElement } from "@my-react/react";
 import { WrapperByScope } from "@my-react/react-reconciler";
+import { STATE_TYPE } from "@my-react/react-shared";
 
 import type { lazy } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -26,7 +27,7 @@ export const resolveLazyElement = (_fiber: MyReactFiberNode) => {
 
         typedElementType.render = render as ReturnType<typeof lazy>["render"];
 
-        _fiber._update();
+        _fiber._update(STATE_TYPE.__triggerSync__);
       });
   }
 

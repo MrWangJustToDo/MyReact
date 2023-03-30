@@ -1,5 +1,4 @@
-import { processHookNode } from "../dispatchHook";
-import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
+import { processHookNode } from "../processHook";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
@@ -27,15 +26,5 @@ export class CustomRenderPlatform implements RenderPlatform {
   }
   dispatchHook(_params: RenderHook<Record<string, any>>): unknown {
     return processHookNode(_params);
-  }
-  triggerClassComponent(_fiber: MyReactFiberNode): void {
-    const needUpdate = processClassComponentUpdateQueue(_fiber);
-
-    if (needUpdate) _fiber._update();
-  }
-  triggerFunctionComponent(_fiber: MyReactFiberNode): void {
-    const needUpdate = processFunctionComponentUpdateQueue(_fiber);
-
-    if (needUpdate) _fiber._update();
   }
 }

@@ -5,7 +5,7 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const setRef = (_fiber: MyReactFiberNode) => {
   if (_fiber.patch & PATCH_TYPE.__ref__) {
-    if (_fiber.type & NODE_TYPE.__isPlainNode__) {
+    if (_fiber.type & NODE_TYPE.__plain__) {
       if (_fiber.nativeNode) {
         const ref = _fiber.ref;
         if (typeof ref === "object" && ref !== null) {
@@ -17,7 +17,7 @@ export const setRef = (_fiber: MyReactFiberNode) => {
         throw new Error("plain element do not have a native node");
       }
     }
-    if (_fiber.type & NODE_TYPE.__isClassComponent__) {
+    if (_fiber.type & NODE_TYPE.__class__) {
       if (_fiber.instance) {
         const ref = _fiber.ref;
         if (typeof ref === "object" && ref !== null) {
@@ -36,7 +36,7 @@ export const setRef = (_fiber: MyReactFiberNode) => {
 export const unsetRef = (_fiber: MyReactFiberNode) => {
   if (_fiber.state & STATE_TYPE.__unmount__) return;
 
-  if (_fiber.ref && _fiber.type & (NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__)) {
+  if (_fiber.ref && _fiber.type & (NODE_TYPE.__plain__ | NODE_TYPE.__class__)) {
     const ref = _fiber.ref;
     if (typeof ref === "object" && ref !== null) {
       ref.current = null;

@@ -35,7 +35,7 @@ export const getInsertBeforeDomFromSiblingAndParent = (fiber: MyReactFiberNode |
   const beforeDom = getInsertBeforeDomFromSibling(fiber.sibling);
 
   if (beforeDom) {
-    if (beforeDom.type & NODE_TYPE.__isPortal__) {
+    if (beforeDom.type & NODE_TYPE.__portal__) {
       return null;
     } else {
       return beforeDom;

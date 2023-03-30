@@ -6,7 +6,7 @@ import type { DomNode } from "@my-react-dom-shared";
 
 const clearFiberDom = (fiber: MyReactFiberNode) => {
   if (fiber.nativeNode) {
-    if (!(fiber.type & NODE_TYPE.__isPortal__)) {
+    if (!(fiber.type & NODE_TYPE.__portal__) && fiber !== fiber.container.rootFiber) {
       const dom = fiber.nativeNode as DomNode;
 
       dom.parentElement?.removeChild(dom);

@@ -103,4 +103,4 @@ type DefaultRenderDispatch = {
   shouldYield(): boolean;
 };
 
-export type RenderDispatch<T extends Record<string, any> = any> = DefaultRenderDispatch & T;
+export type RenderDispatch<T = Record<string, any>> = DefaultRenderDispatch & T;

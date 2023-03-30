@@ -6,7 +6,7 @@ import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 // TODO
 export const validDomNesting = (fiber: MyReactFiberNode) => {
-  if (__DEV__ && fiber.type & NODE_TYPE.__isPlainNode__) {
+  if (__DEV__ && fiber.type & NODE_TYPE.__plain__) {
     const typedElementType = fiber.elementType;
 
     const renderContainer = fiber.container;

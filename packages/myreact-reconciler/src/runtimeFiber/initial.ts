@@ -1,7 +1,6 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberRoot } from "./instance";
-import type { MyReactFiberNodeDev } from "./interface";
 
 // just used for rootFiber
 export const initialFiberNode = (fiber: MyReactFiberRoot) => {
@@ -21,19 +20,6 @@ export const initialFiberNode = (fiber: MyReactFiberRoot) => {
 
   if (!(fiber.patch & PATCH_TYPE.__update__)) {
     fiber.memoizedProps = fiber.pendingProps;
-  }
-
-  if (__DEV__) {
-    const typedFiber = fiber as MyReactFiberNodeDev;
-
-    const timeNow = Date.now();
-
-    typedFiber._debugRenderState = {
-      renderCount: 1,
-      mountTime: timeNow,
-      prevUpdateTime: 0,
-      currentUpdateTime: timeNow,
-    };
   }
 
   return fiber;

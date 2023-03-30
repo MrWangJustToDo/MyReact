@@ -27,9 +27,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
     const nextNode = node.next;
 
     if (updater.type === "component") {
-      if (__DEV__ && updater.trigger !== typedInstance) {
-        throw new Error("current update not valid, look like a bug for @my-react");
-      }
+      if (__DEV__ && updater.trigger !== typedInstance) throw new Error("current update not valid, look like a bug for @my-react");
 
       allQueue.delete(node);
 
@@ -65,9 +63,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
     const nextNode = node.next;
 
     if (updater.type === "hook") {
-      if (__DEV__ && updater.trigger._ownerFiber !== fiber) {
-        throw new Error("current update not valid, look like a bug for @my-react");
-      }
+      if (__DEV__ && updater.trigger._ownerFiber !== fiber) throw new Error("current update not valid, look like a bug for @my-react");
 
       allQueue.delete(node);
 
@@ -79,9 +75,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
 
       typedTrigger.result = typedTrigger.reducer(lastResult, payLoad);
 
-      if (!Object.is(lastResult, typedTrigger.result)) {
-        needUpdate = true;
-      }
+      if (!Object.is(lastResult, typedTrigger.result)) needUpdate = true;
     }
 
     node = nextNode;

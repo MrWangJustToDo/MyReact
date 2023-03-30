@@ -39,7 +39,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     });
     return false;
   }
-  if (fiber.type & NODE_TYPE.__isTextNode__) {
+  if (fiber.type & NODE_TYPE.__text__) {
     if (dom.nodeType !== Node.TEXT_NODE) {
       log({
         fiber,
@@ -50,7 +50,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     }
     return true;
   }
-  if (fiber.type & NODE_TYPE.__isPlainNode__) {
+  if (fiber.type & NODE_TYPE.__plain__) {
     if (dom.nodeType !== Node.ELEMENT_NODE) {
       log({
         fiber,
@@ -69,7 +69,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     }
     return true;
   }
-  if (fiber.type & NODE_TYPE.__isCommentNode__) {
+  if (fiber.type & NODE_TYPE.__comment__) {
     if (dom.nodeType !== Node.COMMENT_NODE) {
       log({
         fiber,

@@ -10,7 +10,7 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
   if (fiber.patch & PATCH_TYPE.__update__) {
-    if (fiber.type & NODE_TYPE.__isPlainNode__) {
+    if (fiber.type & NODE_TYPE.__plain__) {
       const dom = fiber.nativeNode as PlainElement;
       const props = fiber.pendingProps || {};
       Object.keys(props).forEach((key) => {
@@ -42,7 +42,7 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
 };
 
 export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
-  if (fiber.type & NODE_TYPE.__isPlainNode__) {
+  if (fiber.type & NODE_TYPE.__plain__) {
     const props = fiber.pendingProps || {};
     const attrs = {};
     const styles = {};

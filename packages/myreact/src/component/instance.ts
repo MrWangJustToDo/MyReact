@@ -1,7 +1,6 @@
 import { isNormalEquals } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
-import { currentRenderPlatform } from "../share";
 
 import type { MyReactElementNode, createContext } from "../element";
 import type { RenderFiber } from "../renderFiber";
@@ -84,11 +83,11 @@ export class MyReactComponent<
 
     const ownerFiber = this._ownerFiber;
 
-    ownerFiber.updateQueue.push(updater);
+    if (ownerFiber) {
+      ownerFiber.updateQueue?.push(updater);
 
-    const renderPlatform = currentRenderPlatform.current;
-
-    renderPlatform.triggerClassComponent(ownerFiber);
+      ownerFiber._prepare();
+    }
   };
 
   forceUpdate = () => {
@@ -100,11 +99,11 @@ export class MyReactComponent<
 
     const ownerFiber = this._ownerFiber;
 
-    ownerFiber.updateQueue.push(updater);
+    if (ownerFiber) {
+      ownerFiber.updateQueue?.push(updater);
 
-    const renderPlatform = currentRenderPlatform.current;
-
-    renderPlatform.triggerClassComponent(ownerFiber);
+      ownerFiber._prepare();
+    }
   };
 
   render(): MyReactElementNode {

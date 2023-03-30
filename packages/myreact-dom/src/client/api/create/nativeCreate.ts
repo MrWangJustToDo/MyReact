@@ -7,9 +7,9 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 const SVG = "http://www.w3.org/2000/svg";
 
 export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
-  if (fiber.type & NODE_TYPE.__isTextNode__) {
+  if (fiber.type & NODE_TYPE.__text__) {
     fiber.nativeNode = document.createTextNode(fiber.element as string);
-  } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
+  } else if (fiber.type & NODE_TYPE.__plain__) {
     const typedElementType = fiber.elementType as string;
 
     if (isSVG) {
@@ -17,11 +17,11 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     } else {
       fiber.nativeNode = document.createElement(typedElementType);
     }
-  } else if (fiber.type & NODE_TYPE.__isPortal__) {
+  } else if (fiber.type & NODE_TYPE.__portal__) {
     fiber.nativeNode = fiber.pendingProps["container"] as Element;
 
     if (__DEV__) (fiber.nativeNode as Element).setAttribute?.("portal", "MyReact");
-  } else if (fiber.type & NODE_TYPE.__isCommentNode__) {
+  } else if (fiber.type & NODE_TYPE.__comment__) {
     if (isCommentStartElement(fiber)) {
       fiber.nativeNode = document.createComment(commentS);
     } else {

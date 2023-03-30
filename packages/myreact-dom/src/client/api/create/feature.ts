@@ -36,7 +36,7 @@ export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWit
 
       typedDom.__hydrate__ = true;
 
-      if (__DEV__ && fiber.type & NODE_TYPE.__isPlainNode__) {
+      if (__DEV__ && fiber.type & NODE_TYPE.__plain__) {
         if (!re) {
           typedDom.setAttribute("debug_hydrate", "fail");
         } else {

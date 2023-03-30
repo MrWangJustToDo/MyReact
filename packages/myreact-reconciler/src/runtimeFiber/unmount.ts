@@ -29,21 +29,19 @@ export const unmountFiberNode = (fiber: MyReactFiberNode) => {
 
   renderDispatch.eventMap.delete(fiber);
 
-  if (!`${__DEV__}`) {
-    fiber.child = null;
+  fiber.child = null;
 
-    fiber.sibling = null;
+  fiber.sibling = null;
 
-    fiber.instance = null;
+  fiber.instance = null;
 
-    fiber.hookList = null;
+  fiber.hookList = null;
 
-    fiber.container = null;
+  fiber.container = null;
 
-    fiber.dependence = null;
+  fiber.dependence = null;
 
-    fiber.nativeNode = null;
+  fiber.nativeNode = null;
 
-    fiber.updateQueue = null;
-  }
+  fiber.updateQueue = null;
 };

@@ -35,9 +35,8 @@ export const forEach = (
 };
 
 export const count = (arrayLike: MaybeArrayMyReactElementNode): number => {
-  if (Array.isArray(arrayLike)) {
-    return arrayLike.reduce<number>((p, c) => p + count(c), 0);
-  }
+  if (Array.isArray(arrayLike)) return arrayLike.reduce<number>((p, c) => p + count(c), 0);
+
   return 1;
 };
 

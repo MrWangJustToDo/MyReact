@@ -55,9 +55,9 @@ const rollupBuild = async (packageName: packages, packageScope?: string) => {
 };
 
 const start = async () => {
-  await rollupBuild("myreact-shared");
-  await rollupBuild("myreact");
-  await rollupBuild("myreact-jsx");
+  // await rollupBuild("myreact-shared");
+  // await rollupBuild("myreact");
+  // await rollupBuild("myreact-jsx");
   await rollupBuild("myreact-reconciler");
   await rollupBuild("myreact-dom");
   // await rollupBuild("myreact-reactivity");

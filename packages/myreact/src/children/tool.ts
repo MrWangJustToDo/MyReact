@@ -1,9 +1,8 @@
 import type { MyReactElementNode, ArrayMyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
 
 export const flatten = (children: MaybeArrayMyReactElementNode): ArrayMyReactElementNode => {
-  if (Array.isArray(children)) {
-    return children.reduce<ArrayMyReactElementNode>((p, c) => p.concat(flatten(c)), []);
-  }
+  if (Array.isArray(children)) return children.reduce<ArrayMyReactElementNode>((p, c) => p.concat(flatten(c)), []);
+
   return [children];
 };
 

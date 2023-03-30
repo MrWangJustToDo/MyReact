@@ -11,13 +11,13 @@ import type { ServerStreamContainer } from "@my-react-dom-server";
 
 export const create = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
-    if (fiber.type & NODE_TYPE.__isTextNode__) {
+    if (fiber.type & NODE_TYPE.__text__) {
       fiber.nativeNode = new TextElement(fiber.element as string);
-    } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
+    } else if (fiber.type & NODE_TYPE.__plain__) {
       const typedElementType = fiber.elementType as string;
 
       fiber.nativeNode = new PlainElement(typedElementType);
-    } else if (fiber.type & NODE_TYPE.__isCommentNode__) {
+    } else if (fiber.type & NODE_TYPE.__comment__) {
       if (isCommentStartElement(fiber)) {
         fiber.nativeNode = new CommentStartElement();
       } else {
@@ -36,7 +36,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolea
     const renderContainer = fiber.container as ServerStreamContainer;
 
     const stream = renderContainer.stream;
-    if (fiber.type & NODE_TYPE.__isTextNode__) {
+    if (fiber.type & NODE_TYPE.__text__) {
       if (renderContainer.lastIsStringNode) {
         stream.push("<!-- -->");
       }
@@ -45,7 +45,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolea
       renderContainer.lastIsStringNode = true;
 
       fiber.patch = PATCH_TYPE.__initial__;
-    } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
+    } else if (fiber.type & NODE_TYPE.__plain__) {
       renderContainer.lastIsStringNode = false;
 
       if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, fiber.elementType as string)) {
@@ -62,7 +62,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolea
           stream.push(typedProps.__html as string);
         }
       }
-    } else if (fiber.type & NODE_TYPE.__isCommentNode__) {
+    } else if (fiber.type & NODE_TYPE.__comment__) {
       renderContainer.lastIsStringNode = false;
 
       if (isCommentStartElement(fiber)) {
@@ -83,7 +83,7 @@ export const createCloseTagWithStream = (fiber: MyReactFiberNode) => {
     const renderContainer = fiber.container as ServerStreamContainer;
 
     const stream = renderContainer.stream;
-    if (fiber.type & NODE_TYPE.__isPlainNode__) {
+    if (fiber.type & NODE_TYPE.__plain__) {
       renderContainer.lastIsStringNode = false;
 
       stream.push(`</${fiber.elementType as string}>`);

@@ -1,4 +1,3 @@
-
 import { createRef } from "./createRef";
 
 import type { RenderFiber } from "../renderFiber";
@@ -22,9 +21,6 @@ export const enableDebugLog = createRef(false);
 export const enableConcurrentMode = createRef(true);
 
 export const enableSyncFlush = createRef(false);
-
-// TODO 从root更新并支持优先级
-export const enableUpdateFromRoot = createRef(false);
 
 // support "unsafe_" lifecycle
 export const enableLegacyLifeCycle = createRef(true);

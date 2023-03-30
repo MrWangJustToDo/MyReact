@@ -11,15 +11,15 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 export class ClientDomDispatch extends CustomRenderDispatch {
   elementMap = new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>();
 
-  refType = NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isClassComponent__;
+  refType = NODE_TYPE.__plain__ | NODE_TYPE.__class__;
 
-  createType = NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isCommentNode__;
+  createType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
 
-  updateType = NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__;
+  updateType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
 
-  appendType = NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isCommentNode__;
+  appendType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
 
-  hasNodeType = NODE_TYPE.__isTextNode__ | NODE_TYPE.__isPlainNode__ | NODE_TYPE.__isPortal__ | NODE_TYPE.__isCommentNode__;
+  hasNodeType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     const { isSVG, parentFiberWithNode } = this.elementMap.get(_fiber) || {};

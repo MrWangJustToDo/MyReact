@@ -1,3 +1,4 @@
+import { __my_react_internal__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { context, defaultGenerateContextMap, defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
@@ -14,6 +15,8 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 import type { NODE_TYPE } from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
+
+const { currentRenderPlatform } = __my_react_internal__;
 
 export class CustomRenderDispatch implements RenderDispatch {
   refType: NODE_TYPE;
@@ -155,7 +158,7 @@ export class CustomRenderDispatch implements RenderDispatch {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
-    const mountLoop = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
+    const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
       const _result = safeCallWithFiber({
         fiber: _fiber,
         action: () => this.commitCreate(_fiber, _hydrate),
@@ -173,16 +176,14 @@ export class CustomRenderDispatch implements RenderDispatch {
 
       let _final = _hydrate;
 
-      if (_fiber.child) _final = mountLoop(_fiber.child, _result);
+      if (_fiber.child) _final = mountCommit(_fiber.child, _result);
 
       safeCallWithFiber({ fiber: _fiber, action: () => this.commitSetRef(_fiber) });
 
       safeCallWithFiber({ fiber: _fiber, action: () => layoutEffect(_fiber) });
 
-      _fiber.container.renderPlatform.macroTask(() => effect(_fiber));
-
       if (_fiber.sibling) {
-        mountLoop(_fiber.sibling, _fiber.nativeNode ? _result : _final);
+        mountCommit(_fiber.sibling, _fiber.nativeNode ? _result : _final);
       }
 
       if (_fiber.nativeNode) {
@@ -192,9 +193,30 @@ export class CustomRenderDispatch implements RenderDispatch {
       }
     };
 
+    const mountEffect = (_fiber: MyReactFiberNode) => {
+      if (_fiber.child) mountEffect(_fiber.child);
+
+      effect(_fiber);
+
+      if (_fiber.sibling) mountEffect(_fiber.sibling);
+    };
+
+    const mountLoop = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
+      const re = mountCommit(_fiber, _hydrate);
+
+      currentRenderPlatform.current.microTask(() => mountEffect(_fiber));
+
+      return re;
+    };
+
     return mountLoop(_fiber, _hydrate);
   }
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
+    _list.listToFoot((_fiber) => {
+      if (_fiber.state !== STATE_TYPE.__unmount__) {
+        safeCallWithFiber({ fiber: _fiber, action: () => unmount(_fiber) });
+      }
+    });
     _list.listToFoot((_fiber) => {
       if (_fiber.state !== STATE_TYPE.__unmount__) {
         safeCallWithFiber({
@@ -225,13 +247,12 @@ export class CustomRenderDispatch implements RenderDispatch {
           fiber: _fiber,
           action: () => {
             context(_fiber);
-            unmount(_fiber);
             layoutEffect(_fiber);
           },
         });
-        _fiber.container.renderPlatform.macroTask(() => effect(_fiber));
       }
     });
+    currentRenderPlatform.current.microTask(() => _list.listToFoot((_fiber) => effect(_fiber)));
   }
   shouldYield(): boolean {
     return false;

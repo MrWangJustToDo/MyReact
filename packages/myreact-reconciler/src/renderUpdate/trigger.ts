@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { STATE_TYPE } from "@my-react/react-shared";
 
-import { updateWitConcurrent, updateWithSync } from "./feature";
+import { updateConcurrentWithSkip, updateConcurrentWithTrigger, updateSyncWithSkip, updateSyncWithTrigger } from "./feature";
 
 import type { MyReactContainer, MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent } from "@my-react/react";
@@ -24,7 +24,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
       hasError: true,
     };
 
-    errorBoundariesFiber._update();
+    triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__);
   } else {
     renderContainer.pendingFiberArray.clear();
 
@@ -38,34 +38,48 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 
 export const scheduleUpdate = (container: MyReactContainer) => {
   let nextWorkFiber: MyReactFiberNode | null = null;
+
   while (!nextWorkFiber && container.pendingFiberArray.length) {
     const tempFiber = container.pendingFiberArray.uniShift();
 
-    if (tempFiber.state & STATE_TYPE.__unmount__ || tempFiber.state & STATE_TYPE.__stable__) continue;
+    if (tempFiber.state & (STATE_TYPE.__unmount__ | STATE_TYPE.__stable__)) continue;
 
     nextWorkFiber = tempFiber;
   }
 
   if (nextWorkFiber) {
-    if (nextWorkFiber.state === STATE_TYPE.__trigger__) {
+    if (nextWorkFiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
       container.triggeredFiber = nextWorkFiber;
       container.nextWorkingFiber = nextWorkFiber;
-      updateWithSync(container, () => scheduleUpdate(container));
-    } else if (nextWorkFiber.state === STATE_TYPE.__skipped__) {
+      if (nextWorkFiber.state & STATE_TYPE.__triggerSync__) {
+        updateSyncWithTrigger(container, () => scheduleUpdate(container));
+      } else {
+        updateConcurrentWithTrigger(container, () => scheduleUpdate(container));
+      }
+    } else if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__)) {
       container.triggeredFiber = nextWorkFiber;
       container.nextWorkingFiber = nextWorkFiber;
-      updateWitConcurrent(container, () => scheduleUpdate(container));
+      if (nextWorkFiber.state & STATE_TYPE.__skippedSync__) {
+        updateSyncWithSkip(container, () => scheduleUpdate(container));
+      } else {
+        updateConcurrentWithSkip(container, () => scheduleUpdate(container));
+      }
     } else {
+      console.log("un handle", nextWorkFiber);
       // TODO
     }
   } else {
+    globalLoop.current = false;
+
     container.triggeredFiber = null;
+
     container.commitFiberList = null;
+
     container.nextWorkingFiber = null;
   }
 };
 
-export const triggerUpdate = (fiber: MyReactFiberNode) => {
+export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
   const renderContainer = fiber.container;
 
   const renderPlatform = renderContainer.renderPlatform;
@@ -75,16 +89,12 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
   if (!renderContainer.isAppMounted) {
     if (__DEV__) console.log("pending, can not update component");
 
-    renderPlatform.macroTask(() => triggerUpdate(fiber));
+    renderPlatform.macroTask(() => triggerUpdate(fiber, state));
 
     return;
   }
 
-  if (__DEV__) {
-    (renderContainer as any).__globalLoop__ = globalLoop;
-  }
-
-  fiber.state = STATE_TYPE.__trigger__;
+  fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : (fiber.state |= state);
 
   renderContainer.pendingFiberArray.uniPush(fiber);
 
@@ -92,35 +102,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode) => {
 
   globalLoop.current = true;
 
-  renderPlatform.microTask(() => scheduleUpdate(renderContainer));
-};
+  scheduleUpdate(renderContainer);
 
-export const triggerRoot = (fiber: MyReactFiberNode) => {
-  const renderContainer = fiber.container;
-
-  const renderPlatform = renderContainer.renderPlatform;
-
-  if (renderContainer.isAppCrashed) return;
-
-  if (!renderContainer.isAppMounted) {
-    if (__DEV__) console.log("pending, can not update component");
-
-    renderPlatform.macroTask(() => triggerUpdate(fiber));
-
-    return;
-  }
-
-  if (__DEV__) {
-    (renderContainer as any).__globalLoop__ = globalLoop;
-  }
-
-  fiber.state = STATE_TYPE.__skipped__;
-
-  renderContainer.pendingFiberArray.uniPush(fiber);
-
-  if (globalLoop.current) return;
-
-  globalLoop.current = true;
-
-  renderPlatform.microTask(() => scheduleUpdate(renderContainer));
+  // renderPlatform.microTask(() => scheduleUpdate(renderContainer));
 };

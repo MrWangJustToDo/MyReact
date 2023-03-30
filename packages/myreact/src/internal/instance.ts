@@ -17,7 +17,9 @@ export class MyReactInternalInstance {
 
   _setContext(fiber: RenderFiber | null) {
     this._contextFiber?._removeDependence(this);
+
     this._contextFiber = fiber;
+
     this._contextFiber?._addDependence(this);
   }
 
@@ -27,8 +29,11 @@ export class MyReactInternalInstance {
 
   _unmount() {
     this.mode = Effect_TYPE.__initial__;
+
     this._contextFiber?._removeDependence(this);
+
     this._ownerFiber = null;
+
     this._contextFiber = null;
   }
 }

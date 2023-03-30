@@ -18,9 +18,9 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
 
   const node = fiber.nativeNode as DomElement | DomNode;
 
-  if (fiber.type & NODE_TYPE.__isTextNode__) {
+  if (fiber.type & NODE_TYPE.__text__) {
     node.textContent = fiber.element as string;
-  } else if (fiber.type & NODE_TYPE.__isPlainNode__) {
+  } else if (fiber.type & NODE_TYPE.__plain__) {
     const dom = node as HTMLElement;
     const oldProps = fiber.memoizedProps || {};
     const newProps = fiber.pendingProps || {};

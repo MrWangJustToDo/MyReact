@@ -26,9 +26,11 @@ interface DefaultRenderFiber {
 
   _removeDependence(instance: MyReactInternalInstance): void;
 
-  _update(): void;
+  _update(state: STATE_TYPE): void;
 
   _error(error: Error): void;
+
+  _prepare(): void;
 
   _unmount(): void;
 }

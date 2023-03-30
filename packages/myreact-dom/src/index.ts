@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { safeCall } from "@my-react/react-reconciler";
+import { safeCall, safeCallWithSync } from "@my-react/react-reconciler";
 
 import { render, hydrate } from "./client";
 import { renderToString, renderToNodeStream } from "./server";
@@ -7,7 +7,7 @@ import { createPortal, findDOMNode, MyReactDomPlatform, unmountComponentAtNode }
 
 const version = __VERSION__;
 
-const flushSync = safeCall;
+const flushSync = safeCallWithSync;
 
 const unstable_batchedUpdates = safeCall;
 

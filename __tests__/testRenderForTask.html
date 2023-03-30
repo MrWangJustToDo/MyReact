@@ -15,11 +15,12 @@
       addEventListener("load", () => {
         let count = 1;
         window.update = () => {
-          setTimeout(() => {
+          requestAnimationFrame(() => {
             text.textContent = count++;
             update();
           });
         };
+        update();
       });
     </script>
   </body>

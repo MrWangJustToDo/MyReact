@@ -110,7 +110,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (node) {
     const props = fiber.pendingProps;
 
-    if (fiber.type & NODE_TYPE.__isPlainNode__) {
+    if (fiber.type & NODE_TYPE.__plain__) {
       Object.keys(props).forEach((key) => {
         if (isEvent(key)) {
           domEventHydrate(fiber, key);
@@ -123,7 +123,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
       domInnerHTMLHydrate(fiber);
     }
 
-    if (fiber.type & NODE_TYPE.__isTextNode__) {
+    if (fiber.type & NODE_TYPE.__text__) {
       domContentHydrate(fiber);
     }
   }

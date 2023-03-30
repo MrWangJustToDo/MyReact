@@ -6,7 +6,7 @@ export const defaultGenerateStrictMap = (fiber: MyReactFiberNode, map: WeakMap<M
   const parent = fiber.parent;
 
   if (parent) {
-    if (parent.type & NODE_TYPE.__isStrictNode__) {
+    if (parent.type & NODE_TYPE.__strict__) {
       map.set(fiber, true);
     } else {
       map.set(fiber, map.get(parent) || false);

@@ -1,4 +1,5 @@
 import { isValidElement, __my_react_internal__ } from "@my-react/react";
+import { STATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { isCommentElement } from "../runtimeScope";
@@ -46,7 +47,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
 
   let children: MyReactElementNode = null;
 
-  if (fiber.type & NODE_TYPE.__isForwardRef__) {
+  if (fiber.type & NODE_TYPE.__forwardRef__) {
     const typedElementTypeWithRef = typedElementType as ReturnType<typeof forwardRef>["render"];
     children = safeCallWithFiber({ fiber, action: () => typedElementTypeWithRef(fiber.pendingProps, fiber.ref) });
   } else {
@@ -61,7 +62,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkComponent = (fiber: MyReactFiberNode) => {
-  if (fiber.type & NODE_TYPE.__isFunctionComponent__) {
+  if (fiber.type & NODE_TYPE.__function__) {
     currentComponentFiber.current = fiber;
 
     const res = nextWorkFunctionComponent(fiber);
@@ -99,7 +100,7 @@ export const nextWorkLazySync = async (fiber: MyReactFiberNode) => {
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
   // for a comment element, will not have any children;
   // empty node normally a invalid node
-  if (isValidElement(fiber.element) && !(fiber.type & NODE_TYPE.__isEmptyNode__) && !isCommentElement(fiber)) {
+  if (isValidElement(fiber.element) && !(fiber.type & NODE_TYPE.__empty__) && !isCommentElement(fiber)) {
     const { children } = fiber.pendingProps;
 
     const childrenFiber = transformChildrenFiber(fiber, children);
@@ -123,7 +124,7 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   currentComponentFiber.current = fiber;
 
-  if (!fiber.instance._contextFiber || !fiber.instance._contextFiber.isMounted) {
+  if (!fiber.instance._contextFiber || fiber.instance._contextFiber.state & STATE_TYPE.__unmount__) {
     const ProviderFiber = renderDispatch.resolveContextFiber(fiber, Context);
 
     const context = renderDispatch.resolveContextValue(ProviderFiber, Context);
@@ -147,15 +148,15 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 };
 
 export const runtimeNextWork = (fiber: MyReactFiberNode) => {
-  if (fiber.type & NODE_TYPE.__isDynamicNode__) return nextWorkComponent(fiber);
-  if (fiber.type & NODE_TYPE.__isLazy__) return nextWorkLazy(fiber);
-  if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);
+  if (fiber.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) return nextWorkComponent(fiber);
+  if (fiber.type & NODE_TYPE.__lazy__) return nextWorkLazy(fiber);
+  if (fiber.type & NODE_TYPE.__consumer__) return nextWorkConsumer(fiber);
   return nextWorkNormal(fiber);
 };
 
 export const runtimeNextWorkAsync = async (fiber: MyReactFiberNode) => {
-  if (fiber.type & NODE_TYPE.__isDynamicNode__) return nextWorkComponent(fiber);
-  if (fiber.type & NODE_TYPE.__isLazy__) return await nextWorkLazySync(fiber);
-  if (fiber.type & NODE_TYPE.__isContextConsumer__) return nextWorkConsumer(fiber);
+  if (fiber.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) return nextWorkComponent(fiber);
+  if (fiber.type & NODE_TYPE.__lazy__) return await nextWorkLazySync(fiber);
+  if (fiber.type & NODE_TYPE.__consumer__) return nextWorkConsumer(fiber);
   return nextWorkNormal(fiber);
 };

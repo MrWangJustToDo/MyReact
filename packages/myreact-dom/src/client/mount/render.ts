@@ -1,6 +1,6 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { checkIsSameType, getTypeFromElementNode, initialFiberNode, MyReactFiberNode, MyReactFiberRoot } from "@my-react/react-reconciler";
-import { once } from "@my-react/react-shared";
+import { once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomContainer, ClientDomDispatch } from "@my-react-dom-client";
 import { MyReactDomPlatform, startRender, unmountComponentAtNode } from "@my-react-dom-shared";
@@ -48,7 +48,7 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
       containerFiber.pendingProps = pendingProps;
 
-      containerFiber._update();
+      containerFiber._update(STATE_TYPE.__triggerSync__);
 
       return;
     } else {

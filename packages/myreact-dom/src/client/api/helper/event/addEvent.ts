@@ -1,3 +1,4 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { safeCallWithFiber } from "@my-react/react-reconciler";
 
 import { enableControlComponent, enableEventSystem } from "@my-react-dom-shared";
@@ -17,6 +18,8 @@ type ControlledElement = HTMLInputElement & {
   __isControlled__: boolean;
   __isReadonly__: boolean;
 };
+
+const { enableSyncFlush } = __my_react_shared__;
 
 export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
   const renderContainer = fiber.container;
@@ -46,10 +49,16 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
 
         e.nativeEvent = e;
 
+        const lastFlag = enableSyncFlush.current;
+
+        nativeName === "scroll" && (enableSyncFlush.current = true);
+
         safeCallWithFiber({
           action: () => handler.cb?.forEach((cb) => typeof cb === "function" && cb.call(null, ...args)),
           fiber,
         });
+
+        nativeName === "scroll" && (enableSyncFlush.current = lastFlag);
 
         if (enableControlComponent.current) {
           requestAnimationFrame(() => {

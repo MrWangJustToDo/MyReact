@@ -1,15 +1,28 @@
+import {
+  __my_react_shared__,
+} from "@my-react/react";
 import { ListTree, PATCH_TYPE, STATE_TYPE, UniqueArray } from "@my-react/react-shared";
 
-import { triggerError, triggerRoot } from "../renderUpdate";
+import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
+import { triggerError, triggerUpdate } from "../renderUpdate";
 import { getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { CustomRenderPlatform } from "../renderPlatform";
-import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
+import type {
+  MyReactElement,
+  MyReactElementNode,
+  MyReactElementType,
+  MyReactInternalInstance,
+  RenderFiber,
+  RenderHook,
+  UpdateQueue} from "@my-react/react";
 
 type NativeNode = Record<string, any>;
 
 const emptyProps = {};
+
+const { enableSyncFlush } = __my_react_shared__;
 
 export class MyReactFiberNode implements RenderFiber {
   ref: MyReactElement["ref"];
@@ -70,22 +83,35 @@ export class MyReactFiberNode implements RenderFiber {
   _removeDependence(instance: MyReactInternalInstance): void {
     this.dependence.delete(instance);
   }
-  _update(): void {
-    if (this.state & STATE_TYPE.__unmount__) return;
-    this.state = STATE_TYPE.__trigger__;
-    triggerRoot(this.container.rootFiber);
-    // triggerUpdate(this);
-  }
-  _error(_error: Error): void {
-    if (this.state & STATE_TYPE.__unmount__) return;
-    triggerError(this, _error);
-  }
   _unmount(): void {
     if (this.state & STATE_TYPE.__unmount__) return;
+
     this.hookList.listToFoot((h) => h._unmount());
+
     this.instance && this.instance._unmount();
-    this.state = STATE_TYPE.__unmount__;
+
     this.patch = PATCH_TYPE.__initial__;
+  }
+  _prepare(): void {
+    const currentIsSync = enableSyncFlush.current;
+
+    const renderPlatform = this.container.renderPlatform;
+
+    const callBack = () => {
+      const needUpdate = this.type & NODE_TYPE.__class__ ? processClassComponentUpdateQueue(this) : processFunctionComponentUpdateQueue(this);
+
+      if (needUpdate) this._update(currentIsSync ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__triggerConcurrent__);
+    };
+
+    renderPlatform.microTask(callBack);
+  }
+  _update(state: STATE_TYPE) {
+    if (this.state & STATE_TYPE.__unmount__) return;
+    triggerUpdate(this, state);
+  }
+  _error(error: Error) {
+    if (this.state & STATE_TYPE.__unmount__) return;
+    triggerError(this, error);
   }
 }
 
@@ -130,7 +156,8 @@ export class MyReactContainer {
 
   _generateCommitList(_fiber: MyReactFiberNode) {
     if (!_fiber) return;
-    if (_fiber.patch & PATCH_TYPE.__needCommit__) {
+
+    if (_fiber.patch !== PATCH_TYPE.__initial__) {
       this.commitFiberList = this.commitFiberList || new ListTree();
 
       this.commitFiberList.push(_fiber);

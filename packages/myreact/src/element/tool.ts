@@ -12,23 +12,27 @@ import type {
   MyReactObjectComponent,
 } from "./instance";
 
-export function isValidElement(element?: MyReactElementNode | any): element is MyReactElement {
+export const isValidElement = (element?: MyReactElementNode | any): element is MyReactElement => {
   return typeof element === "object" && !Array.isArray(element) && element?.[TYPEKEY] === Element;
-}
+};
 
 export const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
+
   const renderPlatform = currentRenderPlatform.current;
+
   const onceWarnDuplicate = once(renderPlatform?.log);
+
   const onceWarnUndefined = once(renderPlatform?.log);
+
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
+
   if (validElement.length > 1) {
     validElement.forEach((c) => {
       if (!c._store["validKey"]) {
         if (typeof c.key === "string") {
-          if (obj[c.key]) {
-            onceWarnDuplicate({ message: `array child have duplicate key` });
-          }
+          if (obj[c.key]) onceWarnDuplicate({ message: `array child have duplicate key` });
+
           obj[c.key] = true;
         } else {
           onceWarnUndefined({
@@ -46,6 +50,7 @@ export const checkValidElement = (element: MyReactElementNode) => {
   if (isValidElement(element)) {
     if (!element._store["validType"]) {
       const rawType = element.type;
+
       if (typeof rawType === "object") {
         const typedRawType = rawType as MyReactObjectComponent;
         // check <Consumer /> usage
@@ -57,6 +62,7 @@ export const checkValidElement = (element: MyReactElementNode) => {
         // check forward function
         else if (typedRawType[TYPEKEY] === ForwardRef) {
           const CurrentTypedRawType = rawType as ReturnType<typeof forwardRef>;
+
           const targetRender = CurrentTypedRawType.render;
           if (typeof targetRender !== "function") {
             throw new Error(`invalid render function for 'forwardRef()' element`);

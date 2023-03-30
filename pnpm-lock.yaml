@@ -156,6 +156,9 @@ importers:
   packages/myreact-shared:
     specifiers: {}
 
+  packages/myreact-wxs:
+    specifiers: {}
+
   site/axios:
     specifiers: {}
 

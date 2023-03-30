@@ -31,6 +31,7 @@ const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"
       rowHeight={GRID_ROW_HEIGHT}
       draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
       draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
+      onLayoutChange={console.log}
     >
       {data.map((p, index) => {
         return (

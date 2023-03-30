@@ -4,7 +4,7 @@ import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
 
 export const isErrorBoundariesComponent = (fiber: MyReactFiberNode) => {
-  if (fiber.type & NODE_TYPE.__isClassComponent__) {
+  if (fiber.type & NODE_TYPE.__class__) {
     const Component = fiber.elementType;
 
     const typedComponent = Component as MixinMyReactClassComponent;

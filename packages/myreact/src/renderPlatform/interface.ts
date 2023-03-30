@@ -23,10 +23,6 @@ interface DefaultRenderPlatform {
   getHookTree(_treeHookNode: ListTreeNode<RenderHook>, _errorType: { lastRender: RenderHook["type"]; nextRender: RenderHook["type"] }): string;
 
   dispatchHook(_params: RenderHook): unknown;
-
-  triggerClassComponent(_fiber: RenderFiber): void;
-
-  triggerFunctionComponent(_fiber: RenderFiber): void;
 }
 
 export type RenderPlatform<T = Record<string, any>> = DefaultRenderPlatform & T;

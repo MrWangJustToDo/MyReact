@@ -7,7 +7,7 @@ export const defaultGenerateScopeMap = (fiber: MyReactFiberNode, map: WeakMap<My
   const parent = fiber.parent;
 
   if (parent) {
-    if (parent.type & NODE_TYPE.__isScopeNode__) {
+    if (parent.type & NODE_TYPE.__scope__) {
       map.set(fiber, parent);
     } else {
       const parentScopeFiber = map.get(parent);

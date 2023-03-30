@@ -125,8 +125,8 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: 
   const renderDispatch = fiber.container.renderDispatch;
 
   if (devInstance) {
-    if ((typedInstance.componentDidMount || typedInstance.componentWillUnmount) && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
-      typedInstance.mode = Effect_TYPE.__pendingEffect__;
+    if ((typedInstance.componentDidMount || typedInstance.componentWillUnmount) && !(typedInstance.mode & Effect_TYPE.__effect__)) {
+      typedInstance.mode = Effect_TYPE.__effect__;
       renderDispatch.pendingLayoutEffect(fiber, () => {
         typedInstance.mode = Effect_TYPE.__initial__;
         typedInstance.componentDidMount?.();
@@ -135,8 +135,8 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: 
       });
     }
   } else {
-    if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
-      typedInstance.mode = Effect_TYPE.__pendingEffect__;
+    if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE.__effect__)) {
+      typedInstance.mode = Effect_TYPE.__effect__;
       renderDispatch.pendingLayoutEffect(fiber, () => {
         typedInstance.mode = Effect_TYPE.__initial__;
         typedInstance.componentDidMount?.();
@@ -152,8 +152,8 @@ const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error
 
   const renderPlatform = fiber.container.renderPlatform;
 
-  if (typedInstance.componentDidCatch && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
-    typedInstance.mode = Effect_TYPE.__pendingEffect__;
+  if (typedInstance.componentDidCatch && !(typedInstance.mode & Effect_TYPE.__effect__)) {
+    typedInstance.mode = Effect_TYPE.__effect__;
     renderDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
       typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(targetFiber) });
@@ -171,7 +171,7 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedComponent.contextType) {
-    if (!typedInstance?._contextFiber || !typedInstance._contextFiber.isMounted) {
+    if (!typedInstance?._contextFiber || typedInstance._contextFiber.state & STATE_TYPE.__unmount__) {
       const ProviderFiber = renderDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
       const context = renderDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
@@ -207,7 +207,7 @@ const processComponentShouldUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  if (fiber.state & STATE_TYPE.__trigger__) return true;
+  if (fiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) return true;
 
   if (typedInstance.shouldComponentUpdate) {
     return typedInstance.shouldComponentUpdate?.(nextProps, nextState, nextContext);
@@ -246,8 +246,8 @@ const processComponentDidUpdateOnUpdate = (
 
   const hasEffect = typedInstance.componentDidUpdate || callback.length;
 
-  if (hasEffect && !(typedInstance.mode & Effect_TYPE.__pendingEffect__)) {
-    typedInstance.mode = Effect_TYPE.__pendingEffect__;
+  if (hasEffect && !(typedInstance.mode & Effect_TYPE.__effect__)) {
+    typedInstance.mode = Effect_TYPE.__effect__;
     renderDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
       callback.forEach((c) => c.call(null));

@@ -79,7 +79,7 @@ export class HighLight {
       const allWrapper: HTMLElement[] = [];
       allFiber.forEach((f) => {
         if (!(f.state & STATE_TYPE.__unmount__)) {
-          f.type & NODE_TYPE.__isTextNode__ ? this.range.selectNodeContents(f.nativeNode as HighlightDOM) : this.range.selectNode(f.nativeNode as HighlightDOM);
+          f.type & NODE_TYPE.__text__ ? this.range.selectNodeContents(f.nativeNode as HighlightDOM) : this.range.selectNode(f.nativeNode as HighlightDOM);
           const rect = this.range.getBoundingClientRect();
           if (
             rect.top >= 0 &&
@@ -112,7 +112,7 @@ export class HighLight {
           this.map.push(wrapperDom);
         });
         allFiber.forEach((f) => {
-          if (!(f.state & STATE_TYPE.__unmount__)) {
+          if (f.nativeNode) {
             (f.nativeNode as HighlightDOM).__pendingHighLight__ = false;
           }
         });

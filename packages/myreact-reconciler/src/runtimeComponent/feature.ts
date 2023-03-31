@@ -145,18 +145,16 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: 
   }
 };
 
-const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error: Error, targetFiber: MyReactFiberNode) => {
+const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error: Error, stack: string) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   const renderDispatch = fiber.container.renderDispatch;
-
-  const renderPlatform = fiber.container.renderPlatform;
 
   if (typedInstance.componentDidCatch && !(typedInstance.mode & Effect_TYPE.__effect__)) {
     typedInstance.mode = Effect_TYPE.__effect__;
     renderDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
-      typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(targetFiber) });
+      typedInstance.componentDidCatch?.(error, { componentStack: stack });
     });
   }
 };
@@ -414,15 +412,15 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const { error, trigger } = typedInstance._error;
+  const { error, stack } = typedInstance._error;
 
   processComponentStateFromError(fiber, error);
 
   const children = processComponentRenderOnMountAndUpdate(fiber);
 
-  processComponentDidCatchOnMountAndUpdate(fiber, error, trigger as MyReactFiberNode);
+  processComponentDidCatchOnMountAndUpdate(fiber, error, stack);
 
-  typedInstance._error = { hasError: false, error: null, trigger: null };
+  typedInstance._error = { hasError: false, error: null, stack: null };
 
   return { updated: true, children };
 };

@@ -13,6 +13,8 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 
   const renderDispatch = renderContainer.renderDispatch;
 
+  const renderPlatform = renderContainer.renderPlatform;
+
   const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
 
   if (errorBoundariesFiber) {
@@ -20,7 +22,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 
     typedInstance._error = {
       error: error,
-      trigger: fiber,
+      stack: renderPlatform.getFiberTree(fiber),
       hasError: true,
     };
 

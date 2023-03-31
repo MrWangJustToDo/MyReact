@@ -3,7 +3,6 @@ import { isNormalEquals } from "@my-react/react-shared";
 import { MyReactInternalInstance } from "../internal";
 
 import type { MyReactElementNode, createContext } from "../element";
-import type { RenderFiber } from "../renderFiber";
 import type { ComponentUpdateQueue } from "../renderQueue";
 
 type ErrorInfo = {
@@ -53,9 +52,9 @@ export class MyReactComponent<
   };
 
   // error catch component
-  _error: { error: Error | null; trigger: RenderFiber | null; hasError: boolean } = {
+  _error: { error: Error | null; stack: string | null; hasError: boolean } = {
     error: null,
-    trigger: null,
+    stack: null,
     hasError: false,
   };
 

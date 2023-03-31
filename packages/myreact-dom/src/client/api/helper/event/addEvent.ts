@@ -23,7 +23,11 @@ type ControlledElement = HTMLInputElement & {
 
 // TODO
 const syncUpdateEvent = {
+  click: true,
+  input: true,
+  chang: true,
   scroll: true,
+  dblclick: true,
   mousedown: true,
 };
 

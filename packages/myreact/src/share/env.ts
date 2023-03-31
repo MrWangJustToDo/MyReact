@@ -18,8 +18,6 @@ export const currentHookTreeNode = createRef<ListTreeNode<RenderHook> | null>(nu
 // ==== feature ==== //
 export const enableDebugLog = createRef(false);
 
-export const enableConcurrentMode = createRef(true);
-
 export const enableSyncFlush = createRef(false);
 
 // support "unsafe_" lifecycle

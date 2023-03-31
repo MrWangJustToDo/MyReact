@@ -1,6 +1,6 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { IS_SINGLE_ELEMENT, getFiberWithNativeDom } from "@my-react-dom-shared";
+import { getFiberWithNativeDom, isSingleTag } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -29,7 +29,7 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFibe
 
     const currentDom = fiber.nativeNode as DomNode;
 
-    if (!Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, parentDom.tagName.toLowerCase())) {
+    if (!isSingleTag[parentFiberWithDom.elementType as string]) {
       parentDom.appendChild(currentDom);
     }
 

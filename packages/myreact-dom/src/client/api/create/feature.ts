@@ -1,10 +1,10 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-
 import { hydrateCreate } from "./hydrateCreate";
 import { nativeCreate } from "./nativeCreate";
 import { validDomNesting } from "./validDomNesting";
+import { validDomTag } from "./validDomTag";
 
 import type { HydrateDOM } from "./getHydrateDom";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -15,7 +15,9 @@ export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWit
   if (fiber.patch & PATCH_TYPE.__create__) {
     let re = false;
 
-    validDomNesting(fiber);
+    if (__DEV__) validDomTag(fiber);
+
+    if (__DEV__) validDomNesting(fiber);
 
     if (hydrate) {
       const result = hydrateCreate(fiber, parentFiberWithDom);

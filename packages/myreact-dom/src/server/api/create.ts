@@ -2,7 +2,7 @@ import { isCommentStartElement, NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { getSerializeProps } from "@my-react-dom-server";
-import { IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
+import { isSingleTag } from "@my-react-dom-shared";
 
 import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
 
@@ -48,7 +48,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolea
     } else if (fiber.type & NODE_TYPE.__plain__) {
       renderContainer.lastIsStringNode = false;
 
-      if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, fiber.elementType as string)) {
+      if (isSingleTag[fiber.elementType as string]) {
         stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}/>`);
 
         // TODO

@@ -1,7 +1,7 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, IS_UNIT_LESS_NUMBER, kebabCase, propsToAttrMap } from "@my-react-dom-shared";
+import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, isUnitlessNumber, kebabCase, propsToAttrMap } from "@my-react-dom-shared";
 
 import { TextElement } from "./native";
 
@@ -21,7 +21,7 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
         if (isStyle(key)) {
           const typedProps = (props[key] as Record<string, unknown>) || {};
           Object.keys(typedProps).forEach((styleName) => {
-            if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedProps[styleName] === "number") {
+            if (isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
               dom[key][styleName] = `${typedProps[styleName]}px`;
               return;
             }
@@ -55,7 +55,7 @@ export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       if (isStyle(key)) {
         const typedProps = (props[key] as Record<string, unknown>) || {};
         Object.keys(typedProps).forEach((styleName) => {
-          if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedProps[styleName] === "number") {
+          if (isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
             styles[kebabCase(styleName)] = `${typedProps[styleName]}px`;
             return;
           }

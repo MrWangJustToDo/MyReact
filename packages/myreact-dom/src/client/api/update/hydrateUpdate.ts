@@ -1,7 +1,7 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, IS_UNIT_LESS_NUMBER, log } from "@my-react-dom-shared";
+import { getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, isUnitlessNumber, log } from "@my-react-dom-shared";
 
 import { addEventListener } from "../helper";
 
@@ -74,7 +74,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
 const domStyleHydrate = (fiber: MyReactFiberNode, key: string, value: Record<string, unknown>) => {
   const node = fiber.nativeNode as DomElement | DomNode;
   Object.keys(value).forEach((styleName) => {
-    if (Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof value[styleName] === "number") {
+    if (isUnitlessNumber[styleName] && typeof value[styleName] === "number") {
       node[key][styleName] = `${value[styleName]}px`;
       return;
     }

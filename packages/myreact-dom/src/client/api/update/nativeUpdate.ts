@@ -1,6 +1,6 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import { enableHighlight, getHTMLAttrKey, getSVGAttrKey, isEvent, isGone, isNew, isProperty, isStyle, IS_UNIT_LESS_NUMBER } from "@my-react-dom-shared";
+import { enableHighlight, getHTMLAttrKey, getSVGAttrKey, isEvent, isGone, isNew, isProperty, isStyle, isUnitlessNumber } from "@my-react-dom-shared";
 
 import { addEventListener, removeEventListener } from "../helper";
 
@@ -95,7 +95,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
           Object.keys(typedNewProps || {})
             .filter(isNew(typedOldProps || {}, typedNewProps))
             .forEach((styleName) => {
-              if (!Object.prototype.hasOwnProperty.call(IS_UNIT_LESS_NUMBER, styleName) && typeof typedNewProps[styleName] === "number") {
+              if (isUnitlessNumber[styleName] && typeof typedNewProps[styleName] === "number") {
                 dom[key][styleName] = `${typedNewProps[styleName]}px`;
                 return;
               }

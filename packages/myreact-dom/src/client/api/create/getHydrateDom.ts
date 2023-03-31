@@ -1,6 +1,6 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import { commentE, commentS, getElementName, IS_SINGLE_ELEMENT } from "@my-react-dom-shared";
+import { commentE, commentS, getElementName } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -84,8 +84,6 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
 };
 
 export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
-  if (IS_SINGLE_ELEMENT[parentDom.tagName.toLowerCase() as keyof typeof IS_SINGLE_ELEMENT]) return { result: true };
-
   const dom = getNextHydrateDom(parentDom);
 
   const result = checkHydrateDom(fiber, dom);

@@ -28,3 +28,5 @@ export const KeepLive = Symbol.for("react.keep_live");
 export const Scope = Symbol.for("react.scope");
 
 export const Comment = Symbol.for("react.comment");
+
+export const Profiler = Symbol.for("react.profiler");

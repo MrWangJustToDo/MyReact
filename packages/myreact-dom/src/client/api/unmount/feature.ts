@@ -1,4 +1,5 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
+import { STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { DomNode } from "@my-react-dom-shared";
@@ -26,7 +27,7 @@ const clearFiberDom = (fiber: MyReactFiberNode) => {
 };
 
 export const clearNode = (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return;
+  if (fiber.state & STATE_TYPE.__unmount__) return;
 
   clearFiberDom(fiber);
 };

@@ -1,4 +1,4 @@
-import { PATCH_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { getFiberWithNativeDom, isSingleTag } from "@my-react-dom-shared";
 
@@ -13,7 +13,7 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFibe
     const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
 
     // will never happen
-    if (!parentFiberWithDom?.isMounted) {
+    if (parentFiberWithDom.state & STATE_TYPE.__unmount__) {
       parentFiberWithDom = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
       const elementObj = renderDispatch.elementMap.get(fiber);

@@ -28,10 +28,6 @@ export class MyReactFiberNode implements RenderFiber {
 
   nativeNode: Record<string, any> = null;
 
-  isMounted = true;
-
-  isInvoked = false;
-
   container: MyReactContainer;
 
   element: MyReactElementNode;
@@ -79,7 +75,7 @@ export class MyReactFiberNode implements RenderFiber {
     this.dependence.delete(instance);
   }
   _unmount(): void {
-    if (!this.isMounted) return;
+    if (this.state & STATE_TYPE.__unmount__) return;
 
     this.hookList.listToFoot((h) => h._unmount());
 
@@ -103,12 +99,12 @@ export class MyReactFiberNode implements RenderFiber {
     renderPlatform.microTask(callBack);
   }
   _update(state?: STATE_TYPE) {
-    if (!this.isMounted) return;
+    if (this.state & STATE_TYPE.__unmount__) return;
 
     triggerUpdate(this, state || STATE_TYPE.__triggerSync__);
   }
   _error(error: Error) {
-    if (!this.isMounted) return;
+    if (this.state & STATE_TYPE.__unmount__) return;
 
     triggerError(this, error);
   }
@@ -135,7 +131,7 @@ export class MyReactContainer {
 
   isAppCrashed: boolean;
 
-  triggeredFiber: MyReactFiberNode | null = null;
+  scheduledFiber: MyReactFiberNode | null = null;
 
   nextWorkingFiber: MyReactFiberNode | null = null;
 

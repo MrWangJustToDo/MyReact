@@ -1,9 +1,10 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
+import { STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const findFiberWithDOMFromFiber = (fiber: MyReactFiberNode | null): MyReactFiberNode | null => {
-  if (!fiber || !fiber.isMounted) return null;
+  if (!fiber || fiber.state & STATE_TYPE.__unmount__) return null;
 
   if (fiber.nativeNode) return fiber;
 

@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { HOOK_TYPE, isArrayEquals } from "@my-react/react-shared";
+import { HOOK_TYPE, STATE_TYPE, isArrayEquals } from "@my-react/react-shared";
 
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -79,7 +79,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
   }
 
   if (currentHook.type === HOOK_TYPE.useContext) {
-    if (!currentHook._contextFiber || !(currentHook._contextFiber as MyReactFiberNode).isMounted || !Object.is(currentHook.value, value)) {
+    if (!currentHook._contextFiber || currentHook._contextFiber.state & STATE_TYPE.__unmount__ || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
 
       const ProviderFiber = renderDispatch.resolveContextFiber(currentHook._ownerFiber as MyReactFiberNode, currentHook.value);

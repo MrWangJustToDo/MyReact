@@ -6,4 +6,5 @@ export enum STATE_TYPE {
   __inherit__ = 1 << 3,
   __triggerConcurrent__ = 1 << 4,
   __triggerSync__ = 1 << 5,
+  __unmount__ = 1 << 6,
 }

@@ -8,16 +8,14 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 const { currentRunningFiber } = __my_react_internal__;
 
 export const performToNextFiberWithSkip = (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return null;
+  if (fiber.state & STATE_TYPE.__unmount__) return null;
 
-  if (!fiber.isInvoked || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
+  if (fiber.state === STATE_TYPE.__initial__ || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
     currentRunningFiber.current = fiber;
 
     runtimeNextWork(fiber);
 
     currentRunningFiber.current = null;
-
-    fiber.isInvoked = true;
   }
 
   fiber.state = STATE_TYPE.__stable__;
@@ -28,7 +26,7 @@ export const performToNextFiberWithSkip = (fiber: MyReactFiberNode) => {
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
-  while (nextFiber && nextFiber !== renderContainer.triggeredFiber) {
+  while (nextFiber && nextFiber !== renderContainer.scheduledFiber) {
     renderContainer._generateCommitList(nextFiber);
 
     if (nextFiber.sibling) return nextFiber.sibling;
@@ -36,22 +34,20 @@ export const performToNextFiberWithSkip = (fiber: MyReactFiberNode) => {
     nextFiber = nextFiber.parent;
   }
 
-  if (nextFiber === renderContainer.triggeredFiber) renderContainer._generateCommitList(nextFiber);
+  if (nextFiber === renderContainer.scheduledFiber) renderContainer._generateCommitList(nextFiber);
 
   return null;
 };
 
 export const performToNxtFiberWithTrigger = (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return null;
+  if (fiber.state & STATE_TYPE.__unmount__) return null;
 
-  if (!fiber.isInvoked || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
+  if (fiber.state === STATE_TYPE.__initial__ || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
     currentRunningFiber.current = fiber;
 
     runtimeNextWork(fiber);
 
     currentRunningFiber.current = null;
-
-    fiber.isInvoked = true;
 
     fiber.state = STATE_TYPE.__stable__;
 
@@ -62,7 +58,7 @@ export const performToNxtFiberWithTrigger = (fiber: MyReactFiberNode) => {
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
-  while (nextFiber && nextFiber !== renderContainer.triggeredFiber) {
+  while (nextFiber && nextFiber !== renderContainer.scheduledFiber) {
     renderContainer._generateCommitList(nextFiber);
 
     if (nextFiber.sibling) return nextFiber.sibling;
@@ -70,22 +66,20 @@ export const performToNxtFiberWithTrigger = (fiber: MyReactFiberNode) => {
     nextFiber = nextFiber.parent;
   }
 
-  if (nextFiber === renderContainer.triggeredFiber) renderContainer._generateCommitList(nextFiber);
+  if (nextFiber === renderContainer.scheduledFiber) renderContainer._generateCommitList(nextFiber);
 
   return null;
 };
 
 export const performToNextFiberAsyncWithSkip = async (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return null;
+  if (fiber.state & STATE_TYPE.__unmount__) return null;
 
-  if (!fiber.isMounted || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
+  if (fiber.state === STATE_TYPE.__initial__ || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
     currentRunningFiber.current = fiber;
 
     await runtimeNextWorkAsync(fiber);
 
     currentRunningFiber.current = null;
-
-    fiber.isInvoked = true;
   }
 
   fiber.state = STATE_TYPE.__stable__;
@@ -96,7 +90,7 @@ export const performToNextFiberAsyncWithSkip = async (fiber: MyReactFiberNode) =
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
-  while (nextFiber && nextFiber !== renderContainer.triggeredFiber) {
+  while (nextFiber && nextFiber !== renderContainer.scheduledFiber) {
     renderContainer._generateCommitList(nextFiber);
 
     if (nextFiber.sibling) return nextFiber.sibling;
@@ -104,22 +98,20 @@ export const performToNextFiberAsyncWithSkip = async (fiber: MyReactFiberNode) =
     nextFiber = nextFiber.parent;
   }
 
-  if (nextFiber === renderContainer.triggeredFiber) renderContainer._generateCommitList(nextFiber);
+  if (nextFiber === renderContainer.scheduledFiber) renderContainer._generateCommitList(nextFiber);
 
   return null;
 };
 
 export const performToNextFiberAsyncWithTrigger = async (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return null;
+  if (fiber.state & STATE_TYPE.__unmount__) return null;
 
-  if (!fiber.isInvoked || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
+  if (fiber.state === STATE_TYPE.__initial__ || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
     currentRunningFiber.current = fiber;
 
     await runtimeNextWorkAsync(fiber);
 
     currentRunningFiber.current = null;
-
-    fiber.isInvoked = true;
 
     fiber.state = STATE_TYPE.__stable__;
 
@@ -130,7 +122,7 @@ export const performToNextFiberAsyncWithTrigger = async (fiber: MyReactFiberNode
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
-  while (nextFiber && nextFiber !== renderContainer.triggeredFiber) {
+  while (nextFiber && nextFiber !== renderContainer.scheduledFiber) {
     renderContainer._generateCommitList(nextFiber);
 
     if (nextFiber.sibling) return nextFiber.sibling;
@@ -138,7 +130,7 @@ export const performToNextFiberAsyncWithTrigger = async (fiber: MyReactFiberNode
     nextFiber = nextFiber.parent;
   }
 
-  if (nextFiber === renderContainer.triggeredFiber) renderContainer._generateCommitList(nextFiber);
+  if (nextFiber === renderContainer.scheduledFiber) renderContainer._generateCommitList(nextFiber);
 
   return null;
 };

@@ -1,4 +1,5 @@
 import { isValidElement, __my_react_internal__ } from "@my-react/react";
+import { STATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { isCommentElement } from "../runtimeScope";
@@ -123,7 +124,7 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   currentComponentFiber.current = fiber;
 
-  if (!fiber.instance._contextFiber || !(fiber.instance._contextFiber as MyReactFiberNode).isMounted) {
+  if (!fiber.instance._contextFiber || fiber.instance._contextFiber.state & STATE_TYPE.__unmount__) {
     const ProviderFiber = renderDispatch.resolveContextFiber(fiber, Context);
 
     const context = renderDispatch.resolveContextValue(ProviderFiber, Context);

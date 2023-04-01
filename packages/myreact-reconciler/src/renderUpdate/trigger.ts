@@ -30,7 +30,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
   } else {
     renderContainer.pendingFiberArray.clear();
 
-    renderContainer.triggeredFiber = null;
+    renderContainer.scheduledFiber = null;
 
     renderContainer.nextWorkingFiber = null;
 
@@ -44,36 +44,40 @@ export const scheduleUpdate = (container: MyReactContainer) => {
   while (!nextWorkFiber && container.pendingFiberArray.length) {
     const tempFiber = container.pendingFiberArray.uniShift();
 
-    if (!tempFiber.isMounted || tempFiber.state === STATE_TYPE.__stable__) continue;
+    if (tempFiber.state & (STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) continue;
 
     nextWorkFiber = tempFiber;
   }
 
   if (nextWorkFiber) {
     if (nextWorkFiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
-      container.triggeredFiber = nextWorkFiber;
+      container.scheduledFiber = nextWorkFiber;
+
       container.nextWorkingFiber = nextWorkFiber;
+
       if (nextWorkFiber.state & STATE_TYPE.__triggerSync__) {
         updateSyncWithTrigger(container, () => scheduleUpdate(container));
       } else {
         updateConcurrentWithTrigger(container, () => scheduleUpdate(container));
       }
     } else if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__)) {
-      container.triggeredFiber = nextWorkFiber;
+      container.scheduledFiber = nextWorkFiber;
+
       container.nextWorkingFiber = nextWorkFiber;
+
       if (nextWorkFiber.state & STATE_TYPE.__skippedSync__) {
         updateSyncWithSkip(container, () => scheduleUpdate(container));
       } else {
         updateConcurrentWithSkip(container, () => scheduleUpdate(container));
       }
     } else {
-      console.log("un handle", nextWorkFiber);
       // TODO
+      throw new Error(`un handler state, ${nextWorkFiber.state}`);
     }
   } else {
     globalLoop.current = false;
 
-    container.triggeredFiber = null;
+    container.scheduledFiber = null;
 
     container.commitFiberList = null;
 
@@ -96,15 +100,21 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
     return;
   }
 
+  if (__DEV__) (renderContainer as any).globalLoop = globalLoop;
+
   fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : (fiber.state |= state);
 
   renderContainer.pendingFiberArray.uniPush(fiber);
+
+  // if there are a loop state, but not have a work todo
+  // some yield task has missing?
+  // if (globalLoop.current && !renderContainer.nextWorkingFiber) {
+  //   globalLoop.current = false;
+  // }
 
   if (globalLoop.current) return;
 
   globalLoop.current = true;
 
   scheduleUpdate(renderContainer);
-
-  // renderPlatform.microTask(() => scheduleUpdate(renderContainer));
 };

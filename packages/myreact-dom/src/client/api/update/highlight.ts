@@ -1,4 +1,5 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
+import { STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -77,7 +78,7 @@ export class HighLight {
       this.__pendingUpdate__ = [];
       const allWrapper: HTMLElement[] = [];
       allFiber.forEach((f) => {
-        if (f.isMounted) {
+        if (!(f.state & STATE_TYPE.__unmount__)) {
           f.type & NODE_TYPE.__text__ ? this.range.selectNodeContents(f.nativeNode as HighlightDOM) : this.range.selectNode(f.nativeNode as HighlightDOM);
           const rect = this.range.getBoundingClientRect();
           if (

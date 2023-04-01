@@ -1,11 +1,12 @@
 import { Component } from "@my-react/react";
+import { STATE_TYPE } from "@my-react/react-shared";
 
 import type { DomNode } from "./dom";
 import type { MyReactInternalInstance } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const findDOMFromFiber = (fiber: MyReactFiberNode | null) => {
-  if (!fiber || !fiber.isMounted) return;
+  if (!fiber || fiber.state & STATE_TYPE.__unmount__) return;
 
   if (fiber.nativeNode) return fiber.nativeNode as DomNode;
 

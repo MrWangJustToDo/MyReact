@@ -11,7 +11,7 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
     const renderPlatform = fiber.container.renderPlatform;
 
     Object.keys(props).forEach((key) => {
-      if (isProperty(key) && typeof props[key] === "object" && props[key] !== null) {
+      if (isProperty(key) && props[key] && typeof props[key] === "object" && props[key] !== null) {
         renderPlatform.log({
           fiber,
           level: "warn",
@@ -19,7 +19,7 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
           message: `invalid dom props, expect a string or number but get a object. key: ${key} value: ${props[key]}`,
         });
       }
-      if (isStyle(key) && typeof props[key] !== "object") {
+      if (isStyle(key) && props[key] && typeof props[key] !== "object") {
         throw new Error("style or the element props should be a object");
       }
     });

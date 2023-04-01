@@ -2,6 +2,9 @@ import { CustomRenderDispatch, NODE_TYPE, safeCallWithFiber } from "@my-react/re
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server";
 
+import { resolveLazyElement, resolveLazyElementAsync } from "./lazy";
+
+import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ServerStreamContainer } from "@my-react-dom-server";
 
@@ -46,8 +49,15 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
     void 0;
   }
 
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
+    return resolveLazyElement(_fiber);
+  }
+
+  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
+    return resolveLazyElementAsync(_fiber);
+  }
+
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
-    // const renderPlatform = this.renderPlatform as ServerStreamPlatform;
     const renderContainer = _fiber.container as ServerStreamContainer;
 
     const mountLoop = (_fiber: MyReactFiberNode) => {

@@ -14,7 +14,7 @@ export const map = (
     (v) => v !== undefined && v !== null,
     (child, index, children) => {
       const element = action(child, index, children);
-      return cloneElement(element, { key: typeof element === "object" ? (typeof element?.key === "string" ? `${element.key}` : `.$${index}`) : null });
+      return cloneElement(element, { key: typeof element === "object" ? (typeof element?.key === "string" ? `${element.key}` : `.${index}`) : null });
     }
   );
 };
@@ -23,7 +23,7 @@ export const toArray = (arrayLike: MaybeArrayMyReactElementNode) => {
   return mapByJudge(
     arrayLike,
     (v) => v !== undefined && v !== null,
-    (child, index) => cloneElement(child, { key: typeof child === "object" ? (typeof child?.key === "string" ? `${child.key}` : `.$${index}`) : null })
+    (child, index) => cloneElement(child, { key: typeof child === "object" ? (typeof child?.key === "string" ? `${child.key}` : `.${index}`) : null })
   );
 };
 

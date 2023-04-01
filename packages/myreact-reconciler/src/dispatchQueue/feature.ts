@@ -1,7 +1,11 @@
-import type { MyReactComponent, MyReactFiberNode } from "@my-react/react";
+import { STATE_TYPE } from "@my-react/react-shared";
+
+import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactHookNode } from "../runtimeHook";
+import type { MyReactComponent } from "@my-react/react";
 
 export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return;
+  if (fiber.state & STATE_TYPE.__unmount__) return;
 
   const allQueue = fiber.updateQueue;
 
@@ -15,8 +19,6 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
   const newResult = typedInstance._result;
 
-  // there are not a updateQueue
-
   if (!node) return false;
 
   while (node) {
@@ -25,9 +27,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
     const nextNode = node.next;
 
     if (updater.type === "component") {
-      if (__DEV__ && updater.trigger !== typedInstance) {
-        throw new Error("current update not valid, look like a bug for @my-react");
-      }
+      if (__DEV__ && updater.trigger !== typedInstance) throw new Error("current update not valid, look like a bug for @my-react");
 
       allQueue.delete(node);
 
@@ -49,7 +49,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 };
 
 export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return;
+  if (fiber.state & STATE_TYPE.__unmount__) return;
 
   const allQueue = fiber.updateQueue;
 
@@ -63,21 +63,19 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
     const nextNode = node.next;
 
     if (updater.type === "hook") {
-      if (__DEV__ && updater.trigger._ownerFiber !== fiber) {
-        throw new Error("current update not valid, look like a bug for @my-react");
-      }
+      if (__DEV__ && updater.trigger._ownerFiber !== fiber) throw new Error("current update not valid, look like a bug for @my-react");
 
       allQueue.delete(node);
 
       const { trigger, payLoad } = updater;
 
-      const lastResult = trigger.result;
+      const typedTrigger = trigger as MyReactHookNode;
 
-      trigger.result = trigger.reducer(lastResult, payLoad);
+      const lastResult = typedTrigger.result;
 
-      if (!Object.is(lastResult, trigger.result)) {
-        needUpdate = true;
-      }
+      typedTrigger.result = typedTrigger.reducer(lastResult, payLoad);
+
+      if (!Object.is(lastResult, typedTrigger.result)) needUpdate = true;
     }
 
     node = nextNode;

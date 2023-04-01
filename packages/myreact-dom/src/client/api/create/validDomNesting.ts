@@ -1,17 +1,21 @@
 // for invalid dom structure
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import type { MyReactFiberNode } from "@my-react/react";
-import type { ClientDomPlatform } from "@my-react-dom-client/renderPlatform";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 // TODO
 export const validDomNesting = (fiber: MyReactFiberNode) => {
-  if (__DEV__ && fiber.type & NODE_TYPE.__isPlainNode__) {
+  if (fiber.type & NODE_TYPE.__plain__) {
     const typedElementType = fiber.elementType;
 
-    const renderPlatform = fiber.root.renderPlatform as ClientDomPlatform;
+    const renderContainer = fiber.container;
 
-    const parentFiberWithDom = renderPlatform.elementMap.get(fiber).parentFiberWithNode;
+    const renderPlatform = renderContainer.renderPlatform;
+
+    const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
+
+    const parentFiberWithDom = renderDispatch.elementMap.get(fiber).parentFiberWithNode;
 
     if (typedElementType === "p" && parentFiberWithDom.elementType === "p") {
       renderPlatform.log({

@@ -1,24 +1,26 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { HOOK_TYPE } from "@my-react/react-shared";
+import { HOOK_TYPE, STATE_TYPE, isArrayEquals } from "@my-react/react-shared";
 
-import { isArrayEquals } from "../share";
-
-import type { RenderDispatch } from "../renderDispatch";
-import type { CreateHookParams, MyReactFiberNode } from "@my-react/react";
+import type { MyReactHookNode } from "./instance";
+import type { MyReactFiberNode } from "../runtimeFiber";
+import type { RenderHook } from "@my-react/react";
+import type { ListTreeNode } from "@my-react/react-shared";
 
 const { currentHookTreeNode } = __my_react_internal__;
 
-export const updateHookNode = ({ type, value, reducer, deps }: CreateHookParams, fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber: MyReactFiberNode) => {
+  const renderPlatform = fiber.container.renderPlatform;
 
-  const renderPlatform = fiber.root.renderPlatform;
+  const renderDispatch = fiber.container.renderDispatch;
 
-  const currentHook = currentHookTreeNode.current.value;
+  const currentHook = currentHookTreeNode.current.value as MyReactHookNode;
 
   if (type !== currentHook?.type) {
-    // change the hook type, TODO for hmr
     throw new Error(
-      renderPlatform.getHookTree(currentHookTreeNode.current.prev, { lastRender: currentHook?.type || ("undefined" as HOOK_TYPE), nextRender: type })
+      renderPlatform.getHookTree(currentHookTreeNode.current.prev as ListTreeNode<MyReactHookNode>, {
+        lastRender: currentHook?.type || ("undefined" as HOOK_TYPE),
+        nextRender: type,
+      })
     );
   }
 
@@ -42,15 +44,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: CreateHookParams,
   }
 
   if (currentHook.type === HOOK_TYPE.useEffect || currentHook.type === HOOK_TYPE.useLayoutEffect || currentHook.type === HOOK_TYPE.useImperativeHandle) {
-    if (!deps) {
-      currentHook.value = value;
-
-      currentHook.reducer = reducer || currentHook.reducer;
-
-      currentHook.deps = deps;
-
-      currentHook.effect = true;
-    } else if (!isArrayEquals(currentHook.deps, deps)) {
+    if (!deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
       currentHook.reducer = reducer || currentHook.reducer;
@@ -63,7 +57,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: CreateHookParams,
   }
 
   if (currentHook.type === HOOK_TYPE.useCallback) {
-    if (!isArrayEquals(currentHook.deps, deps)) {
+    if (!deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
       currentHook.result = value;
@@ -74,7 +68,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: CreateHookParams,
   }
 
   if (currentHook.type === HOOK_TYPE.useMemo) {
-    if (!isArrayEquals(currentHook.deps, deps)) {
+    if (!deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
       currentHook.result = (value as () => unknown).call(null);
@@ -85,7 +79,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: CreateHookParams,
   }
 
   if (currentHook.type === HOOK_TYPE.useContext) {
-    if (!currentHook._contextFiber || !currentHook._contextFiber.isMounted || !Object.is(currentHook.value, value)) {
+    if (!currentHook._contextFiber || currentHook._contextFiber.state & STATE_TYPE.__unmount__ || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
 
       const ProviderFiber = renderDispatch.resolveContextFiber(currentHook._ownerFiber as MyReactFiberNode, currentHook.value);
@@ -98,7 +92,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: CreateHookParams,
 
       currentHook.context = context;
     } else {
-      const context = renderDispatch.resolveContextValue(currentHook._contextFiber, currentHook.value);
+      const context = renderDispatch.resolveContextValue(currentHook._contextFiber as MyReactFiberNode, currentHook.value);
 
       currentHook.result = context;
 

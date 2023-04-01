@@ -1,6 +1,6 @@
 export class UniqueArray<T> {
-  set = new Set<T>();
-  arr = new Array<T>();
+  private set = new Set<T>();
+  private arr = new Array<T>();
 
   length = 0;
 
@@ -30,5 +30,11 @@ export class UniqueArray<T> {
     this.set.add(v);
     this.arr.unshift(v);
     this.length++;
+  }
+
+  clear() {
+    this.length = 0;
+    this.set.clear();
+    this.arr.length = 0;
   }
 }

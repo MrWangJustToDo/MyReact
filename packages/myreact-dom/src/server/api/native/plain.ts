@@ -1,4 +1,4 @@
-import { IS_SINGLE_ELEMENT, kebabCase } from "@my-react-dom-shared";
+import { isSingleTag, kebabCase } from "@my-react-dom-shared";
 
 import { CommentEndElement, CommentStartElement } from "./comment";
 import { TextElement } from "./text";
@@ -39,7 +39,7 @@ export class PlainElement {
   }
 
   appendChild(dom: PlainElement | TextElement | CommentStartElement | CommentEndElement | string) {
-    if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type)) return;
+    if (isSingleTag[this.type]) return;
     if (
       dom instanceof PlainElement ||
       dom instanceof TextElement ||
@@ -95,7 +95,7 @@ export class PlainElement {
   }
 
   toString(): string {
-    if (Object.prototype.hasOwnProperty.call(IS_SINGLE_ELEMENT, this.type)) {
+    if (isSingleTag[this.type]) {
       return `<${this.type}${this.serialize()}/>`;
     } else {
       if (this.type) {

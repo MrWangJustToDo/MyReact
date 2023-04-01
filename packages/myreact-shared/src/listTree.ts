@@ -1,6 +1,8 @@
 export class ListTreeNode<T> {
   value: T;
+
   prev: ListTreeNode<T> | null = null;
+
   next: ListTreeNode<T> | null = null;
 
   constructor(value: T) {
@@ -12,78 +14,50 @@ export class ListTree<T> {
   length = 0;
 
   head: ListTreeNode<T> | null = null;
-  foot: ListTreeNode<T> | null = null;
 
-  append(node: T) {
-    const listNode = new ListTreeNode(node);
-    this._push(listNode);
-  }
+  foot: ListTreeNode<T> | null = null;
 
   push(node: T) {
     const listNode = new ListTreeNode(node);
-    this._push(listNode);
-  }
-
-  _push(node: ListTreeNode<T>) {
     this.length++;
     if (!this.foot) {
-      this.head = node;
-      this.foot = node;
+      this.head = listNode;
+      this.foot = listNode;
     } else {
-      this.foot.next = node;
-      node.prev = this.foot;
-      this.foot = node;
+      this.foot.next = listNode;
+      listNode.prev = this.foot;
+      this.foot = listNode;
     }
   }
 
-  unshift(node: T) {
-    const listNode = new ListTreeNode(node);
-    this._unshift(listNode);
-  }
-
-  _unshift(node: ListTreeNode<T>) {
-    this.length++;
-    if (!this.head) {
-      this.head = node;
-      this.foot = node;
-    } else {
-      this.head.prev = node;
-      node.next = this.head;
-      this.head = node;
-    }
-  }
-
-  shift() {
-    if (this.head) {
-      const re = this.head;
-      if (this.head.next) {
-        this.head = this.head.next;
-        re.next = null;
-        this.head.prev = null;
-      } else {
-        this.head = null;
-        this.foot = null;
-      }
-      this.length--;
-      return re.value;
+  pop() {
+    const foot = this.foot;
+    if (foot) {
+      this.delete(foot);
+      return foot.value;
     } else {
       return null;
     }
   }
 
-  pop() {
-    if (this.foot) {
-      const re = this.foot;
-      if (this.foot.prev) {
-        this.foot = this.foot.prev;
-        re.prev = null;
-        this.foot.next = null;
-      } else {
-        this.head = null;
-        this.foot = null;
-      }
-      this.length--;
-      return re.value;
+  unshift(node: T) {
+    const listNode = new ListTreeNode(node);
+    this.length++;
+    if (!this.head) {
+      this.head = listNode;
+      this.foot = listNode;
+    } else {
+      this.head.prev = listNode;
+      listNode.next = this.head;
+      this.head = listNode;
+    }
+  }
+
+  shift() {
+    const head = this.head;
+    if (head) {
+      this.delete(head);
+      return head.value;
     } else {
       return null;
     }
@@ -120,29 +94,35 @@ export class ListTree<T> {
   }
 
   delete(node: ListTreeNode<T>) {
-    if (node.prev && node.next) {
+    if (this.head === node) {
+      const next = node.next;
+      node.next = null;
+      if (next) {
+        this.head = next;
+        next.prev = null;
+      } else {
+        this.head = null;
+        this.foot = null;
+      }
+      this.length--;
+    } else if (this.foot === node) {
       const prev = node.prev;
       node.prev = null;
+      if (prev) {
+        this.foot = prev;
+        prev.next = null;
+      } else {
+        this.head = null;
+        this.foot = null;
+      }
+      this.length--;
+    } else if (this.hasNode(node)) {
+      const prev = node.prev;
       const next = node.next;
+      node.prev = null;
       node.next = null;
       prev.next = next;
       next.prev = prev;
-      this.length--;
-    } else if (node.prev) {
-      const prev = node.prev;
-      node.prev = null;
-      prev.next = null;
-      this.foot = prev;
-      this.length--;
-    } else if (node.next) {
-      const next = node.next;
-      node.next = null;
-      next.prev = null;
-      this.head = next;
-      this.length--;
-    } else {
-      this.head = null;
-      this.foot = null;
       this.length--;
     }
   }
@@ -151,7 +131,16 @@ export class ListTree<T> {
     return this.length;
   }
 
-  has(node: T) {
+  hasNode(node: ListTreeNode<T>) {
+    let listNode = this.head;
+    while (listNode) {
+      if (Object.is(listNode, node)) return true;
+      listNode = listNode.next;
+    }
+    return false;
+  }
+
+  hasValue(node: T) {
     let listNode = this.head;
     while (listNode) {
       if (Object.is(listNode.value, node)) return true;

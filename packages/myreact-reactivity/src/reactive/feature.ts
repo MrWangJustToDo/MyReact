@@ -3,7 +3,7 @@ import { Component, createElement, useState, useCallback, useMemo } from "@my-re
 import { proxyRefs, ReactiveEffect } from "../api";
 
 import type { UnwrapRef } from "../api";
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElementNode , LikeJSX } from "@my-react/react";
 
 type LifeCycle = {
   onBeforeMount: Array<() => void>;
@@ -27,7 +27,7 @@ export let globalInstance: LifeCycle | null = null;
 
 export function createReactive<P extends Record<string, unknown>, S extends Record<string, unknown>>(props?: {
   setup: () => S;
-  render?: (props: UnwrapRef<S> & P) => MyReactElementNode;
+  render?: (props: UnwrapRef<S> & P) => LikeJSX;
 }) {
   const setup = typeof props === "function" ? props : props.setup;
 

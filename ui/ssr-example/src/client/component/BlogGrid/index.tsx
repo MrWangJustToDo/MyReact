@@ -44,7 +44,6 @@ const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"
 };
 
 const _BlogGrid = ({ data, disableGridLayout = true }: { data: GetBlogListQuery["repository"]["issues"]["nodes"]; disableGridLayout?: boolean }) => {
-
   if (disableGridLayout) {
     return (
       <SimpleGrid width="100%" padding="2" columns={{ base: 1, lg: 2, xl: 3 }} spacing={3}>

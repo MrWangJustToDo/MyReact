@@ -1,17 +1,17 @@
-import type { MyReactFiberNode } from "@my-react/react";
+import { performToNxtFiberWithTrigger, performToNextFiberAsyncWithTrigger } from "../renderNextWork";
+
+import type { MyReactFiberNode } from "../runtimeFiber";
 
 export const mountLoop = (fiber: MyReactFiberNode) => {
-  const renderController = fiber.root.renderController;
   let pendingFiber = fiber;
   while (pendingFiber) {
-    pendingFiber = renderController.performToNextFiberOnMount(pendingFiber);
+    pendingFiber = performToNxtFiberWithTrigger(pendingFiber);
   }
 };
 
 export const mountLoopAsync = async (fiber: MyReactFiberNode) => {
-  const renderController = fiber.root.renderController;
   let pendingFiber = fiber;
   while (pendingFiber) {
-    pendingFiber = await renderController.performToNextFiberOnMountAsync(pendingFiber);
+    pendingFiber = await performToNextFiberAsyncWithTrigger(pendingFiber);
   }
 };

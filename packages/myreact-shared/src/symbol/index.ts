@@ -1,4 +1,4 @@
 export * from "./hookType";
+export * from "./fiberState";
 export * from "./fiberPatch";
-export * from "./fiberUpdate";
 export * from "./instanceEffect";

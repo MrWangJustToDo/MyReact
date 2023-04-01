@@ -20,14 +20,13 @@ export const Lazy = Symbol.for("react.lazy");
 
 export const Suspense = Symbol.for("react.suspense");
 
-export const Strict = Symbol.for("react.strict");
+export const Strict = Symbol.for("react.strict_mode");
 
 // TODO
 export const KeepLive = Symbol.for("react.keep_live");
 
-// REMOVE
-// export const Reactive = Symbol.for("react.reactive");
-
 export const Scope = Symbol.for("react.scope");
 
 export const Comment = Symbol.for("react.comment");
+
+export const Profiler = Symbol.for("react.profiler");

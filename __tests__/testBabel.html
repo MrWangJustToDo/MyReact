@@ -1526,6 +1526,11 @@
       }
     </script>
 
+    <h2>original</h2>
+    <pre id="original"></pre>
+    <pre id="compiler_1"></pre>
+    <pre id="compiler_2"></pre>
+
     <script>
       const jsx = `
       const useCounter = (init = 1) => {
@@ -1582,8 +1587,11 @@
       }
       `;
 
-      console.log(Babel.transform(jsx, { presets: [["env", { targets: "chrome 90" }], "react"], plugins: [[reactRefresh, { skipEnvCheck: true }]] }));
-      console.log(Babel.transform(jsx, { presets: [["env", { targets: "chrome 90" }], "react"], plugins: [[fastRefresh, { skipEnvCheck: true }]] }));
+      const foo = Babel.transform(jsx, { presets: [["env", { targets: "chrome 90" }], "react"], plugins: [[reactRefresh, { skipEnvCheck: true }]] });
+      const bar = Babel.transform(jsx, { presets: [["env", { targets: "chrome 90" }], "react"], plugins: [[fastRefresh, { skipEnvCheck: true }]] });
+      original.innerText = jsx;
+      compiler_1.innerText = foo.code;
+      compiler_2.innerText = bar.code;
     </script>
   </body>
 </html>

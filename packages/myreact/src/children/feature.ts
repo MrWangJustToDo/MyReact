@@ -14,7 +14,7 @@ export const map = (
     (v) => v !== undefined && v !== null,
     (child, index, children) => {
       const element = action(child, index, children);
-      return cloneElement(element, { key: typeof element === "object" ? (typeof element.key === "string" ? `${element.key}` : `.$${index}`) : null });
+      return cloneElement(element, { key: typeof element === "object" ? (typeof element?.key === "string" ? `${element.key}` : `.$${index}`) : null });
     }
   );
 };
@@ -27,6 +27,7 @@ export const toArray = (arrayLike: MaybeArrayMyReactElementNode) => {
   );
 };
 
+// TODO
 export const forEach = (
   arrayLike: MaybeArrayMyReactElementNode,
   action: (child: MyReactElement, index: number, children: ArrayMyReactElementNode) => MyReactElement
@@ -35,9 +36,8 @@ export const forEach = (
 };
 
 export const count = (arrayLike: MaybeArrayMyReactElementNode): number => {
-  if (Array.isArray(arrayLike)) {
-    return arrayLike.reduce<number>((p, c) => p + count(c), 0);
-  }
+  if (Array.isArray(arrayLike)) return arrayLike.reduce<number>((p, c) => p + count(c), 0);
+
   return 1;
 };
 

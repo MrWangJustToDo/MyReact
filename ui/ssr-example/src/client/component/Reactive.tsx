@@ -1,12 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Code, Heading, Button, HStack, VStack } from "@chakra-ui/react";
 import { createReactive, ref, onMounted, reactive, onUnmounted, watch, computed } from "@my-react/react-reactive";
 import throttle from "lodash/throttle";
 
-import type { MyReactElement } from "@my-react/react";
-import type { FunctionComponent } from "react";
-
-const _Reactive = createReactive({
+export const Reactive = createReactive({
   setup: () => {
     const countRef = ref(0);
     const changeRef = ref(0);
@@ -54,10 +50,6 @@ const _Reactive = createReactive({
       </VStack>
     );
 
-    return Element as MyReactElement;
+    return Element;
   },
 });
-
-// const _Reactive = () => <>div</>
-
-export const Reactive = _Reactive as unknown as FunctionComponent;

@@ -1,21 +1,33 @@
-import type { RenderController } from "@my-react/react";
+import { performToNextFiberWithSkip, performToNxtFiberWithTrigger } from "../renderNextWork";
 
-export const updateLoop = (renderController: RenderController) => {
-  while (renderController.hasNext()) {
-    const fiber = renderController.getNextFiber();
-    if (fiber) {
-      const nextFiber = renderController.performToNextFiber(fiber);
-      renderController.setYieldFiber(nextFiber);
-    }
+import type { MyReactContainer } from "../runtimeFiber";
+
+export const updateLoopSyncWithSkip = (renderContainer: MyReactContainer) => {
+  while (renderContainer.nextWorkingFiber) {
+    const nextFiber = performToNextFiberWithSkip(renderContainer.nextWorkingFiber);
+    renderContainer.nextWorkingFiber = nextFiber;
   }
 };
 
-export const updateLoopWithConcurrent = (renderController: RenderController) => {
-  while (renderController.hasNext() && !renderController.shouldYield()) {
-    const fiber = renderController.getNextFiber();
-    if (fiber) {
-      const nextFiber = renderController.performToNextFiber(fiber);
-      renderController.setYieldFiber(nextFiber);
-    }
+export const updateLoopSyncWithTrigger = (renderContainer: MyReactContainer) => {
+  while (renderContainer.nextWorkingFiber) {
+    const nextFiber = performToNxtFiberWithTrigger(renderContainer.nextWorkingFiber);
+    renderContainer.nextWorkingFiber = nextFiber;
+  }
+};
+
+export const updateLoopConcurrentWithSkip = (renderContainer: MyReactContainer) => {
+  const renderDispatch = renderContainer.renderDispatch;
+  while (renderContainer.nextWorkingFiber && !renderDispatch.shouldYield()) {
+    const nextFiber = performToNextFiberWithSkip(renderContainer.nextWorkingFiber);
+    renderContainer.nextWorkingFiber = nextFiber;
+  }
+};
+
+export const updateLoopConcurrentWithTrigger = (renderContainer: MyReactContainer) => {
+  const renderDispatch = renderContainer.renderDispatch;
+  while (renderContainer.nextWorkingFiber && !renderDispatch.shouldYield()) {
+    const nextFiber = performToNxtFiberWithTrigger(renderContainer.nextWorkingFiber);
+    renderContainer.nextWorkingFiber = nextFiber;
   }
 };

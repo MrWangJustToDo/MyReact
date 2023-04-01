@@ -1,15 +1,60 @@
-import { CustomRenderDispatch } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 
-import { fallback } from "@my-react-dom-client";
-import { asyncUpdateTimeStep } from "@my-react-dom-shared";
+import { append, clearNode, create, fallback, position, update } from "@my-react-dom-client";
+import { patchToFiberInitial, patchToFiberUnmount, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
 
-import type { MyReactFiberNode } from "@my-react/react";
+import { resolveLazyElement, resolveLazyElementAsync } from "./lazy";
+
+import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export class ClientDomDispatch extends CustomRenderDispatch {
-  triggerUpdate(_fiber: MyReactFiberNode): void {
-    asyncUpdateTimeStep.current = Date.now();
+  elementMap = new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>();
 
-    super.triggerUpdate(_fiber);
+  refType = NODE_TYPE.__plain__ | NODE_TYPE.__class__;
+
+  createType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
+
+  updateType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
+
+  appendType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
+
+  hasNodeType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
+
+  commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
+    const { isSVG, parentFiberWithNode } = this.elementMap.get(_fiber) || {};
+
+    return create(_fiber, !!_hydrate, parentFiberWithNode, isSVG);
+  }
+  commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
+    const { isSVG } = this.elementMap.get(_fiber) || {};
+
+    update(_fiber, !!_hydrate, isSVG);
+  }
+  commitAppend(_fiber: MyReactFiberNode): void {
+    const { parentFiberWithNode } = this.elementMap.get(_fiber) || {};
+
+    append(_fiber, parentFiberWithNode);
+  }
+  commitPosition(_fiber: MyReactFiberNode): void {
+    const { parentFiberWithNode } = this.elementMap.get(_fiber) || {};
+
+    position(_fiber, parentFiberWithNode);
+  }
+  commitSetRef(_fiber: MyReactFiberNode): void {
+    setRef(_fiber);
+  }
+  commitUnsetRef(_fiber: MyReactFiberNode): void {
+    unsetRef(_fiber);
+  }
+  commitClearNode(_fiber: MyReactFiberNode): void {
+    clearNode(_fiber);
+  }
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
+    return resolveLazyElement(_fiber);
+  }
+  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
+    return resolveLazyElementAsync(_fiber);
   }
 
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
@@ -21,5 +66,14 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     }
 
     return result;
+  }
+  shouldYield(): boolean {
+    return shouldPauseAsyncUpdate();
+  }
+  patchToFiberInitial(_fiber: MyReactFiberNode) {
+    patchToFiberInitial(_fiber);
+  }
+  patchToFiberUnmount(_fiber: MyReactFiberNode) {
+    patchToFiberUnmount(_fiber);
   }
 }

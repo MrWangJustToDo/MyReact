@@ -1,17 +1,15 @@
-import type { RenderDispatch } from "../renderDispatch";
-import type { RenderPlatform } from "../runtimePlatform";
-import type { MyReactFiberNode } from "@my-react/react";
+import { STATE_TYPE } from "@my-react/react-shared";
+
+import type { MyReactFiberNode } from "./instance";
 
 export const unmountFiberNode = (fiber: MyReactFiberNode) => {
-  if (!fiber.isMounted) return;
+  if (fiber.state & STATE_TYPE.__unmount__) return;
 
-  fiber.isMounted = false;
+  const renderDispatch = fiber.container.renderDispatch;
 
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  renderDispatch.commitUnsetRef(fiber);
 
-  const renderPlatform = fiber.root.renderPlatform as RenderPlatform;
-
-  renderPlatform.patchToFiberUnmount?.(fiber);
+  renderDispatch.patchToFiberUnmount?.(fiber);
 
   renderDispatch.suspenseMap.delete(fiber);
 
@@ -29,17 +27,23 @@ export const unmountFiberNode = (fiber: MyReactFiberNode) => {
 
   renderDispatch.eventMap.delete(fiber);
 
-  if (!`${__DEV__}`) {
-    fiber.node = null;
+  fiber.child = null;
 
-    fiber.child = null;
+  fiber.parent = null;
 
-    fiber.sibling = null;
+  fiber.sibling = null;
 
-    fiber.instance = null;
+  fiber.instance = null;
 
-    fiber.hookList = null;
+  fiber.hookList = null;
 
-    fiber.dependence = null;
-  }
+  fiber.container = null;
+
+  fiber.dependence = null;
+
+  fiber.nativeNode = null;
+
+  fiber.updateQueue = null;
+
+  fiber.state = STATE_TYPE.__unmount__;
 };

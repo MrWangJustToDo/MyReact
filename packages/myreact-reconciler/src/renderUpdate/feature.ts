@@ -1,55 +1,112 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-import { updateLoop, updateLoopWithConcurrent } from "../runtimeUpdate";
+import { updateLoopConcurrentWithSkip, updateLoopConcurrentWithTrigger, updateLoopSyncWithSkip, updateLoopSyncWithTrigger } from "../runtimeUpdate";
 import { safeCall } from "../share";
 
-import type { RenderDispatch } from "../renderDispatch";
-import type { RenderPlatform } from "../runtimePlatform";
-import type { RenderController, RenderScope } from "@my-react/react";
+import type { MyReactContainer } from "../runtimeFiber";
 
 const { globalLoop } = __my_react_internal__;
 
-const reconcileUpdate = (renderDispatch: RenderDispatch, renderScope: RenderScope, _renderPlatform: RenderPlatform) => {
-  const allPendingList = renderScope.pendingCommitFiberListArray.slice(0);
+export const updateSyncWithSkip = (container: MyReactContainer, cb?: () => void) => {
+  globalLoop.current = true;
 
-  allPendingList.forEach((l) => renderDispatch.reconcileUpdate(l));
+  const renderContainer = container;
 
-  renderScope.pendingCommitFiberListArray = [];
+  const renderDispatch = container.renderDispatch;
+
+  const renderPlatform = container.renderPlatform;
+
+  safeCall(() => updateLoopSyncWithSkip(renderContainer));
+
+  const commitList = renderContainer.commitFiberList;
+
+  renderContainer.commitFiberList = null;
+
+  commitList && renderDispatch.reconcileUpdate(commitList);
+
+  renderPlatform.microTask(() => {
+    globalLoop.current = false;
+
+    cb?.();
+  });
 };
 
-export const updateAll = (renderController: RenderController, renderDispatch: RenderDispatch, renderScope: RenderScope, renderPlatform: RenderPlatform) => {
-  safeCall(() => updateLoop(renderController));
+export const updateSyncWithTrigger = (container: MyReactContainer, cb?: () => void) => {
+  globalLoop.current = true;
 
-  reconcileUpdate(renderDispatch, renderScope, renderPlatform);
+  const renderContainer = container;
 
-  if (renderController.hasNext()) {
-    renderPlatform.yieldTask(() => updateAll(renderController, renderDispatch, renderScope, renderPlatform));
-  } else {
+  const renderDispatch = container.renderDispatch;
+
+  const renderPlatform = container.renderPlatform;
+
+  safeCall(() => updateLoopSyncWithTrigger(renderContainer));
+
+  const commitList = renderContainer.commitFiberList;
+
+  renderContainer.commitFiberList = null;
+
+  commitList && renderDispatch.reconcileUpdate(commitList);
+
+  renderPlatform.microTask(() => {
     globalLoop.current = false;
+
+    cb?.();
+  });
+};
+
+export const updateConcurrentWithSkip = (container: MyReactContainer, cb?: () => void) => {
+  globalLoop.current = true;
+
+  const renderContainer = container;
+
+  const renderPlatform = container.renderPlatform;
+
+  const renderDispatch = container.renderDispatch;
+
+  safeCall(() => updateLoopConcurrentWithSkip(renderContainer));
+
+  if (renderContainer.nextWorkingFiber) {
+    renderPlatform.yieldTask(() => updateConcurrentWithSkip(container, cb));
+  } else {
+    const commitList = renderContainer.commitFiberList;
+
+    renderContainer.commitFiberList = null;
+
+    commitList && renderDispatch.reconcileUpdate(commitList);
+
+    renderPlatform.microTask(() => {
+      globalLoop.current = false;
+
+      cb?.();
+    });
   }
 };
 
-export const updateAllWithConcurrent = (
-  renderController: RenderController,
-  renderDispatch: RenderDispatch,
-  renderScope: RenderScope,
-  renderPlatform: RenderPlatform
-) => {
-  safeCall(() => updateLoopWithConcurrent(renderController));
+export const updateConcurrentWithTrigger = (container: MyReactContainer, cb?: () => void) => {
+  globalLoop.current = true;
 
-  const hasUpdate = !!renderScope.pendingCommitFiberListArray.length;
+  const renderContainer = container;
 
-  hasUpdate && reconcileUpdate(renderDispatch, renderScope, renderPlatform);
+  const renderPlatform = container.renderPlatform;
 
-  if (renderController.hasNext()) {
-    if (hasUpdate && renderController.hasUiUpdate) {
-      renderPlatform.yieldTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));
-    } else {
-      renderPlatform.microTask(() => updateAllWithConcurrent(renderController, renderDispatch, renderScope, renderPlatform));
-    }
+  const renderDispatch = container.renderDispatch;
+
+  safeCall(() => updateLoopConcurrentWithTrigger(renderContainer));
+
+  if (renderContainer.nextWorkingFiber) {
+    renderPlatform.yieldTask(() => updateConcurrentWithTrigger(container, cb));
   } else {
-    globalLoop.current = false;
-  }
+    const commitList = renderContainer.commitFiberList;
 
-  renderController.hasUiUpdate = false;
+    renderContainer.commitFiberList = null;
+
+    commitList && renderDispatch.reconcileUpdate(commitList);
+
+    renderPlatform.microTask(() => {
+      globalLoop.current = false;
+
+      cb?.();
+    });
+  }
 };

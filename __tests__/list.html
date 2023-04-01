@@ -27,9 +27,6 @@
     </style>
 
     <script>
-      // React.__my_react_shared__.enableSyncFlush.current = true;
-      // React.__my_react_shared__.enableConcurrentMode.current = false;
-      // React.__my_react_shared__.enableUpdateFromRoot.current = true;
       Number.prototype[Symbol.iterator] = function* () {
         const value = this.valueOf();
         for (let i = 0; i < value; i++) {
@@ -271,7 +268,7 @@
       const Test = () => {
         const [list, setList] = useState(data);
         useEffect(() => {
-          // console.log('run')
+          console.log('run')
           setInterval(() => {
             if (a > 0) {
               a--;

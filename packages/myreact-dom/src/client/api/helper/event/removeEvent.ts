@@ -2,12 +2,13 @@ import { enableEventSystem } from "@my-react-dom-shared";
 
 import { getNativeEventName } from "./getEventName";
 
-import type { MyReactFiberNode } from "@my-react/react";
-import type { RenderDispatch } from "@my-react/react-reconciler";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { DomElement } from "@my-react-dom-shared";
 
 export const removeEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  const renderContainer = fiber.container;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   const typedElementType = fiber.elementType as string;
 

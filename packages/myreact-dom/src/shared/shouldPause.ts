@@ -7,7 +7,7 @@ export const shouldPauseAsyncUpdate = () => {
   } else {
     const now = Date.now();
     const result = now - asyncUpdateTimeStep.current > asyncUpdateTimeLimit.current;
-    if (result) asyncUpdateTimeStep.current = now;
+    if (result) asyncUpdateTimeStep.current = null;
     return result;
   }
 };

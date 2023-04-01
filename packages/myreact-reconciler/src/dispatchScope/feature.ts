@@ -1,14 +1,13 @@
 import { NODE_TYPE } from "../share";
 
-import type { MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 
 // TODO used for hydrate fallback
 export const defaultGenerateScopeMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, MyReactFiberNode>) => {
   const parent = fiber.parent;
 
   if (parent) {
-    if (parent.type & NODE_TYPE.__isScopeNode__) {
+    if (parent.type & NODE_TYPE.__scope__) {
       map.set(fiber, parent);
     } else {
       const parentScopeFiber = map.get(parent);

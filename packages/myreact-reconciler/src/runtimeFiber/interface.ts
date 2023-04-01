@@ -1,10 +1,14 @@
-import type { MaybeArrayMyReactElementNode, MyReactElementNode, MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "./instance";
+import type { MyReactHookNode } from "../runtimeHook";
+import type { MaybeArrayMyReactElementNode, MyReactElementNode } from "@my-react/react";
 import type { HOOK_TYPE } from "@my-react/react-shared";
 
 export interface MyReactFiberNodeDev extends MyReactFiberNode {
   _debugRenderState: { renderCount: number; mountTime: number; prevUpdateTime: number; currentUpdateTime: number };
 
   _debugHookTypes: HOOK_TYPE[];
+
+  _debugHookNodes: MyReactHookNode[];
 
   _debugContextMap: Record<string, MyReactFiberNode>;
 

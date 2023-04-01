@@ -1,8 +1,8 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import { commentE, commentS, getElementName, IS_SINGLE_ELEMENT, log } from "@my-react-dom-shared";
+import { commentE, commentS, getElementName } from "@my-react-dom-shared";
 
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export type HydrateDOM = Element & {
   __hydrate__: boolean;
@@ -29,6 +29,8 @@ const getNextHydrateDom = (parentDom: Element) => {
 };
 
 const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
+  const log = fiber.container.renderPlatform.log;
+
   if (!dom) {
     log({
       fiber,
@@ -37,7 +39,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     });
     return false;
   }
-  if (fiber.type & NODE_TYPE.__isTextNode__) {
+  if (fiber.type & NODE_TYPE.__text__) {
     if (dom.nodeType !== Node.TEXT_NODE) {
       log({
         fiber,
@@ -48,7 +50,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     }
     return true;
   }
-  if (fiber.type & NODE_TYPE.__isPlainNode__) {
+  if (fiber.type & NODE_TYPE.__plain__) {
     if (dom.nodeType !== Node.ELEMENT_NODE) {
       log({
         fiber,
@@ -67,7 +69,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     }
     return true;
   }
-  if (fiber.type & NODE_TYPE.__isCommentNode__) {
+  if (fiber.type & NODE_TYPE.__comment__) {
     if (dom.nodeType !== Node.COMMENT_NODE) {
       log({
         fiber,
@@ -82,8 +84,6 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
 };
 
 export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
-  if (IS_SINGLE_ELEMENT[parentDom.tagName.toLowerCase() as keyof typeof IS_SINGLE_ELEMENT]) return { result: true };
-
   const dom = getNextHydrateDom(parentDom);
 
   const result = checkHydrateDom(fiber, dom);
@@ -91,7 +91,7 @@ export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
   if (result) {
     const typedDom = dom as HydrateDOM;
 
-    fiber.node = typedDom;
+    fiber.nativeNode = typedDom;
 
     return { dom: typedDom, result };
   } else {

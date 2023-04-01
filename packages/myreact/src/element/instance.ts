@@ -1,15 +1,14 @@
 /* eslint-disable prefer-rest-params */
-
 import { TYPEKEY, Element } from "@my-react/react-shared";
 
 import { currentComponentFiber } from "../share";
 
-import { checkArrayChildrenKey, checkSingleChildrenKey } from "./tool";
+import { checkArrayChildrenKey, checkSingleChildrenKey, checkValidElement, checkValidProps } from "./tool";
 
 import type { createContext, forwardRef, lazy, memo } from "./feature";
 import type { MyReactComponent } from "../component";
-import type { MyReactFiberNode } from "../fiber";
 import type { MyReactInternalInstance } from "../internal";
+import type { RenderFiber } from "../renderFiber";
 import type { createRef } from "../share";
 
 type MyReactFunctionComponent<P extends Record<string, unknown> = any> = (props: P) => MyReactElementNode;
@@ -23,7 +22,6 @@ type MyReactClassComponent<
 export type MyReactObjectComponent =
   | ReturnType<typeof createContext>["Consumer"]
   | ReturnType<typeof createContext>["Provider"]
-  // type error
   | ReturnType<typeof forwardRef>
   | ReturnType<typeof memo>
   | ReturnType<typeof lazy>
@@ -83,7 +81,7 @@ export type CreateElementProps<P extends Record<string, unknown> = any, S extend
   props: Props;
   _self: MyReactInternalInstance | null;
   _source: { fileName: string; lineNumber: string } | null;
-  _owner: MyReactFiberNode | null;
+  _owner: RenderFiber | null;
 };
 
 export type CreateElementConfig = {
@@ -95,37 +93,30 @@ export type CreateElementConfig = {
 };
 
 export const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps): MyReactElement => {
-  if (__DEV__) {
-    const element = {
-      [TYPEKEY]: Element,
-      type,
-      key,
-      ref,
-      props,
+  const element: MyReactElement = {
+    [TYPEKEY]: Element,
+    type,
+    key,
+    ref,
+    props,
+  };
 
-      _owner,
-      _self,
-      _source,
-      _store: {} as Record<string, unknown>,
-    };
+  if (__DEV__) {
+    element._owner = _owner;
+
+    element._self = _self;
+
+    element._source = _source;
+
+    element._store = {};
 
     if (typeof Object.freeze === "function") {
       Object.freeze(element.props);
       Object.freeze(element);
     }
-
-    return element;
-  } else {
-    const element = {
-      [TYPEKEY]: Element,
-      type,
-      key,
-      ref,
-      props,
-    };
-
-    return element;
   }
+
+  return element;
 };
 
 export function createElement<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>(
@@ -134,46 +125,48 @@ export function createElement<P extends Record<string, unknown> = any, S extends
   ...children: ArrayMyReactElementChildren
 ) {
   let key: CreateElementProps["key"] = null;
+
   let ref: CreateElementProps["ref"] = null;
+
   let self: CreateElementProps["_self"] = null;
+
   let source: CreateElementProps["_source"] = null;
 
   const props: CreateElementProps["props"] = {};
 
   if (config !== null && config !== undefined) {
     const { ref: _ref, key: _key, __self, __source, ...resProps } = config;
+
     ref = _ref === undefined ? null : _ref;
+
     key = _key === undefined ? null : _key + "";
+
     self = __self === undefined ? null : __self;
+
     source = __source === undefined ? null : __source;
+
     Object.keys(resProps).forEach((key) => (props[key] = resProps[key]));
   }
 
   if (typeof type === "function" || typeof type === "object") {
     const typedType = type as MixinMyReactClassComponent<P, S, C> | MixinMyReactFunctionComponent<P>;
-    Object.keys(typedType?.defaultProps || {}).forEach((key) => {
-      props[key] = props[key] === undefined ? typedType.defaultProps?.[key] : props[key];
-    });
-  }
 
-  // const childrenLength = arguments.length - 2;
+    Object.keys(typedType?.defaultProps || {}).forEach((key) => (props[key] = props[key] === undefined ? typedType.defaultProps?.[key] : props[key]));
+  }
 
   const childrenLength = children.length;
 
   if (childrenLength > 1) {
-    // children = Array.from(arguments).slice(2);
-    if (__DEV__) {
-      checkArrayChildrenKey(children as ArrayMyReactElementNode);
-    }
+    if (__DEV__) checkArrayChildrenKey(children as ArrayMyReactElementNode);
+
     props.children = children as MaybeArrayMyReactElementNode;
   } else if (childrenLength === 1) {
-    if (__DEV__) {
-      checkSingleChildrenKey(children[0] as MyReactElementNode);
-    }
+    if (__DEV__) checkSingleChildrenKey(children[0] as MyReactElementNode);
+
     props.children = children[0];
   }
 
-  return createMyReactElement({
+  const element = createMyReactElement({
     type,
     key,
     ref,
@@ -182,6 +175,12 @@ export function createElement<P extends Record<string, unknown> = any, S extends
     _source: source,
     _owner: currentComponentFiber.current,
   });
+
+  if (__DEV__) checkValidElement(element);
+
+  if (__DEV__) checkValidProps(element);
+
+  return element;
 }
 
 export function cloneElement<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>(
@@ -189,48 +188,46 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
   config?: CreateElementConfig,
   children?: Props["children"]
 ) {
-  if (element === null || element === undefined) {
-    throw new Error("cloneElement(...) need a valid element as params");
-  }
+  if (element === null || element === undefined) throw new Error("cloneElement(...) need a valid element as params");
+
   if (typeof element !== "object") return element;
-  // from react source code
+
   element = element as MyReactElement;
+
   const props = Object.assign({}, element.props);
+
   let key = element.key;
+
   let ref = element.ref;
+
   const type = element.type;
+
   const self = element._self;
+
   const source = element._source;
+
   let owner = element._owner;
+
   if (config !== null && config !== undefined) {
     const { ref: _ref, key: _key, __self, __source, ...resProps } = config;
 
     if (_ref !== undefined) {
       ref = _ref;
+
       owner = currentComponentFiber.current;
     }
 
-    if (_key !== undefined) {
-      key = _key + "";
-    }
+    if (_key !== undefined) key = _key + "";
 
     let defaultProps: Record<string, unknown> | undefined = {};
 
     if (typeof element.type === "function" || typeof element.type === "object") {
       const typedType = element.type as MixinMyReactClassComponent<P, S, C> | MixinMyReactFunctionComponent<P>;
 
-      defaultProps = typedType?.defaultProps;
+      defaultProps = typedType?.defaultProps || {};
     }
 
-    for (const key in resProps) {
-      if (Object.prototype.hasOwnProperty.call(resProps, key)) {
-        if (resProps[key] === undefined && defaultProps) {
-          props[key] = defaultProps[key];
-        } else {
-          props[key] = resProps[key];
-        }
-      }
-    }
+    Object.keys(resProps).forEach((key) => (props[key] = resProps[key] === undefined ? defaultProps[key] : resProps[key]));
   }
 
   const childrenLength = arguments.length - 2;
@@ -258,6 +255,8 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
   });
 
   if (__DEV__) clonedElement._store["clonedEle"] = true;
+
+  if (__DEV__) checkValidProps(clonedElement);
 
   return clonedElement;
 }

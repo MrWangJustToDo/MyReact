@@ -1,7 +1,8 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import type { MyReactElement, MyReactHookNode, MyReactFiberNode, MixinMyReactClassComponent, MixinMyReactFunctionComponent, lazy } from "@my-react/react";
+import type { MyReactElement, MixinMyReactClassComponent, MixinMyReactFunctionComponent, lazy, LogProps } from "@my-react/react";
+import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react-reconciler";
 import type { ListTreeNode } from "@my-react/react-shared";
 
 const { currentRunningFiber } = __my_react_internal__;
@@ -19,7 +20,7 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
     if (owner) {
       const ownerElement = owner as MyReactFiberNode;
       const ownerElementType = ownerElement.elementType;
-      if (ownerElement.type & NODE_TYPE.__isDynamicNode__) {
+      if (ownerElement.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
         const typedOwnerElementType = ownerElementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
         const name = typedOwnerElementType.name || typedOwnerElementType.displayName;
         preString = name ? `${preString} (render dy ${name})` : preString;
@@ -32,7 +33,7 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
 };
 
 export const getElementName = (fiber: MyReactFiberNode) => {
-  if (fiber.type & NODE_TYPE.__isMemo__) {
+  if (fiber.type & NODE_TYPE.__memo__) {
     const targetRender = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
     let name = "";
     if (typeof targetRender === "function") {
@@ -40,27 +41,27 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     }
     return name ? `<Memo - (${name}) />` : `<Memo />`;
   }
-  if (fiber.type & NODE_TYPE.__isLazy__) {
+  if (fiber.type & NODE_TYPE.__lazy__) {
     const typedElementType = fiber.elementType as ReturnType<typeof lazy>;
     const typedRender = typedElementType?.render;
     const name = typedRender?.displayName || typedRender?.name || "";
     return name ? `<Lazy - (${name}) />` : `<Lazy />`;
   }
-  if (fiber.type & NODE_TYPE.__isPortal__) return `<Portal />`;
-  if (fiber.type & NODE_TYPE.__isNullNode__) return `<Null />`;
-  if (fiber.type & NODE_TYPE.__isEmptyNode__) return `<Empty />`;
-  if (fiber.type & NODE_TYPE.__isScopeNode__) return `<Scope />`;
-  if (fiber.type & NODE_TYPE.__isStrictNode__) return `<Strict />`;
-  if (fiber.type & NODE_TYPE.__isSuspenseNode__) return `<Suspense />`;
-  if (fiber.type & NODE_TYPE.__isFragmentNode__) {
+  if (fiber.type & NODE_TYPE.__portal__) return `<Portal />`;
+  if (fiber.type & NODE_TYPE.__null__) return `<Null />`;
+  if (fiber.type & NODE_TYPE.__empty__) return `<Empty />`;
+  if (fiber.type & NODE_TYPE.__scope__) return `<Scope />`;
+  if (fiber.type & NODE_TYPE.__strict__) return `<Strict />`;
+  if (fiber.type & NODE_TYPE.__suspense__) return `<Suspense />`;
+  if (fiber.type & NODE_TYPE.__fragment__) {
     if (fiber.pendingProps["wrap"]) return `<Fragment - (wrap) />`;
     return `<Fragment />`;
   }
-  if (fiber.type & NODE_TYPE.__isKeepLiveNode__) return `<KeepAlive />`;
-  if (fiber.type & NODE_TYPE.__isContextProvider__) return `<Provider />`;
-  if (fiber.type & NODE_TYPE.__isContextConsumer__) return `<Consumer />`;
-  if (fiber.type & NODE_TYPE.__isCommentNode__) return `<Comment />`;
-  if (fiber.type & NODE_TYPE.__isForwardRef__) {
+  if (fiber.type & NODE_TYPE.__keepLive__) return `<KeepAlive />`;
+  if (fiber.type & NODE_TYPE.__provider__) return `<Provider />`;
+  if (fiber.type & NODE_TYPE.__consumer__) return `<Consumer />`;
+  if (fiber.type & NODE_TYPE.__comment__) return `<Comment />`;
+  if (fiber.type & NODE_TYPE.__forwardRef__) {
     const targetRender = fiber.elementType as MixinMyReactFunctionComponent;
     const name = targetRender?.displayName || targetRender?.name || "";
     return name ? `<ForwardRef - (${name}) />` : `<ForwardRef />`;
@@ -120,16 +121,10 @@ export const getHookTree = (
 
 const cache: Record<string, Record<string, boolean>> = {};
 
-type LogProps = {
-  message: string | Error;
-  fiber?: MyReactFiberNode;
-  triggerOnce?: boolean;
-  level?: "warn" | "error";
-};
-
 export const log = ({ fiber, message, level = "warn", triggerOnce = false }: LogProps) => {
   if (__DEV__) {
-    const tree = getFiberTree(fiber || currentRunningFiber.current);
+    const currentFiber = fiber || currentRunningFiber.current;
+    const tree = getFiberTree(currentFiber as MyReactFiberNode);
     if (triggerOnce) {
       const messageKey = message.toString();
       cache[messageKey] = cache[messageKey] || {};
@@ -163,7 +158,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
     return;
   }
   const currentFiber = fiber || currentRunningFiber.current;
-  const tree = getFiberTree(currentFiber);
+  const tree = getFiberTree(currentFiber as MyReactFiberNode);
   if (triggerOnce) {
     const messageKey = message.toString();
     cache[messageKey] = cache[messageKey] || {};

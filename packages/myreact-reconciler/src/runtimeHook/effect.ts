@@ -1,16 +1,16 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { Effect_TYPE } from "@my-react/react-shared";
+import { Effect_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
-import type { RenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react";
+import type { MyReactHookNode } from "./instance";
+import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { enableStrictLifeCycle } = __my_react_shared__;
 
 export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  const renderDispatch = fiber.container.renderDispatch;
 
   if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
-    hookNode.mode = Effect_TYPE.__pendingEffect__;
+    hookNode.mode = Effect_TYPE.__effect__;
 
     const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
 
@@ -18,7 +18,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       const update = () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (hookNode._ownerFiber?.isMounted) hookNode.cancel = hookNode.value();
+        if (!(hookNode._ownerFiber.state & STATE_TYPE.__unmount__)) hookNode.cancel = hookNode.value();
 
         hookNode.effect = false;
 
@@ -38,7 +38,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       const update = () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (hookNode._ownerFiber?.isMounted) hookNode.cancel = hookNode.value();
+        hookNode.cancel = hookNode.value();
 
         hookNode.effect = false;
 

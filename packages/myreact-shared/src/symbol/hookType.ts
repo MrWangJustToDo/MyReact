@@ -1,4 +1,5 @@
 export enum HOOK_TYPE {
+  useId = "useId",
   useRef = "useRef",
   useMemo = "useMemo",
   useState = "useState",
@@ -7,7 +8,11 @@ export enum HOOK_TYPE {
   useContext = "useContext",
   useReducer = "useReducer",
   useCallback = "useCallback",
+  useTransition = "useTransition",
   useDebugValue = "useDebugValue",
   useLayoutEffect = "useLayoutEffect",
+  useDeferredValue = "useDeferredValue",
+  useInsertionEffect = "useInsertionEffect",
   useImperativeHandle = "useImperativeHandle",
+  useSyncExternalStore = "useSyncExternalStore",
 }

@@ -8,7 +8,7 @@ export const Game = () => {
 
   const isMounted = useIsMounted();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onToggle, onClose } = useDisclosure();
 
   useEffect(() => {
     if (isMobile) {
@@ -20,7 +20,7 @@ export const Game = () => {
 
   return (
     <Flex alignItems="center" justifyContent="center">
-      <Button onClick={onOpen} margin="10px">
+      <Button onClick={onToggle} margin="10px">
         open
       </Button>
       <Modal size="4xl" isOpen={isOpen} onClose={onClose} scrollBehavior="inside">
@@ -28,7 +28,6 @@ export const Game = () => {
         <ModalContent>
           <ModalCloseButton />
           <ModalBody>
-            {/* <iframe title="example" src="https://mrwangjusttodo.github.io/MrWangJustToDo.io/" height="800px" width="1000px" /> */}
             <iframe
               title="example"
               srcDoc={`

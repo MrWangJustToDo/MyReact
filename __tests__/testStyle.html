@@ -28,6 +28,7 @@
         });
 
         useEffect(() => {
+          console.log("run effect");
           const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
           window.addEventListener("mousemove", action);
           return () => window.removeEventListener("mousemove", action);
@@ -39,6 +40,7 @@
       const App = () => {
         const [x, setX] = useState(0);
         const [globalX] = usePosition();
+        console.log("run");
 
         return (
           <div onMouseMove={(e) => setX(e.clientX)} style={{ backgroundColor: `hsl(${x}, 80%, 50%)` }} className="movearea">

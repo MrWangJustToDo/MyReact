@@ -119,9 +119,11 @@ const _BlogListWithInfinityScroll = () => {
           <Button color="red" textTransform="capitalize" onClick={() => refetch()}>
             refresh
           </Button>
-          <Button color="red" textTransform="capitalize" onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/Hot" : "/Hot")}>
-            Hmr
-          </Button>
+          {__DEVELOPMENT__ && (
+            <Button color="red" textTransform="capitalize" onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/Hot" : "/Hot")}>
+              Hmr
+            </Button>
+          )}
           <Button color="red" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
             {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
           </Button>

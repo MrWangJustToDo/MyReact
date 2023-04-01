@@ -1,6 +1,6 @@
 import { ListTree } from "@my-react/react-shared";
 
-import type { MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "../runtimeFiber";
 
 const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
   if (fiber.child) return fiber.child;
@@ -21,11 +21,11 @@ export const generateFiberToList = (fiber: MyReactFiberNode) => {
 
   let temp = fiber;
 
-  listTree.append(temp);
+  listTree.push(temp);
 
   while (temp) {
     temp = getNext(temp, fiber);
-    if (temp) listTree.append(temp);
+    if (temp) listTree.push(temp);
   }
 
   return listTree;

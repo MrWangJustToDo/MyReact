@@ -21,6 +21,8 @@ export const Hmr = () => {
       <Code key={2}>hmr just works</Code>
       <br />
       <Code>so cool! i like it very much</Code>
+      <br />
+      <div>next step is hook</div>
     </Container>
   );
 };

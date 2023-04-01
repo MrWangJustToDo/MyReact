@@ -1,10 +1,12 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import type { MyReactFiberNode } from "@my-react/react";
+import { triggerError } from "../renderUpdate";
 
-const { currentRunningFiber } = __my_react_internal__;
+import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { enableSyncFlush } = __my_react_shared__;
+
+const { currentRunningFiber, currentRenderPlatform } = __my_react_internal__;
 
 export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
   try {
@@ -12,12 +14,12 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
   } catch (e) {
     const fiber = currentRunningFiber.current;
 
+    const renderPlatform = currentRenderPlatform.current;
+
+    renderPlatform.log({ message: e as Error, level: "error", fiber });
+
     if (fiber) {
-      const renderPlatform = fiber.root.renderPlatform;
-
-      renderPlatform.log({ message: e as Error, level: "error", fiber });
-
-      fiber._error(e);
+      triggerError(fiber as MyReactFiberNode, e);
     } else {
       throw e;
     }
@@ -30,12 +32,12 @@ export const safeCallAsync = async <T extends any[] = any[], K = any>(action: (.
   } catch (e) {
     const fiber = currentRunningFiber.current;
 
+    const renderPlatform = currentRenderPlatform.current;
+
+    renderPlatform.log({ message: e as Error, level: "error", fiber });
+
     if (fiber) {
-      const renderPlatform = fiber.root.renderPlatform;
-
-      renderPlatform.log({ message: e as Error, level: "error", fiber });
-
-      fiber._error(e);
+      triggerError(fiber as MyReactFiberNode, e);
     } else {
       throw e;
     }
@@ -49,28 +51,27 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
   try {
     return action.call(null, ...args);
   } catch (e) {
-    const renderPlatform = fiber.root.renderPlatform;
+    const renderPlatform = currentRenderPlatform.current;
 
     renderPlatform.log({ message: e as Error, level: "error", fiber });
 
-    fiber._error(e);
+    triggerError(fiber, e);
   }
 };
 
-export const safeCallWithFlushSync = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
+export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
   try {
     enableSyncFlush.current = true;
-
     return action.call(null, ...args);
   } catch (e) {
     const fiber = currentRunningFiber.current;
 
+    const renderPlatform = currentRenderPlatform.current;
+
+    renderPlatform.log({ message: e as Error, level: "error", fiber });
+
     if (fiber) {
-      const renderPlatform = fiber.root.renderPlatform;
-
-      renderPlatform.log({ message: e as Error, level: "error", fiber });
-
-      fiber._error(e);
+      triggerError(fiber as MyReactFiberNode, e);
     } else {
       throw e;
     }

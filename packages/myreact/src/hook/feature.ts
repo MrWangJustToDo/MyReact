@@ -1,140 +1,153 @@
 import { HOOK_TYPE } from "@my-react/react-shared";
 
-import { createRef, currentFunctionFiber, enableDebugLog } from "../share";
+import { createRef, currentRenderPlatform } from "../share";
 
-import type { Reducer } from "./instance";
 import type { createContext } from "../element";
+import type { Action, Reducer } from "../renderHook";
 
-const emptyDeps: unknown[] = [];
+const defaultDeps: unknown[] = [];
+
+const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
+  return typeof action === "function" ? action(state) : action;
+};
 
 export const useState = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) => T)) => void] => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderDispatch = currentFiber.root.renderDispatch;
-
-  return renderDispatch.resolveHookNode(currentFiber, {
+  return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useState,
     value: typeof initial === "function" ? initial : () => initial,
-    reducer: null,
-    deps: emptyDeps,
-  });
+    reducer: defaultReducer,
+    deps: defaultDeps,
+  }) as [T, (t?: T | ((t: T) => T)) => void];
 };
 
 export const useEffect = (action: () => any, deps: any[]) => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderDispatch = currentFiber.root.renderDispatch;
-
-  return renderDispatch.resolveHookNode(currentFiber, {
+  return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useEffect,
     value: action,
-    reducer: null,
+    reducer: defaultReducer,
     deps,
   });
 };
 
 export const useLayoutEffect = (action: () => any, deps: any[]) => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderDispatch = currentFiber.root.renderDispatch;
-
-  return renderDispatch.resolveHookNode(currentFiber, {
+  return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useLayoutEffect,
     value: action,
-    reducer: null,
+    reducer: defaultReducer,
     deps,
   });
 };
 
 export const useCallback = <T extends (...args: any[]) => any = (...args: any[]) => any>(callback: T, deps: any[]): T => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderDispatch = currentFiber.root.renderDispatch;
-
-  return renderDispatch.resolveHookNode(currentFiber, {
+  return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useCallback,
     value: callback,
-    reducer: null,
+    reducer: defaultReducer,
     deps,
-  });
+  }) as T;
 };
 
 export const useMemo = <T = any>(action: () => T, deps: any[]): T => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderDispatch = currentFiber.root.renderDispatch;
-
-  return renderDispatch.resolveHookNode(currentFiber, {
+  return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useMemo,
     value: action,
-    reducer: null,
+    reducer: defaultReducer,
     deps,
-  });
+  }) as T;
 };
 
 export const useRef = <T = any>(value: T): { current: T } => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderDispatch = currentFiber.root.renderDispatch;
-
-  return renderDispatch.resolveHookNode(currentFiber, {
+  return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useRef,
     value: createRef(value),
-    reducer: null,
-    deps: emptyDeps,
-  });
+    reducer: defaultReducer,
+    deps: defaultDeps,
+  }) as { current: T };
 };
 
 export const useContext = (Context: ReturnType<typeof createContext>) => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderDispatch = currentFiber.root.renderDispatch;
-
-  return renderDispatch.resolveHookNode(currentFiber, {
+  return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useContext,
     value: Context,
-    reducer: null,
-    deps: emptyDeps,
+    reducer: defaultReducer,
+    deps: defaultDeps,
   });
 };
 
 export const useReducer = (reducer: Reducer, initialArgs: any, init?: (...args: any) => any) => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderDispatch = currentFiber.root.renderDispatch;
-
-  return renderDispatch.resolveHookNode(currentFiber, {
+  return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useReducer,
     value: typeof init === "function" ? () => init(initialArgs) : () => initialArgs,
     reducer,
-    deps: emptyDeps,
+    deps: defaultDeps,
   });
 };
 
 export const useImperativeHandle = (ref: any, createHandle: Reducer, deps: any[]) => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderDispatch = currentFiber.root.renderDispatch;
-
-  return renderDispatch.resolveHookNode(currentFiber, {
+  return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useImperativeHandle,
     value: ref,
     reducer: createHandle,
@@ -143,28 +156,33 @@ export const useImperativeHandle = (ref: any, createHandle: Reducer, deps: any[]
 };
 
 export const useSignal = <T = any>(initial: T | (() => T)) => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderDispatch = currentFiber.root.renderDispatch;
-
-  return renderDispatch.resolveHookNode(currentFiber, {
+  return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useSignal,
     value: typeof initial === "function" ? initial : () => initial,
-    reducer: null,
-    deps: emptyDeps,
+    reducer: defaultReducer,
+    deps: defaultDeps,
   });
 };
 
 export const useDebugValue = (...args: any[]) => {
-  const currentFiber = currentFunctionFiber.current;
+  const renderPlatform = currentRenderPlatform.current;
 
-  if (!currentFiber) throw new Error("can not use hook outside of component");
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
 
-  const renderPlatform = currentFiber.root.renderPlatform;
-
-  if (enableDebugLog.current) {
-    console.log(`[debug]: `, ...args, renderPlatform.getFiberTree(currentFiber));
-  }
+  return renderPlatform.dispatchHook({
+    type: HOOK_TYPE.useDebugValue,
+    value: args,
+    reducer: defaultReducer,
+    deps: defaultDeps,
+  });
 };

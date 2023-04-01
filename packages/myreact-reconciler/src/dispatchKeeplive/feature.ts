@@ -1,10 +1,11 @@
 import { checkIsSameType, NODE_TYPE } from "../share";
 
-import type { MyReactElementNode, MyReactFiberNode } from "@my-react/react";
+import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactElementNode } from "@my-react/react";
 
 // TODO
 export const defaultGenerateKeepLiveMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, MyReactFiberNode[]>) => {
-  if (fiber.type & NODE_TYPE.__isKeepLiveNode__) {
+  if (fiber.type & NODE_TYPE.__keepLive__) {
     const cacheArray = map.get(fiber) || [];
 
     map.set(fiber, cacheArray);
@@ -18,9 +19,7 @@ export const defaultGetKeepLiveFiber = (fiber: MyReactFiberNode, map: WeakMap<My
   // just a normal update
   if (checkIsSameType(currentChild, element)) return currentChild;
 
-  if (cacheArray.every((f) => f !== currentChild)) {
-    cacheArray.push(currentChild);
-  }
+  if (cacheArray.every((f) => f !== currentChild)) cacheArray.push(currentChild);
 
   const cachedFiber = cacheArray.find((f) => checkIsSameType(f, element));
 

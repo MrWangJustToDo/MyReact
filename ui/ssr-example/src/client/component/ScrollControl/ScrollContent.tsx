@@ -31,11 +31,15 @@ export const ScrollContent = ({ children }: { children: ReactElement | ReactElem
   }, [count]);
 
   const setCurrentView = useCallbackRef((inView: boolean, index: number) => {
-    if (inViewArray[index] !== inView) {
-      const newInViewArray = [...inViewArray];
-      newInViewArray[index] = inView;
-      setInViewArray(newInViewArray);
-    }
+    setInViewArray((last) => {
+      if (last[index] !== inView) {
+        const newInViewArray = [...last];
+        newInViewArray[index] = inView;
+        return newInViewArray;
+      } else {
+        return last;
+      }
+    });
   });
 
   const context = useMemo(() => ({ inViewArray, setCurrentView }), [inViewArray, setCurrentView]);

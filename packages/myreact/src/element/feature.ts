@@ -8,8 +8,16 @@ let contextId = 0;
 
 const defaultObject = { [TYPEKEY]: Context, contextId: 0 };
 
+type ContextObjectType<T, K> = {
+  displayName?: string;
+  [TYPEKEY]: symbol;
+  contextId: number;
+  Provider: T;
+  Consumer: K;
+};
+
 export const createContext = <T = any>(value: T) => {
-  const ContextObject = {
+  const ContextObject: ContextObjectType<typeof ProviderObject, typeof ConsumerObject> = {
     [TYPEKEY]: Context,
     contextId: contextId++,
     Provider: {} as typeof ProviderObject,
@@ -45,6 +53,7 @@ export const createContext = <T = any>(value: T) => {
   });
 
   ContextObject.Provider = ProviderObject;
+
   ContextObject.Consumer = ConsumerObject;
 
   return ContextObject;

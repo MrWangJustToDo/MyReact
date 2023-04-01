@@ -1,11 +1,11 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { safeCallWithFiber } from "@my-react/react-reconciler";
 
 import { enableControlComponent, enableEventSystem } from "@my-react-dom-shared";
 
 import { getNativeEventName } from "./getEventName";
 
-import type { MyReactFiberNode } from "@my-react/react";
-import type { MyReactFiberNodeDev, RenderDispatch } from "@my-react/react-reconciler";
+import type { MyReactFiberNodeDev, MyReactFiberNode } from "@my-react/react-reconciler";
 import type { DomElement } from "@my-react-dom-shared";
 
 export const controlElementTag: Record<string, boolean> = {
@@ -14,13 +14,43 @@ export const controlElementTag: Record<string, boolean> = {
   // select: true,
 };
 
+const { enableSyncFlush } = __my_react_shared__;
+
 type ControlledElement = HTMLInputElement & {
   __isControlled__: boolean;
   __isReadonly__: boolean;
 };
 
+// TODO
+const syncUpdateEvent = {
+  click: true,
+  input: true,
+  chang: true,
+  scroll: true,
+  dblclick: true,
+  mousedown: true,
+};
+
+let prev = true;
+
+const beforeEvent = (event: string) => {
+  if (syncUpdateEvent[event]) {
+    prev = enableSyncFlush.current;
+
+    enableSyncFlush.current = true;
+  }
+};
+
+const afterEvent = (event: string) => {
+  if (syncUpdateEvent[event]) {
+    enableSyncFlush.current = prev;
+  }
+};
+
 export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
-  const renderDispatch = fiber.root.renderDispatch as RenderDispatch;
+  const renderContainer = fiber.container;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   const typedElementType = fiber.elementType as string;
 
@@ -45,10 +75,14 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
 
         e.nativeEvent = e;
 
+        beforeEvent(nativeName);
+
         safeCallWithFiber({
           action: () => handler.cb?.forEach((cb) => typeof cb === "function" && cb.call(null, ...args)),
           fiber,
         });
+
+        afterEvent(nativeName);
 
         if (enableControlComponent.current) {
           requestAnimationFrame(() => {

@@ -1,8 +1,23 @@
-import { CustomRenderDispatch } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 
-import type { MyReactFiberNode } from "@my-react/react";
+import { append, create, update } from "@my-react-dom-server";
+import { patchToFiberInitial } from "@my-react-dom-shared";
+
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export class ServerDomDispatch extends CustomRenderDispatch {
+  elementMap = new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>();
+
+  refType = NODE_TYPE.__plain__ | NODE_TYPE.__class__;
+
+  createType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
+
+  updateType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
+
+  appendType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
+
+  hasNodeType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
+
   triggerUpdate(_fiber: MyReactFiberNode): void {
     void 0;
   }
@@ -29,5 +44,27 @@ export class ServerDomDispatch extends CustomRenderDispatch {
 
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
     void 0;
+  }
+
+  commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
+    create(_fiber);
+
+    return true;
+  }
+
+  commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
+    const { isSVG } = this.elementMap.get(_fiber) || {};
+
+    update(_fiber, isSVG);
+  }
+
+  commitAppend(_fiber: MyReactFiberNode): void {
+    const { parentFiberWithNode } = this.elementMap.get(_fiber) || {};
+
+    append(_fiber, parentFiberWithNode);
+  }
+
+  patchToFiberInitial(_fiber: MyReactFiberNode) {
+    patchToFiberInitial(_fiber);
   }
 }

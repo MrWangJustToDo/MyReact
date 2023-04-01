@@ -9,6 +9,7 @@ import { useIntl } from "react-intl";
 import { useLocation, useNavigate } from "react-router";
 
 import { CONTAINER_WIDTH } from "@client/config/container";
+import { useIsMobile } from "@client/hooks";
 import { getIsStaticGenerate } from "@shared";
 
 import { ColorMode } from "../ColorMode";
@@ -28,6 +29,8 @@ const _Header = () => {
 
   const { formatMessage } = useIntl();
 
+  const isMobile = useIsMobile();
+
   const { scrollY } = useScroll();
 
   const opacity = useTransform(scrollY, [0, 0.2, 0.4], [0, 0.4, 1]);
@@ -46,7 +49,7 @@ const _Header = () => {
       <Container maxWidth={CONTAINER_WIDTH} paddingX={{ base: "3", lg: "6" }}>
         <GlobalStyle />
         <Flex paddingY="2" justifyContent="space-between" alignItems="center">
-          <Text as="h1" fontSize={{ base: "xl", md: "2xl" }} fontWeight={{ base: "semibold", md: "bold" }}>
+          <Text as="h1" fontSize={{ base: "xl", md: "2xl" }} fontWeight={{ base: "semibold", md: "bold" }} noOfLines={1}>
             {formatMessage({ id })}
           </Text>
           <HStack gap={{ base: "4px", lg: "8px" }}>
@@ -59,7 +62,7 @@ const _Header = () => {
             <ColorMode />
             <Button variant="outline" size="sm" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
               <Icon as={SiGithub} />
-              {loading ? null : (
+              {loading || isMobile ? null : (
                 <Tag variant="subtle" colorScheme="orange" marginLeft="3">
                   <TagLeftIcon as={FaStar} color="orange.300" />
                   <TagLabel>{data?.repository?.stargazerCount}</TagLabel>

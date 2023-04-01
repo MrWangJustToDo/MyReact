@@ -1,5 +1,7 @@
 # MyReact -- a React like project
 
+[![Deploy](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml/badge.svg)](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml)
+
 ```shell
 // install
 pnpm add @my-react/react @my-react/react-dom

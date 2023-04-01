@@ -1,3 +1,4 @@
 {
-  "commentTranslate.source": "intellsmi.comment-translate-ali.cloud"
+  "commentTranslate.source": "intellsmi.comment-translate-ali.cloud",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

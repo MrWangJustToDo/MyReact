@@ -24,7 +24,7 @@ const createApolloClient = (initialState: NormalizedCacheObject = {}, enableInfi
 
   // for server side, every apollo request should clean the cache
   if (__SERVER__) {
-    _apolloClient.cache.restore({});
+    _apolloClient.cache.restore(initialState);
   } else {
     // for client side, should merge exist cacheData
     const existCacheData = _apolloClient.cache.extract();

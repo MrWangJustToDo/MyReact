@@ -38,7 +38,7 @@ const BlogListLoading = () => (
   </SimpleGrid>
 );
 
-const BASIC_VARIABLE = {
+export const BASIC_VARIABLE = {
   name: __CLIENT__ ? localStorage.getItem("blog_name") || BLOG_REPOSITORY : BLOG_REPOSITORY,
   owner: __CLIENT__ ? localStorage.getItem("blog_owner") || BLOG_REPOSITORY_OWNER : BLOG_REPOSITORY_OWNER,
   orderBy: {

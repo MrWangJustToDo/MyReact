@@ -1,8 +1,8 @@
-const { __my_react_internal__ } = require("@my-react/react");
-const { replaceFiberNode } = require("@my-react/react-reconciler");
-const { TYPEKEY, ForwardRef, Memo, STATE_TYPE } = require("@my-react/react-shared");
+const TYPEKEY = "$$typeof";
 
-const { currentComponentFiber } = __my_react_internal__;
+const ForwardRef = Symbol.for("react.forward_ref");
+
+const Memo = Symbol.for("react.memo");
 
 console.log("load package");
 
@@ -109,7 +109,7 @@ const computeFullKey = (signature) => {
 const setFiber = (type) => {
   if (!type) return;
 
-  const currentFiber = currentComponentFiber.current;
+  const currentFiber = globalThis["__@my-react/runtime__"].currentComponentFiber.current;
 
   if (!currentFiber) {
     console.error("[@my-react/react-refresh] can not found current fiber node");
@@ -245,9 +245,9 @@ const performReactRefresh = () => {
       root = root || fiber.container.rootFiber;
       if (canPreserveStateBetween(prevType, nextType)) {
         fiber.elementType = nextType;
-        fiber.state = STATE_TYPE.__triggerSync__;
+        fiber.state = 32;
       } else {
-        const newFiber = replaceFiberNode(fiber, nextType);
+        const newFiber = globalThis["__@my-react/runtime__"].replaceFiberNode(fiber, nextType);
         allFiberByType.set(prevType, newFiber);
       }
     } else {
@@ -257,7 +257,7 @@ const performReactRefresh = () => {
 
   console.log(`[hmr] updating...`);
 
-  root?._update(STATE_TYPE.__triggerSync__);
+  root?._update(32);
 };
 
 const isLikelyComponentType = (type) => {
@@ -304,9 +304,7 @@ const isLikelyComponentType = (type) => {
   }
 };
 
-globalThis["__@my-react/react-refresh__"] = allFiberByType;
-
-module.exports = {
+const moduleObject = {
   isLikelyComponentType,
   performReactRefresh,
   createSignatureFunctionForTransform,
@@ -316,3 +314,17 @@ module.exports = {
   getFamilyByID,
   getFamilyByType,
 };
+
+self["__@my-react/react-refresh__"] = moduleObject;
+
+self["__@my-react/react-refresh__fiber"] = allFiberByType;
+
+exports.isLikelyComponentType = isLikelyComponentType;
+exports.performReactRefresh = performReactRefresh;
+exports.createSignatureFunctionForTransform = createSignatureFunctionForTransform;
+exports.register = register;
+exports.collectCustomHooksForSignature = collectCustomHooksForSignature;
+exports.setSignature = setSignature;
+exports.getFamilyByID = getFamilyByID;
+exports.getFamilyByType = getFamilyByType;
+exports.injectIntoGlobalHook = () => void 0;

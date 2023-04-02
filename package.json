@@ -43,6 +43,7 @@
     "@my-react/react-reactive": "workspace:*",
     "@my-react/react-reconciler": "workspace:*",
     "@my-react/react-shared": "workspace:*",
+    "@my-react/react-refresh": "workspace:*",
     "@rollup/plugin-commonjs": "^24.0.1",
     "@rollup/plugin-node-resolve": "^15.0.1",
     "@rollup/plugin-replace": "^5.0.2",

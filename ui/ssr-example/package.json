@@ -24,6 +24,7 @@
     "@my-react/react-reactive": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "@my-react/react-jsx": "workspace:*",
+    "@my-react/react-refresh": "workspace:*",
     "@site/graphql": "workspace: *",
     "@site/axios": "workspace: *",
     "cookie-parser": "^1.4.6",

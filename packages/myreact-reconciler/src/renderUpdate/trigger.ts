@@ -106,12 +106,6 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
 
   renderContainer.pendingFiberArray.uniPush(fiber);
 
-  // if there are a loop state, but not have a work todo
-  // some yield task has missing?
-  // if (globalLoop.current && !renderContainer.nextWorkingFiber) {
-  //   globalLoop.current = false;
-  // }
-
   if (globalLoop.current) return;
 
   globalLoop.current = true;

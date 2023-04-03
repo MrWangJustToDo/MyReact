@@ -1,3 +1,3 @@
-### implement @my-react fast-refresh 
+### implement @my-react/react-refresh
 
-TODO
+this package just for fast refresh

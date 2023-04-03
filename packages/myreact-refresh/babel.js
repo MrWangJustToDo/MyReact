@@ -1,3 +1,3 @@
 "use strict";
 
-module.exports = require("./src/core/RefreshBebelPlugin");
+module.exports = require("./src/RefreshBebelPlugin");

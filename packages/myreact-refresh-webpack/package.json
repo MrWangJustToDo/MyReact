@@ -1,0 +1,17 @@
+{
+  "name": "@my-react/react-refresh-webpack",
+  "description": "@my-react/react-refresh-webpack",
+  "version": "0.0.1",
+  "main": "index.js",
+  "files": [
+    "src",
+    "index.js"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@my-react/react-refresh": "latest"
+  }
+}

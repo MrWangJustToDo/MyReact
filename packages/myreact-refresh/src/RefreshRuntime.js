@@ -4,8 +4,6 @@ const ForwardRef = Symbol.for("react.forward_ref");
 
 const Memo = Symbol.for("react.memo");
 
-console.log("load package");
-
 // some type has been changed, need update pending array
 const pendingUpdates = [];
 // register type
@@ -25,8 +23,8 @@ function getProperty(object, property) {
 }
 
 function haveEqualSignatures(prevType, nextType) {
-  const prevSignature = signaturesByType.get(prevType);
-  const nextSignature = signaturesByType.get(nextType);
+  const prevSignature = allSignaturesByType.get(prevType);
+  const nextSignature = allSignaturesByType.get(nextType);
 
   if (prevSignature === undefined && nextSignature === undefined) {
     return true;
@@ -34,7 +32,7 @@ function haveEqualSignatures(prevType, nextType) {
   if (prevSignature === undefined || nextSignature === undefined) {
     return false;
   }
-  if (computeKey(prevSignature) !== computeKey(nextSignature)) {
+  if (computeFullKey(prevSignature) !== computeFullKey(nextSignature)) {
     return false;
   }
   if (nextSignature.forceReset) {
@@ -94,7 +92,7 @@ const computeFullKey = (signature) => {
       return fullKey;
     }
 
-    const nestedHookSignature = signaturesForType.get(hook);
+    const nestedHookSignature = allSignaturesByType.get(hook);
     if (nestedHookSignature === undefined) continue;
 
     const nestedHookKey = computeFullKey(nestedHookSignature);
@@ -159,7 +157,7 @@ const setSignature = (type, key, forceReset, getCustomHooks) => {
 };
 
 const collectCustomHooksForSignature = (type) => {
-  const signature = signaturesByType.get(type);
+  const signature = allSignaturesByType.get(type);
   if (signature) {
     signature.fullKey = computeFullKey(signature);
   }
@@ -228,6 +226,7 @@ const createSignatureFunctionForTransform = () => {
   };
 };
 
+// TODO cause infinity loop error in some usage
 const performReactRefresh = () => {
   if (!pendingUpdates.length) return;
 
@@ -237,27 +236,32 @@ const performReactRefresh = () => {
 
   let root = null;
 
+  let rootTrigger = false;
+
   allPending.forEach(([family, _nextType]) => {
     const prevType = getRenderTypeFormType(family.current);
     const nextType = getRenderTypeFormType(_nextType);
-    const fiber = allFiberByType.get(prevType);
-    if (fiber) {
-      root = root || fiber.container.rootFiber;
-      if (canPreserveStateBetween(prevType, nextType)) {
-        fiber.elementType = nextType;
-        fiber.state = 32;
+    if (prevType) {
+      const fiber = allFiberByType.get(prevType);
+      if (fiber) {
+        root = root || fiber.container.rootFiber;
+        rootTrigger = root === fiber;
+        if (canPreserveStateBetween(prevType, nextType)) {
+          fiber.elementType = nextType;
+          fiber.state = 32;
+        } else {
+          const newFiber = globalThis["__@my-react/runtime__"].replaceFiberNode(fiber, nextType);
+          allFiberByType.set(prevType, newFiber);
+        }
       } else {
-        const newFiber = globalThis["__@my-react/runtime__"].replaceFiberNode(fiber, nextType);
-        allFiberByType.set(prevType, newFiber);
+        console.error(`[@my-react/refresh] current type ${prevType} not have a fiber node for the render tree`);
       }
-    } else {
-      console.error(`[@my-react/refresh] current type ${prevType} not have a fiber node for the render tree`);
     }
   });
 
-  console.log(`[hmr] updating...`);
+  console.log(`[@my-react/refresh] updating ${rootTrigger ? "root" : "target"} ...`);
 
-  root?._update(32);
+  root?._update(rootTrigger ? 32 : 4);
 };
 
 const isLikelyComponentType = (type) => {

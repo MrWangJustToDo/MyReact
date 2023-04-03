@@ -15,7 +15,7 @@ export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFib
 
     const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
 
-    if (parentFiberWithDom?.state & STATE_TYPE.__unmount__) {
+    if (!parentFiberWithDom || parentFiberWithDom.state & STATE_TYPE.__unmount__) {
       parentFiberWithDom = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
       const elementObj = renderDispatch.elementMap.get(fiber);

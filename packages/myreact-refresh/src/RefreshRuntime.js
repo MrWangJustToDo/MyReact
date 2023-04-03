@@ -246,13 +246,9 @@ const performReactRefresh = () => {
       if (fiber) {
         root = root || fiber.container.rootFiber;
         rootTrigger = root === fiber;
-        if (canPreserveStateBetween(prevType, nextType)) {
-          fiber.elementType = nextType;
-          fiber.state = 32;
-        } else {
-          const newFiber = globalThis["__@my-react/runtime__"].replaceFiberNode(fiber, nextType);
-          allFiberByType.set(prevType, newFiber);
-        }
+        const forceReset = !canPreserveStateBetween(prevType, nextType);
+        const newFiber = globalThis["__@my-react/runtime__"].replaceFiberNode(fiber, nextType, forceReset);
+        allFiberByType.set(prevType, newFiber);
       } else {
         console.error(`[@my-react/refresh] current type ${prevType} not have a fiber node for the render tree`);
       }

@@ -22,7 +22,7 @@ export const patchToFiberInitial = (_fiber: MyReactFiberNode) => {
     } else if (_fiber.parent.type & renderDispatch.hasNodeType) {
       parentFiberWithNode = _fiber.parent;
     } else {
-      parentFiberWithNode = renderDispatch.elementMap.get(_fiber.parent).parentFiberWithNode;
+      parentFiberWithNode = renderDispatch.elementMap.get(_fiber.parent)?.parentFiberWithNode;
     }
   }
 

@@ -1,88 +1,42 @@
 // replace a fiber node in the render tree
-
-import { cloneElement } from "@my-react/react";
-import { PATCH_TYPE } from "@my-react/react-shared";
+import { createElement } from "@my-react/react";
+import { STATE_TYPE } from "@my-react/react-shared";
 
 import { unmountFiber } from "../dispatchUnmount";
-import { debugWithNode } from "../share";
 
-import { MyReactFiberNode, MyReactFiberRoot } from "./instance";
+import { MyReactFiberNode } from "./instance";
 
-import type { MyReactFiberNodeDev } from "./interface";
+import type { MyReactFiberRoot } from "./instance";
 import type { MyReactElementType } from "@my-react/react";
 
 // just used for HMR
-export const replaceFiberNode = (fiber: MyReactFiberNode | MyReactFiberRoot, nextType: MyReactElementType) => {
-  if (fiber instanceof MyReactFiberRoot) {
+export const replaceFiberNode = (fiber: MyReactFiberNode | MyReactFiberRoot, nextType: MyReactElementType, forceRefresh?: boolean) => {
+  const newElement = createElement(nextType, { ...fiber.pendingProps, ref: fiber.ref, key: fiber.key });
+
+  if (forceRefresh) {
+    const parent = fiber.parent;
+
+    const newFiberNode = new MyReactFiberNode(newElement);
+
+    newFiberNode.parent = parent;
+
+    newFiberNode.container = parent.container;
+
+    if (parent.child === fiber) parent.child = newFiberNode;
+
+    newFiberNode.sibling = fiber.sibling;
+
+    // unmount exist node
+    unmountFiber(fiber);
+
+    return newFiberNode;
+  } else {
+    fiber.element = newElement;
+
     fiber.elementType = nextType;
+
+    fiber.state |= STATE_TYPE.__triggerSync__;
+
     return fiber;
   }
-
-  const parent = fiber.parent;
-
-  const element = fiber.element;
-
-  const clonedElement = cloneElement(element);
-
-  const newFiberNode = new MyReactFiberNode(clonedElement);
-
-  newFiberNode.elementType = nextType;
-
-  newFiberNode.parent = parent;
-
-  newFiberNode.container = parent.container;
-
-  if (parent.child === fiber) parent.child = newFiberNode;
-
-  newFiberNode.sibling = fiber.sibling;
-
-  const renderDispatch = parent.container.renderDispatch;
-
-  renderDispatch.pendingCreate(newFiberNode);
-
-  renderDispatch.pendingUpdate(newFiberNode);
-
-  renderDispatch.pendingPosition(newFiberNode);
-
-  if (newFiberNode.ref) {
-    renderDispatch.pendingRef(newFiberNode);
-  }
-
-  renderDispatch.resolveScopeMap(newFiberNode);
-
-  renderDispatch.resolveStrictMap(newFiberNode);
-
-  renderDispatch.resolveContextMap(newFiberNode);
-
-  renderDispatch.resolveSuspenseMap(newFiberNode);
-
-  renderDispatch.resolveErrorBoundariesMap(newFiberNode);
-
-  renderDispatch.patchToFiberInitial?.(newFiberNode);
-
-  if (!(newFiberNode.patch & PATCH_TYPE.__update__)) {
-    newFiberNode.memoizedProps = newFiberNode.pendingProps;
-  }
-
-  if (__DEV__) {
-    const typedFiber = newFiberNode as MyReactFiberNodeDev;
-
-    const timeNow = Date.now();
-
-    typedFiber._debugRenderState = {
-      renderCount: 1,
-      mountTime: timeNow,
-      prevUpdateTime: 0,
-      currentUpdateTime: timeNow,
-    };
-
-    if (typedFiber.type & renderDispatch.hasNodeType) {
-      renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
-    }
-  }
-
-  // unmount exist node
-  unmountFiber(fiber);
-
-  return newFiberNode;
 };

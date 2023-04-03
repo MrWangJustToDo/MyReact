@@ -12,8 +12,8 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFibe
 
     const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
 
-    // will never happen
-    if (parentFiberWithDom.state & STATE_TYPE.__unmount__) {
+    // will happen on HMR
+    if (!parentFiberWithDom || parentFiberWithDom.state & STATE_TYPE.__unmount__) {
       parentFiberWithDom = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
       const elementObj = renderDispatch.elementMap.get(fiber);
@@ -23,7 +23,9 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFibe
       renderDispatch.elementMap.set(fiber, elementObj);
     }
 
-    if (!fiber.nativeNode || !parentFiberWithDom.nativeNode) throw new Error("append error, dom not exist");
+    globalThis["getFiberWithNativeDom"] = getFiberWithNativeDom;
+
+    if (!fiber?.nativeNode || !parentFiberWithDom?.nativeNode) throw new Error("append error, dom not exist");
 
     const parentDom = parentFiberWithDom.nativeNode as DomElement;
 

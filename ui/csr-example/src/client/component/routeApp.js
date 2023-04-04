@@ -5,6 +5,7 @@ import Welcome from "./welcome";
 import Home from "./home";
 import File from "./file";
 import Msg from "./msg";
+import { CanvasBG } from "./bg";
 
 export default () => {
   let location = useLocation();
@@ -28,6 +29,7 @@ export default () => {
 
   return (
     <>
+      <CanvasBG />
       <Switch location={background || location}>
         <Route path="/file/**/:type/:id">
           <File />

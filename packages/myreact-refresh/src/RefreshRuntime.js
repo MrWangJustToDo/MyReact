@@ -11,6 +11,8 @@ const allFamiliesByID = new Map();
 const allFamiliesByType = new WeakMap();
 const allSignaturesByType = new WeakMap();
 
+const updatedFamiliesByType = new WeakMap();
+
 const allFiberByType = new Map();
 
 function getProperty(object, property) {
@@ -74,6 +76,11 @@ function canPreserveStateBetween(prevType, nextType) {
   return false;
 }
 
+function resolveFamily(type) {
+  // Only check updated types to keep lookups fast.
+  return updatedFamiliesByType.get(type);
+}
+
 const computeFullKey = (signature) => {
   let fullKey = signature.key;
   let hooks;
@@ -107,7 +114,7 @@ const computeFullKey = (signature) => {
 const setFiber = (type) => {
   if (!type) return;
 
-  const currentFiber = globalThis["__@my-react/runtime__"].currentComponentFiber.current;
+  const currentFiber = self["__@my-react/hmr__"].currentComponentFiber.current;
 
   if (!currentFiber) {
     console.error("[@my-react/react-refresh] can not found current fiber node");
@@ -138,7 +145,6 @@ function getFamilyByType(type) {
 const setSignature = (type, key, forceReset, getCustomHooks) => {
   if (!allSignaturesByType.has(type)) {
     allSignaturesByType.set(type, {
-      type,
       key,
       forceReset,
       getCustomHooks: getCustomHooks | (() => []),
@@ -176,9 +182,10 @@ const register = (type, id) => {
   let family = allFamiliesByID.get(id);
 
   if (family === undefined) {
-    family = { current: type };
+    family = { current: type, latest: type };
     allFamiliesByID.set(id, family);
   } else {
+    family.latest = type;
     pendingUpdates.push([family, type]);
   }
   allFamiliesByType.set(type, family);
@@ -236,28 +243,26 @@ const performReactRefresh = () => {
 
   let root = null;
 
-  let rootTrigger = false;
-
   allPending.forEach(([family, _nextType]) => {
     const prevType = getRenderTypeFormType(family.current);
     const nextType = getRenderTypeFormType(_nextType);
     if (prevType) {
       const fiber = allFiberByType.get(prevType);
+      updatedFamiliesByType.set(prevType, family);
+      updatedFamiliesByType.set(_nextType, family);
       if (fiber) {
         root = root || fiber.container.rootFiber;
-        rootTrigger = root === fiber;
         const forceReset = !canPreserveStateBetween(prevType, nextType);
-        const newFiber = globalThis["__@my-react/runtime__"].replaceFiberNode(fiber, nextType, forceReset);
-        allFiberByType.set(prevType, newFiber);
+        self["__@my-react/hmr__"].hmr(fiber, nextType, forceReset);
       } else {
         console.error(`[@my-react/refresh] current type ${prevType} not have a fiber node for the render tree`);
       }
     }
   });
 
-  console.log(`[@my-react/refresh] updating ${rootTrigger ? "root" : "target"} ...`);
+  console.log(`[@my-react/refresh] updating ...`);
 
-  root?._update(rootTrigger ? 32 : 4);
+  root?._update();
 };
 
 const isLikelyComponentType = (type) => {
@@ -318,6 +323,14 @@ const moduleObject = {
 self["__@my-react/react-refresh__"] = moduleObject;
 
 self["__@my-react/react-refresh__fiber"] = allFiberByType;
+
+if (typeof window !== "undefined") {
+  // inject type resolve handler
+  window.addEventListener("load", () => {
+    // set type resolve handler for fast refresh
+    self["__@my-react/hmr__"]?.setRefreshHandler?.(resolveFamily);
+  });
+}
 
 exports.isLikelyComponentType = isLikelyComponentType;
 exports.performReactRefresh = performReactRefresh;

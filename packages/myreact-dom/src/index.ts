@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { safeCall, safeCallWithSync, replaceFiberNode } from "@my-react/react-reconciler";
+import { safeCall, safeCallWithSync, hmr, setRefreshHandler } from "@my-react/react-reconciler";
 
 import { render, hydrate } from "./client";
 import { renderToString, renderToNodeStream } from "./server";
@@ -16,8 +16,9 @@ const { setRenderPlatform, currentComponentFiber } = __my_react_internal__;
 setRenderPlatform(MyReactDomPlatform);
 
 if (__DEV__) {
-  globalThis["__@my-react/runtime__"] = {
-    replaceFiberNode,
+  globalThis["__@my-react/hmr__"] = {
+    hmr,
+    setRefreshHandler,
     currentComponentFiber,
   };
 }

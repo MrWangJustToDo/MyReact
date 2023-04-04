@@ -23,8 +23,6 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFibe
       renderDispatch.elementMap.set(fiber, elementObj);
     }
 
-    globalThis["getFiberWithNativeDom"] = getFiberWithNativeDom;
-
     if (!fiber?.nativeNode || !parentFiberWithDom?.nativeNode) throw new Error("append error, dom not exist");
 
     const parentDom = parentFiberWithDom.nativeNode as DomElement;

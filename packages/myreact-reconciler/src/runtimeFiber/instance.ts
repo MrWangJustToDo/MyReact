@@ -110,11 +110,13 @@ export class MyReactFiberNode implements RenderFiber {
   }
 }
 
-export class MyReactFiberRoot extends MyReactFiberNode {
-  constructor(element: MyReactElement, nativeNode: NativeNode) {
+export class MyReactFiberContainer extends MyReactFiberNode {
+  containerNode: NativeNode;
+
+  constructor(element: MyReactElement, containerNode: NativeNode) {
     super(element);
 
-    this.nativeNode = nativeNode;
+    this.containerNode = containerNode;
   }
 }
 

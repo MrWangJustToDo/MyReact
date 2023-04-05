@@ -1,4 +1,3 @@
-import { NODE_TYPE } from "@my-react/react-reconciler";
 import { STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -6,17 +5,9 @@ import type { DomNode } from "@my-react-dom-shared";
 
 const clearFiberDom = (fiber: MyReactFiberNode) => {
   if (fiber.nativeNode) {
-    if (!(fiber.type & NODE_TYPE.__portal__) && fiber !== fiber.container.rootFiber) {
-      const dom = fiber.nativeNode as DomNode;
+    const dom = fiber.nativeNode as DomNode;
 
-      dom.parentElement?.removeChild(dom);
-    } else {
-      let child = fiber.child;
-      while (child) {
-        clearFiberDom(child);
-        child = child.sibling;
-      }
-    }
+    dom.parentElement?.removeChild(dom);
   } else {
     let child = fiber.child;
     while (child) {

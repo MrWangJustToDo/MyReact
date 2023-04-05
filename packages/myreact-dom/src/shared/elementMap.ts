@@ -1,6 +1,4 @@
-import { MyReactFiberRoot } from "@my-react/react-reconciler";
-
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { MyReactFiberContainer , MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomContainer, ClientDomDispatch } from "@my-react-dom-client";
 
 export const patchToFiberInitial = (_fiber: MyReactFiberNode) => {
@@ -17,7 +15,8 @@ export const patchToFiberInitial = (_fiber: MyReactFiberNode) => {
   }
 
   if (_fiber.parent) {
-    if (_fiber.parent instanceof MyReactFiberRoot) {
+    const mayFiberContainer = _fiber.parent as MyReactFiberContainer;
+    if (mayFiberContainer.containerNode) {
       parentFiberWithNode = _fiber.parent;
     } else if (_fiber.parent.type & renderDispatch.hasNodeType) {
       parentFiberWithNode = _fiber.parent;

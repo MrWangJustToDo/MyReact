@@ -95,7 +95,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
           Object.keys(typedNewProps || {})
             .filter(isNew(typedOldProps || {}, typedNewProps))
             .forEach((styleName) => {
-              if (isUnitlessNumber[styleName] && typeof typedNewProps[styleName] === "number") {
+              if (!isUnitlessNumber[styleName] && typeof typedNewProps[styleName] === "number") {
                 dom[key][styleName] = `${typedNewProps[styleName]}px`;
                 return;
               }

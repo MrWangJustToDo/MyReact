@@ -74,7 +74,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
 const domStyleHydrate = (fiber: MyReactFiberNode, key: string, value: Record<string, unknown>) => {
   const node = fiber.nativeNode as DomElement | DomNode;
   Object.keys(value).forEach((styleName) => {
-    if (isUnitlessNumber[styleName] && typeof value[styleName] === "number") {
+    if (!isUnitlessNumber[styleName] && typeof value[styleName] === "number") {
       node[key][styleName] = `${value[styleName]}px`;
       return;
     }

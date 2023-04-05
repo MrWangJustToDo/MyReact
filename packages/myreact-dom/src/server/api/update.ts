@@ -21,7 +21,7 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
         if (isStyle(key)) {
           const typedProps = (props[key] as Record<string, unknown>) || {};
           Object.keys(typedProps).forEach((styleName) => {
-            if (isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
+            if (!isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
               dom[key][styleName] = `${typedProps[styleName]}px`;
               return;
             }
@@ -55,7 +55,7 @@ export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       if (isStyle(key)) {
         const typedProps = (props[key] as Record<string, unknown>) || {};
         Object.keys(typedProps).forEach((styleName) => {
-          if (isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
+          if (!isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
             styles[kebabCase(styleName)] = `${typedProps[styleName]}px`;
             return;
           }

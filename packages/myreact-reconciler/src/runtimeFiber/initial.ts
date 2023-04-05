@@ -1,9 +1,9 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import type { MyReactFiberRoot } from "./instance";
+import type { MyReactFiberNode } from "./instance";
 
-// just used for rootFiber
-export const initialFiberNode = (fiber: MyReactFiberRoot) => {
+// no need to resolve map for this fiber, this code only used for fiberRoot init
+export const initialFiberNode = (fiber: MyReactFiberNode) => {
   const renderDispatch = fiber.container.renderDispatch;
 
   renderDispatch.pendingCreate(fiber);

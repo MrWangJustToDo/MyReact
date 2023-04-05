@@ -1,4 +1,4 @@
-import { initialFiberNode, MyReactFiberRoot } from "@my-react/react-reconciler";
+import { initialFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
 import { PlainElement, ServerStreamContainer, ServerStreamDispatch } from "@my-react-dom-server";
 import { MyReactDomPlatform, startRender, startRenderAsync } from "@my-react-dom-shared";
@@ -10,7 +10,7 @@ import type { Readable } from "stream";
 const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, stream: T) => {
   const container = new PlainElement("");
 
-  const fiber = new MyReactFiberRoot(element, container);
+  const fiber = new MyReactFiberContainer(element, container);
 
   const renderDispatch = new ServerStreamDispatch();
 
@@ -34,7 +34,7 @@ const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, s
 const renderToStreamAsync = <T extends SimpleReadable>(element: MyReactElement, stream: T) => {
   const container = new PlainElement("");
 
-  const fiber = new MyReactFiberRoot(element, container);
+  const fiber = new MyReactFiberContainer(element, container);
 
   const renderDispatch = new ServerStreamDispatch();
 

@@ -7,6 +7,7 @@ export const resolveConfig = ({ env }: SafeGenerateActionProps): Configuration["
   alias: {
     react: process.env.REACT === "myreact" && env === "client" ? "@my-react/react" : "react",
     "react-dom": process.env.REACT === "myreact" && env === "client" ? "@my-react/react-dom" : "react-dom",
+    "react-refresh": process.env.REACT === "myreact" && env === "client" ? "@my-react/react-refresh" : "react-refresh",
     lodash: env === "client" ? "lodash-es" : "lodash",
     "lodash-es": env === "server" ? "lodash" : "lodash-es",
     "@build": resolve(process.cwd(), "build"),

@@ -1,5 +1,5 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { initialFiberNode, MyReactFiberRoot } from "@my-react/react-reconciler";
+import { initialFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
 import { ClientDomContainer, ClientDomDispatch } from "@my-react-dom-client";
 import { MyReactDomPlatform, startRender, startRenderAsync } from "@my-react-dom-shared";
@@ -12,7 +12,7 @@ import type { MyReactElement, LikeJSX } from "@my-react/react";
 const { enableStrictLifeCycle, enableLegacyLifeCycle } = __my_react_shared__;
 
 const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
-  const fiber = new MyReactFiberRoot(element, container);
+  const fiber = new MyReactFiberContainer(element, container);
 
   const renderDispatch = new ClientDomDispatch();
 
@@ -38,7 +38,7 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 };
 
 const hydrateAsync = async (element: MyReactElement, container: RenderContainer) => {
-  const fiber = new MyReactFiberRoot(element, container);
+  const fiber = new MyReactFiberContainer(element, container);
 
   const renderDispatch = new ClientDomDispatch();
 

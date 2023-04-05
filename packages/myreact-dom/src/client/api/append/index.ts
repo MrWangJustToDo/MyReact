@@ -2,7 +2,7 @@ import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { getFiberWithNativeDom, isSingleTag } from "@my-react-dom-shared";
 
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
@@ -12,8 +12,8 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFibe
 
     const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
 
-    // will never happen
-    if (parentFiberWithDom.state & STATE_TYPE.__unmount__) {
+    // will happen on HMR
+    if (!parentFiberWithDom || parentFiberWithDom.state & STATE_TYPE.__unmount__) {
       parentFiberWithDom = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
       const elementObj = renderDispatch.elementMap.get(fiber);
@@ -23,9 +23,15 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFibe
       renderDispatch.elementMap.set(fiber, elementObj);
     }
 
-    if (!fiber.nativeNode || !parentFiberWithDom.nativeNode) throw new Error("append error, dom not exist");
+    const maybeContainer = parentFiberWithDom as MyReactFiberContainer;
 
-    const parentDom = parentFiberWithDom.nativeNode as DomElement;
+    if (!fiber?.nativeNode) throw new Error(`append error, current render node not have a native node`);
+
+    if (!parentFiberWithDom?.nativeNode && !maybeContainer?.containerNode) {
+      throw new Error(`append error, current render node not have a container native node`);
+    }
+
+    const parentDom = (parentFiberWithDom.nativeNode || maybeContainer.containerNode) as DomElement;
 
     const currentDom = fiber.nativeNode as DomNode;
 

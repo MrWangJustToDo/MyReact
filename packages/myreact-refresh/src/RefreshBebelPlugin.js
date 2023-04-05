@@ -1,26 +1,10 @@
-// TODO 
-function hash(str) {
-  let hash = 5381,
-    i = str.length;
-  while (i) {
-    hash = (hash * 33) ^ str.charCodeAt(--i);
-  }
-
-  return (hash >>> 0).toString(36);
-}
-
-// copy from preact
-
-/**
- *
- * Majority copied from https://github.com/facebook/react/blob/master/packages/react-refresh/src/ReactFreshBabelPlugin.js
- */
-export default function (babel, opts = {}) {
+module.exports = function (babel, opts = {}) {
   if (typeof babel.env === "function") {
+    // Only available in Babel 7.
     const env = babel.env();
     if (env !== "development" && !opts.skipEnvCheck) {
       throw new Error(
-        "@my-react Babel transform should only be enabled in development environment. " +
+        "@my-react refresh Babel transform should only be enabled in development environment. " +
           'Instead, the environment is: "' +
           env +
           '". If you want to override this check, pass {skipEnvCheck: true} as plugin options.'
@@ -28,7 +12,7 @@ export default function (babel, opts = {}) {
     }
   }
 
-  const { types: t, template } = babel;
+  const { types: t } = babel;
   const refreshReg = t.identifier(opts.refreshReg || "$RefreshReg$");
   const refreshSig = t.identifier(opts.refreshSig || "$RefreshSig$");
 
@@ -38,13 +22,11 @@ export default function (babel, opts = {}) {
     if (!registrationsByProgramPath.has(programPath)) {
       registrationsByProgramPath.set(programPath, []);
     }
-
     const registrations = registrationsByProgramPath.get(programPath);
     registrations.push({
       handle,
       persistentID,
     });
-
     return handle;
   }
 
@@ -94,12 +76,12 @@ export default function (babel, opts = {}) {
         }
         const calleePath = path.get("callee");
         switch (calleePath.node.type) {
-          case "CallExpression":
           case "MemberExpression":
           case "Identifier": {
-            const calleeSource = calleePath.getSource().split("(")[0];
+            const calleeSource = calleePath.getSource();
+            const firstArgPath = argsPath[0];
             const innerName = inferredName + "$" + calleeSource;
-            const foundInside = argsPath.some((argPath) => findInnerComponents(innerName, argPath, callback));
+            const foundInside = findInnerComponents(innerName, firstArgPath, callback);
             if (!foundInside) {
               return false;
             }
@@ -207,8 +189,6 @@ export default function (babel, opts = {}) {
 
   function isBuiltinHook(hookName) {
     switch (hookName) {
-      case "useErrorBoundary":
-      case "React.useErrorBoundary":
       case "useState":
       case "React.useState":
       case "useReducer":
@@ -225,8 +205,8 @@ export default function (babel, opts = {}) {
       case "React.useRef":
       case "useContext":
       case "React.useContext":
-      case "useImperativeMethods":
-      case "React.useImperativeMethods":
+      case "useImperativeHandle":
+      case "React.useImperativeHandle":
       case "useDebugValue":
       case "React.useDebugValue":
         return true;
@@ -321,6 +301,38 @@ export default function (babel, opts = {}) {
     return args;
   }
 
+  function findHOCCallPathsAbove(path) {
+    const calls = [];
+    while (true) {
+      if (!path) {
+        return calls;
+      }
+      const parentPath = path.parentPath;
+      if (!parentPath) {
+        return calls;
+      }
+      if (
+        // hoc(_c = function() { })
+        parentPath.node.type === "AssignmentExpression" &&
+        path.node === parentPath.node.right
+      ) {
+        // Ignore registrations.
+        path = parentPath;
+        continue;
+      }
+      if (
+        // hoc1(hoc2(...))
+        parentPath.node.type === "CallExpression" &&
+        path.node !== parentPath.node.callee
+      ) {
+        calls.push(parentPath);
+        path = parentPath;
+        continue;
+      }
+      return calls; // Stop at other types.
+    }
+  }
+
   const seenForRegistration = new WeakSet();
   const seenForSignature = new WeakSet();
   const seenForOutro = new WeakSet();
@@ -366,7 +378,7 @@ export default function (babel, opts = {}) {
       // Some built-in Hooks reset on edits to arguments.
       const args = path.get("arguments");
       if (name === "useState" && args.length > 0) {
-        // useState first argument is initial state.
+        // useState second argument is initial state.
         key += "(" + args[0].getSource() + ")";
       } else if (name === "useReducer" && args.length > 1) {
         // useReducer second argument is initial state.
@@ -381,107 +393,8 @@ export default function (babel, opts = {}) {
     },
   };
 
-  const createContextTemplate = template(
-    `
-    Object.assign((CREATECONTEXT.IDENT || (CREATECONTEXT.IDENT=CREATECONTEXT(VALUE))), {__:VALUE});
-  `,
-    { placeholderPattern: /^[A-Z]+$/ }
-  );
-
-  const emptyTemplate = template(`
-    (CREATECONTEXT.IDENT || (CREATECONTEXT.IDENT=CREATECONTEXT()));
-	`);
-
-  const getFirstNonTsExpression = (expression) => (expression.type === "TSAsExpression" ? getFirstNonTsExpression(expression.expression) : expression);
-
   return {
     visitor: {
-      ClassDeclaration: {
-        enter(path) {
-          const node = path.node;
-          let programPath;
-          let insertAfterPath;
-          switch (path.parent.type) {
-            case "Program":
-              insertAfterPath = path;
-              programPath = path.parentPath;
-              break;
-            case "ExportNamedDeclaration":
-              insertAfterPath = path.parentPath;
-              programPath = insertAfterPath.parentPath;
-              break;
-            case "ExportDefaultDeclaration":
-              insertAfterPath = path.parentPath;
-              programPath = insertAfterPath.parentPath;
-              break;
-            default:
-              return;
-          }
-          const id = node.id;
-          if (id === null) {
-            // We don't currently handle anonymous default exports.
-            return;
-          }
-          const inferredName = id.name;
-          if (!isComponentishName(inferredName)) {
-            return;
-          }
-
-          // Make sure we're not mutating the same tree twice.
-          // This can happen if another Babel plugin replaces parents.
-          if (seenForRegistration.has(node)) {
-            return;
-          }
-          seenForRegistration.add(node);
-          // Don't mutate the tree above this point.
-
-          const handle = createRegistration(programPath, inferredName);
-          insertAfterPath.insertAfter(t.expressionStatement(t.assignmentExpression("=", handle, path.node.id)));
-        },
-      },
-      CallExpression(path, state) {
-        if (
-          !path.get("callee").referencesImport("preact", "createContext") &&
-          !path.get("callee").referencesImport("react", "createContext") &&
-          !path.get("callee").referencesImport("preact/compat", "createContext")
-        )
-          return;
-
-        let id = "";
-        if (t.isObjectProperty(path.parentPath)) {
-          id += "__" + path.parent.key.name;
-        } else if (t.isVariableDeclarator(path.parentPath)) {
-          id += "$" + path.parent.id.name;
-        } else if (t.isAssignmentExpression(path.parentPath)) {
-          if (t.isIdentifier(path.parent.left)) {
-            id += "_" + path.parent.left.name;
-          } else {
-            id += "_" + hash(path.parentPath.get("left").getSource());
-          }
-        }
-        const contexts = state.get("contexts");
-        const counter = (contexts.get(id) || -1) + 1;
-        contexts.set(id, counter);
-        if (counter) id += counter;
-        id = "_" + state.get("filehash") + id;
-        path.skip();
-        if (path.node.arguments[0]) {
-          path.replaceWith(
-            createContextTemplate({
-              CREATECONTEXT: path.get("callee").node,
-              IDENT: t.identifier(id),
-              VALUE: t.clone(getFirstNonTsExpression(path.node.arguments[0])),
-            })
-          );
-        } else {
-          path.replaceWith(
-            emptyTemplate({
-              CREATECONTEXT: path.get("callee").node,
-              IDENT: t.identifier(id),
-            })
-          );
-        }
-      },
       ExportDefaultDeclaration(path) {
         const node = path.node;
         const decl = node.declaration;
@@ -527,10 +440,15 @@ export default function (babel, opts = {}) {
           const node = path.node;
           let programPath;
           let insertAfterPath;
+          let modulePrefix = "";
           switch (path.parent.type) {
             case "Program":
               insertAfterPath = path;
               programPath = path.parentPath;
+              break;
+            case "TSModuleBlock":
+              insertAfterPath = path;
+              programPath = insertAfterPath.parentPath.parentPath;
               break;
             case "ExportNamedDeclaration":
               insertAfterPath = path.parentPath;
@@ -543,6 +461,22 @@ export default function (babel, opts = {}) {
             default:
               return;
           }
+
+          // These types can be nested in typescript namespace
+          // We need to find the export chain
+          // Or return if it stays local
+          if (path.parent.type === "TSModuleBlock" || path.parent.type === "ExportNamedDeclaration") {
+            while (programPath.type !== "Program") {
+              if (programPath.type === "TSModuleDeclaration") {
+                if (programPath.parentPath.type !== "Program" && programPath.parentPath.type !== "ExportNamedDeclaration") {
+                  return;
+                }
+                modulePrefix = programPath.node.id.name + "$" + modulePrefix;
+              }
+              programPath = programPath.parentPath;
+            }
+          }
+
           const id = node.id;
           if (id === null) {
             // We don't currently handle anonymous default exports.
@@ -561,9 +495,10 @@ export default function (babel, opts = {}) {
           seenForRegistration.add(node);
           // Don't mutate the tree above this point.
 
+          const innerName = modulePrefix + inferredName;
           // export function Named() {}
           // function Named() {}
-          findInnerComponents(inferredName, path, (persistentID, targetExpr) => {
+          findInnerComponents(innerName, path, (persistentID, targetExpr) => {
             const handle = createRegistration(programPath, persistentID);
             insertAfterPath.insertAfter(t.expressionStatement(t.assignmentExpression("=", handle, targetExpr)));
           });
@@ -671,8 +606,11 @@ export default function (babel, opts = {}) {
             // Result: let Foo = () => {}; __signature(Foo, ...);
           } else {
             // let Foo = hoc(() => {})
-            path.replaceWith(t.callExpression(sigCallID, createArgumentsForSignature(node, signature, path.scope)));
-            // Result: let Foo = hoc(__signature(() => {}, ...))
+            const paths = [path, ...findHOCCallPathsAbove(path)];
+            paths.forEach((p) => {
+              p.replaceWith(t.callExpression(sigCallID, createArgumentsForSignature(p.node, signature, p.scope)));
+            });
+            // Result: let Foo = __signature(hoc(__signature(() => {}, ...)), ...)
           }
         },
       },
@@ -680,10 +618,15 @@ export default function (babel, opts = {}) {
         const node = path.node;
         let programPath;
         let insertAfterPath;
+        let modulePrefix = "";
         switch (path.parent.type) {
           case "Program":
             insertAfterPath = path;
             programPath = path.parentPath;
+            break;
+          case "TSModuleBlock":
+            insertAfterPath = path;
+            programPath = insertAfterPath.parentPath.parentPath;
             break;
           case "ExportNamedDeclaration":
             insertAfterPath = path.parentPath;
@@ -695,6 +638,21 @@ export default function (babel, opts = {}) {
             break;
           default:
             return;
+        }
+
+        // These types can be nested in typescript namespace
+        // We need to find the export chain
+        // Or return if it stays local
+        if (path.parent.type === "TSModuleBlock" || path.parent.type === "ExportNamedDeclaration") {
+          while (programPath.type !== "Program") {
+            if (programPath.type === "TSModuleDeclaration") {
+              if (programPath.parentPath.type !== "Program" && programPath.parentPath.type !== "ExportNamedDeclaration") {
+                return;
+              }
+              modulePrefix = programPath.node.id.name + "$" + modulePrefix;
+            }
+            programPath = programPath.parentPath;
+          }
         }
 
         // Make sure we're not mutating the same tree twice.
@@ -711,7 +669,8 @@ export default function (babel, opts = {}) {
         }
         const declPath = declPaths[0];
         const inferredName = declPath.node.id.name;
-        findInnerComponents(inferredName, declPath, (persistentID, targetExpr, targetPath) => {
+        const innerName = modulePrefix + inferredName;
+        findInnerComponents(innerName, declPath, (persistentID, targetExpr, targetPath) => {
           if (targetPath === null) {
             // For case like:
             // export const Something = hoc(Foo)
@@ -739,9 +698,7 @@ export default function (babel, opts = {}) {
         });
       },
       Program: {
-        enter(path, state) {
-          state.set("filehash", hash(path.hub.file.opts.filename || "unnamed"));
-          state.set("contexts", new Map());
+        enter(path) {
           // This is a separate early visitor because we need to collect Hook calls
           // and "const [foo, setFoo] = ..." signatures before the destructuring
           // transform mangles them. This extra traversal is not ideal for perf,
@@ -774,4 +731,4 @@ export default function (babel, opts = {}) {
       },
     },
   };
-}
+};

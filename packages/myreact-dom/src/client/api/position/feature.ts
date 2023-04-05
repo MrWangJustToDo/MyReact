@@ -6,7 +6,7 @@ import { append } from "./append";
 import { getInsertBeforeDomFromSiblingAndParent } from "./getInsertBeforeDom";
 import { insertBefore } from "./insertBefore";
 
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
@@ -15,7 +15,7 @@ export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFib
 
     const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
 
-    if (parentFiberWithDom?.state & STATE_TYPE.__unmount__) {
+    if (!parentFiberWithDom || parentFiberWithDom.state & STATE_TYPE.__unmount__) {
       parentFiberWithDom = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
       const elementObj = renderDispatch.elementMap.get(fiber);
@@ -25,7 +25,9 @@ export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFib
       renderDispatch.elementMap.set(fiber, elementObj);
     }
 
-    if (!parentFiberWithDom?.nativeNode) throw new Error("position error, dom not exist");
+    const maybeContainer = parentFiberWithDom as MyReactFiberContainer;
+
+    if (!parentFiberWithDom?.nativeNode && !maybeContainer?.containerNode) throw new Error(`position error, current render node not have a container node`);
 
     const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithDom);
 

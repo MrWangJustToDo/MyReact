@@ -1,8 +1,9 @@
-import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
 
 export const debugWithNode = (fiber: MyReactFiberNode) => {
-  if (fiber.nativeNode) {
-    const node = fiber.nativeNode as any;
+  const mayFiberContainer = fiber as MyReactFiberContainer;
+  if (fiber.nativeNode || mayFiberContainer.containerNode) {
+    const node = (fiber.nativeNode || mayFiberContainer.containerNode) as any;
     node.__fiber__ = fiber;
     node.__props__ = fiber.pendingProps;
   }

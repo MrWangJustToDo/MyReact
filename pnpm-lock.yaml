@@ -52,6 +52,12 @@ importers:
       '@my-react/react-reconciler':
         specifier: workspace:*
         version: link:packages/myreact-reconciler
+      '@my-react/react-refresh':
+        specifier: workspace:*
+        version: link:packages/myreact-refresh
+      '@my-react/react-refresh-webpack':
+        specifier: workspace:*
+        version: link:packages/myreact-refresh-webpack
       '@my-react/react-shared':
         specifier: workspace:*
         version: link:packages/myreact-shared
@@ -206,7 +212,23 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
 
-  packages/myreact-refresh: {}
+  packages/myreact-refresh:
+    dependencies:
+      '@my-react/react':
+        specifier: latest
+        version: link:../myreact
+      '@my-react/react-reconciler':
+        specifier: latest
+        version: link:../myreact-reconciler
+      '@my-react/react-shared':
+        specifier: latest
+        version: link:../myreact-shared
+
+  packages/myreact-refresh-webpack:
+    dependencies:
+      '@my-react/react-refresh':
+        specifier: latest
+        version: link:../myreact-refresh
 
   packages/myreact-shared: {}
 
@@ -587,6 +609,12 @@ importers:
       '@my-react/react-reactive':
         specifier: workspace:*
         version: link:../../packages/myreact-reactivity
+      '@my-react/react-refresh':
+        specifier: workspace:*
+        version: link:../../packages/myreact-refresh
+      '@my-react/react-refresh-webpack':
+        specifier: workspace:*
+        version: link:../../packages/myreact-refresh-webpack
       '@site/axios':
         specifier: 'workspace: *'
         version: link:../../site/axios

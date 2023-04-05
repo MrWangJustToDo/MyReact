@@ -1560,12 +1560,14 @@
 
       const Baz = () => {
         const value = useContext(Context);
+        const [foo] = useState();
 
         return value;
       }
 
       const Bar = () => {
         const [x] = usePosition();
+        const [bar] = useState();
 
         return <Context><div>{x}</div></Context>
       }

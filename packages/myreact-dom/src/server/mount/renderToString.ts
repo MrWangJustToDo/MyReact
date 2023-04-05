@@ -1,4 +1,4 @@
-import { initialFiberNode, MyReactFiberRoot } from "@my-react/react-reconciler";
+import { initialFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
 import { PlainElement, ServerDomContainer, ServerDomDispatch } from "@my-react-dom-server";
 import { MyReactDomPlatform, startRender, startRenderAsync } from "@my-react-dom-shared";
@@ -8,7 +8,7 @@ import type { MyReactElement, LikeJSX } from "@my-react/react";
 const renderToStringSync = (element: MyReactElement) => {
   const container = new PlainElement("");
 
-  const fiber = new MyReactFiberRoot(element, container);
+  const fiber = new MyReactFiberContainer(element, container);
 
   const renderDispatch = new ServerDomDispatch();
 
@@ -30,7 +30,7 @@ const renderToStringSync = (element: MyReactElement) => {
 const renderToStringAsync = async (element: MyReactElement) => {
   const container = new PlainElement("");
 
-  const fiber = new MyReactFiberRoot(element, container);
+  const fiber = new MyReactFiberContainer(element, container);
 
   const renderDispatch = new ServerDomDispatch();
 

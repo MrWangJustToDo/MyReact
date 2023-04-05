@@ -1,10 +1,4 @@
 {
-  "./Hot": {
-    "path": [
-      "pages-Hot.js"
-    ],
-    "static": true
-  },
   "./Blog": {
     "path": [
       "pages-Blog.js"

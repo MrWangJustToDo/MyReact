@@ -20,6 +20,8 @@ export const enableDebugLog = createRef(false);
 
 export const enableSyncFlush = createRef(false);
 
+export const enableHMRForDev = createRef(true);
+
 // support "unsafe_" lifecycle
 export const enableLegacyLifeCycle = createRef(true);
 

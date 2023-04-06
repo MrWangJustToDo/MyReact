@@ -1,7 +1,7 @@
 {
   "name": "@my-react/react-dom",
   "description": "@my-react/react-dom",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "unpkg": "./dist/umd/index.development.js",

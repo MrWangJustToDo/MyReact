@@ -140,7 +140,6 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
         "Render Tree:",
         tree
       );
-      return;
     }
     if (level === "error") {
       console.error(
@@ -175,7 +174,6 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
       "cause by:",
       tree
     );
-    return;
   }
   if (level === "error") {
     console.error(

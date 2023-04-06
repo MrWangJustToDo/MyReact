@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { safeCall, safeCallWithSync, hmr, setRefreshHandler } from "@my-react/react-reconciler";
 
 import { render, hydrate } from "./client";
@@ -11,11 +11,13 @@ const flushSync = safeCallWithSync;
 
 const unstable_batchedUpdates = safeCall;
 
+const { enableHMRForDev } = __my_react_shared__;
+
 const { setRenderPlatform, currentComponentFiber } = __my_react_internal__;
 
 setRenderPlatform(MyReactDomPlatform);
 
-if (__DEV__) {
+if (__DEV__ && enableHMRForDev.current) {
   globalThis["__@my-react/hmr__"] = {
     hmr,
     setRefreshHandler,

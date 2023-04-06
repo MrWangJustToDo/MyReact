@@ -24,7 +24,7 @@ export const generateGlobalEnv =
       isMIDDLEWARE,
       isANIMATE_ROUTER,
       PUBLIC_API_HOST,
-      FORMWORK: process.env.REACT,
+      FRAMEWORK: process.env.REACT,
     };
 
     await next(args);

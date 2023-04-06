@@ -22,7 +22,7 @@ declare global {
       isDEVELOPMENT: boolean;
       isANIMATE_ROUTER: boolean;
       PUBLIC_API_HOST: string;
-      FORMWORK: "react" | "myreact";
+      FRAMEWORK: "react" | "myreact";
     };
   }
 

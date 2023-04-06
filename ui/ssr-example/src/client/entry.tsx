@@ -34,8 +34,6 @@ safeData(window.__PRELOAD_STORE_STATE__);
 
 safeData(window as unknown as Record<string, unknown>, "__PRELOAD_STORE_STATE__");
 
-console.log(`[client] render page by "${window.__ENV__.FORMWORK}" formwork!`);
-
 if (window.__ENV__.isPURE_CSR) {
   const { loadCurrentLang } = require("@shared");
   loadCurrentLang(store.dispatch, window.__ENV__.LANG as "en" | "ar").then(() => loadableReady(() => render(<Root store={store} />, place)));

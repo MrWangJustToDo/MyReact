@@ -36,11 +36,15 @@ const rollupWatch = async (packageName: packages) => {
   const { allOtherDev, allSingleOther } = await getRollupConfig(packageName);
 
   if (allOtherDev) {
-    watch(packageName, allOtherDev, "development", false);
+    if (!Array.isArray(allOtherDev)) {
+      watch(packageName, allOtherDev, "development", false);
+    }
   }
 
   if (allSingleOther) {
-    watch(packageName, allSingleOther, "process.env", false);
+    if (!Array.isArray(allSingleOther)) {
+      watch(packageName, allSingleOther, "process.env", false);
+    }
   }
 
   // if (allUMDDev) {

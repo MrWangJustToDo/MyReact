@@ -28,41 +28,66 @@ const rollupBuild = async (packageName: packages, packageScope?: string) => {
   const all = [];
 
   if (allOtherDev) {
-    all.push(() => build(packageName, allOtherDev, "development", false));
+    if (Array.isArray(allOtherDev)) {
+      allOtherDev.forEach((config) => config && all.push(() => build(packageName, config, "development", false)));
+    } else {
+      all.push(() => build(packageName, allOtherDev, "development", false));
+    }
   }
 
   if (allOtherProd) {
-    all.push(() => build(packageName, allOtherProd, "production", false));
+    if (Array.isArray(allOtherProd)) {
+      allOtherProd.forEach((config) => config && all.push(() => build(packageName, config, "production", false)));
+    } else {
+      all.push(() => build(packageName, allOtherProd, "production", false));
+    }
   }
 
   if (allSingleOther) {
-    all.push(() => build(packageName, allSingleOther, "process.nev", false));
+    if (Array.isArray(allSingleOther)) {
+      allSingleOther.forEach((config) => config && all.push(() => build(packageName, config, "process.nev", false)));
+    } else {
+      all.push(() => build(packageName, allSingleOther, "process.nev", false));
+    }
   }
 
   if (allSingleUMD) {
-    all.push(() => build(packageName, allSingleUMD, "process.env", true));
+    if (Array.isArray(allSingleUMD)) {
+      allSingleUMD.forEach((config) => config && all.push(() => build(packageName, config, "process.env", true)));
+    } else {
+      all.push(() => build(packageName, allSingleUMD, "process.env", true));
+    }
   }
 
   if (allUMDDev) {
-    all.push(() => build(packageName, allUMDDev, "development", true));
+    if (Array.isArray(allUMDDev)) {
+      allUMDDev.forEach((config) => config && all.push(() => build(packageName, config, "development", true)));
+    } else {
+      all.push(() => build(packageName, allUMDDev, "development", true));
+    }
   }
 
   if (allUMDProd) {
-    all.push(() => build(packageName, allUMDProd, "production", true));
+    if (Array.isArray(allUMDProd)) {
+      allUMDProd.forEach((config) => config && all.push(() => build(packageName, config, "production", true)));
+    } else {
+      all.push(() => build(packageName, allUMDProd, "production", true));
+    }
   }
 
   await Promise.all(all.map((f) => f()));
 };
 
 const start = async () => {
-  await rollupBuild("myreact-shared");
-  await rollupBuild("myreact");
-  await rollupBuild("myreact-jsx");
-  await rollupBuild("myreact-reconciler");
-  await rollupBuild("myreact-dom");
-  await rollupBuild("myreact-reactivity");
-  await rollupBuild("axios", "site");
-  await rollupBuild("graphql", "site");
+  // await rollupBuild("myreact-shared");
+  // await rollupBuild("myreact");
+  // await rollupBuild("myreact-jsx");
+  // await rollupBuild("myreact-reconciler");
+  // await rollupBuild("myreact-dom");
+  // await rollupBuild("myreact-reactivity");
+  await rollupBuild("myreact-refresh");
+  // await rollupBuild("axios", "site");
+  // await rollupBuild("graphql", "site");
   process.exit(0);
 };
 

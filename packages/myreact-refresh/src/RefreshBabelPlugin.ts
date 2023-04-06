@@ -1,4 +1,6 @@
-module.exports = function (babel, opts = {}) {
+/* eslint-disable no-constant-condition */
+/* eslint-disable @typescript-eslint/no-var-requires */
+export default function (babel, opts: Record<string, any> = {}) {
   if (typeof babel.env === "function") {
     // Only available in Babel 7.
     const env = babel.env();
@@ -731,4 +733,4 @@ module.exports = function (babel, opts = {}) {
       },
     },
   };
-};
+}

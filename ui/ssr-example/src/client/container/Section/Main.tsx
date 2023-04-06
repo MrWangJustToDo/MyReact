@@ -1,4 +1,5 @@
 import { Box, Button, Container, Flex, Heading, HStack, Text } from "@chakra-ui/react";
+import { version } from "@my-react/react";
 import { useIntl } from "react-intl";
 import { useNavigate } from "react-router-dom";
 
@@ -49,7 +50,8 @@ export const MainSection = () => {
           </Heading>
           <Text fontSize={{ base: "xl", md: "3xl", lg: "4xl" }}>{formatMessage({ id: "description" })}</Text>
           <Text fontSize="sm" color="lightTextColor" marginY="2">
-            This website is built with @my-react
+            This website is built with @my-react,
+            version: {version}
           </Text>
           <HStack marginTop="14" spacing="4" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "14px", xl: "16px" }}>
             <Button

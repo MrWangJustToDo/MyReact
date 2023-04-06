@@ -29,13 +29,14 @@ const defaultBuildOptions: RollupOptions = {
   ],
 };
 
-const checkFileExist = (path: string) =>
-  access(path, fs.constants.F_OK)
+const checkFileExist = (path: string) => {
+  return access(path, fs.constants.F_OK)
     .then(() => true)
     .catch(() => false);
+};
 
-const tsConfig = (relativePath: string, mode: Mode) =>
-  typescript({
+const tsConfig = (relativePath: string, mode: Mode) => {
+  return typescript({
     clean: true,
     tsconfig: resolve(relativePath, "tsconfig.json"),
     useTsconfigDeclarationDir: true,
@@ -49,6 +50,7 @@ const tsConfig = (relativePath: string, mode: Mode) =>
       },
     },
   });
+};
 
 const transformBuildOptions = (
   options: RollupOptions,
@@ -191,30 +193,8 @@ const transformBuildOptions = (
   return allOptions;
 };
 
-export const getRollupConfig = async (packageName: string, packageScope = "packages") => {
+const flattenRollupConfig = (rollupConfig: RollupOptions, packageName: string, packageFileObject: Record<string, any>, relativePath: string) => {
   const modes: Mode[] = ["development", "production"];
-
-  const relativePath = resolve(process.cwd(), packageScope, packageName);
-
-  const packageFilePath = resolve(relativePath, "package.json");
-
-  const isPackageFileExist = await checkFileExist(packageFilePath);
-
-  if (!isPackageFileExist) {
-    throw new Error(`current package ${packageName} not exist!`);
-  }
-
-  const packageFileContent = await readFile(packageFilePath, {
-    encoding: "utf-8",
-  });
-
-  const packageFileObject = JSON.parse(packageFileContent);
-
-  let rollupConfig: RollupOptions = { ...defaultBuildOptions };
-
-  if (packageFileObject["buildOptions"]) {
-    rollupConfig = packageFileObject["buildOptions"] as RollupOptions;
-  }
 
   if (!rollupConfig.input) throw new Error(`current package ${packageName} not have a input config`);
 
@@ -246,4 +226,73 @@ export const getRollupConfig = async (packageName: string, packageScope = "packa
     allUMDDev,
     allUMDProd,
   };
+};
+
+export const getRollupConfig = async (packageName: string, packageScope = "packages") => {
+  const relativePath = resolve(process.cwd(), packageScope, packageName);
+
+  const packageFilePath = resolve(relativePath, "package.json");
+
+  const isPackageFileExist = await checkFileExist(packageFilePath);
+
+  if (!isPackageFileExist) {
+    throw new Error(`current package ${packageName} not exist!`);
+  }
+
+  const packageFileContent = await readFile(packageFilePath, {
+    encoding: "utf-8",
+  });
+
+  const packageFileObject = JSON.parse(packageFileContent);
+
+  let rollupConfig: RollupOptions | RollupOptions[] = { ...defaultBuildOptions };
+
+  if (packageFileObject["buildOptions"]) {
+    rollupConfig = packageFileObject["buildOptions"] as RollupOptions;
+  }
+
+  if (Array.isArray(rollupConfig)) {
+    const all = rollupConfig.map((config) => flattenRollupConfig(config, packageName, packageFileObject, relativePath));
+    return {
+      allSingleOther: all.map((i) => i.allSingleOther),
+      allSingleUMD: all.map((i) => i.allSingleUMD),
+      allOtherDev: all.map((i) => i.allOtherDev),
+      allOtherProd: all.map((i) => i.allOtherProd),
+      allUMDDev: all.map((i) => i.allUMDDev),
+      allUMDProd: all.map((i) => i.allUMDProd),
+    };
+  } else {
+    return flattenRollupConfig(rollupConfig, packageName, packageFileObject, relativePath);
+  }
+
+  // if (!rollupConfig.input) throw new Error(`current package ${packageName} not have a input config`);
+
+  // if (!rollupConfig.output) throw new Error(`current package ${packageName} not have a output config`);
+
+  // const allRollupOptions = modes.map((mode) => transformBuildOptions(cloneDeep(rollupConfig), packageFileObject, relativePath, mode));
+
+  // const allDevBuild = allRollupOptions[0];
+
+  // const allProdBuild = allRollupOptions[1];
+
+  // const allSingleOther = allDevBuild["singleOther"];
+
+  // const allSingleUMD = allDevBuild["singleUMD"];
+
+  // const allOtherDev = allDevBuild["multipleOther"];
+
+  // const allUMDDev = allDevBuild["multipleUMD"];
+
+  // const allOtherProd = allProdBuild["multipleOther"];
+
+  // const allUMDProd = allProdBuild["multipleUMD"];
+
+  // return {
+  //   allSingleOther,
+  //   allSingleUMD,
+  //   allOtherDev,
+  //   allOtherProd,
+  //   allUMDDev,
+  //   allUMDProd,
+  // };
 };

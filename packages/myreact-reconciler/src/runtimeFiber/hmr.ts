@@ -5,29 +5,33 @@ import type { MyReactFiberNode } from "./instance";
 import type { MyReactElementType } from "@my-react/react";
 
 export const hmr = (fiber: MyReactFiberNode, nextType: MyReactElementType, forceRefresh?: boolean) => {
-  const newElement = createElement(nextType, { ...fiber.pendingProps, ref: fiber.ref, key: typeof fiber.key === "string" ? fiber.key : undefined });
+  if (__DEV__) {
+    const newElement = createElement(nextType, { ...fiber.pendingProps, ref: fiber.ref, key: typeof fiber.key === "string" ? fiber.key : undefined });
 
-  fiber.element = newElement;
+    fiber.element = newElement;
 
-  fiber.elementType = nextType;
+    fiber.elementType = nextType;
 
-  if (forceRefresh) {
-    const existingHookList = fiber.hookList;
+    if (forceRefresh) {
+      const existingHookList = fiber.hookList;
 
-    const existingInstance = fiber.instance;
+      const existingInstance = fiber.instance;
 
-    existingHookList.listToFoot((hook) => hook._unmount());
+      existingHookList.listToFoot((hook) => hook._unmount());
 
-    existingInstance?._unmount();
+      existingInstance?._unmount();
 
-    fiber.hookList = new ListTree();
+      fiber.hookList = new ListTree();
 
-    fiber.updateQueue = new ListTree();
+      fiber.updateQueue = new ListTree();
 
-    fiber.state = STATE_TYPE.__initial__;
+      fiber.state = STATE_TYPE.__initial__;
+    } else {
+      fiber.state |= STATE_TYPE.__triggerSync__;
+    }
+
+    return fiber;
   } else {
-    fiber.state |= STATE_TYPE.__triggerSync__;
+    throw new Error(`can not try to dev refresh this app in prod env!`);
   }
-
-  return fiber;
 };

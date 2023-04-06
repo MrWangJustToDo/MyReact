@@ -1,10 +1,12 @@
-import { isValidElement, __my_react_internal__ } from "@my-react/react";
+import { isValidElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { Consumer, ForwardRef, Fragment, KeepLive, Lazy, Memo, Portal, Provider, Scope, Strict, Suspense, Comment, TYPEKEY } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "./fiberType";
 import { getLatestTypeFromRefresh } from "./refresh";
 
 import type { MyReactElementNode, MyReactObjectComponent, forwardRef, memo, MyReactElement, MyReactElementType } from "@my-react/react";
+
+const { enableHMRForDev } = __my_react_shared__;
 
 const { currentRenderPlatform } = __my_react_internal__;
 
@@ -131,7 +133,7 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
     nodeType |= NODE_TYPE.__empty__;
   }
 
-  if (__DEV__ && nodeType & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+  if (__DEV__ && enableHMRForDev.current && nodeType & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
     elementType = getLatestTypeFromRefresh(elementType);
   }
 

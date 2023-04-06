@@ -1,4 +1,4 @@
-import { isValidElement } from "@my-react/react";
+import { isValidElement, __my_react_shared__ } from "@my-react/react";
 
 import { MyReactFiberNode } from "../runtimeFiber";
 
@@ -7,6 +7,8 @@ import { NODE_TYPE } from "./fiberType";
 import { getStableTypeFromRefresh } from "./refresh";
 
 import type { MyReactElement, MyReactElementNode } from "@my-react/react";
+
+const { enableHMRForDev } = __my_react_shared__;
 
 export function checkIsSameType(p: MyReactFiberNode, element: MyReactElementNode): boolean;
 export function checkIsSameType(p: MyReactElementNode, element: MyReactElementNode): boolean;
@@ -17,7 +19,7 @@ export function checkIsSameType(p: MyReactFiberNode | MyReactElementNode, elemen
       if (isValidElement(element)) {
         const typedIncomingElement = element as MyReactElement;
         const typedExistElement = p.element as MyReactElement;
-        if (__DEV__ && nodeType & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+        if (__DEV__ && enableHMRForDev.current && nodeType & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
           return Object.is(getStableTypeFromRefresh(typedIncomingElement.type), getStableTypeFromRefresh(typedExistElement.type));
         } else {
           return Object.is(typedIncomingElement.type, typedExistElement.type);
@@ -35,7 +37,7 @@ export function checkIsSameType(p: MyReactFiberNode | MyReactElementNode, elemen
       if (isValidElement(element)) {
         const typedExistElement = p as MyReactElement;
         const typedIncomingElement = element as MyReactElement;
-        if (__DEV__ && existElementType.nodeType & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+        if (__DEV__ && enableHMRForDev.current && existElementType.nodeType & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
           return Object.is(getStableTypeFromRefresh(typedIncomingElement.type), getStableTypeFromRefresh(typedExistElement.type));
         } else {
           return Object.is(typedIncomingElement.type, typedExistElement.type);

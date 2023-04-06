@@ -79,15 +79,15 @@ const rollupBuild = async (packageName: packages, packageScope?: string) => {
 };
 
 const start = async () => {
-  // await rollupBuild("myreact-shared");
-  // await rollupBuild("myreact");
-  // await rollupBuild("myreact-jsx");
-  // await rollupBuild("myreact-reconciler");
-  // await rollupBuild("myreact-dom");
-  // await rollupBuild("myreact-reactivity");
+  await rollupBuild("myreact-shared");
+  await rollupBuild("myreact");
+  await rollupBuild("myreact-jsx");
+  await rollupBuild("myreact-reconciler");
+  await rollupBuild("myreact-dom");
+  await rollupBuild("myreact-reactivity");
   await rollupBuild("myreact-refresh");
-  // await rollupBuild("axios", "site");
-  // await rollupBuild("graphql", "site");
+  await rollupBuild("axios", "site");
+  await rollupBuild("graphql", "site");
   process.exit(0);
 };
 

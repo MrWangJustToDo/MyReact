@@ -1,0 +1,20 @@
+{
+  "./Blog": {
+    "path": [
+      "pages-Blog.js"
+    ],
+    "static": true
+  },
+  "./": {
+    "path": [
+      "pages-.js"
+    ],
+    "static": true
+  },
+  "./404": {
+    "path": [
+      "pages-404.js"
+    ],
+    "static": true
+  }
+}

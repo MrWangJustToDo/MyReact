@@ -21,6 +21,8 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactElementType, force
 
       existingInstance?._unmount();
 
+      fiber.instance = null;
+
       fiber.hookList = new ListTree();
 
       fiber.updateQueue = new ListTree();

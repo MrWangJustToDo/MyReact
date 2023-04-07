@@ -9,7 +9,6 @@ const Memo = Symbol.for("react.memo");
 
 type Family = {
   current: MyReactComponentType;
-  latest: MyReactComponentType;
 };
 
 type Signature = {
@@ -38,11 +37,13 @@ type HMRGlobal = {
     collectCustomHooksForSignature: typeof collectCustomHooksForSignature;
     createSignatureFunctionForTransform: typeof createSignatureFunctionForTransform;
   };
+  ["__@my-react/react-refresh__id"]: typeof allFamiliesByID;
   ["__@my-react/react-refresh__fiber"]: typeof allFibersByType;
+  ["__@my-react/react-refresh__updated"]: typeof updatedFamiliesByType;
   ["__@my-react/react-refresh__signature"]: typeof allSignaturesByType;
 };
 
-const typedSelf = self as unknown as HMRGlobal;
+const typedSelf = globalThis as unknown as HMRGlobal;
 
 const pendingUpdates: Array<[Family, MyReactComponentType]> = [];
 
@@ -233,12 +234,10 @@ export const register = (type: MyReactComponentType, id: string) => {
   let family = allFamiliesByID.get(id);
 
   if (family === undefined) {
-    family = { current: type, latest: type };
+    family = { current: type };
 
     allFamiliesByID.set(id, family);
   } else {
-    family.latest = type;
-
     pendingUpdates.push([family, type]);
   }
 
@@ -304,6 +303,7 @@ export const performReactRefresh = () => {
       const fiber = allFibersByType.get(prevType);
       updatedFamiliesByType.set(prevType, family);
       updatedFamiliesByType.set(_nextType, family);
+      family.current = nextType;
       if (fiber) {
         root = root || fiber.container.rootFiber;
         const forceReset = !canPreserveStateBetween(prevType, nextType);
@@ -389,7 +389,11 @@ if (__DEV__) {
     createSignatureFunctionForTransform,
   };
 
+  typedSelf["__@my-react/react-refresh__id"] = allFamiliesByID;
+
   typedSelf["__@my-react/react-refresh__fiber"] = allFibersByType;
+
+  typedSelf["__@my-react/react-refresh__updated"] = updatedFamiliesByType;
 
   typedSelf["__@my-react/react-refresh__signature"] = allSignaturesByType;
 

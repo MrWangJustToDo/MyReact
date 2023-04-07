@@ -12,14 +12,8 @@ export const setRefreshHandler = (handler: RefreshHandler) => {
   refreshHandler = handler;
 };
 
-export const getStableTypeFromRefresh = (type: MyReactElementType) => {
+export const getCurrentTypeFromRefresh = (type: MyReactElementType) => {
   const family = refreshHandler?.(type);
 
   return family?.current || type;
-};
-
-export const getLatestTypeFromRefresh = (type: MyReactElementType) => {
-  const family = refreshHandler?.(type);
-
-  return family?.latest || type;
 };

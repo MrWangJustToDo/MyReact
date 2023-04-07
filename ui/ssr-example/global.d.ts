@@ -3,6 +3,8 @@ declare global {
   const __SERVER__: boolean;
   const __CSR__: boolean;
   const __SSR__: boolean;
+  // current application is build by React or not
+  const __REACT__: boolean;
   const __DEVELOPMENT__: boolean;
   const __MIDDLEWARE__: boolean;
   const __ANIMATE_ROUTER__: boolean;

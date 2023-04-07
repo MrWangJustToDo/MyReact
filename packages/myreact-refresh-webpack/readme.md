@@ -2,4 +2,4 @@
 
 from prefresh, see [https://github.com/preactjs/prefresh](https://github.com/preactjs/prefresh)
 
-TODO  bug fix
+copy from @pmmmwh/react-refresh-webpack-plugin

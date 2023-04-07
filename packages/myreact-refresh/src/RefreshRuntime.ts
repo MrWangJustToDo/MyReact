@@ -178,9 +178,8 @@ const setFiber = (type: MyReactComponentType) => {
     console.error(`[@my-react/react-refresh] can not register current type's fiber node. type: ${type}`);
   }
 
-  if (!allFibersByType.has(type)) {
-    allFibersByType.set(type, currentFiber);
-  }
+  // always set
+  allFibersByType.set(type, currentFiber);
 
   if (typeof type === "object" && type !== null) {
     switch (getProperty(type, TYPEKEY)) {
@@ -258,7 +257,6 @@ export const register = (type: MyReactComponentType, id: string) => {
 export const createSignatureFunctionForTransform = () => {
   let savedType: MyReactComponentType | null = null;
   let hasCustomHooks = false;
-  let didCollectFiber = false;
   let didCollectHooks = false;
   return (type: MyReactComponentType, key: string, forceReset: boolean, getCustomHooks: Signature["getCustomHooks"]) => {
     // call with argument
@@ -278,10 +276,8 @@ export const createSignatureFunctionForTransform = () => {
         didCollectHooks = true;
         collectCustomHooksForSignature(type);
       }
-      if (!didCollectFiber) {
-        didCollectFiber = true;
-        setFiber(savedType as MyReactComponentType);
-      }
+      // always collect newest fiber
+      setFiber(savedType as MyReactComponentType);
     }
   };
 };
@@ -300,14 +296,19 @@ export const performReactRefresh = () => {
     const prevType = getRenderTypeFormType(family.current);
     const nextType = getRenderTypeFormType(_nextType);
     if (prevType && nextType) {
-      const fiber = allFibersByType.get(prevType);
+      const fiber_1 = allFibersByType.get(prevType);
+      const fiber_2 = allFibersByType.get(nextType);
       updatedFamiliesByType.set(prevType, family);
       updatedFamiliesByType.set(_nextType, family);
       family.current = nextType;
-      if (fiber) {
-        root = root || fiber.container.rootFiber;
+      if (fiber_1 && fiber_1.state !== 64) {
+        root = root || fiber_1.container.rootFiber;
         const forceReset = !canPreserveStateBetween(prevType, nextType);
-        typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber as MyReactFiberNode, nextType, forceReset);
+        typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber_1 as MyReactFiberNode, nextType, forceReset);
+      } else if (fiber_2 && fiber_2.state !== 64) {
+        root = root || fiber_2.container.rootFiber;
+        const forceReset = !canPreserveStateBetween(prevType, nextType);
+        typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber_2 as MyReactFiberNode, nextType, forceReset);
       } else {
         console.error(`[@my-react/react-refresh] current type ${prevType} not have a fiber node for the render tree`);
       }
@@ -375,7 +376,7 @@ const tryToRegister = () => {
   }
 };
 
-export const injectIntoGlobalHook = tryToRegister;
+export const injectIntoGlobalHook = () => window.addEventListener("load", tryToRegister);
 
 if (__DEV__) {
   typedSelf["__@my-react/react-refresh__"] = {
@@ -396,8 +397,4 @@ if (__DEV__) {
   typedSelf["__@my-react/react-refresh__updated"] = updatedFamiliesByType;
 
   typedSelf["__@my-react/react-refresh__signature"] = allSignaturesByType;
-
-  if (typeof window !== "undefined") {
-    window.addEventListener("load", tryToRegister);
-  }
 }

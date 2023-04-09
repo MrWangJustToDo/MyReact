@@ -155,6 +155,22 @@ export const useImperativeHandle = (ref: any, createHandle: Reducer, deps: any[]
   });
 };
 
+export const useDebugValue = (...args: any[]) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
+
+  return renderPlatform.dispatchHook({
+    type: HOOK_TYPE.useDebugValue,
+    value: args,
+    reducer: defaultReducer,
+    deps: defaultDeps,
+  });
+};
+
 export const useSignal = <T = any>(initial: T | (() => T)) => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -171,7 +187,8 @@ export const useSignal = <T = any>(initial: T | (() => T)) => {
   });
 };
 
-export const useDebugValue = (...args: any[]) => {
+// TODO
+export const useDeferredValue = <T = any>(value: T): T => {
   const renderPlatform = currentRenderPlatform.current;
 
   if (!renderPlatform)
@@ -180,9 +197,73 @@ export const useDebugValue = (...args: any[]) => {
     );
 
   return renderPlatform.dispatchHook({
-    type: HOOK_TYPE.useDebugValue,
-    value: args,
+    type: HOOK_TYPE.useDeferredValue,
+    value: value,
+    reducer: defaultReducer,
+    deps: defaultDeps,
+  }) as T;
+};
+
+export const useId = (): string => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
+
+  return renderPlatform.dispatchHook({
+    type: HOOK_TYPE.useId,
+    value: null,
+    reducer: defaultReducer,
+    deps: defaultDeps,
+  }) as string;
+};
+
+export const useInsertionEffect = (action: () => any, deps: any[]) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
+
+  return renderPlatform.dispatchHook({
+    type: HOOK_TYPE.useInsertionEffect,
+    value: action,
+    reducer: defaultReducer,
+    deps,
+  });
+};
+
+export const useSyncExternalStore = (subscribe: () => any, getSnapshot: () => any, getServerSnapshot?: () => any) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
+
+  return renderPlatform.dispatchHook({
+    type: HOOK_TYPE.useSyncExternalStore,
+    value: createRef({ subscribe, getSnapshot, getServerSnapshot }),
     reducer: defaultReducer,
     deps: defaultDeps,
   });
+};
+
+export const useTransition = (): [boolean, (cb: () => void) => void] => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  if (!renderPlatform)
+    throw new Error(
+      `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
+
+  return renderPlatform.dispatchHook({
+    type: HOOK_TYPE.useTransition,
+    value: null,
+    reducer: defaultReducer,
+    deps: defaultDeps,
+  }) as [boolean, (cb: () => void) => void];
 };

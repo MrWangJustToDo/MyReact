@@ -7,7 +7,7 @@ import { getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { CustomRenderPlatform } from "../renderPlatform";
-import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
+import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue , MyReactComponent} from "@my-react/react";
 
 type NativeNode = Record<string, any>;
 
@@ -129,11 +129,13 @@ export class MyReactContainer {
 
   renderPlatform: CustomRenderPlatform;
 
-  isAppMounted: boolean;
+  isAppMounted = false;
 
-  isAppCrashed: boolean;
+  isAppCrashed = false;
 
   scheduledFiber: MyReactFiberNode | null = null;
+
+  errorBoundaryInstance: MyReactComponent | null = null;
 
   nextWorkingFiber: MyReactFiberNode | null = null;
 

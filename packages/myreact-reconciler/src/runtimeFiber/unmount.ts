@@ -37,7 +37,8 @@ export const unmountFiberNode = (fiber: MyReactFiberNode) => {
 
   fiber.hookList = null;
 
-  fiber.container = null;
+  // used for HMR
+  // fiber.container = null;
 
   fiber.dependence = null;
 

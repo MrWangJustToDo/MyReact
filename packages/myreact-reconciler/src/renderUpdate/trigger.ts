@@ -24,6 +24,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
       error: error,
       stack: renderPlatform.getFiberTree(fiber),
       hasError: true,
+      _restoreState: Object.assign({}, typedInstance._error._restoreState || {}),
     };
 
     triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__);

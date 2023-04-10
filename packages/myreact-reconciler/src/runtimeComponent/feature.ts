@@ -412,7 +412,11 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
+  const renderContainer = fiber.container;
+
   const { error, stack } = typedInstance._error;
+
+  const state = Object.assign({}, typedInstance.state);
 
   processComponentStateFromError(fiber, error);
 
@@ -420,7 +424,9 @@ const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
 
   processComponentDidCatchOnMountAndUpdate(fiber, error, stack);
 
-  typedInstance._error = { hasError: false, error: null, stack: null };
+  typedInstance._error = { hasError: false, error: null, stack: null, _restoreState: state };
+
+  renderContainer.errorBoundaryInstance = typedInstance;
 
   return { updated: true, children };
 };

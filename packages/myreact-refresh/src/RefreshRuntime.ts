@@ -1,5 +1,5 @@
 import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, createRef, MyReactElementType } from "@my-react/react";
-import type { setRefreshHandler, hmr, MyReactFiberNode } from "@my-react/react-reconciler";
+import type { setRefreshHandler, hmr, MyReactFiberNode, MyReactContainer } from "@my-react/react-reconciler";
 
 const TYPEKEY = "$$typeof";
 
@@ -170,7 +170,10 @@ export const getFamilyByType = (type: MyReactComponentType) => {
 };
 
 const setFiber = (type: MyReactComponentType) => {
-  if (!type) return;
+  if (!type) {
+    console.error(`[@my-react/react-refresh] can not get current component type`);
+    return;
+  }
 
   const currentFiber = typedSelf?.["__@my-react/hmr__"]?.currentComponentFiber?.current;
 
@@ -292,23 +295,44 @@ export const performReactRefresh = () => {
 
   let root: null | MyReactFiberNode = null;
 
+  let container: null | MyReactContainer = null;
+
   allPending.forEach(([family, _nextType]) => {
     const prevType = getRenderTypeFormType(family.current);
+
     const nextType = getRenderTypeFormType(_nextType);
+
     if (prevType && nextType) {
       const fiber_1 = allFibersByType.get(prevType);
+
       const fiber_2 = allFibersByType.get(nextType);
+
       updatedFamiliesByType.set(prevType, family);
+
       updatedFamiliesByType.set(_nextType, family);
+
       family.current = nextType;
-      if (fiber_1 && fiber_1.state !== 64) {
+
+      if (fiber_1) {
+        container = container || fiber_1.container;
+
         root = root || fiber_1.container.rootFiber;
-        const forceReset = !canPreserveStateBetween(prevType, nextType);
-        typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber_1 as MyReactFiberNode, nextType, forceReset);
-      } else if (fiber_2 && fiber_2.state !== 64) {
+
+        if (fiber_1.state !== 64) {
+          const forceReset = !canPreserveStateBetween(prevType, nextType);
+
+          typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber_1 as MyReactFiberNode, nextType, forceReset);
+        }
+      } else if (fiber_2) {
+        container = container || fiber_2.container;
+
         root = root || fiber_2.container.rootFiber;
-        const forceReset = !canPreserveStateBetween(prevType, nextType);
-        typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber_2 as MyReactFiberNode, nextType, forceReset);
+
+        if (fiber_2.state !== 64) {
+          const forceReset = !canPreserveStateBetween(prevType, nextType);
+
+          typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber_2 as MyReactFiberNode, nextType, forceReset);
+        }
       } else {
         console.error(`[@my-react/react-refresh] current type ${prevType} not have a fiber node for the render tree`);
       }
@@ -317,7 +341,18 @@ export const performReactRefresh = () => {
 
   console.log(`[@my-react/react-refresh] updating ...`);
 
-  (root as unknown as MyReactFiberNode)?._update();
+  // has a error for prev render
+  if (container?.errorBoundaryInstance) {
+    const state = container.errorBoundaryInstance._error._restoreState;
+
+    container.errorBoundaryInstance.setState(state, () => {
+      container.errorBoundaryInstance = null;
+
+      root?._update();
+    });
+  } else {
+    root?._update();
+  }
 };
 
 export const isLikelyComponentType = (type: MyReactElementType) => {

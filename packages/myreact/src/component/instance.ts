@@ -52,10 +52,11 @@ export class MyReactComponent<
   };
 
   // error catch component
-  _error: { error: Error | null; stack: string | null; hasError: boolean } = {
+  _error: { error: Error | null; stack: string | null; hasError: boolean; _restoreState: S | null } = {
     error: null,
     stack: null,
     hasError: false,
+    _restoreState: null,
   };
 
   constructor(props?: P, context?: C | null) {

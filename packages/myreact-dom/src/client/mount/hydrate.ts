@@ -34,7 +34,7 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 
   startRender(fiber, true);
 
-  renderContainer.isHydrateRender = false;
+  delete renderContainer.isHydrateRender;
 };
 
 const hydrateAsync = async (element: MyReactElement, container: RenderContainer) => {
@@ -60,7 +60,7 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
 
   await startRenderAsync(fiber, true);
 
-  renderContainer.isHydrateRender = false;
+  delete renderContainer.isHydrateRender;
 };
 
 export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>): void;

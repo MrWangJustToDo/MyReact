@@ -4,6 +4,7 @@ import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
 import { createElement, cloneElement, isValidElement, forwardRef, createContext, memo, lazy } from "./element";
 import {
+  useId,
   useRef,
   useMemo,
   useState,
@@ -21,6 +22,7 @@ import {
   createRef,
   currentRunningFiber,
   currentHookTreeNode,
+  currentHookNodeIndex,
   currentComponentFiber,
   currentRenderPlatform,
   setRenderPlatform,
@@ -52,6 +54,7 @@ const __my_react_internal__ = {
   setRenderPlatform,
   currentRunningFiber,
   currentHookTreeNode,
+  currentHookNodeIndex,
   currentComponentFiber,
   currentRenderPlatform,
 };
@@ -79,6 +82,7 @@ export {
   Suspense,
   StrictMode,
   useRef,
+  useId,
   useMemo,
   useState,
   useSignal,

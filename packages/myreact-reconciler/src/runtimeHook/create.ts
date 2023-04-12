@@ -30,8 +30,12 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
     hookNode.effect = true;
   }
 
-  if (hookNode.type === HOOK_TYPE.useRef || hookNode.type === HOOK_TYPE.useCallback) {
+  if (hookNode.type === HOOK_TYPE.useRef || hookNode.type === HOOK_TYPE.useCallback || hookNode.type === HOOK_TYPE.useDeferredValue) {
     hookNode.result = hookNode.value;
+  }
+
+  if (hookNode.type === HOOK_TYPE.useId) {
+    hookNode.result = renderDispatch.resolveUseId(hookNode._ownerFiber as MyReactFiberNode);
   }
 
   if (hookNode.type === HOOK_TYPE.useContext) {

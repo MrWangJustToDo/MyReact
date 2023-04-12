@@ -8,6 +8,7 @@ import { defaultGenerateScopeMap } from "../dispatchScope";
 import { defaultGenerateStrictMap } from "../dispatchStrict";
 import { defaultGenerateSuspenseMap } from "../dispatchSuspense";
 import { defaultGenerateUnmountMap, unmount } from "../dispatchUnmount";
+import { defaultGenerateUseIdMap, defaultGetCurrentId } from "../dispatchUseId";
 import { MyWeakMap, safeCallWithFiber } from "../share";
 
 import type { RenderDispatch } from "./interface";
@@ -32,6 +33,8 @@ export class CustomRenderDispatch implements RenderDispatch {
   suspenseMap: WeakMap<MyReactFiberNode, MyReactElementNode> = new MyWeakMap();
 
   strictMap: WeakMap<MyReactFiberNode, boolean> = new MyWeakMap();
+
+  useIdMap: WeakMap<MyReactFiberNode, { initial: number; latest: number }> = new MyWeakMap();
 
   scopeMap: WeakMap<MyReactFiberNode, MyReactFiberNode> = new MyWeakMap();
 
@@ -129,6 +132,12 @@ export class CustomRenderDispatch implements RenderDispatch {
   }
   resolveStrict(_fiber: MyReactFiberNode): boolean {
     return this.strictMap.get(_fiber) || false;
+  }
+  resolveUseIdMap(_fiber: MyReactFiberNode): void {
+    defaultGenerateUseIdMap(_fiber, this.useIdMap);
+  }
+  resolveUseId(_fiber: MyReactFiberNode): string {
+    return defaultGetCurrentId(_fiber, this.useIdMap);
   }
   resolveScopeMap(_fiber: MyReactFiberNode): void {
     defaultGenerateScopeMap(_fiber, this.scopeMap);

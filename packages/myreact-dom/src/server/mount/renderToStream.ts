@@ -26,7 +26,7 @@ const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, s
 
   startRender(fiber);
 
-  renderContainer.isServerRender = false;
+  delete renderContainer.isServerRender;
 
   return stream;
 };
@@ -50,7 +50,7 @@ const renderToStreamAsync = <T extends SimpleReadable>(element: MyReactElement, 
 
   startRenderAsync(fiber);
 
-  renderContainer.isServerRender = false;
+  delete renderContainer.isServerRender;
 
   return stream;
 };

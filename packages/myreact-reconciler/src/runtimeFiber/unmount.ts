@@ -27,6 +27,8 @@ export const unmountFiberNode = (fiber: MyReactFiberNode) => {
 
   renderDispatch.eventMap.delete(fiber);
 
+  renderDispatch.useIdMap.delete(fiber);
+
   fiber.child = null;
 
   fiber.parent = null;

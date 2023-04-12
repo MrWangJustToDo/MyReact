@@ -18,6 +18,8 @@ type DefaultRenderDispatch = {
 
   strictMap: WeakMap<MyReactFiberNode, boolean>;
 
+  useIdMap: WeakMap<MyReactFiberNode, { initial: number; latest: number }>;
+
   scopeMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
 
   errorBoundariesMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
@@ -77,6 +79,10 @@ type DefaultRenderDispatch = {
   resolveStrictMap(_fiber: MyReactFiberNode): void;
 
   resolveStrict(_fiber: MyReactFiberNode): boolean;
+
+  resolveUseIdMap(_fiber: MyReactFiberNode): void;
+
+  resolveUseId(_fiber: MyReactFiberNode): string;
 
   resolveScopeMap(_fiber: MyReactFiberNode): void;
 

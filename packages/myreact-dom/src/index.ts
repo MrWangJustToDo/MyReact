@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { safeCall, safeCallWithSync, hmr, setRefreshHandler } from "@my-react/react-reconciler";
 
-import { render, hydrate } from "./client";
+import { render, hydrate, hydrateRoot, createRoot } from "./client";
 import { renderToString, renderToNodeStream } from "./server";
 import { createPortal, findDOMNode, MyReactDomPlatform, unmountComponentAtNode } from "./shared";
 
@@ -25,4 +25,17 @@ if (__DEV__ && enableHMRForDev.current) {
   };
 }
 
-export { render, hydrate, findDOMNode, createPortal, renderToString, renderToNodeStream, unmountComponentAtNode, flushSync, unstable_batchedUpdates, version };
+export {
+  render,
+  hydrate,
+  createRoot,
+  hydrateRoot,
+  findDOMNode,
+  createPortal,
+  renderToString,
+  renderToNodeStream,
+  unmountComponentAtNode,
+  flushSync,
+  unstable_batchedUpdates,
+  version,
+};

@@ -20,6 +20,8 @@ const resolveHookValue = (hookNode: MyReactHookNode) => {
       case HOOK_TYPE.useMemo:
       case HOOK_TYPE.useContext:
       case HOOK_TYPE.useCallback:
+      case HOOK_TYPE.useDeferredValue:
+      case HOOK_TYPE.useSyncExternalStore:
         return hookNode.result;
       case HOOK_TYPE.useSignal:
         return [hookNode.result.getValue, hookNode.result.setValue];

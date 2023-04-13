@@ -1,5 +1,5 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { Effect_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { Effect_TYPE, HOOK_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -14,7 +14,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
 
     const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
 
-    if (hookNode.type === "useEffect") {
+    if (hookNode.type === HOOK_TYPE.useEffect) {
       const update = () => {
         hookNode.cancel && hookNode.cancel();
 
@@ -34,7 +34,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       });
     }
 
-    if (hookNode.type === "useLayoutEffect") {
+    if (hookNode.type === HOOK_TYPE.useLayoutEffect) {
       const update = () => {
         hookNode.cancel && hookNode.cancel();
 
@@ -54,12 +54,46 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       });
     }
 
-    if (hookNode.type === "useImperativeHandle") {
+    if (hookNode.type === HOOK_TYPE.useInsertionEffect) {
+      const update = () => {
+        hookNode.cancel && hookNode.cancel();
+
+        hookNode.cancel = hookNode.value();
+
+        hookNode.effect = false;
+
+        hookNode.mode = Effect_TYPE.__initial__;
+      };
+      renderDispatch.pendingInsertionEffect(fiber, () => {
+        if (ReactNewStrictMod) {
+          update();
+          update();
+        } else {
+          update();
+        }
+      });
+    }
+
+    if (hookNode.type === HOOK_TYPE.useImperativeHandle) {
       renderDispatch.pendingLayoutEffect(fiber, () => {
         // ref obj
         if (hookNode.value && typeof hookNode.value === "object") hookNode.value.current = hookNode.reducer.call(null);
         // ref function
         if (hookNode.value && typeof hookNode.value === "function") hookNode.value(hookNode.reducer.call(null));
+
+        hookNode.effect = false;
+
+        hookNode.mode = Effect_TYPE.__initial__;
+      });
+    }
+
+    if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
+      renderDispatch.pendingLayoutEffect(fiber, () => {
+        hookNode.cancel && hookNode.cancel();
+
+        const storeApi = hookNode.value;
+
+        hookNode.cancel = storeApi.subscribe(() => hookNode._ownerFiber._update(STATE_TYPE.__triggerConcurrent__));
 
         hookNode.effect = false;
 

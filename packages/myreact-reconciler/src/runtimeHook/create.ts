@@ -1,3 +1,4 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { checkHookValid } from "./check";
@@ -7,12 +8,16 @@ import { MyReactSignal } from "./signal";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { Action, Reducer, RenderHook } from "@my-react/react";
 
+const { enableDebugLog } = __my_react_shared__;
+
 const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;
 };
 
 export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber: MyReactFiberNode) => {
   const renderDispatch = fiber.container.renderDispatch;
+
+  const renderPlatform = fiber.container.renderPlatform;
 
   const hookNode = new MyReactHookNode(type, value, reducer || defaultReducer, deps);
 
@@ -26,7 +31,12 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
     hookNode.result = hookNode.value.call(null);
   }
 
-  if (hookNode.type === HOOK_TYPE.useEffect || hookNode.type === HOOK_TYPE.useLayoutEffect || hookNode.type === HOOK_TYPE.useImperativeHandle) {
+  if (
+    hookNode.type === HOOK_TYPE.useEffect ||
+    hookNode.type === HOOK_TYPE.useLayoutEffect ||
+    hookNode.type === HOOK_TYPE.useInsertionEffect ||
+    hookNode.type === HOOK_TYPE.useImperativeHandle
+  ) {
     hookNode.effect = true;
   }
 
@@ -36,6 +46,12 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
 
   if (hookNode.type === HOOK_TYPE.useId) {
     hookNode.result = renderDispatch.resolveUseId(hookNode._ownerFiber as MyReactFiberNode);
+  }
+
+  if (hookNode.type === HOOK_TYPE.useDebugValue) {
+    if (enableDebugLog.current) {
+      renderPlatform.log({ message: hookNode.value?.toString(), fiber: hookNode._ownerFiber, level: "warn" });
+    }
   }
 
   if (hookNode.type === HOOK_TYPE.useContext) {
@@ -48,6 +64,14 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
     hookNode.result = context;
 
     hookNode.context = context;
+  }
+
+  if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
+    const storeApi = hookNode.value;
+
+    hookNode.result = storeApi.getServerSnapshot ? storeApi.getServerSnapshot?.call(null) : storeApi.getSnapshot.call(null);
+
+    hookNode.effect = true;
   }
 
   if (hookNode.type === HOOK_TYPE.useSignal) {

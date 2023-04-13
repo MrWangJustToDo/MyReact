@@ -28,6 +28,8 @@ type DefaultRenderDispatch = {
 
   layoutEffectMap: WeakMap<MyReactFiberNode, (() => void)[]>;
 
+  insertionEffectMap: WeakMap<MyReactFiberNode, (() => void)[]>;
+
   contextMap: WeakMap<MyReactFiberNode, Record<string, MyReactFiberNode>>;
 
   unmountMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>[]>;
@@ -51,6 +53,8 @@ type DefaultRenderDispatch = {
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void;
 
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void;
+
+  pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void): void;
 
   patchToFiberInitial?: (_fiber: MyReactFiberNode) => void;
 

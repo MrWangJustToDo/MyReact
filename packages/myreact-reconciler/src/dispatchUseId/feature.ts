@@ -25,7 +25,7 @@ export const defaultGenerateUseIdMap = (fiber: MyReactFiberNode, map: WeakMap<My
   if (parent) {
     if (isFiberWithUseId(parent)) {
       map.set(fiber, { initial: (map.get(parent)?.initial || 0) + 1, latest: (map.get(parent)?.initial || 0) + 1 });
-    } else {
+    } else if (map.get(parent)) {
       map.set(fiber, map.get(parent));
     }
   }

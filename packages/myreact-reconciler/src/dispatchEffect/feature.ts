@@ -12,6 +12,22 @@ export const defaultGenerateEffectMap = (fiber: MyReactFiberNode, effect: () => 
   map.set(fiber, exist);
 };
 
+export const effect = (fiber: MyReactFiberNode) => {
+  if (fiber.patch & PATCH_TYPE.__effect__) {
+    const renderContainer = fiber.container;
+
+    const effectMap = renderContainer.renderDispatch.effectMap;
+
+    const allEffect = effectMap.get(fiber) || [];
+
+    effectMap.delete(fiber);
+
+    if (allEffect.length) safeCallWithFiber({ fiber, action: () => allEffect.forEach((effect) => effect.call(null)) });
+
+    if (fiber.patch & PATCH_TYPE.__effect__) fiber.patch ^= PATCH_TYPE.__effect__;
+  }
+};
+
 export const layoutEffect = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__layoutEffect__) {
     const renderContainer = fiber.container;
@@ -28,18 +44,18 @@ export const layoutEffect = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const effect = (fiber: MyReactFiberNode) => {
-  if (fiber.patch & PATCH_TYPE.__effect__) {
+export const insertionEffect = (fiber: MyReactFiberNode) => {
+  if (fiber.patch & PATCH_TYPE.__insertionEffect__) {
     const renderContainer = fiber.container;
 
-    const effectMap = renderContainer.renderDispatch.effectMap;
+    const insertionEffectMap = renderContainer.renderDispatch.insertionEffectMap;
 
-    const allEffect = effectMap.get(fiber) || [];
+    const allInsertionEffect = insertionEffectMap.get(fiber) || [];
 
-    effectMap.delete(fiber);
+    insertionEffectMap.delete(fiber);
 
-    if (allEffect.length) safeCallWithFiber({ fiber, action: () => allEffect.forEach((effect) => effect.call(null)) });
+    if (allInsertionEffect.length) safeCallWithFiber({ fiber, action: () => allInsertionEffect.forEach((insertionEffect) => insertionEffect.call(null)) });
 
-    if (fiber.patch & PATCH_TYPE.__effect__) fiber.patch ^= PATCH_TYPE.__effect__;
+    if (fiber.patch & PATCH_TYPE.__insertionEffect__) fiber.patch ^= PATCH_TYPE.__insertionEffect__;
   }
 };

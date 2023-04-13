@@ -18,4 +18,11 @@ export const checkHookValid = (hookNode: MyReactHookNode) => {
       throw new Error(`${hookNode.type} initial error`);
     }
   }
+
+  if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
+    const storeApi = hookNode.value;
+    if (typeof storeApi.subscribe !== "function" || typeof storeApi.getSnapshot !== "function") {
+      throw new Error(`${hookNode.type} initial error`);
+    }
+  }
 };

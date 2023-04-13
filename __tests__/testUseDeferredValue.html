@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { memo, useState, useCallback, useEffect, useRef, useMemo, map, cloneElement, createContext, useDeferredValue } = React;
+
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+        return [count, i, j];
+      };
+
+      const useTime = () => {
+        const [c, setC] = useState(100);
+        const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
+        useEffect(() => {
+          console.log("init");
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, []);
+
+        return currentTime;
+      };
+
+      const usePosition = () => {
+        const [currentPosition, setCurrentPosition] = useState({
+          x: 0,
+          y: 0,
+        });
+
+        useEffect(() => {
+          const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPosition.x, currentPosition.y];
+      };
+
+      const SlowList = memo(function SlowList({ text }) {
+        // Log once. The actual slowdown is inside SlowItem.
+        console.log("[ARTIFICIALLY SLOW] Rendering 250 <SlowItem />");
+
+        let items = [];
+        for (let i = 0; i < 250; i++) {
+          items.push(<SlowItem key={i} text={text} />);
+        }
+        return <ul className="items">{items}</ul>;
+      });
+
+      function SlowItem({ text }) {
+        let startTime = performance.now();
+        while (performance.now() - startTime < 1) {
+          // Do nothing for 1 ms per item to emulate extremely slow code
+        }
+
+        return <li className="item">Text: {text}</li>;
+      }
+
+      function App() {
+        const [text, setText] = useState("");
+        const deferredText = useDeferredValue(text);
+        console.log("run", deferredText);
+        return (
+          <>
+            <input value={text} onChange={(e) => setText(e.target.value)} />
+            <SlowList text={deferredText} />
+          </>
+        );
+      }
+
+      ReactDOM.render(<App />, root);
+    </script>
+  </body>
+</html>

@@ -27,7 +27,7 @@ export const useState = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) 
   }) as [T, (t?: T | ((t: T) => T)) => void];
 };
 
-export const useEffect = (action: () => any, deps: any[]) => {
+export const useEffect = (action: () => any, deps?: any[]) => {
   const renderPlatform = currentRenderPlatform.current;
 
   if (!renderPlatform)
@@ -43,7 +43,7 @@ export const useEffect = (action: () => any, deps: any[]) => {
   });
 };
 
-export const useLayoutEffect = (action: () => any, deps: any[]) => {
+export const useLayoutEffect = (action: () => any, deps?: any[]) => {
   const renderPlatform = currentRenderPlatform.current;
 
   if (!renderPlatform)
@@ -59,7 +59,7 @@ export const useLayoutEffect = (action: () => any, deps: any[]) => {
   });
 };
 
-export const useCallback = <T extends (...args: any[]) => any = (...args: any[]) => any>(callback: T, deps: any[]): T => {
+export const useCallback = <T extends (...args: any[]) => any = (...args: any[]) => any>(callback: T, deps?: any[]): T => {
   const renderPlatform = currentRenderPlatform.current;
 
   if (!renderPlatform)
@@ -75,7 +75,7 @@ export const useCallback = <T extends (...args: any[]) => any = (...args: any[])
   }) as T;
 };
 
-export const useMemo = <T = any>(action: () => T, deps: any[]): T => {
+export const useMemo = <T = any>(action: () => T, deps?: any[]): T => {
   const renderPlatform = currentRenderPlatform.current;
 
   if (!renderPlatform)
@@ -246,12 +246,13 @@ export const useSyncExternalStore = (subscribe: () => any, getSnapshot: () => an
 
   return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useSyncExternalStore,
-    value: createRef({ subscribe, getSnapshot, getServerSnapshot }),
+    value: { subscribe, getSnapshot, getServerSnapshot },
     reducer: defaultReducer,
     deps: defaultDeps,
   });
 };
 
+// TODO
 export const useTransition = (): [boolean, (cb: () => void) => void] => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -260,10 +261,25 @@ export const useTransition = (): [boolean, (cb: () => void) => void] => {
       `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
-    type: HOOK_TYPE.useTransition,
-    value: null,
-    reducer: defaultReducer,
-    deps: defaultDeps,
-  }) as [boolean, (cb: () => void) => void];
+  const isPending = useRef(false);
+
+  const startTransition = useCallback((cb: () => void) => {
+    renderPlatform.yieldTask(() => {
+      isPending.current = true;
+      cb();
+    });
+  }, []);
+
+  useEffect(() => {
+    isPending.current = false;
+  });
+
+  // return renderPlatform.dispatchHook({
+  //   type: HOOK_TYPE.useTransition,
+  //   value: createRef(false),
+  //   reducer: defaultReducer,
+  //   deps: defaultDeps,
+  // }) as [boolean, (cb: () => void) => void];
+
+  return [isPending.current, startTransition];
 };

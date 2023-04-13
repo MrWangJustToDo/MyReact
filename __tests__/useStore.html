@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { memo, useState, useCallback, useEffect, useRef, useMemo, map, cloneElement, createContext, useDeferredValue, useSyncExternalStore } = React;
+
+      function subscribe(callback) {
+        window.addEventListener("online", callback);
+        window.addEventListener("offline", callback);
+        return () => {
+          window.removeEventListener("online", callback);
+          window.removeEventListener("offline", callback);
+        };
+      }
+
+      function getSnapshot() {
+        return navigator.onLine;
+      }
+
+      function ChatIndicator() {
+        const isOnline = useSyncExternalStore(subscribe, getSnapshot);
+
+        return (
+          <div>
+            是否在线： {isOnline ? "true" : "false"}
+            <br />
+            <TodosApp />
+          </div>
+        );
+      }
+
+      let nextId = 0;
+      let todos = [{ id: nextId++, text: "Todo #1" }];
+      let listeners = [];
+
+      const todosStore = {
+        addTodo() {
+          todos = [...todos, { id: nextId++, text: "Todo #" + nextId }];
+          emitChange();
+        },
+        subscribe(listener) {
+          listeners = [...listeners, listener];
+          return () => {
+            listeners = listeners.filter((l) => l !== listener);
+          };
+        },
+        getSnapshot() {
+          return todos;
+        },
+      };
+
+      function emitChange() {
+        for (let listener of listeners) {
+          listener();
+        }
+      }
+
+      function TodosApp() {
+        const todos = useSyncExternalStore(todosStore.subscribe, todosStore.getSnapshot);
+        return (
+          <>
+            <button onClick={() => todosStore.addTodo()}>Add todo</button>
+            <hr />
+            <ul>
+              {todos.map((todo) => (
+                <li key={todo.id}>{todo.text}</li>
+              ))}
+            </ul>
+          </>
+        );
+      }
+
+      ReactDOM.render(<ChatIndicator />, root);
+    </script>
+  </body>
+</html>

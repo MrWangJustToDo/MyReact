@@ -7,6 +7,7 @@ export enum PATCH_TYPE {
   __context__ = 1 << 4,
   __effect__ = 1 << 5,
   __layoutEffect__ = 1 << 6,
-  __unmount__ = 1 << 7,
-  __ref__ = 1 << 8,
+  __insertionEffect__ = 1 << 7,
+  __unmount__ = 1 << 8,
+  __ref__ = 1 << 9,
 }

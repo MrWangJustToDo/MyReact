@@ -16,7 +16,7 @@ interface DefaultRenderPlatform {
 
   macroTask(_task: () => void): void;
 
-  yieldTask(_task: () => void): void;
+  yieldTask(_task: () => void): () => void;
 
   getFiberTree(_fiber: RenderFiber): string;
 

@@ -1,5 +1,20 @@
 import { isValidElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { Consumer, ForwardRef, Fragment, KeepLive, Lazy, Memo, Portal, Provider, Scope, Strict, Suspense, Comment, TYPEKEY } from "@my-react/react-shared";
+import {
+  Consumer,
+  ForwardRef,
+  Fragment,
+  KeepLive,
+  Lazy,
+  Memo,
+  Portal,
+  Provider,
+  Scope,
+  Strict,
+  Suspense,
+  Comment,
+  TYPEKEY,
+  Profiler,
+} from "@my-react/react-shared";
 
 import { NODE_TYPE } from "./fiberType";
 import { getCurrentTypeFromRefresh } from "./refresh";
@@ -120,6 +135,9 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
         break;
       case Portal:
         nodeType |= NODE_TYPE.__portal__;
+        break;
+      case Profiler:
+        nodeType |= NODE_TYPE.__profiler__;
         break;
       default:
         throw new Error(`invalid symbol element type ${elementType?.toString()}`);

@@ -10,7 +10,7 @@ import { transformChildrenFiber } from "./generate";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext, forwardRef } from "@my-react/react";
 
-const { currentHookTreeNode, currentComponentFiber } = __my_react_internal__;
+const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber } = __my_react_internal__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   transformChildrenFiber(fiber, children);
@@ -41,6 +41,8 @@ export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
 export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
   currentHookTreeNode.current = fiber.hookList.head;
 
+  currentHookNodeIndex.current = 0;
+
   currentComponentFiber.current = fiber;
 
   const typedElementType = fiber.elementType as MixinMyReactFunctionComponent;
@@ -55,6 +57,8 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
   }
 
   currentComponentFiber.current = null;
+
+  currentHookNodeIndex.current = 0;
 
   currentHookTreeNode.current = null;
 

@@ -15,8 +15,8 @@ export class CustomRenderPlatform implements RenderPlatform {
   macroTask(_task: () => void): void {
     void 0;
   }
-  yieldTask(_task: () => void): void {
-    void 0;
+  yieldTask(_task: () => void): () => void {
+    return void 0;
   }
   getFiberTree(_fiber: MyReactFiberNode): string {
     return "";

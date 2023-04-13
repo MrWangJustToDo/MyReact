@@ -2,12 +2,13 @@ import { __my_react_internal__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { context, defaultGenerateContextMap, defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
-import { defaultGenerateEffectMap, effect, layoutEffect } from "../dispatchEffect";
+import { defaultGenerateEffectMap, effect, insertionEffect, layoutEffect } from "../dispatchEffect";
 import { defaultGenerateErrorBoundariesMap } from "../dispatchErrorBoundaries";
 import { defaultGenerateScopeMap } from "../dispatchScope";
 import { defaultGenerateStrictMap } from "../dispatchStrict";
 import { defaultGenerateSuspenseMap } from "../dispatchSuspense";
 import { defaultGenerateUnmountMap, unmount } from "../dispatchUnmount";
+import { defaultGenerateUseIdMap, defaultGetCurrentId } from "../dispatchUseId";
 import { MyWeakMap, safeCallWithFiber } from "../share";
 
 import type { RenderDispatch } from "./interface";
@@ -33,6 +34,8 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   strictMap: WeakMap<MyReactFiberNode, boolean> = new MyWeakMap();
 
+  useIdMap: WeakMap<MyReactFiberNode, { initial: number; latest: number }> = new MyWeakMap();
+
   scopeMap: WeakMap<MyReactFiberNode, MyReactFiberNode> = new MyWeakMap();
 
   errorBoundariesMap: WeakMap<MyReactFiberNode, MyReactFiberNode> = new MyWeakMap();
@@ -40,6 +43,8 @@ export class CustomRenderDispatch implements RenderDispatch {
   effectMap: WeakMap<MyReactFiberNode, (() => void)[]> = new MyWeakMap();
 
   layoutEffectMap: WeakMap<MyReactFiberNode, (() => void)[]> = new MyWeakMap();
+
+  insertionEffectMap: WeakMap<MyReactFiberNode, (() => void)[]> = new MyWeakMap();
 
   contextMap: WeakMap<MyReactFiberNode, Record<string, MyReactFiberNode>> = new MyWeakMap();
 
@@ -88,6 +93,11 @@ export class CustomRenderDispatch implements RenderDispatch {
 
     defaultGenerateEffectMap(_fiber, _layoutEffect, this.layoutEffectMap);
   }
+  pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void): void {
+    _fiber.patch |= PATCH_TYPE.__insertionEffect__;
+
+    defaultGenerateEffectMap(_fiber, _insertionEffect, this.insertionEffectMap);
+  }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     void 0;
   }
@@ -130,6 +140,12 @@ export class CustomRenderDispatch implements RenderDispatch {
   resolveStrict(_fiber: MyReactFiberNode): boolean {
     return this.strictMap.get(_fiber) || false;
   }
+  resolveUseIdMap(_fiber: MyReactFiberNode): void {
+    defaultGenerateUseIdMap(_fiber, this.useIdMap);
+  }
+  resolveUseId(_fiber: MyReactFiberNode): string {
+    return defaultGetCurrentId(_fiber, this.useIdMap);
+  }
   resolveScopeMap(_fiber: MyReactFiberNode): void {
     defaultGenerateScopeMap(_fiber, this.scopeMap);
   }
@@ -158,6 +174,14 @@ export class CustomRenderDispatch implements RenderDispatch {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
+    const mountInsertionEffect = (_fiber: MyReactFiberNode) => {
+      if (_fiber.child) mountInsertionEffect(_fiber.child);
+
+      insertionEffect(_fiber);
+
+      if (_fiber.sibling) mountInsertionEffect(_fiber.sibling);
+    };
+
     const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
       const _result = safeCallWithFiber({
         fiber: _fiber,
@@ -202,6 +226,8 @@ export class CustomRenderDispatch implements RenderDispatch {
     };
 
     const mountLoop = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
+      mountInsertionEffect(_fiber);
+
       const re = mountCommit(_fiber, _hydrate);
 
       currentRenderPlatform.current.microTask(() => mountEffect(_fiber));
@@ -214,6 +240,7 @@ export class CustomRenderDispatch implements RenderDispatch {
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
     _list.listToFoot((_fiber) => {
       if (!(_fiber.state & STATE_TYPE.__unmount__)) {
+        safeCallWithFiber({ fiber: _fiber, action: () => insertionEffect(_fiber) });
         safeCallWithFiber({ fiber: _fiber, action: () => unmount(_fiber) });
       }
     });

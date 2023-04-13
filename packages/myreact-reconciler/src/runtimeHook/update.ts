@@ -1,10 +1,12 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE, STATE_TYPE, isArrayEquals } from "@my-react/react-shared";
 
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { RenderHook } from "@my-react/react";
 import type { ListTreeNode } from "@my-react/react-shared";
+
+const { enableDebugLog } = __my_react_shared__;
 
 const { currentHookTreeNode } = __my_react_internal__;
 
@@ -33,6 +35,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
     currentHook.type === HOOK_TYPE.useEffect ||
     currentHook.type === HOOK_TYPE.useCallback ||
     currentHook.type === HOOK_TYPE.useLayoutEffect ||
+    currentHook.type === HOOK_TYPE.useInsertionEffect ||
     currentHook.type === HOOK_TYPE.useImperativeHandle
   ) {
     if (deps && !currentHook.deps) {
@@ -43,7 +46,12 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
     }
   }
 
-  if (currentHook.type === HOOK_TYPE.useEffect || currentHook.type === HOOK_TYPE.useLayoutEffect || currentHook.type === HOOK_TYPE.useImperativeHandle) {
+  if (
+    currentHook.type === HOOK_TYPE.useEffect ||
+    currentHook.type === HOOK_TYPE.useLayoutEffect ||
+    currentHook.type === HOOK_TYPE.useInsertionEffect ||
+    currentHook.type === HOOK_TYPE.useImperativeHandle
+  ) {
     if (!deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
@@ -54,6 +62,22 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
       currentHook.effect = true;
     }
     return currentHook;
+  }
+
+  if (currentHook.type === HOOK_TYPE.useSyncExternalStore) {
+    const storeApi = currentHook.value;
+
+    const newStoreApi = value;
+
+    if (!Object.is(storeApi.subscribe, newStoreApi.subscribe)) {
+      storeApi.subscribe = newStoreApi.subscribe;
+
+      currentHook.effect = true;
+    }
+
+    storeApi.getSnapshot = newStoreApi.getSnapshot;
+
+    currentHook.result = storeApi.getSnapshot.call(null);
   }
 
   if (currentHook.type === HOOK_TYPE.useCallback) {
@@ -107,6 +131,27 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
     currentHook.reducer = reducer;
 
     return currentHook;
+  }
+
+  if (currentHook.type === HOOK_TYPE.useDeferredValue) {
+    currentHook.cancel?.();
+    currentHook.value = value;
+    if (!Object.is(currentHook.value, currentHook.result)) {
+      currentHook.cancel = renderPlatform.yieldTask(() => {
+        currentHook.result = currentHook.value;
+        currentHook._ownerFiber._update();
+        currentHook.cancel = null;
+      });
+    }
+  }
+
+  if (currentHook.type === HOOK_TYPE.useDebugValue) {
+    if (!Object.is(currentHook.value, value)) {
+      currentHook.value = value;
+      if (enableDebugLog.current) {
+        renderPlatform.log({ message: currentHook.value?.toString(), fiber: currentHook._ownerFiber, level: "warn" });
+      }
+    }
   }
 
   return currentHook;

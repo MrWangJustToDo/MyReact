@@ -1,9 +1,10 @@
-import { Strict as StrictMode, Fragment, Suspense } from "@my-react/react-shared";
+import { Strict as StrictMode, Fragment, Suspense, Profiler } from "@my-react/react-shared";
 
 import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
 import { createElement, cloneElement, isValidElement, forwardRef, createContext, memo, lazy } from "./element";
 import {
+  useId,
   useRef,
   useMemo,
   useState,
@@ -13,14 +14,19 @@ import {
   useContext,
   useCallback,
   useDebugValue,
+  useTransition,
   useLayoutEffect,
+  useDeferredValue,
   useImperativeHandle,
+  useSyncExternalStore,
 } from "./hook";
 import { MyReactInternalInstance } from "./internal";
 import {
   createRef,
+  startTransition,
   currentRunningFiber,
   currentHookTreeNode,
+  currentHookNodeIndex,
   currentComponentFiber,
   currentRenderPlatform,
   setRenderPlatform,
@@ -52,6 +58,7 @@ const __my_react_internal__ = {
   setRenderPlatform,
   currentRunningFiber,
   currentHookTreeNode,
+  currentHookNodeIndex,
   currentComponentFiber,
   currentRenderPlatform,
 };
@@ -65,11 +72,13 @@ const Children = {
 };
 
 export {
+  Profiler,
   Component,
   PureComponent,
   createElement,
   cloneElement,
   isValidElement,
+  startTransition,
   lazy,
   memo,
   createRef,
@@ -79,6 +88,7 @@ export {
   Suspense,
   StrictMode,
   useRef,
+  useId,
   useMemo,
   useState,
   useSignal,
@@ -87,8 +97,11 @@ export {
   useContext,
   useCallback,
   useDebugValue,
+  useTransition,
   useLayoutEffect,
+  useDeferredValue,
   useImperativeHandle,
+  useSyncExternalStore,
   Children,
   __my_react_internal__,
   __my_react_shared__,

@@ -70,7 +70,7 @@ export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       .map((key) => `${key}: ${styles[key]?.toString()}`)
       .reduce((p, c) => p + c, "");
     serializedStyles = serializedStyles.length ? `style=${serializedStyles}` : "";
-    const arr = [serializedAttrs, serializedStyles].filter((i) => i.length);
+    const arr = [serializedAttrs.slice(1), serializedStyles].filter((i) => i.length);
     if (arr.length) return arr.reduce((p, c) => `${p} ${c}`);
     return "";
   }

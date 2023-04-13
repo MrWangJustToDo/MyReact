@@ -15,6 +15,8 @@ export const currentRenderPlatform = createRef<RenderPlatform | null>(null);
 
 export const currentHookTreeNode = createRef<ListTreeNode<RenderHook> | null>(null);
 
+export const currentHookNodeIndex = createRef<number>(0);
+
 // ==== feature ==== //
 export const enableDebugLog = createRef(false);
 

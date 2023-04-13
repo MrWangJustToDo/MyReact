@@ -8,7 +8,16 @@ import type { ListTreeNode } from "@my-react/react-shared";
 
 const microTask = typeof queueMicrotask === "undefined" ? (task: () => void) => Promise.resolve().then(task) : queueMicrotask;
 
-const yieldTask = typeof requestIdleCallback === "function" ? requestIdleCallback : (task: () => void) => setTimeout(task);
+const yieldTask =
+  typeof requestIdleCallback === "function"
+    ? (task: () => void) => {
+        const id = requestIdleCallback(task);
+        return () => cancelIdleCallback(id);
+      }
+    : (task: () => void) => {
+        const id = setTimeout(task);
+        return () => clearTimeout(id);
+      };
 
 const set = new Set<() => void>();
 
@@ -48,8 +57,12 @@ class DomPlatform extends CustomRenderPlatform {
   macroTask(_task: () => void): void {
     !isServer && macroTask(_task);
   }
-  yieldTask(_task: () => void): void {
-    !isServer && yieldTask(_task);
+  yieldTask(_task: () => void): () => void {
+    if (!isServer) {
+      return yieldTask(_task);
+    } else {
+      return void 0;
+    }
   }
   getFiberTree(fiber: MyReactFiberNode): string {
     return getFiberTree(fiber);

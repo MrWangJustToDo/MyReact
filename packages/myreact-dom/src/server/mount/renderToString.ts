@@ -22,7 +22,7 @@ const renderToStringSync = (element: MyReactElement) => {
 
   startRender(fiber);
 
-  renderContainer.isServerRender = false;
+  delete renderContainer.isServerRender;
 
   return container.toString();
 };
@@ -44,7 +44,7 @@ const renderToStringAsync = async (element: MyReactElement) => {
 
   await startRenderAsync(fiber);
 
-  renderContainer.isServerRender = false;
+  delete renderContainer.isServerRender;
 
   return container.toString();
 };

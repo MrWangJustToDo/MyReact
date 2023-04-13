@@ -18,6 +18,8 @@ type DefaultRenderDispatch = {
 
   strictMap: WeakMap<MyReactFiberNode, boolean>;
 
+  useIdMap: WeakMap<MyReactFiberNode, { initial: number; latest: number }>;
+
   scopeMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
 
   errorBoundariesMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
@@ -25,6 +27,8 @@ type DefaultRenderDispatch = {
   effectMap: WeakMap<MyReactFiberNode, (() => void)[]>;
 
   layoutEffectMap: WeakMap<MyReactFiberNode, (() => void)[]>;
+
+  insertionEffectMap: WeakMap<MyReactFiberNode, (() => void)[]>;
 
   contextMap: WeakMap<MyReactFiberNode, Record<string, MyReactFiberNode>>;
 
@@ -49,6 +53,8 @@ type DefaultRenderDispatch = {
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void;
 
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void;
+
+  pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void): void;
 
   patchToFiberInitial?: (_fiber: MyReactFiberNode) => void;
 
@@ -77,6 +83,10 @@ type DefaultRenderDispatch = {
   resolveStrictMap(_fiber: MyReactFiberNode): void;
 
   resolveStrict(_fiber: MyReactFiberNode): boolean;
+
+  resolveUseIdMap(_fiber: MyReactFiberNode): void;
+
+  resolveUseId(_fiber: MyReactFiberNode): string;
 
   resolveScopeMap(_fiber: MyReactFiberNode): void;
 

@@ -7,7 +7,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { RenderHook } from "@my-react/react";
 
-const { currentComponentFiber } = __my_react_internal__;
+const { currentComponentFiber, currentHookNodeIndex } = __my_react_internal__;
 
 const resolveHookValue = (hookNode: MyReactHookNode) => {
   if (hookNode) {
@@ -15,10 +15,13 @@ const resolveHookValue = (hookNode: MyReactHookNode) => {
       case HOOK_TYPE.useState:
       case HOOK_TYPE.useReducer:
         return [hookNode.result, hookNode._dispatch];
+      case HOOK_TYPE.useId:
       case HOOK_TYPE.useRef:
       case HOOK_TYPE.useMemo:
       case HOOK_TYPE.useContext:
       case HOOK_TYPE.useCallback:
+      case HOOK_TYPE.useDeferredValue:
+      case HOOK_TYPE.useSyncExternalStore:
         return hookNode.result;
       case HOOK_TYPE.useSignal:
         return [hookNode.result.getValue, hookNode.result.setValue];
@@ -40,6 +43,8 @@ export const processHookNode = ({ type, reducer, value, deps }: RenderHook) => {
     // update
     currentHook = updateHookNode({ type, reducer, value, deps }, fiber);
   }
+
+  currentHookNodeIndex.current++;
 
   effectHookNode(fiber, currentHook);
 

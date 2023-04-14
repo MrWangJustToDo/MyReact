@@ -1,4 +1,4 @@
-import { ChakraProvider, cookieStorageManager } from "@chakra-ui/react";
+import { ChakraProvider, /* cookieStorageManager */ cookieStorageManagerSSR } from "@chakra-ui/react";
 import { CacheProvider } from "@emotion/react";
 // import { extractCriticalToChunks } from "@emotion/server";
 import { ChunkExtractor } from "@loadable/server";
@@ -18,7 +18,7 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
 
   const emotionCache = createEmotionCache();
 
-  const cookieStore = cookieStorageManager(req.headers.cookie || "");
+  const cookieStore = cookieStorageManagerSSR(req.headers.cookie || "");
 
   const content = (
     <CacheProvider value={emotionCache}>

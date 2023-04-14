@@ -23,14 +23,20 @@ const data = [
     "@my-react/react-dom": "renderToNodeStream",
     "@my-react/react-reactive": "onBeforeUnmount",
   },
-  { "@my-react/react (hook)": "useImperativeHandle", "@my-react/react": "createRef", "@my-react/react-dom": "", "@my-react/react-reactive": "onBeforeUpdate" },
-  { "@my-react/react (hook)": "useContext", "@my-react/react": "memo", "@my-react/react-dom": "", "@my-react/react-reactive": "onMounted" },
+  {
+    "@my-react/react (hook)": "useImperativeHandle",
+    "@my-react/react": "createRef",
+    "@my-react/react-dom": "createRoot",
+    "@my-react/react-reactive": "onBeforeUpdate",
+  },
+  { "@my-react/react (hook)": "useContext", "@my-react/react": "memo", "@my-react/react-dom": "hydrateRoot", "@my-react/react-reactive": "onMounted" },
   { "@my-react/react (hook)": "useDebugValue", "@my-react/react": "Component", "@my-react/react-dom": "", "@my-react/react-reactive": "onUnmounted" },
   { "@my-react/react (hook)": "useSignal (new)", "@my-react/react": "PureComponent", "@my-react/react-dom": "", "@my-react/react-reactive": "onUpdated" },
-  { "@my-react/react (hook)": "", "@my-react/react": "StrictMode", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
-  { "@my-react/react (hook)": "", "@my-react/react": "Fragment", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
-  { "@my-react/react (hook)": "", "@my-react/react": "Suspense", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
-  { "@my-react/react (hook)": "", "@my-react/react": "KeepLive(TODO)", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
+  { "@my-react/react (hook)": "useDeferredValue", "@my-react/react": "StrictMode", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
+  { "@my-react/react (hook)": "useId", "@my-react/react": "Fragment", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
+  { "@my-react/react (hook)": "useInsertionEffect", "@my-react/react": "Suspense", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
+  { "@my-react/react (hook)": "useSyncExternalStore", "@my-react/react": "KeepLive(TODO)", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
+  { "@my-react/react (hook)": "useTransition", "@my-react/react": "", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
 ];
 
 export const ApiSection = () => {

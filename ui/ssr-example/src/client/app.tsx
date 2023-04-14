@@ -1,4 +1,4 @@
-import { ChakraProvider, cookieStorageManager } from "@chakra-ui/react";
+import { ChakraProvider, /* cookieStorageManager */ cookieStorageManagerSSR } from "@chakra-ui/react";
 import { CacheProvider } from "@emotion/react";
 import { StrictMode } from "react";
 import { HelmetProvider } from "react-helmet-async";
@@ -15,7 +15,7 @@ const emotionCache = createEmotionCache();
 
 const Root = ({ store }: { store: ReturnType<typeof createUniversalStore> }) => {
   // this component will only run once when the page mount, so it's ok to use server's cookie
-  const cookieStore = cookieStorageManager(document.cookie);
+  const cookieStore = cookieStorageManagerSSR(document.cookie);
 
   return (
     <StrictMode>

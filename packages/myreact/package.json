@@ -23,13 +23,18 @@
       "default": "./index.js"
     },
     "./jsx-runtime": {
+      "import": "./jsx-main.js",
       "require": "./jsx-main.js",
+      "node": "./jsx-main.js",
       "types": "./jsx-runtime.d.ts"
     },
     "./jsx-dev-runtime": {
+      "import": "./jsx-main.js",
       "require": "./jsx-main.js",
+      "node": "./jsx-main.js",
       "types": "./jsx-dev-runtime.d.ts"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "buildOptions": {
     "input": "./src/index.ts",

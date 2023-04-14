@@ -62,8 +62,13 @@ const _User = () => {
       {/* <Text fontWeight="semibold">{data.viewer.login}</Text> */}
       <Box fontSize="sm" marginY="2">
         <Text fontWeight="semibold">Recommend:</Text>
-        <Link target="_blank" color="red.400" href="https://github.com/MrWangJustToDo/MyReact" title="https://github.com/MrWangJustToDo/MyReact">
-          MyReact
+        <Link
+          target="_blank"
+          color="red.400"
+          href="https://mrwangjusttodo.github.io/MrWangJustToDo.io"
+          title="https://mrwangjusttodo.github.io/MrWangJustToDo.io"
+        >
+          Blog
         </Link>
       </Box>
       <Flex alignItems="center" marginTop="1">

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { loadableReady } from "@loadable/component";
-import { render, hydrate } from "react-dom";
+import { render } from "react-dom";
+import { hydrateRoot } from "@my-react/react-dom";
 
 import { createUniversalStore, safeData } from "../shared";
 
@@ -41,6 +42,6 @@ if (window.__ENV__.isPURE_CSR) {
   if (!window.__ENV__.isSSR || (window.__ENV__.isDEVELOPMENT && window.__ENV__.isMIDDLEWARE)) {
     loadableReady(() => render(<Root store={store} />, place));
   } else {
-    loadableReady(() => hydrate(<Root store={store} />, place));
+    loadableReady(() => hydrateRoot(place, <Root store={store} />));
   }
 }

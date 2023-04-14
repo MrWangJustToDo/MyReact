@@ -1,3 +1,5 @@
+import { once } from "@my-react/react-shared";
+
 import { unmountComponentAtNode } from "@my-react-dom-shared";
 
 import { render as originalRender } from "./render";
@@ -10,10 +12,16 @@ export type Options = {
   identifierPrefix?: string;
 };
 
+export const onceLogNewEntry = once((entry) => {
+  console.log(`[@my-react/react-dom] you are using new entry function "${entry}"`);
+});
+
 export const createRoot = (container: Partial<RenderContainer>, _option?: Options) => {
   const render = (element: LikeJSX) => originalRender(element, container);
 
   const unmount = () => unmountComponentAtNode(container as RenderContainer);
+
+  onceLogNewEntry("createRoot");
 
   return {
     render,

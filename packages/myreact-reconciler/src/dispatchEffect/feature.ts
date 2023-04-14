@@ -14,9 +14,11 @@ export const defaultGenerateEffectMap = (fiber: MyReactFiberNode, effect: () => 
 
 export const effect = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__effect__) {
-    const renderContainer = fiber.container;
+    const renderContainer = fiber.renderContainer;
 
-    const effectMap = renderContainer.renderDispatch.effectMap;
+    const renderDispatch = renderContainer.renderDispatch;
+
+    const effectMap = renderDispatch.effectMap;
 
     const allEffect = effectMap.get(fiber) || [];
 
@@ -30,9 +32,11 @@ export const effect = (fiber: MyReactFiberNode) => {
 
 export const layoutEffect = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__layoutEffect__) {
-    const renderContainer = fiber.container;
+    const renderContainer = fiber.renderContainer;
 
-    const layoutEffectMap = renderContainer.renderDispatch.layoutEffectMap;
+    const renderDispatch = renderContainer.renderDispatch;
+
+    const layoutEffectMap = renderDispatch.layoutEffectMap;
 
     const allLayoutEffect = layoutEffectMap.get(fiber) || [];
 
@@ -46,9 +50,11 @@ export const layoutEffect = (fiber: MyReactFiberNode) => {
 
 export const insertionEffect = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__insertionEffect__) {
-    const renderContainer = fiber.container;
+    const renderContainer = fiber.renderContainer;
 
-    const insertionEffectMap = renderContainer.renderDispatch.insertionEffectMap;
+    const renderDispatch = renderContainer.renderDispatch;
+
+    const insertionEffectMap = renderDispatch.insertionEffectMap;
 
     const allInsertionEffect = insertionEffectMap.get(fiber) || [];
 

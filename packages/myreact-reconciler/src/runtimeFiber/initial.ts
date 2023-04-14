@@ -4,7 +4,9 @@ import type { MyReactFiberNode } from "./instance";
 
 // no need to resolve map for this fiber, this code only used for fiberRoot init
 export const initialFiberNode = (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   renderDispatch.pendingCreate(fiber);
 

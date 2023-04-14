@@ -46,7 +46,11 @@ export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextOb
 
 export const defaultGetContextFiber = (fiber: MyReactFiberNode, ContextObject?: ReturnType<typeof createContext> | null) => {
   if (ContextObject) {
-    const contextMap = fiber.container.renderDispatch.contextMap.get(fiber);
+    const renderContainer = fiber.renderContainer;
+
+    const renderDispatch = renderContainer.renderDispatch;
+
+    const contextMap = renderDispatch.contextMap.get(fiber);
 
     return contextMap?.[ContextObject.contextId] || null;
   } else {
@@ -58,7 +62,9 @@ export const context = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__context__) {
     const set = new Set(fiber.dependence);
 
-    const renderPlatform = fiber.container.renderPlatform as CustomRenderPlatform;
+    const renderContainer = fiber.renderContainer;
+
+    const renderPlatform = renderContainer.renderPlatform as CustomRenderPlatform;
 
     renderPlatform.microTask(() => {
       set.forEach((i) => {
@@ -67,7 +73,7 @@ export const context = (fiber: MyReactFiberNode) => {
         }
       });
       // sync skip from root
-      fiber.container.rootFiber._update(STATE_TYPE.__skippedSync__);
+      renderContainer.rootFiber._update(STATE_TYPE.__skippedSync__);
     });
 
     if (fiber.patch & PATCH_TYPE.__context__) fiber.patch ^= PATCH_TYPE.__context__;

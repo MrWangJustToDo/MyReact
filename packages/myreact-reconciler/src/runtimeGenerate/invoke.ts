@@ -86,7 +86,9 @@ export const nextWorkComponent = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkLazy = (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   const children = renderDispatch.resolveLazyElement(fiber);
 
@@ -94,7 +96,9 @@ export const nextWorkLazy = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkLazySync = async (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   const children = await renderDispatch.resolveLazyElementAsync(fiber);
 
@@ -116,7 +120,9 @@ export const nextWorkNormal = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
 

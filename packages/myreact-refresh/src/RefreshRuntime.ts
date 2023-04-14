@@ -314,9 +314,9 @@ export const performReactRefresh = () => {
       family.current = nextType;
 
       if (fiber_1) {
-        container = container || fiber_1.container;
+        container = container || fiber_1.renderContainer;
 
-        root = root || fiber_1.container.rootFiber;
+        root = root || fiber_1.renderContainer.rootFiber;
 
         if (fiber_1.state !== 64) {
           const forceReset = !canPreserveStateBetween(prevType, nextType);
@@ -324,9 +324,9 @@ export const performReactRefresh = () => {
           typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber_1 as MyReactFiberNode, nextType, forceReset);
         }
       } else if (fiber_2) {
-        container = container || fiber_2.container;
+        container = container || fiber_2.renderContainer;
 
-        root = root || fiber_2.container.rootFiber;
+        root = root || fiber_2.renderContainer.rootFiber;
 
         if (fiber_2.state !== 64) {
           const forceReset = !canPreserveStateBetween(prevType, nextType);

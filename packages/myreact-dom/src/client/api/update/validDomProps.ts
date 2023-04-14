@@ -1,6 +1,6 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import { isProperty, isStyle } from "@my-react-dom-shared";
+import { isProperty, isStyle, log } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -8,11 +8,9 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__plain__) {
     const props = fiber.pendingProps;
 
-    const renderPlatform = fiber.container.renderPlatform;
-
     Object.keys(props).forEach((key) => {
       if (isProperty(key) && props[key] && typeof props[key] === "object" && props[key] !== null) {
-        renderPlatform.log({
+        log({
           fiber,
           level: "warn",
           triggerOnce: true,

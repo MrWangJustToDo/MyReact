@@ -11,7 +11,7 @@ import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__position__) {
-    const renderContainer = fiber.container;
+    const renderContainer = fiber.renderContainer;
 
     const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
 

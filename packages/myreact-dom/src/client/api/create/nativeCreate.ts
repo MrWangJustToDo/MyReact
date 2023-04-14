@@ -2,7 +2,7 @@ import { isCommentStartElement, NODE_TYPE } from "@my-react/react-reconciler";
 
 import { commentS, commentE } from "@my-react-dom-shared";
 
-import type { MyReactFiberNode , MyReactFiberContainer} from "@my-react/react-reconciler";
+import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
 const SVG = "http://www.w3.org/2000/svg";
 
@@ -24,7 +24,7 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
 
     fiberContainer.containerNode = containerNode;
 
-    if (__DEV__) containerNode.setAttribute?.("portal", "MyReact");
+    if (__DEV__) containerNode.setAttribute?.("portal", "@my-react");
   } else if (fiber.type & NODE_TYPE.__comment__) {
     if (isCommentStartElement(fiber)) {
       fiber.nativeNode = document.createComment(commentS);

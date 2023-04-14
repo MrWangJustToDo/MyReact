@@ -20,11 +20,11 @@ export const onceLog = once(() => {
 });
 
 export const onceLogNewStrictMode = once(() => {
-  console.log("[@my-react] react-18 like lifecycle have been enabled!");
+  console.log("[@my-react/react] react-18 like lifecycle have been enabled!");
 });
 
 export const onceLogLegacyLifeCycleMode = once(() => {
-  console.log("[@my-react] legacy 'UNSAFE_' lifeCycle have been enabled!");
+  console.log("[@my-react/react] legacy 'UNSAFE_' lifeCycle have been enabled!");
 });
 
 export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) => {
@@ -71,13 +71,11 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
   const renderContainer = new ClientDomContainer(container, fiber, MyReactDomPlatform, renderDispatch);
 
-  fiber.container = renderContainer;
+  fiber.renderContainer = renderContainer;
 
   Array.from(container.children).forEach((n) => n.remove?.());
 
-  container.setAttribute?.("render", "MyReact");
-
-  container.setAttribute?.("version", __VERSION__);
+  container.setAttribute?.("render", "@my-react");
 
   container.__fiber__ = fiber;
 

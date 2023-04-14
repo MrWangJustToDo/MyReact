@@ -63,7 +63,9 @@ const createFragmentWithUpdate = (newChild: ArrayMyReactElementChildren, parentF
 };
 
 const deleteIfNeed = (parentFiber: MyReactFiberNode, existingChildren: Map<string | number, ListTree<MyReactFiberNode>>) => {
-  const renderDispatch = parentFiber.container.renderDispatch;
+  const renderContainer = parentFiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   if (existingChildren.size) existingChildren.forEach((list) => list.listToFoot((f) => renderDispatch.pendingUnmount(parentFiber, f)));
 };
@@ -75,7 +77,9 @@ const getNewFiberWithUpdate = (
   prevFiberChild: MyReactFiberNode | null,
   index: number
 ): MyReactFiberNode => {
-  const renderDispatch = parentFiber.container.renderDispatch;
+  const renderContainer = parentFiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   if (Array.isArray(newChild)) {
     const draftList = existingChildren.get(index);

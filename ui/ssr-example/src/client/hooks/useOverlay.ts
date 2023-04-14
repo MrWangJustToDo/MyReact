@@ -1,4 +1,4 @@
-import { findLast } from "lodash-es";
+import findLast from "lodash/findLast";
 import { createContext, useCallback, useContext, useRef, useState } from "react";
 
 import { delay } from "@client/utils";

@@ -58,7 +58,7 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
   }
 
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
-    const renderContainer = _fiber.container as ServerStreamContainer;
+    const renderContainer = _fiber.renderContainer as ServerStreamContainer;
 
     const mountLoop = (_fiber: MyReactFiberNode) => {
       safeCallWithFiber({ fiber: _fiber, action: () => createStartTagWithStream(_fiber) });

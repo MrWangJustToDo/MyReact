@@ -48,7 +48,7 @@ const afterEvent = (event: string) => {
 };
 
 export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
 

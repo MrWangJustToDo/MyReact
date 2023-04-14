@@ -32,7 +32,7 @@ export class HighLight {
 
   constructor() {
     this.container = document.createElement("div");
-    this.container.setAttribute("debug_highlight", "MyReact");
+    this.container.setAttribute("debug_highlight", "@my-react");
     this.container.style.cssText = `
       position: fixed;
       z-index: 99999999;

@@ -18,7 +18,7 @@ const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, s
 
   renderContainer.stream = stream;
 
-  fiber.container = renderContainer;
+  fiber.renderContainer = renderContainer;
 
   renderContainer.isServerRender = true;
 
@@ -42,7 +42,7 @@ const renderToStreamAsync = <T extends SimpleReadable>(element: MyReactElement, 
 
   renderContainer.stream = stream;
 
-  fiber.container = renderContainer;
+  fiber.renderContainer = renderContainer;
 
   renderContainer.isServerRender = true;
 

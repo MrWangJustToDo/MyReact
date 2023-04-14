@@ -29,7 +29,7 @@ export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWit
       nativeCreate(fiber, isSVG);
     }
 
-    const renderContainer = fiber.container as ClientDomContainer;
+    const renderContainer = fiber.renderContainer as ClientDomContainer;
 
     if (renderContainer.isHydrateRender) {
       const element = fiber.nativeNode as DomElement | DomNode | DomComment;

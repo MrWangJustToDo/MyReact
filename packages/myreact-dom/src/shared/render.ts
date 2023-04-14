@@ -11,7 +11,7 @@ export const startRender = (fiber: MyReactFiberNode, hydrate = false) => {
 
   const endTime = Date.now();
 
-  const renderContainer = fiber.container as ClientDomContainer;
+  const renderContainer = fiber.renderContainer as ClientDomContainer;
 
   renderContainer.isAppMounted = true;
 
@@ -29,7 +29,7 @@ export const startRenderAsync = async (fiber: MyReactFiberNode, hydrate = false)
 
   const endTime = Date.now();
 
-  const renderContainer = fiber.container as ClientDomContainer;
+  const renderContainer = fiber.renderContainer as ClientDomContainer;
 
   renderContainer.isAppMounted = true;
 

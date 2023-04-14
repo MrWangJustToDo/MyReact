@@ -8,7 +8,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 const { globalLoop } = __my_react_internal__;
 
 export const mount = (fiber: MyReactFiberNode, hydrate?: boolean) => {
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
 
@@ -24,7 +24,7 @@ export const mount = (fiber: MyReactFiberNode, hydrate?: boolean) => {
 };
 
 export const mountAsync = async (fiber: MyReactFiberNode, hydrate?: boolean) => {
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
 

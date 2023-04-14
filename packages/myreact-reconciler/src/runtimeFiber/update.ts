@@ -27,7 +27,7 @@ export const updateFiberNode = (
 
   fiber.element = nextElement;
 
-  fiber.container = parent.container;
+  fiber.renderContainer = parent.renderContainer;
 
   parent.child = parent.child || fiber;
 
@@ -37,7 +37,9 @@ export const updateFiberNode = (
 
   fiber.pendingProps = pendingProps;
 
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   if (prevElement !== nextElement) {
     if (fiber.type & NODE_TYPE.__memo__) {

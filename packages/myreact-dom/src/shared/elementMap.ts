@@ -2,7 +2,7 @@ import type { MyReactFiberContainer , MyReactFiberNode } from "@my-react/react-r
 import type { ClientDomContainer, ClientDomDispatch } from "@my-react-dom-client";
 
 export const patchToFiberInitial = (_fiber: MyReactFiberNode) => {
-  const renderContainer = _fiber.container as ClientDomContainer;
+  const renderContainer = _fiber.renderContainer as ClientDomContainer;
 
   const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
 
@@ -29,7 +29,7 @@ export const patchToFiberInitial = (_fiber: MyReactFiberNode) => {
 };
 
 export const patchToFiberUnmount = (_fiber: MyReactFiberNode) => {
-  const renderContainer = _fiber.container as ClientDomContainer;
+  const renderContainer = _fiber.renderContainer as ClientDomContainer;
 
   const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
 

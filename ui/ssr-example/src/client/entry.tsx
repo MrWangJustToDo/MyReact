@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { loadableReady } from "@loadable/component";
-import { render } from "react-dom";
 import { hydrateRoot } from "@my-react/react-dom";
+import { render } from "react-dom";
 
 import { createUniversalStore, safeData } from "../shared";
 

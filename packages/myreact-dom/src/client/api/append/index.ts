@@ -8,7 +8,7 @@ import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 export const append = (fiber: MyReactFiberNode, parentFiberWithDom?: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__append__) {
-    const renderContainer = fiber.container;
+    const renderContainer = fiber.renderContainer;
 
     const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
 

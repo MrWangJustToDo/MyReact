@@ -22,7 +22,7 @@ export const performToNextFiberWithSkip = (fiber: MyReactFiberNode) => {
 
   if (fiber.child) return fiber.child;
 
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
@@ -54,7 +54,7 @@ export const performToNxtFiberWithTrigger = (fiber: MyReactFiberNode) => {
     if (fiber.child) return fiber.child;
   }
 
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
@@ -86,7 +86,7 @@ export const performToNextFiberAsyncWithSkip = async (fiber: MyReactFiberNode) =
 
   if (fiber.child) return fiber.child;
 
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   let nextFiber: MyReactFiberNode | null = fiber;
 
@@ -118,7 +118,7 @@ export const performToNextFiberAsyncWithTrigger = async (fiber: MyReactFiberNode
     if (fiber.child) return fiber.child;
   }
 
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   let nextFiber: MyReactFiberNode | null = fiber;
 

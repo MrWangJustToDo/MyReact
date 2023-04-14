@@ -6,7 +6,7 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { DomElement } from "@my-react-dom-shared";
 
 export const removeEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
 

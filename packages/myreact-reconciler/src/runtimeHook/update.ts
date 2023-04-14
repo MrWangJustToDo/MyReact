@@ -11,9 +11,11 @@ const { enableDebugLog } = __my_react_shared__;
 const { currentHookTreeNode } = __my_react_internal__;
 
 export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber: MyReactFiberNode) => {
-  const renderPlatform = fiber.container.renderPlatform;
+  const renderContainer = fiber.renderContainer;
 
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderDispatch = renderContainer.renderDispatch;
+
+  const renderPlatform = renderContainer.renderPlatform;
 
   const currentHook = currentHookTreeNode.current.value as MyReactHookNode;
 

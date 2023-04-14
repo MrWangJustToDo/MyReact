@@ -14,7 +14,7 @@ const renderToStringSync = (element: MyReactElement) => {
 
   const renderContainer = new ServerDomContainer(container, fiber, MyReactDomPlatform, renderDispatch);
 
-  fiber.container = renderContainer;
+  fiber.renderContainer = renderContainer;
 
   renderContainer.isServerRender = true;
 
@@ -36,7 +36,7 @@ const renderToStringAsync = async (element: MyReactElement) => {
 
   const renderContainer = new ServerDomContainer(container, fiber, MyReactDomPlatform, renderDispatch);
 
-  fiber.container = renderContainer;
+  fiber.renderContainer = renderContainer;
 
   renderContainer.isServerRender = true;
 

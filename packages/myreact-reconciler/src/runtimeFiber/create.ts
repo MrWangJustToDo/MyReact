@@ -21,11 +21,13 @@ export const createFiberNode = (
 
   newFiberNode.parent = parent;
 
-  newFiberNode.container = parent.container;
+  newFiberNode.renderContainer = parent.renderContainer;
 
   parent.child = parent.child || newFiberNode;
 
-  const renderDispatch = parent.container.renderDispatch;
+  const renderContainer = parent.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   renderDispatch.pendingCreate(newFiberNode);
 

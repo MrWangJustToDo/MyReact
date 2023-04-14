@@ -33,7 +33,7 @@ export const create = (fiber: MyReactFiberNode) => {
 
 export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolean) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
-    const renderContainer = fiber.container as ServerStreamContainer;
+    const renderContainer = fiber.renderContainer as ServerStreamContainer;
 
     const stream = renderContainer.stream;
     if (fiber.type & NODE_TYPE.__text__) {
@@ -80,7 +80,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolea
 
 export const createCloseTagWithStream = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
-    const renderContainer = fiber.container as ServerStreamContainer;
+    const renderContainer = fiber.renderContainer as ServerStreamContainer;
 
     const stream = renderContainer.stream;
     if (fiber.type & NODE_TYPE.__plain__) {

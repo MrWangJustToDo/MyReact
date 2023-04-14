@@ -14,7 +14,7 @@ import type { DomElement, DomNode } from "@my-react-dom-shared";
 export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (!fiber.nativeNode) throw new Error("update error, dom not exist");
 
-  const renderContainer = fiber.container as ClientDomContainer;
+  const renderContainer = fiber.renderContainer as ClientDomContainer;
 
   const node = fiber.nativeNode as DomElement | DomNode;
 

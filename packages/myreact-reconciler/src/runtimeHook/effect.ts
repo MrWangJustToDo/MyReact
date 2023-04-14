@@ -7,7 +7,9 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 const { enableStrictLifeCycle } = __my_react_shared__;
 
 export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
     hookNode.mode = Effect_TYPE.__effect__;

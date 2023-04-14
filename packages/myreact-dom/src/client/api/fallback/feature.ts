@@ -27,7 +27,9 @@ export const fallback = (fiber: MyReactFiberNode) => {
     });
   };
 
-  const container = fiber.container.rootNode as HTMLElement;
+  const renderContainer = fiber.renderContainer;
+
+  const container = renderContainer.rootNode as HTMLElement;
 
   Array.from(container.childNodes).forEach(clearHydrate);
 

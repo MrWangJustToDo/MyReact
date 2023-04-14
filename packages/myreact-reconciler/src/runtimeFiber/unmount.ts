@@ -5,7 +5,9 @@ import type { MyReactFiberNode } from "./instance";
 export const unmountFiberNode = (fiber: MyReactFiberNode) => {
   if (fiber.state & STATE_TYPE.__unmount__) return;
 
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   renderDispatch.commitUnsetRef(fiber);
 

@@ -7,7 +7,16 @@ import { getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { CustomRenderPlatform } from "../renderPlatform";
-import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue , MyReactComponent} from "@my-react/react";
+import type {
+  MyReactElement,
+  MyReactElementNode,
+  MyReactElementType,
+  MyReactInternalInstance,
+  RenderFiber,
+  RenderHook,
+  UpdateQueue,
+  MyReactComponent,
+} from "@my-react/react";
 
 type NativeNode = Record<string, any>;
 
@@ -28,7 +37,7 @@ export class MyReactFiberNode implements RenderFiber {
 
   nativeNode: Record<string, any> = null;
 
-  container: MyReactContainer;
+  renderContainer: MyReactContainer;
 
   element: MyReactElementNode;
 
@@ -88,7 +97,7 @@ export class MyReactFiberNode implements RenderFiber {
   _prepare(): void {
     const currentIsSync = enableSyncFlush.current;
 
-    const renderPlatform = this.container.renderPlatform;
+    const renderPlatform = this.renderContainer.renderPlatform;
 
     const callBack = () => {
       const needUpdate = this.type & NODE_TYPE.__class__ ? processClassComponentUpdateQueue(this) : processFunctionComponentUpdateQueue(this);

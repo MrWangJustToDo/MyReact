@@ -9,7 +9,7 @@ import type { MyReactComponent } from "@my-react/react";
 const { globalLoop } = __my_react_internal__;
 
 export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
 
@@ -87,7 +87,7 @@ export const scheduleUpdate = (container: MyReactContainer) => {
 };
 
 export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   const renderPlatform = renderContainer.renderPlatform;
 

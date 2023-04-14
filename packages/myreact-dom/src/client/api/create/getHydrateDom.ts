@@ -1,6 +1,6 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import { commentE, commentS, getElementName } from "@my-react-dom-shared";
+import { commentE, commentS, getElementName, log } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -29,8 +29,6 @@ const getNextHydrateDom = (parentDom: Element) => {
 };
 
 const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
-  const log = fiber.container.renderPlatform.log;
-
   if (!dom) {
     log({
       fiber,

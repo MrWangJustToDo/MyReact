@@ -5,7 +5,9 @@ import type { lazy } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const resolveLazyElement = (_fiber: MyReactFiberNode) => {
-  const renderDispatch = _fiber.container.renderDispatch;
+  const renderContainer = _fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   return WrapperByScope(renderDispatch.resolveSuspense(_fiber));
 };

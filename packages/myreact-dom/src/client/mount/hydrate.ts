@@ -18,11 +18,9 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 
   const renderContainer = new ClientDomContainer(container, fiber, MyReactDomPlatform, renderDispatch);
 
-  fiber.container = renderContainer;
+  fiber.renderContainer = renderContainer;
 
-  container.setAttribute?.("hydrate", "MyReact");
-
-  container.setAttribute?.("version", __VERSION__);
+  container.setAttribute?.("hydrate", "@my-react");
 
   container.__fiber__ = fiber;
 
@@ -44,11 +42,9 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
 
   const renderContainer = new ClientDomContainer(container, fiber, MyReactDomPlatform, renderDispatch);
 
-  fiber.container = renderContainer;
+  fiber.renderContainer = renderContainer;
 
-  container.setAttribute?.("hydrate", "MyReact");
-
-  container.setAttribute?.("version", __VERSION__);
+  container.setAttribute?.("hydrate", "@my-react");
 
   container.__fiber__ = fiber;
 

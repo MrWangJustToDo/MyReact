@@ -57,7 +57,9 @@ const processComponentStateFromError = (fiber: MyReactFiberNode, error: Error) =
 };
 
 const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
 
@@ -122,7 +124,9 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInst
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   if (devInstance) {
     if ((typedInstance.componentDidMount || typedInstance.componentWillUnmount) && !(typedInstance.mode & Effect_TYPE.__effect__)) {
@@ -148,7 +152,9 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: 
 const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error: Error, stack: string) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   if (typedInstance.componentDidCatch && !(typedInstance.mode & Effect_TYPE.__effect__)) {
     typedInstance.mode = Effect_TYPE.__effect__;
@@ -160,7 +166,9 @@ const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error
 };
 
 const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   const Component = fiber.elementType;
 
@@ -240,7 +248,9 @@ const processComponentDidUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
+
+  const renderDispatch = renderContainer.renderDispatch;
 
   const hasEffect = typedInstance.componentDidUpdate || callback.length;
 
@@ -257,7 +267,9 @@ const processComponentDidUpdateOnUpdate = (
 const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderPlatform = fiber.container.renderPlatform as CustomRenderPlatform;
+  const renderContainer = fiber.renderContainer;
+
+  const renderPlatform = renderContainer.renderPlatform as CustomRenderPlatform;
 
   // TODO setState
   if (typedInstance.UNSAFE_componentWillMount) {
@@ -276,7 +288,9 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
 const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderPlatform = fiber.container.renderPlatform as CustomRenderPlatform;
+  const renderContainer = fiber.renderContainer;
+
+  const renderPlatform = renderContainer.renderPlatform as CustomRenderPlatform;
 
   // only trigger on parent component update
   if (fiber.state & STATE_TYPE.__inherit__) {
@@ -298,7 +312,9 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
 const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextState }: { nextProps: unknown; nextState: unknown }) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderPlatform = fiber.container.renderPlatform as CustomRenderPlatform;
+  const renderContainer = fiber.renderContainer;
+
+  const renderPlatform = renderContainer.renderPlatform as CustomRenderPlatform;
 
   if (typedInstance.UNSAFE_componentWillUpdate) {
     typedInstance.UNSAFE_componentWillUpdate(nextProps, nextState);
@@ -412,7 +428,7 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderContainer = fiber.container;
+  const renderContainer = fiber.renderContainer;
 
   const { error, stack } = typedInstance._error;
 

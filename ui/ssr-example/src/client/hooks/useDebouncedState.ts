@@ -1,4 +1,4 @@
-import { debounce } from "lodash-es";
+import debounce from "lodash/debounce";
 import { useMemo, useState } from "react";
 
 import type { Dispatch, SetStateAction } from "react";

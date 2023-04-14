@@ -29,17 +29,20 @@ export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: Cu
   list.listToFoot((f) => unmountFiberNode(f));
 };
 
+// unmount current fiber
 export const unmountFiber = (fiber: MyReactFiberNode) => {
   if (fiber.state & STATE_TYPE.__unmount__) return;
 
   const list = generateFiberToList(fiber);
 
-  unmountList(list, fiber.container.renderDispatch);
+  const renderContainer = fiber.renderContainer;
+
+  unmountList(list, renderContainer.renderDispatch);
 };
 
 export const unmount = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__unmount__) {
-    const renderContainer = fiber.container;
+    const renderContainer = fiber.renderContainer;
 
     const renderDispatch = renderContainer.renderDispatch;
 

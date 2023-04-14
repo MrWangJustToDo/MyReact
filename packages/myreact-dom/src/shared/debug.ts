@@ -55,7 +55,7 @@ export const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__profiler__) return `<Profiler />`;
   if (fiber.type & NODE_TYPE.__suspense__) return `<Suspense />`;
   if (fiber.type & NODE_TYPE.__fragment__) {
-    if (fiber.pendingProps["wrap"]) return `<Fragment - (wrap) />`;
+    if (fiber.pendingProps["wrap"]) return `<Fragment - (auto-wrap) />`;
     return `<Fragment />`;
   }
   if (fiber.type & NODE_TYPE.__keepLive__) return `<KeepAlive />`;

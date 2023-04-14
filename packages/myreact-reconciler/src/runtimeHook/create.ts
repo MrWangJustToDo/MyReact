@@ -15,9 +15,11 @@ const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
 };
 
 export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber: MyReactFiberNode) => {
-  const renderDispatch = fiber.container.renderDispatch;
+  const renderContainer = fiber.renderContainer;
 
-  const renderPlatform = fiber.container.renderPlatform;
+  const renderDispatch = renderContainer.renderDispatch;
+
+  const renderPlatform = renderContainer.renderPlatform;
 
   const hookNode = new MyReactHookNode(type, value, reducer || defaultReducer, deps);
 

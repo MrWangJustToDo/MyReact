@@ -17,6 +17,7 @@ import {
   useTransition,
   useLayoutEffect,
   useDeferredValue,
+  useInsertionEffect,
   useImperativeHandle,
   useSyncExternalStore,
 } from "./hook";
@@ -100,6 +101,7 @@ export {
   useTransition,
   useLayoutEffect,
   useDeferredValue,
+  useInsertionEffect,
   useImperativeHandle,
   useSyncExternalStore,
   Children,

@@ -204,7 +204,7 @@ export class CustomRenderDispatch implements RenderDispatch {
 
       safeCallWithFiber({ fiber: _fiber, action: () => this.commitSetRef(_fiber) });
 
-      safeCallWithFiber({ fiber: _fiber, action: () => layoutEffect(_fiber) });
+      // safeCallWithFiber({ fiber: _fiber, action: () => layoutEffect(_fiber) });
 
       if (_fiber.sibling) {
         mountCommit(_fiber.sibling, _fiber.nativeNode ? _result : _final);
@@ -215,6 +215,14 @@ export class CustomRenderDispatch implements RenderDispatch {
       } else {
         return _final;
       }
+    };
+
+    const mountLayoutEffect = (_fiber: MyReactFiberNode) => {
+      if (_fiber.child) mountLayoutEffect(_fiber.child);
+
+      layoutEffect(_fiber);
+
+      if (_fiber.sibling) mountLayoutEffect(_fiber.sibling);
     };
 
     const mountEffect = (_fiber: MyReactFiberNode) => {
@@ -229,6 +237,8 @@ export class CustomRenderDispatch implements RenderDispatch {
       mountInsertionEffect(_fiber);
 
       const re = mountCommit(_fiber, _hydrate);
+
+      mountLayoutEffect(_fiber);
 
       currentRenderPlatform.current.microTask(() => mountEffect(_fiber));
 
@@ -270,6 +280,10 @@ export class CustomRenderDispatch implements RenderDispatch {
             this.commitSetRef(_fiber);
           },
         });
+      }
+    });
+    _list.listToFoot((_fiber) => {
+      if (!(_fiber.state & STATE_TYPE.__unmount__)) {
         safeCallWithFiber({
           fiber: _fiber,
           action: () => {

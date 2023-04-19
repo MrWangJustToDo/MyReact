@@ -248,8 +248,8 @@ export class CustomRenderDispatch implements RenderDispatch {
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
     _list.listToFoot((_fiber) => {
       if (!(_fiber.state & STATE_TYPE.__unmount__)) {
-        safeCallWithFiber({ fiber: _fiber, action: () => insertionEffect(_fiber) });
-        safeCallWithFiber({ fiber: _fiber, action: () => unmount(_fiber) });
+        unmount(_fiber);
+        insertionEffect(_fiber);
       }
     });
     _list.listToFoot((_fiber) => {
@@ -282,13 +282,8 @@ export class CustomRenderDispatch implements RenderDispatch {
     });
     _list.listToFoot((_fiber) => {
       if (!(_fiber.state & STATE_TYPE.__unmount__)) {
-        safeCallWithFiber({
-          fiber: _fiber,
-          action: () => {
-            context(_fiber);
-            layoutEffect(_fiber);
-          },
-        });
+        context(_fiber);
+        layoutEffect(_fiber);
       }
     });
     currentRenderPlatform.current.microTask(() => _list.listToFoot((_fiber) => effect(_fiber)));

@@ -133,7 +133,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
       }
     }, []);
 
-    if (globalInstance?.hasHookInstalled) {
+    if (instance.hasHookInstalled) {
       return createElement(ForBeforeUnmount, {
         ["$$__instance__$$"]: instance,
         children: createElement(Render, { ...props, ["$$__trigger__$$"]: updateCallback, ["$$__reactiveState__$$"]: state, ["$$__instance__$$"]: instance }),

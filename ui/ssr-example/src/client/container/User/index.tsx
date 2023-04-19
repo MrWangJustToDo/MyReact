@@ -23,6 +23,7 @@ import { SiLeetcode } from "react-icons/si";
 import { Chart } from "@client/component/Chart";
 import { ErrorCom } from "@client/component/Error";
 import { Followers } from "@client/component/Follower";
+import { useEffectOnce } from "@client/hooks";
 import { momentTo } from "@client/utils/time";
 
 const ITEM_FOLLOWER = 10;
@@ -36,11 +37,13 @@ const UserLoading = () => (
 );
 
 const _User = () => {
-  const { data, loading, error } = useQuery(GetViewerDocument, {
+  const { data, loading, error, refetch } = useQuery(GetViewerDocument, {
     variables: {
       first: ITEM_FOLLOWER,
     },
   });
+
+  useEffectOnce(refetch);
 
   if (loading) return <UserLoading />;
 

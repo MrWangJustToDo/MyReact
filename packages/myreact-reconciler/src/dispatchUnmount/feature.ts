@@ -1,7 +1,7 @@
 import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { unmountFiberNode } from "../runtimeFiber";
-import { generateFiberToList } from "../share";
+import { generateFiberToList, safeCallWithFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -52,7 +52,7 @@ export const unmount = (fiber: MyReactFiberNode) => {
 
     unmountMap.delete(fiber);
 
-    if (allUnmountFiber.length) allUnmountFiber.forEach((l) => unmountList(l, renderDispatch));
+    if (allUnmountFiber.length) safeCallWithFiber({ fiber, action: () => allUnmountFiber.forEach((l) => unmountList(l, renderDispatch)) });
 
     if (fiber.patch & PATCH_TYPE.__unmount__) fiber.patch ^= PATCH_TYPE.__unmount__;
   }

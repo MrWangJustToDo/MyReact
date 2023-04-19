@@ -20,6 +20,7 @@ import { memo, useMemo, useRef, useState } from "react";
 import { BlogGrid } from "@client/component/BlogGrid";
 import { ErrorCom } from "@client/component/Error";
 import { BLOG_REPOSITORY, BLOG_REPOSITORY_OWNER } from "@client/config/source";
+import { useEffectOnce } from "@client/hooks";
 
 import { BlogModal } from "../BlogModal";
 
@@ -60,6 +61,8 @@ const _BlogListWithInfinityScroll = () => {
     },
     notifyOnNetworkStatusChange: true,
   });
+
+  useEffectOnce(refetch)
 
   const fetchMoreCallback = useCallbackRef(() => {
     if (data?.repository?.issues?.pageInfo?.hasNextPage) {

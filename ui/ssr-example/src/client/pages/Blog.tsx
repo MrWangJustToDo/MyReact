@@ -1,5 +1,5 @@
 import { Container } from "@chakra-ui/react";
-import { getApolloClient, GetBlogListDocument, GetViewerDocument } from "@site/graphql";
+import { getApolloClient, GetBlogListDocument, GetViewerDocument, IssueState } from "@site/graphql";
 
 import { GridCard } from "@client/component/GridCard";
 import { StyledResponsiveReactGridLayout } from "@client/component/GridLayout";
@@ -97,6 +97,7 @@ export const getInitialState: GetInitialStateType = async () => {
       query: GetBlogListDocument,
       variables: {
         ...BASIC_VARIABLE,
+        states: IssueState.Open,
         first: 15,
       },
     }),

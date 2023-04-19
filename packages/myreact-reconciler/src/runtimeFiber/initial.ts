@@ -14,9 +14,7 @@ export const initialFiberNode = (fiber: MyReactFiberNode) => {
 
   renderDispatch.pendingAppend(fiber);
 
-  if (fiber.ref) {
-    renderDispatch.pendingRef(fiber);
-  }
+  renderDispatch.pendingRef(fiber);
 
   renderDispatch.patchToFiberInitial?.(fiber);
 

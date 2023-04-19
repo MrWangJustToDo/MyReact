@@ -204,8 +204,6 @@ export class CustomRenderDispatch implements RenderDispatch {
 
       safeCallWithFiber({ fiber: _fiber, action: () => this.commitSetRef(_fiber) });
 
-      // safeCallWithFiber({ fiber: _fiber, action: () => layoutEffect(_fiber) });
-
       if (_fiber.sibling) {
         mountCommit(_fiber.sibling, _fiber.nativeNode ? _result : _final);
       }

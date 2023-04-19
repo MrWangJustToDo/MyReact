@@ -39,9 +39,7 @@ export const createFiberNode = (
     renderDispatch.pendingAppend(newFiberNode);
   }
 
-  if (newFiberNode.ref) {
-    renderDispatch.pendingRef(newFiberNode);
-  }
+  renderDispatch.pendingRef(newFiberNode);
 
   renderDispatch.resolveUseIdMap(newFiberNode);
 

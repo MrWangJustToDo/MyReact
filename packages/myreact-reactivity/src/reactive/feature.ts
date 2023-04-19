@@ -18,7 +18,7 @@ type LifeCycle = {
 
   onUnmounted: Array<() => void>;
 
-  hasHookInstall: boolean;
+  hasHookInstalled: boolean;
 
   canUpdateComponent: boolean;
 };
@@ -100,7 +100,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
       onMounted: [],
       onUpdated: [],
       onUnmounted: [],
-      hasHookInstall: false,
+      hasHookInstalled: false,
       canUpdateComponent: true,
     }));
 
@@ -133,10 +133,18 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
       }
     }, []);
 
-    return createElement(ForBeforeUnmount, {
-      ["$$__instance__$$"]: instance,
-      children: createElement(Render, { ...props, ["$$__trigger__$$"]: updateCallback, ["$$__reactiveState__$$"]: state, ["$$__instance__$$"]: instance }),
-    });
+    if (globalInstance?.hasHookInstalled) {
+      return createElement(ForBeforeUnmount, {
+        ["$$__instance__$$"]: instance,
+        children: createElement(Render, { ...props, ["$$__trigger__$$"]: updateCallback, ["$$__reactiveState__$$"]: state, ["$$__instance__$$"]: instance }),
+      });
+    } else {
+      const { children, ...last } = props;
+
+      const targetRender = render || children as typeof render;
+
+      return targetRender?.({ ...last, ...state } as P & UnwrapRef<S>) || null;
+    }
   };
 
   return MyReactReactiveComponent;

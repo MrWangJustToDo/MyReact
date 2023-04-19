@@ -22,8 +22,11 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     node.textContent = fiber.element as string;
   } else if (fiber.type & NODE_TYPE.__plain__) {
     const dom = node as HTMLElement;
+
     const oldProps = fiber.memoizedProps || {};
+
     const newProps = fiber.pendingProps || {};
+
     Object.keys(oldProps)
       .filter((key) => isGone(newProps)(key) || isNew(oldProps, newProps)(key))
       .forEach((key) => {
@@ -85,13 +88,15 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
                 dom.setAttribute(attrKey, String(newProps[key]));
               }
             }
-            if ((key === "autofocus" || key === "autoFocus") && newProps[key]) {
-              Promise.resolve().then(() => dom.focus());
-            }
+            // if ((key === "autofocus" || key === "autoFocus") && newProps[key]) {
+            //   Promise.resolve().then(() => dom.focus());
+            // }
           }
         } else if (isStyle(key)) {
           const typedNewProps = newProps[key] as Record<string, unknown>;
+
           const typedOldProps = oldProps[key] as Record<string, unknown>;
+
           Object.keys(typedNewProps || {})
             .filter(isNew(typedOldProps || {}, typedNewProps))
             .forEach((styleName) => {

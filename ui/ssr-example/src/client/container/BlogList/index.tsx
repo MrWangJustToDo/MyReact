@@ -13,7 +13,7 @@ import {
   ButtonGroup,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { GetBlogListDocument, IssueOrderField, OrderDirection } from "@site/graphql";
+import { GetBlogListDocument, IssueOrderField, IssueState, OrderDirection } from "@site/graphql";
 import { throttle } from "lodash-es";
 import { memo, useMemo, useRef, useState } from "react";
 
@@ -56,6 +56,7 @@ const _BlogListWithInfinityScroll = () => {
     variables: {
       ...BASIC_VARIABLE,
       first: ITEM_PER_PAGE,
+      states: IssueState.Open
     },
     notifyOnNetworkStatusChange: true,
   });

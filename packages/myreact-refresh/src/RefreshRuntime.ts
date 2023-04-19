@@ -277,7 +277,7 @@ export const createSignatureFunctionForTransform = () => {
       // call without argument, only happen in the component
       if (!didCollectHooks && hasCustomHooks) {
         didCollectHooks = true;
-        collectCustomHooksForSignature(type);
+        collectCustomHooksForSignature(savedType);
       }
       // always collect newest fiber
       setFiber(savedType as MyReactComponentType);
@@ -285,7 +285,6 @@ export const createSignatureFunctionForTransform = () => {
   };
 };
 
-// TODO cause infinity loop error in some usage
 export const performReactRefresh = () => {
   if (!pendingUpdates.length) return;
 
@@ -339,19 +338,21 @@ export const performReactRefresh = () => {
     }
   });
 
-  console.log(`[@my-react/react-refresh] updating ...`);
+  if (root) {
+    console.log(`[@my-react/react-refresh] updating ...`);
 
-  // has a error for prev render
-  if (container?.errorBoundaryInstance) {
-    const state = container.errorBoundaryInstance._error._restoreState;
+    // has a error for prev render
+    if (container?.errorBoundaryInstance) {
+      const state = container.errorBoundaryInstance._error._restoreState;
 
-    container.errorBoundaryInstance.setState(state, () => {
-      container.errorBoundaryInstance = null;
+      container.errorBoundaryInstance.setState(state, () => {
+        container.errorBoundaryInstance = null;
 
+        root?._update();
+      });
+    } else {
       root?._update();
-    });
-  } else {
-    root?._update();
+    }
   }
 };
 

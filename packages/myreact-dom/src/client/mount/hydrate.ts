@@ -4,12 +4,12 @@ import { initialFiberNode, MyReactFiberContainer } from "@my-react/react-reconci
 import { ClientDomContainer, ClientDomDispatch } from "@my-react-dom-client";
 import { MyReactDomPlatform, startRender, startRenderAsync } from "@my-react-dom-shared";
 
-import { onceLog, onceLogLegacyLifeCycleMode, onceLogNewStrictMode } from "./render";
+import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogNewStrictMode } from "./render";
 
 import type { RenderContainer } from "./render";
 import type { MyReactElement, LikeJSX } from "@my-react/react";
 
-const { enableStrictLifeCycle, enableLegacyLifeCycle } = __my_react_shared__;
+const { enableStrictLifeCycle, enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
 
 const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
   const fiber = new MyReactFiberContainer(element, container);
@@ -71,7 +71,13 @@ export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>, 
   if (enableLegacyLifeCycle.current) {
     onceLogLegacyLifeCycleMode();
   }
+
+  if (enableConcurrentMode.current) {
+    onceLogConcurrentMode();
+  }
+
   const element = _element as MyReactElement;
+
   if (asyncRender) {
     return hydrateAsync(element, container as RenderContainer);
   } else {

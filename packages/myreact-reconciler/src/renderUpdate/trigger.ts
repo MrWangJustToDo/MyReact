@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE } from "@my-react/react-shared";
 
 import { updateConcurrentWithSkip, updateConcurrentWithTrigger, updateSyncWithSkip, updateSyncWithTrigger } from "./feature";
@@ -7,6 +7,8 @@ import type { MyReactContainer, MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent } from "@my-react/react";
 
 const { globalLoop } = __my_react_internal__;
+
+const { enableConcurrentMode } = __my_react_shared__;
 
 export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
   const renderContainer = fiber.renderContainer;
@@ -58,8 +60,10 @@ export const scheduleUpdate = (container: MyReactContainer) => {
 
       if (nextWorkFiber.state & STATE_TYPE.__triggerSync__) {
         updateSyncWithTrigger(container, () => scheduleUpdate(container));
-      } else {
+      } else if (enableConcurrentMode.current) {
         updateConcurrentWithTrigger(container, () => scheduleUpdate(container));
+      } else {
+        updateSyncWithTrigger(container, () => scheduleUpdate(container));
       }
     } else if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__)) {
       container.scheduledFiber = nextWorkFiber;
@@ -68,8 +72,10 @@ export const scheduleUpdate = (container: MyReactContainer) => {
 
       if (nextWorkFiber.state & STATE_TYPE.__skippedSync__) {
         updateSyncWithSkip(container, () => scheduleUpdate(container));
-      } else {
+      } else if (enableConcurrentMode.current) {
         updateConcurrentWithSkip(container, () => scheduleUpdate(container));
+      } else {
+        updateSyncWithSkip(container, () => scheduleUpdate(container));
       }
     } else {
       // TODO

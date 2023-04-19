@@ -1,4 +1,4 @@
-import axios from "axios";
+import { createRequest } from "project-tool/request";
 import { call, put, select } from "redux-saga/effects";
 
 import { getPublicApi } from "@shared";
@@ -12,7 +12,7 @@ export function* langSaga({ done, lang }: { done: () => void; lang: string }) {
     const langData: { [props: string]: any } = yield select<(s: StoreState) => { [props: string]: unknown }>((state) => state.server.serverLang.data);
     if (!langData[lang]) {
       yield put(getDataLoading_server({ name: serverActionName.serverLang }));
-      const request = axios.create({ baseURL: getPublicApi() });
+      const request = createRequest({ baseURL: getPublicApi() });
       const {
         data: { data },
       } = yield call((apiName: string) => request.get(apiName, { params: { lang } }), "/api/lang");

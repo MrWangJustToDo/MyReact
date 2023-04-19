@@ -13,7 +13,7 @@ export type RenderContainer = Element & {
   __container__: MyReactContainer;
 };
 
-const { enableStrictLifeCycle, enableLegacyLifeCycle } = __my_react_shared__;
+const { enableStrictLifeCycle, enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
 
 export const onceLog = once(() => {
   console.log(`you are using @my-react to render this site, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`);
@@ -21,6 +21,10 @@ export const onceLog = once(() => {
 
 export const onceLogNewStrictMode = once(() => {
   console.log("[@my-react/react] react-18 like lifecycle have been enabled!");
+});
+
+export const onceLogConcurrentMode = once(() => {
+  console.log("[@my-react/react] concurrent mode have been enabled!");
 });
 
 export const onceLogLegacyLifeCycleMode = once(() => {
@@ -63,6 +67,10 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
   if (enableLegacyLifeCycle.current) {
     onceLogLegacyLifeCycleMode();
+  }
+
+  if (enableConcurrentMode.current) {
+    onceLogConcurrentMode();
   }
 
   const fiber = new MyReactFiberContainer(element, container);

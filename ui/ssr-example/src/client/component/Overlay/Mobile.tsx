@@ -15,6 +15,10 @@ export const Mobile = (props: OverlayProps) => {
 
   const modalRef = useRef<HTMLDivElement>(null);
 
+  const allowDragElement = useRef<HTMLDivElement>(null);
+
+  const allowDrag = useRef(false);
+
   const { height: windowHeight } = useWindowSize();
 
   const indicatorRotation = useMotionValue(0);
@@ -25,7 +29,21 @@ export const Mobile = (props: OverlayProps) => {
 
   const y = useMotionValue(0);
 
+  const handleDragStart = useCallback((e: PointerEvent) => {
+    if (e.target) {
+      const typedElement = e.target as HTMLElement;
+      if (typedElement.contains(allowDragElement.current)) {
+        allowDrag.current = true;
+      } else {
+        allowDrag.current = false;
+      }
+    } else {
+      allowDrag.current = false;
+    }
+  }, []);
+
   const handleDrag = useCallback((_, { delta }: PanInfo) => {
+    if (!allowDrag.current) return;
     // Update drag indicator rotation based on drag velocity
     const velocity = y.getVelocity();
     if (velocity > 0) indicatorRotation.set(10);
@@ -55,7 +73,6 @@ export const Mobile = (props: OverlayProps) => {
     [indicatorRotation] // eslint-disable-line
   );
 
-  // TODO there are some bug for the motion component
   const animationComplete = useCallbackRef(() => {
     if (!isOpenRef.current) {
       isOpenRef.current = true;
@@ -81,6 +98,7 @@ export const Mobile = (props: OverlayProps) => {
           onDrag={handleDrag}
           dragMomentum={false}
           onDragEnd={handleDragEnd}
+          onDragStart={handleDragStart}
           dragConstraints={{ bottom: 0, top: 0 }}
           style={{ height: "100%", width: "100%", position: "absolute" }}
         >
@@ -106,7 +124,7 @@ export const Mobile = (props: OverlayProps) => {
             className={className}
             onAnimationComplete={animationComplete}
           >
-            <Box height="25px" display="flex" alignItems="center" justifyContent="center" backgroundColor="mobileModalColor">
+            <Box ref={allowDragElement} height="25px" display="flex" alignItems="center" justifyContent="center" backgroundColor="mobileModalColor">
               <motion.span
                 style={{
                   width: "18px",

@@ -326,7 +326,6 @@ blockquote {
 /* 去除 webkit 中 input 和 textarea 的默认样式  */
 .typo-input,
 .typo-textarea {
-  -webkit-appearance: none;
   border-radius: 0;
 }
 

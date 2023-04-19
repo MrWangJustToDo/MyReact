@@ -35,6 +35,7 @@ import {
   enableDebugLog,
   enableSyncFlush,
   enableHMRForDev,
+  enableConcurrentMode,
   enableLegacyLifeCycle,
   enableStrictLifeCycle,
 } from "./share";
@@ -49,6 +50,7 @@ const __my_react_shared__ = {
   enableDebugLog,
   enableSyncFlush,
   enableHMRForDev,
+  enableConcurrentMode,
   enableLegacyLifeCycle,
   enableStrictLifeCycle,
 };

@@ -67,8 +67,6 @@
     "@types/react-dom": "^18.0.11",
     "@types/webpack-env": "^1.18.0",
     "@types/webpack-node-externals": "^3.0.0",
-    "@typescript-eslint/eslint-plugin": "^5.58.0",
-    "@typescript-eslint/parser": "^5.58.0",
     "autoprefixer": "^10.4.14",
     "babel-loader": "^9.1.2",
     "browserslist": "^4.21.5",
@@ -77,13 +75,6 @@
     "css-loader": "^6.7.3",
     "css-minimizer-webpack-plugin": "^5.0.0",
     "eslint": "^8.38.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-import-resolver-typescript": "^3.5.5",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsx-a11y": "^6.7.1",
-    "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-react": "^7.32.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-webpack-plugin": "^4.0.1",
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^8.0.0",
@@ -92,6 +83,7 @@
     "postcss": "^8.4.21",
     "postcss-loader": "^7.2.4",
     "prettier": "^2.8.7",
+    "project-tool": "git+ssh://git@github.com:MrWangJustToDo/project-tool.git",
     "regenerator-runtime": "^0.13.11",
     "sass": "^1.62.0",
     "sass-loader": "^13.2.2",
@@ -99,10 +91,7 @@
     "thread-loader": "^3.0.4",
     "typescript": "^4.7.4",
     "webpack": "^5.79.0",
-    "webpack-bundle-analyzer": "^4.8.0",
     "webpack-dev-server": "^4.13.2",
-    "webpack-manifest-plugin": "^5.0.0",
-    "webpack-merge": "^5.8.0",
-    "webpack-node-externals": "^3.0.0"
+    "webpack-manifest-plugin": "^5.0.0"
   }
 }

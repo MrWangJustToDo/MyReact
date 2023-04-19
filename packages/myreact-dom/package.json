@@ -17,17 +17,20 @@
     ".": {
       "require": "./index.js",
       "node": "./index.js",
+      "types": "./index.d.ts",
       "default": "./index.js"
     },
     "./client": {
-      "require": "./index.js",
-      "node": "./index.js",
-      "default": "./index.js"
+      "require": "./client.js",
+      "node": "./client.js",
+      "types": "./client.d.ts",
+      "default": "./client.js"
     },
     "./server": {
-      "require": "./index.js",
-      "node": "./index.js",
-      "default": "./index.js"
+      "require": "./server.js",
+      "node": "./server.js",
+      "types": "./server.d.ts",
+      "default": "./server.js"
     }
   },
   "buildOptions": {

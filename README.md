@@ -29,41 +29,26 @@ pnpm dev:ssr / dev:csr
 
 ## api
 
-| @my-react/react | @my-react/react-dom    | @my-react/react-reactive |
-| --------------- | ---------------------- | ------------------------ |
-| createELement   | render                 | createReactive           |
-| cloneElement    | renderToString         | reactive                 |
-| isValidElement  | findDOMNode            | ref                      |
-| Children        | hydrate                | computed                 |
-| lazy            | createPortal           | watch                    |
-| forwardRef      | unmountComponentAtNode | onBeforeMount            |
-| createContext   |                        | onBeforeUnmount          |
-| createRef       |                        | onBeforeUpdate           |
-| memo            |                        | onMounted                |
-| Component       |                        | onUnmounted              |
-| PureComponent   |                        | onUpdated                |
-| StrictMode      |                        |
-| Fragment        |                        |
-| Suspense        |                        |
+| @my-react/react | @my-react/react-dom    | @my-react/react-reactive | @my-react/react (hook) |
+| --------------- | ---------------------- | ------------------------ | ---------------------- |
+| createELement   | render                 | createReactive           | useState               |
+| cloneElement    | renderToString         | reactive                 | useEffect              |
+| isValidElement  | findDOMNode            | ref                      | useLayoutEffect        |
+| Children        | hydrate                | computed                 | useRef                 |
+| lazy            | createPortal           | watch                    | useMemo                |
+| forwardRef      | unmountComponentAtNode | onBeforeMount            | useReducer             |
+| createContext   | createRoot (new)       | onBeforeUnmount          | useCallback            |
+| createRef       | hydrateRoot (new)      | onBeforeUpdate           | useContext             |
+| memo            |                        | onMounted                | useImperativeHandle    |
+| Component       |                        | onUnmounted              | useDebugValue          |
+| PureComponent   |                        | onUpdated                | useSignal              |
+| StrictMode      |                        |                          | useDeferredValue (new) |
+| Fragment        |                        |                          | useId (new)            |
+| Suspense        |                        |                          | useInsertionEffect (new)   
+|                 |                        |                          | useSyncExternalStore (new)
+|                 |                        |                          | useTransition (new)
 
-## hook api
-
-| @my-react/react     |
-| ------------------- |
-| useState            |
-| useEffect           |
-| useLayoutEffect     |
-| useRef              |
-| useMemo             |
-| useReducer          |
-| useCallback         |
-| useContext          |
-| useImperativeHandle |
-| useDebugValue       |
-| useSignal (new)     |
-
----
-
+`React 18` api have been added
 ## Vue like reactive api
 
 ```tsx

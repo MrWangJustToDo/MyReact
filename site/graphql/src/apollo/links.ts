@@ -1,8 +1,8 @@
 import { HttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-// import { generateFetchWithTimeout } from "@site/axios";
 import { fetch } from "cross-fetch";
+import { generateFetchWithTimeout } from "project-tool/request";
 
 const BLOG_API = "https://api.github.com/graphql";
 
@@ -10,7 +10,7 @@ const isBrowser = typeof window !== "undefined";
 
 export const httpLink = new HttpLink({
   uri: BLOG_API,
-  fetch,
+  fetch: typeof fetch === "function" ? generateFetchWithTimeout(5000) : fetch,
 });
 
 export const onErrorLink = onError(({ networkError, graphQLErrors }) => {

@@ -30,4 +30,6 @@ export const enableConcurrentMode = createRef(true)
 export const enableLegacyLifeCycle = createRef(true);
 
 // enable react-18 strict lifecycle method
+// for now there are some bug for current flow, should not enable this feature flag
+// TODO need improve strictMode flow
 export const enableStrictLifeCycle = createRef(false);

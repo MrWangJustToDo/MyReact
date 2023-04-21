@@ -5,9 +5,12 @@
 ```shell
 // install
 pnpm add @my-react/react @my-react/react-dom
+
+// use
+// currently i think it is a better way to use `alias` method/option to try this project what provide by build framework like `webpack`/`vite` and this project currently not ready for production env
 ```
 
-This project provide a react like framework to build site, you can see this project github page which build by @my-react package
+This project provide a react like framework, for now contain `React17` & `React18` api by default 
 
 ---
 
@@ -48,7 +51,6 @@ pnpm dev:ssr / dev:csr
 |                 |                        |                          | useSyncExternalStore (new)
 |                 |                        |                          | useTransition (new)
 
-`React 18` api have been added
 ## Vue like reactive api
 
 ```tsx

@@ -246,6 +246,7 @@ export class CustomRenderDispatch implements RenderDispatch {
     return mountLoop(_fiber, _hydrate);
   }
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
+    // TODO maybe need call `insertionEffect` in another function
     _list.listToFoot((_fiber) => {
       if (!(_fiber.state & STATE_TYPE.__unmount__)) {
         unmount(_fiber);

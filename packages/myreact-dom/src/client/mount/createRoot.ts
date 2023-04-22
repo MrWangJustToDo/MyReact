@@ -13,7 +13,7 @@ export type Options = {
 };
 
 export const onceLogNewEntry = once((entry) => {
-  console.log(`[@my-react/react-dom] you are using new entry function "${entry}"`);
+  console.log(`[@my-react/react-dom] you are using new entry function '${entry}'`);
 });
 
 export const createRoot = (container: Partial<RenderContainer>, _option?: Options) => {

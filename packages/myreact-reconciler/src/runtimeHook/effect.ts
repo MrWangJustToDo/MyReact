@@ -1,10 +1,7 @@
-import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, HOOK_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
-
-const { enableStrictLifeCycle } = __my_react_shared__;
 
 export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
   const renderContainer = fiber.renderContainer;
@@ -14,10 +11,10 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
   if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
     hookNode.mode = Effect_TYPE.__effect__;
 
-    const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
+    // const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
 
     if (hookNode.type === HOOK_TYPE.useEffect) {
-      const update = () => {
+      renderDispatch.pendingEffect(fiber, () => {
         hookNode.cancel && hookNode.cancel();
 
         if (!(hookNode._ownerFiber.state & STATE_TYPE.__unmount__)) hookNode.cancel = hookNode.value();
@@ -25,19 +22,11 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
         hookNode.effect = false;
 
         hookNode.mode = Effect_TYPE.__initial__;
-      };
-      renderDispatch.pendingEffect(fiber, () => {
-        if (ReactNewStrictMod) {
-          update();
-          update();
-        } else {
-          update();
-        }
       });
     }
 
     if (hookNode.type === HOOK_TYPE.useLayoutEffect) {
-      const update = () => {
+      renderDispatch.pendingLayoutEffect(fiber, () => {
         hookNode.cancel && hookNode.cancel();
 
         hookNode.cancel = hookNode.value();
@@ -45,19 +34,11 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
         hookNode.effect = false;
 
         hookNode.mode = Effect_TYPE.__initial__;
-      };
-      renderDispatch.pendingLayoutEffect(fiber, () => {
-        if (ReactNewStrictMod) {
-          update();
-          update();
-        } else {
-          update();
-        }
       });
     }
 
     if (hookNode.type === HOOK_TYPE.useInsertionEffect) {
-      const update = () => {
+      renderDispatch.pendingInsertionEffect(fiber, () => {
         hookNode.cancel && hookNode.cancel();
 
         hookNode.cancel = hookNode.value();
@@ -65,14 +46,6 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
         hookNode.effect = false;
 
         hookNode.mode = Effect_TYPE.__initial__;
-      };
-      renderDispatch.pendingInsertionEffect(fiber, () => {
-        if (ReactNewStrictMod) {
-          update();
-          update();
-        } else {
-          update();
-        }
       });
     }
 

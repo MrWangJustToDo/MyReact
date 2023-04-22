@@ -7,9 +7,9 @@ import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
-const { enableLegacyLifeCycle, enableStrictLifeCycle } = __my_react_shared__;
+const { enableLegacyLifeCycle /* enableStrictLifeCycle */ } = __my_react_shared__;
 
-const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
+const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const Component = fiber.elementType;
 
   const typedComponent = Component as MixinMyReactClassComponent;
@@ -23,20 +23,6 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode, devInstance?: M
     const payloadState = typedComponent.getDerivedStateFromProps?.(pendingProps, currentState);
     if (payloadState) {
       typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
-    }
-  }
-
-  if (devInstance) {
-    const typedDevInstance = devInstance as MyReactComponent;
-
-    const pendingProps = Object.assign({}, fiber.pendingProps);
-    const currentState = Object.assign({}, typedInstance.state);
-
-    if (typedComponent.getDerivedStateFromProps) {
-      const payloadState = typedComponent.getDerivedStateFromProps?.(pendingProps, currentState);
-      if (payloadState) {
-        typedDevInstance.state = Object.assign({}, typedInstance.state, payloadState);
-      }
     }
   }
 };
@@ -61,7 +47,7 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   const renderDispatch = renderContainer.renderDispatch;
 
-  const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
+  // const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
 
   const Component = fiber.elementType;
 
@@ -84,20 +70,6 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   instance._setOwner(fiber);
 
   instance._setContext(ProviderFiber);
-
-  let devInstance: null | MyReactComponent = null;
-
-  if (ReactNewStrictMod) {
-    const props = Object.assign({}, fiber.pendingProps);
-
-    devInstance = new typedComponent(props, context);
-
-    devInstance.props = props;
-
-    devInstance.context = context;
-  }
-
-  return devInstance;
 };
 
 const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
@@ -105,47 +77,27 @@ const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
   typedInstance._setOwner(fiber);
 };
 
-const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
+const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
-
-  if (devInstance) {
-    try {
-      devInstance.render();
-    } catch (e) {
-      void 0;
-    }
-  }
 
   const children = safeCallWithFiber({ fiber, action: () => typedInstance.render() });
 
   return children;
 };
 
-const processComponentDidMountOnMount = (fiber: MyReactFiberNode, devInstance?: MyReactComponent | null) => {
+const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
 
-  if (devInstance) {
-    if ((typedInstance.componentDidMount || typedInstance.componentWillUnmount) && !(typedInstance.mode & Effect_TYPE.__effect__)) {
-      typedInstance.mode = Effect_TYPE.__effect__;
-      renderDispatch.pendingLayoutEffect(fiber, () => {
-        typedInstance.mode = Effect_TYPE.__initial__;
-        typedInstance.componentDidMount?.();
-        typedInstance.componentWillUnmount?.();
-        typedInstance.componentDidMount?.();
-      });
-    }
-  } else {
-    if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE.__effect__)) {
-      typedInstance.mode = Effect_TYPE.__effect__;
-      renderDispatch.pendingLayoutEffect(fiber, () => {
-        typedInstance.mode = Effect_TYPE.__initial__;
-        typedInstance.componentDidMount?.();
-      });
-    }
+  if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE.__effect__)) {
+    typedInstance.mode = Effect_TYPE.__effect__;
+    renderDispatch.pendingLayoutEffect(fiber, () => {
+      typedInstance.mode = Effect_TYPE.__initial__;
+      typedInstance.componentDidMount?.();
+    });
   }
 };
 
@@ -330,18 +282,18 @@ const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextSt
 };
 
 export const classComponentMount = (fiber: MyReactFiberNode) => {
-  const devInstance = processComponentInstanceOnMount(fiber);
+  processComponentInstanceOnMount(fiber);
 
-  processComponentStateFromProps(fiber, devInstance);
+  processComponentStateFromProps(fiber);
 
   // legacy lifeCycle
   if (enableLegacyLifeCycle.current) {
     processComponentWillMountOnMount(fiber);
   }
 
-  const children = processComponentRenderOnMountAndUpdate(fiber, devInstance);
+  const children = processComponentRenderOnMountAndUpdate(fiber);
 
-  processComponentDidMountOnMount(fiber, devInstance);
+  processComponentDidMountOnMount(fiber);
 
   return children;
 };

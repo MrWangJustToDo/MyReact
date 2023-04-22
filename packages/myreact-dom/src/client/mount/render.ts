@@ -20,7 +20,8 @@ export const onceLog = once(() => {
 });
 
 export const onceLogNewStrictMode = once(() => {
-  console.log("[@my-react/react] react-18 like lifecycle have been enabled!");
+  // remove strict lifecycle
+  // console.log("[@my-react/react] react-18 like lifecycle have been enabled!");
 });
 
 export const onceLogConcurrentMode = once(() => {

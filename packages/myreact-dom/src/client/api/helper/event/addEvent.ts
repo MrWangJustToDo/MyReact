@@ -1,25 +1,15 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { safeCallWithFiber } from "@my-react/react-reconciler";
 
-import { enableControlComponent, enableEventSystem } from "@my-react-dom-shared";
+import { enableEventSystem } from "@my-react-dom-shared";
 
 import { getNativeEventName } from "./getEventName";
 
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "@my-react/react-reconciler";
+import type { ControlledElement } from "@my-react-dom-client";
 import type { DomElement } from "@my-react-dom-shared";
 
-export const controlElementTag: Record<string, boolean> = {
-  input: true,
-  // textarea: true,
-  // select: true,
-};
-
 const { enableSyncFlush } = __my_react_shared__;
-
-type ControlledElement = HTMLInputElement & {
-  __isControlled__: boolean;
-  __isReadonly__: boolean;
-};
 
 // TODO
 const syncUpdateEvent = {
@@ -47,7 +37,7 @@ const afterEvent = (event: string) => {
   }
 };
 
-export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
+export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string, isControlled: boolean) => {
   const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
@@ -84,40 +74,22 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
 
         afterEvent(nativeName);
 
-        if (enableControlComponent.current) {
+        if (isControlled) {
           requestAnimationFrame(() => {
             const pendingProps = fiber.pendingProps;
 
-            if (controlElementTag[typedElementType] && typeof pendingProps["value"] !== "undefined") {
+            if (typeof pendingProps["value"] !== "undefined") {
               const typedDom = dom as ControlledElement;
 
               typedDom["value"] = pendingProps["value"] as string;
 
-              if (typedDom.__isControlled__) {
-                typedDom.setAttribute("my_react_controlled_value", String(pendingProps["value"]));
-              }
-              if (typedDom.__isReadonly__) {
-                typedDom.setAttribute("my_react_readonly_value", String(pendingProps["value"]));
-              }
+              // if (typedDom.__isControlled__) {
+              //   typedDom.setAttribute("controlled_value", String(pendingProps["value"]));
+              // }
             }
           });
         }
       };
-
-      if (enableControlComponent.current) {
-        if (controlElementTag[typedElementType]) {
-          if ("value" in pendingProps) {
-            const typedDom = dom as ControlledElement;
-            if ("onChange" in pendingProps) {
-              typedDom.__isControlled__ = true;
-              typedDom.setAttribute("my_react_input", "controlled");
-            } else {
-              typedDom.__isReadonly__ = true;
-              typedDom.setAttribute("my_react_input", "readonly");
-            }
-          }
-        }
-      }
 
       handler.cb = [callback];
 

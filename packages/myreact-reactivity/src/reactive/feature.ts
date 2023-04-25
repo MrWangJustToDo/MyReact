@@ -3,7 +3,7 @@ import { Component, createElement, useState, useCallback, useMemo } from "@my-re
 import { proxyRefs, ReactiveEffect } from "../api";
 
 import type { UnwrapRef } from "../api";
-import type { MyReactElementNode , LikeJSX } from "@my-react/react";
+import type { MyReactElementNode, LikeJSX } from "@my-react/react";
 
 type LifeCycle = {
   onBeforeMount: Array<() => void>;
@@ -53,7 +53,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     }
   }
 
-  class Render extends Component<
+  class RenderWithLifeCycle extends Component<
     {
       ["$$__trigger__$$"]: () => void;
       ["$$__instance__$$"]: LifeCycle;
@@ -71,6 +71,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
 
     componentWillUnmount(): void {
       this.props.$$__instance__$$.onUnmounted.forEach((f) => f());
+      this.effect.stop();
     }
 
     shouldComponentUpdate(): boolean {
@@ -89,6 +90,29 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
 
     render() {
       return createElement(ForBeforeMount, { ["$$__instance__$$"]: this.props.$$__instance__$$, children: this.effect.run() });
+    }
+  }
+
+  class Render extends Component<
+    {
+      ["$$__trigger__$$"]: () => void;
+      ["$$__reactiveState__$$"]: UnwrapRef<S>;
+      children: (props: UnwrapRef<S> & P) => MyReactElementNode;
+    } & P
+  > {
+    componentWillUnmount(): void {
+      this.effect.stop();
+    }
+
+    effect = new ReactiveEffect(() => {
+      const { children, $$__trigger__$$, $$__reactiveState__$$, $$__instance__$$, ...last } = this.props;
+      const targetRender = (render || children) as (props: UnwrapRef<S> & P) => MyReactElementNode;
+      const element = targetRender?.({ ...last, ...$$__reactiveState__$$ } as UnwrapRef<S> & P) || null;
+      return element;
+    }, this.props.$$__trigger__$$);
+
+    render() {
+      return this.effect.run();
     }
   }
 
@@ -136,14 +160,15 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     if (instance.hasHookInstalled) {
       return createElement(ForBeforeUnmount, {
         ["$$__instance__$$"]: instance,
-        children: createElement(Render, { ...props, ["$$__trigger__$$"]: updateCallback, ["$$__reactiveState__$$"]: state, ["$$__instance__$$"]: instance }),
+        children: createElement(RenderWithLifeCycle, {
+          ...props,
+          ["$$__trigger__$$"]: updateCallback,
+          ["$$__reactiveState__$$"]: state,
+          ["$$__instance__$$"]: instance,
+        }),
       });
     } else {
-      const { children, ...last } = props;
-
-      const targetRender = render || children as typeof render;
-
-      return targetRender?.({ ...last, ...state } as P & UnwrapRef<S>) || null;
+      return createElement(Render, { ...props, ["$$__trigger__$$"]: updateCallback, ["$$__reactiveState__$$"]: state });
     }
   };
 

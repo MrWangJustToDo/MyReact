@@ -90,7 +90,11 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
   container.__container__ = renderContainer;
 
+  renderContainer.isClientRender = true;
+
   initialFiberNode(fiber);
 
   startRender(fiber);
+
+  delete renderContainer.isClientRender;
 };

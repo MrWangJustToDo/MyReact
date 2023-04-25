@@ -19,7 +19,12 @@
       const Input = () => {
         const [str, setStr] = useState("");
 
-        return <input type="text" value={str} onChange={(e) => setStr(e.target.value)} />;
+        return (
+          <>
+            <input type="text" value={str} onChange={(e) => setStr(e.target.value)} />
+            <input value={str} />
+          </>
+        );
       };
 
       ReactDOM.render(<Input />, root);

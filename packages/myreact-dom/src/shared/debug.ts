@@ -42,6 +42,12 @@ const shouldIncludeLog = (fiber: MyReactFiberNode) => {
   }
 };
 
+const getRenderFiber = (fiber: MyReactFiberNode) => {
+  if (!fiber) return "<unknown />";
+  if (shouldIncludeLog(fiber)) return fiber;
+  return getRenderFiber(fiber.parent);
+};
+
 export const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__memo__) {
     const targetRender = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
@@ -81,10 +87,10 @@ export const getElementName = (fiber: MyReactFiberNode) => {
   if (typeof fiber.elementType === "function") {
     const typedElementType = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
     const name = typedElementType.displayName || typedElementType.name || "anonymous";
-    return `<${name}* />`;
+    return `<${name} />`;
   }
   if (typeof fiber.element === "object" && fiber.element !== null) {
-    return `<unknown* />`;
+    return `<unknown />`;
   } else {
     return `<text (${fiber.element?.toString()}) />`;
   }
@@ -93,34 +99,26 @@ export const getElementName = (fiber: MyReactFiberNode) => {
 export const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)}${getTrackDevLog(fiber)}`;
 
 export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
-  if (__DEV__) {
-    if (fiber) {
-      const preString = "".padEnd(4) + "at".padEnd(4);
-      let parent = fiber.parent;
-      let res = `${preString}${getFiberNodeName(fiber)}`;
-      if (enableOptimizeTreeLog.current) {
-        while (parent) {
-          if (shouldIncludeLog(parent)) {
-            res += `\n${preString}${getFiberNodeName(parent)}`;
-          }
-          parent = parent.parent;
+  if (fiber) {
+    const preString = "".padEnd(4) + "at".padEnd(4);
+    let res = "";
+    let temp = fiber;
+    if (enableOptimizeTreeLog.current) {
+      while (temp) {
+        if (shouldIncludeLog(temp)) {
+          res ? (res += `\n${preString}${getFiberNodeName(temp)}`) : (res = `${preString}${getFiberNodeName(temp)}`);
         }
-      } else {
-        while (parent) {
-          res += `\n${preString}${getFiberNodeName(parent)}`;
-          parent = parent.parent;
-        }
+        temp = temp.parent;
       }
-      return `\n${res}`;
-    }
-    return "";
-  } else {
-    if (fiber) {
-      return getFiberNodeName(fiber);
     } else {
-      return "";
+      while (temp) {
+        res ? (res += `\n${preString}${getFiberNodeName(temp)}`) : (res = `${preString}${getFiberNodeName(temp)}`);
+        temp = temp.parent;
+      }
     }
+    return `\n${res}`;
   }
+  return "";
 };
 
 export const getHookTree = (
@@ -177,7 +175,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
     return;
   }
   const currentFiber = fiber || currentRunningFiber.current;
-  const tree = getFiberTree(currentFiber as MyReactFiberNode);
+  const tree = getRenderFiber(currentFiber as MyReactFiberNode);
   if (triggerOnce) {
     const messageKey = message.toString();
     cache[messageKey] = cache[messageKey] || {};
@@ -191,7 +189,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
       "\n-----------------------------------------\n",
       `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
       "\n-----------------------------------------\n",
-      "cause by:",
+      "render by:",
       tree
     );
   }
@@ -201,7 +199,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
       "\n-----------------------------------------\n",
       `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
       "\n-----------------------------------------\n",
-      "cause by:",
+      "render by:",
       tree
     );
   }

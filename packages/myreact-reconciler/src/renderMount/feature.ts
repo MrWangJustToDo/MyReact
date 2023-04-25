@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { mountLoop, mountLoopAsync } from "../runtimeMount";
 import { resetLogScope, safeCall, safeCallAsync, setLogScope } from "../share";
@@ -7,6 +7,8 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { globalLoop } = __my_react_internal__;
 
+const { enableScopeTreeLog } = __my_react_shared__;
+
 export const mount = (fiber: MyReactFiberNode, hydrate?: boolean) => {
   const renderContainer = fiber.renderContainer;
 
@@ -14,11 +16,11 @@ export const mount = (fiber: MyReactFiberNode, hydrate?: boolean) => {
 
   globalLoop.current = true;
 
-  setLogScope();
+  enableScopeTreeLog.current && setLogScope();
 
   safeCall(() => mountLoop(fiber));
 
-  resetLogScope();
+  enableScopeTreeLog.current && resetLogScope();
 
   renderContainer.commitFiberList = null;
 
@@ -34,11 +36,11 @@ export const mountAsync = async (fiber: MyReactFiberNode, hydrate?: boolean) => 
 
   globalLoop.current = true;
 
-  setLogScope();
+  enableScopeTreeLog.current && setLogScope();
 
   await safeCallAsync(() => mountLoopAsync(fiber));
 
-  resetLogScope();
+  enableScopeTreeLog.current && resetLogScope();
 
   renderContainer.commitFiberList = null;
 

@@ -1,9 +1,11 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, isUnitlessNumber, log } from "@my-react-dom-shared";
+import { enableControlComponent, getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, isUnitlessNumber, log } from "@my-react-dom-shared";
 
 import { addEventListener } from "../helper";
+
+import { controlElementTag, prepareControlElement, prepareControlProp } from "./controlled";
 
 import type { HydrateDOM } from "../create/getHydrateDom";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -93,7 +95,9 @@ const domStyleHydrate = (fiber: MyReactFiberNode, key: string, value: Record<str
 const domEventHydrate = (fiber: MyReactFiberNode, key: string) => {
   const node = fiber.nativeNode;
 
-  addEventListener(fiber, node as DomElement, key);
+  const isCanControlledElement = controlElementTag[fiber.elementType as string];
+
+  addEventListener(fiber, node as DomElement, key, isCanControlledElement);
 };
 
 const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
@@ -125,6 +129,16 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     const props = fiber.pendingProps;
 
     if (fiber.type & NODE_TYPE.__plain__) {
+      const isCanControlledElement = enableControlComponent.current && controlElementTag[fiber.elementType as string];
+
+      if (isCanControlledElement) {
+        prepareControlProp(fiber);
+      }
+
+      if (isCanControlledElement) {
+        prepareControlElement(fiber);
+      }
+
       Object.keys(props).forEach((key) => {
         if (isEvent(key)) {
           domEventHydrate(fiber, key);

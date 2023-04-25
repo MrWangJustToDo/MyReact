@@ -28,6 +28,8 @@ export const enableConcurrentMode = createRef(true);
 
 export const enableOptimizeTreeLog = createRef(true);
 
+export const enableScopeTreeLog = createRef(true);
+
 // support "unsafe_" lifecycle
 export const enableLegacyLifeCycle = createRef(true);
 

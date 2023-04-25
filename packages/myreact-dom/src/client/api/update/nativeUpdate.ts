@@ -1,9 +1,21 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import { enableHighlight, getHTMLAttrKey, getSVGAttrKey, isEvent, isGone, isNew, isProperty, isStyle, isUnitlessNumber } from "@my-react-dom-shared";
+import {
+  enableControlComponent,
+  enableHighlight,
+  getHTMLAttrKey,
+  getSVGAttrKey,
+  isEvent,
+  isGone,
+  isNew,
+  isProperty,
+  isStyle,
+  isUnitlessNumber,
+} from "@my-react-dom-shared";
 
 import { addEventListener, removeEventListener } from "../helper";
 
+import { controlElementTag, prepareControlElement, prepareControlProp } from "./controlled";
 import { HighLight } from "./highlight";
 import { XLINK_NS, XML_NS, X_CHAR } from "./tool";
 
@@ -22,6 +34,16 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     node.textContent = fiber.element as string;
   } else if (fiber.type & NODE_TYPE.__plain__) {
     const dom = node as HTMLElement;
+
+    const isCanControlledElement = enableControlComponent.current && controlElementTag[fiber.elementType as string];
+
+    if (isCanControlledElement) {
+      prepareControlProp(fiber);
+    }
+
+    if (isCanControlledElement && renderContainer.isClientRender) {
+      prepareControlElement(fiber);
+    }
 
     const oldProps = fiber.memoizedProps || {};
 
@@ -61,7 +83,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
       .filter(isNew(oldProps, newProps))
       .filter((key) => {
         if (isEvent(key)) {
-          addEventListener(fiber, node as DomElement, key);
+          addEventListener(fiber, node as DomElement, key, isCanControlledElement);
         } else if (isProperty(key)) {
           // from million package
           if (key.charCodeAt(0) === X_CHAR && isSVG) {
@@ -88,9 +110,6 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
                 dom.setAttribute(attrKey, String(newProps[key]));
               }
             }
-            // if ((key === "autofocus" || key === "autoFocus") && newProps[key]) {
-            //   Promise.resolve().then(() => dom.focus());
-            // }
           }
         } else if (isStyle(key)) {
           const typedNewProps = newProps[key] as Record<string, unknown>;

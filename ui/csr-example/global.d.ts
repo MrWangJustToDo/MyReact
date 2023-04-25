@@ -3,6 +3,7 @@ declare global {
   const __SERVER__: boolean;
   const __CSR__: boolean;
   const __SSR__: boolean;
+  const __REACT__: boolean;
   const __DEVELOPMENT__: boolean;
   const __BUILD_TIME__: string;
 

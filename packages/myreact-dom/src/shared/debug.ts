@@ -1,9 +1,11 @@
-import { __my_react_internal__ } from "@my-react/react";
-import { NODE_TYPE } from "@my-react/react-reconciler";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { NODE_TYPE, originalError, originalWarn } from "@my-react/react-reconciler";
 
 import type { MyReactElement, MixinMyReactClassComponent, MixinMyReactFunctionComponent, lazy, LogProps } from "@my-react/react";
 import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react-reconciler";
 import type { ListTreeNode } from "@my-react/react-shared";
+
+const { enableOptimizeTreeLog } = __my_react_shared__;
 
 const { currentRunningFiber } = __my_react_internal__;
 
@@ -29,6 +31,14 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
     return preString;
   } else {
     return "";
+  }
+};
+
+const shouldIncludeLog = (fiber: MyReactFiberNode) => {
+  if (typeof fiber.elementType === "function" && !(fiber.type & NODE_TYPE.__forwardRef__)) {
+    return true;
+  } else {
+    return false;
   }
 };
 
@@ -88,9 +98,18 @@ export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
       const preString = "".padEnd(4) + "at".padEnd(4);
       let parent = fiber.parent;
       let res = `${preString}${getFiberNodeName(fiber)}`;
-      while (parent) {
-        res += `\n${preString}${getFiberNodeName(parent)}`;
-        parent = parent.parent;
+      if (enableOptimizeTreeLog.current) {
+        while (parent) {
+          if (shouldIncludeLog(parent)) {
+            res += `\n${preString}${getFiberNodeName(parent)}`;
+          }
+          parent = parent.parent;
+        }
+      } else {
+        while (parent) {
+          res += `\n${preString}${getFiberNodeName(parent)}`;
+          parent = parent.parent;
+        }
       }
       return `\n${res}`;
     }
@@ -133,7 +152,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
       cache[messageKey][tree] = true;
     }
     if (level === "warn") {
-      console.warn(
+      originalWarn(
         `[${level}]:`,
         "\n-----------------------------------------\n",
         `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
@@ -143,7 +162,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
       );
     }
     if (level === "error") {
-      console.error(
+      originalError(
         `[${level}]:`,
         "\n-----------------------------------------\n",
         `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
@@ -167,7 +186,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
   }
   // look like a ts bug
   if (level === "warn") {
-    console.warn(
+    originalWarn(
       `[${level}]:`,
       "\n-----------------------------------------\n",
       `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
@@ -177,7 +196,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
     );
   }
   if (level === "error") {
-    console.error(
+    originalError(
       `[${level}]:`,
       "\n-----------------------------------------\n",
       `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,

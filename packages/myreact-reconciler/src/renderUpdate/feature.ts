@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 
 import { updateLoopConcurrentWithSkip, updateLoopConcurrentWithTrigger, updateLoopSyncWithSkip, updateLoopSyncWithTrigger } from "../runtimeUpdate";
-import { safeCall } from "../share";
+import { resetLogScope, safeCall, setLogScope } from "../share";
 
 import type { MyReactContainer } from "../runtimeFiber";
 
@@ -16,7 +16,11 @@ export const updateSyncWithSkip = (container: MyReactContainer, cb?: () => void)
 
   const renderPlatform = container.renderPlatform;
 
+  setLogScope();
+
   safeCall(() => updateLoopSyncWithSkip(renderContainer));
+
+  resetLogScope();
 
   const commitList = renderContainer.commitFiberList;
 
@@ -40,7 +44,11 @@ export const updateSyncWithTrigger = (container: MyReactContainer, cb?: () => vo
 
   const renderPlatform = container.renderPlatform;
 
+  setLogScope();
+
   safeCall(() => updateLoopSyncWithTrigger(renderContainer));
+
+  resetLogScope();
 
   const commitList = renderContainer.commitFiberList;
 
@@ -64,7 +72,11 @@ export const updateConcurrentWithSkip = (container: MyReactContainer, cb?: () =>
 
   const renderDispatch = container.renderDispatch;
 
+  setLogScope();
+
   safeCall(() => updateLoopConcurrentWithSkip(renderContainer));
+
+  resetLogScope();
 
   if (renderContainer.nextWorkingFiber) {
     renderPlatform.yieldTask(() => updateConcurrentWithSkip(container, cb));
@@ -92,7 +104,11 @@ export const updateConcurrentWithTrigger = (container: MyReactContainer, cb?: ()
 
   const renderDispatch = container.renderDispatch;
 
+  setLogScope();
+
   safeCall(() => updateLoopConcurrentWithTrigger(renderContainer));
+
+  resetLogScope();
 
   if (renderContainer.nextWorkingFiber) {
     renderPlatform.yieldTask(() => updateConcurrentWithTrigger(container, cb));

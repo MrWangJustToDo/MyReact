@@ -22,6 +22,7 @@ export const pluginsConfig = ({ env, isDEV }: SafeGenerateActionProps): Configur
       __CLIENT__: env === "client",
       __SERVER__: env === "server",
       __DEVELOPMENT__: isDEV,
+      __REACT__: process.env.REACT === "react",
       __BUILD_TIME__: JSON.stringify(new Date().toLocaleString()),
     }),
     env === "client" &&

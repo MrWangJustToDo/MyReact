@@ -35,6 +35,7 @@ import {
   enableDebugLog,
   enableSyncFlush,
   enableHMRForDev,
+  enableOptimizeTreeLog,
   enableConcurrentMode,
   enableLegacyLifeCycle,
   enableStrictLifeCycle,
@@ -53,6 +54,7 @@ const __my_react_shared__ = {
   enableConcurrentMode,
   enableLegacyLifeCycle,
   enableStrictLifeCycle,
+  enableOptimizeTreeLog,
 };
 
 const __my_react_internal__ = {

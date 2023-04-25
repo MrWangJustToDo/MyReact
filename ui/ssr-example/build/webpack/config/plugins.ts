@@ -37,7 +37,6 @@ export const pluginsConfig = ({ env, isDEV, isSSR, isCSR, isMIDDLEWARE }: SafeGe
         filename: isDEV ? "[name].css" : "[name]-[contenthash].css",
         chunkFilename: isDEV ? "[name]-[id].css" : "[name]-[id]-[contenthash].css",
       }),
-    // 在client打包下，引入的refresh会导致webpack 打包格式识别错误，触发export not defined 错误
     env === "client" && isDEV && (process.env.REACT === "react" ? new ReactRefreshPlugin() : new MyReactRefreshPlugin()),
     env === "client" && isDEV && isMIDDLEWARE && new HotModuleReplacementPlugin(),
     env === "server" && isDEV && !isMIDDLEWARE && new HotModuleReplacementPlugin(),

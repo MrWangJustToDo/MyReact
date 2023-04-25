@@ -42,6 +42,6 @@ if (window.__ENV__.isPURE_CSR) {
   if (!window.__ENV__.isSSR || (window.__ENV__.isDEVELOPMENT && window.__ENV__.isMIDDLEWARE)) {
     loadableReady(() => render(<Root store={store} />, place));
   } else {
-    loadableReady(() => hydrateRoot(place, <Root store={store} />));
+    __REACT__ ? loadableReady(() => render(<Root store={store} />, place)) : loadableReady(() => hydrateRoot(place, <Root store={store} />));
   }
 }

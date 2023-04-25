@@ -39,4 +39,4 @@ function LoginContainerPassword() {
   );
 }
 
-export default ReactiveLoginContainerPassword;
+export default __REACT__ ? LoginContainerPassword : ReactiveLoginContainerPassword;

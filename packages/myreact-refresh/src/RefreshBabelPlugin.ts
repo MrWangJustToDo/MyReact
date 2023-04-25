@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable no-constant-condition */
 /* eslint-disable @typescript-eslint/no-var-requires */
 export default function (babel, opts: Record<string, any> = {}) {

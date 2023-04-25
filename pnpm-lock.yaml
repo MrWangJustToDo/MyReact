@@ -14158,7 +14158,7 @@ packages:
     dev: false
 
   github.com/MrWangJustToDo/project-tool/2a39cde4ddb591b0920abf582ac8b0ed1d94e256(typescript@4.9.5):
-    resolution: {commit: 2a39cde4ddb591b0920abf582ac8b0ed1d94e256, repo: git+ssh://git@github.com/MrWangJustToDo/project-tool.git, type: git}
+    resolution: {tarball: https://codeload.github.com/MrWangJustToDo/project-tool/tar.gz/2a39cde4ddb591b0920abf582ac8b0ed1d94e256}
     id: github.com/MrWangJustToDo/project-tool/2a39cde4ddb591b0920abf582ac8b0ed1d94e256
     name: project-tool
     version: 0.1.8

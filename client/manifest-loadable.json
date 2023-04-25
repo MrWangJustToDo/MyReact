@@ -1,0 +1,835 @@
+{
+  "name": "client",
+  "hash": "488ea83ba368c7313aad",
+  "publicPath": "client/",
+  "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
+  "assetsByChunkName": {
+    "main": [
+      "main-899432e8b2b128d5a9e0.css",
+      "main-54efc031b21cd0d210ca.js"
+    ],
+    "runtime": [
+      "runtime-114e64931da621c5b415.js"
+    ],
+    "common-Layout": [
+      "common-Layout-dc11ff6cb4bbb37578b4.js"
+    ],
+    "pages-": [
+      "pages--0cff148f0be5ace81a56.js"
+    ],
+    "pages-404": [
+      "pages-404-bcab06dd1aa96af01559.js"
+    ],
+    "pages-Blog": [
+      "pages-Blog-8626af3a2ff6a7d18c30.js"
+    ],
+    "vendor-ui": [
+      "vendor-ui-78962f7d948ce0ed407b.js"
+    ],
+    "vendor-react": [
+      "vendor-react-45c377887f79d3b629a1.js"
+    ],
+    "vendor": [
+      "vendor-90c5146cc6699a363406.css",
+      "vendor-7cf3ba934ee7ca05a569.js"
+    ],
+    "vendor-babel": [
+      "vendor-babel-28e1a2d9cf5548baed95.js"
+    ],
+    "vendor-lodash": [
+      "vendor-lodash-0307fabf012c75cb3374.js"
+    ]
+  },
+  "assets": [
+    {
+      "type": "asset",
+      "name": "vendor-7cf3ba934ee7ca05a569.js",
+      "size": 655885,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "7cf3ba934ee7ca05a569",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "vendor-7cf3ba934ee7ca05a569.js.LICENSE.txt",
+          "sourceMap": "vendor-7cf3ba934ee7ca05a569.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 2,
+      "chunks": [
+        736
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "main-54efc031b21cd0d210ca.js",
+      "size": 179168,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "54efc031b21cd0d210ca",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "main-54efc031b21cd0d210ca.js.map"
+        }
+      },
+      "chunkNames": [
+        "main"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        179
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-ui-78962f7d948ce0ed407b.js",
+      "size": 163241,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "78962f7d948ce0ed407b",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "vendor-ui-78962f7d948ce0ed407b.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-ui"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        50
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-react-45c377887f79d3b629a1.js",
+      "size": 154568,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "45c377887f79d3b629a1",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "vendor-react-45c377887f79d3b629a1.js.LICENSE.txt",
+          "sourceMap": "vendor-react-45c377887f79d3b629a1.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-react"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 2,
+      "chunks": [
+        270
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-lodash-0307fabf012c75cb3374.js",
+      "size": 42391,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "0307fabf012c75cb3374",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "vendor-lodash-0307fabf012c75cb3374.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-lodash"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        904
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-Blog-8626af3a2ff6a7d18c30.js",
+      "size": 39388,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "8626af3a2ff6a7d18c30",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages-Blog-8626af3a2ff6a7d18c30.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-Blog"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        587
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages--0cff148f0be5ace81a56.js",
+      "size": 27583,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "0cff148f0be5ace81a56",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages--0cff148f0be5ace81a56.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        617
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-babel-28e1a2d9cf5548baed95.js",
+      "size": 14322,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "28e1a2d9cf5548baed95",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "vendor-babel-28e1a2d9cf5548baed95.js.LICENSE.txt",
+          "sourceMap": "vendor-babel-28e1a2d9cf5548baed95.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-babel"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 2,
+      "chunks": [
+        89
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "common-Layout-dc11ff6cb4bbb37578b4.js",
+      "size": 14200,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "dc11ff6cb4bbb37578b4",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "common-Layout-dc11ff6cb4bbb37578b4.js.map"
+        }
+      },
+      "chunkNames": [
+        "common-Layout"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        497
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "main-899432e8b2b128d5a9e0.css",
+      "size": 4322,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "899432e8b2b128d5a9e0",
+        "minimized": true,
+        "related": {
+          "sourceMap": "main-899432e8b2b128d5a9e0.css.map"
+        }
+      },
+      "chunkNames": [
+        "main"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        179
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "runtime-114e64931da621c5b415.js",
+      "size": 3466,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "114e64931da621c5b415",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "runtime-114e64931da621c5b415.js.map"
+        }
+      },
+      "chunkNames": [
+        "runtime"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        666
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-90c5146cc6699a363406.css",
+      "size": 3414,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "90c5146cc6699a363406",
+        "minimized": true,
+        "related": {
+          "sourceMap": "vendor-90c5146cc6699a363406.css.map"
+        }
+      },
+      "chunkNames": [
+        "vendor"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        736
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-404-bcab06dd1aa96af01559.js",
+      "size": 492,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "bcab06dd1aa96af01559",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages-404-bcab06dd1aa96af01559.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-404"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        751
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "manifest-deps.json",
+      "size": 235,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {},
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [],
+      "auxiliaryChunks": []
+    }
+  ],
+  "namedChunkGroups": {
+    "main": {
+      "name": "main",
+      "chunks": [
+        666,
+        50,
+        270,
+        736,
+        89,
+        904,
+        179
+      ],
+      "assets": [
+        {
+          "name": "runtime-114e64931da621c5b415.js"
+        },
+        {
+          "name": "vendor-ui-78962f7d948ce0ed407b.js"
+        },
+        {
+          "name": "vendor-react-45c377887f79d3b629a1.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-7cf3ba934ee7ca05a569.js"
+        },
+        {
+          "name": "vendor-babel-28e1a2d9cf5548baed95.js"
+        },
+        {
+          "name": "vendor-lodash-0307fabf012c75cb3374.js"
+        },
+        {
+          "name": "main-899432e8b2b128d5a9e0.css"
+        },
+        {
+          "name": "main-54efc031b21cd0d210ca.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 9,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "common-Layout": {
+      "name": "common-Layout",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        497
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-78962f7d948ce0ed407b.js"
+        },
+        {
+          "name": "vendor-react-45c377887f79d3b629a1.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-7cf3ba934ee7ca05a569.js"
+        },
+        {
+          "name": "vendor-babel-28e1a2d9cf5548baed95.js"
+        },
+        {
+          "name": "common-Layout-dc11ff6cb4bbb37578b4.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 6,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-": {
+      "name": "pages-",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        904,
+        617
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-78962f7d948ce0ed407b.js"
+        },
+        {
+          "name": "vendor-react-45c377887f79d3b629a1.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-7cf3ba934ee7ca05a569.js"
+        },
+        {
+          "name": "vendor-babel-28e1a2d9cf5548baed95.js"
+        },
+        {
+          "name": "vendor-lodash-0307fabf012c75cb3374.js"
+        },
+        {
+          "name": "pages--0cff148f0be5ace81a56.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 7,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-404": {
+      "name": "pages-404",
+      "chunks": [
+        50,
+        751
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-78962f7d948ce0ed407b.js"
+        },
+        {
+          "name": "pages-404-bcab06dd1aa96af01559.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 2,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-404-tsx": {
+      "name": "pages-404-tsx",
+      "chunks": [
+        50,
+        751
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-78962f7d948ce0ed407b.js"
+        },
+        {
+          "name": "pages-404-bcab06dd1aa96af01559.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 2,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Blog": {
+      "name": "pages-Blog",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        904,
+        587
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-78962f7d948ce0ed407b.js"
+        },
+        {
+          "name": "vendor-react-45c377887f79d3b629a1.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-7cf3ba934ee7ca05a569.js"
+        },
+        {
+          "name": "vendor-babel-28e1a2d9cf5548baed95.js"
+        },
+        {
+          "name": "vendor-lodash-0307fabf012c75cb3374.js"
+        },
+        {
+          "name": "pages-Blog-8626af3a2ff6a7d18c30.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 7,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Blog-tsx": {
+      "name": "pages-Blog-tsx",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        904,
+        587
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-78962f7d948ce0ed407b.js"
+        },
+        {
+          "name": "vendor-react-45c377887f79d3b629a1.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-7cf3ba934ee7ca05a569.js"
+        },
+        {
+          "name": "vendor-babel-28e1a2d9cf5548baed95.js"
+        },
+        {
+          "name": "vendor-lodash-0307fabf012c75cb3374.js"
+        },
+        {
+          "name": "pages-Blog-8626af3a2ff6a7d18c30.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 7,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-index": {
+      "name": "pages-index",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        904,
+        617
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-78962f7d948ce0ed407b.js"
+        },
+        {
+          "name": "vendor-react-45c377887f79d3b629a1.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-7cf3ba934ee7ca05a569.js"
+        },
+        {
+          "name": "vendor-babel-28e1a2d9cf5548baed95.js"
+        },
+        {
+          "name": "vendor-lodash-0307fabf012c75cb3374.js"
+        },
+        {
+          "name": "pages--0cff148f0be5ace81a56.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 7,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-index-tsx": {
+      "name": "pages-index-tsx",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        904,
+        617
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-78962f7d948ce0ed407b.js"
+        },
+        {
+          "name": "vendor-react-45c377887f79d3b629a1.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-7cf3ba934ee7ca05a569.js"
+        },
+        {
+          "name": "vendor-babel-28e1a2d9cf5548baed95.js"
+        },
+        {
+          "name": "vendor-lodash-0307fabf012c75cb3374.js"
+        },
+        {
+          "name": "pages--0cff148f0be5ace81a56.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 7,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    }
+  },
+  "generator": "loadable-components",
+  "chunks": [
+    {
+      "id": 179,
+      "files": [
+        "main-899432e8b2b128d5a9e0.css",
+        "main-54efc031b21cd0d210ca.js"
+      ]
+    },
+    {
+      "id": 666,
+      "files": [
+        "runtime-114e64931da621c5b415.js"
+      ]
+    },
+    {
+      "id": 497,
+      "files": [
+        "common-Layout-dc11ff6cb4bbb37578b4.js"
+      ]
+    },
+    {
+      "id": 617,
+      "files": [
+        "pages--0cff148f0be5ace81a56.js"
+      ]
+    },
+    {
+      "id": 751,
+      "files": [
+        "pages-404-bcab06dd1aa96af01559.js"
+      ]
+    },
+    {
+      "id": 587,
+      "files": [
+        "pages-Blog-8626af3a2ff6a7d18c30.js"
+      ]
+    },
+    {
+      "id": 50,
+      "files": [
+        "vendor-ui-78962f7d948ce0ed407b.js"
+      ]
+    },
+    {
+      "id": 270,
+      "files": [
+        "vendor-react-45c377887f79d3b629a1.js"
+      ]
+    },
+    {
+      "id": 736,
+      "files": [
+        "vendor-90c5146cc6699a363406.css",
+        "vendor-7cf3ba934ee7ca05a569.js"
+      ]
+    },
+    {
+      "id": 89,
+      "files": [
+        "vendor-babel-28e1a2d9cf5548baed95.js"
+      ]
+    },
+    {
+      "id": 904,
+      "files": [
+        "vendor-lodash-0307fabf012c75cb3374.js"
+      ]
+    }
+  ]
+}

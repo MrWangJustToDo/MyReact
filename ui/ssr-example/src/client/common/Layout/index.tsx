@@ -38,7 +38,7 @@ export default class Layout extends Component<{ title: string }, { isMounted: bo
     const { isMounted } = this.state;
     return (
       <>
-        <Helmet title={(title.slice(1).toLowerCase() || "@my-react") + " | @my-react"} />
+        <Helmet title={(title?.slice(1)?.toLowerCase() || "@my-react") + " | @my-react"} />
         <LockBody />
         <ModuleManager>
           <Box id="page-header" position="sticky" top="0" backgroundColor={isMounted ? "bannerBackgroundColor" : undefined} zIndex="banner">

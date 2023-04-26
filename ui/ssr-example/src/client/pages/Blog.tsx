@@ -1,14 +1,14 @@
 import { Container } from "@chakra-ui/react";
-import { getApolloClient, GetBlogListDocument, GetViewerDocument, IssueState } from "@site/graphql";
+// import { getApolloClient, GetBlogListDocument, GetViewerDocument, IssueState } from "@site/graphql";
 
 import { GridCard } from "@client/component/GridCard";
 import { StyledResponsiveReactGridLayout } from "@client/component/GridLayout";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT } from "@client/config/gridLayout";
-import { BASIC_VARIABLE, BlogGridWithInfinityScroll } from "@client/container/BlogList";
+import { /* BASIC_VARIABLE, */ BlogGridWithInfinityScroll } from "@client/container/BlogList";
 import { User } from "@client/container/User";
 
-import type { GetInitialStateType } from "@client/types/common";
+// import type { GetInitialStateType } from "@client/types/common";
 
 const GRID_COLS = { lg: 12, md: 12, sm: 12, xs: 2, xxs: 2 };
 const GRID_LAYOUTS = {
@@ -83,27 +83,27 @@ const Page = () => {
 
 export default Page;
 
-export const getInitialState: GetInitialStateType = async () => {
-  const client = getApolloClient(null, false);
+// export const getInitialState: GetInitialStateType = async () => {
+//   const client = getApolloClient(null, false);
 
-  await Promise.all([
-    client.query({
-      query: GetViewerDocument,
-      variables: {
-        first: 10,
-      },
-    }),
-    client.query({
-      query: GetBlogListDocument,
-      variables: {
-        ...BASIC_VARIABLE,
-        states: IssueState.Open,
-        first: 15,
-      },
-    }),
-  ]);
+//   await Promise.all([
+//     client.query({
+//       query: GetViewerDocument,
+//       variables: {
+//         first: 10,
+//       },
+//     }),
+//     client.query({
+//       query: GetBlogListDocument,
+//       variables: {
+//         ...BASIC_VARIABLE,
+//         states: IssueState.Open,
+//         first: 15,
+//       },
+//     }),
+//   ]);
 
-  return { props: { ["$$__apollo__$$"]: client.cache.extract() } };
-};
+//   return { props: { ["$$__apollo__$$"]: client.cache.extract() } };
+// };
 
 export const isStatic = true;

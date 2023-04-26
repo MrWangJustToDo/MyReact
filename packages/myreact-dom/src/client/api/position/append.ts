@@ -5,7 +5,7 @@ import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-re
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
-  if (!fiber) throw new Error("position error, look like a bug");
+  if (!fiber) throw new Error("position error, look like a bug for @my-react");
 
   if (fiber.patch & PATCH_TYPE.__append__) fiber.patch ^= PATCH_TYPE.__append__;
 

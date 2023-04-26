@@ -6,6 +6,8 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 const findFiberWithDOMFromFiber = (fiber: MyReactFiberNode | null): MyReactFiberNode | null => {
   if (!fiber || fiber.state & STATE_TYPE.__unmount__) return null;
 
+  if (fiber.type & NODE_TYPE.__portal__) return null;
+
   if (fiber.nativeNode) return fiber;
 
   let child = fiber.child;
@@ -34,13 +36,7 @@ export const getInsertBeforeDomFromSiblingAndParent = (fiber: MyReactFiberNode |
 
   const beforeDom = getInsertBeforeDomFromSibling(fiber.sibling);
 
-  if (beforeDom) {
-    if (beforeDom.type & NODE_TYPE.__portal__) {
-      return null;
-    } else {
-      return beforeDom;
-    }
-  }
+  if (beforeDom) return beforeDom;
 
   return getInsertBeforeDomFromSiblingAndParent(fiber.parent, parentFiber) as MyReactFiberNode | null;
 };

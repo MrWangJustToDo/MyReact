@@ -43,7 +43,7 @@ const shouldIncludeLog = (fiber: MyReactFiberNode) => {
 };
 
 const getRenderFiber = (fiber: MyReactFiberNode) => {
-  if (!fiber) return "<unknown />";
+  if (!fiber) return "";
   if (shouldIncludeLog(fiber)) return fiber;
   return getRenderFiber(fiber.parent);
 };
@@ -175,7 +175,8 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
     return;
   }
   const currentFiber = fiber || currentRunningFiber.current;
-  const tree = getRenderFiber(currentFiber as MyReactFiberNode);
+  const renderFiber = getRenderFiber(currentFiber as MyReactFiberNode);
+  const tree = renderFiber ? getFiberNodeName(renderFiber) : "<unknown />";
   if (triggerOnce) {
     const messageKey = message.toString();
     cache[messageKey] = cache[messageKey] || {};

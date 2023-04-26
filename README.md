@@ -6,8 +6,7 @@
 // install
 pnpm add @my-react/react @my-react/react-dom
 
-// use
-// currently i think it is a better way to use `alias` method/option to try this project what provide by build framework like `webpack`/`vite` and this project currently not ready for production env
+# currently i think it is a better way to use `alias` method/option to try this project what provide by build framework like `webpack`/`vite` and this project currently not ready for production env
 ```
 
 This project provide a react like framework, for now contain `React17` & `React18` api by default 

@@ -5,7 +5,7 @@ import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-re
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
-  if (!fiber) throw new Error("position error, look like a bug");
+  if (!fiber) throw new Error("position error, look like a bug for @my-react");
 
   if (fiber.patch & PATCH_TYPE.__append__) fiber.patch ^= PATCH_TYPE.__append__;
 
@@ -22,12 +22,17 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReac
     const beforeDOM = beforeFiberWithDom.nativeNode as DomNode;
 
     if (__DEV__ && !beforeDOM) {
-      console.error("not have a before dom node");
+      console.error("not have a before dom node, look like a bug for @my-react");
     }
 
     const childDOM = fiber.nativeNode as DomNode;
 
-    parentDOM.insertBefore(childDOM, beforeDOM);
+    try {
+      parentDOM.insertBefore(childDOM, beforeDOM);
+    } catch {
+      console.error("position error, look like a bug for @my-react");
+      parentDOM.append(childDOM);
+    }
 
     return;
   }

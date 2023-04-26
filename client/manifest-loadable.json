@@ -1,12 +1,12 @@
 {
   "name": "client",
-  "hash": "0566e9410f447b1b113e",
+  "hash": "140fa6307354a1b2351f",
   "publicPath": "client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
   "assetsByChunkName": {
     "main": [
       "main-899432e8b2b128d5a9e0.css",
-      "main-1f8ec58d9fa52b8a3293.js"
+      "main-898c147ba93a334a6b99.js"
     ],
     "runtime": [
       "runtime-7b35bfdcd258b7b17c5f.js"
@@ -27,7 +27,7 @@
       "vendor-ui-5079d12acf419cea6cd1.js"
     ],
     "vendor-react": [
-      "vendor-react-681fe5cfbabe73a2c3ea.js"
+      "vendor-react-c5c86dc310c3c6fae057.js"
     ],
     "vendor": [
       "vendor-90c5146cc6699a363406.css",
@@ -74,18 +74,18 @@
     },
     {
       "type": "asset",
-      "name": "main-1f8ec58d9fa52b8a3293.js",
-      "size": 180109,
+      "name": "main-898c147ba93a334a6b99.js",
+      "size": 180218,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "1f8ec58d9fa52b8a3293",
+        "contenthash": "898c147ba93a334a6b99",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "main-1f8ec58d9fa52b8a3293.js.map"
+          "sourceMap": "main-898c147ba93a334a6b99.js.map"
         }
       },
       "chunkNames": [
@@ -132,19 +132,19 @@
     },
     {
       "type": "asset",
-      "name": "vendor-react-681fe5cfbabe73a2c3ea.js",
+      "name": "vendor-react-c5c86dc310c3c6fae057.js",
       "size": 154566,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "681fe5cfbabe73a2c3ea",
+        "contenthash": "c5c86dc310c3c6fae057",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "license": "vendor-react-681fe5cfbabe73a2c3ea.js.LICENSE.txt",
-          "sourceMap": "vendor-react-681fe5cfbabe73a2c3ea.js.map"
+          "license": "vendor-react-c5c86dc310c3c6fae057.js.LICENSE.txt",
+          "sourceMap": "vendor-react-c5c86dc310c3c6fae057.js.map"
         }
       },
       "chunkNames": [
@@ -454,7 +454,7 @@
           "name": "vendor-ui-5079d12acf419cea6cd1.js"
         },
         {
-          "name": "vendor-react-681fe5cfbabe73a2c3ea.js"
+          "name": "vendor-react-c5c86dc310c3c6fae057.js"
         },
         {
           "name": "vendor-90c5146cc6699a363406.css"
@@ -472,7 +472,7 @@
           "name": "main-899432e8b2b128d5a9e0.css"
         },
         {
-          "name": "main-1f8ec58d9fa52b8a3293.js"
+          "name": "main-898c147ba93a334a6b99.js"
         }
       ],
       "filteredAssets": 0,
@@ -496,7 +496,7 @@
           "name": "vendor-ui-5079d12acf419cea6cd1.js"
         },
         {
-          "name": "vendor-react-681fe5cfbabe73a2c3ea.js"
+          "name": "vendor-react-c5c86dc310c3c6fae057.js"
         },
         {
           "name": "vendor-90c5146cc6699a363406.css"
@@ -533,7 +533,7 @@
           "name": "vendor-ui-5079d12acf419cea6cd1.js"
         },
         {
-          "name": "vendor-react-681fe5cfbabe73a2c3ea.js"
+          "name": "vendor-react-c5c86dc310c3c6fae057.js"
         },
         {
           "name": "vendor-90c5146cc6699a363406.css"
@@ -615,7 +615,7 @@
           "name": "vendor-ui-5079d12acf419cea6cd1.js"
         },
         {
-          "name": "vendor-react-681fe5cfbabe73a2c3ea.js"
+          "name": "vendor-react-c5c86dc310c3c6fae057.js"
         },
         {
           "name": "vendor-90c5146cc6699a363406.css"
@@ -655,7 +655,7 @@
           "name": "vendor-ui-5079d12acf419cea6cd1.js"
         },
         {
-          "name": "vendor-react-681fe5cfbabe73a2c3ea.js"
+          "name": "vendor-react-c5c86dc310c3c6fae057.js"
         },
         {
           "name": "vendor-90c5146cc6699a363406.css"
@@ -695,7 +695,7 @@
           "name": "vendor-ui-5079d12acf419cea6cd1.js"
         },
         {
-          "name": "vendor-react-681fe5cfbabe73a2c3ea.js"
+          "name": "vendor-react-c5c86dc310c3c6fae057.js"
         },
         {
           "name": "vendor-90c5146cc6699a363406.css"
@@ -735,7 +735,7 @@
           "name": "vendor-ui-5079d12acf419cea6cd1.js"
         },
         {
-          "name": "vendor-react-681fe5cfbabe73a2c3ea.js"
+          "name": "vendor-react-c5c86dc310c3c6fae057.js"
         },
         {
           "name": "vendor-90c5146cc6699a363406.css"
@@ -767,7 +767,7 @@
       "id": 179,
       "files": [
         "main-899432e8b2b128d5a9e0.css",
-        "main-1f8ec58d9fa52b8a3293.js"
+        "main-898c147ba93a334a6b99.js"
       ]
     },
     {
@@ -809,7 +809,7 @@
     {
       "id": 270,
       "files": [
-        "vendor-react-681fe5cfbabe73a2c3ea.js"
+        "vendor-react-c5c86dc310c3c6fae057.js"
       ]
     },
     {

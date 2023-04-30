@@ -9,6 +9,8 @@ export * from "./dispatchScope";
 export * from "./dispatchStrict";
 export * from "./dispatchSuspense";
 export * from "./dispatchUnmount";
+export * from "./dispatchMount";
+export * from "./dispatchUpdate";
 export * from "./share";
 export * from "./renderDispatch";
 export * from "./renderMount";

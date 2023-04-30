@@ -1,4 +1,4 @@
-import { Consumer, Context, ForwardRef, Lazy, Memo, Provider, TYPEKEY } from "@my-react/react-shared";
+import { Consumer, Context, ForwardRef, isNormalEquals, Lazy, Memo, Provider, TYPEKEY } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
 
@@ -7,6 +7,8 @@ import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunct
 let contextId = 0;
 
 const defaultObject = { [TYPEKEY]: Context, contextId: 0 };
+
+const defaultCompare = <P extends Record<string, unknown>>(oldProps: P, newProps: P) => isNormalEquals(oldProps, newProps);
 
 type ContextObjectType<T, K> = {
   displayName?: string;
@@ -68,10 +70,11 @@ export const forwardRef = <P extends Record<string, unknown> = any, T extends Cr
   };
 };
 
-export const memo = (
-  render: MixinMyReactFunctionComponent | MixinMyReactClassComponent | ReturnType<typeof forwardRef> | { [TYPEKEY]: symbol; [p: string]: unknown }
+export const memo = <P extends Record<string, unknown> = any>(
+  render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown },
+  compare = defaultCompare<P>
 ) => {
-  return { [TYPEKEY]: Memo, render };
+  return { [TYPEKEY]: Memo, render, compare };
 };
 
 export const lazy = (loader: () => Promise<{ default: MixinMyReactFunctionComponent | MixinMyReactClassComponent }>) => {

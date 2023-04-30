@@ -5,7 +5,7 @@ import { debugWithNode, getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElementNode, memo, MyReactElement } from "@my-react/react";
 
 export const updateFiberNode = (
   {
@@ -43,7 +43,14 @@ export const updateFiberNode = (
 
   if (prevElement !== nextElement) {
     if (fiber.type & NODE_TYPE.__memo__) {
-      if (!(fiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) && isNormalEquals(fiber.pendingProps, fiber.memoizedProps)) {
+      const typedElement = fiber.element as MyReactElement;
+
+      const typedElementType = typedElement.type as ReturnType<typeof memo>;
+
+      if (
+        !(fiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) &&
+        typedElementType.compare(fiber.pendingProps, fiber.memoizedProps)
+      ) {
         fiber.state = STATE_TYPE.__stable__;
       } else {
         fiber.state |= STATE_TYPE.__inherit__;

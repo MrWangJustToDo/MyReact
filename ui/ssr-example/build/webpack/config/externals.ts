@@ -12,19 +12,9 @@ export const externalsConfig = ({ env }: SafeGenerateActionProps) =>
             /\.(?!(?:jsx?|json)$).{1,5}$/i,
             "webpack/hot/poll?1000",
             "lodash-es",
-            // "react",
-            // "react-dom",
-            // "react-dom/server",
-            // "@my-react/react",
-            // "@my-react/react-shared",
-            // "@my-react/react-reactive",
-            // "@my-react/react-reconciler",
-            // "@my-react/react-dom",
-            // "@my-react/react-jsx",
+            // ...(process.env.REACT === "myreact" ? ["react", "react-dom", "react-dom/server"] : []),
           ],
           additionalModuleDirs: [path.resolve(process.cwd(), "..", "..", "node_modules")],
         }),
       ]
-    : [
-        /* { react: "React" }, { "react-dom": "ReactDOM" }, { "@my-react/react-dom": "ReactDOM" }, { "@my-react/react": "React" } */
-      ];
+    : [];

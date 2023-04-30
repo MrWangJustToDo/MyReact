@@ -1,23 +1,22 @@
-import { __my_react_internal__ } from "@my-react/react";
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { context, defaultGenerateContextMap, defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
-import { defaultGenerateEffectMap, effect, insertionEffect, layoutEffect } from "../dispatchEffect";
+import { defaultGenerateContextMap, defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
+import { defaultGenerateEffectMap } from "../dispatchEffect";
 import { defaultGenerateErrorBoundariesMap } from "../dispatchErrorBoundaries";
+import { defaultDispatchMount } from "../dispatchMount";
 import { defaultGenerateScopeMap } from "../dispatchScope";
 import { defaultGenerateStrictMap } from "../dispatchStrict";
 import { defaultGenerateSuspenseMap } from "../dispatchSuspense";
-import { defaultGenerateUnmountMap, unmount } from "../dispatchUnmount";
+import { defaultGenerateUnmountMap } from "../dispatchUnmount";
+import { defaultDispatchUpdate } from "../dispatchUpdate";
 import { defaultGenerateUseIdMap, defaultGetCurrentId } from "../dispatchUseId";
-import { MyWeakMap, safeCallWithFiber } from "../share";
+import { MyWeakMap } from "../share";
 
 import type { RenderDispatch } from "./interface";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { NODE_TYPE } from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
-
-const { currentRenderPlatform } = __my_react_internal__;
 
 export class CustomRenderDispatch implements RenderDispatch {
   refType: NODE_TYPE;
@@ -174,120 +173,10 @@ export class CustomRenderDispatch implements RenderDispatch {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
-    const mountInsertionEffect = (_fiber: MyReactFiberNode) => {
-      if (_fiber.child) mountInsertionEffect(_fiber.child);
-
-      insertionEffect(_fiber);
-
-      if (_fiber.sibling) mountInsertionEffect(_fiber.sibling);
-    };
-
-    const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
-      const _result = safeCallWithFiber({
-        fiber: _fiber,
-        action: () => this.commitCreate(_fiber, _hydrate),
-      });
-
-      safeCallWithFiber({
-        fiber: _fiber,
-        action: () => this.commitUpdate(_fiber, _result),
-      });
-
-      safeCallWithFiber({
-        fiber: _fiber,
-        action: () => this.commitAppend(_fiber),
-      });
-
-      let _final = _hydrate;
-
-      if (_fiber.child) _final = mountCommit(_fiber.child, _result);
-
-      safeCallWithFiber({ fiber: _fiber, action: () => this.commitSetRef(_fiber) });
-
-      if (_fiber.sibling) {
-        mountCommit(_fiber.sibling, _fiber.nativeNode ? _result : _final);
-      }
-
-      if (_fiber.nativeNode) {
-        return _result;
-      } else {
-        return _final;
-      }
-    };
-
-    const mountLayoutEffect = (_fiber: MyReactFiberNode) => {
-      if (_fiber.child) mountLayoutEffect(_fiber.child);
-
-      layoutEffect(_fiber);
-
-      if (_fiber.sibling) mountLayoutEffect(_fiber.sibling);
-    };
-
-    const mountEffect = (_fiber: MyReactFiberNode) => {
-      if (_fiber.child) mountEffect(_fiber.child);
-
-      effect(_fiber);
-
-      if (_fiber.sibling) mountEffect(_fiber.sibling);
-    };
-
-    const mountLoop = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
-      mountInsertionEffect(_fiber);
-
-      const re = mountCommit(_fiber, _hydrate);
-
-      mountLayoutEffect(_fiber);
-
-      currentRenderPlatform.current.microTask(() => mountEffect(_fiber));
-
-      return re;
-    };
-
-    return mountLoop(_fiber, _hydrate);
+    return defaultDispatchMount(this, _fiber, _hydrate);
   }
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
-    // TODO maybe need call `insertionEffect` in another function
-    _list.listToFoot((_fiber) => {
-      if (!(_fiber.state & STATE_TYPE.__unmount__)) {
-        unmount(_fiber);
-        insertionEffect(_fiber);
-      }
-    });
-    _list.listToFoot((_fiber) => {
-      if (!(_fiber.state & STATE_TYPE.__unmount__)) {
-        safeCallWithFiber({
-          fiber: _fiber,
-          action: () => this.commitCreate(_fiber),
-        });
-      }
-    });
-    _list.listToHead((_fiber) => {
-      if (!(_fiber.state & STATE_TYPE.__unmount__)) {
-        safeCallWithFiber({
-          fiber: _fiber,
-          action: () => this.commitPosition(_fiber),
-        });
-      }
-    });
-    _list.listToFoot((_fiber) => {
-      if (!(_fiber.state & STATE_TYPE.__unmount__)) {
-        safeCallWithFiber({
-          fiber: _fiber,
-          action: () => {
-            this.commitAppend(_fiber);
-            this.commitUpdate(_fiber);
-            this.commitSetRef(_fiber);
-          },
-        });
-      }
-    });
-    _list.listToFoot((_fiber) => {
-      if (!(_fiber.state & STATE_TYPE.__unmount__)) {
-        context(_fiber);
-        layoutEffect(_fiber);
-      }
-    });
-    currentRenderPlatform.current.microTask(() => _list.listToFoot((_fiber) => effect(_fiber)));
+    defaultDispatchUpdate(this, _list);
   }
   shouldYield(): boolean {
     return false;

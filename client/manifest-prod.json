@@ -1,6 +1,6 @@
 {
   "main.css": "client/main-899432e8b2b128d5a9e0.css",
-  "main.js": "client/main-b99fbc540aff9cf74cc4.js",
+  "main.js": "client/main-ccc90b69736b8dbc08b4.js",
   "runtime.js": "client/runtime-1c4fbc8d2f2a4309761e.js",
   "common-Layout.js": "client/common-Layout-f29a00760367d8e54fba.js",
   "pages-.js": "client/pages--f395b185bb1ee3c0638b.js",
@@ -15,7 +15,7 @@
   "manifest-loadable.json": "client/manifest-loadable.json",
   "manifest-deps.json": "client/manifest-deps.json",
   "main-css.map": "client/main-899432e8b2b128d5a9e0.css.map",
-  "main-js.map": "client/main-b99fbc540aff9cf74cc4.js.map",
+  "main-js.map": "client/main-ccc90b69736b8dbc08b4.js.map",
   "runtime-js.map": "client/runtime-1c4fbc8d2f2a4309761e.js.map",
   "common-Layout-js.map": "client/common-Layout-f29a00760367d8e54fba.js.map",
   "pages--js.map": "client/pages--f395b185bb1ee3c0638b.js.map",

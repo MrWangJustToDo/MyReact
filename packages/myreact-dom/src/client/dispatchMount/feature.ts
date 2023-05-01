@@ -83,6 +83,8 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
 
     const re = mountCommit(_fiber, _hydrate);
 
+    delete _dispatch.previousNativeNode;
+
     mountLayoutEffect(_fiber);
 
     currentRenderPlatform.current.microTask(() => mountEffect(_fiber));

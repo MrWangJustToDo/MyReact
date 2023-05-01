@@ -1,4 +1,4 @@
-import { once, TYPEKEY, Element, Consumer, ForwardRef, Memo, Lazy, Provider, Fragment, Suspense } from "@my-react/react-shared";
+import { once, TYPEKEY, Element, Consumer, ForwardRef, Memo, Lazy, Provider, Fragment, Suspense, Context } from "@my-react/react-shared";
 
 import { currentRenderPlatform } from "../share";
 
@@ -58,6 +58,13 @@ export const checkValidElement = (element: MyReactElementNode) => {
           if (typeof element.props.children !== "function") {
             throw new Error(`@my-react <Consumer /> need a render function as children`);
           }
+          if (element.props.children.prototype?.isMyReactComponent) {
+            throw new Error(`@my-react <Consumer /> expect a function children, but got a class Element`);
+          }
+        }
+        // check invalid context usage
+        else if (typedRawType[TYPEKEY] === Context) {
+          throw new Error(`@my-react <Context /> unSupport usage, please use <Context.Provider /> / <Context.Consumer />`);
         }
         // check forward function
         else if (typedRawType[TYPEKEY] === ForwardRef) {

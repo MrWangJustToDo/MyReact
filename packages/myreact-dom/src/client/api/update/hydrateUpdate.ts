@@ -7,7 +7,6 @@ import { addEventListener } from "../helper";
 
 import { controlElementTag, prepareControlElement, prepareControlProp } from "./controlled";
 
-import type { HydrateDOM } from "../create/getHydrateDom";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
@@ -104,7 +103,7 @@ const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
   const props = fiber.pendingProps;
 
   if (props["dangerouslySetInnerHTML"]) {
-    const typedDOM = fiber.nativeNode as HydrateDOM;
+    const typedDOM = fiber.nativeNode as Element;
 
     const typedProps = props["dangerouslySetInnerHTML"] as Record<string, unknown>;
 
@@ -117,8 +116,6 @@ const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
 
       typedDOM.innerHTML = typedProps.__html as string;
     }
-
-    typedDOM.__skipChildren__ = true;
   }
 };
 

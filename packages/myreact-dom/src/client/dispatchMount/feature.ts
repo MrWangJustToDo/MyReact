@@ -1,5 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { effect, insertionEffect, layoutEffect } from "@my-react/react-reconciler";
+import { effect, insertionEffect, layoutEffect, safeCallWithFiber } from "@my-react/react-reconciler";
+
+import { fallback } from "@my-react-dom-client";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";
@@ -32,61 +34,60 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
     if (_fiber.sibling) mountEffect(_fiber.sibling);
   };
 
-  // const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
-  //   const _result = safeCallWithFiber({
-  //     fiber: _fiber,
-  //     action: () => _dispatch.commitCreate(_fiber, _hydrate),
-  //   });
+  const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
+    const _result = safeCallWithFiber({
+      fiber: _fiber,
+      action: () => _dispatch.commitCreate(_fiber, _hydrate),
+    });
 
-  //   safeCallWithFiber({
-  //     fiber: _fiber,
-  //     action: () => _dispatch.commitUpdate(_fiber, _result),
-  //   });
+    safeCallWithFiber({
+      fiber: _fiber,
+      action: () => _dispatch.commitUpdate(_fiber, _result),
+    });
 
-  //   safeCallWithFiber({
-  //     fiber: _fiber,
-  //     action: () => _dispatch.commitAppend(_fiber),
-  //   });
+    safeCallWithFiber({
+      fiber: _fiber,
+      action: () => _dispatch.commitAppend(_fiber),
+    });
 
-  //   let _final = _hydrate;
+    let _final = _hydrate;
 
-  //   let innerNode: Element | null = null;
+    if (_fiber.nativeNode) {
+      _dispatch.previousNativeNode = null;
+    }
 
-  //   if (_fiber.child) {
-  //     const { dom, hydrate } = mountCommit(_fiber.child, _fiber.nativeNode ? null : _previousDom, _result);
+    if (_fiber.child) _final = mountCommit(_fiber.child, _result);
 
-  //     _final = hydrate;
+    safeCallWithFiber({ fiber: _fiber, action: () => _dispatch.commitSetRef(_fiber) });
 
-  //     innerNode = dom;
-  //   }
+    if (_fiber.nativeNode) {
+      // current child have loop done, so it is safe to fallback here
+      fallback(_dispatch.previousNativeNode?.nextSibling);
 
-  //   safeCallWithFiber({ fiber: _fiber, action: () => _dispatch.commitSetRef(_fiber) });
+      _dispatch.previousNativeNode = _fiber.nativeNode as ChildNode;
+    }
 
-  //   if (_fiber.sibling) {
-  //     const { dom } = mountCommit(_fiber.sibling, _fiber.nativeNode ? (_fiber.nativeNode as ChildNode) : innerNode, _fiber.nativeNode ? _result : _final);
+    if (_fiber.sibling) {
+      mountCommit(_fiber.sibling, _fiber.nativeNode ? _result : _final);
+    }
 
-  //     innerNode = dom;
-  //   } else {
-  //     // fallback(null, (_fiber.nativeNode as ChildNode) || _previousDom);
-  //   }
-
-  //   if (_fiber.nativeNode) {
-  //     return { dom: _fiber.nativeNode as Element, hydrate: _result };
-  //   } else {
-  //     return { dom: innerNode, hydrate: _final };
-  //   }
-  // };
+    if (_fiber.nativeNode) {
+      return _result;
+    } else {
+      return _final;
+    }
+  };
 
   const mountLoop = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
     mountInsertionEffect(_fiber);
 
-    // const re = mountCommit(_fiber, null, _hydrate);
+    const re = mountCommit(_fiber, _hydrate);
 
     mountLayoutEffect(_fiber);
 
     currentRenderPlatform.current.microTask(() => mountEffect(_fiber));
 
-    // return re;
+    return re;
   };
 
   return mountLoop(_fiber, _hydrate);

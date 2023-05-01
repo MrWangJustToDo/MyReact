@@ -1,31 +1,36 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import { commentE, commentS, getElementName, log } from "@my-react-dom-shared";
+import { getElementName, log } from "@my-react-dom-shared";
+
+import { fallback } from "../fallback";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-export type HydrateDOM = Element & {
-  __hydrate__: boolean;
-  __skipChildren__: boolean;
+const isValidHydrateDom = (el: ChildNode) => {
+  if (el.nodeType === Node.COMMENT_NODE) {
+    if (el.textContent === " " || el.textContent === "") return false;
+  }
+  return true;
 };
 
-const getNextHydrateDom = (parentDom: Element) => {
-  const children = Array.from(parentDom.childNodes);
+const getNextHydrateDom = (parentDom: Element, previousDom?: ChildNode) => {
+  if (previousDom) {
+    let el = previousDom.nextSibling;
 
-  return children.find((dom) => {
-    const typedDom = dom as HydrateDOM;
-
-    // skip hydrated
-    if (typedDom.__hydrate__) return false;
-
-    if (dom.nodeType === Node.COMMENT_NODE) {
-      // skip empty comment
-      if (dom.textContent === " " || dom.textContent === "") return false;
-      // scope comment
-      if (dom.textContent === commentS || dom.textContent === commentE) return true;
+    while (el && !isValidHydrateDom(el)) {
+      el = el.nextSibling;
     }
-    return true;
-  });
+
+    return el;
+  } else {
+    let el = parentDom.firstChild;
+
+    while (el && !isValidHydrateDom(el)) {
+      el = el.nextSibling;
+    }
+
+    return el;
+  }
 };
 
 const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
@@ -81,18 +86,16 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
   throw new Error("hydrate error, look like a bug");
 };
 
-export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element) => {
-  const dom = getNextHydrateDom(parentDom);
+export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element, previousDom?: ChildNode) => {
+  const dom = getNextHydrateDom(parentDom, previousDom);
 
   const result = checkHydrateDom(fiber, dom);
 
   if (result) {
-    const typedDom = dom as HydrateDOM;
-
-    fiber.nativeNode = typedDom;
-
-    return { dom: typedDom, result };
+    fiber.nativeNode = dom;
   } else {
-    return { dom, result };
+    fallback(dom);
   }
+
+  return result;
 };

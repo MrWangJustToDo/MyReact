@@ -6,12 +6,17 @@ import { nativeCreate } from "./nativeCreate";
 import { validDomNesting } from "./validDomNesting";
 import { validDomTag } from "./validDomTag";
 
-import type { HydrateDOM } from "./getHydrateDom";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomContainer } from "@my-react-dom-client/renderContainer";
 import type { DomComment, DomElement, DomNode } from "@my-react-dom-shared";
 
-export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWithDom: MyReactFiberNode, isSVG: boolean): boolean => {
+export const create = (
+  fiber: MyReactFiberNode,
+  hydrate: boolean,
+  parentFiberWithDom: MyReactFiberNode,
+  previousDom: ChildNode | null,
+  isSVG: boolean
+): boolean => {
   if (fiber.patch & PATCH_TYPE.__create__) {
     let re = false;
 
@@ -20,7 +25,7 @@ export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWit
     if (__DEV__) validDomNesting(fiber);
 
     if (hydrate) {
-      const result = hydrateCreate(fiber, parentFiberWithDom);
+      const result = hydrateCreate(fiber, parentFiberWithDom, previousDom);
 
       if (!result) nativeCreate(fiber, isSVG);
 
@@ -34,11 +39,9 @@ export const create = (fiber: MyReactFiberNode, hydrate: boolean, parentFiberWit
     if (renderContainer.isHydrateRender) {
       const element = fiber.nativeNode as DomElement | DomNode | DomComment;
 
-      const typedDom = element as HydrateDOM;
-
-      typedDom.__hydrate__ = true;
-
       if (__DEV__ && fiber.type & NODE_TYPE.__plain__) {
+        const typedDom = element as Element;
+
         if (!re) {
           typedDom.setAttribute("debug_hydrate", "fail");
         } else {

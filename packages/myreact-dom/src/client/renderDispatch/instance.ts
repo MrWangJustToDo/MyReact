@@ -1,6 +1,6 @@
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 
-import { append, clearNode, create, fallback, position, update } from "@my-react-dom-client";
+import { append, clearNode, clientDispatchMount, create, position, update } from "@my-react-dom-client";
 import { patchToFiberInitial, patchToFiberUnmount, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
 
 import { resolveLazyElement, resolveLazyElementAsync } from "./lazy";
@@ -10,6 +10,8 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export class ClientDomDispatch extends CustomRenderDispatch {
   elementMap = new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>();
+
+  previousNativeNode: null | ChildNode = null;
 
   refType = NODE_TYPE.__plain__ | NODE_TYPE.__class__;
 
@@ -24,7 +26,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     const { isSVG, parentFiberWithNode } = this.elementMap.get(_fiber) || {};
 
-    return create(_fiber, !!_hydrate, parentFiberWithNode, isSVG);
+    return create(_fiber, !!_hydrate, parentFiberWithNode, this.previousNativeNode, isSVG);
   }
   commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
     const { isSVG } = this.elementMap.get(_fiber) || {};
@@ -58,14 +60,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
 
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
-    const result = super.reconcileCommit(_fiber, _hydrate);
-
-    // always check if there are any hydrate error, maybe could improve hydrate flow to avoid this
-    if (_hydrate) {
-      fallback(_fiber);
-    }
-
-    return result;
+    return clientDispatchMount(this, _fiber, _hydrate);
   }
   shouldYield(): boolean {
     return shouldPauseAsyncUpdate();

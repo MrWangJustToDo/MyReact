@@ -13,15 +13,15 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   previousNativeNode: null | ChildNode = null;
 
-  refType = NODE_TYPE.__plain__ | NODE_TYPE.__class__;
+  typeForRef = NODE_TYPE.__plain__ | NODE_TYPE.__class__;
 
-  createType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
+  typeForCreate = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
 
-  updateType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
+  typeForUpdate = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
 
-  appendType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
+  typeForAppend = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
 
-  hasNodeType = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
+  typeForHasNode = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     const { isSVG, parentFiberWithNode } = this.elementMap.get(_fiber) || {};

@@ -1,10 +1,16 @@
-import { NODE_TYPE } from "@my-react/react-reconciler";
 import { STATE_TYPE } from "@my-react/react-shared";
 
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { MyReactFiberNode} from "@my-react/react-reconciler";
 
-type HighlightDOM = HTMLElement & {
-  __pendingHighLight__: boolean;
+// eslint-disable-next-line @typescript-eslint/ban-types
+const debounce = <T extends Function>(callback: T): T => {
+  let id = null;
+  return ((...args) => {
+    clearTimeout(id);
+    id = setTimeout(() => {
+      callback.call(null, ...args);
+    }, 40);
+  }) as unknown as T;
 };
 
 export class HighLight {
@@ -22,101 +28,90 @@ export class HighLight {
     return HighLight.instance;
   };
 
-  map: HTMLElement[] = [];
-
-  container: HTMLElement | null = null;
+  mask: HTMLCanvasElement | null = null;
 
   range = document.createRange();
 
-  __pendingUpdate__: MyReactFiberNode[] = [];
+  running = false;
+
+  __pendingUpdate__: Set<MyReactFiberNode> = new Set();
+
+  width = 0;
+
+  height = 0;
 
   constructor() {
-    this.container = document.createElement("div");
-    this.container.setAttribute("debug_highlight", "@my-react");
-    this.container.style.cssText = `
+    this.mask = document.createElement("canvas");
+    this.mask.setAttribute("debug_highlight", "@my-react");
+    this.mask.style.cssText = `
       position: fixed;
       z-index: 99999999;
-      width: 100%;
       left: 0;
       top: 0;
       pointer-events: none;
       `;
-    document.body.append(this.container);
+    document.body.append(this.mask);
+    this.setSize();
+    window.addEventListener("resize", this.setSize);
   }
 
-  createHighLight = () => {
-    const element = document.createElement("div");
-    this.container?.append(element);
-    return element;
-  };
+  setSize = debounce(() => {
+    this.width = window.innerWidth || document.documentElement.clientWidth;
 
-  getHighLight = () => {
-    if (this.map.length > 0) {
-      return this.map.shift() as HTMLElement;
-    }
-    return this.createHighLight();
-  };
+    this.height = window.innerHeight || document.documentElement.clientHeight;
+
+    this.mask.width = this.width;
+
+    this.mask.height = this.height;
+  });
 
   highLight = (fiber: MyReactFiberNode) => {
     if (fiber.nativeNode) {
-      const typedDom = fiber.nativeNode as HighlightDOM;
-      if (!typedDom.__pendingHighLight__) {
-        typedDom.__pendingHighLight__ = true;
-        this.startHighLight(fiber);
-      }
+      this.__pendingUpdate__.add(fiber);
+    }
+
+    if (!this.running) {
+      this.running = true;
+      requestAnimationFrame(this.flashPending);
     }
   };
 
-  startHighLight = (fiber: MyReactFiberNode) => {
-    this.__pendingUpdate__.push(fiber);
-    this.flashPending();
-  };
-
   flashPending = () => {
-    Promise.resolve().then(() => {
-      const allFiber = this.__pendingUpdate__.slice(0);
-      this.__pendingUpdate__ = [];
-      const allWrapper: HTMLElement[] = [];
-      allFiber.forEach((f) => {
-        if (!(f.state & STATE_TYPE.__unmount__)) {
-          f.type & NODE_TYPE.__text__ ? this.range.selectNodeContents(f.nativeNode as HighlightDOM) : this.range.selectNode(f.nativeNode as HighlightDOM);
-          const rect = this.range.getBoundingClientRect();
-          if (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-          ) {
-            // in the viewport
-            const wrapperDom = this.getHighLight();
-            allWrapper.push(wrapperDom);
-            const width = rect.width + 4;
-            const height = rect.height + 4;
-            const positionLeft = rect.left - 2;
-            const positionTop = rect.top - 2;
-            wrapperDom.style.cssText = `
-            position: absolute;
-            width: ${width}px;
-            height: ${height}px;
-            left: ${positionLeft}px;
-            top: ${positionTop}px;
-            pointer-events: none;
-            box-shadow: 1px 1px 1px red, -1px -1px 1px red;
-            `;
-          }
-        }
-      });
-      setTimeout(() => {
-        allWrapper.forEach((wrapperDom) => {
-          wrapperDom.style.boxShadow = "none";
-          this.map.push(wrapperDom);
-        });
-        allFiber.forEach((f) => {
-          if (f.nativeNode) {
-            (f.nativeNode as HighlightDOM).__pendingHighLight__ = false;
-          }
-        });
-      }, 100);
+    const context = this.mask.getContext("2d");
+
+    const allPending = new Set(this.__pendingUpdate__);
+
+    this.__pendingUpdate__.clear();
+
+    context.strokeStyle = "rgb(200,0,0)";
+
+    allPending.forEach((fiber) => {
+      if (fiber.state & STATE_TYPE.__unmount__) return;
+      const node = fiber.nativeNode as HTMLElement;
+      if (node.nodeType === Node.TEXT_NODE) {
+        this.range.selectNodeContents(node);
+      } else {
+        this.range.selectNode(node);
+      }
+      const rect = this.range.getBoundingClientRect();
+      if (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+      ) {
+        // do the highlight paint
+        context.strokeRect(rect.left, rect.top, rect.width, rect.height);
+      }
     });
+
+    setTimeout(() => {
+      context.clearRect(0, 0, this.width, this.height);
+      this.running = false;
+      if (this.__pendingUpdate__.size) {
+        this.running = true;
+        this.flashPending();
+      }
+    }, 100);
   };
 }

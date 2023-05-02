@@ -106,7 +106,7 @@ export const updateFiberNode = (
       currentUpdateTime: timeNow,
     };
 
-    if (typedFiber.type & renderDispatch.hasNodeType) {
+    if (typedFiber.type & renderDispatch.typeForHasNode) {
       renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
     }
   }

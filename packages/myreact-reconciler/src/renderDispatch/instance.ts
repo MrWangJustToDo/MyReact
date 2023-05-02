@@ -19,15 +19,15 @@ import type { createContext, MyReactElementNode } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
 export class CustomRenderDispatch implements RenderDispatch {
-  refType: NODE_TYPE;
+  typeForRef: NODE_TYPE;
 
-  createType: NODE_TYPE;
+  typeForCreate: NODE_TYPE;
 
-  updateType: NODE_TYPE;
+  typeForUpdate: NODE_TYPE;
 
-  appendType: NODE_TYPE;
+  typeForAppend: NODE_TYPE;
 
-  hasNodeType: NODE_TYPE;
+  typeForHasNode: NODE_TYPE;
 
   suspenseMap: WeakMap<MyReactFiberNode, MyReactElementNode> = new MyWeakMap();
 
@@ -52,17 +52,17 @@ export class CustomRenderDispatch implements RenderDispatch {
   eventMap: WeakMap<MyReactFiberNode, Record<string, ((...args: any[]) => void) & { cb?: any[] }>> = new MyWeakMap();
 
   pendingCreate(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & this.createType) {
+    if (_fiber.type & this.typeForCreate) {
       _fiber.patch |= PATCH_TYPE.__create__;
     }
   }
   pendingUpdate(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & this.updateType) {
+    if (_fiber.type & this.typeForUpdate) {
       _fiber.patch |= PATCH_TYPE.__update__;
     }
   }
   pendingAppend(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & this.appendType) {
+    if (_fiber.type & this.typeForAppend) {
       _fiber.patch |= PATCH_TYPE.__append__;
     }
   }
@@ -73,7 +73,7 @@ export class CustomRenderDispatch implements RenderDispatch {
     _fiber.patch |= PATCH_TYPE.__position__;
   }
   pendingRef(_fiber: MyReactFiberNode): void {
-    if (_fiber.ref && _fiber.type & this.refType) {
+    if (_fiber.ref && _fiber.type & this.typeForRef) {
       _fiber.patch |= PATCH_TYPE.__ref__;
     }
   }

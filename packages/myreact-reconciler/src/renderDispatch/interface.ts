@@ -4,15 +4,15 @@ import type { createContext, MyReactElementNode } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
 type DefaultRenderDispatch = {
-  refType: NODE_TYPE;
+  typeForRef: NODE_TYPE;
 
-  createType: NODE_TYPE;
+  typeForCreate: NODE_TYPE;
 
-  updateType: NODE_TYPE;
+  typeForUpdate: NODE_TYPE;
 
-  appendType: NODE_TYPE;
+  typeForAppend: NODE_TYPE;
 
-  hasNodeType: NODE_TYPE;
+  typeForHasNode: NODE_TYPE;
 
   suspenseMap: WeakMap<MyReactFiberNode, MyReactElementNode>;
 

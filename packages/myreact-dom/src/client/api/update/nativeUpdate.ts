@@ -131,7 +131,11 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
             });
         }
       });
-    if (newProps["dangerouslySetInnerHTML"] && newProps["dangerouslySetInnerHTML"] !== oldProps["dangerouslySetInnerHTML"]) {
+    if (
+      newProps["dangerouslySetInnerHTML"] &&
+      newProps["dangerouslySetInnerHTML"] !== oldProps["dangerouslySetInnerHTML"] &&
+      newProps["dangerouslySetInnerHTML"].__html !== oldProps["dangerouslySetInnerHTML"]?.__html
+    ) {
       const typedProps = newProps["dangerouslySetInnerHTML"] as Record<string, unknown>;
       dom.innerHTML = typedProps.__html as string;
     }

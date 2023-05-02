@@ -18,7 +18,7 @@ export const patchToFiberInitial = (_fiber: MyReactFiberNode) => {
     const mayFiberContainer = _fiber.parent as MyReactFiberContainer;
     if (mayFiberContainer.containerNode) {
       parentFiberWithNode = _fiber.parent;
-    } else if (_fiber.parent.type & renderDispatch.hasNodeType) {
+    } else if (_fiber.parent.type & renderDispatch.typeForHasNode) {
       parentFiberWithNode = _fiber.parent;
     } else {
       parentFiberWithNode = renderDispatch.elementMap.get(_fiber.parent)?.parentFiberWithNode;

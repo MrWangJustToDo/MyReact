@@ -82,10 +82,6 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
               const typedDom = dom as ControlledElement;
 
               typedDom["value"] = pendingProps["value"] as string;
-
-              // if (typedDom.__isControlled__) {
-              //   typedDom.setAttribute("controlled_value", String(pendingProps["value"]));
-              // }
             }
           });
         }

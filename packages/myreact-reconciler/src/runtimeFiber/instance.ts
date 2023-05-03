@@ -20,9 +20,9 @@ import type {
 
 type NativeNode = Record<string, any>;
 
-const emptyProps = {};
-
 const { enableSyncFlush } = __my_react_shared__;
+
+export const emptyProps = {};
 
 export class MyReactFiberNode implements RenderFiber {
   ref: MyReactElement["ref"];

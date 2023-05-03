@@ -5,7 +5,7 @@ import { enableControlComponent, getHTMLAttrKey, getSVGAttrKey, isEvent, isPrope
 
 import { addEventListener } from "../helper";
 
-import { controlElementTag, prepareControlElement, prepareControlProp } from "./controlled";
+import { controlElementTag, mountControlElement, prepareControlProp } from "./controlled";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
@@ -133,7 +133,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
       }
 
       if (isCanControlledElement) {
-        prepareControlElement(fiber);
+        mountControlElement(fiber);
       }
 
       Object.keys(props).forEach((key) => {

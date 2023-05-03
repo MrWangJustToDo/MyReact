@@ -1,6 +1,6 @@
 import { STATE_TYPE } from "@my-react/react-shared";
 
-import type { MyReactFiberNode} from "@my-react/react-reconciler";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 const debounce = <T extends Function>(callback: T): T => {
@@ -101,7 +101,16 @@ export class HighLight {
         rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
       ) {
         // do the highlight paint
-        context.strokeRect(rect.left, rect.top, rect.width, rect.height);
+        const left = rect.left - 2;
+        const top = rect.top - 2;
+        const width = rect.width + 2;
+        const height = rect.height + 2;
+        context.strokeRect(
+          left < 0 ? 0 : left,
+          top < 0 ? 0 : top,
+          width > window.innerWidth ? window.innerWidth : width,
+          height > window.innerHeight ? window.innerHeight : height
+        );
       }
     });
 

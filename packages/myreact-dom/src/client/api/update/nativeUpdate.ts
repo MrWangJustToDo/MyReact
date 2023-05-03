@@ -1,4 +1,4 @@
-import { NODE_TYPE } from "@my-react/react-reconciler";
+import { emptyProps, NODE_TYPE } from "@my-react/react-reconciler";
 
 import {
   enableControlComponent,
@@ -15,7 +15,7 @@ import {
 
 import { addEventListener, removeEventListener } from "../helper";
 
-import { controlElementTag, prepareControlElement, prepareControlProp } from "./controlled";
+import { controlElementTag, mountControlElement, prepareControlProp, updateControlElement } from "./controlled";
 import { HighLight } from "./highlight";
 import { XLINK_NS, XML_NS, X_CHAR } from "./tool";
 
@@ -41,8 +41,12 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
       prepareControlProp(fiber);
     }
 
-    if (isCanControlledElement && renderContainer.isClientRender) {
-      prepareControlElement(fiber);
+    if (isCanControlledElement) {
+      if (fiber.memoizedProps === emptyProps) {
+        mountControlElement(fiber);
+      } else {
+        updateControlElement(fiber);
+      }
     }
 
     const oldProps = fiber.memoizedProps || {};

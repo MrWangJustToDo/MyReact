@@ -76,7 +76,7 @@ type DefaultRenderDispatch = {
 
   commitClearNode(_fiber: MyReactFiberNode): void;
 
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode;
+  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode;
 
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode>;
 

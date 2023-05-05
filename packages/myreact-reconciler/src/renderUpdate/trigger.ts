@@ -107,8 +107,6 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
     return;
   }
 
-  if (__DEV__) (renderContainer as any).globalLoop = globalLoop;
-
   fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : (fiber.state |= state);
 
   renderContainer.pendingFiberArray.uniPush(fiber);

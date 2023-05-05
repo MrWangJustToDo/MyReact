@@ -6,8 +6,9 @@ import { NODE_TYPE } from "../share";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactElementNode } from "@my-react/react";
 
-export const WrapperByScope = (children: MyReactElementNode) =>
-  createElement(Scope, null, createElement(Comment, { mode: "s" }), children, createElement(Comment, { mode: "e" }));
+export const WrapperByScope = (children: MyReactElementNode) => {
+  return createElement(Scope, null, createElement(Comment, { mode: "s" }), children, createElement(Comment, { mode: "e" }));
+};
 
 export const isCommentElement = (fiber: MyReactFiberNode) => fiber.type & NODE_TYPE.__comment__;
 

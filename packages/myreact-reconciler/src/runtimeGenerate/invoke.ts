@@ -26,15 +26,11 @@ export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
   if (!fiber.instance) {
     const children = classComponentMount(fiber);
 
-    return nextWorkCommon(fiber, children);
+    nextWorkCommon(fiber, children);
   } else {
     const { updated, children } = classComponentUpdate(fiber);
 
-    if (updated) {
-      return nextWorkCommon(fiber, children);
-    } else {
-      return void 0;
-    }
+    if (updated) nextWorkCommon(fiber, children);
   }
 };
 
@@ -51,6 +47,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
 
   if (fiber.type & NODE_TYPE.__forwardRef__) {
     const typedElementTypeWithRef = typedElementType as ReturnType<typeof forwardRef>["render"];
+
     children = safeCallWithFiber({ fiber, action: () => typedElementTypeWithRef(fiber.pendingProps, fiber.ref) });
   } else {
     children = safeCallWithFiber({ fiber, action: () => typedElementType(fiber.pendingProps) });
@@ -62,26 +59,22 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
 
   currentHookTreeNode.current = null;
 
-  return nextWorkCommon(fiber, children);
+  nextWorkCommon(fiber, children);
 };
 
 export const nextWorkComponent = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__function__) {
     currentComponentFiber.current = fiber;
 
-    const res = nextWorkFunctionComponent(fiber);
+    nextWorkFunctionComponent(fiber);
 
     currentComponentFiber.current = null;
-
-    return res;
   } else {
     currentComponentFiber.current = fiber;
 
-    const res = nextWorkClassComponent(fiber);
+    nextWorkClassComponent(fiber);
 
     currentComponentFiber.current = null;
-
-    return res;
   }
 };
 
@@ -90,19 +83,19 @@ export const nextWorkLazy = (fiber: MyReactFiberNode) => {
 
   const renderDispatch = renderContainer.renderDispatch;
 
-  const children = renderDispatch.resolveLazyElement(fiber);
+  const children = renderDispatch.resolveLazyElementSync(fiber);
 
-  return nextWorkCommon(fiber, children);
+  nextWorkCommon(fiber, children);
 };
 
-export const nextWorkLazySync = async (fiber: MyReactFiberNode) => {
+export const nextWorkLazyAsync = async (fiber: MyReactFiberNode) => {
   const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
 
   const children = await renderDispatch.resolveLazyElementAsync(fiber);
 
-  return nextWorkCommon(fiber, children);
+  nextWorkCommon(fiber, children);
 };
 
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
@@ -111,11 +104,7 @@ export const nextWorkNormal = (fiber: MyReactFiberNode) => {
   if (isValidElement(fiber.element) && !(fiber.type & NODE_TYPE.__empty__) && !isCommentElement(fiber)) {
     const { children } = fiber.pendingProps;
 
-    const childrenFiber = transformChildrenFiber(fiber, children);
-
-    return childrenFiber;
-  } else {
-    return void 0;
+    transformChildrenFiber(fiber, children);
   }
 };
 
@@ -154,19 +143,25 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   currentComponentFiber.current = null;
 
-  return nextWorkCommon(fiber, children);
+  nextWorkCommon(fiber, children);
 };
 
 export const runtimeNextWork = (fiber: MyReactFiberNode) => {
   if (fiber.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) return nextWorkComponent(fiber);
+
   if (fiber.type & NODE_TYPE.__lazy__) return nextWorkLazy(fiber);
+
   if (fiber.type & NODE_TYPE.__consumer__) return nextWorkConsumer(fiber);
-  return nextWorkNormal(fiber);
+
+  nextWorkNormal(fiber);
 };
 
 export const runtimeNextWorkAsync = async (fiber: MyReactFiberNode) => {
   if (fiber.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) return nextWorkComponent(fiber);
-  if (fiber.type & NODE_TYPE.__lazy__) return await nextWorkLazySync(fiber);
+
+  if (fiber.type & NODE_TYPE.__lazy__) return await nextWorkLazyAsync(fiber);
+
   if (fiber.type & NODE_TYPE.__consumer__) return nextWorkConsumer(fiber);
-  return nextWorkNormal(fiber);
+
+  nextWorkNormal(fiber);
 };

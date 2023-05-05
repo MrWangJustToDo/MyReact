@@ -3,7 +3,7 @@ import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 import { append, clearNode, clientDispatchMount, create, position, update } from "@my-react-dom-client";
 import { patchToFiberInitial, patchToFiberUnmount, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
 
-import { resolveLazyElement, resolveLazyElementAsync } from "./lazy";
+import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
 
 import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -52,13 +52,12 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   commitClearNode(_fiber: MyReactFiberNode): void {
     clearNode(_fiber);
   }
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElement(_fiber);
+  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
+    return resolveLazyElementSync(_fiber);
   }
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
     return resolveLazyElementAsync(_fiber);
   }
-
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
     return clientDispatchMount(this, _fiber, _hydrate);
   }

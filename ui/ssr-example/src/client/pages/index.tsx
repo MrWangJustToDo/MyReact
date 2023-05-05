@@ -1,5 +1,9 @@
+import { lazy } from "react";
+
 import { ScrollContent, ScrollControl, ScrollControlTool, ScrollSection, ScrollToTop } from "@client/component";
-import { ApiSection, MainSection } from "@client/container/Section";
+import { MainSection } from "@client/container/Section";
+
+const ApiSection = lazy(() => import("@client/container/Section").then(({ ApiSection }) => ({ default: ApiSection })));
 
 const Page = () => {
   return (

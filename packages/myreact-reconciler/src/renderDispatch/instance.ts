@@ -127,7 +127,7 @@ export class CustomRenderDispatch implements RenderDispatch {
   commitClearNode(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
+  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
     return null;
   }
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {

@@ -29,4 +29,6 @@ export const Scope = Symbol.for("react.scope");
 
 export const Comment = Symbol.for("react.comment");
 
+export const Offscreen = Symbol.for("react.offscreen");
+
 export const Profiler = Symbol.for("react.profiler");

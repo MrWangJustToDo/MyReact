@@ -2,7 +2,7 @@ import { CustomRenderDispatch, NODE_TYPE, safeCallWithFiber } from "@my-react/re
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server";
 
-import { resolveLazyElement, resolveLazyElementAsync } from "./lazy";
+import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
 
 import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -49,8 +49,8 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
     void 0;
   }
 
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElement(_fiber);
+  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
+    return resolveLazyElementSync(_fiber);
   }
 
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {

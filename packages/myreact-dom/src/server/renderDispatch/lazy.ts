@@ -1,10 +1,10 @@
 import { createElement } from "@my-react/react";
-import { safeCallAsync, WrapperByScope } from "@my-react/react-reconciler";
+import { WrapperByScope } from "@my-react/react-reconciler";
 
 import type { lazy } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-export const resolveLazyElement = (_fiber: MyReactFiberNode) => {
+export const resolveLazyElementSync = (_fiber: MyReactFiberNode) => {
   const renderContainer = _fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
@@ -17,7 +17,7 @@ export const resolveLazyElementAsync = async (_fiber: MyReactFiberNode) => {
 
   if (typedElementType._loaded) return WrapperByScope(createElement(typedElementType.render, _fiber.pendingProps));
 
-  const loaded = await safeCallAsync(() => typedElementType.loader());
+  const loaded = await typedElementType.loader();
 
   const render = typeof loaded === "object" && typeof loaded?.default === "function" ? loaded.default : loaded;
 

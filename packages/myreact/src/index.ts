@@ -39,7 +39,6 @@ import {
   enableOptimizeTreeLog,
   enableConcurrentMode,
   enableLegacyLifeCycle,
-  enableStrictLifeCycle,
 } from "./share";
 
 const Component = MyReactComponent;
@@ -55,7 +54,6 @@ const __my_react_shared__ = {
   enableScopeTreeLog,
   enableConcurrentMode,
   enableLegacyLifeCycle,
-  enableStrictLifeCycle,
   enableOptimizeTreeLog,
 };
 

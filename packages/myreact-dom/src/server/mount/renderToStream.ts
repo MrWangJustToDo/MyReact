@@ -1,11 +1,14 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
 import { PlainElement, ServerStreamContainer, ServerStreamDispatch } from "@my-react-dom-server";
 import { MyReactDomPlatform, startRender, startRenderAsync } from "@my-react-dom-shared";
 
-import type { MyReactElement, LikeJSX } from "@my-react/react";
+import type { MyReactElement, LikeJSX} from "@my-react/react";
 import type { SimpleReadable } from "@my-react-dom-server";
 import type { Readable } from "stream";
+
+const { enableScopeTreeLog } = __my_react_shared__;
 
 const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, stream: T) => {
   const container = new PlainElement("");
@@ -67,6 +70,8 @@ export function renderToNodeStream(_element: LikeJSX, asyncRender?: boolean) {
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-empty-function
   const stream = typeof window === "undefined" ? new (require("stream").Readable)({ read() {} }) : temp;
+
+  enableScopeTreeLog.current = false;
 
   if (asyncRender) {
     return renderToStreamSync(element, stream);

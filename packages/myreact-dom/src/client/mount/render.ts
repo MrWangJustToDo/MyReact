@@ -2,7 +2,7 @@ import { __my_react_shared__ } from "@my-react/react";
 import { checkIsSameType, getTypeFromElementNode, initialFiberNode, MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 import { once, STATE_TYPE } from "@my-react/react-shared";
 
-import { ClientDomContainer, ClientDomDispatch } from "@my-react-dom-client";
+import { ClientDomContainer, ClientDomDispatch, prepareDevContainer } from "@my-react-dom-client";
 import { MyReactDomPlatform, startRender, unmountComponentAtNode } from "@my-react-dom-shared";
 
 import type { MyReactElement, LikeJSX } from "@my-react/react";
@@ -13,15 +13,10 @@ export type RenderContainer = Element & {
   __container__: MyReactContainer;
 };
 
-const { enableStrictLifeCycle, enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
+const { enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
 
 export const onceLog = once(() => {
   console.log(`you are using @my-react to render this site, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`);
-});
-
-export const onceLogNewStrictMode = once(() => {
-  // remove strict lifecycle
-  // console.log("[@my-react/react] react-18 like lifecycle have been enabled!");
 });
 
 export const onceLogConcurrentMode = once(() => {
@@ -62,10 +57,6 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
   }
   onceLog();
 
-  if (enableStrictLifeCycle.current) {
-    onceLogNewStrictMode();
-  }
-
   if (enableLegacyLifeCycle.current) {
     onceLogLegacyLifeCycleMode();
   }
@@ -81,6 +72,8 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
   const renderContainer = new ClientDomContainer(container, fiber, MyReactDomPlatform, renderDispatch);
 
   fiber.renderContainer = renderContainer;
+
+  __DEV__ && prepareDevContainer(renderContainer);
 
   Array.from(container.children).forEach((n) => n.remove?.());
 

@@ -24,9 +24,9 @@ export const updateSyncWithSkip = (container: MyReactContainer, cb?: () => void)
 
   enableScopeTreeLog.current && resetLogScope();
 
-  const commitList = renderContainer.commitFiberList;
+  const commitList = renderContainer.pendingCommitFiberList;
 
-  renderContainer.commitFiberList = null;
+  renderContainer.pendingCommitFiberList = null;
 
   commitList && renderDispatch.reconcileUpdate(commitList);
 
@@ -52,9 +52,9 @@ export const updateSyncWithTrigger = (container: MyReactContainer, cb?: () => vo
 
   enableScopeTreeLog.current && resetLogScope();
 
-  const commitList = renderContainer.commitFiberList;
+  const commitList = renderContainer.pendingCommitFiberList;
 
-  renderContainer.commitFiberList = null;
+  renderContainer.pendingCommitFiberList = null;
 
   commitList && renderDispatch.reconcileUpdate(commitList);
 
@@ -83,9 +83,9 @@ export const updateConcurrentWithSkip = (container: MyReactContainer, cb?: () =>
   if (renderContainer.nextWorkingFiber) {
     renderPlatform.yieldTask(() => updateConcurrentWithSkip(container, cb));
   } else {
-    const commitList = renderContainer.commitFiberList;
+    const commitList = renderContainer.pendingCommitFiberList;
 
-    renderContainer.commitFiberList = null;
+    renderContainer.pendingCommitFiberList = null;
 
     commitList && renderDispatch.reconcileUpdate(commitList);
 
@@ -115,9 +115,9 @@ export const updateConcurrentWithTrigger = (container: MyReactContainer, cb?: ()
   if (renderContainer.nextWorkingFiber) {
     renderPlatform.yieldTask(() => updateConcurrentWithTrigger(container, cb));
   } else {
-    const commitList = renderContainer.commitFiberList;
+    const commitList = renderContainer.pendingCommitFiberList;
 
-    renderContainer.commitFiberList = null;
+    renderContainer.pendingCommitFiberList = null;
 
     commitList && renderDispatch.reconcileUpdate(commitList);
 

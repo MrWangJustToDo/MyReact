@@ -10,7 +10,7 @@ const { currentHookNodeIndex } = __my_react_internal__;
 const isFiberWithUseId = (fiber: MyReactFiberNode) => {
   let withUseId = false;
   if (fiber.type & NODE_TYPE.__function__) {
-    fiber.hookList.listToFoot((h) => {
+    fiber.hookList?.listToFoot((h) => {
       if (h.type === HOOK_TYPE.useId) {
         withUseId = true;
       }

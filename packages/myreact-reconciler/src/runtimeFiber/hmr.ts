@@ -17,7 +17,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactElementType, force
 
       const existingInstance = fiber.instance;
 
-      existingHookList.listToFoot((hook) => hook._unmount());
+      existingHookList?.listToFoot((hook) => hook._unmount());
 
       existingInstance?._unmount();
 

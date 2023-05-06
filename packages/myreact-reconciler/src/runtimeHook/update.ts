@@ -148,10 +148,10 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
   }
 
   if (currentHook.type === HOOK_TYPE.useDebugValue) {
-    if (!Object.is(currentHook.value, value)) {
+    if (!isArrayEquals(currentHook.value, value)) {
       currentHook.value = value;
       if (enableDebugLog.current) {
-        renderPlatform.log({ message: currentHook.value?.toString(), fiber: currentHook._ownerFiber, level: "warn" });
+        console.warn(`[@my-react/react]-[debug]`, ...currentHook.value);
       }
     }
   }

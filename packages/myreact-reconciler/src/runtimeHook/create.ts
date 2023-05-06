@@ -19,8 +19,6 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
 
   const renderDispatch = renderContainer.renderDispatch;
 
-  const renderPlatform = renderContainer.renderPlatform;
-
   const hookNode = new MyReactHookNode(type, value, reducer || defaultReducer, deps);
 
   hookNode._setOwner(fiber);
@@ -52,7 +50,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
 
   if (hookNode.type === HOOK_TYPE.useDebugValue) {
     if (enableDebugLog.current) {
-      renderPlatform.log({ message: hookNode.value?.toString(), fiber: hookNode._ownerFiber, level: "warn" });
+      console.warn(`[@my-react/react]-[debug]`, ...hookNode.value);
     }
   }
 

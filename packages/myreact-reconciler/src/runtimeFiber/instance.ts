@@ -43,9 +43,9 @@ export class MyReactFiberNode implements RenderFiber {
 
   elementType: MyReactElementType | null;
 
-  hookList: ListTree<RenderHook> = new ListTree();
+  hookList: ListTree<RenderHook> | null = null;
 
-  dependence: Set<MyReactInternalInstance> = new Set();
+  dependence: Set<MyReactInternalInstance> | null = null;
 
   instance: MyReactInternalInstance | null = null;
 
@@ -78,6 +78,8 @@ export class MyReactFiberNode implements RenderFiber {
   }
 
   _addDependence(instance: MyReactInternalInstance): void {
+    this.dependence = this.dependence || new Set();
+
     this.dependence.add(instance);
   }
   _removeDependence(instance: MyReactInternalInstance): void {
@@ -86,7 +88,7 @@ export class MyReactFiberNode implements RenderFiber {
   _unmount(): void {
     if (this.state & STATE_TYPE.__unmount__) return;
 
-    this.hookList.listToFoot((h) => h._unmount());
+    this.hookList?.listToFoot((h) => h._unmount());
 
     this.instance && this.instance._unmount();
 
@@ -148,9 +150,9 @@ export class MyReactContainer {
 
   nextWorkingFiber: MyReactFiberNode | null = null;
 
-  commitFiberList: ListTree<MyReactFiberNode> | null = null;
+  pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
 
-  pendingFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray();
+  pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray();
 
   constructor(rootNode: NativeNode, rootFiber: MyReactFiberNode, renderPlatform: CustomRenderPlatform, renderDispatch: CustomRenderDispatch) {
     this.rootNode = rootNode;
@@ -166,9 +168,9 @@ export class MyReactContainer {
     if (!_fiber) return;
 
     if (_fiber.patch !== PATCH_TYPE.__initial__) {
-      this.commitFiberList = this.commitFiberList || new ListTree();
+      this.pendingCommitFiberList = this.pendingCommitFiberList || new ListTree();
 
-      this.commitFiberList.push(_fiber);
+      this.pendingCommitFiberList.push(_fiber);
     }
   }
 }

@@ -31,7 +31,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 
     triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__);
   } else {
-    renderContainer.pendingFiberArray.clear();
+    renderContainer.pendingUpdateFiberArray.clear();
 
     renderContainer.scheduledFiber = null;
 
@@ -44,8 +44,8 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 export const scheduleUpdate = (container: MyReactContainer) => {
   let nextWorkFiber: MyReactFiberNode | null = null;
 
-  while (!nextWorkFiber && container.pendingFiberArray.length) {
-    const tempFiber = container.pendingFiberArray.uniShift();
+  while (!nextWorkFiber && container.pendingUpdateFiberArray.length) {
+    const tempFiber = container.pendingUpdateFiberArray.uniShift();
 
     if (tempFiber.state & (STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) continue;
 
@@ -86,9 +86,9 @@ export const scheduleUpdate = (container: MyReactContainer) => {
 
     container.scheduledFiber = null;
 
-    container.commitFiberList = null;
-
     container.nextWorkingFiber = null;
+
+    container.pendingCommitFiberList = null;
   }
 };
 
@@ -109,7 +109,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
 
   fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : (fiber.state |= state);
 
-  renderContainer.pendingFiberArray.uniPush(fiber);
+  renderContainer.pendingUpdateFiberArray.uniPush(fiber);
 
   if (globalLoop.current) return;
 

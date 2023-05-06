@@ -22,7 +22,7 @@ export const mount = (fiber: MyReactFiberNode, hydrate?: boolean) => {
 
   enableScopeTreeLog.current && resetLogScope();
 
-  renderContainer.commitFiberList = null;
+  renderContainer.pendingCommitFiberList = null;
 
   renderDispatch.reconcileCommit(fiber, hydrate);
 
@@ -42,7 +42,7 @@ export const mountAsync = async (fiber: MyReactFiberNode, hydrate?: boolean) => 
 
   enableScopeTreeLog.current && resetLogScope();
 
-  renderContainer.commitFiberList = null;
+  renderContainer.pendingCommitFiberList = null;
 
   renderDispatch.reconcileCommit(fiber, hydrate);
 

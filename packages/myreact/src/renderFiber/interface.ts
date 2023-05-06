@@ -8,9 +8,9 @@ interface DefaultRenderFiber {
 
   patch: PATCH_TYPE;
 
-  hookList: ListTree<RenderHook>;
+  hookList: ListTree<RenderHook> | null;
 
-  dependence: Set<MyReactInternalInstance>;
+  dependence: Set<MyReactInternalInstance> | null;
 
   instance: MyReactInternalInstance | null;
 

@@ -1,5 +1,5 @@
 import { isValidElement, __my_react_internal__ } from "@my-react/react";
-import { ListTree, STATE_TYPE } from "@my-react/react-shared";
+import { STATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { isCommentElement } from "../runtimeScope";
@@ -35,9 +35,7 @@ export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
-  fiber.hookList = fiber.hookList || new ListTree();
-
-  currentHookTreeNode.current = fiber.hookList.head;
+  currentHookTreeNode.current = fiber.hookList?.head;
 
   currentHookNodeIndex.current = 0;
 

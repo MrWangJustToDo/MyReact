@@ -24,6 +24,21 @@ const { enableSyncFlush } = __my_react_shared__;
 
 export const emptyProps = {};
 
+export type PendingStateType = {
+  isForce: boolean;
+  callback: Array<() => void>;
+  pendingState: Record<string, unknown>;
+};
+
+export type MemoizedStateType = Record<string, unknown>;
+
+export type ErrorType = {
+  stack: string;
+  error: Error;
+  // used for revert from error for hmr
+  revertState: Record<string, unknown>;
+};
+
 export class MyReactFiberNode implements RenderFiber {
   ref: MyReactElement["ref"];
 
@@ -35,7 +50,7 @@ export class MyReactFiberNode implements RenderFiber {
 
   type: NODE_TYPE = NODE_TYPE.__initial__;
 
-  nativeNode: Record<string, any> = null;
+  nativeNode: Record<string, any>;
 
   renderContainer: MyReactContainer;
 
@@ -55,11 +70,15 @@ export class MyReactFiberNode implements RenderFiber {
 
   sibling: MyReactFiberNode | null = null;
 
-  updateQueue: ListTree<UpdateQueue> = new ListTree();
+  updateQueue: ListTree<UpdateQueue> | null = null;
 
   pendingProps: MyReactElement["props"] = emptyProps;
 
   memoizedProps: MyReactElement["props"] = emptyProps;
+
+  pendingState: { state?: PendingStateType; error?: ErrorType };
+
+  memoizedState: { stableState?: MemoizedStateType; revertState?: MemoizedStateType };
 
   constructor(element: MyReactElementNode) {
     const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);

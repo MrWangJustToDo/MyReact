@@ -3,14 +3,14 @@ import { HOOK_TYPE, STATE_TYPE, isArrayEquals } from "@my-react/react-shared";
 
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { RenderHook } from "@my-react/react";
+import type { RenderHookParams } from "@my-react/react";
 import type { ListTreeNode } from "@my-react/react-shared";
 
 const { enableDebugLog } = __my_react_shared__;
 
 const { currentHookTreeNode } = __my_react_internal__;
 
-export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber: MyReactFiberNode) => {
+export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
   const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
@@ -151,7 +151,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
     if (!isArrayEquals(currentHook.value, value)) {
       currentHook.value = value;
       if (enableDebugLog.current) {
-        console.warn(`[@my-react/react]-[debug]`, ...currentHook.value);
+        console.warn(`[@my-react/react]-[debug-log]`, ...currentHook.value);
       }
     }
   }

@@ -59,7 +59,13 @@ export interface LikeJSX<T extends MyReactElementType = any, P extends Record<st
   _store?: Record<string, unknown>;
 }
 
-export type MyReactElement = LikeJSX & { [TYPEKEY]: symbol };
+export type MyReactElement = LikeJSX & {
+  [TYPEKEY]: symbol;
+  // createElement
+  _legacy?: boolean;
+  // jsx runtime
+  _jsx?: boolean;
+};
 
 export type MyReactElementNode = MyReactElement | ((p: any) => MyReactElementNode) | string | number | boolean | null | undefined;
 
@@ -99,6 +105,7 @@ export const createMyReactElement = ({ type, key, ref, props, _self, _source, _o
     key,
     ref,
     props,
+    _legacy: true,
   };
 
   if (__DEV__) {

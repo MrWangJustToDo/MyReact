@@ -1,11 +1,11 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { HOOK_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { HOOK_TYPE, ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import { createHookNode, effectHookNode, updateHookNode } from "../runtimeHook";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
-import type { RenderHook } from "@my-react/react";
+import type { RenderHookParams } from "@my-react/react";
 
 const { currentComponentFiber, currentHookNodeIndex } = __my_react_internal__;
 
@@ -29,10 +29,12 @@ const resolveHookValue = (hookNode: MyReactHookNode) => {
   }
 };
 
-export const processHookNode = ({ type, reducer, value, deps }: RenderHook) => {
+export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams) => {
   const fiber = currentComponentFiber.current as MyReactFiberNode;
 
   if (!fiber) throw new Error("can not use hook outside of component");
+
+  fiber.hookList = fiber.hookList || new ListTree();
 
   let currentHook: MyReactHookNode | null = null;
 

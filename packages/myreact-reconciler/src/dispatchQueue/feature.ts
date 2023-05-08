@@ -17,7 +17,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
   const baseProps = Object.assign({}, typedInstance.props);
 
-  const newResult = typedInstance._result;
+  const nextState = fiber.pendingState.state;
 
   if (!node) return false;
 
@@ -31,19 +31,17 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
       allQueue.delete(node);
 
-      newResult.newState = Object.assign(
-        newResult.newState || baseState,
+      nextState.pendingState = Object.assign(
+        nextState.pendingState || baseState,
         typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad
       );
 
-      newResult.isForce = newResult.isForce || updater.isForce;
+      nextState.isForce = nextState.isForce || updater.isForce;
 
-      updater.callback && newResult.callback.push(updater.callback);
+      updater.callback && nextState.callback.push(updater.callback);
     }
     node = nextNode;
   }
-
-  typedInstance._result = newResult;
 
   return true;
 };

@@ -6,7 +6,7 @@ import { MyReactHookNode } from "./instance";
 import { MyReactSignal } from "./signal";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { Action, Reducer, RenderHook } from "@my-react/react";
+import type { Action, Reducer, RenderHookParams } from "@my-react/react";
 
 const { enableDebugLog } = __my_react_shared__;
 
@@ -14,7 +14,7 @@ const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;
 };
 
-export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber: MyReactFiberNode) => {
+export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
   const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
@@ -50,7 +50,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHook, fiber
 
   if (hookNode.type === HOOK_TYPE.useDebugValue) {
     if (enableDebugLog.current) {
-      console.warn(`[@my-react/react]-[debug]`, ...hookNode.value);
+      console.warn(`[@my-react/react]-[debug-log]`, ...hookNode.value);
     }
   }
 

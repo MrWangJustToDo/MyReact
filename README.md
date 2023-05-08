@@ -41,13 +41,13 @@ pnpm dev:ssr / dev:csr
 | forwardRef      | unmountComponentAtNode | onBeforeMount            | useReducer             |
 | createContext   | createRoot (new)       | onBeforeUnmount          | useCallback            |
 | createRef       | hydrateRoot (new)      | onBeforeUpdate           | useContext             |
-| memo            |                        | onMounted                | useImperativeHandle    |
+| memo            | renderToNodeStream     | onMounted                | useImperativeHandle    |
 | Component       |                        | onUnmounted              | useDebugValue          |
 | PureComponent   |                        | onUpdated                | useSignal              |
 | StrictMode      |                        |                          | useDeferredValue (new) |
 | Fragment        |                        |                          | useId (new)            |
 | Suspense        |                        |                          | useInsertionEffect (new)   
-|                 |                        |                          | useSyncExternalStore (new)
+| startTransition |                        |                          | useSyncExternalStore (new)
 |                 |                        |                          | useTransition (new)
 
 ## Vue like reactive api

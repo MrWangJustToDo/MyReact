@@ -1,8 +1,9 @@
 import { processHookNode } from "../processHook";
+import { processState } from "../processState";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
-import type { LogProps, RenderHook, RenderPlatform } from "@my-react/react";
+import type { LogProps, RenderHook, RenderPlatform, UpdateQueue } from "@my-react/react";
 import type { ListTreeNode, HOOK_TYPE } from "@my-react/react-shared";
 
 export class CustomRenderPlatform implements RenderPlatform {
@@ -24,7 +25,10 @@ export class CustomRenderPlatform implements RenderPlatform {
   getHookTree(_treeHookNode: ListTreeNode<MyReactHookNode>, _errorType: { lastRender: HOOK_TYPE; nextRender: HOOK_TYPE }): string {
     return "";
   }
-  dispatchHook(_params: RenderHook<Record<string, any>>): unknown {
+  dispatchHook(_params: Pick<RenderHook<Record<string, any>>, "reducer" | "deps" | "type" | "value">): unknown {
     return processHookNode(_params);
+  }
+  dispatchState(_params: UpdateQueue): void {
+    processState(_params);
   }
 }

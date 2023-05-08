@@ -1,6 +1,7 @@
 import { isNormalEquals } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
+import { currentRenderPlatform } from "../share";
 
 import type { MyReactElementNode, createContext } from "../element";
 import type { ComponentUpdateQueue } from "../renderQueue";
@@ -44,21 +45,6 @@ export class MyReactComponent<
 
   UNSAFE_componentWillUpdate?(nextProps: P, nextState: S): void;
 
-  // for queue update
-  _result: { newState: unknown; isForce: boolean; callback: Array<() => void> } = {
-    newState: null,
-    isForce: false,
-    callback: [],
-  };
-
-  // error catch component
-  _error: { error: Error | null; stack: string | null; hasError: boolean; _restoreState: S | null } = {
-    error: null,
-    stack: null,
-    hasError: false,
-    _restoreState: null,
-  };
-
   constructor(props?: P, context?: C | null) {
     super();
     this.props = props || null;
@@ -81,13 +67,9 @@ export class MyReactComponent<
       trigger: this,
     };
 
-    const ownerFiber = this._ownerFiber;
+    const renderPlatform = currentRenderPlatform.current;
 
-    if (ownerFiber) {
-      ownerFiber.updateQueue?.push(updater);
-
-      ownerFiber._prepare();
-    }
+    renderPlatform?.dispatchState(updater);
   };
 
   forceUpdate = () => {
@@ -97,13 +79,9 @@ export class MyReactComponent<
       trigger: this,
     };
 
-    const ownerFiber = this._ownerFiber;
+    const renderPlatform = currentRenderPlatform.current;
 
-    if (ownerFiber) {
-      ownerFiber.updateQueue?.push(updater);
-
-      ownerFiber._prepare();
-    }
+    renderPlatform?.dispatchState(updater);
   };
 
   render(): MyReactElementNode {

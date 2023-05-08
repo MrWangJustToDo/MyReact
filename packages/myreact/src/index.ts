@@ -114,7 +114,7 @@ export {
   version,
 };
 
-export type { Action, Reducer, RenderHook } from "./renderHook";
+export type { Action, Reducer, RenderHook, RenderHookParams } from "./renderHook";
 
 export type { RenderPlatform, LogProps } from "./renderPlatform";
 

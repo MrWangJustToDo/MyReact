@@ -14,10 +14,6 @@ const RESERVED_PROPS = {
   __source: true,
 };
 
-type JSXMyReactElement = MyReactElement & {
-  _jsx: boolean;
-};
-
 export { Fragment } from "@my-react/react-shared";
 
 export const jsx = (
@@ -60,7 +56,7 @@ export const jsx = (
     });
   }
 
-  const element: JSXMyReactElement = {
+  const element: MyReactElement = {
     [TYPEKEY]: Element,
     type,
     key,

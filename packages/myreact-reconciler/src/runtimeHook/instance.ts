@@ -3,7 +3,7 @@ import { __my_react_internal__ } from "@my-react/react";
 import type { RenderHook, Action, HookUpdateQueue } from "@my-react/react";
 import type { HOOK_TYPE } from "@my-react/react-shared";
 
-const { MyReactInternalInstance } = __my_react_internal__;
+const { MyReactInternalInstance, currentRenderPlatform } = __my_react_internal__;
 
 export class MyReactHookNode extends MyReactInternalInstance implements RenderHook {
   type: HOOK_TYPE;
@@ -45,12 +45,8 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
       payLoad: action,
     };
 
-    const ownerFiber = this._ownerFiber;
+    const renderPlatform = currentRenderPlatform.current;
 
-    if (ownerFiber) {
-      ownerFiber.updateQueue?.push(updater);
-
-      ownerFiber._prepare();
-    }
+    renderPlatform?.dispatchState(updater);
   };
 }

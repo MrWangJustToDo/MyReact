@@ -11,8 +11,6 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
   if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
     hookNode.mode = Effect_TYPE.__effect__;
 
-    // const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
-
     if (hookNode.type === HOOK_TYPE.useEffect) {
       renderDispatch.pendingEffect(fiber, () => {
         hookNode.cancel && hookNode.cancel();

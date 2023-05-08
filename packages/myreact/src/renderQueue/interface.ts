@@ -1,7 +1,6 @@
 import type { MyReactComponent } from "../component";
 import type { Action, RenderHook } from "../renderHook";
 
-
 export type ComponentUpdateQueue = {
   type: "component";
   trigger: MyReactComponent;

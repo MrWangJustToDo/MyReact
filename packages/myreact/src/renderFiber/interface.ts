@@ -14,7 +14,7 @@ interface DefaultRenderFiber {
 
   instance: MyReactInternalInstance | null;
 
-  updateQueue: ListTree<UpdateQueue>;
+  updateQueue: ListTree<UpdateQueue> | null;
 
   child: DefaultRenderFiber | null;
 

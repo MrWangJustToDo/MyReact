@@ -7,7 +7,7 @@ import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
-const { enableLegacyLifeCycle /* enableStrictLifeCycle */ } = __my_react_shared__;
+const { enableLegacyLifeCycle } = __my_react_shared__;
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const Component = fiber.elementType;
@@ -17,12 +17,16 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   const pendingProps = Object.assign({}, fiber.pendingProps);
+
   const currentState = Object.assign({}, typedInstance.state);
+
+  const nextState = fiber.pendingState.state;
 
   if (typedComponent.getDerivedStateFromProps) {
     const payloadState = typedComponent.getDerivedStateFromProps?.(pendingProps, currentState);
     if (payloadState) {
-      typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
+      nextState.pendingState = Object.assign({}, nextState.pendingState, payloadState);
+      // typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
     }
   }
 };
@@ -37,6 +41,7 @@ const processComponentStateFromError = (fiber: MyReactFiberNode, error: Error) =
   if (typedComponent.getDerivedStateFromError) {
     const payloadState = typedComponent.getDerivedStateFromError?.(error);
     if (payloadState) {
+      // if there are a error happen, ignore all the updateQueue
       typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
     }
   }
@@ -46,8 +51,6 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   const renderContainer = fiber.renderContainer;
 
   const renderDispatch = renderContainer.renderDispatch;
-
-  // const ReactNewStrictMod = __DEV__ ? renderDispatch.resolveStrict(fiber) && enableStrictLifeCycle.current : false;
 
   const Component = fiber.elementType;
 
@@ -70,6 +73,13 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   instance._setOwner(fiber);
 
   instance._setContext(ProviderFiber);
+
+  const pendingState = Object.assign({}, instance.state);
+
+  // prepare state flow
+  fiber.pendingState = { state: { pendingState, isForce: false, callback: [] }, error: { revertState: null, error: null, stack: null } };
+
+  fiber.memoizedState = { stableState: null, revertState: null };
 };
 
 const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
@@ -320,20 +330,14 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const { newState, isForce, callback } = typedInstance._result;
-
-  typedInstance._result = {
-    newState: null,
-    isForce: false,
-    callback: [],
-  };
+  const { pendingState, isForce, callback } = fiber.pendingState.state;
 
   const baseState = typedInstance.state;
 
   const baseProps = typedInstance.props;
 
   // const baseContext = typedInstance.context;
-  const nextState = Object.assign({}, baseState, newState);
+  const nextState = Object.assign({}, pendingState);
 
   const nextProps = Object.assign({}, fiber.pendingProps);
 
@@ -382,9 +386,7 @@ const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
 
   const renderContainer = fiber.renderContainer;
 
-  const { error, stack } = typedInstance._error;
-
-  const state = Object.assign({}, typedInstance.state);
+  const { error, stack } = fiber.pendingState.error;
 
   processComponentStateFromError(fiber, error);
 
@@ -392,19 +394,55 @@ const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
 
   processComponentDidCatchOnMountAndUpdate(fiber, error, stack);
 
-  typedInstance._error = { hasError: false, error: null, stack: null, _restoreState: state };
-
   renderContainer.errorBoundaryInstance = typedInstance;
 
   return { updated: true, children };
 };
 
 export const classComponentUpdate = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MyReactComponent;
+  if (fiber.pendingState.error?.error) {
+    const res = classComponentUpdateFromError(fiber);
 
-  if (typedInstance._error.hasError) {
-    return classComponentUpdateFromError(fiber);
+    const pendingState = fiber.pendingState;
+
+    const memoizedState = fiber.memoizedState;
+
+    const typedInstance = fiber.instance as MyReactComponent;
+
+    // sync pendingState
+    pendingState.state.pendingState = Object.assign({}, typedInstance.state);
+
+    // sync memoizedState
+    memoizedState.stableState = Object.assign({}, typedInstance.state);
+    memoizedState.revertState = pendingState.error.revertState;
+
+    // clear pendingState
+    pendingState.state.isForce = false;
+    pendingState.state.callback = [];
+    pendingState.error.stack = null;
+    pendingState.error.error = null;
+    pendingState.error.revertState = null;
+
+    return res;
   } else {
-    return classComponentUpdateFromNormal(fiber);
+    const res = classComponentUpdateFromNormal(fiber);
+
+    const pendingState = fiber.pendingState;
+
+    const memoizedState = fiber.memoizedState;
+
+    const typedInstance = fiber.instance as MyReactComponent;
+
+    // sync pendingState
+    pendingState.state.pendingState = Object.assign({}, typedInstance.state);
+
+    // sync memoizedState
+    memoizedState.stableState = Object.assign({}, typedInstance.state);
+
+    // clear pendingState
+    pendingState.state.isForce = false;
+    pendingState.state.callback = [];
+
+    return res;
   }
 };

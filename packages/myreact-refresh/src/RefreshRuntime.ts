@@ -343,7 +343,9 @@ export const performReactRefresh = () => {
 
     // has a error for prev render
     if (container?.errorBoundaryInstance) {
-      const state = container.errorBoundaryInstance._error._restoreState;
+      const errorBoundaryFiber = container.errorBoundaryInstance._ownerFiber as MyReactFiberNode;
+
+      const state = errorBoundaryFiber.memoizedState.revertState;
 
       container.errorBoundaryInstance.setState(state, () => {
         container.errorBoundaryInstance = null;

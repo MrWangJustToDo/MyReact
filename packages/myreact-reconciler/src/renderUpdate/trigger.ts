@@ -22,11 +22,11 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
   if (errorBoundariesFiber) {
     const typedInstance = errorBoundariesFiber.instance as MyReactComponent;
 
-    typedInstance._error = {
-      error: error,
+    // prepare error catch flow
+    errorBoundariesFiber.pendingState.error = {
+      error,
       stack: renderPlatform.getFiberTree(fiber),
-      hasError: true,
-      _restoreState: Object.assign({}, typedInstance._error._restoreState || {}),
+      revertState: Object.assign({}, typedInstance.state),
     };
 
     triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__);

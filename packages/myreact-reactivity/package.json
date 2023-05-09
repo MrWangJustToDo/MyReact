@@ -1,14 +1,23 @@
 {
   "name": "@my-react/react-reactive",
   "description": "@my-react/react-reactive",
-  "version": "0.1.8",
+  "author": "MrWangJustToDo",
+  "license": "MIT",
+  "version": "0.1.9",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "unpkg": "./dist/umd/index.development.js",
+  "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
     "index.js"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWangJustToDo/MyReact",
+    "directory": "packages/myreact-reactivity"
+  },
+  "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
     "node": "./index.js",
     "require": "./index.js",
@@ -44,7 +53,9 @@
     ]
   },
   "dependencies": {
-    "@my-react/react": "latest",
     "@my-react/react-shared": "latest"
+  },
+  "peerDependencies": {
+    "@my-react/react": "latest"
   }
 }

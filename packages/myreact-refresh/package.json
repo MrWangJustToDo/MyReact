@@ -1,6 +1,8 @@
 {
   "name": "@my-react/react-refresh",
   "description": "@my-react/react-refresh",
+  "author": "MrWangJustToDo",
+  "license": "MIT",
   "version": "0.0.1",
   "main": "runtime.js",
   "files": [
@@ -8,6 +10,11 @@
     "babel.js",
     "runtime.js"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWangJustToDo/MyReact",
+    "directory": "packages/myreact-refresh"
+  },
   "exports": {
     ".": "./runtime.js",
     "./runtime": "./runtime.js",
@@ -53,8 +60,10 @@
     }
   ],
   "dependencies": {
+    "@my-react/react-shared": "latest"
+  },
+  "peerDependencies": {
     "@my-react/react": "latest",
-    "@my-react/react-shared": "latest",
     "@my-react/react-reconciler": "latest"
   }
 }

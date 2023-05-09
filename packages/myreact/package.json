@@ -1,10 +1,13 @@
 {
   "name": "@my-react/react",
   "description": "@my-react/react",
+  "author": "MrWangJustToDo",
+  "license": "MIT",
   "version": "0.1.9",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "unpkg": "./dist/umd/index.development.js",
+  "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
     "index.js",
@@ -14,8 +17,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/MrWangJustToDo/MyReact/tree/main/packages/myreact"
+    "url": "https://github.com/MrWangJustToDo/MyReact",
+    "directory": "packages/myreact"
   },
+  "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
     ".": {
       "require": "./index.js",

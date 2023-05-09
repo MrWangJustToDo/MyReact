@@ -1,6 +1,8 @@
 {
   "name": "@my-react/react-reconciler",
   "description": "@my-react/react-reconciler",
+  "author": "MrWangJustToDo",
+  "license": "MIT",
   "version": "0.1.9",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
@@ -10,8 +12,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/MrWangJustToDo/MyReact/tree/main/packages/myreact-reconciler"
+    "url": "https://github.com/MrWangJustToDo/MyReact",
+    "directory": "packages/myreact-reconciler"
   },
+  "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
     "node": "./index.js",
     "require": "./index.js",
@@ -36,8 +40,9 @@
     ]
   },
   "dependencies": {
-    "@my-react/react": "latest",
-    "@my-react/react-shared": "latest",
-    "lodash": "^4.17.21"
+    "@my-react/react-shared": "latest"
+  },
+  "peerDependencies": {
+    "@my-react/react": "latest"
   }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "@my-react/react-shared",
-  "description": "@my-react/react-shared",
+  "name": "@my-react/react-terminal",
+  "description": "@my-react/react-terminal",
   "author": "MrWangJustToDo",
   "license": "MIT",
   "version": "0.1.9",
@@ -13,7 +13,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/MrWangJustToDo/MyReact",
-    "directory": "packages/myreact-shared"
+    "directory": "packages/myreact-terminal"
   },
   "exports": {
     "node": "./index.js",
@@ -37,5 +37,11 @@
         "sourcemap": true
       }
     ]
+  },
+  "dependencies": {
+    "@my-react/react-shared": "latest"
+  },
+  "peerDependencies": {
+    "@my-react/react": "latest"
   }
 }

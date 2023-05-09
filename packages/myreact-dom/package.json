@@ -1,18 +1,23 @@
 {
   "name": "@my-react/react-dom",
   "description": "@my-react/react-dom",
+  "author": "MrWangJustToDo",
+  "license": "MIT",
   "version": "0.1.9",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "unpkg": "./dist/umd/index.development.js",
+  "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
     "index.js"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/MrWangJustToDo/MyReact/tree/main/packages/myreact-dom"
+    "url": "https://github.com/MrWangJustToDo/MyReact",
+    "directory": "packages/myreact-dom"
   },
+  "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
     ".": {
       "require": "./index.js",
@@ -55,8 +60,7 @@
         "format": "umd",
         "multiple": true,
         "globals": {
-          "@my-react/react": "React",
-          "@my-react/react-reactive": "ReactReactive"
+          "@my-react/react": "React"
         },
         "name": "ReactDOM",
         "sourcemap": true
@@ -65,11 +69,15 @@
   },
   "keywords": [
     "react-dom",
-    "react-dom like"
+    "react-dom like",
+    "react-dom server",
+    "react-dom client"
   ],
   "dependencies": {
-    "@my-react/react": "latest",
     "@my-react/react-shared": "latest",
     "@my-react/react-reconciler": "latest"
+  },
+  "peerDependencies": {
+    "@my-react/react": "latest"
   }
 }

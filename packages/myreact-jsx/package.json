@@ -1,6 +1,8 @@
 {
   "name": "@my-react/react-jsx",
   "description": "@my-react/react-jsx",
+  "author": "MrWangJustToDo",
+  "license": "MIT",
   "version": "0.1.0",
   "main": "index.js",
   "module": "./dist/esm/index.js",
@@ -11,6 +13,12 @@
     "jsx-runtime.d.ts",
     "jsx-dev-runtime.d.ts"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWangJustToDo/MyReact",
+    "directory": "packages/myreact-jsx"
+  },
+  "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
     ".": {
       "require": "./index.js",
@@ -50,7 +58,9 @@
     ]
   },
   "dependencies": {
-    "@my-react/react": "latest",
     "@my-react/react-shared": "latest"
+  },
+  "peerDependencies": {
+    "@my-react/react": "latest"
   }
 }

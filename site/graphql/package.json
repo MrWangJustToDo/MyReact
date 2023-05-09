@@ -39,14 +39,14 @@
     "project-tool": "git+ssh://git@github.com:MrWangJustToDo/project-tool.git"
   },
   "peerDependencies": {
-    "@apollo/client": "^3.7.12",
+    "@apollo/client": "^3.7.14",
     "@graphql-codegen/add": "^4.0.1",
     "@graphql-codegen/cli": "^3.3.0",
     "@graphql-codegen/import-types-preset": "^2.2.6",
     "@graphql-codegen/near-operation-file-preset": "^2.5.0",
     "@graphql-codegen/typed-document-node": "^4.0.0",
-    "@graphql-codegen/typescript": "^3.0.3",
-    "@graphql-codegen/typescript-operations": "^3.0.3",
+    "@graphql-codegen/typescript": "^3.0.4",
+    "@graphql-codegen/typescript-operations": "^3.0.4",
     "@graphql-typed-document-node/core": "^3.2.0",
     "graphql": "^16.6.0",
     "lodash": "^4.17.21",

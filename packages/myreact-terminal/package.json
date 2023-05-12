@@ -39,7 +39,26 @@
     ]
   },
   "dependencies": {
-    "@my-react/react-shared": "latest"
+    "@my-react/react-shared": "latest",
+    "@my-react/react-reconciler": "latest",
+    "ansi-escapes": "^6.2.0",
+    "auto-bind": "^5.0.1",
+    "chalk": "^5.2.0",
+    "cli-boxes": "^3.0.0",
+    "cli-cursor": "^4.0.0",
+    "cli-truncate": "^3.1.0",
+    "code-excerpt": "^4.0.0",
+    "indent-string": "^5.0.0",
+    "lodash": "^4.17.21",
+    "patch-console": "^2.0.0",
+    "signal-exit": "^4.0.2",
+    "slice-ansi": "^6.0.0",
+    "stack-utils": "^2.0.6",
+    "string-width": "^6.1.0",
+    "type-fest": "^3.10.0",
+    "widest-line": "^4.0.1",
+    "wrap-ansi": "^8.1.0",
+    "yoga-wasm-web": "^0.3.3"
   },
   "peerDependencies": {
     "@my-react/react": "latest"

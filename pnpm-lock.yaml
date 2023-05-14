@@ -285,6 +285,22 @@ importers:
       yoga-wasm-web:
         specifier: ^0.3.3
         version: 0.3.3
+    devDependencies:
+      '@types/lodash':
+        specifier: ^4.14.194
+        version: 4.14.194
+      '@types/signal-exit':
+        specifier: ^3.0.0
+        version: 3.0.0
+      '@types/slice-ansi':
+        specifier: ^4.0.0
+        version: 4.0.0
+      '@types/stack-utils':
+        specifier: ^1.0.1
+        version: 1.0.1
+      '@types/wrap-ansi':
+        specifier: ^3.0.0
+        version: 3.0.0
 
   packages/myreact-wxs: {}
 
@@ -5718,10 +5734,22 @@ packages:
       '@types/node': 20.1.1
     dev: true
 
+  /@types/signal-exit@3.0.0:
+    resolution: {integrity: sha512-MaJ+16SOXz0Z27EMf3d88+B6UDglq1sn140a+5X/ROLkIcEfRq0CPg+1B2efF1GXQn4n+aKH4ti2hHG4Ya+Dzg==}
+    dev: true
+
+  /@types/slice-ansi@4.0.0:
+    resolution: {integrity: sha512-+OpjSaq85gvlZAYINyzKpLeiFkSC4EsC6IIiT6v6TLSU5k5U83fHGj9Lel8oKEXM0HqgrMVCjXPDPVICtxF7EQ==}
+    dev: true
+
   /@types/sockjs@0.3.33:
     resolution: {integrity: sha512-f0KEEe05NvUnat+boPTZ0dgaLZ4SfSouXUgv5noUiefG2ajgKjmETo9ZJyuqsl7dfl2aHlLJUiki6B4ZYldiiw==}
     dependencies:
       '@types/node': 20.1.1
+    dev: true
+
+  /@types/stack-utils@1.0.1:
+    resolution: {integrity: sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==}
     dev: true
 
   /@types/stack-utils@2.0.1:
@@ -5763,6 +5791,10 @@ packages:
       - esbuild
       - uglify-js
       - webpack-cli
+    dev: true
+
+  /@types/wrap-ansi@3.0.0:
+    resolution: {integrity: sha512-ltIpx+kM7g/MLRZfkbL7EsCEjfzCcScLpkg37eXEtx5kmrAKBkTJwd1GIAjDSL8wTpM6Hzn5YO4pSb91BEwu1g==}
     dev: true
 
   /@types/ws@8.5.4:
@@ -14695,7 +14727,7 @@ packages:
     dev: false
 
   github.com/MrWangJustToDo/project-tool/8f03c5e99f2854a1436a11e6fcf09340598690fa(typescript@4.9.5):
-    resolution: {commit: 8f03c5e99f2854a1436a11e6fcf09340598690fa, repo: git+ssh://git@github.com/MrWangJustToDo/project-tool.git, type: git}
+    resolution: {tarball: https://codeload.github.com/MrWangJustToDo/project-tool/tar.gz/8f03c5e99f2854a1436a11e6fcf09340598690fa}
     id: github.com/MrWangJustToDo/project-tool/8f03c5e99f2854a1436a11e6fcf09340598690fa
     name: project-tool
     version: 0.1.8

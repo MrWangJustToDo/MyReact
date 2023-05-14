@@ -19,13 +19,17 @@ type MyReactClassComponent<
   C extends Record<string, unknown> = any
 > = typeof MyReactComponent<P, S, C>;
 
-export type MyReactObjectComponent =
-  | ReturnType<typeof createContext>["Consumer"]
-  | ReturnType<typeof createContext>["Provider"]
-  | ReturnType<typeof forwardRef>
-  | ReturnType<typeof memo>
-  | ReturnType<typeof lazy>
-  | { [TYPEKEY]: symbol; [p: string]: unknown };
+export type MyReactObjectComponent<P extends Record<string, unknown> = any> =
+  | ReturnType<typeof createContext<P>>["Consumer"]
+  | ReturnType<typeof createContext<P>>["Provider"]
+  | ReturnType<typeof forwardRef<P>>
+  | ReturnType<typeof memo<P>>
+  | ReturnType<typeof lazy>;
+
+export type MixinMyReactObjectComponent<P extends Record<string, unknown> = any> = MyReactObjectComponent<P> & {
+  displayName?: string;
+  defaultProps?: Record<string, unknown>;
+};
 
 export type MixinMyReactClassComponent<
   P extends Record<string, unknown> = any,
@@ -44,11 +48,11 @@ export type MixinMyReactFunctionComponent<P extends Record<string, unknown> = an
 export type MyReactElementType<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any> =
   | symbol
   | string
-  | MyReactObjectComponent
+  | MixinMyReactObjectComponent<P>
   | MixinMyReactClassComponent<P, S, C>
   | MixinMyReactFunctionComponent<P>;
 
-export interface LikeJSX<T extends MyReactElementType = any, P extends Record<string, unknown> = any, Key extends string | number = any> {
+export interface LikeJSX<T extends MyReactElementType<P> = any, P extends Record<string, unknown> = any, Key extends string | number = any> {
   type: T;
   props: P;
   key: Key | null;
@@ -60,7 +64,7 @@ export interface LikeJSX<T extends MyReactElementType = any, P extends Record<st
 }
 
 export type MyReactElement = LikeJSX & {
-  [TYPEKEY]: symbol;
+  [TYPEKEY]?: symbol;
   // createElement
   _legacy?: boolean;
   // jsx runtime
@@ -76,26 +80,24 @@ export type ArrayMyReactElementNode = MyReactElementNode[];
 export type ArrayMyReactElementChildren = MaybeArrayMyReactElementNode[];
 
 export type Props = {
-  children?: MaybeArrayMyReactElementNode;
   [key: string]: unknown;
 };
 
 export type CreateElementProps<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any> = {
   type: MyReactElementType<P, S, C>;
-  key: string | null;
+  key: string | number | null;
   ref: ReturnType<typeof createRef> | ((node?: { [p: string]: any } | MyReactInternalInstance) => void) | null;
-  props: Props;
+  props: P & Props;
   _self: MyReactInternalInstance | null;
   _source: { fileName: string; lineNumber: string } | null;
   _owner: RenderFiber | null;
 };
 
-export type CreateElementConfig = {
-  ref?: CreateElementProps["ref"];
-  key?: CreateElementProps["key"];
-  __self?: CreateElementProps["_self"];
-  __source?: CreateElementProps["_source"];
-  [key: string]: unknown;
+export type CreateElementConfig<P extends Record<string, unknown> = any> = {
+  ref?: CreateElementProps<P>["ref"];
+  key?: CreateElementProps<P>["key"];
+  __self?: CreateElementProps<P>["_self"];
+  __source?: CreateElementProps<P>["_source"];
 };
 
 export const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps): MyReactElement => {
@@ -126,9 +128,63 @@ export const createMyReactElement = ({ type, key, ref, props, _self, _source, _o
   return element;
 };
 
+export function createElement<P extends Record<string, unknown> = any>(
+  type: string,
+  config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
+  ...children: ArrayMyReactElementChildren
+): MyReactElement;
+
+export function createElement<P extends Record<string, unknown> = any>(
+  type: symbol,
+  config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
+  ...children: ArrayMyReactElementChildren
+): MyReactElement;
+
+export function createElement<P extends Record<string, unknown> = any>(
+  type: ReturnType<typeof memo<P>>,
+  config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
+  ...children: ArrayMyReactElementChildren
+): MyReactElement;
+
+export function createElement<P extends Record<string, unknown> = any>(
+  type: ReturnType<typeof forwardRef<P>>,
+  config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
+  ...children: ArrayMyReactElementChildren
+): MyReactElement;
+
+export function createElement<P extends Record<string, unknown> = any>(
+  type: ReturnType<typeof createContext<P>>["Provider"],
+  config?: CreateElementConfig<P> & { value: CreateElementProps<P>["props"] },
+  ...children: ArrayMyReactElementChildren
+): MyReactElement;
+
+export function createElement<P extends Record<string, unknown> = any>(
+  type: ReturnType<typeof createContext<P>>["Consumer"],
+  config?: CreateElementConfig<P> & { children: (props: P) => MyReactElement },
+  ...children: ArrayMyReactElementChildren
+): MyReactElement;
+
+export function createElement<P extends Record<string, unknown> = any>(
+  type: MixinMyReactObjectComponent<P>,
+  config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
+  ...children: ArrayMyReactElementChildren
+): MyReactElement;
+
+export function createElement<P extends Record<string, unknown> = any>(
+  type: MixinMyReactFunctionComponent<P>,
+  config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
+  ...children: ArrayMyReactElementChildren
+): MyReactElement;
+
 export function createElement<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>(
-  type: CreateElementProps<P, S, C>["type"],
-  config?: CreateElementConfig,
+  type: MixinMyReactClassComponent<P, S, C>,
+  config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
+  ...children: ArrayMyReactElementChildren
+): MyReactElement;
+
+export function createElement<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>(
+  type: MyReactElementType<P, S, C>,
+  config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
   ...children: ArrayMyReactElementChildren
 ) {
   let key: CreateElementProps["key"] = null;

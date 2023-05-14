@@ -107,7 +107,7 @@ export const useRef = <T = any>(value: T): { current: T } => {
   }) as { current: T };
 };
 
-export const useContext = (Context: ReturnType<typeof createContext>) => {
+export const useContext = <T = any>(Context: ReturnType<typeof createContext<T>>): T => {
   const renderPlatform = currentRenderPlatform.current;
 
   if (!renderPlatform)
@@ -120,7 +120,7 @@ export const useContext = (Context: ReturnType<typeof createContext>) => {
     value: Context,
     reducer: defaultReducer,
     deps: defaultDeps,
-  });
+  }) as T;
 };
 
 export const useReducer = (reducer: Reducer, initialArgs: any, init?: (...args: any) => any) => {

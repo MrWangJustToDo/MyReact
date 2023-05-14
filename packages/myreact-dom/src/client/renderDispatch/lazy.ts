@@ -2,7 +2,7 @@ import { createElement } from "@my-react/react";
 import { WrapperByScope } from "@my-react/react-reconciler";
 import { STATE_TYPE } from "@my-react/react-shared";
 
-import type { lazy } from "@my-react/react";
+import type { lazy , MixinMyReactFunctionComponent } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 // TODO
@@ -15,7 +15,7 @@ export const resolveLazyElementSync = (_fiber: MyReactFiberNode) => {
   if (typedElementType._loaded === true) {
     const render = typedElementType.render as ReturnType<typeof lazy>["render"];
 
-    return WrapperByScope(createElement(render, _fiber.pendingProps));
+    return WrapperByScope(createElement(render as MixinMyReactFunctionComponent, _fiber.pendingProps));
   } else if (typedElementType._loading === false) {
     typedElementType._loading = true;
 
@@ -40,7 +40,7 @@ export const resolveLazyElementSync = (_fiber: MyReactFiberNode) => {
 export const resolveLazyElementAsync = async (_fiber: MyReactFiberNode) => {
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
 
-  if (typedElementType._loaded) return WrapperByScope(createElement(typedElementType.render, _fiber.pendingProps));
+  if (typedElementType._loaded) return WrapperByScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
 
   const loaded = await typedElementType.loader();
 
@@ -50,5 +50,5 @@ export const resolveLazyElementAsync = async (_fiber: MyReactFiberNode) => {
 
   typedElementType._loaded = true;
 
-  return WrapperByScope(createElement(typedElementType.render, _fiber.pendingProps));
+  return WrapperByScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
 };

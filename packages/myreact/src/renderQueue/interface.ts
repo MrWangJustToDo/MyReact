@@ -1,11 +1,11 @@
 import type { MyReactComponent } from "../component";
 import type { Action, RenderHook } from "../renderHook";
 
-export type ComponentUpdateQueue = {
+export type ComponentUpdateQueue<State = Record<string, unknown>, Props = Record<string, unknown>> = {
   type: "component";
   trigger: MyReactComponent;
   isForce?: boolean;
-  payLoad?: Record<string, unknown> | ((state: Record<string, unknown>, props: Record<string, unknown>) => Record<string, unknown>);
+  payLoad?: Partial<State> | ((state: State, props: Props) => Partial<State>);
   callback?: () => void;
 };
 

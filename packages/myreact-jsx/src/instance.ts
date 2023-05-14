@@ -3,7 +3,7 @@ import { TYPEKEY, Element } from "@my-react/react-shared";
 
 import { checkSingleChildrenKey, checkValidElement, checkValidProps } from "./check";
 
-import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement, MyReactElementType, Props } from "@my-react/react";
+import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement, MyReactElementType, Props , MaybeArrayMyReactElementNode} from "@my-react/react";
 
 const { currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
 
@@ -94,7 +94,7 @@ export const jsxDEV = (
   const element = jsx(type, config, key, source, self);
 
   if (config.children) {
-    const children = config.children;
+    const children = config.children as MaybeArrayMyReactElementNode;
 
     if (isStaticChildren) {
       if (Array.isArray(children)) {

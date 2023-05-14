@@ -2,11 +2,11 @@ import { createElement } from "@my-react/react";
 import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "./instance";
-import type { MyReactElementType } from "@my-react/react";
+import type { MixinMyReactFunctionComponent , MixinMyReactClassComponent} from "@my-react/react";
 
-export const hmr = (fiber: MyReactFiberNode, nextType: MyReactElementType, forceRefresh?: boolean) => {
+export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionComponent | MixinMyReactClassComponent, forceRefresh?: boolean) => {
   if (__DEV__) {
-    const newElement = createElement(nextType, { ...fiber.pendingProps, ref: fiber.ref, key: typeof fiber.key === "string" ? fiber.key : undefined });
+    const newElement = createElement(nextType as MixinMyReactFunctionComponent, { ...fiber.pendingProps, ref: fiber.ref, key: typeof fiber.key === "string" ? fiber.key : undefined });
 
     fiber.element = newElement;
 

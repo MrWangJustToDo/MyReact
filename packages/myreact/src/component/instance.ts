@@ -15,7 +15,7 @@ export class MyReactComponent<
   S extends Record<string, unknown> = any,
   C extends Record<string, unknown> = any
 > extends MyReactInternalInstance {
-  static contextType: null | ReturnType<typeof createContext>;
+  static contextType?: null | ReturnType<typeof createContext>;
 
   static getDerivedStateFromProps?(props: any, state: any): any;
 
@@ -59,7 +59,7 @@ export class MyReactComponent<
     return true;
   }
 
-  setState = (payLoad: ComponentUpdateQueue["payLoad"], callback: ComponentUpdateQueue["callback"]) => {
+  setState = (payLoad: ComponentUpdateQueue<S, P>["payLoad"], callback?: ComponentUpdateQueue["callback"]) => {
     const updater: ComponentUpdateQueue = {
       type: "component",
       payLoad,

@@ -62,20 +62,41 @@ export const createContext = <T = any>(value: T) => {
   return ContextObject;
 };
 
-export const forwardRef = <P extends Record<string, unknown> = any, T extends CreateElementConfig["ref"] = any>(
+export const forwardRef = <P extends Record<string, unknown> = any, T extends CreateElementConfig<P>["ref"] = any>(
   render: (props: P, ref?: T) => MyReactElement
 ) => {
-  return {
+  const objectType: {
+    [TYPEKEY]: symbol;
+    prototype?: any;
+    displayName?: string;
+    defaultProps?: Record<string, unknown>;
+    render: (props: P, ref?: T) => MyReactElement;
+  } = {
     [TYPEKEY]: ForwardRef,
     render,
   };
+
+  return objectType;
 };
 
 export const memo = <P extends Record<string, unknown> = any>(
   render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown },
   compare = defaultCompare<P>
 ) => {
-  return { [TYPEKEY]: Memo, render, compare };
+  const objectType: {
+    [TYPEKEY]: symbol;
+    prototype?: any;
+    displayName?: string;
+    defaultProps?: Record<string, unknown>;
+    compare: typeof defaultCompare<P>;
+    render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown };
+  } = {
+    [TYPEKEY]: Memo,
+    render,
+    compare,
+  };
+
+  return objectType;
 };
 
 const wrapperLoader = (config: ReturnType<typeof lazy>, loader: Parameters<typeof lazy>[0]) => {
@@ -112,6 +133,6 @@ export const lazy = (
     loader: () => Promise<{ default: MixinMyReactFunctionComponent | MixinMyReactClassComponent } | MixinMyReactFunctionComponent | MixinMyReactClassComponent>;
     _loading: boolean;
     _loaded: boolean;
-    render: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent | { [TYPEKEY]: symbol; [p: string]: unknown };
+    render: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent;
   };
 };

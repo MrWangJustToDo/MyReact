@@ -1,7 +1,7 @@
 import { createElement } from "@my-react/react";
 import chalk from "chalk";
 
-import { colorize } from "../native";
+import { colorize, TextType } from "../native";
 
 import type { Styles } from "../native";
 import type { MyReactElementNode } from "@my-react/react";
@@ -114,9 +114,5 @@ export function Text({
     return children;
   };
 
-  return createElement(
-    "terminal-text",
-    { style: { flexGrow: 0, flexShrink: 1, flexDirection: "row", textWrap: wrap }, ["internal_transform"]: transform },
-    children
-  );
+  return createElement(TextType, { style: { flexGrow: 0, flexShrink: 1, flexDirection: "row", textWrap: wrap }, ["internal_transform"]: transform }, children);
 }

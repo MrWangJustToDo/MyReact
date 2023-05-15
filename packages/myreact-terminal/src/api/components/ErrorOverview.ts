@@ -53,87 +53,53 @@ export function ErrorOverview({ error }: Props) {
         Box,
         { marginTop: 1, flexDirection: "column" },
         excerpt.map(({ line, value }) => {
-          return createElement(Box, { key: line }, createElement(Box, { width: lineWidth + 1 }));
+          return createElement(
+            Box,
+            { key: line },
+            createElement(
+              Box,
+              { width: lineWidth + 1 },
+              createElement(Text, {
+                dimColor: line !== origin.line,
+                backgroundColor: line === origin.line ? "red" : undefined,
+                color: line === origin.line ? "white" : undefined,
+                children: String(line).padStart(lineWidth, " "),
+              })
+            ),
+            createElement(Text, {
+              key: line,
+              color: line === origin.line ? "white" : undefined,
+              backgroundColor: line === origin.line ? "red" : undefined,
+              children: " " + value,
+            })
+          );
         })
+      ),
+    error.stack &&
+      createElement(
+        Box,
+        { marginTop: 1, flexDirection: "column" },
+        error.stack
+          .split("\n")
+          .slice(1)
+          .map((line) => {
+            const parsedLine = stackUtils.parseLine(line);
+            if (!parsedLine) {
+              return createElement(
+                Box,
+                { key: line },
+                createElement(Text, { dimColor: true }, "- "),
+                createElement(Text, { dimColor: true, bold: true }, line)
+              );
+            }
+            return createElement(
+              Box,
+              { key: line },
+              createElement(Text, { dimColor: true }, "- "),
+              createElement(Text, { dimColor: true, bold: true }, parsedLine.function),
+              createElement(Text, { dimColor: true, color: "gray" }, cleanupPath(parsedLine.file) ?? "", ":", parsedLine.line, ":", parsedLine.column)
+            );
+          })
       )
   );
-
-  // return (
-  //   <Box flexDirection="column" padding={1}>
-  //     <Box>
-  //       <Text backgroundColor="red" color="white">
-  //         {" "}
-  //         ERROR{" "}
-  //       </Text>
-
-  //       <Text> {error.message}</Text>
-  //     </Box>
-
-  //     {origin && filePath && (
-  //       <Box marginTop={1}>
-  //         <Text dimColor>
-  //           {filePath}:{origin.line}:{origin.column}
-  //         </Text>
-  //       </Box>
-  //     )}
-
-  //     {origin && excerpt && (
-  //       <Box marginTop={1} flexDirection="column">
-  //         {excerpt.map(({ line, value }) => (
-  //           <Box key={line}>
-  //             <Box width={lineWidth + 1}>
-  //               <Text
-  //                 dimColor={line !== origin.line}
-  //                 backgroundColor={line === origin.line ? "red" : undefined}
-  //                 color={line === origin.line ? "white" : undefined}
-  //               >
-  //                 {String(line).padStart(lineWidth, " ")}:
-  //               </Text>
-  //             </Box>
-
-  //             <Text key={line} backgroundColor={line === origin.line ? "red" : undefined} color={line === origin.line ? "white" : undefined}>
-  //               {" " + value}
-  //             </Text>
-  //           </Box>
-  //         ))}
-  //       </Box>
-  //     )}
-
-  //     {error.stack && (
-  //       <Box marginTop={1} flexDirection="column">
-  //         {error.stack
-  //           .split("\n")
-  //           .slice(1)
-  //           .map((line) => {
-  //             const parsedLine = stackUtils.parseLine(line);
-
-  //             // If the line from the stack cannot be parsed, we print out the unparsed line.
-  //             if (!parsedLine) {
-  //               return (
-  //                 <Box key={line}>
-  //                   <Text dimColor>- </Text>
-  //                   <Text dimColor bold>
-  //                     {line}
-  //                   </Text>
-  //                 </Box>
-  //               );
-  //             }
-
-  //             return (
-  //               <Box key={line}>
-  //                 <Text dimColor>- </Text>
-  //                 <Text dimColor bold>
-  //                   {parsedLine.function}
-  //                 </Text>
-  //                 <Text dimColor color="gray">
-  //                   {" "}
-  //                   ({cleanupPath(parsedLine.file) ?? ""}:{parsedLine.line}:{parsedLine.column})
-  //                 </Text>
-  //               </Box>
-  //             );
-  //           })}
-  //       </Box>
-  //     )}
-  //   </Box>
-  // );
 }

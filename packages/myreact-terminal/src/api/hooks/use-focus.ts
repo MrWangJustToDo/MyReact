@@ -2,7 +2,7 @@ import { useEffect, useContext, useMemo } from "@my-react/react";
 
 import { FocusContext } from "../components/FocusContext";
 
-import useStdin from "./use-stdin.js";
+import { useStdin } from "./use-stdin";
 
 type Input = {
   /**

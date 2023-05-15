@@ -15,10 +15,21 @@
       addEventListener("load", () => {
         let count = 1;
         window.update = () => {
-          requestAnimationFrame(() => {
-            text.textContent = count++;
-            update();
-          });
+          // requestAnimationFrame(() => {
+          //   text.textContent = count++;
+          //   update();
+          // });
+          scheduler.postTask(
+            () => {
+              text.textContent = count++;
+              update();
+            },
+            {
+              // priority: "background",
+              // priority: "user-blocking",
+              priority: 'user-visible'
+            }
+          );
         };
         update();
       });

@@ -2,7 +2,7 @@ import { useEffect, __my_react_internal__ } from "@my-react/react";
 
 import { nonAlphanumericKeys, parseKeypress } from "../../shared";
 
-import useStdin from "./use-stdin";
+import { useStdin } from "./use-stdin";
 
 const { currentRenderPlatform } = __my_react_internal__;
 
@@ -119,7 +119,7 @@ type Options = {
  * };
  * ```
  */
-const useInput = (inputHandler: Handler, options: Options = {}) => {
+export const useInput = (inputHandler: Handler, options: Options = {}) => {
   const { stdin, setRawMode, internal_exitOnCtrlC } = useStdin();
 
   useEffect(() => {
@@ -192,5 +192,3 @@ const useInput = (inputHandler: Handler, options: Options = {}) => {
     };
   }, [options.isActive, stdin, internal_exitOnCtrlC, inputHandler]);
 };
-
-export default useInput;

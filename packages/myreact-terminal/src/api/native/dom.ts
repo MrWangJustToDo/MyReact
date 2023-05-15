@@ -18,6 +18,14 @@ export type TextName = "#text";
 
 export type ElementNames = "terminal-root" | "terminal-box" | "terminal-text" | "terminal-virtual-text";
 
+export type RootType = "terminal-root";
+
+export const TextType = "terminal-text";
+
+export const BoxType = "terminal-box";
+
+export const VirtualTextType = "terminal-virtual-text";
+
 export type NodeNames = ElementNames | TextName;
 
 export type DOMNodeAttribute = boolean | string | number;

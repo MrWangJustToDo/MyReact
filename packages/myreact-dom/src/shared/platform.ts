@@ -8,8 +8,11 @@ import type { ListTreeNode } from "@my-react/react-shared";
 
 const microTask = typeof queueMicrotask === "undefined" ? (task: () => void) => Promise.resolve().then(task) : queueMicrotask;
 
+// TODO
 const yieldTask =
-  typeof requestIdleCallback === "function"
+  typeof scheduler !== "undefined"
+    ? (task: () => void) => scheduler.postTask(task, { priority: "background" })
+    : typeof requestIdleCallback === "function"
     ? (task: () => void) => {
         const id = requestIdleCallback(task);
         return () => cancelIdleCallback(id);

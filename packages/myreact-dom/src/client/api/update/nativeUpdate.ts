@@ -20,15 +20,15 @@ import { HighLight } from "./highlight";
 import { XLINK_NS, XML_NS, X_CHAR } from "./tool";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomContainer } from "@my-react-dom-client/renderContainer";
+import type { ClientDomDispatch } from "@my-react-dom-client";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
-export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
+export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
   if (!fiber.nativeNode) throw new Error("update error, dom not exist");
 
-  const renderContainer = fiber.renderContainer as ClientDomContainer;
-
   const node = fiber.nativeNode as DomElement | DomNode;
+
+  const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
   if (fiber.type & NODE_TYPE.__text__) {
     node.textContent = fiber.element as string;
@@ -57,7 +57,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
       .filter((key) => isGone(newProps)(key) || isNew(oldProps, newProps)(key))
       .forEach((key) => {
         if (isEvent(key)) {
-          removeEventListener(fiber, node as DomElement, key);
+          removeEventListener(fiber, renderDispatch, node as DomElement, key);
         } else if (isProperty(key)) {
           if (newProps[key] === null || newProps[key] === undefined) {
             if (key === "className") {
@@ -87,7 +87,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
       .filter(isNew(oldProps, newProps))
       .filter((key) => {
         if (isEvent(key)) {
-          addEventListener(fiber, node as DomElement, key, isCanControlledElement);
+          addEventListener(fiber, renderDispatch, node as DomElement, key, isCanControlledElement);
         } else if (isProperty(key)) {
           // from million package
           if (key.charCodeAt(0) === X_CHAR && isSVG) {
@@ -146,9 +146,9 @@ export const nativeUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   }
 
   if (
-    renderContainer.isAppMounted &&
-    !renderContainer.isHydrateRender &&
-    !renderContainer.isServerRender &&
+    renderDispatch.isAppMounted &&
+    !renderDispatch.isHydrateRender &&
+    !renderDispatch.isServerRender &&
     (enableHighlight.current || (window as any).__highlight__)
   ) {
     HighLight.getHighLightInstance().highLight(fiber);

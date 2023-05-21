@@ -2,8 +2,9 @@ import { createRef } from "@my-react/react";
 
 import { MyWeakMap } from "./map";
 
-import type { MyReactContainer, MyReactFiberNode } from "../runtimeFiber";
+import type { CustomRenderDispatch } from "../renderDispatch";
+import type { MyReactFiberNode } from "../runtimeFiber";
 
-export const currentLoopContainer = createRef<MyReactContainer | null>(null);
+export const currentRenderDispatch = createRef<CustomRenderDispatch | null>(null);
 
-export const fiberToContainerMap = new MyWeakMap<MyReactFiberNode, MyReactContainer>();
+export const fiberToDispatchMap = new MyWeakMap() as WeakMap<MyReactFiberNode, CustomRenderDispatch>;

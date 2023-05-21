@@ -1,19 +1,12 @@
+import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { NODE_TYPE } from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
-import type { ListTree } from "@my-react/react-shared";
+import type { ListTree, UniqueArray } from "@my-react/react-shared";
 
-type DefaultRenderDispatch = {
-  typeForRef: NODE_TYPE;
+export type refKey = "typeForRef" | "typeForCreate" | "typeForUpdate" | "typeForAppend" | "typeForNativeNode";
 
-  typeForCreate: NODE_TYPE;
-
-  typeForUpdate: NODE_TYPE;
-
-  typeForAppend: NODE_TYPE;
-
-  typeForHasNode: NODE_TYPE;
-
+export type RuntimeMap = {
   suspenseMap: WeakMap<MyReactFiberNode, MyReactElementNode>;
 
   strictMap: WeakMap<MyReactFiberNode, boolean>;
@@ -35,6 +28,32 @@ type DefaultRenderDispatch = {
   unmountMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>[]>;
 
   eventMap: WeakMap<MyReactFiberNode, Record<string, ((...args: any[]) => void) & { cb?: any[] }>>;
+};
+
+export type fiberKey = "scheduledFiber" | "errorCatchFiber" | "nextWorkingFiber";
+
+type DefaultRenderDispatch = {
+  runtimeRef: Record<refKey, NODE_TYPE>;
+
+  runtimeMap: RuntimeMap;
+
+  runtimeFiber: Record<fiberKey, MyReactFiberNode>;
+
+  rootNode: any;
+
+  rootFiber: MyReactFiberNode;
+
+  renderPlatform: CustomRenderPlatform;
+
+  isAppMounted: boolean;
+
+  isAppCrashed: boolean;
+
+  pendingCommitFiberList: ListTree<MyReactFiberNode> | null;
+
+  pendingUpdateFiberArray: UniqueArray<MyReactFiberNode>;
+
+  generateCommitList(_fiber: MyReactFiberNode): void;
 
   pendingCreate(_fiber: MyReactFiberNode): void;
 

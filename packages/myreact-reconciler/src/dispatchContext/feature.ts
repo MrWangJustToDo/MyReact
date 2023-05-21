@@ -1,10 +1,14 @@
+import { __my_react_internal__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { createContext } from "@my-react/react";
+
+const { currentRenderPlatform } = __my_react_internal__;
 
 const emptyObj = {};
 
@@ -44,13 +48,13 @@ export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextOb
   }
 };
 
-export const defaultGetContextFiber = (fiber: MyReactFiberNode, ContextObject?: ReturnType<typeof createContext> | null) => {
+export const defaultGetContextFiber = (
+  fiber: MyReactFiberNode,
+  renderDispatch: CustomRenderDispatch,
+  ContextObject?: ReturnType<typeof createContext> | null
+) => {
   if (ContextObject) {
-    const renderContainer = fiber.renderContainer;
-
-    const renderDispatch = renderContainer.renderDispatch;
-
-    const contextMap = renderDispatch.contextMap.get(fiber);
+    const contextMap = renderDispatch.runtimeMap.contextMap.get(fiber);
 
     return contextMap?.[ContextObject.contextId] || null;
   } else {
@@ -58,13 +62,11 @@ export const defaultGetContextFiber = (fiber: MyReactFiberNode, ContextObject?: 
   }
 };
 
-export const context = (fiber: MyReactFiberNode) => {
+export const context = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (fiber.patch & PATCH_TYPE.__context__) {
     const set = new Set(fiber.dependence);
 
-    const renderContainer = fiber.renderContainer;
-
-    const renderPlatform = renderContainer.renderPlatform as CustomRenderPlatform;
+    const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 
     renderPlatform.microTask(() => {
       set.forEach((i) => {
@@ -73,7 +75,8 @@ export const context = (fiber: MyReactFiberNode) => {
         }
       });
       // sync skip from root
-      renderContainer.rootFiber._update(STATE_TYPE.__skippedSync__);
+
+      renderDispatch.rootFiber._update(STATE_TYPE.__skippedSync__);
     });
 
     if (fiber.patch & PATCH_TYPE.__context__) fiber.patch ^= PATCH_TYPE.__context__;

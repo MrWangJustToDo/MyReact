@@ -4,20 +4,13 @@ import { NODE_TYPE } from "@my-react/react-reconciler";
 import { log } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 // TODO
-export const validDomNesting = (fiber: MyReactFiberNode) => {
+export const validDomNesting = (fiber: MyReactFiberNode, parentFiberWithNode?: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__plain__) {
     const typedElementType = fiber.elementType;
 
-    const renderContainer = fiber.renderContainer;
-
-    const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
-
-    const parentFiberWithDom = renderDispatch.elementMap.get(fiber).parentFiberWithNode;
-
-    if (typedElementType === "p" && parentFiberWithDom.elementType === "p") {
+    if (typedElementType === "p" && parentFiberWithNode?.elementType === "p") {
       log({
         fiber,
         level: "warn",

@@ -1,21 +1,22 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE } from "@my-react/react-shared";
 
+import { fiberToDispatchMap } from "../share";
+
 import { updateConcurrentWithSkip, updateConcurrentWithTrigger, updateSyncWithSkip, updateSyncWithTrigger } from "./feature";
 
-import type { MyReactContainer, MyReactFiberNode } from "../runtimeFiber";
+import type { CustomRenderDispatch } from "../renderDispatch";
+import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent } from "@my-react/react";
 
-const { globalLoop } = __my_react_internal__;
+const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 
 const { enableConcurrentMode } = __my_react_shared__;
 
 export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
-  const renderContainer = fiber.renderContainer;
+  const renderDispatch = fiberToDispatchMap.get(fiber);
 
-  const renderDispatch = renderContainer.renderDispatch;
-
-  const renderPlatform = renderContainer.renderPlatform;
+  const renderPlatform = currentRenderPlatform.current;
 
   const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
 
@@ -31,21 +32,21 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 
     triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__);
   } else {
-    renderContainer.pendingUpdateFiberArray.clear();
+    renderDispatch.pendingUpdateFiberArray.clear();
 
-    renderContainer.scheduledFiber = null;
+    renderDispatch.runtimeFiber.scheduledFiber = null;
 
-    renderContainer.nextWorkingFiber = null;
+    renderDispatch.runtimeFiber.nextWorkingFiber = null;
 
-    renderContainer.isAppCrashed = true;
+    renderDispatch.isAppCrashed = true;
   }
 };
 
-export const scheduleUpdate = (container: MyReactContainer) => {
+export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   let nextWorkFiber: MyReactFiberNode | null = null;
 
-  while (!nextWorkFiber && container.pendingUpdateFiberArray.length) {
-    const tempFiber = container.pendingUpdateFiberArray.uniShift();
+  while (!nextWorkFiber && renderDispatch.pendingUpdateFiberArray.length) {
+    const tempFiber = renderDispatch.pendingUpdateFiberArray.uniShift();
 
     if (tempFiber.state & (STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) continue;
 
@@ -54,28 +55,28 @@ export const scheduleUpdate = (container: MyReactContainer) => {
 
   if (nextWorkFiber) {
     if (nextWorkFiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
-      container.scheduledFiber = nextWorkFiber;
+      renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 
-      container.nextWorkingFiber = nextWorkFiber;
+      renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
       if (nextWorkFiber.state & STATE_TYPE.__triggerSync__) {
-        updateSyncWithTrigger(container, () => scheduleUpdate(container));
+        updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
       } else if (enableConcurrentMode.current) {
-        updateConcurrentWithTrigger(container, () => scheduleUpdate(container));
+        updateConcurrentWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
       } else {
-        updateSyncWithTrigger(container, () => scheduleUpdate(container));
+        updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
       }
     } else if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__)) {
-      container.scheduledFiber = nextWorkFiber;
+      renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 
-      container.nextWorkingFiber = nextWorkFiber;
+      renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
       if (nextWorkFiber.state & STATE_TYPE.__skippedSync__) {
-        updateSyncWithSkip(container, () => scheduleUpdate(container));
+        updateSyncWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
       } else if (enableConcurrentMode.current) {
-        updateConcurrentWithSkip(container, () => scheduleUpdate(container));
+        updateConcurrentWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
       } else {
-        updateSyncWithSkip(container, () => scheduleUpdate(container));
+        updateSyncWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
       }
     } else {
       // TODO
@@ -84,22 +85,22 @@ export const scheduleUpdate = (container: MyReactContainer) => {
   } else {
     globalLoop.current = false;
 
-    container.scheduledFiber = null;
+    renderDispatch.runtimeFiber.scheduledFiber = null;
 
-    container.nextWorkingFiber = null;
+    renderDispatch.runtimeFiber.nextWorkingFiber = null;
 
-    container.pendingCommitFiberList = null;
+    renderDispatch.pendingCommitFiberList = null;
   }
 };
 
 export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
-  const renderContainer = fiber.renderContainer;
+  const renderPlatform = currentRenderPlatform.current;
 
-  const renderPlatform = renderContainer.renderPlatform;
+  const renderDispatch = fiberToDispatchMap.get(fiber);
 
-  if (renderContainer.isAppCrashed) return;
+  if (renderDispatch.isAppCrashed) return;
 
-  if (!renderContainer.isAppMounted) {
+  if (!renderDispatch.isAppMounted) {
     if (__DEV__) console.log("pending, can not update component");
 
     renderPlatform.macroTask(() => triggerUpdate(fiber, state));
@@ -109,11 +110,11 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
 
   fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : (fiber.state |= state);
 
-  renderContainer.pendingUpdateFiberArray.uniPush(fiber);
+  renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 
   if (globalLoop.current) return;
 
   globalLoop.current = true;
 
-  scheduleUpdate(renderContainer);
+  scheduleUpdate(renderDispatch);
 };

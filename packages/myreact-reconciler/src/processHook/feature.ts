@@ -2,6 +2,7 @@ import { __my_react_internal__ } from "@my-react/react";
 import { HOOK_TYPE, ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import { createHookNode, effectHookNode, updateHookNode } from "../runtimeHook";
+import { currentRenderDispatch } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
@@ -32,7 +33,11 @@ const resolveHookValue = (hookNode: MyReactHookNode) => {
 export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams) => {
   const fiber = currentComponentFiber.current as MyReactFiberNode;
 
+  const renderDispatch = currentRenderDispatch.current;
+
   if (!fiber) throw new Error("can not use hook outside of component");
+
+  if (!renderDispatch) throw new Error(`internal error, can not get 'renderDispatch' for current render`);
 
   fiber.hookList = fiber.hookList || new ListTree();
 

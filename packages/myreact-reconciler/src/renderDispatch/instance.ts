@@ -1,4 +1,4 @@
-import { PATCH_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, ListTree , UniqueArray } from "@my-react/react-shared";
 
 import { defaultGenerateContextMap, defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
 import { defaultGenerateEffectMap } from "../dispatchEffect";
@@ -12,57 +12,81 @@ import { defaultDispatchUpdate } from "../dispatchUpdate";
 import { defaultGenerateUseIdMap, defaultGetCurrentId } from "../dispatchUseId";
 import { MyWeakMap } from "../share";
 
-import type { RenderDispatch } from "./interface";
-import type { MyReactFiberNode } from "../runtimeFiber";
+import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
+import type { CustomRenderPlatform } from "../renderPlatform";
+import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
 import type { NODE_TYPE } from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
-import type { ListTree } from "@my-react/react-shared";
 
 export class CustomRenderDispatch implements RenderDispatch {
-  typeForRef: NODE_TYPE;
+  runtimeRef: Record<refKey, NODE_TYPE>;
 
-  typeForCreate: NODE_TYPE;
+  runtimeMap: RuntimeMap = {
+    suspenseMap: new MyWeakMap(),
 
-  typeForUpdate: NODE_TYPE;
+    strictMap: new MyWeakMap(),
 
-  typeForAppend: NODE_TYPE;
+    useIdMap: new MyWeakMap(),
 
-  typeForHasNode: NODE_TYPE;
+    scopeMap: new MyWeakMap(),
 
-  suspenseMap: WeakMap<MyReactFiberNode, MyReactElementNode> = new MyWeakMap();
+    errorBoundariesMap: new MyWeakMap(),
 
-  strictMap: WeakMap<MyReactFiberNode, boolean> = new MyWeakMap();
+    effectMap: new MyWeakMap(),
 
-  useIdMap: WeakMap<MyReactFiberNode, { initial: number; latest: number }> = new MyWeakMap();
+    layoutEffectMap: new MyWeakMap(),
 
-  scopeMap: WeakMap<MyReactFiberNode, MyReactFiberNode> = new MyWeakMap();
+    insertionEffectMap: new MyWeakMap(),
 
-  errorBoundariesMap: WeakMap<MyReactFiberNode, MyReactFiberNode> = new MyWeakMap();
+    contextMap: new MyWeakMap(),
 
-  effectMap: WeakMap<MyReactFiberNode, (() => void)[]> = new MyWeakMap();
+    unmountMap: new MyWeakMap(),
 
-  layoutEffectMap: WeakMap<MyReactFiberNode, (() => void)[]> = new MyWeakMap();
+    eventMap: new MyWeakMap(),
+  };
 
-  insertionEffectMap: WeakMap<MyReactFiberNode, (() => void)[]> = new MyWeakMap();
+  runtimeFiber: Record<fiberKey, MyReactFiberNode | null> = {
+    scheduledFiber: null,
+    errorCatchFiber: null,
+    nextWorkingFiber: null,
+  };
 
-  contextMap: WeakMap<MyReactFiberNode, Record<string, MyReactFiberNode>> = new MyWeakMap();
+  isAppMounted = false;
 
-  unmountMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>[]> = new MyWeakMap();
+  isAppCrashed = false;
 
-  eventMap: WeakMap<MyReactFiberNode, Record<string, ((...args: any[]) => void) & { cb?: any[] }>> = new MyWeakMap();
+  pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
+
+  pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
+
+  constructor(readonly rootNode: any, readonly rootFiber: MyReactFiberNode, readonly renderPlatform: CustomRenderPlatform) {
+    const typedFiber = rootFiber as MyReactFiberContainer;
+
+    typedFiber.containerNode = rootNode;
+  }
+
+  generateCommitList(_fiber: MyReactFiberNode) {
+    if (!_fiber) return;
+
+    if (_fiber.patch !== PATCH_TYPE.__initial__) {
+      this.pendingCommitFiberList = this.pendingCommitFiberList || new ListTree();
+
+      this.pendingCommitFiberList.push(_fiber);
+    }
+  }
 
   pendingCreate(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & this.typeForCreate) {
+    if (_fiber.type & this.runtimeRef.typeForCreate) {
       _fiber.patch |= PATCH_TYPE.__create__;
     }
   }
   pendingUpdate(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & this.typeForUpdate) {
+    if (_fiber.type & this.runtimeRef.typeForUpdate) {
       _fiber.patch |= PATCH_TYPE.__update__;
     }
   }
   pendingAppend(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & this.typeForAppend) {
+    if (_fiber.type & this.runtimeRef.typeForAppend) {
       _fiber.patch |= PATCH_TYPE.__append__;
     }
   }
@@ -73,29 +97,29 @@ export class CustomRenderDispatch implements RenderDispatch {
     _fiber.patch |= PATCH_TYPE.__position__;
   }
   pendingRef(_fiber: MyReactFiberNode): void {
-    if (_fiber.ref && _fiber.type & this.typeForRef) {
+    if (_fiber.ref && _fiber.type & this.runtimeRef.typeForRef) {
       _fiber.patch |= PATCH_TYPE.__ref__;
     }
   }
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
     _fiber.patch |= PATCH_TYPE.__unmount__;
 
-    defaultGenerateUnmountMap(_fiber, _pendingUnmount, this.unmountMap);
+    defaultGenerateUnmountMap(_fiber, _pendingUnmount, this.runtimeMap.unmountMap);
   }
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
     _fiber.patch |= PATCH_TYPE.__effect__;
 
-    defaultGenerateEffectMap(_fiber, _effect, this.effectMap);
+    defaultGenerateEffectMap(_fiber, _effect, this.runtimeMap.effectMap);
   }
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
     _fiber.patch |= PATCH_TYPE.__layoutEffect__;
 
-    defaultGenerateEffectMap(_fiber, _layoutEffect, this.layoutEffectMap);
+    defaultGenerateEffectMap(_fiber, _layoutEffect, this.runtimeMap.layoutEffectMap);
   }
   pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void): void {
     _fiber.patch |= PATCH_TYPE.__insertionEffect__;
 
-    defaultGenerateEffectMap(_fiber, _insertionEffect, this.insertionEffectMap);
+    defaultGenerateEffectMap(_fiber, _insertionEffect, this.runtimeMap.insertionEffectMap);
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     void 0;
@@ -134,49 +158,49 @@ export class CustomRenderDispatch implements RenderDispatch {
     return null;
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateStrictMap(_fiber, this.strictMap);
+    defaultGenerateStrictMap(_fiber, this.runtimeMap.strictMap);
   }
   resolveStrict(_fiber: MyReactFiberNode): boolean {
-    return this.strictMap.get(_fiber) || false;
+    return this.runtimeMap.strictMap.get(_fiber) || false;
   }
   resolveUseIdMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateUseIdMap(_fiber, this.useIdMap);
+    defaultGenerateUseIdMap(_fiber, this.runtimeMap.useIdMap);
   }
   resolveUseId(_fiber: MyReactFiberNode): string {
-    return defaultGetCurrentId(_fiber, this.useIdMap);
+    return defaultGetCurrentId(_fiber, this.runtimeMap.useIdMap);
   }
   resolveScopeMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateScopeMap(_fiber, this.scopeMap);
+    defaultGenerateScopeMap(_fiber, this.runtimeMap.scopeMap);
   }
   resolveScope(_fiber: MyReactFiberNode): MyReactFiberNode | null {
-    return this.scopeMap.get(_fiber) || null;
+    return this.runtimeMap.scopeMap.get(_fiber) || null;
   }
   resolveSuspenseMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateSuspenseMap(_fiber, this.suspenseMap);
+    defaultGenerateSuspenseMap(_fiber, this.runtimeMap.suspenseMap);
   }
   resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode {
-    return this.suspenseMap.get(_fiber) || null;
+    return this.runtimeMap.suspenseMap.get(_fiber) || null;
   }
   resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateErrorBoundariesMap(_fiber, this.errorBoundariesMap);
+    defaultGenerateErrorBoundariesMap(_fiber, this.runtimeMap.errorBoundariesMap);
   }
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
-    return this.errorBoundariesMap.get(_fiber) || null;
+    return this.runtimeMap.errorBoundariesMap.get(_fiber) || null;
   }
   resolveContextMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateContextMap(_fiber, this.contextMap);
+    defaultGenerateContextMap(_fiber, this.runtimeMap.contextMap);
   }
   resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): MyReactFiberNode | null {
-    return defaultGetContextFiber(_fiber, _contextObject);
+    return defaultGetContextFiber(_fiber, this, _contextObject);
   }
   resolveContextValue(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
-    return defaultDispatchMount(this, _fiber, _hydrate);
+    return defaultDispatchMount(_fiber, this, _hydrate);
   }
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
-    defaultDispatchUpdate(this, _list);
+    defaultDispatchUpdate(_list, this);
   }
   shouldYield(): boolean {
     return false;

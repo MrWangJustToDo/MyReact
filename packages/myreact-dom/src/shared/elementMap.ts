@@ -1,37 +1,30 @@
-import type { MyReactFiberContainer , MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomContainer, ClientDomDispatch } from "@my-react-dom-client";
+import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
+import type { ClientDomDispatch } from "@my-react-dom-client";
+import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-server";
 
-export const patchToFiberInitial = (_fiber: MyReactFiberNode) => {
-  const renderContainer = _fiber.renderContainer as ClientDomContainer;
-
-  const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
-
+export const patchToFiberInitial = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch | ServerDomDispatch | ServerStreamDispatch) => {
   let isSVG = _fiber.elementType === "svg";
 
   let parentFiberWithNode = null;
 
   if (!isSVG) {
-    isSVG = renderDispatch.elementMap.get(_fiber.parent)?.isSVG || false;
+    isSVG = _dispatch.runtimeDom.elementMap.get(_fiber.parent)?.isSVG || false;
   }
 
   if (_fiber.parent) {
     const mayFiberContainer = _fiber.parent as MyReactFiberContainer;
     if (mayFiberContainer.containerNode) {
       parentFiberWithNode = _fiber.parent;
-    } else if (_fiber.parent.type & renderDispatch.typeForHasNode) {
+    } else if (_fiber.parent.type & _dispatch.runtimeRef.typeForNativeNode) {
       parentFiberWithNode = _fiber.parent;
     } else {
-      parentFiberWithNode = renderDispatch.elementMap.get(_fiber.parent)?.parentFiberWithNode;
+      parentFiberWithNode = _dispatch.runtimeDom.elementMap.get(_fiber.parent)?.parentFiberWithNode;
     }
   }
 
-  renderDispatch.elementMap.set(_fiber, { isSVG, parentFiberWithNode });
+  _dispatch.runtimeDom.elementMap.set(_fiber, { isSVG, parentFiberWithNode });
 };
 
-export const patchToFiberUnmount = (_fiber: MyReactFiberNode) => {
-  const renderContainer = _fiber.renderContainer as ClientDomContainer;
-
-  const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
-
-  renderDispatch.elementMap.delete(_fiber);
+export const patchToFiberUnmount = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
+  _dispatch.runtimeDom.elementMap.delete(_fiber);
 };

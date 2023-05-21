@@ -1,12 +1,12 @@
 import { Effect_TYPE, HOOK_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
+import { currentRenderDispatch } from "../share";
+
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   if (hookNode.effect && hookNode.mode === Effect_TYPE.__initial__) {
     hookNode.mode = Effect_TYPE.__effect__;

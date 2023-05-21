@@ -2,7 +2,7 @@ import { createElement, isValidElement } from "@my-react/react";
 import { Fragment, ListTree } from "@my-react/react-shared";
 
 import { createFiberNode, updateFiberNode } from "../runtimeFiber";
-import { checkIsSameType, NODE_TYPE } from "../share";
+import { checkIsSameType, currentRenderDispatch, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactElementNode, MaybeArrayMyReactElementNode, ArrayMyReactElementChildren } from "@my-react/react";
@@ -63,9 +63,7 @@ const createFragmentWithUpdate = (newChild: ArrayMyReactElementChildren, parentF
 };
 
 const deleteIfNeed = (parentFiber: MyReactFiberNode, existingChildren: Map<string | number, ListTree<MyReactFiberNode>>) => {
-  const renderContainer = parentFiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   if (existingChildren.size) existingChildren.forEach((list) => list.listToFoot((f) => renderDispatch.pendingUnmount(parentFiber, f)));
 };
@@ -77,9 +75,7 @@ const getNewFiberWithUpdate = (
   prevFiberChild: MyReactFiberNode | null,
   index: number
 ): MyReactFiberNode => {
-  const renderContainer = parentFiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   if (Array.isArray(newChild)) {
     const draftList = existingChildren.get(index);

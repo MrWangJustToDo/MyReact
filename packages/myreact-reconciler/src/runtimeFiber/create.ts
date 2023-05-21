@@ -1,6 +1,6 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { debugWithNode } from "../share";
+import { currentRenderDispatch, fiberToDispatchMap, setRefreshTypeMap } from "../share";
 
 import { MyReactFiberNode } from "./instance";
 
@@ -17,17 +17,15 @@ export const createFiberNode = (
   },
   element: MyReactElementNode
 ) => {
+  const renderDispatch = currentRenderDispatch.current;
+
   const newFiberNode = new MyReactFiberNode(element);
+
+  fiberToDispatchMap.set(newFiberNode, renderDispatch);
 
   newFiberNode.parent = parent;
 
-  newFiberNode.renderContainer = parent.renderContainer;
-
   parent.child = parent.child || newFiberNode;
-
-  const renderContainer = parent.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
 
   renderDispatch.pendingCreate(newFiberNode);
 
@@ -60,6 +58,8 @@ export const createFiberNode = (
   }
 
   if (__DEV__) {
+    setRefreshTypeMap(newFiberNode);
+
     const typedFiber = newFiberNode as MyReactFiberNodeDev;
 
     const timeNow = Date.now();
@@ -70,10 +70,6 @@ export const createFiberNode = (
       prevUpdateTime: 0,
       currentUpdateTime: timeNow,
     };
-
-    if (typedFiber.type & renderDispatch.typeForHasNode) {
-      renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
-    }
   }
 
   return newFiberNode;

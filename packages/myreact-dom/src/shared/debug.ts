@@ -2,12 +2,15 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { NODE_TYPE, originalError, originalWarn } from "@my-react/react-reconciler";
 
 import type { MyReactElement, MixinMyReactClassComponent, MixinMyReactFunctionComponent, lazy, LogProps } from "@my-react/react";
-import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react-reconciler";
+import type { MyReactFiberNode, MyReactHookNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 import type { ListTreeNode } from "@my-react/react-shared";
+import type { ClientDomDispatch } from "@my-react-dom-client";
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
 const { currentRunningFiber } = __my_react_internal__;
+
+const cache: Record<string, Record<string, boolean>> = {};
 
 const getTrackDevLog = (fiber: MyReactFiberNode) => {
   if (__DEV__) {
@@ -137,8 +140,6 @@ export const getHookTree = (
   return re + stack;
 };
 
-const cache: Record<string, Record<string, boolean>> = {};
-
 export const log = ({ fiber, message, level = "warn", triggerOnce = false }: LogProps) => {
   if (__DEV__) {
     const currentFiber = fiber || currentRunningFiber.current;
@@ -203,5 +204,19 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
       "render by:",
       tree
     );
+  }
+};
+
+export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
+  Reflect.defineProperty(renderDispatch, "_dev_shared", { value: __my_react_shared__ });
+  Reflect.defineProperty(renderDispatch, "_dev_internal", { value: __my_react_internal__ });
+};
+
+export const debugWithNode = (fiber: MyReactFiberNode) => {
+  const mayFiberContainer = fiber as MyReactFiberContainer;
+  if (fiber.nativeNode || mayFiberContainer.containerNode) {
+    const node = (fiber.nativeNode || mayFiberContainer.containerNode) as any;
+    node.__fiber__ = fiber;
+    node.__props__ = fiber.pendingProps;
   }
 };

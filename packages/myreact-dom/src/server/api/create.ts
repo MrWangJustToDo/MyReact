@@ -7,7 +7,7 @@ import { isSingleTag } from "@my-react-dom-shared";
 import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ServerStreamContainer } from "@my-react-dom-server";
+import type { ServerStreamDispatch } from "@my-react-dom-server";
 
 export const create = (fiber: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
@@ -31,22 +31,24 @@ export const create = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolean) => {
+export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
-    const renderContainer = fiber.renderContainer as ServerStreamContainer;
+    const stream = renderDispatch.stream;
 
-    const stream = renderContainer.stream;
+    const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
+
     if (fiber.type & NODE_TYPE.__text__) {
-      if (renderContainer.lastIsStringNode) {
+      if (renderDispatch.lastIsStringNode) {
         stream.push("<!-- -->");
       }
+
       stream.push(fiber.element as string);
 
-      renderContainer.lastIsStringNode = true;
+      renderDispatch.lastIsStringNode = true;
 
       fiber.patch = PATCH_TYPE.__initial__;
     } else if (fiber.type & NODE_TYPE.__plain__) {
-      renderContainer.lastIsStringNode = false;
+      renderDispatch.lastIsStringNode = false;
 
       if (isSingleTag[fiber.elementType as string]) {
         stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}/>`);
@@ -63,7 +65,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolea
         }
       }
     } else if (fiber.type & NODE_TYPE.__comment__) {
-      renderContainer.lastIsStringNode = false;
+      renderDispatch.lastIsStringNode = false;
 
       if (isCommentStartElement(fiber)) {
         stream.push("<!-- [ -->");
@@ -78,13 +80,11 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, isSVG?: boolea
   }
 };
 
-export const createCloseTagWithStream = (fiber: MyReactFiberNode) => {
+export const createCloseTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
-    const renderContainer = fiber.renderContainer as ServerStreamContainer;
-
-    const stream = renderContainer.stream;
+    const stream = renderDispatch.stream;
     if (fiber.type & NODE_TYPE.__plain__) {
-      renderContainer.lastIsStringNode = false;
+      renderDispatch.lastIsStringNode = false;
 
       stream.push(`</${fiber.elementType as string}>`);
 

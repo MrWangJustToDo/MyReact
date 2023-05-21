@@ -1,7 +1,7 @@
 import { isValidElement } from "@my-react/react";
 import { isNormalEquals, PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
-import { debugWithNode, getTypeFromElementNode, NODE_TYPE } from "../share";
+import { currentRenderDispatch, NODE_TYPE, setRefreshTypeMap } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
@@ -21,25 +21,15 @@ export const updateFiberNode = (
 ) => {
   const prevElement = fiber.element;
 
+  const renderDispatch = currentRenderDispatch.current;
+
   fiber.parent = parent;
 
   fiber.sibling = null;
 
-  fiber.element = nextElement;
-
-  fiber.renderContainer = parent.renderContainer;
-
   parent.child = parent.child || fiber;
 
-  const { pendingProps, ref } = getTypeFromElementNode(nextElement);
-
-  fiber.ref = ref;
-
-  fiber.pendingProps = pendingProps;
-
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  fiber._installElement(nextElement);
 
   if (prevElement !== nextElement) {
     if (fiber.type & NODE_TYPE.__memo__) {
@@ -93,6 +83,8 @@ export const updateFiberNode = (
   }
 
   if (__DEV__) {
+    setRefreshTypeMap(fiber);
+
     const typedFiber = fiber as MyReactFiberNodeDev;
 
     const timeNow = Date.now();
@@ -105,10 +97,6 @@ export const updateFiberNode = (
       prevUpdateTime: prevRenderState.currentUpdateTime,
       currentUpdateTime: timeNow,
     };
-
-    if (typedFiber.type & renderDispatch.typeForHasNode) {
-      renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
-    }
   }
 
   return fiber;

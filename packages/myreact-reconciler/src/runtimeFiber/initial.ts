@@ -1,12 +1,13 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
+import { fiberToDispatchMap } from "../share";
+
 import type { MyReactFiberNode } from "./instance";
+import type { CustomRenderDispatch } from "../renderDispatch";
 
 // no need to resolve map for this fiber, this code only used for fiberRoot init
-export const initialFiberNode = (fiber: MyReactFiberNode) => {
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+export const initialFiberNode = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+  fiberToDispatchMap.set(fiber, renderDispatch);
 
   renderDispatch.pendingCreate(fiber);
 

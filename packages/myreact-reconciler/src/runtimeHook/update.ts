@@ -1,6 +1,8 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE, STATE_TYPE, isArrayEquals } from "@my-react/react-shared";
 
+import { currentRenderDispatch } from "../share";
+
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { RenderHookParams } from "@my-react/react";
@@ -8,14 +10,12 @@ import type { ListTreeNode } from "@my-react/react-shared";
 
 const { enableDebugLog } = __my_react_shared__;
 
-const { currentHookTreeNode } = __my_react_internal__;
+const { currentHookTreeNode, currentRenderPlatform } = __my_react_internal__;
 
 export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
-  const renderContainer = fiber.renderContainer;
+  const renderDispatch = currentRenderDispatch.current;
 
-  const renderDispatch = renderContainer.renderDispatch;
-
-  const renderPlatform = renderContainer.renderPlatform;
+  const renderPlatform = currentRenderPlatform.current;
 
   const currentHook = currentHookTreeNode.current.value as MyReactHookNode;
 

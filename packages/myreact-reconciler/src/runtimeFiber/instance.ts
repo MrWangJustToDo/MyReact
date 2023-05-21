@@ -1,26 +1,18 @@
-import { __my_react_shared__ } from "@my-react/react";
-import { ListTree, PATCH_TYPE, STATE_TYPE, UniqueArray } from "@my-react/react-shared";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
 import { triggerError, triggerUpdate } from "../renderUpdate";
 import { getTypeFromElementNode, NODE_TYPE } from "../share";
 
-import type { CustomRenderDispatch } from "../renderDispatch";
-import type { CustomRenderPlatform } from "../renderPlatform";
-import type {
-  MyReactElement,
-  MyReactElementNode,
-  MyReactElementType,
-  MyReactInternalInstance,
-  RenderFiber,
-  RenderHook,
-  UpdateQueue,
-  MyReactComponent,
-} from "@my-react/react";
+import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
+import type { ListTree } from "@my-react/react-shared";
 
 type NativeNode = Record<string, any>;
 
 const { enableSyncFlush } = __my_react_shared__;
+
+const { currentRenderPlatform } = __my_react_internal__;
 
 export const emptyProps = {};
 
@@ -52,8 +44,6 @@ export class MyReactFiberNode implements RenderFiber {
 
   nativeNode: Record<string, any>;
 
-  renderContainer: MyReactContainer;
-
   element: MyReactElementNode;
 
   elementType: MyReactElementType | null;
@@ -81,6 +71,10 @@ export class MyReactFiberNode implements RenderFiber {
   memoizedState: { stableState?: MemoizedStateType; revertState?: MemoizedStateType };
 
   constructor(element: MyReactElementNode) {
+    this._installElement(element);
+  }
+
+  _installElement(element: MyReactElementNode) {
     const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
 
     this.ref = ref;
@@ -95,7 +89,6 @@ export class MyReactFiberNode implements RenderFiber {
 
     this.pendingProps = pendingProps;
   }
-
   _addDependence(instance: MyReactInternalInstance): void {
     this.dependence = this.dependence || new Set();
 
@@ -118,7 +111,7 @@ export class MyReactFiberNode implements RenderFiber {
   _prepare(): void {
     const currentIsSync = enableSyncFlush.current;
 
-    const renderPlatform = this.renderContainer.renderPlatform;
+    const renderPlatform = currentRenderPlatform.current;
 
     const callBack = () => {
       const needUpdate = this.type & NODE_TYPE.__class__ ? processClassComponentUpdateQueue(this) : processFunctionComponentUpdateQueue(this);
@@ -140,56 +133,6 @@ export class MyReactFiberNode implements RenderFiber {
   }
 }
 
-export class MyReactFiberContainer extends MyReactFiberNode {
+export interface MyReactFiberContainer extends MyReactFiberNode {
   containerNode: NativeNode;
-
-  constructor(element: MyReactElement, containerNode: NativeNode) {
-    super(element);
-
-    this.containerNode = containerNode;
-  }
-}
-
-export class MyReactContainer {
-  rootNode: NativeNode;
-
-  rootFiber: MyReactFiberNode;
-
-  renderDispatch: CustomRenderDispatch;
-
-  renderPlatform: CustomRenderPlatform;
-
-  isAppMounted = false;
-
-  isAppCrashed = false;
-
-  scheduledFiber: MyReactFiberNode | null = null;
-
-  errorBoundaryInstance: MyReactComponent | null = null;
-
-  nextWorkingFiber: MyReactFiberNode | null = null;
-
-  pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
-
-  pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray();
-
-  constructor(rootNode: NativeNode, rootFiber: MyReactFiberNode, renderPlatform: CustomRenderPlatform, renderDispatch: CustomRenderDispatch) {
-    this.rootNode = rootNode;
-
-    this.rootFiber = rootFiber;
-
-    this.renderPlatform = renderPlatform;
-
-    this.renderDispatch = renderDispatch;
-  }
-
-  _generateCommitList(_fiber: MyReactFiberNode) {
-    if (!_fiber) return;
-
-    if (_fiber.patch !== PATCH_TYPE.__initial__) {
-      this.pendingCommitFiberList = this.pendingCommitFiberList || new ListTree();
-
-      this.pendingCommitFiberList.push(_fiber);
-    }
-  }
 }

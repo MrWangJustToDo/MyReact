@@ -1,16 +1,20 @@
 import { createElement } from "@my-react/react";
 import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
+import { getTypeFromElement, setRefreshTypeMap } from "../share";
+
 import type { MyReactFiberNode } from "./instance";
-import type { MixinMyReactFunctionComponent , MixinMyReactClassComponent} from "@my-react/react";
+import type { MixinMyReactFunctionComponent, MixinMyReactClassComponent } from "@my-react/react";
 
 export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionComponent | MixinMyReactClassComponent, forceRefresh?: boolean) => {
   if (__DEV__) {
-    const newElement = createElement(nextType as MixinMyReactFunctionComponent, { ...fiber.pendingProps, ref: fiber.ref, key: typeof fiber.key === "string" ? fiber.key : undefined });
+    const element = createElement(nextType as MixinMyReactFunctionComponent, null);
 
-    fiber.element = newElement;
+    const { elementType } = getTypeFromElement(element);
 
-    fiber.elementType = nextType;
+    fiber.elementType = elementType;
+
+    setRefreshTypeMap(fiber);
 
     if (forceRefresh) {
       const existingHookList = fiber.hookList;

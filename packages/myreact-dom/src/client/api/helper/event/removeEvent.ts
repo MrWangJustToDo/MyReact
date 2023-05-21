@@ -3,13 +3,10 @@ import { enableEventSystem } from "@my-react-dom-shared";
 import { getNativeEventName } from "./getEventName";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { ClientDomDispatch } from "@my-react-dom-client";
 import type { DomElement } from "@my-react-dom-shared";
 
-export const removeEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string) => {
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
-
+export const removeEventListener = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, dom: DomElement, key: string) => {
   const typedElementType = fiber.elementType as string;
 
   const currentProps = fiber.memoizedProps || {};
@@ -19,7 +16,7 @@ export const removeEventListener = (fiber: MyReactFiberNode, dom: DomElement, ke
   const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElementType, currentProps);
 
   if (enableEventSystem.current) {
-    const eventMap = renderDispatch.eventMap;
+    const eventMap = renderDispatch.runtimeMap.eventMap;
 
     const eventState = eventMap.get(fiber);
 

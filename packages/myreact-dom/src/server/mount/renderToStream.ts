@@ -1,10 +1,10 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { initialFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
+import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
-import { PlainElement, ServerStreamContainer, ServerStreamDispatch } from "@my-react-dom-server";
+import { PlainElement, ServerStreamDispatch } from "@my-react-dom-server";
 import { MyReactDomPlatform, startRender, startRenderAsync } from "@my-react-dom-shared";
 
-import type { MyReactElement, LikeJSX} from "@my-react/react";
+import type { MyReactElement, LikeJSX } from "@my-react/react";
 import type { SimpleReadable } from "@my-react-dom-server";
 import type { Readable } from "stream";
 
@@ -13,23 +13,19 @@ const { enableScopeTreeLog } = __my_react_shared__;
 const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, stream: T) => {
   const container = new PlainElement("");
 
-  const fiber = new MyReactFiberContainer(element, container);
+  const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ServerStreamDispatch();
+  const renderDispatch = new ServerStreamDispatch(container, fiber, MyReactDomPlatform);
 
-  const renderContainer = new ServerStreamContainer(container, fiber, MyReactDomPlatform, renderDispatch);
+  renderDispatch.stream = stream;
 
-  renderContainer.stream = stream;
+  renderDispatch.isServerRender = true;
 
-  fiber.renderContainer = renderContainer;
+  initialFiberNode(fiber, renderDispatch);
 
-  renderContainer.isServerRender = true;
+  startRender(fiber, renderDispatch);
 
-  initialFiberNode(fiber);
-
-  startRender(fiber);
-
-  delete renderContainer.isServerRender;
+  delete renderDispatch.isServerRender;
 
   return stream;
 };
@@ -37,23 +33,19 @@ const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, s
 const renderToStreamAsync = <T extends SimpleReadable>(element: MyReactElement, stream: T) => {
   const container = new PlainElement("");
 
-  const fiber = new MyReactFiberContainer(element, container);
+  const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ServerStreamDispatch();
+  const renderDispatch = new ServerStreamDispatch(container, fiber, MyReactDomPlatform);
 
-  const renderContainer = new ServerStreamContainer(container, fiber, MyReactDomPlatform, renderDispatch);
+  renderDispatch.stream = stream;
 
-  renderContainer.stream = stream;
+  renderDispatch.isServerRender = true;
 
-  fiber.renderContainer = renderContainer;
+  initialFiberNode(fiber, renderDispatch);
 
-  renderContainer.isServerRender = true;
+  startRenderAsync(fiber, renderDispatch);
 
-  initialFiberNode(fiber);
-
-  startRenderAsync(fiber);
-
-  delete renderContainer.isServerRender;
+  delete renderDispatch.isServerRender;
 
   return stream;
 };

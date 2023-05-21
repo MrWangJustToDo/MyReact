@@ -6,7 +6,7 @@ import { enableEventSystem } from "@my-react-dom-shared";
 import { getNativeEventName } from "./getEventName";
 
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ControlledElement } from "@my-react-dom-client";
+import type { ClientDomDispatch, ControlledElement } from "@my-react-dom-client";
 import type { DomElement } from "@my-react-dom-shared";
 
 const { enableSyncFlush } = __my_react_shared__;
@@ -37,11 +37,7 @@ const afterEvent = (event: string) => {
   }
 };
 
-export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: string, isControlled: boolean) => {
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
-
+export const addEventListener = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, dom: DomElement, key: string, isControlled: boolean) => {
   const typedElementType = fiber.elementType as string;
 
   const pendingProps = fiber.pendingProps;
@@ -51,7 +47,7 @@ export const addEventListener = (fiber: MyReactFiberNode, dom: DomElement, key: 
   const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElementType, pendingProps);
 
   if (enableEventSystem.current) {
-    const eventMap = renderDispatch.eventMap;
+    const eventMap = renderDispatch.runtimeMap.eventMap;
 
     const eventState = eventMap.get(fiber) || {};
 

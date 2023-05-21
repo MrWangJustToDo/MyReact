@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { safeCall, safeCallWithSync, hmr, setRefreshHandler } from "@my-react/react-reconciler";
+import { safeCall, safeCallWithSync, hmr, setRefreshHandler, getCurrentFiberFromType, getCurrentDispatchFromType } from "@my-react/react-reconciler";
 
 import { render, hydrate, hydrateRoot, createRoot } from "./client";
 import { renderToString, renderToNodeStream } from "./server";
@@ -22,6 +22,8 @@ if (__DEV__ && enableHMRForDev.current) {
     hmr,
     setRefreshHandler,
     currentComponentFiber,
+    getCurrentFiberFromType,
+    getCurrentDispatchFromType,
   };
 }
 

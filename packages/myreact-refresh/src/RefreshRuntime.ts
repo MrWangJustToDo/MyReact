@@ -1,5 +1,20 @@
-import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, createRef, MyReactElementType } from "@my-react/react";
-import type { setRefreshHandler, hmr, MyReactFiberNode, MyReactContainer } from "@my-react/react-reconciler";
+import type {
+  forwardRef,
+  memo,
+  MixinMyReactClassComponent,
+  MixinMyReactFunctionComponent,
+  createRef,
+  MyReactElementType,
+  MyReactComponent,
+} from "@my-react/react";
+import type {
+  MyReactFiberNode,
+  hmr,
+  setRefreshHandler,
+  CustomRenderDispatch,
+  getCurrentFiberFromType,
+  getCurrentDispatchFromType,
+} from "@my-react/react-reconciler";
 
 const TYPEKEY = "$$typeof";
 
@@ -26,6 +41,8 @@ type HMRGlobal = {
     hmr: typeof hmr;
     setRefreshHandler: typeof setRefreshHandler;
     currentComponentFiber: ReturnType<typeof createRef<MyReactFiberNode>>;
+    getCurrentFiberFromType: typeof getCurrentFiberFromType;
+    getCurrentDispatchFromType: typeof getCurrentDispatchFromType;
   };
   ["__@my-react/react-refresh__"]: {
     register: typeof register;
@@ -38,7 +55,6 @@ type HMRGlobal = {
     createSignatureFunctionForTransform: typeof createSignatureFunctionForTransform;
   };
   ["__@my-react/react-refresh__id"]: typeof allFamiliesByID;
-  ["__@my-react/react-refresh__fiber"]: typeof allFibersByType;
   ["__@my-react/react-refresh__updated"]: typeof updatedFamiliesByType;
   ["__@my-react/react-refresh__signature"]: typeof allSignaturesByType;
 };
@@ -55,7 +71,7 @@ const allSignaturesByType = new WeakMap<MyReactComponentType, Signature>();
 
 const updatedFamiliesByType = new WeakMap<MyReactComponentType, Family>();
 
-const allFibersByType = new WeakMap<MyReactComponentType, MyReactFiberNode>();
+// const allFibersByType = new WeakMap<MyReactComponentType, MyReactFiberNode>();
 
 const getProperty = (object: Record<string, unknown>, property: string) => {
   try {
@@ -169,31 +185,6 @@ export const getFamilyByType = (type: MyReactComponentType) => {
   return allFamiliesByType.get(type);
 };
 
-const setFiber = (type: MyReactComponentType) => {
-  if (!type) {
-    console.error(`[@my-react/react-refresh] can not get current component type`);
-    return;
-  }
-
-  const currentFiber = typedSelf?.["__@my-react/hmr__"]?.currentComponentFiber?.current;
-
-  if (!currentFiber) {
-    console.error(`[@my-react/react-refresh] can not register current type's fiber node. type: ${type}`);
-  }
-
-  // always set
-  allFibersByType.set(type, currentFiber);
-
-  if (typeof type === "object" && type !== null) {
-    switch (getProperty(type, TYPEKEY)) {
-      case ForwardRef:
-      case Memo:
-        setFiber(type.render as MyReactComponentType);
-        break;
-    }
-  }
-};
-
 export const setSignature = (type: MyReactComponentType, key: string, forceReset: boolean, getCustomHooks: Signature["getCustomHooks"]) => {
   if (!type) return;
 
@@ -279,8 +270,6 @@ export const createSignatureFunctionForTransform = () => {
         didCollectHooks = true;
         collectCustomHooksForSignature(savedType);
       }
-      // always collect newest fiber
-      setFiber(savedType as MyReactComponentType);
     }
   };
 };
@@ -292,9 +281,7 @@ export const performReactRefresh = () => {
 
   pendingUpdates.length = 0;
 
-  let root: null | MyReactFiberNode = null;
-
-  let container: null | MyReactContainer = null;
+  let container: null | CustomRenderDispatch = null;
 
   allPending.forEach(([family, _nextType]) => {
     const prevType = getRenderTypeFormType(family.current);
@@ -302,9 +289,9 @@ export const performReactRefresh = () => {
     const nextType = getRenderTypeFormType(_nextType);
 
     if (prevType && nextType) {
-      const fiber_1 = allFibersByType.get(prevType);
+      const fiber = typedSelf["__@my-react/hmr__"]?.getCurrentFiberFromType?.(prevType);
 
-      const fiber_2 = allFibersByType.get(nextType);
+      container = container || typedSelf["__@my-react/hmr__"]?.getCurrentDispatchFromType?.(prevType);
 
       updatedFamiliesByType.set(prevType, family);
 
@@ -312,48 +299,34 @@ export const performReactRefresh = () => {
 
       family.current = nextType;
 
-      if (fiber_1) {
-        container = container || fiber_1.renderContainer;
+      if (fiber) {
+        const forceReset = !canPreserveStateBetween(prevType, nextType);
 
-        root = root || fiber_1.renderContainer.rootFiber;
-
-        if (fiber_1.state !== 64) {
-          const forceReset = !canPreserveStateBetween(prevType, nextType);
-
-          typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber_1 as MyReactFiberNode, nextType, forceReset);
-        }
-      } else if (fiber_2) {
-        container = container || fiber_2.renderContainer;
-
-        root = root || fiber_2.renderContainer.rootFiber;
-
-        if (fiber_2.state !== 64) {
-          const forceReset = !canPreserveStateBetween(prevType, nextType);
-
-          typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber_2 as MyReactFiberNode, nextType, forceReset);
-        }
+        typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber, nextType, forceReset);
       } else {
         console.error(`[@my-react/react-refresh] current type ${prevType} not have a fiber node for the render tree`);
       }
     }
   });
 
-  if (root) {
+  if (container) {
     console.log(`[@my-react/react-refresh] updating ...`);
 
     // has a error for prev render
-    if (container?.errorBoundaryInstance) {
-      const errorBoundaryFiber = container.errorBoundaryInstance._ownerFiber as MyReactFiberNode;
+    if (container.runtimeFiber.errorCatchFiber) {
+      const fiber = container?.runtimeFiber.errorCatchFiber;
 
-      const state = errorBoundaryFiber.memoizedState.revertState;
+      const state = fiber.memoizedState.revertState;
 
-      container.errorBoundaryInstance.setState(state, () => {
-        container.errorBoundaryInstance = null;
+      const instance = fiber.instance as MyReactComponent;
 
-        root?._update();
+      instance.setState(state, () => {
+        container.runtimeFiber.errorCatchFiber = null;
+
+        container.rootFiber._update();
       });
     } else {
-      root?._update();
+      container.rootFiber._update();
     }
   }
 };
@@ -429,8 +402,6 @@ if (__DEV__) {
   };
 
   typedSelf["__@my-react/react-refresh__id"] = allFamiliesByID;
-
-  typedSelf["__@my-react/react-refresh__fiber"] = allFibersByType;
 
   typedSelf["__@my-react/react-refresh__updated"] = updatedFamiliesByType;
 

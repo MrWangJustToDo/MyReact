@@ -1,8 +1,8 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { initialFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
+import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
-import { ClientDomContainer, ClientDomDispatch, prepareDevContainer } from "@my-react-dom-client";
-import { MyReactDomPlatform, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { ClientDomDispatch } from "@my-react-dom-client";
+import { MyReactDomPlatform, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode } from "./render";
 
@@ -12,55 +12,47 @@ import type { MyReactElement, LikeJSX } from "@my-react/react";
 const { enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
 
 const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
-  const fiber = new MyReactFiberContainer(element, container);
+  const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ClientDomDispatch();
+  const renderDispatch = new ClientDomDispatch(container, fiber, MyReactDomPlatform);
 
-  const renderContainer = new ClientDomContainer(container, fiber, MyReactDomPlatform, renderDispatch);
-
-  fiber.renderContainer = renderContainer;
-
-  __DEV__ && prepareDevContainer(renderContainer);
+  __DEV__ && prepareDevContainer(renderDispatch);
 
   container.setAttribute?.("hydrate", "@my-react");
 
   container.__fiber__ = fiber;
 
-  container.__container__ = renderContainer;
+  container.__container__ = renderDispatch;
 
-  renderContainer.isHydrateRender = true;
+  renderDispatch.isHydrateRender = true;
 
-  initialFiberNode(fiber);
+  initialFiberNode(fiber, renderDispatch);
 
-  startRender(fiber, true);
+  startRender(fiber, renderDispatch, true);
 
-  delete renderContainer.isHydrateRender;
+  delete renderDispatch.isHydrateRender;
 };
 
 const hydrateAsync = async (element: MyReactElement, container: RenderContainer) => {
-  const fiber = new MyReactFiberContainer(element, container);
+  const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ClientDomDispatch();
+  const renderDispatch = new ClientDomDispatch(container, fiber, MyReactDomPlatform);
 
-  const renderContainer = new ClientDomContainer(container, fiber, MyReactDomPlatform, renderDispatch);
-
-  fiber.renderContainer = renderContainer;
-
-  __DEV__ && prepareDevContainer(renderContainer);
+  __DEV__ && prepareDevContainer(renderDispatch);
 
   container.setAttribute?.("hydrate", "@my-react");
 
   container.__fiber__ = fiber;
 
-  container.__container__ = renderContainer;
+  container.__container__ = renderDispatch;
 
-  renderContainer.isHydrateRender = true;
+  renderDispatch.isHydrateRender = true;
 
-  initialFiberNode(fiber);
+  initialFiberNode(fiber, renderDispatch);
 
-  await startRenderAsync(fiber, true);
+  await startRenderAsync(fiber, renderDispatch, true);
 
-  delete renderContainer.isHydrateRender;
+  delete renderDispatch.isHydrateRender;
 };
 
 export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>): void;

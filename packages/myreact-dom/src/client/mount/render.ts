@@ -1,16 +1,15 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { checkIsSameType, getTypeFromElementNode, initialFiberNode, MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
+import { checkIsSameType, getTypeFromElementNode, initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 import { once, STATE_TYPE } from "@my-react/react-shared";
 
-import { ClientDomContainer, ClientDomDispatch, prepareDevContainer } from "@my-react-dom-client";
-import { MyReactDomPlatform, startRender, unmountComponentAtNode } from "@my-react-dom-shared";
+import { ClientDomDispatch } from "@my-react-dom-client";
+import { MyReactDomPlatform, prepareDevContainer, startRender, unmountComponentAtNode } from "@my-react-dom-shared";
 
 import type { MyReactElement, LikeJSX } from "@my-react/react";
-import type { MyReactContainer } from "@my-react/react-reconciler";
 
 export type RenderContainer = Element & {
   __fiber__: MyReactFiberNode;
-  __container__: MyReactContainer;
+  __container__: ClientDomDispatch;
 };
 
 const { enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
@@ -34,10 +33,10 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
   const element = _element as MyReactElement;
 
-  if (containerFiber instanceof MyReactFiberNode) {
-    const renderContainer = container.__container__;
+  if (containerFiber instanceof ClientDomDispatch) {
+    const renderDispatch = container.__container__;
 
-    renderContainer.isAppCrashed = false;
+    renderDispatch.isAppCrashed = false;
 
     if (checkIsSameType(containerFiber, element)) {
       const { pendingProps, ref } = getTypeFromElementNode(element);
@@ -65,15 +64,11 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
     onceLogConcurrentMode();
   }
 
-  const fiber = new MyReactFiberContainer(element, container);
+  const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ClientDomDispatch();
+  const renderDispatch = new ClientDomDispatch(container, fiber, MyReactDomPlatform);
 
-  const renderContainer = new ClientDomContainer(container, fiber, MyReactDomPlatform, renderDispatch);
-
-  fiber.renderContainer = renderContainer;
-
-  __DEV__ && prepareDevContainer(renderContainer);
+  __DEV__ && prepareDevContainer(renderDispatch);
 
   Array.from(container.children).forEach((n) => n.remove?.());
 
@@ -81,13 +76,13 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
   container.__fiber__ = fiber;
 
-  container.__container__ = renderContainer;
+  container.__container__ = renderDispatch;
 
-  renderContainer.isClientRender = true;
+  renderDispatch.isClientRender = true;
 
-  initialFiberNode(fiber);
+  initialFiberNode(fiber, renderDispatch);
 
-  startRender(fiber);
+  startRender(fiber, renderDispatch);
 
-  delete renderContainer.isClientRender;
+  delete renderDispatch.isClientRender;
 };

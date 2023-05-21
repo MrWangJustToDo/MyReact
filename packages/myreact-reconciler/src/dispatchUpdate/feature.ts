@@ -6,18 +6,18 @@ import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
 import { unmount } from "../dispatchUnmount";
 import { safeCallWithFiber } from "../share";
 
-import type { RenderDispatch } from "../renderDispatch";
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { ListTree} from "@my-react/react-shared";
+import type { ListTree } from "@my-react/react-shared";
 
 const { currentRenderPlatform } = __my_react_internal__;
 
-export const defaultDispatchUpdate = (_dispatch: RenderDispatch, _list: ListTree<MyReactFiberNode>) => {
+export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispatch: CustomRenderDispatch) => {
   // TODO maybe need call `insertionEffect` in another function
   _list.listToFoot((_fiber) => {
     if (!(_fiber.state & STATE_TYPE.__unmount__)) {
-      unmount(_fiber);
-      insertionEffect(_fiber);
+      unmount(_fiber, _dispatch);
+      insertionEffect(_fiber, _dispatch);
     }
   });
   _list.listToFoot((_fiber) => {
@@ -50,9 +50,9 @@ export const defaultDispatchUpdate = (_dispatch: RenderDispatch, _list: ListTree
   });
   _list.listToFoot((_fiber) => {
     if (!(_fiber.state & STATE_TYPE.__unmount__)) {
-      context(_fiber);
-      layoutEffect(_fiber);
+      context(_fiber, _dispatch);
+      layoutEffect(_fiber, _dispatch);
     }
   });
-  currentRenderPlatform.current.microTask(() => _list.listToFoot((_fiber) => effect(_fiber)));
+  currentRenderPlatform.current.microTask(() => _list.listToFoot((_fiber) => effect(_fiber, _dispatch)));
 };

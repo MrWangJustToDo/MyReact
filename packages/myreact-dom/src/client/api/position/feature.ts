@@ -7,34 +7,32 @@ import { getInsertBeforeDomFromSiblingAndParent } from "./getInsertBeforeDom";
 import { insertBefore } from "./insertBefore";
 
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
+import type { ClientDomDispatch } from "@my-react-dom-client";
 
-export const position = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
+export const position = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
   if (fiber.patch & PATCH_TYPE.__position__) {
-    const renderContainer = fiber.renderContainer;
+    let { parentFiberWithNode } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
-    const renderDispatch = renderContainer.renderDispatch as ClientDomDispatch;
+    if (!parentFiberWithNode || parentFiberWithNode.state & STATE_TYPE.__unmount__) {
+      parentFiberWithNode = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
-    if (!parentFiberWithDom || parentFiberWithDom.state & STATE_TYPE.__unmount__) {
-      parentFiberWithDom = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
+      const elementObj = renderDispatch.runtimeDom.elementMap.get(fiber);
 
-      const elementObj = renderDispatch.elementMap.get(fiber);
+      elementObj.parentFiberWithNode = parentFiberWithNode;
 
-      elementObj.parentFiberWithNode = parentFiberWithDom;
-
-      renderDispatch.elementMap.set(fiber, elementObj);
+      renderDispatch.runtimeDom.elementMap.set(fiber, elementObj);
     }
 
-    const maybeContainer = parentFiberWithDom as MyReactFiberContainer;
+    const maybeContainer = parentFiberWithNode as MyReactFiberContainer;
 
-    if (!parentFiberWithDom?.nativeNode && !maybeContainer?.containerNode) throw new Error(`position error, current render node not have a container node`);
+    if (!parentFiberWithNode?.nativeNode && !maybeContainer?.containerNode) throw new Error(`position error, current render node not have a container node`);
 
-    const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithDom);
+    const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithNode);
 
     if (beforeFiberWithDom) {
-      insertBefore(fiber, beforeFiberWithDom, parentFiberWithDom);
+      insertBefore(fiber, beforeFiberWithDom, parentFiberWithNode);
     } else {
-      append(fiber, parentFiberWithDom);
+      append(fiber, parentFiberWithNode);
     }
 
     if (fiber.patch & PATCH_TYPE.__position__) fiber.patch ^= PATCH_TYPE.__position__;

@@ -2,6 +2,7 @@ import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { safeCallWithFiber } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 export const defaultGenerateEffectMap = (fiber: MyReactFiberNode, effect: () => void, map: WeakMap<MyReactFiberNode, Array<() => void>>) => {
@@ -12,13 +13,9 @@ export const defaultGenerateEffectMap = (fiber: MyReactFiberNode, effect: () => 
   map.set(fiber, exist);
 };
 
-export const effect = (fiber: MyReactFiberNode) => {
+export const effect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (fiber.patch & PATCH_TYPE.__effect__) {
-    const renderContainer = fiber.renderContainer;
-
-    const renderDispatch = renderContainer.renderDispatch;
-
-    const effectMap = renderDispatch.effectMap;
+    const effectMap = renderDispatch.runtimeMap.effectMap;
 
     const allEffect = effectMap.get(fiber) || [];
 
@@ -30,13 +27,9 @@ export const effect = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const layoutEffect = (fiber: MyReactFiberNode) => {
+export const layoutEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (fiber.patch & PATCH_TYPE.__layoutEffect__) {
-    const renderContainer = fiber.renderContainer;
-
-    const renderDispatch = renderContainer.renderDispatch;
-
-    const layoutEffectMap = renderDispatch.layoutEffectMap;
+    const layoutEffectMap = renderDispatch.runtimeMap.layoutEffectMap;
 
     const allLayoutEffect = layoutEffectMap.get(fiber) || [];
 
@@ -48,13 +41,9 @@ export const layoutEffect = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const insertionEffect = (fiber: MyReactFiberNode) => {
+export const insertionEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (fiber.patch & PATCH_TYPE.__insertionEffect__) {
-    const renderContainer = fiber.renderContainer;
-
-    const renderDispatch = renderContainer.renderDispatch;
-
-    const insertionEffectMap = renderDispatch.insertionEffectMap;
+    const insertionEffectMap = renderDispatch.runtimeMap.insertionEffectMap;
 
     const allInsertionEffect = insertionEffectMap.get(fiber) || [];
 

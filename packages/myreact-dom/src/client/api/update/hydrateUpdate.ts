@@ -8,6 +8,7 @@ import { addEventListener } from "../helper";
 import { controlElementTag, mountControlElement, prepareControlProp } from "./controlled";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 const domContentHydrate = (fiber: MyReactFiberNode) => {
@@ -91,12 +92,12 @@ const domStyleHydrate = (fiber: MyReactFiberNode, key: string, value: Record<str
   });
 };
 
-const domEventHydrate = (fiber: MyReactFiberNode, key: string) => {
+const domEventHydrate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, key: string) => {
   const node = fiber.nativeNode;
 
   const isCanControlledElement = controlElementTag[fiber.elementType as string];
 
-  addEventListener(fiber, node as DomElement, key, isCanControlledElement);
+  addEventListener(fiber, renderDispatch, node as DomElement, key, isCanControlledElement);
 };
 
 const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
@@ -119,11 +120,13 @@ const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
+export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
   const node = fiber.nativeNode as DomElement | DomNode;
 
   if (node) {
     const props = fiber.pendingProps;
+
+    const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
     if (fiber.type & NODE_TYPE.__plain__) {
       const isCanControlledElement = enableControlComponent.current && controlElementTag[fiber.elementType as string];
@@ -138,7 +141,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, isSVG: boolean) => {
 
       Object.keys(props).forEach((key) => {
         if (isEvent(key)) {
-          domEventHydrate(fiber, key);
+          domEventHydrate(fiber, renderDispatch, key);
         } else if (isStyle(key)) {
           domStyleHydrate(fiber, key, (props[key] as Record<string, unknown>) || {});
         } else if (isProperty(key)) {

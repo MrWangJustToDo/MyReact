@@ -3,7 +3,7 @@ import { STATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { isCommentElement } from "../runtimeScope";
-import { NODE_TYPE, safeCallWithFiber } from "../share";
+import { currentRenderDispatch, NODE_TYPE, safeCallWithFiber } from "../share";
 
 import { transformChildrenFiber } from "./generate";
 
@@ -79,9 +79,7 @@ export const nextWorkComponent = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkLazy = (fiber: MyReactFiberNode) => {
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   const children = renderDispatch.resolveLazyElementSync(fiber);
 
@@ -89,9 +87,7 @@ export const nextWorkLazy = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkLazyAsync = async (fiber: MyReactFiberNode) => {
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   const children = await renderDispatch.resolveLazyElementAsync(fiber);
 
@@ -109,9 +105,7 @@ export const nextWorkNormal = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
 

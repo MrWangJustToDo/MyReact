@@ -1,13 +1,14 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
-import { safeCallWithFiber } from "../share";
+import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
-import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
 const { enableLegacyLifeCycle } = __my_react_shared__;
+
+const { currentRenderPlatform } = __my_react_internal__;
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const Component = fiber.elementType;
@@ -48,9 +49,7 @@ const processComponentStateFromError = (fiber: MyReactFiberNode, error: Error) =
 };
 
 const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   const Component = fiber.elementType;
 
@@ -98,9 +97,7 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE.__effect__)) {
     typedInstance.mode = Effect_TYPE.__effect__;
@@ -114,9 +111,7 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
 const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error: Error, stack: string) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   if (typedInstance.componentDidCatch && !(typedInstance.mode & Effect_TYPE.__effect__)) {
     typedInstance.mode = Effect_TYPE.__effect__;
@@ -128,11 +123,9 @@ const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error
 };
 
 const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
-
   const Component = fiber.elementType;
+
+  const renderDispatch = currentRenderDispatch.current;
 
   const typedComponent = Component as MixinMyReactClassComponent;
 
@@ -210,9 +203,7 @@ const processComponentDidUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   const hasEffect = typedInstance.componentDidUpdate || callback.length;
 
@@ -229,9 +220,7 @@ const processComponentDidUpdateOnUpdate = (
 const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderContainer = fiber.renderContainer;
-
-  const renderPlatform = renderContainer.renderPlatform as CustomRenderPlatform;
+  const renderPlatform = currentRenderPlatform.current;
 
   // TODO setState
   if (typedInstance.UNSAFE_componentWillMount) {
@@ -250,9 +239,7 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
 const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderContainer = fiber.renderContainer;
-
-  const renderPlatform = renderContainer.renderPlatform as CustomRenderPlatform;
+  const renderPlatform = currentRenderPlatform.current;
 
   // only trigger on parent component update
   if (fiber.state & STATE_TYPE.__inherit__) {
@@ -274,9 +261,7 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
 const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextState }: { nextProps: unknown; nextState: unknown }) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderContainer = fiber.renderContainer;
-
-  const renderPlatform = renderContainer.renderPlatform as CustomRenderPlatform;
+  const renderPlatform = currentRenderPlatform.current;
 
   if (typedInstance.UNSAFE_componentWillUpdate) {
     typedInstance.UNSAFE_componentWillUpdate(nextProps, nextState);
@@ -382,9 +367,7 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 };
 
 const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
-  const typedInstance = fiber.instance as MyReactComponent;
-
-  const renderContainer = fiber.renderContainer;
+  const renderDispatch = currentRenderDispatch.current;
 
   const { error, stack } = fiber.pendingState.error;
 
@@ -394,7 +377,7 @@ const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
 
   processComponentDidCatchOnMountAndUpdate(fiber, error, stack);
 
-  renderContainer.errorBoundaryInstance = typedInstance;
+  renderDispatch.runtimeFiber.errorCatchFiber = fiber;
 
   return { updated: true, children };
 };

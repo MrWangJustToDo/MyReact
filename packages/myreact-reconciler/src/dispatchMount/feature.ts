@@ -3,16 +3,16 @@ import { __my_react_internal__ } from "@my-react/react";
 import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
 import { safeCallWithFiber } from "../share";
 
-import type { RenderDispatch } from "../renderDispatch";
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { currentRenderPlatform } = __my_react_internal__;
 
-export const defaultDispatchMount = (_dispatch: RenderDispatch, _fiber: MyReactFiberNode, _hydrate?: boolean) => {
+export const defaultDispatchMount = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch, _hydrate?: boolean) => {
   const mountInsertionEffect = (_fiber: MyReactFiberNode) => {
     if (_fiber.child) mountInsertionEffect(_fiber.child);
 
-    insertionEffect(_fiber);
+    insertionEffect(_fiber, _dispatch);
 
     if (_fiber.sibling) mountInsertionEffect(_fiber.sibling);
   };
@@ -53,7 +53,7 @@ export const defaultDispatchMount = (_dispatch: RenderDispatch, _fiber: MyReactF
   const mountLayoutEffect = (_fiber: MyReactFiberNode) => {
     if (_fiber.child) mountLayoutEffect(_fiber.child);
 
-    layoutEffect(_fiber);
+    layoutEffect(_fiber, _dispatch);
 
     if (_fiber.sibling) mountLayoutEffect(_fiber.sibling);
   };
@@ -61,7 +61,7 @@ export const defaultDispatchMount = (_dispatch: RenderDispatch, _fiber: MyReactF
   const mountEffect = (_fiber: MyReactFiberNode) => {
     if (_fiber.child) mountEffect(_fiber.child);
 
-    effect(_fiber);
+    effect(_fiber, _dispatch);
 
     if (_fiber.sibling) mountEffect(_fiber.sibling);
   };

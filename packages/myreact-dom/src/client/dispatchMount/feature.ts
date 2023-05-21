@@ -9,11 +9,11 @@ import type { ClientDomDispatch } from "@my-react-dom-client";
 const { currentRenderPlatform } = __my_react_internal__;
 
 // TODO
-export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode, _hydrate?: boolean) => {
+export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch, _hydrate?: boolean) => {
   const mountInsertionEffect = (_fiber: MyReactFiberNode) => {
     if (_fiber.child) mountInsertionEffect(_fiber.child);
 
-    insertionEffect(_fiber);
+    insertionEffect(_fiber, _dispatch);
 
     if (_fiber.sibling) mountInsertionEffect(_fiber.sibling);
   };
@@ -21,7 +21,7 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
   const mountLayoutEffect = (_fiber: MyReactFiberNode) => {
     if (_fiber.child) mountLayoutEffect(_fiber.child);
 
-    layoutEffect(_fiber);
+    layoutEffect(_fiber, _dispatch);
 
     if (_fiber.sibling) mountLayoutEffect(_fiber.sibling);
   };
@@ -29,7 +29,7 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
   const mountEffect = (_fiber: MyReactFiberNode) => {
     if (_fiber.child) mountEffect(_fiber.child);
 
-    effect(_fiber);
+    effect(_fiber, _dispatch);
 
     if (_fiber.sibling) mountEffect(_fiber.sibling);
   };

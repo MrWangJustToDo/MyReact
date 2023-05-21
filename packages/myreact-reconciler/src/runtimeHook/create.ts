@@ -1,6 +1,8 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
+import { currentRenderDispatch } from "../share";
+
 import { checkHookValid } from "./check";
 import { MyReactHookNode } from "./instance";
 import { MyReactSignal } from "./signal";
@@ -15,9 +17,7 @@ const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
 };
 
 export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
-  const renderContainer = fiber.renderContainer;
-
-  const renderDispatch = renderContainer.renderDispatch;
+  const renderDispatch = currentRenderDispatch.current;
 
   const hookNode = new MyReactHookNode(type, value, reducer || defaultReducer, deps);
 

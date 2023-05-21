@@ -8,18 +8,34 @@ import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
 import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
+const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
+  typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
+
+  typeForCreate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
+
+  typeForUpdate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
+
+  typeForAppend: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
+
+  typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
+};
+
 export class ServerDomDispatch extends CustomRenderDispatch {
-  elementMap = new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>();
+  runtimeDom = {
+    elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
+  };
 
-  typeForRef = NODE_TYPE.__plain__ | NODE_TYPE.__class__;
+  runtimeRef = runtimeRef;
 
-  typeForCreate = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
+  isHydrateRender: boolean;
 
-  typeForUpdate = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
+  isClientRender: boolean;
 
-  typeForAppend = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__;
+  isServerRender: boolean;
 
-  typeForHasNode = NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__;
+  renderTime: number | null;
+
+  hydrateTime: number | null;
 
   triggerUpdate(_fiber: MyReactFiberNode): void {
     void 0;
@@ -56,19 +72,19 @@ export class ServerDomDispatch extends CustomRenderDispatch {
   }
 
   commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
-    const { isSVG } = this.elementMap.get(_fiber) || {};
+    const { isSVG } = this.runtimeDom.elementMap.get(_fiber) || {};
 
     update(_fiber, isSVG);
   }
 
   commitAppend(_fiber: MyReactFiberNode): void {
-    const { parentFiberWithNode } = this.elementMap.get(_fiber) || {};
+    const { parentFiberWithNode } = this.runtimeDom.elementMap.get(_fiber) || {};
 
     append(_fiber, parentFiberWithNode);
   }
 
   resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementSync(_fiber);
+    return resolveLazyElementSync(_fiber, this);
   }
 
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
@@ -76,6 +92,6 @@ export class ServerDomDispatch extends CustomRenderDispatch {
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
-    patchToFiberInitial(_fiber);
+    patchToFiberInitial(_fiber, this);
   }
 }

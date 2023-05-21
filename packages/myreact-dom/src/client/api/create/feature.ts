@@ -7,25 +7,21 @@ import { validDomNesting } from "./validDomNesting";
 import { validDomTag } from "./validDomTag";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomContainer } from "@my-react-dom-client/renderContainer";
+import type { ClientDomDispatch } from "@my-react-dom-client";
 import type { DomComment, DomElement, DomNode } from "@my-react-dom-shared";
 
-export const create = (
-  fiber: MyReactFiberNode,
-  hydrate: boolean,
-  parentFiberWithDom: MyReactFiberNode,
-  previousDom: ChildNode | null,
-  isSVG: boolean
-): boolean => {
+export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, hydrate: boolean): boolean => {
   if (fiber.patch & PATCH_TYPE.__create__) {
+    const { isSVG, parentFiberWithNode } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
+
     let re = false;
 
     if (__DEV__) validDomTag(fiber);
 
-    if (__DEV__) validDomNesting(fiber);
+    if (__DEV__) validDomNesting(fiber, parentFiberWithNode);
 
     if (hydrate) {
-      const result = hydrateCreate(fiber, parentFiberWithDom, previousDom);
+      const result = hydrateCreate(fiber, parentFiberWithNode, renderDispatch.previousNativeNode);
 
       if (!result) nativeCreate(fiber, isSVG);
 
@@ -34,9 +30,7 @@ export const create = (
       nativeCreate(fiber, isSVG);
     }
 
-    const renderContainer = fiber.renderContainer as ClientDomContainer;
-
-    if (renderContainer.isHydrateRender) {
+    if (renderDispatch.isHydrateRender) {
       const element = fiber.nativeNode as DomElement | DomNode | DomComment;
 
       if (__DEV__ && fiber.type & NODE_TYPE.__plain__) {

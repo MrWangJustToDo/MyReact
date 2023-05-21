@@ -8,6 +8,8 @@ import type { MixinMyReactFunctionComponent, MixinMyReactClassComponent } from "
 
 export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionComponent | MixinMyReactClassComponent, forceRefresh?: boolean) => {
   if (__DEV__) {
+    if (fiber.state & STATE_TYPE.__unmount__) return;
+
     const element = createElement(nextType as MixinMyReactFunctionComponent, null);
 
     const { elementType } = getTypeFromElement(element);

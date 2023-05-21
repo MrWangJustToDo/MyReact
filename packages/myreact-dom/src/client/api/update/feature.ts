@@ -1,7 +1,5 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { debugWithNode } from "@my-react-dom-shared";
-
 import { hydrateUpdate } from "./hydrateUpdate";
 import { nativeUpdate } from "./nativeUpdate";
 import { validDomProps } from "./validDomProps";
@@ -17,10 +15,6 @@ export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       hydrateUpdate(fiber, renderDispatch);
     } else {
       nativeUpdate(fiber, renderDispatch);
-    }
-
-    if (__DEV__) {
-      debugWithNode(fiber);
     }
 
     fiber.memoizedProps = fiber.pendingProps;

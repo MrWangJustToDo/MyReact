@@ -10,7 +10,7 @@ type RefreshHandler = (type: MyReactElementType) => { current: MyReactElementTyp
 let refreshHandler: RefreshHandler | null = null;
 
 // used for hmr
-export const typeToFiberMap = new MyWeakMap() as WeakMap<MixinMyReactClassComponent | MixinMyReactFunctionComponent, MyReactFiberNode>;
+export const typeToFibersMap = new MyWeakMap() as WeakMap<MixinMyReactClassComponent | MixinMyReactFunctionComponent, Set<MyReactFiberNode>>;
 
 export const setRefreshHandler = (handler: RefreshHandler) => {
   if (refreshHandler) {
@@ -24,7 +24,11 @@ export const setRefreshTypeMap = (fiber: MyReactFiberNode) => {
   if (fiber.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
     const elementType = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
 
-    typeToFiberMap.set(elementType, fiber);
+    const exist = typeToFibersMap.get(elementType) || new Set();
+
+    exist.add(fiber);
+
+    typeToFibersMap.set(elementType, exist);
   }
 };
 
@@ -34,12 +38,14 @@ export const getCurrentTypeFromRefresh = (type: MyReactElementType) => {
   return family?.current || type;
 };
 
-export const getCurrentFiberFromType = (type: MixinMyReactClassComponent | MixinMyReactFunctionComponent) => {
-  return typeToFiberMap.get(type);
+export const getCurrentFibersFromType = (type: MixinMyReactClassComponent | MixinMyReactFunctionComponent) => {
+  return typeToFibersMap.get(type);
 };
 
 export const getCurrentDispatchFromType = (type: MixinMyReactClassComponent | MixinMyReactFunctionComponent) => {
-  const fiber = getCurrentFiberFromType(type);
+  const fibers = getCurrentFibersFromType(type);
+
+  const [fiber] = Array.from(fibers);
 
   return fiber ? fiberToDispatchMap.get(fiber) : null;
 };

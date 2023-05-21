@@ -1,6 +1,6 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { currentRenderDispatch, fiberToDispatchMap, setRefreshTypeMap } from "../share";
+import { currentRenderDispatch, debugWithNode, fiberToDispatchMap, setRefreshTypeMap } from "../share";
 
 import { MyReactFiberNode } from "./instance";
 
@@ -70,6 +70,10 @@ export const createFiberNode = (
       prevUpdateTime: 0,
       currentUpdateTime: timeNow,
     };
+
+    if (typedFiber.type & renderDispatch.runtimeRef.typeForNativeNode) {
+      renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
+    }
   }
 
   return newFiberNode;

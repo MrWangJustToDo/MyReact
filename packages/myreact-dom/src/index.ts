@@ -1,5 +1,13 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { safeCall, safeCallWithSync, hmr, setRefreshHandler, getCurrentFiberFromType, getCurrentDispatchFromType } from "@my-react/react-reconciler";
+import {
+  safeCall,
+  safeCallWithSync,
+  hmr,
+  typeToFibersMap,
+  setRefreshHandler,
+  getCurrentFibersFromType,
+  getCurrentDispatchFromType,
+} from "@my-react/react-reconciler";
 
 import { render, hydrate, hydrateRoot, createRoot } from "./client";
 import { renderToString, renderToNodeStream } from "./server";
@@ -20,9 +28,10 @@ setRenderPlatform(MyReactDomPlatform);
 if (__DEV__ && enableHMRForDev.current) {
   globalThis["__@my-react/hmr__"] = {
     hmr,
+    typeToFibersMap,
     setRefreshHandler,
     currentComponentFiber,
-    getCurrentFiberFromType,
+    getCurrentFibersFromType,
     getCurrentDispatchFromType,
   };
 }

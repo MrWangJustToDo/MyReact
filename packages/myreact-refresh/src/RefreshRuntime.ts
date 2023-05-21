@@ -12,7 +12,7 @@ import type {
   hmr,
   setRefreshHandler,
   CustomRenderDispatch,
-  getCurrentFiberFromType,
+  getCurrentFibersFromType,
   getCurrentDispatchFromType,
 } from "@my-react/react-reconciler";
 
@@ -41,7 +41,7 @@ type HMRGlobal = {
     hmr: typeof hmr;
     setRefreshHandler: typeof setRefreshHandler;
     currentComponentFiber: ReturnType<typeof createRef<MyReactFiberNode>>;
-    getCurrentFiberFromType: typeof getCurrentFiberFromType;
+    getCurrentFibersFromType: typeof getCurrentFibersFromType;
     getCurrentDispatchFromType: typeof getCurrentDispatchFromType;
   };
   ["__@my-react/react-refresh__"]: {
@@ -70,8 +70,6 @@ const allFamiliesByType = new WeakMap<MyReactComponentType, Family>();
 const allSignaturesByType = new WeakMap<MyReactComponentType, Signature>();
 
 const updatedFamiliesByType = new WeakMap<MyReactComponentType, Family>();
-
-// const allFibersByType = new WeakMap<MyReactComponentType, MyReactFiberNode>();
 
 const getProperty = (object: Record<string, unknown>, property: string) => {
   try {
@@ -289,7 +287,7 @@ export const performReactRefresh = () => {
     const nextType = getRenderTypeFormType(_nextType);
 
     if (prevType && nextType) {
-      const fiber = typedSelf["__@my-react/hmr__"]?.getCurrentFiberFromType?.(prevType);
+      const fibers = typedSelf["__@my-react/hmr__"]?.getCurrentFibersFromType?.(prevType);
 
       container = container || typedSelf["__@my-react/hmr__"]?.getCurrentDispatchFromType?.(prevType);
 
@@ -299,10 +297,12 @@ export const performReactRefresh = () => {
 
       family.current = nextType;
 
-      if (fiber) {
+      if (fibers.size) {
         const forceReset = !canPreserveStateBetween(prevType, nextType);
 
-        typedSelf?.["__@my-react/hmr__"]?.hmr?.(fiber, nextType, forceReset);
+        fibers.forEach((f) => {
+          typedSelf?.["__@my-react/hmr__"]?.hmr?.(f, nextType, forceReset);
+        });
       } else {
         console.error(`[@my-react/react-refresh] current type ${prevType} not have a fiber node for the render tree`);
       }

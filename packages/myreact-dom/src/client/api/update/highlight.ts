@@ -103,8 +103,8 @@ export class HighLight {
         // do the highlight paint
         const left = rect.left - 2;
         const top = rect.top - 2;
-        const width = rect.width + 2;
-        const height = rect.height + 2;
+        const width = rect.width + 4;
+        const height = rect.height + 4;
         context.strokeRect(
           left < 0 ? 0 : left,
           top < 0 ? 0 : top,

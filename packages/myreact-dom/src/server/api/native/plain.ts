@@ -11,6 +11,10 @@ export class PlainElement {
 
   constructor(type: string) {
     this.type = type;
+
+    if (type === "html") {
+      this.attrs = { ...this.attrs, "data-server": "@my-react" };
+    }
   }
 
   addEventListener() {

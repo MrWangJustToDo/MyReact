@@ -2,7 +2,7 @@ import { __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client";
-import { MyReactDomPlatform, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode } from "./render";
 
@@ -14,7 +14,7 @@ const { enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
 const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
   const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ClientDomDispatch(container, fiber, MyReactDomPlatform);
+  const renderDispatch = new ClientDomDispatch(container, fiber);
 
   __DEV__ && prepareDevContainer(renderDispatch);
 
@@ -36,7 +36,7 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
 const hydrateAsync = async (element: MyReactElement, container: RenderContainer) => {
   const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ClientDomDispatch(container, fiber, MyReactDomPlatform);
+  const renderDispatch = new ClientDomDispatch(container, fiber);
 
   __DEV__ && prepareDevContainer(renderDispatch);
 

@@ -20,7 +20,7 @@ const domContentHydrate = (fiber: MyReactFiberNode) => {
     } else {
       log({
         fiber,
-        message: `hydrate warning, text not match from server. server: ${node.textContent}, client: ${fiber.element}`,
+        message: `hydrate warning, dom 'text' not match from server. server: ${node.textContent}, client: ${fiber.element}`,
       });
       node.textContent = fiber.element as string;
     }
@@ -40,7 +40,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
         if (v !== String(value)) {
           log({
             fiber,
-            message: `hydrate warning, dom ${key} not match from server. server: ${v}, client: ${value}`,
+            message: `hydrate warning, dom '${key}' not match from server. server: ${v}, client: ${value}`,
           });
           dom.setAttribute("class", value as string);
         }
@@ -48,7 +48,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
         if (dom[key].toString() !== String(value)) {
           log({
             fiber,
-            message: `hydrate warning, dom ${key} not match from server. server: ${dom[key]}, client: ${value}`,
+            message: `hydrate warning, dom '${key}' not match from server. server: ${dom[key]}, client: ${value}`,
           });
           dom[key] == (value as string);
         }
@@ -58,7 +58,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
         if (dom[key].toString() !== String(value)) {
           log({
             fiber,
-            message: `hydrate warning, dom ${key} props not match from server. server: ${dom[key]}, client: ${value}`,
+            message: `hydrate warning, dom '${key}' props not match from server. server: ${dom[key]}, client: ${value}`,
           });
           dom[key] = value as string;
         }
@@ -69,7 +69,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
         if (v?.toString() !== String(value)) {
           log({
             fiber,
-            message: `hydrate warning, dom ${attrKey} attr not match from server. server: ${v}, client: ${value}`,
+            message: `hydrate warning, dom '${attrKey}' attr not match from server. server: ${v}, client: ${value}`,
           });
           dom.setAttribute(attrKey, value as string);
         }
@@ -113,7 +113,7 @@ const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
     const incomingInnerHTML = typedProps.__html as string;
 
     if (existInnerHTML !== incomingInnerHTML) {
-      log({ fiber, level: "error", message: `hydrate error, innerHTML not match from server.` });
+      log({ fiber, level: "error", message: `hydrate error, 'innerHTML' not match from server.` });
 
       typedDOM.innerHTML = typedProps.__html as string;
     }

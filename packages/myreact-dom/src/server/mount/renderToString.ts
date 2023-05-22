@@ -1,19 +1,19 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
-import { PlainElement, ServerDomDispatch } from "@my-react-dom-server";
-import { MyReactDomPlatform, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { ContainerElement, ServerDomDispatch } from "@my-react-dom-server";
+import { startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import type { MyReactElement, LikeJSX } from "@my-react/react";
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
 const renderToStringSync = (element: MyReactElement) => {
-  const container = new PlainElement("");
+  const container = new ContainerElement();
 
   const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ServerDomDispatch(container, fiber, MyReactDomPlatform);
+  const renderDispatch = new ServerDomDispatch(container, fiber);
 
   renderDispatch.isServerRender = true;
 
@@ -27,11 +27,11 @@ const renderToStringSync = (element: MyReactElement) => {
 };
 
 const renderToStringAsync = async (element: MyReactElement) => {
-  const container = new PlainElement("");
+  const container = new ContainerElement();
 
   const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ServerDomDispatch(container, fiber, MyReactDomPlatform);
+  const renderDispatch = new ServerDomDispatch(container, fiber);
 
   renderDispatch.isServerRender = true;
 

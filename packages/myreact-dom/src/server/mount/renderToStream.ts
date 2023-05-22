@@ -1,8 +1,8 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
-import { PlainElement, ServerStreamDispatch } from "@my-react-dom-server";
-import { MyReactDomPlatform, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { ContainerElement, ServerStreamDispatch } from "@my-react-dom-server";
+import { startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import type { MyReactElement, LikeJSX } from "@my-react/react";
 import type { SimpleReadable } from "@my-react-dom-server";
@@ -11,11 +11,11 @@ import type { Readable } from "stream";
 const { enableScopeTreeLog } = __my_react_shared__;
 
 const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, stream: T) => {
-  const container = new PlainElement("");
+  const container = new ContainerElement();
 
   const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ServerStreamDispatch(container, fiber, MyReactDomPlatform);
+  const renderDispatch = new ServerStreamDispatch(container, fiber);
 
   renderDispatch.stream = stream;
 
@@ -31,11 +31,11 @@ const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, s
 };
 
 const renderToStreamAsync = <T extends SimpleReadable>(element: MyReactElement, stream: T) => {
-  const container = new PlainElement("");
+  const container = new ContainerElement();
 
   const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ServerStreamDispatch(container, fiber, MyReactDomPlatform);
+  const renderDispatch = new ServerStreamDispatch(container, fiber);
 
   renderDispatch.stream = stream;
 

@@ -1,4 +1,3 @@
-import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { NODE_TYPE } from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
@@ -42,8 +41,6 @@ type DefaultRenderDispatch = {
   rootNode: any;
 
   rootFiber: MyReactFiberNode;
-
-  renderPlatform: CustomRenderPlatform;
 
   isAppMounted: boolean;
 

@@ -1,4 +1,4 @@
-import { PATCH_TYPE, ListTree , UniqueArray } from "@my-react/react-shared";
+import { PATCH_TYPE, ListTree, UniqueArray } from "@my-react/react-shared";
 
 import { defaultGenerateContextMap, defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
 import { defaultGenerateEffectMap } from "../dispatchEffect";
@@ -13,7 +13,6 @@ import { defaultGenerateUseIdMap, defaultGetCurrentId } from "../dispatchUseId";
 import { MyWeakMap } from "../share";
 
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
-import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
 import type { NODE_TYPE } from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
@@ -59,7 +58,7 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
 
-  constructor(readonly rootNode: any, readonly rootFiber: MyReactFiberNode, readonly renderPlatform: CustomRenderPlatform) {
+  constructor(readonly rootNode: any, readonly rootFiber: MyReactFiberNode) {
     const typedFiber = rootFiber as MyReactFiberContainer;
 
     typedFiber.containerNode = rootNode;

@@ -11,7 +11,7 @@ import type { MyReactComponent } from "@my-react/react";
 
 const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 
-const { enableConcurrentMode } = __my_react_shared__;
+const { enableConcurrentMode, enableLoopFromRoot } = __my_react_shared__;
 
 export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
   const renderDispatch = fiberToDispatchMap.get(fiber);
@@ -45,51 +45,71 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   let nextWorkFiber: MyReactFiberNode | null = null;
 
-  while (!nextWorkFiber && renderDispatch.pendingUpdateFiberArray.length) {
-    const tempFiber = renderDispatch.pendingUpdateFiberArray.uniShift();
+  if (enableLoopFromRoot.current) {
+    const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => !(f.state & STATE_TYPE.__unmount__));
 
-    if (tempFiber.state & (STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) continue;
+    const hasSync = allLive.some((f) => f.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__));
 
-    nextWorkFiber = tempFiber;
-  }
+    renderDispatch.pendingUpdateFiberArray.clear();
 
-  if (nextWorkFiber) {
-    if (nextWorkFiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
-      renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
+    if (allLive.length) {
+      renderDispatch.runtimeFiber.scheduledFiber = renderDispatch.rootFiber;
 
-      renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
+      renderDispatch.runtimeFiber.nextWorkingFiber = renderDispatch.rootFiber;
 
-      if (nextWorkFiber.state & STATE_TYPE.__triggerSync__) {
-        updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
-      } else if (enableConcurrentMode.current) {
-        updateConcurrentWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
-      } else {
-        updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
-      }
-    } else if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__)) {
-      renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
-
-      renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
-
-      if (nextWorkFiber.state & STATE_TYPE.__skippedSync__) {
+      if (hasSync) {
         updateSyncWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
-      } else if (enableConcurrentMode.current) {
+      } else {
         updateConcurrentWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
-      } else {
-        updateSyncWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
       }
-    } else {
-      // TODO
-      throw new Error(`un handler state, ${nextWorkFiber.state}`);
     }
   } else {
-    globalLoop.current = false;
+    while (!nextWorkFiber && renderDispatch.pendingUpdateFiberArray.length) {
+      const tempFiber = renderDispatch.pendingUpdateFiberArray.uniShift();
 
-    renderDispatch.runtimeFiber.scheduledFiber = null;
+      if (tempFiber.state & (STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) continue;
 
-    renderDispatch.runtimeFiber.nextWorkingFiber = null;
+      nextWorkFiber = tempFiber;
+    }
 
-    renderDispatch.pendingCommitFiberList = null;
+    if (nextWorkFiber) {
+      if (nextWorkFiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
+        renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
+
+        renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
+
+        if (nextWorkFiber.state & STATE_TYPE.__triggerSync__) {
+          updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+        } else if (enableConcurrentMode.current) {
+          updateConcurrentWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+        } else {
+          updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+        }
+      } else if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__)) {
+        renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
+
+        renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
+
+        if (nextWorkFiber.state & STATE_TYPE.__skippedSync__) {
+          updateSyncWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
+        } else if (enableConcurrentMode.current) {
+          updateConcurrentWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
+        } else {
+          updateSyncWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
+        }
+      } else {
+        // TODO
+        throw new Error(`un handler state, ${nextWorkFiber.state}`);
+      }
+    } else {
+      globalLoop.current = false;
+
+      renderDispatch.runtimeFiber.scheduledFiber = null;
+
+      renderDispatch.runtimeFiber.nextWorkingFiber = null;
+
+      renderDispatch.pendingCommitFiberList = null;
+    }
   }
 };
 

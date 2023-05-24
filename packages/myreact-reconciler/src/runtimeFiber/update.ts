@@ -1,11 +1,14 @@
-import { isValidElement } from "@my-react/react";
+import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { isNormalEquals, PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
+import { prepareUpdateAllDependence } from "../dispatchContext";
 import { currentRenderDispatch, debugWithNode, NODE_TYPE, setRefreshTypeMap } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
 import type { MyReactElementNode, memo, MyReactElement } from "@my-react/react";
+
+const { enableLoopFromRoot } = __my_react_shared__;
 
 export const updateFiberNode = (
   {
@@ -52,7 +55,12 @@ export const updateFiberNode = (
 
       if (fiber.type & NODE_TYPE.__provider__) {
         if (!isNormalEquals(fiber.pendingProps.value as Record<string, unknown>, fiber.memoizedProps.value as Record<string, unknown>)) {
-          renderDispatch.pendingContext(fiber);
+          // if current is root loop mode, should not delay context update
+          if (enableLoopFromRoot.current) {
+            prepareUpdateAllDependence(fiber);
+          } else {
+            renderDispatch.pendingContext(fiber);
+          }
         }
       }
 

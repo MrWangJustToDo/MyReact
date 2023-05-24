@@ -82,3 +82,12 @@ export const context = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDis
     if (fiber.patch & PATCH_TYPE.__context__) fiber.patch ^= PATCH_TYPE.__context__;
   }
 };
+
+// used for root loop
+export const prepareUpdateAllDependence = (fiber: MyReactFiberNode) => {
+  fiber?.dependence?.forEach((i) => {
+    if (i._ownerFiber && !(i._ownerFiber.state & STATE_TYPE.__unmount__)) {
+      i._ownerFiber.state = STATE_TYPE.__triggerConcurrent__;
+    }
+  });
+};

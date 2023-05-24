@@ -17,6 +17,8 @@ export const currentHookTreeNode = createRef<ListTreeNode<RenderHook> | null>(nu
 
 export const currentHookNodeIndex = createRef<number>(0);
 
+export const enableLoopFromRoot = createRef(false);
+
 // ==== feature ==== //
 export const enableDebugLog = createRef(false);
 

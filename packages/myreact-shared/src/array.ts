@@ -37,4 +37,8 @@ export class UniqueArray<T> {
     this.set.clear();
     this.arr.length = 0;
   }
+
+  getAll() {
+    return this.arr;
+  }
 }

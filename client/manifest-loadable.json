@@ -1,0 +1,835 @@
+{
+  "name": "client",
+  "hash": "5e4784ba7bf31c6d3ec8",
+  "publicPath": "client/",
+  "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
+  "assetsByChunkName": {
+    "main": [
+      "main-899432e8b2b128d5a9e0.css",
+      "main-ef5adfbc5c38df959390.js"
+    ],
+    "runtime": [
+      "runtime-7b728f33083640bee9a0.js"
+    ],
+    "common-Layout": [
+      "common-Layout-207dec1c039ef9ef4920.js"
+    ],
+    "pages-": [
+      "pages--d1bde34cc97c2d437b8b.js"
+    ],
+    "pages-404": [
+      "pages-404-571f0e4dfac2e41f5adf.js"
+    ],
+    "pages-Blog": [
+      "pages-Blog-eb5a5a6a8cfea869eeda.js"
+    ],
+    "vendor-ui": [
+      "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+    ],
+    "vendor-react": [
+      "vendor-react-5b4914f060411a167547.js"
+    ],
+    "vendor": [
+      "vendor-90c5146cc6699a363406.css",
+      "vendor-bf66f77e7e9288513533.js"
+    ],
+    "vendor-babel": [
+      "vendor-babel-f8d365ab42542d45924b.js"
+    ],
+    "vendor-lodash": [
+      "vendor-lodash-a31e962559148d560a67.js"
+    ]
+  },
+  "assets": [
+    {
+      "type": "asset",
+      "name": "vendor-bf66f77e7e9288513533.js",
+      "size": 656892,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "bf66f77e7e9288513533",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "vendor-bf66f77e7e9288513533.js.LICENSE.txt",
+          "sourceMap": "vendor-bf66f77e7e9288513533.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 2,
+      "chunks": [
+        736
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "main-ef5adfbc5c38df959390.js",
+      "size": 186207,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "ef5adfbc5c38df959390",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "main-ef5adfbc5c38df959390.js.map"
+        }
+      },
+      "chunkNames": [
+        "main"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        179
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-ui-5c6c6faa6efa6ec2f6d4.js",
+      "size": 166881,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "5c6c6faa6efa6ec2f6d4",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "vendor-ui-5c6c6faa6efa6ec2f6d4.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-ui"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        50
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-react-5b4914f060411a167547.js",
+      "size": 156339,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "5b4914f060411a167547",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "vendor-react-5b4914f060411a167547.js.LICENSE.txt",
+          "sourceMap": "vendor-react-5b4914f060411a167547.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-react"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 2,
+      "chunks": [
+        270
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-lodash-a31e962559148d560a67.js",
+      "size": 42496,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "a31e962559148d560a67",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "vendor-lodash-a31e962559148d560a67.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-lodash"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        904
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-Blog-eb5a5a6a8cfea869eeda.js",
+      "size": 38877,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "eb5a5a6a8cfea869eeda",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages-Blog-eb5a5a6a8cfea869eeda.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-Blog"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        587
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages--d1bde34cc97c2d437b8b.js",
+      "size": 28042,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "d1bde34cc97c2d437b8b",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages--d1bde34cc97c2d437b8b.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        617
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-babel-f8d365ab42542d45924b.js",
+      "size": 14366,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "f8d365ab42542d45924b",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "vendor-babel-f8d365ab42542d45924b.js.LICENSE.txt",
+          "sourceMap": "vendor-babel-f8d365ab42542d45924b.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-babel"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 2,
+      "chunks": [
+        89
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "common-Layout-207dec1c039ef9ef4920.js",
+      "size": 14303,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "207dec1c039ef9ef4920",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "common-Layout-207dec1c039ef9ef4920.js.map"
+        }
+      },
+      "chunkNames": [
+        "common-Layout"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        497
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "main-899432e8b2b128d5a9e0.css",
+      "size": 4322,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "899432e8b2b128d5a9e0",
+        "minimized": true,
+        "related": {
+          "sourceMap": "main-899432e8b2b128d5a9e0.css.map"
+        }
+      },
+      "chunkNames": [
+        "main"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        179
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "runtime-7b728f33083640bee9a0.js",
+      "size": 3466,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "7b728f33083640bee9a0",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "runtime-7b728f33083640bee9a0.js.map"
+        }
+      },
+      "chunkNames": [
+        "runtime"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        666
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-90c5146cc6699a363406.css",
+      "size": 3414,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "90c5146cc6699a363406",
+        "minimized": true,
+        "related": {
+          "sourceMap": "vendor-90c5146cc6699a363406.css.map"
+        }
+      },
+      "chunkNames": [
+        "vendor"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        736
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-404-571f0e4dfac2e41f5adf.js",
+      "size": 501,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "571f0e4dfac2e41f5adf",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages-404-571f0e4dfac2e41f5adf.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-404"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        751
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "manifest-deps.json",
+      "size": 235,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {},
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [],
+      "auxiliaryChunks": []
+    }
+  ],
+  "namedChunkGroups": {
+    "main": {
+      "name": "main",
+      "chunks": [
+        666,
+        50,
+        270,
+        736,
+        89,
+        904,
+        179
+      ],
+      "assets": [
+        {
+          "name": "runtime-7b728f33083640bee9a0.js"
+        },
+        {
+          "name": "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+        },
+        {
+          "name": "vendor-react-5b4914f060411a167547.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-bf66f77e7e9288513533.js"
+        },
+        {
+          "name": "vendor-babel-f8d365ab42542d45924b.js"
+        },
+        {
+          "name": "vendor-lodash-a31e962559148d560a67.js"
+        },
+        {
+          "name": "main-899432e8b2b128d5a9e0.css"
+        },
+        {
+          "name": "main-ef5adfbc5c38df959390.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 9,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "common-Layout": {
+      "name": "common-Layout",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        497
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+        },
+        {
+          "name": "vendor-react-5b4914f060411a167547.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-bf66f77e7e9288513533.js"
+        },
+        {
+          "name": "vendor-babel-f8d365ab42542d45924b.js"
+        },
+        {
+          "name": "common-Layout-207dec1c039ef9ef4920.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 6,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-": {
+      "name": "pages-",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        904,
+        617
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+        },
+        {
+          "name": "vendor-react-5b4914f060411a167547.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-bf66f77e7e9288513533.js"
+        },
+        {
+          "name": "vendor-babel-f8d365ab42542d45924b.js"
+        },
+        {
+          "name": "vendor-lodash-a31e962559148d560a67.js"
+        },
+        {
+          "name": "pages--d1bde34cc97c2d437b8b.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 7,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-404": {
+      "name": "pages-404",
+      "chunks": [
+        50,
+        751
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+        },
+        {
+          "name": "pages-404-571f0e4dfac2e41f5adf.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 2,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-404-tsx": {
+      "name": "pages-404-tsx",
+      "chunks": [
+        50,
+        751
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+        },
+        {
+          "name": "pages-404-571f0e4dfac2e41f5adf.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 2,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Blog": {
+      "name": "pages-Blog",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        904,
+        587
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+        },
+        {
+          "name": "vendor-react-5b4914f060411a167547.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-bf66f77e7e9288513533.js"
+        },
+        {
+          "name": "vendor-babel-f8d365ab42542d45924b.js"
+        },
+        {
+          "name": "vendor-lodash-a31e962559148d560a67.js"
+        },
+        {
+          "name": "pages-Blog-eb5a5a6a8cfea869eeda.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 7,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Blog-tsx": {
+      "name": "pages-Blog-tsx",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        904,
+        587
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+        },
+        {
+          "name": "vendor-react-5b4914f060411a167547.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-bf66f77e7e9288513533.js"
+        },
+        {
+          "name": "vendor-babel-f8d365ab42542d45924b.js"
+        },
+        {
+          "name": "vendor-lodash-a31e962559148d560a67.js"
+        },
+        {
+          "name": "pages-Blog-eb5a5a6a8cfea869eeda.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 7,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-index": {
+      "name": "pages-index",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        904,
+        617
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+        },
+        {
+          "name": "vendor-react-5b4914f060411a167547.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-bf66f77e7e9288513533.js"
+        },
+        {
+          "name": "vendor-babel-f8d365ab42542d45924b.js"
+        },
+        {
+          "name": "vendor-lodash-a31e962559148d560a67.js"
+        },
+        {
+          "name": "pages--d1bde34cc97c2d437b8b.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 7,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-index-tsx": {
+      "name": "pages-index-tsx",
+      "chunks": [
+        50,
+        270,
+        736,
+        89,
+        904,
+        617
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+        },
+        {
+          "name": "vendor-react-5b4914f060411a167547.js"
+        },
+        {
+          "name": "vendor-90c5146cc6699a363406.css"
+        },
+        {
+          "name": "vendor-bf66f77e7e9288513533.js"
+        },
+        {
+          "name": "vendor-babel-f8d365ab42542d45924b.js"
+        },
+        {
+          "name": "vendor-lodash-a31e962559148d560a67.js"
+        },
+        {
+          "name": "pages--d1bde34cc97c2d437b8b.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 7,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    }
+  },
+  "generator": "loadable-components",
+  "chunks": [
+    {
+      "id": 179,
+      "files": [
+        "main-899432e8b2b128d5a9e0.css",
+        "main-ef5adfbc5c38df959390.js"
+      ]
+    },
+    {
+      "id": 666,
+      "files": [
+        "runtime-7b728f33083640bee9a0.js"
+      ]
+    },
+    {
+      "id": 497,
+      "files": [
+        "common-Layout-207dec1c039ef9ef4920.js"
+      ]
+    },
+    {
+      "id": 617,
+      "files": [
+        "pages--d1bde34cc97c2d437b8b.js"
+      ]
+    },
+    {
+      "id": 751,
+      "files": [
+        "pages-404-571f0e4dfac2e41f5adf.js"
+      ]
+    },
+    {
+      "id": 587,
+      "files": [
+        "pages-Blog-eb5a5a6a8cfea869eeda.js"
+      ]
+    },
+    {
+      "id": 50,
+      "files": [
+        "vendor-ui-5c6c6faa6efa6ec2f6d4.js"
+      ]
+    },
+    {
+      "id": 270,
+      "files": [
+        "vendor-react-5b4914f060411a167547.js"
+      ]
+    },
+    {
+      "id": 736,
+      "files": [
+        "vendor-90c5146cc6699a363406.css",
+        "vendor-bf66f77e7e9288513533.js"
+      ]
+    },
+    {
+      "id": 89,
+      "files": [
+        "vendor-babel-f8d365ab42542d45924b.js"
+      ]
+    },
+    {
+      "id": 904,
+      "files": [
+        "vendor-lodash-a31e962559148d560a67.js"
+      ]
+    }
+  ]
+}

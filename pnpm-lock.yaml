@@ -4095,9 +4095,9 @@ packages:
     peerDependencies:
       graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
     dependencies:
-      '@babel/generator': 7.22.3
-      '@babel/template': 7.21.9
-      '@babel/types': 7.22.4
+      '@babel/generator': 7.21.5
+      '@babel/template': 7.20.7
+      '@babel/types': 7.21.5
       '@graphql-codegen/core': 4.0.0(graphql@16.6.0)
       '@graphql-codegen/plugin-helpers': 5.0.0(graphql@16.6.0)
       '@graphql-tools/apollo-engine-loader': 8.0.0(graphql@16.6.0)
@@ -14907,7 +14907,7 @@ packages:
     dev: false
 
   github.com/MrWangJustToDo/project-tool/8f03c5e99f2854a1436a11e6fcf09340598690fa(typescript@4.9.5):
-    resolution: {tarball: https://codeload.github.com/MrWangJustToDo/project-tool/tar.gz/8f03c5e99f2854a1436a11e6fcf09340598690fa}
+    resolution: {commit: 8f03c5e99f2854a1436a11e6fcf09340598690fa, repo: git+ssh://git@github.com/MrWangJustToDo/project-tool.git, type: git}
     id: github.com/MrWangJustToDo/project-tool/8f03c5e99f2854a1436a11e6fcf09340598690fa
     name: project-tool
     version: 0.1.8

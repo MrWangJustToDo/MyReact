@@ -148,4 +148,12 @@ export class ListTree<T> {
     }
     return false;
   }
+
+  clone(): ListTree<T> {
+    const newList = new ListTree<T>();
+
+    this.listToFoot((v) => newList.push(v));
+
+    return newList;
+  }
 }

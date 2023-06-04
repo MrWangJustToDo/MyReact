@@ -5,7 +5,6 @@ import type {
   MixinMyReactFunctionComponent,
   createRef,
   MyReactElementType,
-  MyReactComponent,
 } from "@my-react/react";
 import type {
   MyReactFiberNode,
@@ -316,15 +315,11 @@ export const performReactRefresh = () => {
     if (container.runtimeFiber.errorCatchFiber) {
       const fiber = container?.runtimeFiber.errorCatchFiber;
 
-      const state = fiber.memoizedState.revertState;
+      fiber._revert(() => {
+        fiber.memoizedState.revertState = null;
 
-      const instance = fiber.instance as MyReactComponent;
-
-      instance.setState(state, () => {
         container.runtimeFiber.errorCatchFiber = null;
-
-        container.rootFiber._update();
-      });
+      })
     } else {
       container.rootFiber._update();
     }

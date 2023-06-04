@@ -126,9 +126,6 @@
   },
   "_moduleAliases": {
     "react": "node_modules/@my-react/react",
-    "react-dom": "node_modules/@my-react/react-dom",
-    "react/jsx-runtime": "node_modules/@my-react/react-jsx",
-    "react-dom/server": "node_modules/@my-react/react-dom",
-    "react-dom/client": "node_modules/@my-react/react-dom"
+    "react-dom": "node_modules/@my-react/react-dom"
   }
 }

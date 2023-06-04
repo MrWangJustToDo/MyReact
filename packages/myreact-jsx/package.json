@@ -3,14 +3,16 @@
   "description": "@my-react/react-jsx",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "main": "index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
     "index.js",
+    "jsx-runtime.js",
     "jsx-runtime.d.ts",
+    "jsx-dev-runtime.js",
     "jsx-dev-runtime.d.ts"
   ],
   "repository": {
@@ -28,14 +30,14 @@
     },
     "./jsx-runtime": {
       "import": "./dist/esm/index.js",
-      "node": "./index.js",
-      "default": "./index.js",
+      "node": "./jsx-runtime.js",
+      "default": "./jsx-runtime.js",
       "types": "./jsx-runtime.d.ts"
     },
     "./jsx-dev-runtime": {
       "import": "./dist/esm/index.js",
-      "node": "./index.js",
-      "default": "./index.js",
+      "node": "./jsx-dev-runtime.js",
+      "default": "./jsx-dev-runtime.js",
       "types": "./jsx-dev-runtime.d.ts"
     }
   },

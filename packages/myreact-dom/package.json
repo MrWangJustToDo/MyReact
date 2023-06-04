@@ -3,13 +3,17 @@
   "description": "@my-react/react-dom",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "unpkg": "./dist/umd/index.development.js",
   "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
+    "client.js",
+    "server.js",
+    "server.node.js",
+    "server.browser.js",
     "index.js"
   ],
   "repository": {
@@ -36,7 +40,20 @@
       "node": "./server.js",
       "types": "./server.d.ts",
       "default": "./server.js"
-    }
+    },
+    "./server.browser": {
+      "require": "./server.browser.js",
+      "node": "./server.browser.js",
+      "types": "./server.d.ts",
+      "default": "./server.browser.js"
+    },
+    "./server.node": {
+      "require": "./server.node.js",
+      "node": "./server.node.js",
+      "types": "./server.d.ts",
+      "default": "./server.node.js"
+    },
+    "./package.json": "./package.json"
   },
   "buildOptions": {
     "input": "./src/index.ts",

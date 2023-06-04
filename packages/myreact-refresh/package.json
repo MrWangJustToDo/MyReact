@@ -3,10 +3,10 @@
   "description": "@my-react/react-refresh",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "runtime.js",
   "files": [
-    "src",
+    "dist",
     "babel.js",
     "runtime.js"
   ],

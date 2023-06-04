@@ -5,7 +5,16 @@ import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue }
 import { triggerError, triggerUpdate } from "../renderUpdate";
 import { getTypeFromElementNode, NODE_TYPE } from "../share";
 
-import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
+import type {
+  MyReactElement,
+  MyReactElementNode,
+  MyReactElementType,
+  MyReactInternalInstance,
+  RenderFiber,
+  RenderHook,
+  UpdateQueue,
+  MyReactComponent,
+} from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
 type NativeNode = Record<string, any>;
@@ -130,6 +139,34 @@ export class MyReactFiberNode implements RenderFiber {
     if (this.state & STATE_TYPE.__unmount__) return;
 
     triggerError(this, error);
+  }
+  _revert(cb?: () => void) {
+    if (this.state & STATE_TYPE.__unmount__) return;
+
+    if (!(this.type & NODE_TYPE.__class__)) return;
+
+    const instance = this.instance as MyReactComponent;
+
+    instance?.setState(this.memoizedState?.revertState, cb);
+  }
+  _clone() {
+    const newFiber = new MyReactFiberNode(this.element);
+
+    const typedFiberContainerThis = this as unknown as MyReactFiberContainer;
+
+    const typedFiberContainerNew = newFiber as unknown as MyReactFiberContainer;
+
+    newFiber.state = this.state;
+
+    newFiber.nativeNode = this.nativeNode;
+
+    if (this.dependence) {
+      newFiber.dependence = new Set(this.dependence);
+    }
+
+    if (typedFiberContainerThis.containerNode) {
+      typedFiberContainerNew.containerNode = typedFiberContainerThis.containerNode;
+    }
   }
 }
 

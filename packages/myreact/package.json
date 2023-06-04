@@ -3,7 +3,7 @@
   "description": "@my-react/react",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "unpkg": "./dist/umd/index.development.js",
@@ -11,8 +11,9 @@
   "files": [
     "dist",
     "index.js",
-    "jsx-main.js",
+    "jsx-runtime.js",
     "jsx-runtime.d.ts",
+    "jsx-dev-runtime.js",
     "jsx-dev-runtime.d.ts"
   ],
   "repository": {
@@ -28,15 +29,15 @@
       "default": "./index.js"
     },
     "./jsx-runtime": {
-      "import": "./jsx-main.js",
-      "require": "./jsx-main.js",
-      "node": "./jsx-main.js",
+      "import": "./jsx-runtime.js",
+      "require": "./jsx-runtime.js",
+      "node": "./jsx-runtime.js",
       "types": "./jsx-runtime.d.ts"
     },
     "./jsx-dev-runtime": {
-      "import": "./jsx-main.js",
-      "require": "./jsx-main.js",
-      "node": "./jsx-main.js",
+      "import": "./jsx-dev-runtime.js",
+      "require": "./jsx-dev-runtime.js",
+      "node": "./jsx-dev-runtime.js",
       "types": "./jsx-dev-runtime.d.ts"
     },
     "./package.json": "./package.json"

@@ -32,6 +32,10 @@ export const enableOptimizeTreeLog = createRef(true);
 
 export const enableScopeTreeLog = createRef(true);
 
+// TODO
+// double render, 尝试实现优先级中断的渲染
+export const enableDoubleRender = createRef(true);
+
 // support "unsafe_" lifecycle
 export const enableLegacyLifeCycle = createRef(true);
 

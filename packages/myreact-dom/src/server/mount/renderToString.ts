@@ -1,4 +1,4 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement, ServerDomDispatch } from "@my-react-dom-server";
@@ -44,16 +44,19 @@ const renderToStringAsync = async (element: MyReactElement) => {
   return container.toString();
 };
 
-export function renderToString(_element: LikeJSX): string;
-export function renderToString(_element: LikeJSX, asyncRender: true): Promise<string>;
-export function renderToString(_element: LikeJSX, asyncRender?: boolean) {
-  const element = _element as MyReactElement;
+export function renderToString(element: LikeJSX): string;
+export function renderToString(element: LikeJSX, asyncRender: true): Promise<string>;
+export function renderToString(element: LikeJSX, asyncRender?: boolean) {
+  // checkValidElement
+  if (isValidElement(element)) {
+    enableScopeTreeLog.current = false;
 
-  enableScopeTreeLog.current = false;
-
-  if (asyncRender) {
-    return renderToStringAsync(element);
+    if (asyncRender) {
+      return renderToStringAsync(element);
+    } else {
+      return renderToStringSync(element);
+    }
   } else {
-    return renderToStringSync(element);
+    throw new Error(`[@my-react/react-dom] 'renderToString' can only render a '@my-react' element`);
   }
 }

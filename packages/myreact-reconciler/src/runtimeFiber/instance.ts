@@ -149,25 +149,6 @@ export class MyReactFiberNode implements RenderFiber {
 
     instance?.setState(this.memoizedState?.revertState, cb);
   }
-  _clone() {
-    const newFiber = new MyReactFiberNode(this.element);
-
-    const typedFiberContainerThis = this as unknown as MyReactFiberContainer;
-
-    const typedFiberContainerNew = newFiber as unknown as MyReactFiberContainer;
-
-    newFiber.state = this.state;
-
-    newFiber.nativeNode = this.nativeNode;
-
-    if (this.dependence) {
-      newFiber.dependence = new Set(this.dependence);
-    }
-
-    if (typedFiberContainerThis.containerNode) {
-      typedFiberContainerNew.containerNode = typedFiberContainerThis.containerNode;
-    }
-  }
 }
 
 export interface MyReactFiberContainer extends MyReactFiberNode {

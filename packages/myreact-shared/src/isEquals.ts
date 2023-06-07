@@ -7,14 +7,14 @@ export const isNormalEquals = (
 
   if (isEquals) return true;
 
+  const hasSkipKeyFunction = typeof isSkipKey === "function";
+
   if (typeof src === "object" && typeof target === "object" && src !== null && target !== null) {
     const srcKeys = Object.keys(src);
 
     const targetKeys = Object.keys(target);
 
     if (srcKeys.length !== targetKeys.length) return false;
-
-    const hasSkipKeyFunction = typeof isSkipKey === "function";
 
     let res = true;
 

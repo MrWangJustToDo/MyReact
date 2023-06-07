@@ -319,6 +319,8 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
 
   if (__DEV__) clonedElement._store["clonedEle"] = true;
 
+  if (__DEV__) clonedElement._store["validType"] = true;
+
   if (__DEV__) checkValidProps(clonedElement);
 
   return clonedElement;

@@ -27,7 +27,7 @@ export const useState = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) 
   }) as [T, (t?: T | ((t: T) => T)) => void];
 };
 
-export const useEffect = (action: () => any, deps?: any[]) => {
+export const useEffect = (action: () => any, deps?: any[]): void => {
   const renderPlatform = currentRenderPlatform.current;
 
   if (!renderPlatform)
@@ -40,10 +40,10 @@ export const useEffect = (action: () => any, deps?: any[]) => {
     value: action,
     reducer: defaultReducer,
     deps,
-  });
+  }) as void;
 };
 
-export const useLayoutEffect = (action: () => any, deps?: any[]) => {
+export const useLayoutEffect = (action: () => any, deps?: any[]): void => {
   const renderPlatform = currentRenderPlatform.current;
 
   if (!renderPlatform)
@@ -56,10 +56,10 @@ export const useLayoutEffect = (action: () => any, deps?: any[]) => {
     value: action,
     reducer: defaultReducer,
     deps,
-  });
+  }) as void;
 };
 
-export const useCallback = <T extends (...args: any[]) => any = (...args: any[]) => any>(callback: T, deps?: any[]): T => {
+export const useCallback = <T extends (...args: any) => any = (...args: any) => any>(callback: T, deps?: any[]): T => {
   const renderPlatform = currentRenderPlatform.current;
 
   if (!renderPlatform)

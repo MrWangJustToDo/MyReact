@@ -1,4 +1,4 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client";
@@ -58,6 +58,8 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
 export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>): void;
 export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>, asyncRender: true): Promise<void>;
 export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>, asyncRender?: boolean) {
+  if (!isValidElement(_element)) if (!isValidElement(_element)) throw new Error(`[@my-react/react-dom] 'hydrate' can only render a '@my-react' element`);
+
   onceLog();
 
   if (enableLegacyLifeCycle.current) {

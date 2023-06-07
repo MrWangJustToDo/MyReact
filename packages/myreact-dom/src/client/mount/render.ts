@@ -1,4 +1,4 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { checkIsSameType, getTypeFromElementNode, initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 import { once, STATE_TYPE } from "@my-react/react-shared";
 
@@ -27,6 +27,8 @@ export const onceLogLegacyLifeCycleMode = once(() => {
 });
 
 export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) => {
+  if (!isValidElement(_element)) throw new Error(`[@my-react/react-dom] 'render' can only render a '@my-react' element`);
+
   const container = _container as RenderContainer;
 
   const containerFiber = container.__fiber__;

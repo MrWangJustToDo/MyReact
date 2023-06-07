@@ -1,4 +1,4 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement, ServerStreamDispatch } from "@my-react-dom-server";
@@ -50,24 +50,26 @@ const renderToStreamAsync = <T extends SimpleReadable>(element: MyReactElement, 
   return stream;
 };
 
-export function renderToNodeStream(_element: LikeJSX): Readable;
-export function renderToNodeStream(_element: LikeJSX, asyncRender: true): Readable;
-export function renderToNodeStream(_element: LikeJSX, asyncRender?: boolean) {
-  const temp = [];
-  (temp as any).destroy = () => {
-    void 0;
-  };
+export function renderToNodeStream(element: LikeJSX): Readable;
+export function renderToNodeStream(element: LikeJSX, asyncRender: true): Readable;
+export function renderToNodeStream(element: LikeJSX, asyncRender?: boolean) {
+  if (isValidElement(element)) {
+    const temp = [];
+    (temp as any).destroy = () => {
+      void 0;
+    };
 
-  const element = _element as MyReactElement;
+    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-empty-function
+    const stream = typeof window === "undefined" ? new (require("stream").Readable)({ read() {} }) : temp;
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-empty-function
-  const stream = typeof window === "undefined" ? new (require("stream").Readable)({ read() {} }) : temp;
+    enableScopeTreeLog.current = false;
 
-  enableScopeTreeLog.current = false;
-
-  if (asyncRender) {
-    return renderToStreamSync(element, stream);
+    if (asyncRender) {
+      return renderToStreamSync(element, stream);
+    } else {
+      return renderToStreamAsync(element, stream);
+    }
   } else {
-    return renderToStreamAsync(element, stream);
+    throw new Error(`[@my-react/react-dom] 'renderToNodeStream' can only render a '@my-react' element`);
   }
 }

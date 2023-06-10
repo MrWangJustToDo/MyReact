@@ -35,7 +35,7 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
   const element = _element as MyReactElement;
 
-  if (containerFiber instanceof ClientDomDispatch) {
+  if (containerFiber instanceof MyReactFiberNode) {
     const renderDispatch = container.__container__;
 
     renderDispatch.isAppCrashed = false;

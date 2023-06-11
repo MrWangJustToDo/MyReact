@@ -61,11 +61,11 @@
     "yoga-wasm-web": "^0.3.3"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.194",
-    "@types/signal-exit": "^3.0.0",
-		"@types/slice-ansi": "^4.0.0",
-		"@types/stack-utils": "^1.0.1",
-		"@types/wrap-ansi": "^3.0.0"
+    "@types/lodash": "^4.14.195",
+    "@types/signal-exit": "^3.0.1",
+		"@types/slice-ansi": "^5.0.0",
+		"@types/stack-utils": "^2.0.1",
+		"@types/wrap-ansi": "^8.0.1"
   },
   "peerDependencies": {
     "@my-react/react": "latest"

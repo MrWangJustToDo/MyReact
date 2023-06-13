@@ -116,7 +116,7 @@ export const parseKeypress = (s: Buffer | string = ""): ParsedKey => {
   let parts;
 
   if (Buffer.isBuffer(s)) {
-    if (s[0] > 127 && s[1] === undefined) {
+    if (s[0]! > 127 && s[1] === undefined) {
       (s[0] as unknown as number) -= 128;
       s = "\x1b" + String(s);
     } else {
@@ -183,7 +183,7 @@ export const parseKeypress = (s: Buffer | string = ""): ParsedKey => {
   } else if ((parts = metaKeyCodeRe.exec(s))) {
     // meta+character key
     key.meta = true;
-    key.shift = /^[A-Z]$/.test(parts[1]);
+    key.shift = /^[A-Z]$/.test(parts[1]!);
   } else if ((parts = fnKeyRe.exec(s))) {
     const segs = Array.from(s);
 
@@ -204,7 +204,7 @@ export const parseKeypress = (s: Buffer | string = ""): ParsedKey => {
     key.shift = !!(modifier & 1);
     key.code = code;
 
-    key.name = keyName[code];
+    key.name = keyName[code]!;
     key.shift = isShiftKey(code) || key.shift;
     key.ctrl = isCtrlKey(code) || key.ctrl;
   }

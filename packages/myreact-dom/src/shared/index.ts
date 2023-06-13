@@ -8,6 +8,7 @@ export * from "./render";
 export * from "./comment";
 export * from "./findDom";
 export * from "./unmount";
+export * from "./validate";
 export * from "./platform";
 export * from "./kebabCase";
 export * from "./shouldPause";

@@ -29,9 +29,7 @@ export class PlainElement {
     delete this.attrs[key];
   }
   setAttribute(key: string, value: string | boolean | null | undefined | number) {
-    if (value !== null && value !== undefined) {
-      this.attrs[key] = value.toString();
-    }
+    this.attrs[key] = value.toString();
   }
 
   /**
@@ -59,7 +57,7 @@ export class PlainElement {
   }
 
   serializeStyle() {
-    const styleKeys = Object.keys(this.style).filter((key) => this.style[key] !== null && this.style[key] !== undefined);
+    const styleKeys = Object.keys(this.style);
     if (styleKeys.length) return `style="${styleKeys.map((key) => `${kebabCase(key)}: ${this.style[key]?.toString()};`).reduce((p, c) => p + c)}"`;
     return "";
   }

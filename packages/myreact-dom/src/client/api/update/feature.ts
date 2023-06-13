@@ -1,8 +1,9 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
+import { validDomProps } from "@my-react-dom-shared";
+
 import { hydrateUpdate } from "./hydrateUpdate";
 import { nativeUpdate } from "./nativeUpdate";
-import { validDomProps } from "./validDomProps";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";

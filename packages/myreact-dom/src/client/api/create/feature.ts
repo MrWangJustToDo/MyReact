@@ -1,14 +1,13 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
+import { validDomTag, type DomComment, type DomElement, type DomNode, validDomNesting } from "@my-react-dom-shared";
+
 import { hydrateCreate } from "./hydrateCreate";
 import { nativeCreate } from "./nativeCreate";
-import { validDomNesting } from "./validDomNesting";
-import { validDomTag } from "./validDomTag";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";
-import type { DomComment, DomElement, DomNode } from "@my-react-dom-shared";
 
 export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, hydrate: boolean): boolean => {
   if (fiber.patch & PATCH_TYPE.__create__) {

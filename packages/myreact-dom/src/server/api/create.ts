@@ -2,15 +2,20 @@ import { isCommentStartElement, NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { getSerializeProps } from "@my-react-dom-server";
-import { isSingleTag } from "@my-react-dom-shared";
+import { isSingleTag, validDomNesting, validDomTag } from "@my-react-dom-shared";
 
 import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ServerStreamDispatch } from "@my-react-dom-server";
+import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-server";
 
-export const create = (fiber: MyReactFiberNode) => {
+export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatch) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
+
+    if (__DEV__) validDomTag(fiber);
+
+    if (__DEV__) validDomNesting(fiber, renderDispatch.runtimeDom.elementMap.get(fiber).parentFiberWithNode);
+
     if (fiber.type & NODE_TYPE.__text__) {
       fiber.nativeNode = new TextElement(fiber.element as string);
     } else if (fiber.type & NODE_TYPE.__plain__) {

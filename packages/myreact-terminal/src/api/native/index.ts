@@ -1,4 +1,6 @@
 export * from "./dom";
+export * from "./text";
+export * from "./plain";
 export * from "./styles";
 export * from "./colorize";
 export * from "./wrap-text";

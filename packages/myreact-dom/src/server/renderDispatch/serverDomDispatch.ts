@@ -66,7 +66,7 @@ export class ServerDomDispatch extends CustomRenderDispatch {
   }
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
-    create(_fiber);
+    create(_fiber, this);
 
     return true;
   }

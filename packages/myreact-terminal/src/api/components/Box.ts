@@ -1,6 +1,6 @@
 import { createElement, forwardRef } from "@my-react/react";
 
-import { BoxType } from "../native";
+import { PlainBoxType } from "../native";
 
 import type { Styles } from "../native";
 import type { MyReactElementNode } from "@my-react/react";
@@ -13,7 +13,7 @@ export type Props = Except<Styles, "textWrap">;
  */
 export const Box = forwardRef<Props & { children?: MyReactElementNode }>(({ children, ...style }, ref) => {
   return createElement(
-    BoxType,
+    PlainBoxType,
     { ref, style: { ...style, overflowX: style.overflowX ?? style.overflow ?? "visible", overflowY: style.overflowY ?? style.overflow ?? "visible" } },
     children
   );

@@ -1,6 +1,6 @@
-import { NODE_TYPE } from "@my-react/react-reconciler";
+import { NODE_TYPE, getElementName } from "@my-react/react-reconciler";
 
-import { getElementName, log } from "@my-react-dom-shared";
+import { log } from "@my-react-dom-shared";
 
 import { fallback } from "../fallback";
 

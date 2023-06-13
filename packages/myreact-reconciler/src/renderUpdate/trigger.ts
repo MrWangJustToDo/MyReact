@@ -6,7 +6,7 @@ import { fiberToDispatchMap } from "../share";
 import { updateConcurrentWithSkip, updateConcurrentWithTrigger, updateSyncWithSkip, updateSyncWithTrigger } from "./feature";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactComponent } from "@my-react/react";
 
 const { globalLoop, currentRenderPlatform } = __my_react_internal__;
@@ -100,6 +100,21 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
       } else {
         // TODO
         throw new Error(`un handler state, ${nextWorkFiber.state}`);
+      }
+
+      if (__DEV__) {
+        const typedFiber = nextWorkFiber as MyReactFiberNodeDev;
+
+        const timeNow = Date.now();
+
+        const prevRenderState = Object.assign({}, typedFiber._debugRenderState);
+
+        typedFiber._debugRenderState = {
+          renderCount: prevRenderState.renderCount + 1,
+          mountTime: prevRenderState.mountTime,
+          prevUpdateTime: prevRenderState.currentUpdateTime,
+          currentUpdateTime: timeNow,
+        };
       }
     } else {
       globalLoop.current = false;

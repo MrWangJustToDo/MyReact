@@ -1,4 +1,4 @@
-import type { DOMElement } from "./dom";
+import type { PlainElement } from "./plain";
 
 // Squashing text nodes allows to combine multiple text nodes into one and write
 // to `Output` instance only once. For example, <Text>hello{' '}world</Text>
@@ -7,7 +7,7 @@ import type { DOMElement } from "./dom";
 // Also, this is necessary for libraries like ink-link (https://github.com/sindresorhus/ink-link),
 
 // which need to wrap all children at once, instead of wrapping 3 text nodes separately.
-export const squashTextNodes = (node: DOMElement): string => {
+export const squashTextNodes = (node: PlainElement): string => {
   let text = "";
 
   if (node.childNodes.length > 0) {

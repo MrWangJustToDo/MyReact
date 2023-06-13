@@ -13,9 +13,11 @@
     <div id="root"></div>
 
     <script type="text/babel">
-      const { useSignal, memo } = React;
+      const { useSignal, memo, useEffect } = React;
 
       const Bar = memo(({ get }) => <div>{get()}</div>);
+
+      const Baz = ({get}) => <div>{get()}</div>
 
       const Count = () => {
         const [get, set] = useSignal(0);
@@ -24,6 +26,7 @@
           <div>
             <p>value: {get()}</p>
             <Bar get={get} />
+            <Baz get={get} />
             <button onClick={() => set(get() + 1)}>add</button>
             <button onClick={() => set(get() - 1)}>del</button>
           </div>

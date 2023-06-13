@@ -1,6 +1,6 @@
-import { CustomRenderPlatform } from "@my-react/react-reconciler";
+import { CustomRenderPlatform, getFiberTree, getHookTree } from "@my-react/react-reconciler";
 
-import { getFiberTree, getHookTree, log } from "@my-react-dom-shared";
+import { log } from "@my-react-dom-shared";
 
 import type { LogProps } from "@my-react/react";
 import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react-reconciler";

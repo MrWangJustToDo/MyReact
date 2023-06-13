@@ -1,8 +1,35 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import { isProperty, isStyle, log } from "@my-react-dom-shared";
+import { isHTMLTag, isProperty, isSVGTag, isStyle, log } from "@my-react-dom-shared";
 
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { MyReactFiberNode} from "@my-react/react-reconciler";
+
+// TODO
+
+export const validDomNesting = (fiber: MyReactFiberNode, parentFiberWithNode?: MyReactFiberNode) => {
+  if (fiber.type & NODE_TYPE.__plain__) {
+    const typedElementType = fiber.elementType;
+
+    if (typedElementType === "p" && parentFiberWithNode?.elementType === "p") {
+      log({
+        fiber,
+        level: "warn",
+        triggerOnce: true,
+        message: `invalid dom nesting: <p> cannot appear as a child of <p>`,
+      });
+    }
+  }
+};
+
+export const validDomTag = (fiber: MyReactFiberNode) => {
+  if (fiber.type & NODE_TYPE.__plain__) {
+    const tagName = fiber.elementType as string;
+
+    if (!isHTMLTag[tagName] && !isSVGTag[tagName]) {
+      log({ fiber, level: "error", triggerOnce: true, message: `invalid dom tag, current is ${tagName}` });
+    }
+  }
+};
 
 export const validDomProps = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__plain__) {

@@ -1,23 +1,26 @@
-// eslint-disable-next-line import/no-named-as-default
 import Yoga, { type Node as YogaNode } from "yoga-wasm-web/auto";
 
-import type { DOMNodeAttribute } from "./dom";
+import { measureTextElement } from "./measure-element";
+
+import type { DOMNode } from "./dom";
 import type { Styles } from "./styles";
 
-export const TextType = "terminal-text";
+export const PlainTextType = "terminal-text";
 
-export const BoxType = "terminal-box";
+export const PlainBoxType = "terminal-box";
 
-export const VirtualTextType = "terminal-virtual-text";
+export const PlainVirtualTextType = "terminal-virtual-text";
+
+export type PlainElementType = typeof PlainTextType | typeof PlainBoxType | typeof PlainVirtualTextType;
 
 export class PlainElement {
-  type: typeof TextType | typeof BoxType | typeof VirtualTextType;
+  type: PlainElementType;
 
-  nodeName: PlainElement["type"];
+  nodeName: PlainElementType;
 
   style: Styles;
 
-  attributes: Record<string, DOMNodeAttribute>;
+  attributes: Record<string, string | boolean | number>;
 
   parentNode?: PlainElement;
 
@@ -25,8 +28,7 @@ export class PlainElement {
 
   internal_static?: boolean;
 
-  // TODO
-  childNodes: PlainElement[];
+  childNodes: DOMNode[];
 
   internal_transform?: (s: string) => string;
 
@@ -44,15 +46,29 @@ export class PlainElement {
 
   constructor(nodeName: PlainElement["type"]) {
     this.type = nodeName;
+
     this.style = {};
+
     this.attributes = {};
+
     this.childNodes = [];
+
     this.nodeName = nodeName;
+
     this.parentNode = undefined;
+
     this.yogaNode = nodeName === "terminal-virtual-text" ? undefined : Yoga.Node.create();
 
-    if (nodeName === 'terminal-text') {
-      // this.yogaNode?.setMeasureFunc()
+    if (nodeName === "terminal-text") {
+      this.yogaNode?.setMeasureFunc(measureTextElement.bind(null, this));
     }
+  }
+
+  setStyle(style: Styles) {
+    this.style = style;
+  }
+
+  setAttribute(key: string, value: string | boolean | number) {
+    this.attributes[key] = value;
   }
 }

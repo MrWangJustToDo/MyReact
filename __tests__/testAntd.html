@@ -65,10 +65,17 @@
       //   );
       // };
 
+      // TODO
       const App = () => {
+
+        const click = () => {
+          debugger;
+          message.info('click on the button');
+        }
+
         return (
           <div>
-            <button onClick={() => message.info("Click on the button.")}>click</button>
+            <button onClick={click}>click</button>
           </div>
         );
       };

@@ -1,7 +1,7 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, isUnitlessNumber, kebabCase, propsToAttrMap } from "@my-react-dom-shared";
+import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, isUnitlessNumber, kebabCase, propsToAttrMap, validDomProps } from "@my-react-dom-shared";
 
 import { TextElement } from "./native";
 
@@ -10,22 +10,28 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
   if (fiber.patch & PATCH_TYPE.__update__) {
+    if (__DEV__) validDomProps(fiber);
+
     if (fiber.type & NODE_TYPE.__plain__) {
       const dom = fiber.nativeNode as PlainElement;
       const props = fiber.pendingProps || {};
       Object.keys(props).forEach((key) => {
         if (isProperty(key)) {
-          const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || propsToAttrMap[key] || key;
-          dom.setAttribute(attrKey as string, props[key] as string);
+          if (props[key] !== null && props[key] !== undefined) {
+            const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || propsToAttrMap[key] || key;
+            dom.setAttribute(attrKey as string, props[key] as string);
+          }
         }
         if (isStyle(key)) {
           const typedProps = (props[key] as Record<string, unknown>) || {};
           Object.keys(typedProps).forEach((styleName) => {
-            if (!isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
-              dom[key][styleName] = `${typedProps[styleName]}px`;
-              return;
+            if (typedProps[styleName] !== null && typedProps !== undefined) {
+              if (!isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
+                dom[key][styleName] = `${typedProps[styleName]}px`;
+                return;
+              }
+              dom[key][styleName] = typedProps[styleName];
             }
-            dom[key][styleName] = typedProps[styleName];
           });
         }
       });
@@ -55,6 +61,7 @@ export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       if (isStyle(key)) {
         const typedProps = (props[key] as Record<string, unknown>) || {};
         Object.keys(typedProps).forEach((styleName) => {
+          if (typedProps[styleName] === null || typedProps[styleName] === undefined) return;
           if (!isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
             styles[kebabCase(styleName)] = `${typedProps[styleName]}px`;
             return;

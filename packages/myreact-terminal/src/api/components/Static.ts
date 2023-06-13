@@ -1,6 +1,6 @@
 import { createElement, useLayoutEffect, useMemo, useState } from "@my-react/react";
 
-import { BoxType } from "../native";
+import { PlainBoxType } from "../native";
 
 import type { Styles } from "../native";
 import type { MyReactElement} from "@my-react/react";
@@ -61,5 +61,5 @@ export function Static<T>(props: Props<T>) {
     [customStyle]
   );
 
-  return createElement(BoxType, { internal_static: true, style: style }, children);
+  return createElement(PlainBoxType, { internal_static: true, style: style }, children);
 }

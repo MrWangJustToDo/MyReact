@@ -4,9 +4,9 @@
   "name": "myreact",
   "author": "MrWangJustToDo",
   "engines": {
-    "node": ">=10"
+    "node": ">=16"
   },
-  "packageManager": "pnpm@7.5.0",
+  "packageManager": "pnpm@8.6.1",
   "scripts": {
     "dev:ssr": "cd ./ui/ssr-example && pnpm run dev",
     "dev:csr": "cd ./ui/csr-example && pnpm run dev",

@@ -28,7 +28,7 @@ jobs:
       
       - name: prepare
         run: |
-          pnpm install
+          pnpm install --frozen-lockfile
           pnpm run gen:gql
       
       - name: build site

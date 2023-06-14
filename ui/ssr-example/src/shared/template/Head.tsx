@@ -1,3 +1,5 @@
+import { ColorModeScript } from "@chakra-ui/react";
+
 import { getIsStaticGenerate } from "@shared/env";
 
 import type { HTMLProps } from ".";
@@ -26,6 +28,7 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
       {helmet?.style.toComponent()}
       {helmet?.script.toComponent()}
     </>
+    <ColorModeScript />
     {preLoad.filter(Boolean).map((ele) => ele)}
     {link.filter(Boolean).map((ele) => ele)}
     {emotionChunks?.styles.map((style, index) => (

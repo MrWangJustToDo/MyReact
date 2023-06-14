@@ -74,7 +74,8 @@ export const context = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDis
           i._ownerFiber.state = STATE_TYPE.__triggerConcurrent__;
         }
       });
-      renderDispatch.pendingUpdateFiberArray.clear();
+      // TODO
+      // renderDispatch.pendingUpdateFiberArray.clear();
       // sync skip from root
       renderDispatch.rootFiber._update(STATE_TYPE.__skippedSync__);
     });

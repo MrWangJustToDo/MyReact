@@ -1,5 +1,5 @@
 import { Container } from "@chakra-ui/react";
-// import { getApolloClient, GetBlogListDocument, GetViewerDocument, IssueState } from "@site/graphql";
+// import { GetBlogListDocument, GetViewerDocument, IssueState, getApolloClient } from "@site/graphql";
 
 import { GridCard } from "@client/component/GridCard";
 import { StyledResponsiveReactGridLayout } from "@client/component/GridLayout";

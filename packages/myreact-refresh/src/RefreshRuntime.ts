@@ -296,7 +296,7 @@ export const performReactRefresh = () => {
 
       family.current = nextType;
 
-      if (fibers.size) {
+      if (fibers?.size) {
         const forceReset = !canPreserveStateBetween(prevType, nextType);
 
         fibers.forEach((f) => {

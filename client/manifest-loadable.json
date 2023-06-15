@@ -1,27 +1,27 @@
 {
   "name": "client",
-  "hash": "6ade3a1ef6afce5d42d6",
+  "hash": "4ad08fc39fea97ec1435",
   "publicPath": "client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
   "assetsByChunkName": {
     "main": [
       "main-cd5b0808ffd3738d8beb.css",
-      "main-b0052fd1e13eb3eca55f.js"
+      "main-32da66011be00d80beac.js"
     ],
     "runtime": [
-      "runtime-e406730e84479fbd4d02.js"
+      "runtime-40fd83ca1c56f62ecbda.js"
     ],
     "common-Layout": [
-      "common-Layout-e32909573e09b6d60911.js"
+      "common-Layout-ac96afeebad09655a7c6.js"
     ],
     "pages-": [
-      "pages--ee3177e632d02b209987.js"
+      "pages--3ebdc762c5cd837b32a5.js"
     ],
     "pages-404": [
-      "pages-404-16836093deceea939dd5.js"
+      "pages-404-2262af4d460752faf05a.js"
     ],
     "pages-Blog": [
-      "pages-Blog-2263f36d434c6bc1647d.js"
+      "pages-Blog-981674801fb2fae5bd49.js"
     ],
     "vendor-ui": [
       "vendor-ui-9e1f3eb9c823f90e2a4f.js"
@@ -74,18 +74,18 @@
     },
     {
       "type": "asset",
-      "name": "main-b0052fd1e13eb3eca55f.js",
-      "size": 187480,
+      "name": "main-32da66011be00d80beac.js",
+      "size": 187640,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "b0052fd1e13eb3eca55f",
+        "contenthash": "32da66011be00d80beac",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "main-b0052fd1e13eb3eca55f.js.map"
+          "sourceMap": "main-32da66011be00d80beac.js.map"
         }
       },
       "chunkNames": [
@@ -193,18 +193,18 @@
     },
     {
       "type": "asset",
-      "name": "pages-Blog-2263f36d434c6bc1647d.js",
-      "size": 38879,
+      "name": "pages-Blog-981674801fb2fae5bd49.js",
+      "size": 38869,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "2263f36d434c6bc1647d",
+        "contenthash": "981674801fb2fae5bd49",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "pages-Blog-2263f36d434c6bc1647d.js.map"
+          "sourceMap": "pages-Blog-981674801fb2fae5bd49.js.map"
         }
       },
       "chunkNames": [
@@ -221,18 +221,18 @@
     },
     {
       "type": "asset",
-      "name": "pages--ee3177e632d02b209987.js",
-      "size": 28040,
+      "name": "pages--3ebdc762c5cd837b32a5.js",
+      "size": 28035,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "ee3177e632d02b209987",
+        "contenthash": "3ebdc762c5cd837b32a5",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "pages--ee3177e632d02b209987.js.map"
+          "sourceMap": "pages--3ebdc762c5cd837b32a5.js.map"
         }
       },
       "chunkNames": [
@@ -280,18 +280,18 @@
     },
     {
       "type": "asset",
-      "name": "common-Layout-e32909573e09b6d60911.js",
-      "size": 14307,
+      "name": "common-Layout-ac96afeebad09655a7c6.js",
+      "size": 14297,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "e32909573e09b6d60911",
+        "contenthash": "ac96afeebad09655a7c6",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "common-Layout-e32909573e09b6d60911.js.map"
+          "sourceMap": "common-Layout-ac96afeebad09655a7c6.js.map"
         }
       },
       "chunkNames": [
@@ -335,18 +335,18 @@
     },
     {
       "type": "asset",
-      "name": "runtime-e406730e84479fbd4d02.js",
+      "name": "runtime-40fd83ca1c56f62ecbda.js",
       "size": 3466,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "e406730e84479fbd4d02",
+        "contenthash": "40fd83ca1c56f62ecbda",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "runtime-e406730e84479fbd4d02.js.map"
+          "sourceMap": "runtime-40fd83ca1c56f62ecbda.js.map"
         }
       },
       "chunkNames": [
@@ -392,18 +392,18 @@
     },
     {
       "type": "asset",
-      "name": "pages-404-16836093deceea939dd5.js",
-      "size": 499,
+      "name": "pages-404-2262af4d460752faf05a.js",
+      "size": 483,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "16836093deceea939dd5",
+        "contenthash": "2262af4d460752faf05a",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "pages-404-16836093deceea939dd5.js.map"
+          "sourceMap": "pages-404-2262af4d460752faf05a.js.map"
         }
       },
       "chunkNames": [
@@ -448,7 +448,7 @@
       ],
       "assets": [
         {
-          "name": "runtime-e406730e84479fbd4d02.js"
+          "name": "runtime-40fd83ca1c56f62ecbda.js"
         },
         {
           "name": "vendor-ui-9e1f3eb9c823f90e2a4f.js"
@@ -472,7 +472,7 @@
           "name": "main-cd5b0808ffd3738d8beb.css"
         },
         {
-          "name": "main-b0052fd1e13eb3eca55f.js"
+          "name": "main-32da66011be00d80beac.js"
         }
       ],
       "filteredAssets": 0,
@@ -508,7 +508,7 @@
           "name": "vendor-babel-8c0f9843df3eeba3bc57.js"
         },
         {
-          "name": "common-Layout-e32909573e09b6d60911.js"
+          "name": "common-Layout-ac96afeebad09655a7c6.js"
         }
       ],
       "filteredAssets": 0,
@@ -548,7 +548,7 @@
           "name": "vendor-lodash-a31e962559148d560a67.js"
         },
         {
-          "name": "pages--ee3177e632d02b209987.js"
+          "name": "pages--3ebdc762c5cd837b32a5.js"
         }
       ],
       "filteredAssets": 0,
@@ -569,7 +569,7 @@
           "name": "vendor-ui-9e1f3eb9c823f90e2a4f.js"
         },
         {
-          "name": "pages-404-16836093deceea939dd5.js"
+          "name": "pages-404-2262af4d460752faf05a.js"
         }
       ],
       "filteredAssets": 0,
@@ -590,7 +590,7 @@
           "name": "vendor-ui-9e1f3eb9c823f90e2a4f.js"
         },
         {
-          "name": "pages-404-16836093deceea939dd5.js"
+          "name": "pages-404-2262af4d460752faf05a.js"
         }
       ],
       "filteredAssets": 0,
@@ -630,7 +630,7 @@
           "name": "vendor-lodash-a31e962559148d560a67.js"
         },
         {
-          "name": "pages-Blog-2263f36d434c6bc1647d.js"
+          "name": "pages-Blog-981674801fb2fae5bd49.js"
         }
       ],
       "filteredAssets": 0,
@@ -670,7 +670,7 @@
           "name": "vendor-lodash-a31e962559148d560a67.js"
         },
         {
-          "name": "pages-Blog-2263f36d434c6bc1647d.js"
+          "name": "pages-Blog-981674801fb2fae5bd49.js"
         }
       ],
       "filteredAssets": 0,
@@ -710,7 +710,7 @@
           "name": "vendor-lodash-a31e962559148d560a67.js"
         },
         {
-          "name": "pages--ee3177e632d02b209987.js"
+          "name": "pages--3ebdc762c5cd837b32a5.js"
         }
       ],
       "filteredAssets": 0,
@@ -750,7 +750,7 @@
           "name": "vendor-lodash-a31e962559148d560a67.js"
         },
         {
-          "name": "pages--ee3177e632d02b209987.js"
+          "name": "pages--3ebdc762c5cd837b32a5.js"
         }
       ],
       "filteredAssets": 0,
@@ -767,37 +767,37 @@
       "id": 179,
       "files": [
         "main-cd5b0808ffd3738d8beb.css",
-        "main-b0052fd1e13eb3eca55f.js"
+        "main-32da66011be00d80beac.js"
       ]
     },
     {
       "id": 666,
       "files": [
-        "runtime-e406730e84479fbd4d02.js"
+        "runtime-40fd83ca1c56f62ecbda.js"
       ]
     },
     {
       "id": 497,
       "files": [
-        "common-Layout-e32909573e09b6d60911.js"
+        "common-Layout-ac96afeebad09655a7c6.js"
       ]
     },
     {
       "id": 617,
       "files": [
-        "pages--ee3177e632d02b209987.js"
+        "pages--3ebdc762c5cd837b32a5.js"
       ]
     },
     {
       "id": 751,
       "files": [
-        "pages-404-16836093deceea939dd5.js"
+        "pages-404-2262af4d460752faf05a.js"
       ]
     },
     {
       "id": 587,
       "files": [
-        "pages-Blog-2263f36d434c6bc1647d.js"
+        "pages-Blog-981674801fb2fae5bd49.js"
       ]
     },
     {

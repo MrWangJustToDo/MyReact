@@ -28,6 +28,7 @@ export const pluginsConfig = ({ env, isDEV, isSSR, isCSR, isMIDDLEWARE }: SafeGe
       __CLIENT__: env === "client",
       __SERVER__: env === "server",
       __REACT__: process.env.REACT === "react",
+      __BASENAME__: JSON.stringify(process.env.BASENAME || ""),
       __DEVELOPMENT__: isDEV,
       __MIDDLEWARE__: isMIDDLEWARE,
       __BUILD_TIME__: JSON.stringify(new Date().toLocaleString()),

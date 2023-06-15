@@ -2,7 +2,7 @@ import { Box, useToast } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
-import { getIsStaticGenerate } from "@shared";
+import { noBase } from "@shared";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ export default function Index() {
       description: "404 not found, redirect to home page",
       status: "error",
     });
-    navigate(`${getIsStaticGenerate() ? "/MyReact/" : "/"}`);
+    navigate(noBase ? "/" : `/${__BASENAME__}/`);
   }, [open, navigate]);
 
   return <Box minHeight="100vh" />;

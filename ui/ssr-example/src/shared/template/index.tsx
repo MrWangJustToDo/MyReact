@@ -1,7 +1,8 @@
+
 import { Body } from "./Body";
 import { Head } from "./Head";
 
-import type { EmotionCriticalToChunks } from "@emotion/server/types/create-instance";
+import type { extractCriticalToChunks } from "@emotion/server";
 import type { ReactElement } from "react";
 import type { HelmetServerState } from "react-helmet-async";
 
@@ -13,7 +14,7 @@ export type HTMLProps = {
   link?: ReactElement[];
   script?: ReactElement[];
   preLoad?: ReactElement[];
-  emotionChunks?: EmotionCriticalToChunks;
+  emotionChunks?: ReturnType<typeof extractCriticalToChunks>;
   helmetContext?: { helmet?: HelmetServerState };
 };
 

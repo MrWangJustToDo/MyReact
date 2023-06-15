@@ -2,7 +2,7 @@ import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement, ServerStreamDispatch } from "@my-react-dom-server";
-import { startRender, startRenderAsync } from "@my-react-dom-shared";
+import { checkRoot, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import type { MyReactElement, LikeJSX } from "@my-react/react";
 import type { SimpleReadable } from "@my-react-dom-server";
@@ -14,6 +14,8 @@ const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, s
   const container = new ContainerElement();
 
   const fiber = new MyReactFiberNode(element);
+
+  __DEV__ && checkRoot(fiber);
 
   const renderDispatch = new ServerStreamDispatch(container, fiber);
 
@@ -34,6 +36,8 @@ const renderToStreamAsync = <T extends SimpleReadable>(element: MyReactElement, 
   const container = new ContainerElement();
 
   const fiber = new MyReactFiberNode(element);
+
+  __DEV__ && checkRoot(fiber);
 
   const renderDispatch = new ServerStreamDispatch(container, fiber);
 

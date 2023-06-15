@@ -60,3 +60,11 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
     }
   }
 };
+
+export const checkRoot = (fiber: MyReactFiberNode) => {
+  if (fiber.type & NODE_TYPE.__class__) return;
+
+  if (fiber.type & NODE_TYPE.__function__) return;
+
+  throw new Error(`[@my-react/react-dom] the root element should be a dynamic node such as 'function' or 'class'`)
+}

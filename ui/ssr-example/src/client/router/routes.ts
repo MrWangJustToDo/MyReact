@@ -1,6 +1,8 @@
 import loadable from "@loadable/component";
 import { createElement } from "react";
 
+import { noBase } from "@shared";
+
 import { AutoInjectProps } from "../common/AutoInjectProps";
 
 import { dynamicRouteConfig } from "./dynamicRoutes";
@@ -19,20 +21,20 @@ const baseRouter: PreLoadRouteConfig = {
 const dynamicRoutes = dynamicRouteConfig
   .map(({ path, componentPath }) => {
     // just set true for current usage
-    if (__DEVELOPMENT__ ? false : true) {
+    if (noBase) {
+      return { path, componentPath };
+    } else {
       if (path.startsWith("/")) {
         return {
-          path: `/MyReact/${path.slice(1)}`,
+          path: `/${__BASENAME__}/${path.slice(1)}`,
           componentPath,
         };
       } else {
         return {
-          path: `/MyReact/${path}`,
+          path: `/${__BASENAME__}/${path}`,
           componentPath,
         };
       }
-    } else {
-      return { path, componentPath };
     }
   })
   .map((it) => ({

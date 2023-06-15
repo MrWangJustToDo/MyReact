@@ -5,7 +5,7 @@ import { VscLinkExternal } from "react-icons/vsc";
 import { useLocation, useNavigate } from "react-router";
 
 import { markNOLineNumber } from "@client/utils/markdown";
-import { getIsStaticGenerate } from "@shared";
+import { noBase } from "@shared";
 
 import { Actor } from "../Actor";
 import { Hover } from "../Hover";
@@ -20,7 +20,7 @@ const ItemHeader = ({ title, externalUrl, detailNumber }: { title: string; exter
     const search = new URLSearchParams(location.search);
     search.append("overlay", "open");
     search.append("detailId", detailNumber + "");
-    navigate(`${getIsStaticGenerate() ? "/MyReact/Blog" : "/Blog"}?${search.toString()}`);
+    navigate(`${noBase ? "/Blog" : `/${__BASENAME__}/Blog`}?${search.toString()}`)
   };
 
   const openExternal = () => window.open(externalUrl, "_blank");

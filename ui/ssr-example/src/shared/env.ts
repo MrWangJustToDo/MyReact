@@ -17,3 +17,5 @@ export const getIsStaticGenerate = memoize(() =>
 export const getPublicApi = memoize(() =>
   __SERVER__ ? (__DEVELOPMENT__ ? process.env.PUBLIC_DEV_API_HOST : process.env.PUBLIC_PROD_API_HOST) : window.__ENV__.PUBLIC_API_HOST
 );
+
+export const noBase = __DEVELOPMENT__ || __BASENAME__ === "";

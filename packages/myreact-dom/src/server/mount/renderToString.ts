@@ -2,7 +2,7 @@ import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement, ServerDomDispatch } from "@my-react-dom-server";
-import { startRender, startRenderAsync } from "@my-react-dom-shared";
+import { checkRoot, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import type { MyReactElement, LikeJSX } from "@my-react/react";
 
@@ -12,6 +12,8 @@ const renderToStringSync = (element: MyReactElement) => {
   const container = new ContainerElement();
 
   const fiber = new MyReactFiberNode(element);
+
+  __DEV__ && checkRoot(fiber);
 
   const renderDispatch = new ServerDomDispatch(container, fiber);
 
@@ -30,6 +32,8 @@ const renderToStringAsync = async (element: MyReactElement) => {
   const container = new ContainerElement();
 
   const fiber = new MyReactFiberNode(element);
+
+  __DEV__ && checkRoot(fiber);
 
   const renderDispatch = new ServerDomDispatch(container, fiber);
 

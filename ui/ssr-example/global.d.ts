@@ -10,6 +10,8 @@ declare global {
   const __ANIMATE_ROUTER__: boolean;
   const __BUILD_TIME__: string;
 
+  const __BASENAME__: string;
+
   interface Window {
     __INITIAL_PROPS_SSR__: { [key: string]: any };
     __PRELOAD_STORE_STATE__: { [key: string]: any };
@@ -38,6 +40,7 @@ declare global {
       STREAM: string;
       SSR: string;
       CSR: string;
+      BASENAME: string;
       REACT: "react" | "myreact";
       STATIC_GENERATE: "true" | "false";
       PUBLIC_DEV_API_HOST: string;

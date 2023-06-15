@@ -3,7 +3,7 @@ import { checkIsSameType, getTypeFromElementNode, initialFiberNode, MyReactFiber
 import { once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client";
-import { prepareDevContainer, startRender, unmountComponentAtNode } from "@my-react-dom-shared";
+import { checkRoot, prepareDevContainer, startRender, unmountComponentAtNode } from "@my-react-dom-shared";
 
 import type { MyReactElement, LikeJSX } from "@my-react/react";
 
@@ -69,6 +69,8 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
   const fiber = new MyReactFiberNode(element);
 
   const renderDispatch = new ClientDomDispatch(container, fiber);
+
+  __DEV__ && checkRoot(fiber);
 
   __DEV__ && prepareDevContainer(renderDispatch);
 

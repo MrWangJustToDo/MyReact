@@ -10,7 +10,7 @@ import { useLocation, useNavigate } from "react-router";
 
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { useIsMobile } from "@client/hooks";
-import { getIsStaticGenerate } from "@shared";
+import { noBase } from "@shared";
 
 import { ColorMode } from "../ColorMode";
 
@@ -53,10 +53,10 @@ const _Header = () => {
             {formatMessage({ id })}
           </Text>
           <HStack gap={{ base: "4px", lg: "8px" }}>
-            <Button variant="ghost" size="sm" onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/" : "/")}>
+            <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/" : `/${__BASENAME__}/`)}>
               Home
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/Blog" : "/Blog")}>
+            <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
               Example
             </Button>
             <ColorMode />

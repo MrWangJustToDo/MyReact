@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { mark } from "@client/utils/markdown";
-import { getIsStaticGenerate } from "@shared";
+import { noBase } from "@shared";
 
 const tsxMd = `
 \`\`\`tsx
@@ -59,7 +59,7 @@ export const MainSection = () => {
               fontSize="inherit"
               borderRadius="full"
               colorScheme="messenger"
-              onClick={() => navigate(getIsStaticGenerate() ? "/MyReact/Blog" : "/Blog")}
+              onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}
             >
               View Example
             </Button>

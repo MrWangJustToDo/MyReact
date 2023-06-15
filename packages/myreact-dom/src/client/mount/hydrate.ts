@@ -2,7 +2,7 @@ import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client";
-import { prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { checkRoot, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode } from "./render";
 
@@ -15,6 +15,8 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
   const fiber = new MyReactFiberNode(element);
 
   const renderDispatch = new ClientDomDispatch(container, fiber);
+
+  __DEV__ && checkRoot(fiber);
 
   __DEV__ && prepareDevContainer(renderDispatch);
 
@@ -37,6 +39,8 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
   const fiber = new MyReactFiberNode(element);
 
   const renderDispatch = new ClientDomDispatch(container, fiber);
+
+  __DEV__ && checkRoot(fiber);
 
   __DEV__ && prepareDevContainer(renderDispatch);
 

@@ -30,7 +30,13 @@ export const getAllStaticRouters = (allRouters: Record<string, boolean>) =>
   Object.keys(allRouters)
     .filter((path) => allRouters[path])
     // TODO static generate need more clear
-    .map((p) => ({ url: `http://${process.env.PROD_HOST}:${process.env.PROD_PORT}/MyReact${p.slice(1)}`, p }));
+    .map((p) => ({
+      url:
+        __BASENAME__ !== ""
+          ? `http://${process.env.PROD_HOST}:${process.env.PROD_PORT}/${__BASENAME__}${p.slice(1)}`
+          : `http://${process.env.PROD_HOST}:${process.env.PROD_PORT}/${p.slice(1)}`,
+      p,
+    }));
 
 export const generateStaticPage = (pathConfig: {
   url: string;

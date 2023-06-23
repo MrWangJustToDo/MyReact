@@ -1,8 +1,10 @@
 import { STATE_TYPE } from "@my-react/react-shared";
 
-import type { MyReactFiberNode } from "../runtimeFiber";
+import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
+
+import type { MyReactFiberNode, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
-import type { MyReactComponent } from "@my-react/react";
+import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
 
 export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
   if (fiber.state & STATE_TYPE.__unmount__) return;
@@ -13,11 +15,15 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
   const typedInstance = fiber.instance as MyReactComponent;
 
+  const typedComponent = fiber.elementType as MixinMyReactClassComponent;
+
   const baseState = Object.assign({}, typedInstance.state);
 
   const baseProps = Object.assign({}, typedInstance.props);
 
-  const nextState = fiber.pendingState.state;
+  const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
+
+  const nextState = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
 
   if (!node) return false;
 

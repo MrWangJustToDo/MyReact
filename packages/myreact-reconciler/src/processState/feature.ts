@@ -23,6 +23,14 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
+    // if (__DEV__) {
+    //   const typedOwnerFiber = ownerFiber as MyReactFiberNodeDev;
+
+    //   typedOwnerFiber._debugUpdateQueue = typedOwnerFiber._debugUpdateQueue || new ListTree();
+
+    //   typedOwnerFiber._debugUpdateQueue.push(_params);
+    // }
+
     ownerFiber._prepare();
   } else {
     const ownerFiber = _params.trigger._ownerFiber;
@@ -40,6 +48,14 @@ export const processState = (_params: UpdateQueue) => {
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
 
     ownerFiber.updateQueue.push(_params);
+
+    // if (__DEV__) {
+    //   const typedOwnerFiber = ownerFiber as MyReactFiberNodeDev;
+
+    //   typedOwnerFiber._debugUpdateQueue = typedOwnerFiber._debugUpdateQueue || new ListTree();
+
+    //   typedOwnerFiber._debugUpdateQueue.push(_params);
+    // }
 
     ownerFiber._prepare();
   }

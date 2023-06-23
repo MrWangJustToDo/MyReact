@@ -1,9 +1,10 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
+import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
 import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
-import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MemoizedStateTypeWithError, MyReactFiberNode, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
 const { enableLegacyLifeCycle } = __my_react_shared__;
@@ -21,7 +22,9 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
 
   const currentState = Object.assign({}, typedInstance.state);
 
-  const nextState = fiber.pendingState.state;
+  const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
+
+  const nextState = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
 
   if (typedComponent.getDerivedStateFromProps) {
     const payloadState = typedComponent.getDerivedStateFromProps?.(pendingProps, currentState);
@@ -75,10 +78,15 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   const pendingState = Object.assign({}, instance.state);
 
-  // prepare state flow
-  fiber.pendingState = { state: { pendingState, isForce: false, callback: [] }, error: { revertState: null, error: null, stack: null } };
+  const isErrorCatch = isErrorBoundariesInstance(instance, typedComponent);
 
-  fiber.memoizedState = { stableState: null, revertState: null };
+  // prepare state flow
+  if (!isErrorCatch) {
+    fiber.pendingState = { pendingState: pendingState, callback: [], isForce: false };
+  } else {
+    fiber.pendingState = { state: { pendingState: pendingState, callback: [], isForce: false }, error: { revertState: null, error: null, stack: null } };
+    fiber.memoizedState = { stableState: null, revertState: null };
+  }
 };
 
 const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
@@ -315,7 +323,11 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const { pendingState, isForce, callback } = fiber.pendingState.state;
+  const typedComponent = fiber.elementType as MixinMyReactClassComponent;
+
+  const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
+
+  const { pendingState, isForce, callback } = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
 
   const baseState = typedInstance.state;
 
@@ -369,7 +381,9 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
   const renderDispatch = currentRenderDispatch.current;
 
-  const { error, stack } = fiber.pendingState.error;
+  const {
+    error: { error, stack },
+  } = fiber.pendingState as PendingStateTypeWithError;
 
   processComponentStateFromError(fiber, error);
 
@@ -383,48 +397,65 @@ const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
 };
 
 export const classComponentUpdate = (fiber: MyReactFiberNode) => {
-  if (fiber.pendingState.error?.error) {
-    const res = classComponentUpdateFromError(fiber);
+  const typedInstance = fiber.instance as MyReactComponent;
 
-    const pendingState = fiber.pendingState;
+  const typedComponent = fiber.elementType as MixinMyReactClassComponent;
 
-    const memoizedState = fiber.memoizedState;
+  const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
 
-    const typedInstance = fiber.instance as MyReactComponent;
+  if (isErrorCatch) {
+    const typedPendingState = fiber.pendingState as PendingStateTypeWithError;
+    const typedMemoizedState = fiber.memoizedState as MemoizedStateTypeWithError;
+    if (typedPendingState.error?.error) {
+      const res = classComponentUpdateFromError(fiber);
 
-    // sync pendingState
-    pendingState.state.pendingState = Object.assign({}, typedInstance.state);
+      const typedInstance = fiber.instance as MyReactComponent;
 
-    // sync memoizedState
-    memoizedState.stableState = Object.assign({}, typedInstance.state);
-    memoizedState.revertState = pendingState.error.revertState;
+      // sync pendingState
+      typedPendingState.state.pendingState = Object.assign({}, typedInstance.state);
 
-    // clear pendingState
-    pendingState.state.isForce = false;
-    pendingState.state.callback = [];
-    pendingState.error.stack = null;
-    pendingState.error.error = null;
-    pendingState.error.revertState = null;
+      // sync memoizedState
+      typedMemoizedState.stableState = Object.assign({}, typedInstance.state);
+      typedMemoizedState.revertState = typedPendingState.error.revertState;
 
-    return res;
+      // clear pendingState
+      typedPendingState.state.isForce = false;
+      typedPendingState.state.callback = [];
+      typedPendingState.error.stack = null;
+      typedPendingState.error.error = null;
+      typedPendingState.error.revertState = null;
+
+      return res;
+    } else {
+      const res = classComponentUpdateFromNormal(fiber);
+
+      const typedInstance = fiber.instance as MyReactComponent;
+
+      // sync pendingState
+      typedPendingState.state.pendingState = Object.assign({}, typedInstance.state);
+
+      // sync memoizedState
+      typedMemoizedState.stableState = Object.assign({}, typedInstance.state);
+
+      // clear pendingState
+      typedPendingState.state.isForce = false;
+      typedPendingState.state.callback = [];
+
+      return res;
+    }
   } else {
+    const typedPendingState = fiber.pendingState as PendingStateType;
+
     const res = classComponentUpdateFromNormal(fiber);
 
-    const pendingState = fiber.pendingState;
-
-    const memoizedState = fiber.memoizedState;
-
     const typedInstance = fiber.instance as MyReactComponent;
 
     // sync pendingState
-    pendingState.state.pendingState = Object.assign({}, typedInstance.state);
-
-    // sync memoizedState
-    memoizedState.stableState = Object.assign({}, typedInstance.state);
+    typedPendingState.pendingState = Object.assign({}, typedInstance.state);
 
     // clear pendingState
-    pendingState.state.isForce = false;
-    pendingState.state.callback = [];
+    typedPendingState.isForce = false;
+    typedPendingState.callback = [];
 
     return res;
   }

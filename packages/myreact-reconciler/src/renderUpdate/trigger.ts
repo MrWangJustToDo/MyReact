@@ -6,7 +6,7 @@ import { fiberToDispatchMap } from "../share";
 import { updateConcurrentWithSkip, updateConcurrentWithTrigger, updateSyncWithSkip, updateSyncWithTrigger } from "./feature";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
+import type { MyReactFiberNode, MyReactFiberNodeDev, PendingStateTypeWithError } from "../runtimeFiber";
 import type { MyReactComponent } from "@my-react/react";
 
 const { globalLoop, currentRenderPlatform } = __my_react_internal__;
@@ -23,8 +23,10 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
   if (errorBoundariesFiber) {
     const typedInstance = errorBoundariesFiber.instance as MyReactComponent;
 
+    const typedPendingState = errorBoundariesFiber.pendingState as PendingStateTypeWithError;
+
     // prepare error catch flow
-    errorBoundariesFiber.pendingState.error = {
+    typedPendingState.error = {
       error,
       stack: renderPlatform.getFiberTree(fiber),
       revertState: Object.assign({}, typedInstance.state),

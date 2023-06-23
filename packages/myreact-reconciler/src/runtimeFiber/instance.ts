@@ -31,7 +31,17 @@ export type PendingStateType = {
   pendingState: Record<string, unknown>;
 };
 
+export type PendingStateTypeWithError = {
+  state?: PendingStateType;
+  error?: ErrorType;
+};
+
 export type MemoizedStateType = Record<string, unknown>;
+
+export type MemoizedStateTypeWithError = {
+  stableState?: MemoizedStateType;
+  revertState?: MemoizedStateType;
+};
 
 export type ErrorType = {
   stack: string;
@@ -75,9 +85,9 @@ export class MyReactFiberNode implements RenderFiber {
 
   memoizedProps: MyReactElement["props"] = emptyProps;
 
-  pendingState: { state?: PendingStateType; error?: ErrorType };
+  pendingState: PendingStateTypeWithError | PendingStateType;
 
-  memoizedState: { stableState?: MemoizedStateType; revertState?: MemoizedStateType };
+  memoizedState: MemoizedStateTypeWithError | MemoizedStateType;
 
   constructor(element: MyReactElementNode) {
     this._installElement(element);

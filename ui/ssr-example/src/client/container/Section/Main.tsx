@@ -45,7 +45,12 @@ export const MainSection = () => {
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh">
       <Flex justifyContent="space-between" marginTop="4%" flexDirection={{ base: "column", md: "row" }}>
-        <Box alignSelf="flex-start" marginLeft={{ base: "4%", md: "6%", lg: "8%" }} maxWidth={{ base: "100%", md: "40%" }}>
+        <Box
+          alignSelf="flex-start"
+          marginLeft={{ base: "4%", md: "6%", lg: "8%" }}
+          marginRight={{ base: "1%", md: "0" }}
+          maxWidth={{ base: "100%", md: "40%" }}
+        >
           <Heading as="h1" fontSize={{ base: "2xl", md: "3xl", lg: "5xl" }} marginBottom="6" color="red.400">
             {formatMessage({ id: "@my-react" })}
           </Heading>
@@ -98,7 +103,7 @@ export const MainSection = () => {
           borderColor="cardBorderColor"
           marginRight={{ base: "4%", md: "16%" }}
           marginTop={{ base: "10%", md: "0" }}
-          marginLeft={{ base: "4%", md: "0" }}
+          marginLeft={{ base: "4%", md: "1%" }}
           marginBottom={{ base: "6%" }}
           borderRadius="0.8em"
           fontSize={{ base: "sm", lg: "medium" }}

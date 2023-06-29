@@ -5,7 +5,7 @@ import type { TextElement } from "./text";
 
 export type DOMNode = PlainElement | TextElement;
 
-export const appendChildNode = (node: PlainElement, childNode: PlainElement): void => {
+export const appendChildNode = (node: PlainElement, childNode: DOMNode): void => {
   if (childNode.parentNode) {
     removeChildNode(childNode.parentNode, childNode);
   }

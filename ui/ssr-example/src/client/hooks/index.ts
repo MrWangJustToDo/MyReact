@@ -8,6 +8,7 @@ export * from "./useIsMounted";
 export * from "./useLoadingBar";
 export * from "./useEffectOnce";
 export * from "./useWindowSize";
+export * from "./useLoadingStore";
 export * from "./useLockBodyScroll";
 export * from "./useDebouncedState";
 export * from "./useGetInitialProps";

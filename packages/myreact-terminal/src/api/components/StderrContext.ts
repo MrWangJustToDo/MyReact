@@ -1,7 +1,7 @@
 import { createContext } from "@my-react/react";
 import process from "node:process";
 
-export type Props = {
+export type StderrContextProps = {
   /**
    * Stderr stream passed to `render()` in `options.stderr` or `process.stderr` by default.
    */
@@ -18,7 +18,7 @@ export type Props = {
 /**
  * `StderrContext` is a React context, which exposes stderr stream.
  */
-export const StderrContext = createContext<Props>({
+export const StderrContext = createContext<StderrContextProps>({
   stderr: process.stderr,
   write: () => void 0,
 });

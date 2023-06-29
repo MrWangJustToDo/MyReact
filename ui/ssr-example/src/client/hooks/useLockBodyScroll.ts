@@ -1,19 +1,16 @@
 import { useEffect } from "react";
-import { create } from "zustand";
-import { shallow } from "zustand/shallow";
+import { createStore, ref } from "reactivity-store";
 
-const useGlobalLockStore = create<{
-  count: number;
-  lock: () => void;
-  unlock: () => void;
-}>((set, get) => ({
-  count: 0,
-  lock: () => set({ count: get().count + 1 }),
-  unlock: () => set({ count: get().count - 1 }),
-}));
+const useGlobalLockStore = createStore(() => {
+  const count = ref(0);
+  const lock = () => count.value++;
+  const unlock = (): void => (count.value--, void 0);
+
+  return { count, lock, unlock };
+});
 
 export const useLockBodyScroll = (isLock?: boolean) => {
-  const { lock, unlock } = useGlobalLockStore((state) => ({ lock: state.lock, unlock: state.unlock }), shallow);
+  const { lock, unlock } = useGlobalLockStore((state) => ({ lock: state.lock, unlock: state.unlock }));
   useEffect(() => {
     if (isLock) {
       lock();

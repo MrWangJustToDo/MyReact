@@ -1,7 +1,7 @@
 import { createContext } from "@my-react/react";
 import process from "node:process";
 
-export type Props = {
+export type StdinContextProps = {
   /**
    * Stdin stream passed to `render()` in `options.stdin` or `process.stdin` by default. Useful if your app needs to handle user input.
    */
@@ -24,7 +24,7 @@ export type Props = {
 /**
  * `StdinContext` is a React context, which exposes input stream.
  */
-export const StdinContext = createContext<Props>({
+export const StdinContext = createContext<StdinContextProps>({
   stdin: process.stdin,
   setRawMode: () => void 0,
   isRawModeSupported: false,

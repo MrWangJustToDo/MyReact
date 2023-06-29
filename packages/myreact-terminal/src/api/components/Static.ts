@@ -5,7 +5,7 @@ import { PlainBoxType } from "../native";
 import type { Styles } from "../native";
 import type { MyReactElement} from "@my-react/react";
 
-export type Props<T> = {
+export type StaticProps<T> = {
   /**
    * Array of items of any type to render using a function you pass as a component child.
    */
@@ -36,7 +36,7 @@ export type Props<T> = {
  * a list of completed tests. [Gatsby](https://github.com/gatsbyjs/gatsby) uses it
  * to display a list of generated pages, while still displaying a live progress bar.
  */
-export function Static<T>(props: Props<T>) {
+export function Static<T>(props: StaticProps<T>) {
   const { items, children: render, style: customStyle } = props;
   const [index, setIndex] = useState(0);
 

@@ -1,8 +1,6 @@
 import { AspectRatio, Box, Image } from "@chakra-ui/react";
 import usePinch from "use-pinch-ref";
 
-// import { usePinch } from "@app/hooks/usePinch";
-
 import type { BoxProps } from "@chakra-ui/react";
 
 export const Chart = (props: Omit<BoxProps, "children">) => {

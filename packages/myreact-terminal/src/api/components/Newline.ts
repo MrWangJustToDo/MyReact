@@ -2,7 +2,7 @@ import { createElement } from "@my-react/react";
 
 import { TextType } from "../native";
 
-export type Props = {
+export type NewlineProps = {
   /**
    * Number of newlines to insert.
    *
@@ -14,6 +14,6 @@ export type Props = {
 /**
  * Adds one or more newline (\n) characters. Must be used within <Text> components.
  */
-export function Newline({ count = 1 }: Props) {
+export function Newline({ count = 1 }: NewlineProps) {
   return createElement(TextType, null, "\n".repeat(count));
 }

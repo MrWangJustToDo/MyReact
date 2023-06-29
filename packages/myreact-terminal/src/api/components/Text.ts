@@ -8,7 +8,7 @@ import type { MyReactElementNode } from "@my-react/react";
 import type { ForegroundColorName } from "chalk";
 import type { LiteralUnion } from "type-fest";
 
-export type Props = {
+export type TextProps = {
   /**
    * Change text color. Ink uses chalk under the hood, so all its functionality is supported.
    */
@@ -73,7 +73,7 @@ export function Text({
   inverse = false,
   wrap = "wrap",
   children,
-}: Props) {
+}: TextProps) {
   if (children === undefined || children === null) {
     return null;
   }

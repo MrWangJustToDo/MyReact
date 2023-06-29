@@ -1,6 +1,6 @@
 import { createContext } from "@my-react/react";
 
-export type Props = {
+export type FocusContextProps = {
   readonly activeId?: string;
   readonly add: (id: string, options: { autoFocus: boolean }) => void;
   readonly remove: (id: string) => void;
@@ -13,7 +13,7 @@ export type Props = {
   readonly focus: (id: string) => void;
 };
 
-export const FocusContext = createContext<Props>({
+export const FocusContext = createContext<FocusContextProps>({
   activeId: undefined,
   add: () => void 0,
   remove: () => void 0,

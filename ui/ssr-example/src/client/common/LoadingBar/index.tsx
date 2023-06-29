@@ -1,14 +1,16 @@
-import { useLoadingBar } from "@client/hooks";
+import { useEffect } from "react";
 
-
-import { useLoadingState } from "../WrapperLoading";
+import { useLoading, useLoadingBar } from "@client/hooks";
 
 import { Bar } from "./LoadingBar";
 
 import type { LoadingBarWrapperType } from "@client/types/common";
 
 export const LoadingBar: LoadingBarWrapperType = () => {
-  const { loading } = useLoadingState();
+  const loading = useLoading((state) => state.loading);
   const { ref } = useLoadingBar({ loading });
+  useEffect(() => {
+    window.dd = useLoading;
+  }, [])
   return <Bar ref={ref} />;
 };

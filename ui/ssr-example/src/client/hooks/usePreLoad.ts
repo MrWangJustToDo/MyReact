@@ -3,10 +3,11 @@ import { useStore } from "react-redux";
 import { useLocation, useNavigate } from "react-router";
 import { useSearchParams } from "react-router-dom";
 
-import { useLoadingState } from "@client/common/WrapperLoading";
 import { getIsP_CSR } from "@shared";
 import { clientActionName } from "@shared/store/action";
 import { setDataSuccess_client } from "@shared/store/reducer";
+
+import { useLoading } from "./useLoadingStore";
 
 import type { UsePreLoadType } from "@client/types/hooks";
 import type { RootState } from "@shared";
@@ -18,7 +19,7 @@ const usePreLoad: UsePreLoadType = ({ routes, preLoad }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [query] = useSearchParams();
-  const { setLoading } = useLoadingState();
+  const setLoading = useLoading((state) => state.setLoading);
   // for pure client render, need preload data
   const firstLoad = useRef(getIsP_CSR() ? true : false);
   const loadedPath = useRef<string | undefined>("");

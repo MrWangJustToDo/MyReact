@@ -41,7 +41,7 @@ type Focusable = {
 // Root component for all Ink apps
 // It renders stdin and stdout contexts, so that children can access them if needed
 // It also handles Ctrl+C exiting and cursor visibility
-export default class App extends PureComponent<Props, State> {
+export class App extends PureComponent<Props, State> {
   static displayName = "InternalApp";
 
   static getDerivedStateFromError(error: Error) {

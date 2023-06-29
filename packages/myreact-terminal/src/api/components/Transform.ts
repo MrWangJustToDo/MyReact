@@ -4,7 +4,7 @@ import { TextType } from "../native";
 
 import type { MyReactElementNode } from "@my-react/react";
 
-export type Props = {
+export type TransformProps = {
   /**
    * Function which transforms children output. It accepts children and must return transformed children too.
    */
@@ -19,7 +19,7 @@ export type Props = {
  * These use cases can't accept React nodes as input, they are expecting a string.
  * That's what <Transform> component does, it gives you an output string of its child components and lets you transform it in any way.
  */
-export function Transform({ children, transform }: Props) {
+export function Transform({ children, transform }: TransformProps) {
   if (children === undefined || children === null) {
     return null;
   }

@@ -1,7 +1,7 @@
 import { createContext } from "@my-react/react";
 import process from "node:process";
 
-export type Props = {
+export type StdoutContextProps = {
   /**
    * Stdout stream passed to `render()` in `options.stdout` or `process.stdout` by default.
    */
@@ -18,7 +18,7 @@ export type Props = {
 /**
  * `StdoutContext` is a React context, which exposes stdout stream, where Ink renders your app.
  */
-export const StdoutContext = createContext<Props>({
+export const StdoutContext = createContext<StdoutContextProps>({
   stdout: process.stdout,
   write: () => void 0,
 });

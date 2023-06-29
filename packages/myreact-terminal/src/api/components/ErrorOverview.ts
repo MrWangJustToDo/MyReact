@@ -20,11 +20,11 @@ const stackUtils = new StackUtils({
   internals: StackUtils.nodeInternals(),
 });
 
-type Props = {
+type ErrorOverviewProps = {
   readonly error: Error;
 };
 
-export function ErrorOverview({ error }: Props) {
+export function ErrorOverview({ error }: ErrorOverviewProps) {
   const stack = error.stack ? error.stack.split("\n").slice(1) : undefined;
   const origin = stack ? stackUtils.parseLine(stack[0]) : undefined;
   const filePath = cleanupPath(origin?.file);

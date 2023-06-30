@@ -1,9 +1,15 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
-import type { UpdateQueue } from "@my-react/react";
+import type { RenderFiber, UpdateQueue } from "@my-react/react";
 
 const { currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
+
+const MAX_UPDATE_COUNT = 25;
+
+let lastRenderComponentFiber: RenderFiber | null = null;
+
+let renderCount = 0;
 
 export const processState = (_params: UpdateQueue) => {
   if (_params.type === "component") {
@@ -12,11 +18,21 @@ export const processState = (_params: UpdateQueue) => {
     if (!ownerFiber || ownerFiber.state & STATE_TYPE.__unmount__) return;
 
     if (__DEV__ && currentComponentFiber.current) {
-      currentRenderPlatform.current?.log({
-        fiber: currentComponentFiber.current,
-        message: `trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`,
-        level: "warn",
-      });
+      if (lastRenderComponentFiber === currentComponentFiber.current) {
+        renderCount++;
+      }
+      if (renderCount > MAX_UPDATE_COUNT) {
+        renderCount = 0;
+        throw new Error("look like there are infinity update for current component");
+      } else {
+        currentRenderPlatform.current?.log({
+          fiber: currentComponentFiber.current,
+          message: `trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`,
+          level: "warn",
+          triggerOnce: true,
+        });
+      }
+      lastRenderComponentFiber = currentComponentFiber.current;
     }
 
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
@@ -38,11 +54,21 @@ export const processState = (_params: UpdateQueue) => {
     if (!ownerFiber || ownerFiber?.state & STATE_TYPE.__unmount__) return;
 
     if (__DEV__ && currentComponentFiber.current) {
-      currentRenderPlatform.current?.log({
-        fiber: currentComponentFiber.current,
-        message: `trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`,
-        level: "warn",
-      });
+      if (lastRenderComponentFiber === currentComponentFiber.current) {
+        renderCount++;
+      }
+      if (renderCount > MAX_UPDATE_COUNT) {
+        renderCount = 0;
+        throw new Error("look like there are infinity update for current component");
+      } else {
+        currentRenderPlatform.current?.log({
+          fiber: currentComponentFiber.current,
+          message: `trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`,
+          level: "warn",
+          triggerOnce: true,
+        });
+      }
+      lastRenderComponentFiber = currentComponentFiber.current;
     }
 
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();

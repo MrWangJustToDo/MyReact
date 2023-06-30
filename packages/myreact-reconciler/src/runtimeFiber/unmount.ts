@@ -3,6 +3,7 @@ import { STATE_TYPE } from "@my-react/react-shared";
 import { fiberToDispatchMap } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
+import type { MyReactFiberNodeDev } from "./interface";
 import type { CustomRenderDispatch } from "../renderDispatch";
 
 export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
@@ -49,4 +50,26 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
   fiber.updateQueue = null;
 
   fiber.state = STATE_TYPE.__unmount__;
+
+  if (__DEV__) {
+    const typedFiber = fiber as MyReactFiberNodeDev;
+
+    typedFiber._debugIsMount = false;
+
+    delete typedFiber._debugHookNodes;
+
+    delete typedFiber._debugContextMap;
+
+    delete typedFiber._debugChildren;
+
+    delete typedFiber._debugSuspense;
+
+    delete typedFiber._debugStrict;
+
+    delete typedFiber._debugScope;
+
+    delete typedFiber._debugEventMap;
+
+    delete typedFiber._debugUpdateQueue;
+  }
 };

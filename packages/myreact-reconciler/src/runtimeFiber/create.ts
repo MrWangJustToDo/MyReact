@@ -71,6 +71,8 @@ export const createFiberNode = (
       currentUpdateTime: timeNow,
     };
 
+    typedFiber._debugIsMount = true;
+
     if (typedFiber.type & renderDispatch.runtimeRef.typeForNativeNode) {
       renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
     }

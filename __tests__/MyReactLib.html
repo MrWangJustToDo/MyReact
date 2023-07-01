@@ -40,6 +40,7 @@
       onload = () => {
         b = document.querySelector("#button");
         b.addEventListener("click", () => window.start());
+        window.__highlight__ = true;
       };
     </script>
 
@@ -308,7 +309,7 @@
       const Pi = memo(() => {
         const c = useContext(Context);
 
-        console.log(c);
+        // console.log('pi', c);
 
         return (
           <div>

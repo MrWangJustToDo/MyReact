@@ -75,19 +75,7 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
     }
 
     if (nextWorkFiber) {
-      if (nextWorkFiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
-        renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
-
-        renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
-
-        if (nextWorkFiber.state & STATE_TYPE.__triggerSync__) {
-          updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
-        } else if (enableConcurrentMode.current) {
-          updateConcurrentWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
-        } else {
-          updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
-        }
-      } else if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__)) {
+      if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 
         renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
@@ -98,6 +86,18 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
           updateConcurrentWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
         } else {
           updateSyncWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
+        }
+      } else if (nextWorkFiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
+        renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
+
+        renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
+
+        if (nextWorkFiber.state & STATE_TYPE.__triggerSync__) {
+          updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+        } else if (enableConcurrentMode.current) {
+          updateConcurrentWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+        } else {
+          updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
         }
       } else {
         // TODO

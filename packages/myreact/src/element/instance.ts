@@ -52,7 +52,7 @@ export type MyReactElementType<P extends Record<string, unknown> = any, S extend
   | MixinMyReactClassComponent<P, S, C>
   | MixinMyReactFunctionComponent<P>;
 
-export interface LikeJSX<T extends MyReactElementType<P> = any, P extends Record<string, unknown> = any, Key extends string | number = any> {
+export interface LikeJSX<T extends MyReactElementType<P> = any, P extends Record<string, unknown> = any, Key extends string | number = string | number> {
   type: T;
   props: P;
   key: Key | null;

@@ -7,11 +7,10 @@ import { isSingleTag, validDomNesting, validDomTag } from "@my-react-dom-shared"
 import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-server";
+import type { ServerDomDispatch, ServerStaticStreamDispatch, ServerStreamDispatch } from "@my-react-dom-server";
 
 export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatch) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
-
     if (__DEV__) validDomTag(fiber);
 
     if (__DEV__) validDomNesting(fiber, renderDispatch.runtimeDom.elementMap.get(fiber).parentFiberWithNode);
@@ -36,7 +35,7 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatc
   }
 };
 
-export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch) => {
+export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch | ServerStaticStreamDispatch) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
     const stream = renderDispatch.stream;
 
@@ -85,7 +84,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
   }
 };
 
-export const createCloseTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch) => {
+export const createCloseTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch | ServerStaticStreamDispatch) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
     const stream = renderDispatch.stream;
     if (fiber.type & NODE_TYPE.__plain__) {

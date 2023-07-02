@@ -1,8 +1,8 @@
 import { createElement, useLayoutEffect, useMemo, useState } from "@my-react/react";
 
-import { PlainBoxType } from "../native";
+import { PlainBoxType } from "../api/native";
 
-import type { Styles } from "../native";
+import type { Styles } from "../api/native";
 import type { MyReactElement} from "@my-react/react";
 
 export type StaticProps<T> = {

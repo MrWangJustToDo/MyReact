@@ -550,7 +550,7 @@ const applyGapStyles = (node: YogaNode, style: Styles): void => {
   }
 };
 
-export const styles = (node: YogaNode, style: Styles = {}): void => {
+export const applyStyles = (node: YogaNode, style: Styles = {}): void => {
   applyPositionStyles(node, style);
   applyMarginStyles(node, style);
   applyPaddingStyles(node, style);

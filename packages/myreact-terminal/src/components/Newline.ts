@@ -1,6 +1,6 @@
 import { createElement } from "@my-react/react";
 
-import { TextType } from "../native";
+import { TextType } from "../api/native";
 
 export type NewlineProps = {
   /**

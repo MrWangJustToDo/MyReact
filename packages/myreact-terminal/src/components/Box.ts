@@ -1,8 +1,8 @@
 import { createElement, forwardRef } from "@my-react/react";
 
-import { PlainBoxType } from "../native";
+import { PlainBoxType } from "../api/native";
 
-import type { Styles } from "../native";
+import type { Styles } from "../api/native";
 import type { MyReactElementNode } from "@my-react/react";
 import type { Except } from "type-fest";
 

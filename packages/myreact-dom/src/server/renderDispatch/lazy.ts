@@ -8,6 +8,10 @@ export const resolveLazyElementSync = (_fiber: MyReactFiberNode, _dispatch: Cust
   return WrapperByScope(_dispatch.resolveSuspense(_fiber));
 };
 
+export const resolveLazyElementStatic = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
+  return _dispatch.resolveSuspense(_fiber);
+}
+
 export const resolveLazyElementAsync = async (_fiber: MyReactFiberNode) => {
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
 

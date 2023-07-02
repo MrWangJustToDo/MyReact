@@ -1,6 +1,6 @@
 import { useEffect, __my_react_internal__ } from "@my-react/react";
 
-import { nonAlphanumericKeys, parseKeypress } from "../../shared";
+import { nonAlphanumericKeys, parseKeypress } from "../shared";
 
 import { useStdin } from "./use-stdin";
 

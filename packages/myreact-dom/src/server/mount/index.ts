@@ -1,2 +1,4 @@
 export * from "./renderToString";
-export * from "./renderToStream";
+export * from "./renderToNodeStream";
+export * from "./renderToStaticMarkup";
+export * from "./renderToStaticNodeStream";

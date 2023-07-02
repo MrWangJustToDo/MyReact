@@ -1,6 +1,6 @@
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 
-import { create, update } from "../api";
+import { append, create, position, update } from "../api";
 
 import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -31,12 +31,12 @@ export class TerminalDispatch extends CustomRenderDispatch {
   commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
     update(_fiber);
   }
-  // commitAppend(_fiber: MyReactFiberNode): void {
-  //   append(_fiber, this);
-  // }
-  // commitPosition(_fiber: MyReactFiberNode): void {
-  //   position(_fiber, this);
-  // }
+  commitAppend(_fiber: MyReactFiberNode): void {
+    append(_fiber, this);
+  }
+  commitPosition(_fiber: MyReactFiberNode): void {
+    position(_fiber, this);
+  }
   // commitSetRef(_fiber: MyReactFiberNode): void {
   //   setRef(_fiber);
   // }
@@ -47,10 +47,10 @@ export class TerminalDispatch extends CustomRenderDispatch {
   //   clearNode(_fiber);
   // }
   resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
-    throw new Error('terminal platform not support lazy component')
+    throw new Error("terminal platform not support lazy component");
   }
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
-    throw new Error('terminal platform not support lazy component')
+    throw new Error("terminal platform not support lazy component");
   }
   // reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
   //   return clientDispatchMount(_fiber, this, _hydrate);

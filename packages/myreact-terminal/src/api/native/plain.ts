@@ -1,9 +1,9 @@
 import Yoga, { type Node as YogaNode } from "yoga-wasm-web/auto";
 
 import { measureTextElement } from "./measure-element";
+import { applyStyles, type Styles } from "./styles";
 
 import type { DOMNode } from "./dom";
-import type { Styles } from "./styles";
 
 export const PlainTextType = "terminal-text";
 
@@ -70,5 +70,11 @@ export class PlainElement {
 
   setAttribute(key: string, value: string | boolean | number) {
     this.attributes[key] = value;
+  }
+
+  applyStyle() {
+    if (this.yogaNode) {
+      applyStyles(this.yogaNode, this.style);
+    }
   }
 }

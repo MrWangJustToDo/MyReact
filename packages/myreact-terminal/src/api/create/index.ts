@@ -1,11 +1,10 @@
 import { NODE_TYPE, type MyReactFiberNode } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { validDomNesting, validDomTag } from "../shared";
+import { validDomNesting, validDomTag } from "../../shared";
+import { PlainBoxType, PlainElement, PlainTextType, PlainVirtualTextType, TextElement } from "../native";
 
-import { PlainBoxType, PlainElement, PlainTextType, PlainVirtualTextType, TextElement } from "./native";
-
-import type { TerminalDispatch } from "../renderDispatch";
+import type { TerminalDispatch } from "../../renderDispatch";
 
 const getValidElementTag = (elementTag: string) => {
   switch(elementTag) {

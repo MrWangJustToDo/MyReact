@@ -1,9 +1,9 @@
 import { createElement } from "@my-react/react";
 import chalk from "chalk";
 
-import { colorize, TextType } from "../native";
+import { colorize, TextType } from "../api/native";
 
-import type { Styles } from "../native";
+import type { Styles } from "../api/native";
 import type { MyReactElementNode } from "@my-react/react";
 import type { ForegroundColorName } from "chalk";
 import type { LiteralUnion } from "type-fest";

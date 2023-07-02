@@ -10,7 +10,7 @@ import {
 } from "@my-react/react-reconciler";
 
 import { render, hydrate, hydrateRoot, createRoot } from "./client";
-import { renderToString, renderToNodeStream } from "./server";
+import { renderToString, renderToNodeStream, renderToStaticMarkup, renderToStaticNodeStream } from "./server";
 import { createPortal, findDOMNode, MyReactDomPlatform, unmountComponentAtNode } from "./shared";
 
 const version = __VERSION__;
@@ -45,6 +45,8 @@ export {
   createPortal,
   renderToString,
   renderToNodeStream,
+  renderToStaticMarkup,
+  renderToStaticNodeStream,
   unmountComponentAtNode,
   flushSync,
   unstable_batchedUpdates,

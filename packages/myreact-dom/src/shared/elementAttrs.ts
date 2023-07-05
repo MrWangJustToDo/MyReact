@@ -33,6 +33,9 @@ const generateGetRawAttrKey = (map: string) => {
 
 // from vue source
 
+/**
+ * @internal
+ */
 export const getHTMLAttrKey = generateGetRawAttrKey(
   `as,accept,accept-charset,accesskey,action,align,allow,alt,async,` +
     `autocapitalize,autocomplete,autofocus,autoplay,background,bgcolor,` +
@@ -51,6 +54,9 @@ export const getHTMLAttrKey = generateGetRawAttrKey(
     `value,width,wrap`
 );
 
+/**
+ * @internal
+ */
 export const getSVGAttrKey = generateGetRawAttrKey(
   `xmlns,accent-height,accumulate,additive,alignment-baseline,alphabetic,amplitude,` +
     `arabic-form,ascent,attributeName,attributeType,azimuth,baseFrequency,` +
@@ -93,6 +99,9 @@ export const getSVGAttrKey = generateGetRawAttrKey(
     `xml:space,y,y1,y2,yChannelSelector,z,zoomAndPan`
 );
 
+/**
+ * @internal
+ */
 export const propsToAttrMap: Record<string, string | undefined> = {
   className: "class",
   htmlFor: "for",

@@ -3,6 +3,9 @@ import { PlainElement } from "./plain";
 import { TextElement } from "./text";
 
 // server container node
+/**
+ * @internal
+ */
 export class ContainerElement {
   children: Array<TextElement | PlainElement | CommentStartElement | CommentEndElement | string> = [];
 

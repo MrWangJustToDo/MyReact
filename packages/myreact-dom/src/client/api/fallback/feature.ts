@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export const fallback = (el?: ChildNode) => {
   if (el) {
     const sibling = el.nextSibling;

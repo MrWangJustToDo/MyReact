@@ -13,7 +13,7 @@ export const hydrateRoot = (container: Partial<RenderContainer>, element: LikeJS
 
   const unmount = () => unmountComponentAtNode(container as RenderContainer);
 
-  onceLogNewEntry("hydrateRoot");
+  __DEV__ && onceLogNewEntry("hydrateRoot");
 
   hydrate(element, container);
 

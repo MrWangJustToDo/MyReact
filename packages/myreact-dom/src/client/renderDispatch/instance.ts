@@ -1,7 +1,7 @@
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 
 import { append, clearNode, clientDispatchMount, create, position, update } from "@my-react-dom-client";
-import { patchToFiberInitial, patchToFiberUnmount, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
+import { asyncUpdateTimeLimit, patchToFiberInitial, patchToFiberUnmount, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
 
 import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
 
@@ -20,6 +20,9 @@ const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
 };
 
+/**
+ * @internal
+ */
 export class ClientDomDispatch extends CustomRenderDispatch {
   runtimeDom = {
     elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
@@ -38,6 +41,8 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   renderTime: number | null;
 
   hydrateTime: number | null;
+
+  performanceLogTimeLimit = asyncUpdateTimeLimit.current;
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(_fiber, this, !!_hydrate);

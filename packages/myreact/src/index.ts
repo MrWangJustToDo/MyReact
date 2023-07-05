@@ -41,11 +41,12 @@ import {
   enableOptimizeTreeLog,
   enableConcurrentMode,
   enableLegacyLifeCycle,
+  enablePerformanceLog,
 } from "./share";
 
 const Component = MyReactComponent;
 
-const PureComponent = MyReactPureComponent;
+const PureComponent = MyReactPureComponent as typeof MyReactComponent;
 
 const version = __VERSION__;
 
@@ -59,6 +60,7 @@ const __my_react_shared__ = {
   enableConcurrentMode,
   enableLegacyLifeCycle,
   enableOptimizeTreeLog,
+  enablePerformanceLog,
 };
 
 const __my_react_internal__ = {

@@ -4,4 +4,7 @@ import { currentRenderPlatform } from "./env";
 
 import type { RenderPlatform } from "../renderPlatform";
 
+/**
+ * @internal
+ */
 export const setRenderPlatform = once((platform: RenderPlatform) => (currentRenderPlatform.current = platform));

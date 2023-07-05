@@ -75,4 +75,7 @@ class DomPlatform extends CustomRenderPlatform {
   }
 }
 
+/**
+ * @internal
+ */
 export const MyReactDomPlatform = new DomPlatform();

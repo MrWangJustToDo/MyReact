@@ -94,6 +94,9 @@ export class MyReactComponent<
   }
 }
 
+/**
+ * @internal
+ */
 export class MyReactPureComponent<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,

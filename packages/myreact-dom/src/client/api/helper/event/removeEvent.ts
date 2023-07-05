@@ -6,6 +6,9 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";
 import type { DomElement } from "@my-react-dom-shared";
 
+/**
+ * @internal
+ */
 export const removeEventListener = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, dom: DomElement, key: string) => {
   const typedElementType = fiber.elementType as string;
 

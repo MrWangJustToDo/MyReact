@@ -3,6 +3,9 @@ import { PATCH_TYPE } from "@my-react/react-shared";
 import type { PlainElement, TextElement } from "./native";
 import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 
+/**
+ * @internal
+ */
 export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
   if (fiber.patch & PATCH_TYPE.__append__) {
     const mayFiberContainer = parentFiberWithDom as MyReactFiberContainer;

@@ -9,6 +9,9 @@ export function isValidElement(element?: MyReactElementNode | any): element is M
   return typeof element === "object" && !Array.isArray(element) && element?.[TYPEKEY] === Element;
 }
 
+/**
+ * @internal
+ */
 export const checkValidKey = (children: MyReactElementNode[]) => {
   const obj: Record<string, boolean> = {};
 
@@ -39,6 +42,9 @@ export const checkValidKey = (children: MyReactElementNode[]) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) => {
   if (Array.isArray(children)) {
     checkValidKey(children);
@@ -47,6 +53,9 @@ export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) =
   }
 };
 
+/**
+ * @internal
+ */
 export const checkValidElement = (element: MyReactElementNode) => {
   if (isValidElement(element)) {
     if (!element._store["validType"]) {
@@ -113,6 +122,9 @@ export const checkValidElement = (element: MyReactElementNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const checkValidProps = (element: MyReactElementNode) => {
   const renderPlatform = currentRenderPlatform.current;
   if (isValidElement(element)) {

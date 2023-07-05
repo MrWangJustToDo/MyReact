@@ -8,6 +8,9 @@ import { nativeUpdate } from "./nativeUpdate";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";
 
+/**
+ * @internal
+ */
 export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, hydrate: boolean) => {
   if (fiber.patch & PATCH_TYPE.__update__) {
     if (__DEV__) validDomProps(fiber);

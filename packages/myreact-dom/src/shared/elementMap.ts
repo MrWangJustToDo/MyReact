@@ -2,6 +2,9 @@ import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-re
 import type { ClientDomDispatch } from "@my-react-dom-client";
 import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-server";
 
+/**
+ * @internal
+ */
 export const patchToFiberInitial = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch | ServerDomDispatch | ServerStreamDispatch) => {
   let isSVG = _fiber.elementType === "svg";
 
@@ -25,6 +28,9 @@ export const patchToFiberInitial = (_fiber: MyReactFiberNode, _dispatch: ClientD
   _dispatch.runtimeDom.elementMap.set(_fiber, { isSVG, parentFiberWithNode });
 };
 
+/**
+ * @internal
+ */
 export const patchToFiberUnmount = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
   _dispatch.runtimeDom.elementMap.delete(_fiber);
 };

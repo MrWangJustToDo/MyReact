@@ -4,6 +4,9 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";
 import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-server";
 
+/**
+ * @internal
+ */
 export const startRender = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch | ServerDomDispatch | ServerStreamDispatch, hydrate = false) => {
   const startTime = Date.now();
 
@@ -20,6 +23,9 @@ export const startRender = (fiber: MyReactFiberNode, renderDispatch: ClientDomDi
   }
 };
 
+/**
+ * @internal
+ */
 export const startRenderAsync = async (
   fiber: MyReactFiberNode,
   renderDispatch: ClientDomDispatch | ServerDomDispatch | ServerStreamDispatch,

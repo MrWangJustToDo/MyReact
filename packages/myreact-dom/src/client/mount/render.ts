@@ -12,16 +12,32 @@ export type RenderContainer = Element & {
   __container__: ClientDomDispatch;
 };
 
-const { enableLegacyLifeCycle, enableConcurrentMode } = __my_react_shared__;
+const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __my_react_shared__;
 
+/**
+ * @internal
+ */
 export const onceLog = once(() => {
   console.log(`you are using @my-react to render this site, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`);
 });
 
+/**
+ * @internal
+ */
+export const onceLogPerformanceWarn = once(() => {
+  console.log("[@my-react/react] performance warning log have been enabled!");
+});
+
+/**
+ * @internal
+ */
 export const onceLogConcurrentMode = once(() => {
   console.log("[@my-react/react] concurrent mode have been enabled!");
 });
 
+/**
+ * @internal
+ */
 export const onceLogLegacyLifeCycleMode = once(() => {
   console.log("[@my-react/react] legacy 'UNSAFE_' lifeCycle have been enabled!");
 });
@@ -58,12 +74,16 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
   }
   onceLog();
 
-  if (enableLegacyLifeCycle.current) {
+  if (__DEV__ && enableLegacyLifeCycle.current) {
     onceLogLegacyLifeCycleMode();
   }
 
-  if (enableConcurrentMode.current) {
+  if (__DEV__ && enableConcurrentMode.current) {
     onceLogConcurrentMode();
+  }
+
+  if (__DEV__ && enablePerformanceLog.current) {
+    onceLogPerformanceWarn();
   }
 
   const fiber = new MyReactFiberNode(element);

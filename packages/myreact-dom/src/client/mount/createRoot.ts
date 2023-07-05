@@ -12,6 +12,9 @@ export type Options = {
   identifierPrefix?: string;
 };
 
+/**
+ * @internal
+ */
 export const onceLogNewEntry = once((entry) => {
   console.log(`[@my-react/react-dom] you are using new entry function '${entry}'`);
 });
@@ -21,7 +24,7 @@ export const createRoot = (container: Partial<RenderContainer>, _option?: Option
 
   const unmount = () => unmountComponentAtNode(container as RenderContainer);
 
-  onceLogNewEntry("createRoot");
+  __DEV__ && onceLogNewEntry("createRoot");
 
   return {
     render,

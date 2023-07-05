@@ -58,6 +58,8 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
 
+  performanceLogTimeLimit = 2000;
+
   constructor(readonly rootNode: any, readonly rootFiber: MyReactFiberNode) {
     const typedFiber = rootFiber as MyReactFiberContainer;
 

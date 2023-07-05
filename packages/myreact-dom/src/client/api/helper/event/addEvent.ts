@@ -37,6 +37,9 @@ const afterEvent = (event: string) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const addEventListener = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, dom: DomElement, key: string, isControlled: boolean) => {
   const typedElementType = fiber.elementType as string;
 

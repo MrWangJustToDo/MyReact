@@ -20,6 +20,9 @@ const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
 };
 
+/**
+ * @internal
+ */
 export class ServerStaticDispatch extends CustomRenderDispatch {
   runtimeDom = {
     elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),

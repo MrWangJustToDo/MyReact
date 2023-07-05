@@ -5,6 +5,9 @@ import type { DomNode } from "./dom";
 import type { MyReactInternalInstance } from "@my-react/react";
 import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 
+/**
+ * @internal
+ */
 export const findDOMFromFiber = (fiber: MyReactFiberNode | null) => {
   if (!fiber || fiber.state & STATE_TYPE.__unmount__) return;
 
@@ -29,7 +32,7 @@ export const findDOMFromFiber = (fiber: MyReactFiberNode | null) => {
   return null;
 };
 
-export const findDOMNode = (instance: MyReactInternalInstance) => {
+export const findDOMNode = (instance: MyReactInternalInstance): DomNode | null => {
   if (instance instanceof Component && instance._ownerFiber) {
     return findDOMFromFiber(instance._ownerFiber as MyReactFiberNode);
   } else {

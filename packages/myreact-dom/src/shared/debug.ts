@@ -9,6 +9,9 @@ const { currentRunningFiber } = __my_react_internal__;
 
 const cache: Record<string, Record<string, boolean>> = {};
 
+/**
+ * @internal
+ */
 export const log = ({ fiber, message, level = "warn", triggerOnce = false }: LogProps) => {
   if (__DEV__) {
     const currentFiber = fiber || currentRunningFiber.current;
@@ -76,6 +79,9 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
   }
 };
 
+/**
+ * @internal
+ */
 export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
   Reflect.defineProperty(renderDispatch, "_dev_shared", { value: __my_react_shared__ });
   Reflect.defineProperty(renderDispatch, "_dev_internal", { value: __my_react_internal__ });

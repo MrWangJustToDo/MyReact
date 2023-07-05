@@ -17,6 +17,9 @@ const clearFiberDom = (fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const clearNode = (fiber: MyReactFiberNode) => {
   if (fiber.state & STATE_TYPE.__unmount__) return;
 

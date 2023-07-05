@@ -6,14 +6,23 @@ const { currentRenderPlatform } = __my_react_internal__;
 
 const emptyFunc = () => void 0;
 
+/**
+ * @internal
+ */
 export type ControlledElement = HTMLInputElement & {
   __isControlled__: boolean;
 };
 
+/**
+ * @internal
+ */
 export const controlElementTag: Record<string, boolean> = {
   input: true,
 };
 
+/**
+ * @internal
+ */
 export const mountControlElement = (fiber: MyReactFiberNode) => {
   const dom = fiber.nativeNode;
   const props = fiber.pendingProps;
@@ -24,6 +33,9 @@ export const mountControlElement = (fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const updateControlElement = (fiber: MyReactFiberNode) => {
   const dom = fiber.nativeNode;
   const props = fiber.pendingProps;
@@ -44,6 +56,9 @@ export const updateControlElement = (fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const prepareControlProp = (fiber: MyReactFiberNode) => {
   const props = fiber.pendingProps;
 

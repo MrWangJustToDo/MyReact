@@ -23,6 +23,9 @@ type LifeCycle = {
   canUpdateComponent: boolean;
 };
 
+/**
+ * @internal
+ */
 export let globalInstance: LifeCycle | null = null;
 
 export function createReactive<P extends Record<string, unknown>, S extends Record<string, unknown>>(props?: {

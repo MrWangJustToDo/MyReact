@@ -9,6 +9,9 @@ import { nativeCreate } from "./nativeCreate";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";
 
+/**
+ * @internal
+ */
 export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, hydrate: boolean): boolean => {
   if (fiber.patch & PATCH_TYPE.__create__) {
     const { isSVG, parentFiberWithNode } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};

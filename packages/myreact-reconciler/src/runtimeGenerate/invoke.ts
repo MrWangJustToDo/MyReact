@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_internal__ } from "@my-react/react";
+import { isValidElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
@@ -10,7 +10,9 @@ import { transformChildrenFiber } from "./generate";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext, forwardRef } from "@my-react/react";
 
-const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber } = __my_react_internal__;
+const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
+
+const { enablePerformanceLog } = __my_react_shared__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   transformChildrenFiber(fiber, children);
@@ -148,6 +150,32 @@ export const runtimeNextWork = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__consumer__) return nextWorkConsumer(fiber);
 
   nextWorkNormal(fiber);
+};
+
+export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
+  if (enablePerformanceLog.current) {
+    const renderDispatch = currentRenderDispatch.current;
+
+    const renderPlatform = currentRenderPlatform.current;
+
+    const start = Date.now();
+
+    const res = runtimeNextWork(fiber);
+
+    const end = Date.now();
+
+    if (end - start > renderDispatch.performanceLogTimeLimit) {
+      renderPlatform?.log({
+        fiber,
+        message: "render current component take a lot of time, there are have a performance warning",
+        level: "warn",
+        triggerOnce: true,
+      });
+    }
+
+    return res;
+  }
+  return runtimeNextWork(fiber);
 };
 
 export const runtimeNextWorkAsync = async (fiber: MyReactFiberNode) => {

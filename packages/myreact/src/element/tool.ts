@@ -16,6 +16,9 @@ export const isValidElement = (element?: MyReactElementNode | any): element is M
   return typeof element === "object" && !Array.isArray(element) && element?.[TYPEKEY] === Element;
 };
 
+/**
+ * @internal
+ */
 export const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
 
@@ -46,6 +49,9 @@ export const checkValidKey = (children: ArrayMyReactElementNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const checkValidElement = (element: MyReactElementNode) => {
   if (isValidElement(element)) {
     if (!element._store["validType"]) {
@@ -113,6 +119,9 @@ export const checkValidElement = (element: MyReactElementNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const checkValidProps = (element: MyReactElementNode) => {
   const renderPlatform = currentRenderPlatform.current;
   if (isValidElement(element)) {
@@ -141,6 +150,9 @@ export const checkValidProps = (element: MyReactElementNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => {
   children.forEach((child) => {
     if (Array.isArray(child)) {
@@ -151,6 +163,9 @@ export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => 
   });
 };
 
+/**
+ * @internal
+ */
 export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) => {
   if (Array.isArray(children)) {
     checkValidKey(children);

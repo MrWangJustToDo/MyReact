@@ -11,4 +11,7 @@ const memorize = <T extends Function>(fn: T): T => {
   }) as unknown as T;
 };
 
+/**
+ * @internal
+ */
 export const kebabCase = memorize((s: string) => s.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase());

@@ -8,6 +8,9 @@ import { TextElement } from "./native";
 import type { PlainElement } from "./native/plain";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
+/**
+ * @internal
+ */
 export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
   if (fiber.patch & PATCH_TYPE.__update__) {
     if (__DEV__) validDomProps(fiber);
@@ -47,6 +50,9 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
   if (fiber.type & NODE_TYPE.__plain__) {
     const props = fiber.pendingProps || {};

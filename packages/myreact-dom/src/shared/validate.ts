@@ -6,6 +6,9 @@ import type { MyReactFiberNode} from "@my-react/react-reconciler";
 
 // TODO
 
+/**
+ * @internal
+ */
 export const validDomNesting = (fiber: MyReactFiberNode, parentFiberWithNode?: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__plain__) {
     const typedElementType = fiber.elementType;
@@ -21,6 +24,9 @@ export const validDomNesting = (fiber: MyReactFiberNode, parentFiberWithNode?: M
   }
 };
 
+/**
+ * @internal
+ */
 export const validDomTag = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__plain__) {
     const tagName = fiber.elementType as string;
@@ -31,6 +37,9 @@ export const validDomTag = (fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const validDomProps = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__plain__) {
     const props = fiber.pendingProps;
@@ -61,6 +70,9 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const checkRoot = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__class__) return;
 

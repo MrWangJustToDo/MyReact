@@ -1,8 +1,14 @@
+/**
+ * @internal
+ */
 export const makeMap = (src: string) => {
   const tags = src.split(",");
   return tags.reduce<Record<string, true>>((p, c) => ((p[c] = true), p), Object.create(null));
 };
 
+/**
+ * @internal
+ */
 export const isHTMLTag = makeMap(
   "html,body,base,head,link,meta,style,title,address,article,aside,footer," +
     "header,hgroup,h1,h2,h3,h4,h5,h6,nav,section,div,dd,dl,dt,figcaption," +
@@ -15,6 +21,9 @@ export const isHTMLTag = makeMap(
     "summary,template,blockquote,iframe,tfoot"
 );
 
+/**
+ * @internal
+ */
 export const isSVGTag = makeMap(
   "svg,animate,animateMotion,animateTransform,circle,clipPath,color-profile," +
     "defs,desc,discard,ellipse,feBlend,feColorMatrix,feComponentTransfer," +
@@ -28,4 +37,7 @@ export const isSVGTag = makeMap(
     "text,textPath,title,tspan,unknown,use,view"
 );
 
+/**
+ * @internal
+ */
 export const isSingleTag = makeMap("area,base,br,col,embed,hr,img,input,link,meta,param,source,track,wbr");

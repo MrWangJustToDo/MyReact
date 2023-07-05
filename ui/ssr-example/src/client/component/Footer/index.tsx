@@ -6,10 +6,10 @@ import { BLOG_SOURCE } from "@client/config/source";
 import { useIsMounted } from "@client/hooks";
 
 // import { BLOG_SOURCE } from "@app/config/source";
-// import { useIsMounted } from "@app/hooks/useIsMounted";
 
 const _Footer = () => {
   const isMounted = useIsMounted();
+
   return (
     <Box textAlign="center">
       <Flex marginTop="6" justifyContent="center" alignItems="center">

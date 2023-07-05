@@ -160,13 +160,13 @@ export const getHookTree = (
 ) => {
   const pre = "".toString().padEnd(5);
   const message = "hook for current component has a different state on current render and previous render, this is not a valid usage.";
-  const re = "\n" + pre + "Last render:".padEnd(20) + "Next render:".padEnd(10) + "\n" + pre + "-".repeat(30) + "\n";
-  let stack = pre + errorType.lastRender.padEnd(20) + errorType.nextRender.padEnd(10) + "\n";
+  const re = "\n" + pre + "Last render:".padEnd(28) + "Next render:".padEnd(10) + "\n" + pre + "-".repeat(44) + "\n";
+  let stack = pre + errorType.lastRender.padEnd(28) + errorType.nextRender.padEnd(10) + "\n";
   while (treeHookNode && treeHookNode.value) {
     const t = treeHookNode.value.type;
-    stack = pre + t.padEnd(20) + t.padEnd(10) + "\n" + stack;
+    stack = pre + t.padEnd(28) + t.padEnd(10) + "\n" + stack;
     treeHookNode = treeHookNode.prev;
   }
-  stack += pre + "^".repeat(30) + "\n";
+  stack += pre + "^".repeat(44) + "\n";
   return message + re + stack;
 };

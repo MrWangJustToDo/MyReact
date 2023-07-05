@@ -3,6 +3,7 @@
     "rootDir": "src",
     "target": "ES5",
     "esModuleInterop": true,
+    "stripInternal": true,
     "paths": {
       "@my-react-dom-shared": ["./src/shared"],
       "@my-react-dom-server": ["./src/server"],

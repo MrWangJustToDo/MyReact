@@ -2,6 +2,9 @@ import { STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
+/**
+ * @internal
+ */
 export const getFiberWithNativeDom = (fiber: MyReactFiberNode | null, transform: (f: MyReactFiberNode) => MyReactFiberNode | null): MyReactFiberNode | null => {
   if (fiber) {
     const maybeContainer = fiber as MyReactFiberContainer;

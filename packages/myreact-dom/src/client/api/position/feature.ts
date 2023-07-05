@@ -9,6 +9,9 @@ import { insertBefore } from "./insertBefore";
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";
 
+/**
+ * @internal
+ */
 export const position = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
   if (fiber.patch & PATCH_TYPE.__position__) {
     let { parentFiberWithNode } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};

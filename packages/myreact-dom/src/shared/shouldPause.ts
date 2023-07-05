@@ -1,5 +1,8 @@
 import { asyncUpdateTimeLimit, asyncUpdateTimeStep } from "./env";
 
+/**
+ * @internal
+ */
 export const shouldPauseAsyncUpdate = () => {
   if (!asyncUpdateTimeStep.current) {
     asyncUpdateTimeStep.current = Date.now();

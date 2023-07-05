@@ -1,5 +1,8 @@
 import { makeMap } from "./elementTag";
 
+/**
+ * @internal
+ */
 export const isUnitlessNumber = makeMap(
   "animationIterationCount,borderImageOutset,borderImageSlice,borderImageWidth,boxFlex," +
     "boxFlexGroup,boxOrdinalGroup,columnCount,columns,flex,flexGrow,flexPositive,flexShrink," +

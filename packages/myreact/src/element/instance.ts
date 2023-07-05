@@ -100,7 +100,7 @@ export type CreateElementConfig<P extends Record<string, unknown> = any> = {
   __source?: CreateElementProps<P>["_source"];
 };
 
-export const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps): MyReactElement => {
+const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps): MyReactElement => {
   const element: MyReactElement = {
     [TYPEKEY]: Element,
     type,

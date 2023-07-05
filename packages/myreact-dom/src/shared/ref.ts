@@ -3,6 +3,9 @@ import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
+/**
+ * @internal
+ */
 export const setRef = (_fiber: MyReactFiberNode) => {
   if (_fiber.patch & PATCH_TYPE.__ref__) {
     if (_fiber.type & NODE_TYPE.__plain__) {
@@ -33,6 +36,9 @@ export const setRef = (_fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const unsetRef = (_fiber: MyReactFiberNode) => {
   if (_fiber.state & STATE_TYPE.__unmount__) return;
 

@@ -6,6 +6,9 @@ import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-re
 import type { ClientDomDispatch } from "@my-react-dom-client";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
+/**
+ * @internal
+ */
 export const append = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
   if (fiber.patch & PATCH_TYPE.__append__) {
     let { parentFiberWithNode } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};

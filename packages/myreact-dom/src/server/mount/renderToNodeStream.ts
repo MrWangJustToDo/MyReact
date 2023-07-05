@@ -56,7 +56,7 @@ const renderToStreamAsync = <T extends SimpleReadable>(element: MyReactElement, 
 
 export function renderToNodeStream(element: LikeJSX): Readable;
 export function renderToNodeStream(element: LikeJSX, asyncRender: true): Readable;
-export function renderToNodeStream(element: LikeJSX, asyncRender?: boolean) {
+export function renderToNodeStream(element: LikeJSX, asyncRender?: boolean): Readable {
   if (isValidElement(element)) {
     const temp = [];
     (temp as any).destroy = () => {

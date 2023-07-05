@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { STATE_TYPE } from "@my-react/react-shared";
 
-import { runtimeNextWork, runtimeNextWorkAsync } from "../runtimeGenerate";
+import { runtimeNextWork, runtimeNextWorkDev, runtimeNextWorkAsync } from "../runtimeGenerate";
 import { currentRenderDispatch } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -17,7 +17,11 @@ export const performToNextFiberWithSkip = (fiber: MyReactFiberNode, renderDispat
 
     currentRenderDispatch.current = renderDispatch;
 
-    runtimeNextWork(fiber);
+    if (__DEV__) {
+      runtimeNextWorkDev(fiber);
+    } else {
+      runtimeNextWork(fiber);
+    }
 
     currentRenderDispatch.current = null;
 
@@ -51,7 +55,11 @@ export const performToNxtFiberWithTrigger = (fiber: MyReactFiberNode, renderDisp
 
     currentRenderDispatch.current = renderDispatch;
 
-    runtimeNextWork(fiber);
+    if (__DEV__) {
+      runtimeNextWorkDev(fiber);
+    } else {
+      runtimeNextWork(fiber);
+    }
 
     currentRenderDispatch.current = null;
 

@@ -9,6 +9,9 @@ import { CommentEndElement, CommentStartElement, PlainElement, TextElement } fro
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ServerDomDispatch, ServerStaticStreamDispatch, ServerStreamDispatch } from "@my-react-dom-server";
 
+/**
+ * @internal
+ */
 export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatch) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
     if (__DEV__) validDomTag(fiber);
@@ -35,6 +38,9 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatc
   }
 };
 
+/**
+ * @internal
+ */
 export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch | ServerStaticStreamDispatch) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
     const stream = renderDispatch.stream;
@@ -84,6 +90,9 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
   }
 };
 
+/**
+ * @internal
+ */
 export const createCloseTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch | ServerStaticStreamDispatch) => {
   if (fiber.patch & PATCH_TYPE.__create__) {
     const stream = renderDispatch.stream;

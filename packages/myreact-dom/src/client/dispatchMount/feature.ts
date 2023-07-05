@@ -9,6 +9,9 @@ import type { ClientDomDispatch } from "@my-react-dom-client";
 const { currentRenderPlatform } = __my_react_internal__;
 
 // TODO
+/**
+ * @internal
+ */
 export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch, _hydrate?: boolean) => {
   const mountInsertionEffect = (_fiber: MyReactFiberNode) => {
     if (_fiber.child) mountInsertionEffect(_fiber.child);

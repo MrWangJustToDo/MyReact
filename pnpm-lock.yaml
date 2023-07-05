@@ -4199,7 +4199,7 @@ packages:
       shell-quote: 1.8.0
       string-env-interpolation: 1.0.1
       ts-log: 2.2.5
-      tslib: 2.6.0
+      tslib: 2.5.2
       yaml: 1.10.2
       yargs: 17.7.0
     transitivePeerDependencies:
@@ -8261,20 +8261,12 @@ packages:
     dependencies:
       once: 1.4.0
 
-  /enhanced-resolve@5.14.1:
-    resolution: {integrity: sha512-Vklwq2vDKtl0y/vtwjSesgJ5MYS7Etuk5txS8VdKL4AOS1aUlD96zqIfsOSLQsdv3xgMRbtkWM8eG9XDfKUPow==}
-    engines: {node: '>=10.13.0'}
-    dependencies:
-      graceful-fs: 4.2.10
-      tapable: 2.2.1
-
   /enhanced-resolve@5.15.0:
     resolution: {integrity: sha512-LXYT42KJ7lpIKECr2mAXIaMldcNCh/7E0KBKOu4KSfkHmP+mZmSs+8V5gBAqisWBy0OO4W5Oyys0GO1Y8KtdKg==}
     engines: {node: '>=10.13.0'}
     dependencies:
       graceful-fs: 4.2.10
       tapable: 2.2.1
-    dev: true
 
   /entities@3.0.1:
     resolution: {integrity: sha512-WiyBqoomrwMdFG1e0kqvASYfnlb0lp8M5o5Fw2OFq1hNZxxcNk8Ik0Xm7LxzBhuidnZB/UtBqVCgUz3kBOP51Q==}
@@ -8440,7 +8432,7 @@ packages:
       eslint-plugin-import: '*'
     dependencies:
       debug: 4.3.4
-      enhanced-resolve: 5.14.1
+      enhanced-resolve: 5.15.0
       eslint: 8.40.0
       eslint-module-utils: 2.7.4(@typescript-eslint/parser@5.59.5)(eslint-import-resolver-node@0.3.7)(eslint-import-resolver-typescript@3.5.5)(eslint@8.40.0)
       eslint-plugin-import: 2.27.5(@typescript-eslint/parser@5.59.5)(eslint-import-resolver-typescript@3.5.5)(eslint@8.40.0)
@@ -15133,7 +15125,7 @@ packages:
     dev: false
 
   github.com/MrWangJustToDo/project-tool/e7787f489c5d5a0a22debbcc778e2589a7a91339(typescript@4.9.5):
-    resolution: {commit: e7787f489c5d5a0a22debbcc778e2589a7a91339, repo: git+ssh://git@github.com/MrWangJustToDo/project-tool.git, type: git}
+    resolution: {tarball: https://codeload.github.com/MrWangJustToDo/project-tool/tar.gz/e7787f489c5d5a0a22debbcc778e2589a7a91339}
     id: github.com/MrWangJustToDo/project-tool/e7787f489c5d5a0a22debbcc778e2589a7a91339
     name: project-tool
     version: 0.1.9

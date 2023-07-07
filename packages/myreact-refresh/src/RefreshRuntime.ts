@@ -280,6 +280,8 @@ export const performReactRefresh = () => {
 
   let container: null | CustomRenderDispatch = null;
 
+  let hasRootUpdate = false;
+
   allPending.forEach(([family, _nextType]) => {
     const prevType = getRenderTypeFormType(family.current);
 
@@ -300,6 +302,7 @@ export const performReactRefresh = () => {
         const forceReset = !canPreserveStateBetween(prevType, nextType);
 
         fibers.forEach((f) => {
+          hasRootUpdate = hasRootUpdate || f === container.rootFiber;
           typedSelf?.["__@my-react/hmr__"]?.hmr?.(f, nextType, forceReset);
         });
       } else {
@@ -315,13 +318,12 @@ export const performReactRefresh = () => {
     if (container.runtimeFiber.errorCatchFiber) {
       const fiber = container?.runtimeFiber.errorCatchFiber;
 
-      fiber._revert(() => {
-        fiber.memoizedState.revertState = null;
-
-        container.runtimeFiber.errorCatchFiber = null;
-      })
+      fiber._revert();
+    } else if (container.isAppCrashed) {
+      // have a uncaught runtime error for prev render
+      (container as any).remountOnDev?.()
     } else {
-      container.rootFiber._update();
+      container.rootFiber._update(hasRootUpdate ? 32 : 4);
     }
   }
 };
@@ -373,7 +375,7 @@ export const isLikelyComponentType = (type: MyReactElementType) => {
 const tryToRegister = () => {
   if (__DEV__) {
     try {
-      console.log(`[@my-react/react-refresh] dev refresh have been enabled`);
+      console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, 'color: red; font-size: 16px');
 
       typedSelf?.["__@my-react/hmr__"]?.setRefreshHandler?.(resolveFamily as Parameters<typeof setRefreshHandler>[0]);
     } catch {

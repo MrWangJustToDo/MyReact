@@ -9,7 +9,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { currentRunningFiber } = __my_react_internal__;
 
-export const performToNextFiberWithSkip = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const performToNextFiberWithAll = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (fiber.state & STATE_TYPE.__unmount__) return null;
 
   if (fiber.state === STATE_TYPE.__initial__ || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
@@ -85,7 +85,7 @@ export const performToNxtFiberWithTrigger = (fiber: MyReactFiberNode, renderDisp
   return null;
 };
 
-export const performToNextFiberAsyncWithSkip = async (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const performToNextFiberAsyncWithAll = async (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (fiber.state & STATE_TYPE.__unmount__) return null;
 
   if (fiber.state === STATE_TYPE.__initial__ || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {

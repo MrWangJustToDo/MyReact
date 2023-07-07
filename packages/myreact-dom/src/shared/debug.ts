@@ -1,9 +1,10 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { getFiberNodeName, getFiberTree, getRenderFiber, originalError, originalWarn } from "@my-react/react-reconciler";
+import { getFiberNodeName, getFiberTree, getRenderFiber, originalError, originalWarn , MyReactFiberNode } from "@my-react/react-reconciler";
+
+import { ClientDomDispatch } from "@my-react-dom-client";
 
 import type { LogProps } from "@my-react/react";
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client";
+import type { RenderContainer } from "@my-react-dom-client";
 
 const { currentRunningFiber } = __my_react_internal__;
 
@@ -86,3 +87,16 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
   Reflect.defineProperty(renderDispatch, "_dev_shared", { value: __my_react_shared__ });
   Reflect.defineProperty(renderDispatch, "_dev_internal", { value: __my_react_internal__ });
 };
+
+/**
+ * @internal
+ */
+export const checkRehydrate = (container: Partial<RenderContainer>) => {
+  const rootFiber = container.__fiber__;
+
+  const rootContainer = container.__container__;
+
+  if (rootFiber instanceof MyReactFiberNode || rootContainer instanceof ClientDomDispatch) {
+    throw new Error(`[@my-react/react] hydrate error, current container have been hydrated`)
+  }
+}

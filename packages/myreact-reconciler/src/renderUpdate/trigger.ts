@@ -1,12 +1,13 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE } from "@my-react/react-shared";
 
+import { unmountFiber } from "../dispatchUnmount";
 import { fiberToDispatchMap } from "../share";
 
-import { updateConcurrentWithSkip, updateConcurrentWithTrigger, updateSyncWithSkip, updateSyncWithTrigger } from "./feature";
+import { updateConcurrentWithAll, updateConcurrentWithTrigger, updateSyncWithAll, updateSyncWithTrigger } from "./feature";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode, MyReactFiberNodeDev, PendingStateTypeWithError } from "../runtimeFiber";
+import type { MyReactFiberNode, PendingStateTypeWithError } from "../runtimeFiber";
 import type { MyReactComponent } from "@my-react/react";
 
 const { globalLoop, currentRenderPlatform } = __my_react_internal__;
@@ -41,6 +42,35 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
     renderDispatch.runtimeFiber.nextWorkingFiber = null;
 
     renderDispatch.isAppCrashed = true;
+
+    const rootFiber = renderDispatch.rootFiber;
+
+    if (__DEV__) {
+      console.error(`[@my-react/react] a uncaught exception have been throw, all of the App will been unmount, `);
+    }
+
+    unmountFiber(rootFiber);
+  }
+};
+
+export const triggerRevert = (fiber: MyReactFiberNode) => {
+  const renderDispatch = fiberToDispatchMap.get(fiber);
+
+  const errorBoundariesFiber = renderDispatch.runtimeFiber.errorCatchFiber;
+
+  if (errorBoundariesFiber) {
+    const instance = errorBoundariesFiber.instance as MyReactComponent;
+
+    instance?.setState(errorBoundariesFiber.memoizedState?.revertState, () => {
+      renderDispatch.runtimeFiber.errorCatchFiber = null;
+      errorBoundariesFiber.memoizedState.revertState = null;
+    });
+  } else {
+    // there are not a ErrorBoundariesFiber
+    if (__DEV__) {
+      console.warn(`[@my-react/react] there are not a ErrorBoundary Component, fallback to root update`);
+    }
+    renderDispatch.rootFiber._update(STATE_TYPE.__triggerSync__);
   }
 };
 
@@ -60,9 +90,9 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
       renderDispatch.runtimeFiber.nextWorkingFiber = renderDispatch.rootFiber;
 
       if (hasSync) {
-        updateSyncWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
+        updateSyncWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
       } else {
-        updateConcurrentWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
+        updateConcurrentWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
       }
     }
   } else {
@@ -81,11 +111,11 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
         renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
         if (nextWorkFiber.state & STATE_TYPE.__skippedSync__) {
-          updateSyncWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
+          updateSyncWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
         } else if (enableConcurrentMode.current) {
-          updateConcurrentWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
+          updateConcurrentWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
         } else {
-          updateSyncWithSkip(renderDispatch, () => scheduleUpdate(renderDispatch));
+          updateSyncWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
         }
       } else if (nextWorkFiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
@@ -102,21 +132,6 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
       } else {
         // TODO
         throw new Error(`un handler state, ${nextWorkFiber.state}`);
-      }
-
-      if (__DEV__) {
-        const typedFiber = nextWorkFiber as MyReactFiberNodeDev;
-
-        const timeNow = Date.now();
-
-        const prevRenderState = Object.assign({}, typedFiber._debugRenderState);
-
-        typedFiber._debugRenderState = {
-          renderCount: prevRenderState.renderCount + 1,
-          mountTime: prevRenderState.mountTime,
-          prevUpdateTime: prevRenderState.currentUpdateTime,
-          currentUpdateTime: timeNow,
-        };
       }
     } else {
       globalLoop.current = false;
@@ -145,7 +160,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
     return;
   }
 
-  fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : (fiber.state |= state);
+  fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : fiber.state & state ? void 0 : (fiber.state |= state);
 
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 

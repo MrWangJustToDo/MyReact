@@ -44,7 +44,7 @@ export class CanvasBG extends Component {
 
     const nodes = [];
 
-    for (let i = 0; i < 400; i++) {
+    for (let i = 0; i < 300; i++) {
       const r = 1;
       const x = getRandom(0, width);
       const y = getRandom(0, height);

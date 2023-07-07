@@ -18,7 +18,7 @@ const cssRules = ({ env, isDEV }: SafeGenerateActionProps): RuleSetRule => ({
   exclude: /\.module\.s?css$/,
 });
 
-const jsRules = ({ isDEV }: SafeGenerateActionProps): RuleSetRule => {
+const jsRules = ({ env, isDEV }: SafeGenerateActionProps): RuleSetRule => {
   const workerPool = {
     workers: 3,
     poolTimeout: isDEV ? Infinity : 2000,
@@ -41,6 +41,7 @@ const jsRules = ({ isDEV }: SafeGenerateActionProps): RuleSetRule => {
           sourceType: "unambiguous",
           cacheDirectory: true,
           configFile: resolve(process.cwd(), "babel.config.js"),
+          plugins: env === "client" ? [isDEV && (process.env.REACT === "react" ? "react-refresh/babel" : "@my-react/react-refresh/babel")].filter(Boolean) : [],
         },
       },
     ],

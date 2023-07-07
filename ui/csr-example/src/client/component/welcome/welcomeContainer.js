@@ -41,7 +41,7 @@ function LoginContainer() {
 
   return (
     <div className="login relative bg bg-content-bg" ref={ref}>
-      <WelcomeContainerHead title="file-Manager" />
+      <WelcomeContainerHead title="File-Manager" />
       <Switch>
         <Route path="/login">
           <LoginContainerBody />

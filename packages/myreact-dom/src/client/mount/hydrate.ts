@@ -2,7 +2,7 @@ import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client";
-import { checkRoot, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { checkRehydrate, checkRoot, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogPerformanceWarn } from "./render";
 
@@ -76,6 +76,11 @@ export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>, 
 
   if (__DEV__ && enablePerformanceLog.current) {
     onceLogPerformanceWarn();
+  }
+
+  if (__DEV__) {
+    // check rehydrate
+    checkRehydrate(container)
   }
 
   const element = _element as MyReactElement;

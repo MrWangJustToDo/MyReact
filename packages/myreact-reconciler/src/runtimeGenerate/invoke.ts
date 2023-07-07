@@ -3,7 +3,7 @@ import { STATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { isCommentElement } from "../runtimeScope";
-import { currentRenderDispatch, NODE_TYPE, safeCallWithFiber } from "../share";
+import { currentRenderDispatch, debugWithNode, NODE_TYPE, safeCallWithFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
 
@@ -153,29 +153,55 @@ export const runtimeNextWork = (fiber: MyReactFiberNode) => {
 };
 
 export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
-  if (enablePerformanceLog.current) {
-    const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current;
 
-    const renderPlatform = currentRenderPlatform.current;
+  setRefreshTypeMap(fiber);
 
-    const start = Date.now();
+  const renderPlatform = currentRenderPlatform.current;
 
-    const res = runtimeNextWork(fiber);
+  const start = Date.now();
 
-    const end = Date.now();
+  const res = runtimeNextWork(fiber);
 
-    if (end - start > renderDispatch.performanceLogTimeLimit) {
-      renderPlatform?.log({
-        fiber,
-        message: "render current component take a lot of time, there are have a performance warning",
-        level: "warn",
-        triggerOnce: true,
-      });
-    }
+  const end = Date.now();
 
-    return res;
+  if (enablePerformanceLog.current && end - start > renderDispatch.performanceLogTimeLimit) {
+    renderPlatform?.log({
+      fiber,
+      message: "render current component take a lot of time, there are have a performance warning",
+      level: "warn",
+      triggerOnce: true,
+    });
   }
-  return runtimeNextWork(fiber);
+
+  const typedFiber = fiber as MyReactFiberNodeDev;
+
+  const timeNow = end;
+
+  if (typedFiber.state === STATE_TYPE.__initial__) {
+    typedFiber._debugRenderState = {
+      mountTime: timeNow,
+    };
+
+    typedFiber._debugIsMount = true;
+  } else {
+    const prevRenderState = Object.assign({}, typedFiber._debugRenderState);
+
+    const prevRenderTime = prevRenderState.updateTime || prevRenderState.mountTime;
+
+    typedFiber._debugRenderState = {
+      renderCount: (prevRenderState.renderCount || 0) + 1,
+      mountTime: prevRenderState.mountTime,
+      updateTime: timeNow,
+      updateTimeInterval: timeNow - prevRenderTime,
+    };
+  }
+
+  if (typedFiber.type & renderDispatch.runtimeRef.typeForNativeNode) {
+    renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
+  }
+  
+  return res;
 };
 
 export const runtimeNextWorkAsync = async (fiber: MyReactFiberNode) => {

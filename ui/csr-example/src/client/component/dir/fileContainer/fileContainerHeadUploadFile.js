@@ -59,7 +59,7 @@ function FileContainerHeadUpdataFile() {
     <label className="inline-flex-center" htmlFor="upload">
       {msgState && <Link className="none" to={{ pathname: "/msg", state: { background: location } }} ref={link}></Link>}
       <i className="block fas fa-file-upload"></i>
-      上传
+      上传文件
       <input className="fm-header-btnUpload" type="file" id="upload" onChange={updateHandler} ref={ref} disabled={disable} />
     </label>
   );

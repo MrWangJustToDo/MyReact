@@ -8,8 +8,6 @@ import type { MixinMyReactFunctionComponent, MixinMyReactClassComponent } from "
 
 export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionComponent | MixinMyReactClassComponent, forceRefresh?: boolean) => {
   if (__DEV__) {
-    if (fiber.state & STATE_TYPE.__unmount__) return;
-
     const element = createElement(nextType as MixinMyReactFunctionComponent, null);
 
     const { elementType } = getTypeFromElement(element);
@@ -17,6 +15,8 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
     fiber.elementType = elementType;
 
     setRefreshTypeMap(fiber);
+
+    if (fiber.state & STATE_TYPE.__unmount__) return;
 
     if (forceRefresh) {
       const existingHookList = fiber.hookList;
@@ -35,7 +35,13 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
 
       fiber.state = STATE_TYPE.__initial__;
     } else {
-      fiber.state |= STATE_TYPE.__triggerSync__;
+      if (fiber.state === STATE_TYPE.__stable__) {
+        fiber.state = STATE_TYPE.__triggerSync__;
+      } else if (fiber.state & STATE_TYPE.__triggerSync__) {
+        fiber.state = STATE_TYPE.__triggerSync__;
+      } else {
+        fiber.state |= STATE_TYPE.__triggerSync__;
+      }
     }
 
     return fiber;

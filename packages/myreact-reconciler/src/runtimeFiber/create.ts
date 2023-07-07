@@ -1,10 +1,9 @@
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { currentRenderDispatch, debugWithNode, fiberToDispatchMap, setRefreshTypeMap } from "../share";
+import { currentRenderDispatch, fiberToDispatchMap } from "../share";
 
 import { MyReactFiberNode } from "./instance";
 
-import type { MyReactFiberNodeDev } from "./interface";
 import type { MyReactElementNode } from "@my-react/react";
 
 export const createFiberNode = (
@@ -55,27 +54,6 @@ export const createFiberNode = (
 
   if (!(newFiberNode.patch & PATCH_TYPE.__update__)) {
     newFiberNode.memoizedProps = newFiberNode.pendingProps;
-  }
-
-  if (__DEV__) {
-    setRefreshTypeMap(newFiberNode);
-
-    const typedFiber = newFiberNode as MyReactFiberNodeDev;
-
-    const timeNow = Date.now();
-
-    typedFiber._debugRenderState = {
-      renderCount: 1,
-      mountTime: timeNow,
-      prevUpdateTime: 0,
-      currentUpdateTime: timeNow,
-    };
-
-    typedFiber._debugIsMount = true;
-
-    if (typedFiber.type & renderDispatch.runtimeRef.typeForNativeNode) {
-      renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
-    }
   }
 
   return newFiberNode;

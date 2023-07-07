@@ -1,10 +1,10 @@
-import { performToNextFiberWithSkip, performToNxtFiberWithTrigger } from "../renderNextWork";
+import { performToNextFiberWithAll, performToNxtFiberWithTrigger } from "../renderNextWork";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 
-export const updateLoopSyncWithSkip = (renderDispatch: CustomRenderDispatch) => {
+export const updateLoopSyncWithAll = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    const nextFiber = performToNextFiberWithSkip(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
+    const nextFiber = performToNextFiberWithAll(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextFiber;
   }
 };
@@ -16,9 +16,9 @@ export const updateLoopSyncWithTrigger = (renderDispatch: CustomRenderDispatch) 
   }
 };
 
-export const updateLoopConcurrentWithSkip = (renderDispatch: CustomRenderDispatch) => {
+export const updateLoopConcurrentWithAll = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber && !renderDispatch.shouldYield()) {
-    const nextFiber = performToNextFiberWithSkip(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
+    const nextFiber = performToNextFiberWithAll(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextFiber;
   }
 };

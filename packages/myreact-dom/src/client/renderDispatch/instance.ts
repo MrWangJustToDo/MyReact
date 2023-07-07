@@ -1,11 +1,11 @@
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 
-import { append, clearNode, clientDispatchMount, create, position, update } from "@my-react-dom-client";
+import { append, clearNode, clientDispatchMount, create, position, render, update } from "@my-react-dom-client";
 import { asyncUpdateTimeLimit, patchToFiberInitial, patchToFiberUnmount, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
 
 import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
 
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElement, MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
@@ -82,5 +82,17 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
   patchToFiberUnmount(_fiber: MyReactFiberNode) {
     patchToFiberUnmount(_fiber, this);
+  }
+}
+
+if (__DEV__) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ClientDomDispatch.prototype.remountOnDev = function(this: ClientDomDispatch) {
+    const rootNode = this.rootNode;
+
+    const rootElement = this.rootFiber.element as MyReactElement;
+    
+    render(rootElement, rootNode);
   }
 }

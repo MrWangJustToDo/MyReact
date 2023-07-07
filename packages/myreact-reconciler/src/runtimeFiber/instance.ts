@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
-import { triggerError, triggerUpdate } from "../renderUpdate";
+import { triggerError, triggerRevert, triggerUpdate } from "../renderUpdate";
 import { getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type {
@@ -13,7 +13,6 @@ import type {
   RenderFiber,
   RenderHook,
   UpdateQueue,
-  MyReactComponent,
 } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
@@ -150,14 +149,10 @@ export class MyReactFiberNode implements RenderFiber {
 
     triggerError(this, error);
   }
-  _revert(cb?: () => void) {
+  _revert() {
     if (this.state & STATE_TYPE.__unmount__) return;
 
-    if (!(this.type & NODE_TYPE.__class__)) return;
-
-    const instance = this.instance as MyReactComponent;
-
-    instance?.setState(this.memoizedState?.revertState, cb);
+    triggerRevert(this);
   }
 }
 

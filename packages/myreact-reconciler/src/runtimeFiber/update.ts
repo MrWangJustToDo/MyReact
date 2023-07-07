@@ -2,10 +2,9 @@ import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { isNormalEquals, PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { prepareUpdateAllDependence } from "../dispatchContext";
-import { currentRenderDispatch, debugWithNode, NODE_TYPE, setRefreshTypeMap } from "../share";
+import { currentRenderDispatch, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
-import type { MyReactFiberNodeDev } from "./interface";
 import type { MyReactElementNode, memo, MyReactElement } from "@my-react/react";
 
 const { enableLoopFromRoot } = __my_react_shared__;
@@ -88,27 +87,6 @@ export const updateFiberNode = (
 
   if (!(fiber.patch & PATCH_TYPE.__update__)) {
     fiber.memoizedProps = fiber.pendingProps;
-  }
-
-  if (__DEV__) {
-    setRefreshTypeMap(fiber);
-
-    const typedFiber = fiber as MyReactFiberNodeDev;
-
-    const timeNow = Date.now();
-
-    const prevRenderState = Object.assign({}, typedFiber._debugRenderState);
-
-    typedFiber._debugRenderState = {
-      renderCount: prevRenderState.renderCount + 1,
-      mountTime: prevRenderState.mountTime,
-      prevUpdateTime: prevRenderState.currentUpdateTime,
-      currentUpdateTime: timeNow,
-    };
-
-    if (typedFiber.type & renderDispatch.runtimeRef.typeForNativeNode) {
-      renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
-    }
   }
 
   return fiber;

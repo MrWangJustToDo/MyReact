@@ -18,7 +18,7 @@ const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __
  * @internal
  */
 export const onceLog = once(() => {
-  console.log(`you are using @my-react to render this site, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`);
+  console.log(`you are using %c@my-react%c to render this site, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`, 'color: white;background-color: rgba(10, 190, 235, 0.8); border-radius: 2px; padding: 2px 5px', '');
 });
 
 /**
@@ -54,7 +54,16 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
   if (containerFiber instanceof MyReactFiberNode) {
     const renderDispatch = container.__container__;
 
-    renderDispatch.isAppCrashed = false;
+    if (renderDispatch.isAppCrashed || containerFiber.state & STATE_TYPE.__unmount__) {
+      // is there are not a valid render tree, try do the pure rerender
+      container.__fiber__ = null;
+
+      container.__container__ = null;
+
+      render(element, container);
+
+      return;
+    }
 
     if (checkIsSameType(containerFiber, element)) {
       const { pendingProps, ref } = getTypeFromElementNode(element);

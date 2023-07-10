@@ -47,7 +47,7 @@ export const performToNextFiberWithAll = (fiber: MyReactFiberNode, renderDispatc
   return null;
 };
 
-export const performToNxtFiberWithTrigger = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const performToNextFiberWithTrigger = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (fiber.state & STATE_TYPE.__unmount__) return null;
 
   if (fiber.state === STATE_TYPE.__initial__ || fiber.state & (STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {

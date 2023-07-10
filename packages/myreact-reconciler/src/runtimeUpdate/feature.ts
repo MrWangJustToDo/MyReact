@@ -1,4 +1,4 @@
-import { performToNextFiberWithAll, performToNxtFiberWithTrigger } from "../renderNextWork";
+import { performToNextFiberWithAll, performToNextFiberWithTrigger } from "../renderNextWork";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 
@@ -11,7 +11,7 @@ export const updateLoopSyncWithAll = (renderDispatch: CustomRenderDispatch) => {
 
 export const updateLoopSyncWithTrigger = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    const nextFiber = performToNxtFiberWithTrigger(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
+    const nextFiber = performToNextFiberWithTrigger(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextFiber;
   }
 };
@@ -25,7 +25,7 @@ export const updateLoopConcurrentWithAll = (renderDispatch: CustomRenderDispatch
 
 export const updateLoopConcurrentWithTrigger = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber && !renderDispatch.shouldYield()) {
-    const nextFiber = performToNxtFiberWithTrigger(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
+    const nextFiber = performToNextFiberWithTrigger(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextFiber;
   }
 };

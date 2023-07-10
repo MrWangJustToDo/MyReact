@@ -84,26 +84,28 @@ const Page = () => {
 export default Page;
 
 export const getInitialState: GetInitialStateType = async () => {
-  const client = getApolloClient(null, false);
+  if (__CLIENT__) {
+    const client = getApolloClient(null, false);
 
-  await Promise.all([
-    client.query({
-      query: GetViewerDocument,
-      variables: {
-        first: 10,
-      },
-    }),
-    client.query({
-      query: GetBlogListDocument,
-      variables: {
-        ...BASIC_VARIABLE,
-        states: IssueState.Open,
-        first: 15,
-      },
-    }),
-  ]);
-
-  return { props: { ["$$__apollo__$$"]: client.cache.extract() } };
+    await Promise.all([
+      client.query({
+        query: GetViewerDocument,
+        variables: {
+          first: 10,
+        },
+      }),
+      client.query({
+        query: GetBlogListDocument,
+        variables: {
+          ...BASIC_VARIABLE,
+          states: IssueState.Open,
+          first: 15,
+        },
+      }),
+    ]);
+  
+    return { props: { ["$$__apollo__$$"]: client.cache.extract() } };
+  }
 };
 
 export const isStatic = true;

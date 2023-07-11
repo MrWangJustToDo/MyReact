@@ -105,6 +105,8 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
   Array.from(container.children).forEach((n) => n.remove?.());
 
+  container.removeAttribute?.('hydrate');
+
   container.setAttribute?.("render", "@my-react");
 
   container.__fiber__ = fiber;

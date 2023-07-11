@@ -5,15 +5,7 @@ import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue }
 import { triggerError, triggerRevert, triggerUpdate } from "../renderUpdate";
 import { getTypeFromElementNode, NODE_TYPE } from "../share";
 
-import type {
-  MyReactElement,
-  MyReactElementNode,
-  MyReactElementType,
-  MyReactInternalInstance,
-  RenderFiber,
-  RenderHook,
-  UpdateQueue,
-} from "@my-react/react";
+import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
 type NativeNode = Record<string, any>;
@@ -88,6 +80,8 @@ export class MyReactFiberNode implements RenderFiber {
 
   memoizedState: MemoizedStateTypeWithError | MemoizedStateType;
 
+  _revert: () => void;
+
   constructor(element: MyReactElementNode) {
     this._installElement(element);
   }
@@ -149,11 +143,16 @@ export class MyReactFiberNode implements RenderFiber {
 
     triggerError(this, error);
   }
-  _revert() {
+}
+
+if (__DEV__) {
+  MyReactFiberNode.prototype._revert = function () {
     if (this.state & STATE_TYPE.__unmount__) return;
 
-    triggerRevert(this);
-  }
+    if (__DEV__) {
+      triggerRevert(this);
+    }
+  };
 }
 
 export interface MyReactFiberContainer extends MyReactFiberNode {

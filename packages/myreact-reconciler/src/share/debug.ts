@@ -68,11 +68,15 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
 };
 
 const shouldIncludeLog = (fiber: MyReactFiberNode) => {
-  if (typeof fiber.elementType === "function" && !(fiber.type & NODE_TYPE.__forwardRef__)) {
+  if (fiber.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
     return true;
-  } else {
-    return false;
   }
+  return false;
+  // if (typeof fiber.elementType === "function" && !(fiber.type & NODE_TYPE.__forwardRef__)) {
+  //   return true;
+  // } else {
+  //   return false;
+  // }
 };
 
 export const getRenderFiber = (fiber: MyReactFiberNode): MyReactFiberNode | null => {

@@ -45,32 +45,36 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 
     const rootFiber = renderDispatch.rootFiber;
 
-    if (__DEV__) {
-      console.error(`[@my-react/react] a uncaught exception have been throw, all of the App will been unmount, `);
-    }
+    console.error(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
 
     unmountFiber(rootFiber);
   }
 };
 
+/**
+ * only used for dev HMR
+ */
 export const triggerRevert = (fiber: MyReactFiberNode) => {
-  const renderDispatch = fiberToDispatchMap.get(fiber);
+  if (__DEV__) {
+    const renderDispatch = fiberToDispatchMap.get(fiber);
 
-  const errorBoundariesFiber = renderDispatch.runtimeFiber.errorCatchFiber;
+    const errorBoundariesFiber = renderDispatch.runtimeFiber.errorCatchFiber;
 
-  if (errorBoundariesFiber) {
-    const instance = errorBoundariesFiber.instance as MyReactComponent;
+    if (errorBoundariesFiber) {
+      const instance = errorBoundariesFiber.instance as MyReactComponent;
 
-    instance?.setState(errorBoundariesFiber.memoizedState?.revertState, () => {
-      renderDispatch.runtimeFiber.errorCatchFiber = null;
-      errorBoundariesFiber.memoizedState.revertState = null;
-    });
-  } else {
-    // there are not a ErrorBoundariesFiber
-    if (__DEV__) {
-      console.warn(`[@my-react/react] there are not a ErrorBoundary Component, fallback to root update`);
+      instance?.setState(errorBoundariesFiber.memoizedState?.revertState, () => {
+        renderDispatch.runtimeFiber.errorCatchFiber = null;
+        errorBoundariesFiber.memoizedState.revertState = null;
+      });
+    } else {
+      // there are not a ErrorBoundariesFiber
+      console.warn(`[@my-react/react] there are not a ErrorBoundary Component, try to remount current App`);
+
+      renderDispatch.remountOnDev?.();
     }
-    renderDispatch.rootFiber._update(STATE_TYPE.__triggerSync__);
+  } else {
+    console.error(`[@my-react/react] can not call revert on prod mode`);
   }
 };
 

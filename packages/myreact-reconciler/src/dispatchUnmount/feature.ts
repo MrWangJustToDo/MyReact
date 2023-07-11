@@ -22,6 +22,9 @@ export const defaultGenerateUnmountMap = (
 };
 
 export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: CustomRenderDispatch) => {
+  // will happen when app crash
+  list.listToFoot((f) => unmount(f, renderDispatch));
+
   list.listToFoot((f) => f._unmount());
 
   if (list.head.value) renderDispatch.commitClearNode(list.head.value);

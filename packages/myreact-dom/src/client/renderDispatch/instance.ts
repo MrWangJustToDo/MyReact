@@ -86,13 +86,11 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 }
 
 if (__DEV__) {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  ClientDomDispatch.prototype.remountOnDev = function(this: ClientDomDispatch) {
+  ClientDomDispatch.prototype.remountOnDev = function () {
     const rootNode = this.rootNode;
 
     const rootElement = this.rootFiber.element as MyReactElement;
-    
+
     render(rootElement, rootNode);
-  }
+  };
 }

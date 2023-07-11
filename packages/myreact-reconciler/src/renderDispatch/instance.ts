@@ -66,6 +66,8 @@ export class CustomRenderDispatch implements RenderDispatch {
     typedFiber.containerNode = rootNode;
   }
 
+  remountOnDev: () => void;
+
   generateCommitList(_fiber: MyReactFiberNode) {
     if (!_fiber) return;
 

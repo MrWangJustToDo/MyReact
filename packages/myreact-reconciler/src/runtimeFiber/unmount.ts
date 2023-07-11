@@ -19,6 +19,10 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   renderDispatch.runtimeMap.strictMap.delete(fiber);
 
+  renderDispatch.runtimeMap.insertionEffectMap.delete(fiber);
+
+  renderDispatch.runtimeMap.scopeMap.delete(fiber);
+
   renderDispatch.runtimeMap.errorBoundariesMap.delete(fiber);
 
   renderDispatch.runtimeMap.effectMap.delete(fiber);

@@ -1,11 +1,4 @@
-import type {
-  forwardRef,
-  memo,
-  MixinMyReactClassComponent,
-  MixinMyReactFunctionComponent,
-  createRef,
-  MyReactElementType,
-} from "@my-react/react";
+import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, createRef, MyReactElementType } from "@my-react/react";
 import type {
   MyReactFiberNode,
   hmr,
@@ -321,7 +314,7 @@ export const performReactRefresh = () => {
       fiber._revert();
     } else if (container.isAppCrashed) {
       // have a uncaught runtime error for prev render
-      (container as any).remountOnDev?.()
+      container.remountOnDev?.();
     } else {
       container.rootFiber._update(hasRootUpdate ? 32 : 4);
     }
@@ -375,7 +368,7 @@ export const isLikelyComponentType = (type: MyReactElementType) => {
 const tryToRegister = () => {
   if (__DEV__) {
     try {
-      console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, 'color: red; font-size: 16px');
+      console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: red; font-size: 16px");
 
       typedSelf?.["__@my-react/hmr__"]?.setRefreshHandler?.(resolveFamily as Parameters<typeof setRefreshHandler>[0]);
     } catch {

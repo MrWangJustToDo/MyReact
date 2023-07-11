@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { getFiberNodeName, getFiberTree, getRenderFiber, originalError, originalWarn , MyReactFiberNode } from "@my-react/react-reconciler";
+import { getFiberTree, originalError, originalWarn, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client";
 
@@ -49,8 +49,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
     return;
   }
   const currentFiber = fiber || currentRunningFiber.current;
-  const renderFiber = getRenderFiber(currentFiber as MyReactFiberNode);
-  const tree = renderFiber ? getFiberNodeName(renderFiber) : "<unknown />";
+  const tree = getFiberTree(currentFiber as MyReactFiberNode);
   if (triggerOnce) {
     const messageKey = message.toString();
     cache[messageKey] = cache[messageKey] || {};
@@ -62,20 +61,14 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
     originalWarn(
       `[${level}]:`,
       "\n-----------------------------------------\n",
-      `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
-      "\n-----------------------------------------\n",
-      "render by:",
-      tree
+      `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`
     );
   }
   if (level === "error") {
     originalError(
       `[${level}]:`,
       "\n-----------------------------------------\n",
-      `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
-      "\n-----------------------------------------\n",
-      "render by:",
-      tree
+      `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`
     );
   }
 };
@@ -97,6 +90,6 @@ export const checkRehydrate = (container: Partial<RenderContainer>) => {
   const rootContainer = container.__container__;
 
   if (rootFiber instanceof MyReactFiberNode || rootContainer instanceof ClientDomDispatch) {
-    throw new Error(`[@my-react/react] hydrate error, current container have been hydrated`)
+    throw new Error(`[@my-react/react] hydrate error, current container have been hydrated`);
   }
-}
+};

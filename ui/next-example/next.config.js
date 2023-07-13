@@ -1,8 +1,34 @@
+// const moduleAlias = require("module-alias");
+const RefreshWebpackPlugin = require("@my-react/react-refresh-next/RefreshWebpackPlugin");
+
+// moduleAlias.addAlias({
+//   react: "@my-react/react",
+//   "react-dom": "@my-react/react-dom",
+//   "react-dom/client": "@my-react/react-dom/client",
+//   "react-dom/server": "@my-react/react-dom/server",
+//   "react-dom/server.node": "@my-react/react-dom/server.node",
+//   "react-dom/server.browser": "@my-react/react-dom/server.browser",
+// });
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
 
   webpack: (config, options) => {
+    const originalEntry = config.entry;
+
+    config.entry = async () => {
+      const entries = await originalEntry();
+
+      if (entries["main.js"] && !entries["main.js"].includes(require.resolve("@my-react/react-refresh-next/runtime"))) {
+        entries["main.js"].unshift(require.resolve("@my-react/react-refresh-next/runtime"));
+      }
+
+      return entries;
+    };
+
+    config.plugins.push(new RefreshWebpackPlugin());
+
     const { isServer, defaultLoaders } = options;
 
     // Disable package exports field resolution in webpack. It can lead

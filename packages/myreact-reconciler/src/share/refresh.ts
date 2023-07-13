@@ -1,11 +1,11 @@
-import { fiberToDispatchMap } from "./env";
+import { currentRefreshHandler, fiberToDispatchMap } from "./env";
 import { NODE_TYPE } from "./fiberType";
 import { MyWeakMap } from "./map";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType } from "@my-react/react";
 
-type RefreshHandler = (type: MyReactElementType) => { current: MyReactElementType; latest: MyReactElementType };
+export type RefreshHandler = (type: MyReactElementType) => { current: MyReactElementType; latest: MyReactElementType };
 
 let refreshHandler: RefreshHandler | null = null;
 
@@ -13,11 +13,15 @@ let refreshHandler: RefreshHandler | null = null;
 export const typeToFibersMap = new MyWeakMap() as WeakMap<MixinMyReactClassComponent | MixinMyReactFunctionComponent, Set<MyReactFiberNode>>;
 
 export const setRefreshHandler = (handler: RefreshHandler) => {
-  if (refreshHandler) {
-    throw new Error(`[@my-react/react-reconciler] "refreshHandler" can be only set once`);
-  }
+  if (__DEV__) {
+    if (refreshHandler) {
+      throw new Error(`[@my-react/react-reconciler] "refreshHandler" can be only set once`);
+    }
 
-  refreshHandler = handler;
+    currentRefreshHandler.current = handler;
+
+    refreshHandler = handler;
+  }
 };
 
 export const setRefreshTypeMap = (fiber: MyReactFiberNode) => {

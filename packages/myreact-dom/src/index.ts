@@ -5,6 +5,7 @@ import {
   hmr,
   typeToFibersMap,
   setRefreshHandler,
+  currentRefreshHandler,
   getCurrentFibersFromType,
   getCurrentDispatchFromType,
 } from "@my-react/react-reconciler";
@@ -31,6 +32,7 @@ if (__DEV__ && enableHMRForDev.current) {
     typeToFibersMap,
     setRefreshHandler,
     currentComponentFiber,
+    currentRefreshHandler,
     getCurrentFibersFromType,
     getCurrentDispatchFromType,
   };

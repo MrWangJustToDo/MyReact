@@ -608,6 +608,9 @@ importers:
       '@my-react/react-refresh':
         specifier: workspace:*
         version: link:../../packages/myreact-refresh
+      '@my-react/react-refresh-next':
+        specifier: workspace:*
+        version: link:../../packages/myreact-refresh-next
       '@types/node':
         specifier: ^20.3.3
         version: 20.3.3

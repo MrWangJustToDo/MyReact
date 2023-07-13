@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "target": "ES6",
+    "esModuleInterop": true,
+    "moduleResolution": "Node"
+  },
+  "include": ["./src"],
+  "exclude": ["node_modules"]
+}

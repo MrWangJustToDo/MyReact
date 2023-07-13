@@ -1,0 +1,87 @@
+{
+  "name": "@my-react/react-refresh-next",
+  "version": "0.0.1",
+  "description": "An experimental package providing utilities for @my-react Refresh.",
+  "files": [
+    "dist",
+    "loader.js",
+    "runtime.js",
+    "RefreshWebpackPlugin.js"
+  ],
+  "license": "MIT",
+  "exports": {
+    "./loader": "./loader.js",
+    "./runtime": "./runtime.js",
+    "./RefreshWebpackPlugin": "./RefreshWebpackPlugin.js",
+    "./package.json": "./package.json"
+  },
+  "peerDependencies": {
+    "@my-react/react-refresh": "latest",
+    "webpack": "^4 || ^5"
+  },
+  "buildOptions": [
+    {
+      "input": "./src/loader.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/loader.js",
+          "format": "cjs",
+          "multiple": true,
+          "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/loader.js",
+          "format": "esm",
+          "sourcemap": true
+        }
+      ]
+    },
+    {
+      "input": "./src/runtime.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/runtime.js",
+          "format": "cjs",
+          "multiple": true,
+          "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/runtime.js",
+          "format": "esm",
+          "sourcemap": true
+        }
+      ]
+    },
+    {
+      "input": "./src/webpackPlugin.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/webpackPlugin.js",
+          "format": "cjs",
+          "multiple": true,
+          "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/webpackPlugin.js",
+          "format": "esm",
+          "sourcemap": true
+        }
+      ]
+    }
+  ],
+  "peerDependenciesMeta": {
+    "webpack": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@my-react/react-refresh": "latest",
+    "webpack": "^4 || ^5"
+  }
+}

@@ -5,10 +5,12 @@
   "license": "MIT",
   "version": "0.1.0",
   "main": "runtime.js",
+  "types": "runtime.d.ts",
   "files": [
     "dist",
     "babel.js",
-    "runtime.js"
+    "runtime.js",
+    "runtime.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -16,8 +18,14 @@
     "directory": "packages/myreact-refresh"
   },
   "exports": {
-    ".": "./runtime.js",
-    "./runtime": "./runtime.js",
+    ".": {
+      "require": "./runtime.js",
+      "types": "./runtime.d.ts"
+    },
+    "./runtime": {
+      "require": "./runtime.js",
+      "types": "./runtime.d.ts"
+    },
     "./babel": "./babel.js",
     "./package.json": "./package.json"
   },

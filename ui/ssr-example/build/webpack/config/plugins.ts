@@ -1,5 +1,8 @@
+/* eslint-disable import/no-unresolved */
 import LoadablePlugin from "@loadable/webpack-plugin";
-import MyReactRefreshPlugin from "@my-react/react-refresh-webpack";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import RefreshWebpackPlugin from '@my-react/react-refresh-next/RefreshWebpackPlugin';
 import ReactRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 // import ESLintWebpackPlugin from "eslint-webpack-plugin";
 // import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";
@@ -38,7 +41,7 @@ export const pluginsConfig = ({ env, isDEV, isSSR, isCSR, isMIDDLEWARE }: SafeGe
         filename: isDEV ? "[name].css" : "[name]-[contenthash].css",
         chunkFilename: isDEV ? "[name]-[id].css" : "[name]-[id]-[contenthash].css",
       }),
-    env === "client" && isDEV && (process.env.REACT === "react" ? new ReactRefreshPlugin() : new MyReactRefreshPlugin()),
+    env === "client" && isDEV && (process.env.REACT === "react" ? new ReactRefreshPlugin() : new RefreshWebpackPlugin()),
     env === "client" && isDEV && isMIDDLEWARE && new HotModuleReplacementPlugin(),
     env === "server" && isDEV && !isMIDDLEWARE && new HotModuleReplacementPlugin(),
     // env === "client" &&

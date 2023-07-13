@@ -50,6 +50,8 @@ const PureComponent = MyReactPureComponent as typeof MyReactComponent;
 
 const version = __VERSION__;
 
+const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {};
+
 const __my_react_shared__ = {
   enableDebugLog,
   enableSyncFlush,
@@ -118,6 +120,7 @@ export {
   Children,
   __my_react_internal__,
   __my_react_shared__,
+  __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
   version,
 };
 

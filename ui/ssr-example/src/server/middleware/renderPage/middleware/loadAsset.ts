@@ -8,6 +8,7 @@ import {
   mainStylesPath,
   manifestDepsFile,
   manifestStateFile,
+  refreshScriptsPath,
   runtimeScriptsPath,
 } from "@server/util/webpackManifest";
 import { getIsSSR } from "@shared";
@@ -22,12 +23,15 @@ export const loadAsset: Middleware = (next) => async (args) => {
   const assets = {
     stylesPath: [],
     scriptsPath: [],
+    refreshPath: [],
     preloadScriptsPath: [],
   };
 
   const stateFileContent = await getAllStateFileContent(manifestStateFile("client"));
 
   const mainStyles = mainStylesPath(stateFileContent);
+
+  const refreshScripts = refreshScriptsPath(stateFileContent);
 
   const runtimeScripts = runtimeScriptsPath(stateFileContent);
 
@@ -40,6 +44,8 @@ export const loadAsset: Middleware = (next) => async (args) => {
   assets.preloadScriptsPath = allScriptsPath;
 
   assets.scriptsPath = allScriptsPath;
+
+  assets.refreshPath = refreshScripts;
 
   if (isSSR) {
     const { page } = args;

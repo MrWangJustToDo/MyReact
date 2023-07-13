@@ -8,12 +8,13 @@ import { Provider } from "react-redux";
 import { StaticRouter as Router } from "react-router-dom/server";
 
 import { App } from "@client/common/App";
+import { generateScriptElements } from "@server/util/element";
 import { manifestLoadableFile } from "@server/util/loadableManifest";
 import { createEmotionCache, HTML, theme } from "@shared";
 
 import type { SafeAction } from "../compose";
 
-export const targetRender: SafeAction = async ({ req, res, store, lang, env }) => {
+export const targetRender: SafeAction = async ({ req, res, store, lang, env, assets }) => {
   const helmetContext = {};
 
   const emotionCache = createEmotionCache();
@@ -48,6 +49,8 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
 
   const scriptElements = webExtractor.getScriptElements();
 
+  const refreshElements = generateScriptElements(assets.refreshPath);
+
   res.status(200).send(
     "<!doctype html>" +
       renderToString(
@@ -59,6 +62,7 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env }) =
           // emotionChunks={emotionChunks}
           link={linkElements.concat(styleElements)}
           preloadedState={JSON.stringify(store.getState())}
+          refresh={refreshElements}
         >
           {body}
         </HTML>

@@ -14,6 +14,7 @@ export type HTMLProps = {
   link?: ReactElement[];
   script?: ReactElement[];
   preLoad?: ReactElement[];
+  refresh?: ReactElement[];
   emotionChunks?: ReturnType<typeof extractCriticalToChunks>;
   helmetContext?: { helmet?: HelmetServerState };
 };

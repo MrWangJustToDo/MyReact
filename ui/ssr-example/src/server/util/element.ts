@@ -24,9 +24,12 @@ export const generateScriptElements = (paths: GenerateType[]) =>
       ? createElement("script", { key: i, src: s, defer: true })
       : createElement("script", {
           key: i,
+          ...Object.keys(s)
+            .filter((k) => k.startsWith("data-"))
+            .reduce((p, k) => ((p[k] = s[k]), p), {}),
           src: s.path,
           ...Object.keys(s)
-            .filter((k) => k !== "path")
+            .filter((k) => !k.startsWith("data-") && k !== "path")
             .reduce((p, k) => ((p[k] = s[k]), p), {}),
         })
   );

@@ -47,6 +47,9 @@ const mainScriptsPath = (content: Record<string, string>) =>
 
 const runtimeScriptsPath = (content: Record<string, string>) => baseScriptsPath(content, (f) => f.startsWith("runtime"));
 
+const refreshScriptsPath = (content: Record<string, string>) =>
+  baseScriptsPath(content, (f) => f.startsWith("__refresh__")).map((path) => ({ path, "data-refresh": "@my-react/react-refresh" }));
+
 const getDynamicPagePath = (content: Record<string, string[]>, page: string[]) =>
   Object.keys(content)
     .filter((key) => page.some((p) => p === key || p === key.slice(1)))
@@ -64,6 +67,7 @@ export {
   mainScriptsPath,
   mainStylesPath,
   runtimeScriptsPath,
+  refreshScriptsPath,
   manifestDepsFile,
   getDynamicPagePath,
   dynamicPageScriptsPath,

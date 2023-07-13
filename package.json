@@ -10,6 +10,7 @@
   "scripts": {
     "dev:ssr": "cd ./ui/ssr-example && pnpm run dev",
     "dev:csr": "cd ./ui/csr-example && pnpm run dev",
+    "dev:next": "cd ./ui/next-example && pnpm run dev",
     "build:site": "cd ./ui/ssr-example && pnpm run build:static",
     "gen:gql": "graphql-codegen --config site/graphql/codegen.yaml",
     "dev": "ts-node ./scripts/rollupWatch.ts",
@@ -44,7 +45,7 @@
     "@my-react/react-reconciler": "workspace:*",
     "@my-react/react-shared": "workspace:*",
     "@my-react/react-refresh": "workspace:*",
-    "@my-react/react-refresh-webpack": "workspace:*",
+    "@my-react/react-refresh-next": "workspace:*",
     "@swc/core": "^1.3.56",
     "@types/babel__core": "^7.20.1",
     "@types/lodash": "^4.14.195",

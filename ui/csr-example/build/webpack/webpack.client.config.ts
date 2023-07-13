@@ -14,6 +14,10 @@ import type { Configuration } from "webpack";
 export const ClientConfig = (props: SafeGenerateActionProps): Partial<Configuration> => {
   const { isDEV, entry } = props;
 
+  const isMyReact = process.env.REACT === "myreact";
+
+  const arrayEntry = isMyReact ? { __refresh__: require.resolve("@my-react/react-refresh-next/runtime") } : {};
+
   const clientBase = BaseConfig(props);
   const rules = rulesConfig(props);
   const output = outputConfig(props);
@@ -28,6 +32,7 @@ export const ClientConfig = (props: SafeGenerateActionProps): Partial<Configurat
     devtool: isDEV ? "eval-cheap-module-source-map" : "hidden-source-map",
     entry: {
       main: entry,
+      ...(arrayEntry as Record<string, string>),
     },
     output,
     module: {

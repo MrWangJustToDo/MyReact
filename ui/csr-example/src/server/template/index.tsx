@@ -10,6 +10,7 @@ export type HTMLProps = {
   preloadedState?: string;
   link?: ReactElement[];
   script?: ReactElement[];
+  refresh?: ReactElement[];
   preLoad?: ReactElement[];
 };
 

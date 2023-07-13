@@ -13,6 +13,7 @@ type BaseArgs = {
   assets?: {
     stylesPath?: string[] | { path?: string; [p: string]: any }[];
     scriptsPath?: string[] | { path?: string; [p: string]: any }[];
+    refreshPath?: string[] | { path?: string; [p: string]: any }[];
     preloadScriptsPath?: string[] | { path?: string; [p: string]: any }[];
   };
 };

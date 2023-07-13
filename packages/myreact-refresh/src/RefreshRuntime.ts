@@ -377,7 +377,7 @@ const tryToRegister = () => {
   }
 };
 
-export const injectIntoGlobalHook = () => window.addEventListener("load", tryToRegister);
+export const injectIntoGlobalHook = (globalThis: Window) => globalThis.addEventListener("load", tryToRegister);
 
 if (__DEV__) {
   typedSelf["__@my-react/react-refresh__"] = {

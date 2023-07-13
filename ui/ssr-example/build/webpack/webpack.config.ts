@@ -39,15 +39,15 @@ export const config = ({
 
   PROD_PORT = process.env.PROD_PORT || "localhost";
 
-  const externalClientConfig = webpackClient?.({ isCSR, isDEV, isSSR, isMIDDLEWARE, entry: clientEntry });
+  const externalClientConfig = webpackClient?.({ isCSR, isDEV, isSSR, isMIDDLEWARE, entry: clientEntry! });
 
-  const externalServerConfig = webpackServer?.({ isCSR, isDEV, isSSR, isMIDDLEWARE, entry: serverEntry });
+  const externalServerConfig = webpackServer?.({ isCSR, isDEV, isSSR, isMIDDLEWARE, entry: serverEntry! });
 
   return [
     merge(
       ClientConfig({
         env: "client",
-        entry: clientEntry,
+        entry: clientEntry!,
         isDEV,
         isSSR,
         isCSR,
@@ -64,7 +64,7 @@ export const config = ({
     merge(
       ServerConfig({
         env: "server",
-        entry: serverEntry,
+        entry: serverEntry!,
         isDEV,
         isSSR,
         isCSR,

@@ -5,8 +5,9 @@ import type { Express } from "express";
 let handlerRender = generateRender;
 
 const startApp = (app: Express) => {
-  app.use((req, res) => {
-    handlerRender()(req, res);
+  app.use(async (req, res) => {
+    const render = handlerRender();
+    await render(req, res);
   });
 
   if (__DEVELOPMENT__ && module.hot) {

@@ -1,7 +1,7 @@
 import { getIsAnimateRouter, getIsMiddleware, getIsStaticGenerate } from "@shared";
 
 import { composeRender } from "./compose";
-import { generateGlobalEnv, initLang, initStore, loadLang, loadStore } from "./middleware";
+import { generateGlobalEnv, initLang, initStore, loadAsset, loadLang, loadStore } from "./middleware";
 import { webpackRender } from "./render/webpackRender";
 
 export const renderSSR = composeRender(
@@ -17,7 +17,8 @@ export const renderSSR = composeRender(
   initLang,
   initStore,
   loadStore,
-  loadLang
+  loadLang,
+  loadAsset,
 )(async (args) => {
   const targetRender = webpackRender({ mode: "SSR" });
   await targetRender(args);
@@ -36,7 +37,8 @@ export const renderCSR = composeRender(
   initLang,
   initStore,
   loadStore,
-  loadLang
+  loadLang,
+  loadAsset
 )(async (args) => {
   const targetRender = webpackRender({ mode: "CSR" });
   await targetRender(args);
@@ -52,7 +54,8 @@ export const renderP_CSR = composeRender(
     isANIMATE_ROUTER: getIsAnimateRouter(),
     PUBLIC_API_HOST: __DEVELOPMENT__ ? process.env.PUBLIC_DEV_API_HOST : process.env.PUBLIC_PROD_API_HOST,
   }),
-  initLang
+  initLang,
+  loadAsset
 )(async (args) => {
   const targetRender = webpackRender({ mode: "P_CSR" });
   await targetRender(args);
@@ -72,7 +75,8 @@ export const renderStreamSSR = composeRender(
   initLang,
   initStore,
   loadStore,
-  loadLang
+  loadLang,
+  loadAsset
 )(async (args) => {
   const targetRender = webpackRender({ mode: "StreamSSR" });
   await targetRender(args);

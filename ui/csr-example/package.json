@@ -58,7 +58,7 @@
     "@loadable/babel-plugin": "^5.15.3",
     "@loadable/webpack-plugin": "^5.15.2",
     "@my-react/react-refresh": "workspace:*",
-    "@my-react/react-refresh-webpack": "workspace:*",
+    "@my-react/react-refresh-next": "workspace:*",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
     "@types/cookie-parser": "^1.4.3",
     "@types/express": "^4.17.17",

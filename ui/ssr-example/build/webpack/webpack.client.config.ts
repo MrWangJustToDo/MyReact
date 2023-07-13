@@ -16,7 +16,7 @@ export const ClientConfig = (props: SafeGenerateActionProps): Partial<Configurat
 
   const isMyReact = process.env.REACT === "myreact";
 
-  const arrayEntry = isMyReact ? { __refresh__: require.resolve("@my-react/react-refresh-next/runtime") } : {};
+  const arrayEntry = isMyReact && isDEV ? { __refresh__: require.resolve("@my-react/react-refresh-next/runtime") } : {};
 
   const clientBase = BaseConfig(props);
   const rules = rulesConfig(props);

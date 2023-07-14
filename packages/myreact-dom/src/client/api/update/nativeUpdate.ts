@@ -96,6 +96,8 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
               typedDom.setAttributeNS(XML_NS, key, String(newProps[key]));
             } else if (key.startsWith("xlink")) {
               typedDom.setAttributeNS(XLINK_NS, "href", String(newProps[key]));
+            } else {
+              typedDom.setAttribute(key, String(newProps[key]))
             }
             return;
           }

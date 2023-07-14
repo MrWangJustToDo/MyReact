@@ -1,5 +1,5 @@
 // const moduleAlias = require("module-alias");
-const RefreshWebpackPlugin = require("@my-react/react-refresh-next/RefreshWebpackPlugin");
+const RefreshWebpackPlugin = require("@my-react/react-refresh-tools/RefreshWebpackPlugin");
 
 // moduleAlias.addAlias({
 //   react: "@my-react/react",
@@ -20,8 +20,8 @@ const nextConfig = {
     config.entry = async () => {
       const entries = await originalEntry();
 
-      if (entries["main.js"] && !entries["main.js"].includes(require.resolve("@my-react/react-refresh-next/runtime"))) {
-        entries["main.js"].unshift(require.resolve("@my-react/react-refresh-next/runtime"));
+      if (entries["main.js"] && !entries["main.js"].includes(require.resolve("@my-react/react-refresh-tools/runtime"))) {
+        entries["main.js"].unshift(require.resolve("@my-react/react-refresh-tools/runtime"));
       }
 
       return entries;

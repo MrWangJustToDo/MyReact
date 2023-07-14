@@ -368,9 +368,13 @@ export const isLikelyComponentType = (type: MyReactElementType) => {
 const tryToRegister = () => {
   if (__DEV__) {
     try {
-      console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: red; font-size: 16px");
+      if (typeof typedSelf?.["__@my-react/hmr__"]?.setRefreshHandler !== "function") {
+        console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, 'font-size: 14px;');
+      } else {
+        console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;");
 
-      typedSelf?.["__@my-react/hmr__"]?.setRefreshHandler?.(resolveFamily as Parameters<typeof setRefreshHandler>[0]);
+        typedSelf?.["__@my-react/hmr__"]?.setRefreshHandler?.(resolveFamily as Parameters<typeof setRefreshHandler>[0]);
+      }
     } catch {
       void 0;
     }

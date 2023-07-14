@@ -49,14 +49,6 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
 
   hydrateTime: number | null;
 
-  triggerUpdate(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-
-  triggerError(_fiber: MyReactFiberNode, _error: Error): void {
-    throw _error;
-  }
-
   pendingPosition(_fiber: MyReactFiberNode): void {
     void 0;
   }
@@ -128,14 +120,6 @@ export class ServerStaticStreamDispatch extends CustomRenderDispatch {
   renderTime: number | null;
 
   hydrateTime: number | null;
-
-  triggerUpdate(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-
-  triggerError(_fiber: MyReactFiberNode, _error: Error): void {
-    throw _error;
-  }
 
   pendingPosition(_fiber: MyReactFiberNode): void {
     void 0;

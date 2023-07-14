@@ -3,7 +3,7 @@ import { processState } from "../processState";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
-import type { LogProps, RenderHook, RenderPlatform, UpdateQueue } from "@my-react/react";
+import type { LogProps, RenderFiber, RenderHook, RenderPlatform, UpdateQueue } from "@my-react/react";
 import type { ListTreeNode, HOOK_TYPE } from "@my-react/react-shared";
 
 export class CustomRenderPlatform implements RenderPlatform {
@@ -30,5 +30,10 @@ export class CustomRenderPlatform implements RenderPlatform {
   }
   dispatchState(_params: UpdateQueue): void {
     processState(_params);
+  }
+  dispatchError(_params: { fiber?: RenderFiber; error?: Error }): void {
+    const { fiber, error } = _params;
+
+    fiber?._error(error);
   }
 }

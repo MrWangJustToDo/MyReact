@@ -59,9 +59,9 @@ importers:
       '@my-react/react-refresh':
         specifier: workspace:*
         version: link:packages/myreact-refresh
-      '@my-react/react-refresh-next':
+      '@my-react/react-refresh-tools':
         specifier: workspace:*
-        version: link:packages/myreact-refresh-next
+        version: link:packages/myreact-refresh-tools
       '@my-react/react-shared':
         specifier: workspace:*
         version: link:packages/myreact-shared
@@ -106,7 +106,7 @@ importers:
         version: 2.8.8
       project-tool:
         specifier: git+ssh://git@github.com:MrWangJustToDo/project-tool.git
-        version: github.com/MrWangJustToDo/project-tool/e7787f489c5d5a0a22debbcc778e2589a7a91339(typescript@4.9.5)
+        version: github.com/MrWangJustToDo/project-tool/9a7ffe95524f78a17bc1840c84d75e28ed5edbd6(typescript@4.9.5)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -189,7 +189,7 @@ importers:
         specifier: latest
         version: link:../myreact-shared
 
-  packages/myreact-refresh-next:
+  packages/myreact-refresh-tools:
     devDependencies:
       '@my-react/react-refresh':
         specifier: latest
@@ -324,7 +324,7 @@ importers:
         version: 4.17.21
       project-tool:
         specifier: git+ssh://git@github.com:MrWangJustToDo/project-tool.git
-        version: github.com/MrWangJustToDo/project-tool/e7787f489c5d5a0a22debbcc778e2589a7a91339(typescript@4.9.5)
+        version: github.com/MrWangJustToDo/project-tool/9a7ffe95524f78a17bc1840c84d75e28ed5edbd6(typescript@4.9.5)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -343,9 +343,6 @@ importers:
       '@my-react/react-dom':
         specifier: workspace:*
         version: link:../../packages/myreact-dom
-      '@my-react/react-jsx':
-        specifier: workspace:*
-        version: link:../../packages/myreact-jsx
       '@my-react/react-reactive':
         specifier: workspace:*
         version: link:../../packages/myreact-reactivity
@@ -470,9 +467,9 @@ importers:
       '@my-react/react-refresh':
         specifier: workspace:*
         version: link:../../packages/myreact-refresh
-      '@my-react/react-refresh-next':
+      '@my-react/react-refresh-tools':
         specifier: workspace:*
-        version: link:../../packages/myreact-refresh-next
+        version: link:../../packages/myreact-refresh-tools
       '@pmmmwh/react-refresh-webpack-plugin':
         specifier: ^0.5.10
         version: 0.5.10(react-refresh@0.14.0)(webpack-dev-server@4.15.1)(webpack-hot-middleware@2.25.4)(webpack@5.88.1)
@@ -556,7 +553,7 @@ importers:
         version: 2.8.8
       project-tool:
         specifier: git+ssh://git@github.com:MrWangJustToDo/project-tool.git
-        version: github.com/MrWangJustToDo/project-tool/e7787f489c5d5a0a22debbcc778e2589a7a91339(typescript@4.9.5)
+        version: github.com/MrWangJustToDo/project-tool/9a7ffe95524f78a17bc1840c84d75e28ed5edbd6(typescript@4.9.5)
       react-refresh:
         specifier: ^0.14.0
         version: 0.14.0
@@ -608,9 +605,9 @@ importers:
       '@my-react/react-refresh':
         specifier: workspace:*
         version: link:../../packages/myreact-refresh
-      '@my-react/react-refresh-next':
+      '@my-react/react-refresh-tools':
         specifier: workspace:*
-        version: link:../../packages/myreact-refresh-next
+        version: link:../../packages/myreact-refresh-tools
       '@types/node':
         specifier: ^20.3.3
         version: 20.3.3
@@ -680,9 +677,6 @@ importers:
       '@my-react/react-dom':
         specifier: workspace:*
         version: link:../../packages/myreact-dom
-      '@my-react/react-jsx':
-        specifier: workspace:*
-        version: link:../../packages/myreact-jsx
       '@my-react/react-reactive':
         specifier: workspace:*
         version: link:../../packages/myreact-reactivity
@@ -819,9 +813,9 @@ importers:
       '@my-react/react-refresh':
         specifier: workspace:*
         version: link:../../packages/myreact-refresh
-      '@my-react/react-refresh-next':
+      '@my-react/react-refresh-tools':
         specifier: workspace:*
-        version: link:../../packages/myreact-refresh-next
+        version: link:../../packages/myreact-refresh-tools
       '@pmmmwh/react-refresh-webpack-plugin':
         specifier: ^0.5.10
         version: 0.5.10(react-refresh@0.14.0)(webpack-dev-server@4.15.1)(webpack-hot-middleware@2.25.4)(webpack@5.88.1)
@@ -932,7 +926,7 @@ importers:
         version: 2.8.8
       project-tool:
         specifier: git+ssh://git@github.com:MrWangJustToDo/project-tool.git
-        version: github.com/MrWangJustToDo/project-tool/e7787f489c5d5a0a22debbcc778e2589a7a91339(typescript@4.9.5)
+        version: github.com/MrWangJustToDo/project-tool/9a7ffe95524f78a17bc1840c84d75e28ed5edbd6(typescript@4.9.5)
       react-refresh:
         specifier: ^0.14.0
         version: 0.14.0
@@ -15501,11 +15495,11 @@ packages:
     resolution: {integrity: sha512-bIusJLS8c4DkIcdiK+s13HiQ/zjQQVgpNohtd8d94Y2DnJqgM1yjh/jpDb8DoL6hd7r8Awagw8e3qK/oLaWr3g==}
     dev: false
 
-  github.com/MrWangJustToDo/project-tool/e7787f489c5d5a0a22debbcc778e2589a7a91339(typescript@4.9.5):
-    resolution: {tarball: https://codeload.github.com/MrWangJustToDo/project-tool/tar.gz/e7787f489c5d5a0a22debbcc778e2589a7a91339}
-    id: github.com/MrWangJustToDo/project-tool/e7787f489c5d5a0a22debbcc778e2589a7a91339
+  github.com/MrWangJustToDo/project-tool/9a7ffe95524f78a17bc1840c84d75e28ed5edbd6(typescript@4.9.5):
+    resolution: {tarball: https://codeload.github.com/MrWangJustToDo/project-tool/tar.gz/9a7ffe95524f78a17bc1840c84d75e28ed5edbd6}
+    id: github.com/MrWangJustToDo/project-tool/9a7ffe95524f78a17bc1840c84d75e28ed5edbd6
     name: project-tool
-    version: 0.1.9
+    version: 0.2.0
     engines: {node: '>=10'}
     peerDependencies:
       typescript: ^4.7.4

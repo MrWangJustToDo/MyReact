@@ -3,6 +3,8 @@ import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import type { RenderFiber, UpdateQueue } from "@my-react/react";
 
+export type UpdateQueueDev = UpdateQueue<{ _debugCreateTime: number; _debugBeforeValue: any; _debugAfterValue: any; _debugRunTime: number }>;
+
 const { currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
 
 const MAX_UPDATE_COUNT = 25;
@@ -12,6 +14,12 @@ let lastRenderComponentFiber: RenderFiber | null = null;
 let renderCount = 0;
 
 export const processState = (_params: UpdateQueue) => {
+  if (__DEV__) {
+    const typedUpdateQueue = _params as UpdateQueueDev;
+
+    typedUpdateQueue._debugCreateTime = Date.now();
+  }
+
   if (_params.type === "component") {
     const ownerFiber = _params.trigger._ownerFiber;
 
@@ -38,14 +46,6 @@ export const processState = (_params: UpdateQueue) => {
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
 
     ownerFiber.updateQueue.push(_params);
-
-    // if (__DEV__) {
-    //   const typedOwnerFiber = ownerFiber as MyReactFiberNodeDev;
-
-    //   typedOwnerFiber._debugUpdateQueue = typedOwnerFiber._debugUpdateQueue || new ListTree();
-
-    //   typedOwnerFiber._debugUpdateQueue.push(_params);
-    // }
 
     ownerFiber._prepare();
   } else {
@@ -74,14 +74,6 @@ export const processState = (_params: UpdateQueue) => {
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
 
     ownerFiber.updateQueue.push(_params);
-
-    // if (__DEV__) {
-    //   const typedOwnerFiber = ownerFiber as MyReactFiberNodeDev;
-
-    //   typedOwnerFiber._debugUpdateQueue = typedOwnerFiber._debugUpdateQueue || new ListTree();
-
-    //   typedOwnerFiber._debugUpdateQueue.push(_params);
-    // }
 
     ownerFiber._prepare();
   }

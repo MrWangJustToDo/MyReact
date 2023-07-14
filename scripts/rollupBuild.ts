@@ -10,7 +10,7 @@ const start = async () => {
   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external });
   await rollupBuild({ packageName: "myreact-reactivity", packageScope: "packages", external });
   await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external });
-  await rollupBuild({ packageName: "myreact-refresh-next", packageScope: "packages", external });
+  await rollupBuild({ packageName: "myreact-refresh-tools", packageScope: "packages", external });
   await rollupBuild({ packageName: "graphql", packageScope: "site", external });
   process.exit(0);
 };

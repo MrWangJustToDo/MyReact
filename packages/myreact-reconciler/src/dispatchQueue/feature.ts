@@ -1,8 +1,9 @@
-import { STATE_TYPE } from "@my-react/react-shared";
+import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
 
-import type { MyReactFiberNode, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
+import type { UpdateQueueDev } from "../processState";
+import type { MyReactFiberNode, MyReactFiberNodeDev, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
 
@@ -10,6 +11,10 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
   if (fiber.state & STATE_TYPE.__unmount__) return;
 
   const allQueue = fiber.updateQueue;
+
+  const typedFiber = fiber as MyReactFiberNodeDev;
+
+  if (__DEV__) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
   let node = allQueue.head;
 
@@ -37,10 +42,25 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
       allQueue.delete(node);
 
+      // TODO
+      const lastResult = nextState.pendingState || baseState;
+
       nextState.pendingState = Object.assign(
-        nextState.pendingState || baseState,
+        { ...lastResult },
         typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad
       );
+
+      if (__DEV__) {
+        const typedNode = node.value as UpdateQueueDev;
+
+        typedNode._debugRunTime = Date.now();
+
+        typedNode._debugBeforeValue = lastResult;
+
+        typedNode._debugAfterValue = nextState.pendingState;
+
+        typedFiber._debugUpdateQueue.push(typedNode);
+      }
 
       nextState.isForce = nextState.isForce || updater.isForce;
 
@@ -56,6 +76,10 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
   if (fiber.state & STATE_TYPE.__unmount__) return;
 
   const allQueue = fiber.updateQueue;
+
+  const typedFiber = fiber as MyReactFiberNodeDev;
+
+  if (__DEV__) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
   let node = allQueue.head;
 
@@ -78,6 +102,18 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
       const lastResult = typedTrigger.result;
 
       typedTrigger.result = typedTrigger.reducer(lastResult, payLoad);
+
+      if (__DEV__) {
+        const typedNode = node.value as UpdateQueueDev;
+
+        typedNode._debugRunTime = Date.now();
+
+        typedNode._debugBeforeValue = lastResult;
+
+        typedNode._debugAfterValue = typedTrigger.result;
+
+        typedFiber._debugUpdateQueue.push(typedNode);
+      }
 
       if (!Object.is(lastResult, typedTrigger.result)) needUpdate = true;
     }

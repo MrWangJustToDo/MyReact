@@ -34,7 +34,7 @@ const jsRules = ({ env, isDEV }: SafeGenerateActionProps): RuleSetRule => {
         loader: require.resolve("thread-loader"),
         options: workerPool,
       },
-      isDEV && env === "client" && process.env.REACT === "myreact" && require.resolve("@my-react/react-refresh-next/loader"),
+      isDEV && env === "client" && process.env.REACT === "myreact" && require.resolve("@my-react/react-refresh-tools/loader"),
       {
         loader: "babel-loader",
         options: {

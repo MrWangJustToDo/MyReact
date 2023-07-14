@@ -26,6 +26,8 @@ interface DefaultRenderPlatform {
   dispatchHook(_params: RenderHookParams): unknown;
 
   dispatchState(_params: UpdateQueue): void;
+
+  dispatchError(_params: { fiber?: RenderFiber; error?: Error }): void;
 }
 
 export type RenderPlatform<T = Record<string, any>> = DefaultRenderPlatform & T;

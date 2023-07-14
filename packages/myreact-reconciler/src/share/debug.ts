@@ -92,13 +92,13 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     if (typeof targetRender === "function") {
       name = targetRender?.displayName || targetRender?.name || name;
     }
-    return name ? `<Memo - (${name}) />` : `<Memo />`;
+    return `<${name ? name : 'anonymous'} - (memo) />`
   }
   if (fiber.type & NODE_TYPE.__lazy__) {
     const typedElementType = fiber.elementType as ReturnType<typeof lazy>;
     const typedRender = typedElementType?.render;
     const name = typedRender?.displayName || typedRender?.name || "";
-    return name ? `<Lazy - (${name}) />` : `<Lazy />`;
+    return `<${name ? name : 'anonymous'} - (lazy) />`
   }
   if (fiber.type & NODE_TYPE.__portal__) return `<Portal />`;
   if (fiber.type & NODE_TYPE.__null__) return `<Null />`;
@@ -118,7 +118,7 @@ export const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__forwardRef__) {
     const targetRender = fiber.elementType as MixinMyReactFunctionComponent;
     const name = targetRender?.displayName || targetRender?.name || "";
-    return name ? `<ForwardRef - (${name}) />` : `<ForwardRef />`;
+    return `<${name ? name : 'anonymous'} - (forwardRef) />`
   }
   if (typeof fiber.elementType === "string") return `<${fiber.elementType} />`;
   if (typeof fiber.elementType === "function") {

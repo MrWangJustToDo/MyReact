@@ -21,7 +21,8 @@ export const removeEventListener = (fiber: MyReactFiberNode, renderDispatch: Cli
   if (enableEventSystem.current) {
     const eventMap = renderDispatch.runtimeMap.eventMap;
 
-    const eventState = eventMap.get(fiber);
+    // TODO
+    const eventState = eventMap.get(fiber) || {};
 
     const eventName = `${nativeName}_${isCapture}`;
 

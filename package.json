@@ -45,7 +45,7 @@
     "@my-react/react-reconciler": "workspace:*",
     "@my-react/react-shared": "workspace:*",
     "@my-react/react-refresh": "workspace:*",
-    "@my-react/react-refresh-next": "workspace:*",
+    "@my-react/react-refresh-tools": "workspace:*",
     "@swc/core": "^1.3.56",
     "@types/babel__core": "^7.20.1",
     "@types/lodash": "^4.14.195",

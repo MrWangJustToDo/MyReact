@@ -14,7 +14,7 @@ const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 
 const { enableConcurrentMode, enableLoopFromRoot } = __my_react_shared__;
 
-export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
+export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => void) => {
   const renderDispatch = fiberToDispatchMap.get(fiber);
 
   const renderPlatform = currentRenderPlatform.current;
@@ -33,7 +33,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
       revertState: Object.assign({}, typedInstance.state),
     };
 
-    triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__);
+    triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__, cb);
   } else {
     renderDispatch.pendingUpdateFiberArray.clear();
 
@@ -45,9 +45,9 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error) => {
 
     const rootFiber = renderDispatch.rootFiber;
 
-    console.error(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
-
     unmountFiber(rootFiber);
+
+    console.error(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
   }
 };
 
@@ -149,7 +149,7 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   }
 };
 
-export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
+export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE, cb?: () => void) => {
   const renderPlatform = currentRenderPlatform.current;
 
   const renderDispatch = fiberToDispatchMap.get(fiber);
@@ -159,7 +159,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
   if (!renderDispatch.isAppMounted) {
     if (__DEV__) console.log("pending, can not update component");
 
-    renderPlatform.macroTask(() => triggerUpdate(fiber, state));
+    renderPlatform.macroTask(() => triggerUpdate(fiber, state, cb));
 
     return;
   }
@@ -167,6 +167,8 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE) => {
   fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : fiber.state & state ? void 0 : (fiber.state |= state);
 
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
+
+  cb && renderDispatch.pendingEffect(fiber, cb);
 
   if (globalLoop.current) return;
 

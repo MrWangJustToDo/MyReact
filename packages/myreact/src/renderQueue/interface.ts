@@ -17,4 +17,4 @@ export type HookUpdateQueue = {
   callback?: () => void;
 };
 
-export type UpdateQueue = ComponentUpdateQueue | HookUpdateQueue;
+export type UpdateQueue<T = Record<string, any>> = (ComponentUpdateQueue | HookUpdateQueue) & T;

@@ -1,5 +1,5 @@
 import LoadablePlugin from "@loadable/webpack-plugin";
-import RefreshWebpackPlugin from '@my-react/react-refresh-next/RefreshWebpackPlugin';
+import RefreshWebpackPlugin from '@my-react/react-refresh-tools/RefreshWebpackPlugin';
 import ReactRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import ESLintWebpackPlugin from "eslint-webpack-plugin";
 import ForkTsCheckerWebpackPlugin from "fork-ts-checker-webpack-plugin";

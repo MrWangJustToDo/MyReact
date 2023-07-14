@@ -12,7 +12,7 @@
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "@my-react/react-refresh": "workspace:*",
-    "@my-react/react-refresh-next": "workspace:*",
+    "@my-react/react-refresh-tools": "workspace:*",
     "@types/node": "^20.3.3",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",

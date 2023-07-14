@@ -1,8 +1,8 @@
-import { CustomRenderPlatform, getFiberTree, getHookTree } from "@my-react/react-reconciler";
+import { CustomRenderPlatform, getFiberTree, getHookTree, triggerError } from "@my-react/react-reconciler";
 
 import { log } from "@my-react-dom-shared";
 
-import type { LogProps } from "@my-react/react";
+import type { LogProps, RenderFiber } from "@my-react/react";
 import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react-reconciler";
 import type { ListTreeNode } from "@my-react/react-shared";
 
@@ -50,6 +50,7 @@ const flashTask = () => {
 
 const isServer = typeof window === "undefined";
 
+// TODO server/client side platform
 class DomPlatform extends CustomRenderPlatform {
   log(props: LogProps): void {
     log(props);
@@ -72,6 +73,18 @@ class DomPlatform extends CustomRenderPlatform {
   }
   getHookTree(treeHookNode: ListTreeNode<MyReactHookNode>, errorType: { lastRender: MyReactHookNode["type"]; nextRender: MyReactHookNode["type"] }): string {
     return getHookTree(treeHookNode, errorType);
+  }
+  dispatchError(_params: { fiber?: RenderFiber; error?: Error }): void {
+    if (isServer) {
+      throw _params.error;
+    } else {
+      triggerError(_params.fiber as MyReactFiberNode, _params.error, () => {
+        // 更新结束后触发error事件
+        this.yieldTask(() => {
+          window.dispatchEvent(new ErrorEvent("error", { error: _params.error, message: _params.error?.message }));
+        })
+      });
+    }
   }
 }
 

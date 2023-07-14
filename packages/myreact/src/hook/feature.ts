@@ -261,18 +261,17 @@ export const useTransition = (): [boolean, (cb: () => void) => void] => {
       `current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  const isPending = useRef(false);
+  const [pending, setPending] = useState(false);
 
   const startTransition = useCallback((cb: () => void) => {
+    setPending(true);
     renderPlatform.yieldTask(() => {
-      isPending.current = true;
       cb();
+      renderPlatform.yieldTask(() => {
+        setPending(false);
+      });
     });
   }, []);
-
-  useEffect(() => {
-    isPending.current = false;
-  });
 
   // return renderPlatform.dispatchHook({
   //   type: HOOK_TYPE.useTransition,
@@ -281,5 +280,5 @@ export const useTransition = (): [boolean, (cb: () => void) => void] => {
   //   deps: defaultDeps,
   // }) as [boolean, (cb: () => void) => void];
 
-  return [isPending.current, startTransition];
+  return [pending, startTransition];
 };

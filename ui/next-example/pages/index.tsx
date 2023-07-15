@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 
 
 export default function Home() {
@@ -40,6 +41,9 @@ export default function Home() {
           height={37}
           priority
         />
+      </div>
+      <div className='border border-[gray] px-2 py-1 rounded-lg underline underline-offset-4 text-[18px] text-[green] cursor-pointer relative z-20' title='Go to Foo Page'>
+        <Link href='/Foo'>Goto Foo Page</Link>
       </div>
 
       <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">

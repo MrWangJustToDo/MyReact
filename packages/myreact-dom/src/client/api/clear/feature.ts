@@ -7,7 +7,7 @@ const clearFiberDom = (fiber: MyReactFiberNode) => {
   if (fiber.nativeNode) {
     const dom = fiber.nativeNode as DomNode;
 
-    dom.parentElement?.removeChild(dom);
+    dom.parentNode?.removeChild(dom);
   } else {
     let child = fiber.child;
     while (child) {

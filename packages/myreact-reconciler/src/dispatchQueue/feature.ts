@@ -46,7 +46,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
       const lastResult = nextState.pendingState || baseState;
 
       nextState.pendingState = Object.assign(
-        { ...lastResult },
+        {},
+        lastResult,
         typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad
       );
 

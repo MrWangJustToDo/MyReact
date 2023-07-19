@@ -50,12 +50,14 @@ export class ClientDomDispatch extends CustomRenderDispatch {
       if (_fiber.type & this.runtimeRef.typeForRef) {
         _fiber.patch |= PATCH_TYPE.__ref__;
       } else {
-        log({
-          fiber: _fiber,
-          message: `can not set 'ref' for current component, 'ref' can only set for nativeNode or class component`,
-          level: "warn",
-          triggerOnce: true,
-        });
+        if (__DEV__ && !(_fiber.type & NODE_TYPE.__forwardRef__)) {
+          log({
+            fiber: _fiber,
+            message: `can not set 'ref' for current component ${_fiber.elementType?.toString()}, 'ref' can only set for nativeNode or class component`,
+            level: "warn",
+            triggerOnce: true,
+          });
+        }
       }
     }
   }

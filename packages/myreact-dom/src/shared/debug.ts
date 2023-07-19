@@ -58,10 +58,10 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
   }
   // look like a ts bug
   if (level === "warn") {
-    originalWarn(`${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`);
+    originalWarn(`[@my-react/react-dom] ${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`);
   }
   if (level === "error") {
-    originalError(`${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`);
+    originalError(`[@my-react/react-dom] ${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`);
   }
 };
 

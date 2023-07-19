@@ -369,7 +369,7 @@ const tryToRegister = () => {
   if (__DEV__) {
     try {
       if (typeof typedSelf?.["__@my-react/hmr__"]?.setRefreshHandler !== "function") {
-        console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, 'font-size: 14px;');
+        console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;");
       } else {
         console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;");
 

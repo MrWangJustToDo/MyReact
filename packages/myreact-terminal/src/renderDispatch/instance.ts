@@ -1,6 +1,7 @@
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 
 import { append, create, position, update } from "../api";
+import { patchToFiberInitial, patchToFiberUnmount } from "../shared";
 
 import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -43,25 +44,22 @@ export class TerminalDispatch extends CustomRenderDispatch {
   // commitUnsetRef(_fiber: MyReactFiberNode): void {
   //   unsetRef(_fiber);
   // }
-  // commitClearNode(_fiber: MyReactFiberNode): void {
-  //   clearNode(_fiber);
-  // }
+  commitClearNode(_fiber: MyReactFiberNode): void {
+    // clearNode(_fiber);
+  }
   resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
     throw new Error("terminal platform not support lazy component");
   }
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
     throw new Error("terminal platform not support lazy component");
   }
-  // reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
-  //   return clientDispatchMount(_fiber, this, _hydrate);
-  // }
-  // shouldYield(): boolean {
-  //   return shouldPauseAsyncUpdate();
-  // }
-  // patchToFiberInitial(_fiber: MyReactFiberNode) {
-  //   patchToFiberInitial(_fiber, this);
-  // }
-  // patchToFiberUnmount(_fiber: MyReactFiberNode) {
-  //   patchToFiberUnmount(_fiber, this);
-  // }
+  shouldYield(): boolean {
+    return false;
+  }
+  patchToFiberInitial(_fiber: MyReactFiberNode) {
+    patchToFiberInitial(_fiber, this);
+  }
+  patchToFiberUnmount(_fiber: MyReactFiberNode) {
+    patchToFiberUnmount(_fiber, this);
+  }
 }

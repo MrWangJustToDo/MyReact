@@ -6,12 +6,14 @@
     "dist",
     "loader.js",
     "runtime.js",
+    "withNext.js",
     "RefreshWebpackPlugin.js"
   ],
   "license": "MIT",
   "exports": {
     "./loader": "./loader.js",
     "./runtime": "./runtime.js",
+    "./withNext": "./withNext.js",
     "./RefreshWebpackPlugin": "./RefreshWebpackPlugin.js",
     "./package.json": "./package.json"
   },

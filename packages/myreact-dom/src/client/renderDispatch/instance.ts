@@ -1,7 +1,8 @@
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
+import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { append, clearNode, clientDispatchMount, create, position, render, update } from "@my-react-dom-client";
-import { asyncUpdateTimeLimit, patchToFiberInitial, patchToFiberUnmount, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
+import { asyncUpdateTimeLimit, log, patchToFiberInitial, patchToFiberUnmount, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
 
 import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
 
@@ -43,6 +44,21 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   hydrateTime: number | null;
 
   performanceLogTimeLimit = asyncUpdateTimeLimit.current;
+
+  pendingRef(_fiber: MyReactFiberNode): void {
+    if (_fiber.ref) {
+      if (_fiber.type & this.runtimeRef.typeForRef) {
+        _fiber.patch |= PATCH_TYPE.__ref__;
+      } else {
+        log({
+          fiber: _fiber,
+          message: `can not set 'ref' for current component, 'ref' can only set for nativeNode or class component`,
+          level: "warn",
+          triggerOnce: true,
+        });
+      }
+    }
+  }
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(_fiber, this, !!_hydrate);

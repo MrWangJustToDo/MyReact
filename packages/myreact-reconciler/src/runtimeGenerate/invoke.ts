@@ -168,7 +168,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   if (enablePerformanceLog.current && end - start > renderDispatch.performanceLogTimeLimit) {
     renderPlatform?.log({
       fiber,
-      message: "render current component take a lot of time, there are have a performance warning",
+      message: "render current component take a lot of time, there have a performance warning",
       level: "warn",
       triggerOnce: true,
     });

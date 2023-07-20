@@ -759,8 +759,8 @@ importers:
         specifier: ^6.10.0
         version: 6.10.0(react-dom@18.2.0)(react@18.2.0)
       reactivity-store:
-        specifier: ^0.1.5
-        version: 0.1.5(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^0.1.7
+        version: 0.1.7(react-dom@18.2.0)(react@18.2.0)
       redux:
         specifier: ^4.2.1
         version: 4.2.1
@@ -13046,8 +13046,8 @@ packages:
     dependencies:
       loose-envify: 1.4.0
 
-  /reactivity-store@0.1.5(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-Wcs96iGVN+tVI6ZtvCueYtczdA6xHNqkOnuHpfsghj27qlzgBGwZq5xDnP7rq0wzLQGTmcmuM6fOJjQKl6X86w==}
+  /reactivity-store@0.1.7(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-ULDyAjTi0TzF5Ix/EY5r8JlR1YGqz+qQG/PZZVqZljVESBrRo7dts4kJxJ+TDXtpuQ/Qxs/XCTWmm0bJ1GHT4w==}
     peerDependencies:
       react: ^17.0.2 || ^18.2.0
       react-dom: ^17.0.2 || ^18.2.0
@@ -15496,7 +15496,7 @@ packages:
     dev: false
 
   github.com/MrWangJustToDo/project-tool/9a7ffe95524f78a17bc1840c84d75e28ed5edbd6(typescript@4.9.5):
-    resolution: {tarball: https://codeload.github.com/MrWangJustToDo/project-tool/tar.gz/9a7ffe95524f78a17bc1840c84d75e28ed5edbd6}
+    resolution: {commit: 9a7ffe95524f78a17bc1840c84d75e28ed5edbd6, repo: git+ssh://git@github.com/MrWangJustToDo/project-tool.git, type: git}
     id: github.com/MrWangJustToDo/project-tool/9a7ffe95524f78a17bc1840c84d75e28ed5edbd6
     name: project-tool
     version: 0.2.0

@@ -25,7 +25,7 @@ const App = () => {
   const [state, add, del] = useCount();
 
   return <div>
-    <p>{state}</p>;
+    <p>{state}</p>
     <button onClick={add}>add</button>
     <button onClick={del}>del</button>
   </div>

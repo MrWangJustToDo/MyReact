@@ -44,17 +44,14 @@ export class TerminalDispatch extends CustomRenderDispatch {
   // commitUnsetRef(_fiber: MyReactFiberNode): void {
   //   unsetRef(_fiber);
   // }
-  commitClearNode(_fiber: MyReactFiberNode): void {
-    // clearNode(_fiber);
-  }
+  // commitClearNode(_fiber: MyReactFiberNode): void {
+  //   clearNode(_fiber);
+  // }
   resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
     throw new Error("terminal platform not support lazy component");
   }
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
     throw new Error("terminal platform not support lazy component");
-  }
-  shouldYield(): boolean {
-    return false;
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     patchToFiberInitial(_fiber, this);

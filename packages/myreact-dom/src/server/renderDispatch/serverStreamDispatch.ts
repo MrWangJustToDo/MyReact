@@ -100,6 +100,9 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
   }
 }
 
+/**
+ * @internal
+ */
 export class ServerStaticStreamDispatch extends CustomRenderDispatch {
   runtimeDom = {
     elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),

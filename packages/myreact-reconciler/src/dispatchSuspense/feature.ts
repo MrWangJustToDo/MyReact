@@ -8,7 +8,9 @@ export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: WeakMap
 
   if (parent) {
     if (parent.type & NODE_TYPE.__suspense__) {
-      const fallback = parent.pendingProps["fallback"] as MyReactElementNode;
+      let fallback = parent.pendingProps["fallback"] as MyReactElementNode;
+
+      fallback = fallback || map.get(parent);
 
       map.set(fiber, fallback);
     } else {

@@ -48,6 +48,10 @@ module.exports = function withNext(nextConfig = {}) {
         }
       }
 
+      if (typeof nextConfig.webpack === 'function') {
+        config = nextConfig.webpack(config, options);
+      }
+
       // Install webpack aliases:
       const aliases = config.resolve.alias || (config.resolve.alias = {});
       aliases.react = "@my-react/react";

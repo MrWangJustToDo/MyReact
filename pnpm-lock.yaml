@@ -178,16 +178,13 @@ importers:
         version: link:../myreact-shared
 
   packages/myreact-refresh:
-    dependencies:
+    devDependencies:
       '@my-react/react':
         specifier: latest
         version: link:../myreact
-      '@my-react/react-reconciler':
+      '@my-react/react-dom':
         specifier: latest
-        version: link:../myreact-reconciler
-      '@my-react/react-shared':
-        specifier: latest
-        version: link:../myreact-shared
+        version: link:../myreact-dom
 
   packages/myreact-refresh-tools:
     devDependencies:

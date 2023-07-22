@@ -30,7 +30,7 @@ export const checkValidKey = (children: ArrayMyReactElementNode) => {
 
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
 
-  if (validElement.length > 1) {
+  if (validElement.length > 0) {
     validElement.forEach((c) => {
       if (!c._store["validKey"]) {
         if (typeof c.key === "string") {

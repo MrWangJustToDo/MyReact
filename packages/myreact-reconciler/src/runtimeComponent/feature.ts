@@ -242,6 +242,18 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
       });
     }
   }
+
+  if (typedInstance.componentWillMount) {
+    typedInstance.componentWillMount?.();
+    if (__DEV__) {
+      renderPlatform.log({
+        message: "should not invoke legacy lifeCycle function `componentWillMount`",
+        fiber,
+        level: "warn",
+        triggerOnce: true,
+      });
+    }
+  }
 };
 
 const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
@@ -263,6 +275,19 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
         });
       }
     }
+
+    if (typedInstance.componentWillReceiveProps) {
+      const nextProps = Object.assign({}, fiber.pendingProps);
+      typedInstance.componentWillReceiveProps?.(nextProps);
+      if (__DEV__) {
+        renderPlatform.log({
+          message: "should not invoke legacy lifeCycle function `componentWillReceiveProps`",
+          fiber,
+          level: "warn",
+          triggerOnce: true,
+        });
+      }
+    }
   }
 };
 
@@ -272,10 +297,21 @@ const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextSt
   const renderPlatform = currentRenderPlatform.current;
 
   if (typedInstance.UNSAFE_componentWillUpdate) {
-    typedInstance.UNSAFE_componentWillUpdate(nextProps, nextState);
+    typedInstance.UNSAFE_componentWillUpdate?.(nextProps, nextState);
     if (__DEV__) {
       renderPlatform.log({
         message: "should not invoke legacy lifeCycle function `UNSAFE_componentWillUpdate`",
+        fiber,
+        level: "warn",
+        triggerOnce: true,
+      });
+    }
+  }
+
+  if (typedInstance.componentWillUpdate) {
+    if (__DEV__) {
+      renderPlatform.log({
+        message: "should not invoke legacy lifeCycle function `componentWillUpdate`",
         fiber,
         level: "warn",
         triggerOnce: true,

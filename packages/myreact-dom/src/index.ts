@@ -1,14 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import {
-  safeCall,
-  safeCallWithSync,
-  hmr,
-  typeToFibersMap,
-  setRefreshHandler,
-  currentRefreshHandler,
-  getCurrentFibersFromType,
-  getCurrentDispatchFromType,
-} from "@my-react/react-reconciler";
+import { initHMR, safeCall, safeCallWithSync } from "@my-react/react-reconciler";
 
 import { render, hydrate, hydrateRoot, createRoot } from "./client";
 import { renderToString, renderToNodeStream, renderToStaticMarkup, renderToStaticNodeStream } from "./server";
@@ -22,20 +13,14 @@ const unstable_batchedUpdates = safeCall;
 
 const { enableHMRForDev } = __my_react_shared__;
 
-const { setRenderPlatform, currentComponentFiber } = __my_react_internal__;
+const { initRenderPlatform } = __my_react_internal__;
 
-setRenderPlatform(MyReactDomPlatform);
+initRenderPlatform(MyReactDomPlatform);
 
 if (__DEV__ && enableHMRForDev.current) {
-  globalThis["__@my-react/hmr__"] = {
-    hmr,
-    typeToFibersMap,
-    setRefreshHandler,
-    currentComponentFiber,
-    currentRefreshHandler,
-    getCurrentFibersFromType,
-    getCurrentDispatchFromType,
-  };
+  globalThis["__@my-react/hmr__"] = {};
+
+  initHMR(globalThis["__@my-react/hmr__"]);
 }
 
 const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {};

@@ -56,7 +56,7 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
     let _final = _hydrate;
 
     if (_fiber.nativeNode) {
-      _dispatch.previousNativeNode = null;
+      _dispatch._previousNativeNode = null;
     }
 
     if (_fiber.child) _final = mountCommit(_fiber.child, _result);
@@ -65,9 +65,9 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
 
     if (_fiber.nativeNode) {
       // current child have loop done, so it is safe to fallback here
-      fallback(_dispatch.previousNativeNode?.nextSibling);
+      fallback(_dispatch._previousNativeNode?.nextSibling);
 
-      _dispatch.previousNativeNode = _fiber.nativeNode as ChildNode;
+      _dispatch._previousNativeNode = _fiber.nativeNode as ChildNode;
     }
 
     if (_fiber.sibling) {
@@ -86,7 +86,7 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
 
     const re = mountCommit(_fiber, _hydrate);
 
-    delete _dispatch.previousNativeNode;
+    delete _dispatch._previousNativeNode;
 
     mountLayoutEffect(_fiber);
 

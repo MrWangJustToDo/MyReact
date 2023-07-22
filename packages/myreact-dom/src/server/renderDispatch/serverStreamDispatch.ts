@@ -37,7 +37,7 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
 
   stream: SimpleReadable;
 
-  lastIsStringNode: boolean;
+  _lastIsStringNode: boolean;
 
   isHydrateRender: boolean;
 
@@ -112,7 +112,7 @@ export class ServerStaticStreamDispatch extends CustomRenderDispatch {
 
   stream: SimpleReadable;
 
-  lastIsStringNode: boolean;
+  _lastIsStringNode: boolean;
 
   isHydrateRender: boolean;
 

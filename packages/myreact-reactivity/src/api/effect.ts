@@ -45,8 +45,6 @@ export class ReactiveEffect<T = any> {
 
     try {
       re = this._action();
-    } catch (e) {
-      console.error(e);
     } finally {
       this.exitScope();
     }

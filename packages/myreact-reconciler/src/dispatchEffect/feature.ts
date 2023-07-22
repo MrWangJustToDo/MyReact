@@ -54,3 +54,29 @@ export const insertionEffect = (fiber: MyReactFiberNode, renderDispatch: CustomR
     if (fiber.patch & PATCH_TYPE.__insertionEffect__) fiber.patch ^= PATCH_TYPE.__insertionEffect__;
   }
 };
+
+export const deleteEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+  if (fiber.patch & PATCH_TYPE.__insertionEffect__) {
+    const insertionEffectMap = renderDispatch.runtimeMap.insertionEffectMap;
+
+    insertionEffectMap.delete(fiber);
+
+    if (fiber.patch & PATCH_TYPE.__insertionEffect__) fiber.patch ^= PATCH_TYPE.__insertionEffect__;
+  }
+
+  if (fiber.patch & PATCH_TYPE.__layoutEffect__) {
+    const layoutEffectMap = renderDispatch.runtimeMap.layoutEffectMap;
+
+    layoutEffectMap.delete(fiber);
+
+    if (fiber.patch & PATCH_TYPE.__layoutEffect__) fiber.patch ^= PATCH_TYPE.__layoutEffect__;
+  }
+
+  if (fiber.patch & PATCH_TYPE.__effect__) {
+    const effectMap = renderDispatch.runtimeMap.effectMap;
+
+    effectMap.delete(fiber);
+
+    if (fiber.patch & PATCH_TYPE.__effect__) fiber.patch ^= PATCH_TYPE.__effect__;
+  }
+};

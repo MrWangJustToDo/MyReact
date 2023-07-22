@@ -22,6 +22,8 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugIsMount: boolean;
 
+  _debugIdTree: { initial: number; latest: number };
+
   _debugScope: MyReactFiberNode;
 
   _debugEventMap: Record<string, ((...args: any[]) => void) & { cb?: any[] }>;

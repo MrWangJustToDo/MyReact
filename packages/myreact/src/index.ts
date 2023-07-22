@@ -2,7 +2,7 @@ import { Strict as StrictMode, Fragment, Suspense, Profiler } from "@my-react/re
 
 import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
-import { createElement, cloneElement, isValidElement, forwardRef, createContext, memo, lazy } from "./element";
+import { createElement, cloneElement, createFactory, isValidElement, forwardRef, createContext, memo, lazy } from "./element";
 import {
   useId,
   useRef,
@@ -30,7 +30,7 @@ import {
   currentHookNodeIndex,
   currentComponentFiber,
   currentRenderPlatform,
-  setRenderPlatform,
+  initRenderPlatform,
   globalLoop,
   enableDebugLog,
   enableSyncFlush,
@@ -68,7 +68,7 @@ const __my_react_shared__ = {
 const __my_react_internal__ = {
   MyReactInternalInstance,
   globalLoop,
-  setRenderPlatform,
+  initRenderPlatform,
   currentRunningFiber,
   currentHookTreeNode,
   currentHookNodeIndex,
@@ -90,6 +90,7 @@ export {
   PureComponent,
   createElement,
   cloneElement,
+  createFactory,
   isValidElement,
   startTransition,
   lazy,

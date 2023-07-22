@@ -23,7 +23,7 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
     if (__DEV__) validDomNesting(fiber, parentFiberWithNode);
 
     if (hydrate) {
-      const result = hydrateCreate(fiber, parentFiberWithNode, renderDispatch.previousNativeNode);
+      const result = hydrateCreate(fiber, parentFiberWithNode, renderDispatch._previousNativeNode);
 
       if (!result) nativeCreate(fiber, isSVG);
 

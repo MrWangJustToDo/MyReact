@@ -31,7 +31,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   runtimeRef = runtimeRef;
 
-  previousNativeNode: null | ChildNode = null;
+  _previousNativeNode: null | ChildNode = null;
 
   isHydrateRender: boolean;
 

@@ -1,18 +1,7 @@
-import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, createRef, MyReactElementType } from "@my-react/react";
-import type {
-  MyReactFiberNode,
-  hmr,
-  setRefreshHandler,
-  CustomRenderDispatch,
-  getCurrentFibersFromType,
-  getCurrentDispatchFromType,
-} from "@my-react/react-reconciler";
+import { ForwardRef, Memo, TYPEKEY } from "@my-react/react-shared";
 
-const TYPEKEY = "$$typeof";
-
-const ForwardRef = Symbol.for("react.forward_ref");
-
-const Memo = Symbol.for("react.memo");
+import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType } from "@my-react/react";
+import type { CustomRenderDispatch, HMR, setRefreshHandler } from "@my-react/react-reconciler";
 
 type Family = {
   current: MyReactComponentType;
@@ -29,13 +18,7 @@ type Signature = {
 type MyReactComponentType = ReturnType<typeof forwardRef> | ReturnType<typeof memo> | MixinMyReactClassComponent | MixinMyReactFunctionComponent;
 
 type HMRGlobal = {
-  ["__@my-react/hmr__"]: {
-    hmr: typeof hmr;
-    setRefreshHandler: typeof setRefreshHandler;
-    currentComponentFiber: ReturnType<typeof createRef<MyReactFiberNode>>;
-    getCurrentFibersFromType: typeof getCurrentFibersFromType;
-    getCurrentDispatchFromType: typeof getCurrentDispatchFromType;
-  };
+  ["__@my-react/hmr__"]: HMR;
   ["__@my-react/react-refresh__"]: {
     register: typeof register;
     setSignature: typeof setSignature;

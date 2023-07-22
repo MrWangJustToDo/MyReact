@@ -48,17 +48,17 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
     const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
     if (fiber.type & NODE_TYPE.__text__) {
-      if (renderDispatch.lastIsStringNode) {
+      if (renderDispatch._lastIsStringNode) {
         stream.push("<!-- -->");
       }
 
       stream.push(fiber.element as string);
 
-      renderDispatch.lastIsStringNode = true;
+      renderDispatch._lastIsStringNode = true;
 
       fiber.patch = PATCH_TYPE.__initial__;
     } else if (fiber.type & NODE_TYPE.__plain__) {
-      renderDispatch.lastIsStringNode = false;
+      renderDispatch._lastIsStringNode = false;
 
       if (isSingleTag[fiber.elementType as string]) {
         stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}/>`);
@@ -75,7 +75,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
         }
       }
     } else if (fiber.type & NODE_TYPE.__comment__) {
-      renderDispatch.lastIsStringNode = false;
+      renderDispatch._lastIsStringNode = false;
 
       if (isCommentStartElement(fiber)) {
         stream.push("<!-- [ -->");
@@ -97,7 +97,7 @@ export const createCloseTagWithStream = (fiber: MyReactFiberNode, renderDispatch
   if (fiber.patch & PATCH_TYPE.__create__) {
     const stream = renderDispatch.stream;
     if (fiber.type & NODE_TYPE.__plain__) {
-      renderDispatch.lastIsStringNode = false;
+      renderDispatch._lastIsStringNode = false;
 
       stream.push(`</${fiber.elementType as string}>`);
 

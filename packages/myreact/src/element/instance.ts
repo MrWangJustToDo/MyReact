@@ -325,3 +325,12 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
 
   return clonedElement;
 }
+
+/**
+ * @deprecated
+ */
+export function createFactory(type: MyReactElementType) {
+  return (config?: CreateElementConfig & CreateElementProps["props"], ...children: ArrayMyReactElementChildren) => {
+    return createElement(type as any, config, ...children);
+  };
+}

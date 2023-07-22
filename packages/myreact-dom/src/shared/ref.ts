@@ -1,4 +1,4 @@
-import { NODE_TYPE } from "@my-react/react-reconciler";
+import { NODE_TYPE, safeCallWithFiber } from "@my-react/react-reconciler";
 import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -14,7 +14,7 @@ export const setRef = (_fiber: MyReactFiberNode) => {
         if (typeof ref === "object" && ref !== null) {
           ref.current = _fiber.nativeNode;
         } else if (typeof ref === "function") {
-          ref(_fiber.nativeNode);
+          safeCallWithFiber({ fiber: _fiber, action: () => ref(_fiber.nativeNode) });
         }
       } else {
         throw new Error("plain element do not have a native node");
@@ -26,7 +26,7 @@ export const setRef = (_fiber: MyReactFiberNode) => {
         if (typeof ref === "object" && ref !== null) {
           ref.current = _fiber.instance;
         } else if (typeof ref === "function") {
-          ref(_fiber.instance);
+          safeCallWithFiber({ fiber: _fiber, action: () => ref(_fiber.nativeNode) });
         }
       } else {
         throw new Error("class component do not have a instance");
@@ -46,13 +46,8 @@ export const unsetRef = (_fiber: MyReactFiberNode) => {
     const ref = _fiber.ref;
     if (typeof ref === "object" && ref !== null) {
       ref.current = null;
-    } else {
-      try {
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        (ref as Function)(null);
-      } catch {
-        void 0;
-      }
+    } else if (typeof ref === "function") {
+      safeCallWithFiber({ fiber: _fiber, action: () => ref(null) });
     }
   }
 };

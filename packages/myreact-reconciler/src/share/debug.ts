@@ -72,11 +72,6 @@ const shouldIncludeLog = (fiber: MyReactFiberNode) => {
     return true;
   }
   return false;
-  // if (typeof fiber.elementType === "function" && !(fiber.type & NODE_TYPE.__forwardRef__)) {
-  //   return true;
-  // } else {
-  //   return false;
-  // }
 };
 
 export const getRenderFiber = (fiber: MyReactFiberNode): MyReactFiberNode | null => {

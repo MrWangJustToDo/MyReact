@@ -1,7 +1,8 @@
 import { createElement } from "@my-react/react";
 import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
-import { getTypeFromElement, setRefreshTypeMap } from "../share";
+import { deleteEffect } from "../dispatchEffect";
+import { fiberToDispatchMap, getTypeFromElement, setRefreshTypeMap } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MixinMyReactFunctionComponent, MixinMyReactClassComponent } from "@my-react/react";
@@ -34,6 +35,10 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
       fiber.updateQueue = new ListTree();
 
       fiber.state = STATE_TYPE.__initial__;
+
+      const renderDispatch = fiberToDispatchMap.get(fiber);
+
+      deleteEffect(fiber, renderDispatch);
     } else {
       if (fiber.state === STATE_TYPE.__stable__) {
         fiber.state = STATE_TYPE.__triggerSync__;

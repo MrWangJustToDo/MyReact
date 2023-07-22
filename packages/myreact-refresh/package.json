@@ -3,7 +3,7 @@
   "description": "@my-react/react-refresh",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "runtime.js",
   "types": "runtime.d.ts",
   "files": [
@@ -67,8 +67,11 @@
       ]
     }
   ],
+  "dependencies": {
+    "@my-react/react-shared": "0.2.1"
+  },
   "devDependencies": {
-    "@my-react/react": "latest",
-    "@my-react/react-dom": "latest"
+    "@my-react/react": ">=0.2.0",
+    "@my-react/react-dom": ">=0.2.0"
   }
 }

@@ -39,11 +39,30 @@ export class MyReactComponent<
 
   componentWillUnmount?(): void;
 
+  /**
+   * @deprecated
+   */
   UNSAFE_componentWillMount?(): void;
-
+  /**
+   * @deprecated
+   */
+  componentWillMount?(): void;
+  /**
+   * @deprecated
+   */
   UNSAFE_componentWillReceiveProps?(nextProps: P): void;
-
+  /**
+   * @deprecated
+   */
+  componentWillReceiveProps?(nextProps: P): void;
+  /**
+   * @deprecated
+   */
   UNSAFE_componentWillUpdate?(nextProps: P, nextState: S): void;
+  /**
+   * @deprecated
+   */
+  componentWillUpdate?(nextProps: P, nextState: S): void;
 
   constructor(props?: P, context?: C | null) {
     super();

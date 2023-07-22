@@ -7,4 +7,4 @@ import type { RenderPlatform } from "../renderPlatform";
 /**
  * @internal
  */
-export const setRenderPlatform = once((platform: RenderPlatform) => (currentRenderPlatform.current = platform));
+export const initRenderPlatform = once((platform: RenderPlatform) => (currentRenderPlatform.current = platform));

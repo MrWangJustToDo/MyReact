@@ -5,4 +5,3 @@ export * from "./array";
 export * from "./symbol";
 export * from "./isEquals";
 export * from "./listTree";
-export * from "./multiTree";

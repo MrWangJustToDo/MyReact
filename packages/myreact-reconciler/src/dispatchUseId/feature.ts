@@ -3,7 +3,7 @@ import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
-import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 
 const { currentHookNodeIndex } = __my_react_internal__;
 
@@ -28,6 +28,14 @@ export const defaultGenerateUseIdMap = (fiber: MyReactFiberNode, map: WeakMap<My
     } else if (map.get(parent)) {
       map.set(fiber, map.get(parent));
     }
+  }
+
+  if (__DEV__) {
+    const typedFiber = fiber as MyReactFiberNodeDev;
+
+    const config = map.get(fiber);
+
+    config && (typedFiber._debugIdTree = config);
   }
 };
 

@@ -1,12 +1,12 @@
 {
   "name": "client",
-  "hash": "18b7f5cd2b56c5ee8fb1",
+  "hash": "e213595eb5521ad5d71f",
   "publicPath": "client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
   "assetsByChunkName": {
     "main": [
       "main-899432e8b2b128d5a9e0.css",
-      "main-9b2bfde2f9f77f7e2bb9.js"
+      "main-28e366fd6b6a4d2064da.js"
     ],
     "runtime": [
       "runtime-77e85fc12c2b16cd60ce.js"
@@ -74,18 +74,18 @@
     },
     {
       "type": "asset",
-      "name": "main-9b2bfde2f9f77f7e2bb9.js",
-      "size": 193136,
+      "name": "main-28e366fd6b6a4d2064da.js",
+      "size": 193455,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "9b2bfde2f9f77f7e2bb9",
+        "contenthash": "28e366fd6b6a4d2064da",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "main-9b2bfde2f9f77f7e2bb9.js.map"
+          "sourceMap": "main-28e366fd6b6a4d2064da.js.map"
         }
       },
       "chunkNames": [
@@ -472,7 +472,7 @@
           "name": "main-899432e8b2b128d5a9e0.css"
         },
         {
-          "name": "main-9b2bfde2f9f77f7e2bb9.js"
+          "name": "main-28e366fd6b6a4d2064da.js"
         }
       ],
       "filteredAssets": 0,
@@ -767,7 +767,7 @@
       "id": 179,
       "files": [
         "main-899432e8b2b128d5a9e0.css",
-        "main-9b2bfde2f9f77f7e2bb9.js"
+        "main-28e366fd6b6a4d2064da.js"
       ]
     },
     {

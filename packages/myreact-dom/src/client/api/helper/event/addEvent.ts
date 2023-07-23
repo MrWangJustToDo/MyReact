@@ -1,15 +1,12 @@
-import { __my_react_shared__ } from "@my-react/react";
 import { safeCallWithFiber } from "@my-react/react-reconciler";
 
-import { enableEventSystem } from "@my-react-dom-shared";
+import { afterSync, beforeSync, enableEventSystem } from "@my-react-dom-shared";
 
 import { getNativeEventName } from "./getEventName";
 
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch, ControlledElement } from "@my-react-dom-client";
 import type { DomElement } from "@my-react-dom-shared";
-
-const { enableSyncFlush } = __my_react_shared__;
 
 // TODO
 const syncUpdateEvent = {
@@ -21,19 +18,15 @@ const syncUpdateEvent = {
   mousedown: true,
 };
 
-let prev = true;
-
 const beforeEvent = (event: string) => {
   if (syncUpdateEvent[event]) {
-    prev = enableSyncFlush.current;
-
-    enableSyncFlush.current = true;
+    beforeSync();
   }
 };
 
 const afterEvent = (event: string) => {
   if (syncUpdateEvent[event]) {
-    enableSyncFlush.current = prev;
+    afterSync();
   }
 };
 

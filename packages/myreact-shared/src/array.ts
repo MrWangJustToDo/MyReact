@@ -32,6 +32,14 @@ export class UniqueArray<T> {
     this.length++;
   }
 
+  uniDelete(v: T) {
+    if (this.set.has(v)) {
+      this.set.delete(v);
+      this.arr = this.arr.filter((i) => i !== v);
+      this.length--;
+    }
+  }
+
   clear() {
     this.length = 0;
     this.set.clear();

@@ -1,4 +1,4 @@
-import { __my_react_internal__, type MixinMyReactClassComponent, type MyReactComponent } from "@my-react/react";
+import { type MixinMyReactClassComponent, type MyReactComponent } from "@my-react/react";
 import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
@@ -6,8 +6,6 @@ import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
 import type { UpdateQueueDev } from "../processState";
 import type { MyReactFiberNode, MyReactFiberNodeDev, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
-
-const { currentRenderPlatform } = __my_react_internal__;
 
 export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
   if (fiber.state & STATE_TYPE.__unmount__) return;
@@ -59,15 +57,6 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
         typedNode._debugAfterValue = nextState.pendingState;
 
         typedFiber._debugUpdateQueue.push(typedNode);
-
-        if (typedNode._debugBeforeValue === typedNode._debugAfterValue) {
-          currentRenderPlatform.current?.log({
-            fiber: typedFiber,
-            message: `a update trigger by setState should use "immutable" data, but current is the same data`,
-            level: "warn",
-            triggerOnce: true,
-          });
-        }
       }
 
       nextState.isForce = nextState.isForce || updater.isForce;
@@ -121,15 +110,6 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
         typedNode._debugAfterValue = typedTrigger.result;
 
         typedFiber._debugUpdateQueue.push(typedNode);
-
-        if (typedNode._debugBeforeValue === typedNode._debugAfterValue) {
-          currentRenderPlatform.current?.log({
-            fiber: typedFiber,
-            message: `a update trigger by setState should use "immutable" data, but current is the same data`,
-            level: "warn",
-            triggerOnce: true,
-          });
-        }
       }
 
       if (!Object.is(lastResult, typedTrigger.result)) needUpdate = true;

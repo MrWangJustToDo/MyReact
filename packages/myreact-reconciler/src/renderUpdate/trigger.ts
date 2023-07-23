@@ -81,6 +81,8 @@ export const triggerRevert = (fiber: MyReactFiberNode) => {
 export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   let nextWorkFiber: MyReactFiberNode | null = null;
 
+  let nextWorkSyncFiber: MyReactFiberNode | null = null;
+
   if (enableLoopFromRoot.current) {
     const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => !(f.state & STATE_TYPE.__unmount__));
 
@@ -100,42 +102,64 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
       }
     }
   } else {
-    while (!nextWorkFiber && renderDispatch.pendingUpdateFiberArray.length) {
-      const tempFiber = renderDispatch.pendingUpdateFiberArray.uniShift();
+    // while (!nextWorkFiber && renderDispatch.pendingUpdateFiberArray.length) {
+    //   const tempFiber = renderDispatch.pendingUpdateFiberArray.uniShift();
 
-      if (tempFiber.state & (STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) continue;
+    //   if (tempFiber.state & (STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) continue;
 
-      nextWorkFiber = tempFiber;
+    //   nextWorkFiber = tempFiber;
+    // }
+    const allPending = renderDispatch.pendingUpdateFiberArray.getAll();
+
+    for (let i = 0; i < allPending.length; i++) {
+      if (nextWorkFiber && nextWorkSyncFiber) continue;
+
+      const item = allPending[i];
+
+      if (item.state & (STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) {
+        renderDispatch.pendingUpdateFiberArray.uniDelete(item);
+        continue;
+      }
+
+      if (!nextWorkFiber) nextWorkFiber = item;
+
+      if (!nextWorkSyncFiber && item.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__)) nextWorkSyncFiber = item;
     }
 
+    nextWorkFiber = nextWorkFiber || nextWorkSyncFiber;
+
     if (nextWorkFiber) {
-      if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__)) {
+      if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 
         renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
         if (nextWorkFiber.state & STATE_TYPE.__skippedSync__) {
           updateSyncWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
-        } else if (enableConcurrentMode.current) {
-          updateConcurrentWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
         } else {
-          updateSyncWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
+          updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
         }
-      } else if (nextWorkFiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
+      } else if (nextWorkFiber.state & (STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 
         renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
-        if (nextWorkFiber.state & STATE_TYPE.__triggerSync__) {
-          updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
-        } else if (enableConcurrentMode.current) {
-          updateConcurrentWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+        if (nextWorkFiber.state & STATE_TYPE.__skippedConcurrent__) {
+          if (enableConcurrentMode.current) {
+            updateConcurrentWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
+          } else {
+            updateSyncWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
+          }
         } else {
-          updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+          if (enableConcurrentMode.current) {
+            updateConcurrentWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+          } else {
+            updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+          }
         }
       } else {
         // TODO
-        throw new Error(`un handler state, ${nextWorkFiber.state}`);
+        throw new Error(`un handler state, ${nextWorkFiber.state}, ${nextWorkFiber}`);
       }
     } else {
       globalLoop.current = false;

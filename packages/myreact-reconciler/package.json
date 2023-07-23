@@ -43,6 +43,6 @@
     "@my-react/react-shared": "latest"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.2.0"
+    "@my-react/react": ">=0.2.1"
   }
 }

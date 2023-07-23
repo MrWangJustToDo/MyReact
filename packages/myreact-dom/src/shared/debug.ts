@@ -30,7 +30,10 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
         `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
         "\n-----------------------------------------\n",
         "Render Tree:",
-        tree
+        tree,
+        "\n-----------------------------------------\n",
+        "fiber: ",
+        fiber
       );
     }
     if (level === "error") {

@@ -141,7 +141,7 @@ importers:
   packages/myreact-dom:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.2.0'
+        specifier: '>=0.2.1'
         version: link:../myreact
       '@my-react/react-reconciler':
         specifier: latest
@@ -153,7 +153,7 @@ importers:
   packages/myreact-jsx:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.2.0'
+        specifier: '>=0.2.1'
         version: link:../myreact
       '@my-react/react-shared':
         specifier: latest
@@ -162,7 +162,7 @@ importers:
   packages/myreact-reactivity:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.2.0'
+        specifier: '>=0.2.1'
         version: link:../myreact
       '@my-react/react-shared':
         specifier: latest
@@ -171,7 +171,7 @@ importers:
   packages/myreact-reconciler:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.2.0'
+        specifier: '>=0.2.1'
         version: link:../myreact
       '@my-react/react-shared':
         specifier: latest
@@ -184,16 +184,16 @@ importers:
         version: link:../myreact-shared
     devDependencies:
       '@my-react/react':
-        specifier: '>=0.2.0'
+        specifier: '>=0.2.1'
         version: link:../myreact
       '@my-react/react-dom':
-        specifier: '>=0.2.0'
+        specifier: '>=0.2.1'
         version: link:../myreact-dom
 
   packages/myreact-refresh-tools:
     devDependencies:
       '@my-react/react-refresh':
-        specifier: '>=0.2.0'
+        specifier: '>=0.2.1'
         version: link:../myreact-refresh
       webpack:
         specifier: ^4 || ^5

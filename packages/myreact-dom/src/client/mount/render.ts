@@ -1,5 +1,5 @@
 import { isValidElement, __my_react_shared__ } from "@my-react/react";
-import { checkIsSameType, getTypeFromElementNode, initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
+import { checkIsSameType, initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 import { once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client";
@@ -18,7 +18,11 @@ const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __
  * @internal
  */
 export const onceLog = once(() => {
-  console.log(`you are using %c@my-react%c to render this site, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`, 'color: white;background-color: rgba(10, 190, 235, 0.8); border-radius: 2px; padding: 2px 5px', '');
+  console.log(
+    `you are using %c@my-react%c to render this site, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`,
+    "color: white;background-color: rgba(10, 190, 235, 0.8); border-radius: 2px; padding: 2px 5px",
+    ""
+  );
 });
 
 /**
@@ -66,13 +70,7 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
     }
 
     if (checkIsSameType(containerFiber, element)) {
-      const { pendingProps, ref } = getTypeFromElementNode(element);
-
-      containerFiber.ref = ref;
-
-      containerFiber.element = element;
-
-      containerFiber.pendingProps = pendingProps;
+      containerFiber._installElement(element);
 
       containerFiber._update(STATE_TYPE.__triggerSync__);
 
@@ -105,7 +103,7 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
 
   Array.from(container.children).forEach((n) => n.remove?.());
 
-  container.removeAttribute?.('hydrate');
+  container.removeAttribute?.("hydrate");
 
   container.setAttribute?.("render", "@my-react");
 

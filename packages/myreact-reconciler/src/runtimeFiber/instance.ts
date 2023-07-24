@@ -52,8 +52,6 @@ export class MyReactFiberNode implements RenderFiber {
 
   nativeNode: Record<string, any>;
 
-  element: MyReactElementNode;
-
   elementType: MyReactElementType | null;
 
   hookList: ListTree<RenderHook> | null = null;
@@ -92,8 +90,6 @@ export class MyReactFiberNode implements RenderFiber {
     this.key = key;
 
     this.type = nodeType;
-
-    this.element = element;
 
     this.elementType = elementType;
 
@@ -145,9 +141,23 @@ if (__DEV__) {
   MyReactFiberNode.prototype._revert = function () {
     if (this.state & STATE_TYPE.__unmount__) return;
 
-    if (__DEV__) {
-      triggerRevert(this);
-    }
+    triggerRevert(this);
+  };
+
+  MyReactFiberNode.prototype._installElement = function (element: MyReactElementNode) {
+    const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
+
+    this.ref = ref;
+
+    this.key = key;
+
+    this.type = nodeType;
+
+    this.elementType = elementType;
+
+    this.pendingProps = pendingProps;
+
+    this._debugElement = element;
   };
 }
 

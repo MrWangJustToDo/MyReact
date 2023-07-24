@@ -1,11 +1,11 @@
-import { isValidElement, __my_react_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react";
 import { isNormalEquals, PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { prepareUpdateAllDependence } from "../dispatchContext";
 import { currentRenderDispatch, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
-import type { MyReactElementNode, memo, MyReactElement } from "@my-react/react";
+import type { MyReactElement, MyReactElementNode, memo } from "@my-react/react";
 
 const { enableLoopFromRoot } = __my_react_shared__;
 
@@ -21,7 +21,11 @@ export const updateFiberNode = (
   },
   nextElement: MyReactElementNode
 ) => {
-  const prevElement = fiber.element;
+  const prevElementType = fiber.elementType;
+
+  const prevProps = fiber.memoizedProps;
+
+  const prevRef = fiber.ref;
 
   const renderDispatch = currentRenderDispatch.current;
 
@@ -33,9 +37,15 @@ export const updateFiberNode = (
 
   fiber._installElement(nextElement);
 
-  if (prevElement !== nextElement) {
+  const nextElementType = fiber.elementType;
+
+  const nextProps = fiber.pendingProps;
+
+  const nextRef = fiber.ref;
+
+  if (prevElementType !== nextElementType || prevProps !== nextProps) {
     if (fiber.type & NODE_TYPE.__memo__) {
-      const typedElement = fiber.element as MyReactElement;
+      const typedElement = nextElement as MyReactElement;
 
       const typedElementType = typedElement.type as ReturnType<typeof memo>;
 
@@ -77,7 +87,7 @@ export const updateFiberNode = (
     }
   }
 
-  if (isValidElement(prevElement) && isValidElement(nextElement) && prevElement.ref !== nextElement.ref) {
+  if (nextRef && prevRef !== nextRef) {
     renderDispatch.pendingRef(fiber);
   }
 

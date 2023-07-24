@@ -4,6 +4,8 @@ import type { MaybeArrayMyReactElementNode, MyReactElementNode, UpdateQueue } fr
 import type { HOOK_TYPE, ListTree } from "@my-react/react-shared";
 
 export interface MyReactFiberNodeDev extends MyReactFiberNode {
+  _debugElement: MyReactElementNode;
+
   _debugRenderState: { mountTime: number; renderCount?: number; updateTime?: number; updateTimeInterval?: number };
 
   _debugHookTypes: HOOK_TYPE[];

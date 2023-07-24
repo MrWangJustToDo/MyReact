@@ -14,15 +14,14 @@ export function checkIsSameType(p: MyReactFiberNode, element: MyReactElementNode
 export function checkIsSameType(p: MyReactElementNode, element: MyReactElementNode): boolean;
 export function checkIsSameType(p: MyReactFiberNode | MyReactElementNode, element: MyReactElementNode) {
   if (p instanceof MyReactFiberNode) {
-    const { nodeType } = getTypeFromElementNode(element);
+    const { nodeType, elementType } = getTypeFromElementNode(element);
     if (p.type === nodeType) {
       if (isValidElement(element)) {
-        const typedIncomingElement = element as MyReactElement;
-        const typedExistElement = p.element as MyReactElement;
         if (__DEV__ && enableHMRForDev.current && nodeType & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
-          return Object.is(getCurrentTypeFromRefresh(typedIncomingElement.type), getCurrentTypeFromRefresh(typedExistElement.type));
+          // type error
+          return Object.is(getCurrentTypeFromRefresh((p as MyReactFiberNode).elementType), getCurrentTypeFromRefresh(elementType));
         } else {
-          return Object.is(typedIncomingElement.type, typedExistElement.type);
+          return Object.is(p.elementType, elementType);
         }
       } else {
         return true;

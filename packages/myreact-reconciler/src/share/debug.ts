@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { NODE_TYPE } from "./fiberType";
 
-import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement, lazy } from "@my-react/react";
 import type { ListTreeNode } from "@my-react/react-shared";
@@ -44,7 +44,8 @@ export const debugWithNode = (fiber: MyReactFiberNode) => {
 
 const getTrackDevLog = (fiber: MyReactFiberNode) => {
   if (__DEV__) {
-    const element = fiber.element;
+    const typedFiber = fiber as MyReactFiberNodeDev;
+    const element = typedFiber._debugElement;
     const source = typeof element === "object" ? (element as MyReactElement)?.["_source"] : null;
     const owner = typeof element === "object" ? (element as MyReactElement)?.["_owner"] : null;
     let preString = "";
@@ -87,13 +88,13 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     if (typeof targetRender === "function") {
       name = targetRender?.displayName || targetRender?.name || name;
     }
-    return `<${name ? name : 'anonymous'} - (memo) />`
+    return `<${name ? name : "anonymous"} - (memo) />`;
   }
   if (fiber.type & NODE_TYPE.__lazy__) {
     const typedElementType = fiber.elementType as ReturnType<typeof lazy>;
     const typedRender = typedElementType?.render;
     const name = typedRender?.displayName || typedRender?.name || "";
-    return `<${name ? name : 'anonymous'} - (lazy) />`
+    return `<${name ? name : "anonymous"} - (lazy) />`;
   }
   if (fiber.type & NODE_TYPE.__portal__) return `<Portal />`;
   if (fiber.type & NODE_TYPE.__null__) return `<Null />`;
@@ -113,7 +114,7 @@ export const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__forwardRef__) {
     const targetRender = fiber.elementType as MixinMyReactFunctionComponent;
     const name = targetRender?.displayName || targetRender?.name || "";
-    return `<${name ? name : 'anonymous'} - (forwardRef) />`
+    return `<${name ? name : "anonymous"} - (forwardRef) />`;
   }
   if (typeof fiber.elementType === "string") return `<${fiber.elementType} />`;
   if (typeof fiber.elementType === "function") {
@@ -121,11 +122,7 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     const name = typedElementType.displayName || typedElementType.name || "anonymous";
     return `<${name} />`;
   }
-  if (typeof fiber.element === "object" && fiber.element !== null) {
-    return `<unknown />`;
-  } else {
-    return `<text (${fiber.element?.toString()}) />`;
-  }
+  return `<text (${fiber.elementType?.toString()}) />`;
 };
 
 export const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)}${getTrackDevLog(fiber)}`;

@@ -14,15 +14,15 @@ import type { DomElement, DomNode } from "@my-react-dom-shared";
 const domContentHydrate = (fiber: MyReactFiberNode) => {
   const node = fiber.nativeNode as DomElement | DomNode;
 
-  if (node.textContent !== String(fiber.element)) {
-    if (node.textContent === " " && fiber.element === "") {
+  if (node.textContent !== String(fiber.elementType)) {
+    if (node.textContent === " " && fiber.elementType === "") {
       node.textContent = "";
     } else {
       log({
         fiber,
-        message: `hydrate warning, dom 'text' not match from server. server: ${node.textContent}, client: ${fiber.element}`,
+        message: `hydrate warning, dom 'text' not match from server. server: ${node.textContent}, client: ${fiber.elementType?.toString()}`,
       });
-      node.textContent = fiber.element as string;
+      node.textContent = fiber.elementType as string;
     }
   }
 };

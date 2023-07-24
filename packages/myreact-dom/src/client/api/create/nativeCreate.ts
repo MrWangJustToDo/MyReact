@@ -8,7 +8,7 @@ const SVG = "http://www.w3.org/2000/svg";
 
 export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (fiber.type & NODE_TYPE.__text__) {
-    fiber.nativeNode = document.createTextNode(fiber.element as string);
+    fiber.nativeNode = document.createTextNode(fiber.elementType as string);
   } else if (fiber.type & NODE_TYPE.__plain__) {
     const typedElementType = fiber.elementType as string;
 

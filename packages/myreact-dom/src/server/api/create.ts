@@ -19,7 +19,7 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatc
     if (__DEV__) validDomNesting(fiber, renderDispatch.runtimeDom.elementMap.get(fiber).parentFiberWithNode);
 
     if (fiber.type & NODE_TYPE.__text__) {
-      fiber.nativeNode = new TextElement(fiber.element as string);
+      fiber.nativeNode = new TextElement(fiber.elementType as string);
     } else if (fiber.type & NODE_TYPE.__plain__) {
       const typedElementType = fiber.elementType as string;
 
@@ -52,7 +52,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
         stream.push("<!-- -->");
       }
 
-      stream.push(fiber.element as string);
+      stream.push(fiber.elementType as string);
 
       renderDispatch._lastIsStringNode = true;
 

@@ -48,10 +48,11 @@ export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeF
         renderPlatform?.log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
       }
       nodeType |= NODE_TYPE.__empty__;
-    } else if (element === null || element === undefined || typeof element === "boolean") {
+    } else if (element === null || element === undefined || typeof element === "boolean" || typeof element === "function") {
       nodeType |= NODE_TYPE.__null__;
     } else {
-      nodeType |= NODE_TYPE.__text__;
+      // text element
+      return { key: null, ref: null, nodeType: NODE_TYPE.__text__, elementType: String(element), pendingProps: emptyProps };
     }
   }
 

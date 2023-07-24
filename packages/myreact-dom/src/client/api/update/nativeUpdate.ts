@@ -31,7 +31,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
   const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
   if (fiber.type & NODE_TYPE.__text__) {
-    node.textContent = fiber.element as string;
+    node.textContent = fiber.elementType as string;
   } else if (fiber.type & NODE_TYPE.__plain__) {
     const dom = node as HTMLElement;
 

@@ -1,8 +1,7 @@
-import { isValidElement, __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
-import { isCommentElement } from "../runtimeScope";
 import { currentRenderDispatch, debugWithNode, NODE_TYPE, safeCallWithFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
@@ -99,7 +98,7 @@ export const nextWorkLazyAsync = async (fiber: MyReactFiberNode) => {
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
   // for a comment element, will not have any children;
   // empty node normally a invalid node
-  if (isValidElement(fiber.element) && !(fiber.type & NODE_TYPE.__empty__) && !isCommentElement(fiber)) {
+  if (!(fiber.type & (NODE_TYPE.__empty__ | NODE_TYPE.__comment__ | NODE_TYPE.__null__ | NODE_TYPE.__text__))) {
     const { children } = fiber.pendingProps;
 
     transformChildrenFiber(fiber, children);
@@ -200,7 +199,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   if (typedFiber.type & renderDispatch.runtimeRef.typeForNativeNode) {
     renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
   }
-  
+
   return res;
 };
 

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { loadableReady } from "@loadable/component";
-import { hydrateRoot } from "@my-react/react-dom";
-import { render } from "react-dom";
+import { hydrateRoot, createRoot } from "react-dom/client";
 
 import { createUniversalStore, safeData } from "../shared";
 
@@ -37,11 +36,11 @@ safeData(window as unknown as Record<string, unknown>, "__PRELOAD_STORE_STATE__"
 
 if (window.__ENV__.isPURE_CSR) {
   const { loadCurrentLang } = require("@shared");
-  loadCurrentLang(store.dispatch, window.__ENV__.LANG as "en" | "ar").then(() => loadableReady(() => render(<Root store={store} />, place)));
+  loadCurrentLang(store.dispatch, window.__ENV__.LANG as "en" | "ar").then(() => loadableReady(() => createRoot(place).render(<Root store={store} />)));
 } else {
   if (!window.__ENV__.isSSR || (window.__ENV__.isDEVELOPMENT && window.__ENV__.isMIDDLEWARE)) {
-    loadableReady(() => render(<Root store={store} />, place));
+    loadableReady(() => createRoot(place).render(<Root store={store} />));
   } else {
-    __REACT__ ? loadableReady(() => render(<Root store={store} />, place)) : loadableReady(() => hydrateRoot(place, <Root store={store} />));
+    loadableReady(() => hydrateRoot(place, <Root store={store} />));
   }
 }

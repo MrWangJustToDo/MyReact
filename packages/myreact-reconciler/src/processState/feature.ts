@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import type { RenderFiber, UpdateQueue } from "@my-react/react";
@@ -6,6 +6,8 @@ import type { RenderFiber, UpdateQueue } from "@my-react/react";
 export type UpdateQueueDev = UpdateQueue<{ _debugCreateTime: number; _debugBeforeValue: any; _debugAfterValue: any; _debugRunTime: number }>;
 
 const { currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
+
+const { enableSyncFlush } = __my_react_shared__;
 
 const MAX_UPDATE_COUNT = 25;
 
@@ -19,6 +21,8 @@ export const processState = (_params: UpdateQueue) => {
 
     typedUpdateQueue._debugCreateTime = Date.now();
   }
+
+  _params.isSync = enableSyncFlush.current;
 
   if (_params.type === "component") {
     const ownerFiber = _params.trigger._ownerFiber;

@@ -57,12 +57,12 @@ const _BlogListWithInfinityScroll = () => {
     variables: {
       ...BASIC_VARIABLE,
       first: ITEM_PER_PAGE,
-      states: IssueState.Open
+      states: IssueState.Open,
     },
     notifyOnNetworkStatusChange: true,
   });
 
-  useEffectOnce(refetch)
+  useEffectOnce(refetch);
 
   const fetchMoreCallback = useCallbackRef(() => {
     if (data?.repository?.issues?.pageInfo?.hasNextPage) {

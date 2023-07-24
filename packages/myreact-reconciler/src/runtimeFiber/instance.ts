@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
@@ -9,8 +9,6 @@ import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInt
 import type { ListTree } from "@my-react/react-shared";
 
 type NativeNode = Record<string, any>;
-
-const { enableSyncFlush } = __my_react_shared__;
 
 const { currentRenderPlatform } = __my_react_internal__;
 
@@ -121,14 +119,12 @@ export class MyReactFiberNode implements RenderFiber {
     this.state = STATE_TYPE.__initial__;
   }
   _prepare(): void {
-    const currentIsSync = enableSyncFlush.current;
-
     const renderPlatform = currentRenderPlatform.current;
 
     const callBack = () => {
       const needUpdate = this.type & NODE_TYPE.__class__ ? processClassComponentUpdateQueue(this) : processFunctionComponentUpdateQueue(this);
 
-      if (needUpdate) this._update(currentIsSync ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__triggerConcurrent__);
+      if (needUpdate?.needUpdate) this._update(needUpdate.isSync ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__triggerConcurrent__);
     };
 
     renderPlatform.microTask(callBack);

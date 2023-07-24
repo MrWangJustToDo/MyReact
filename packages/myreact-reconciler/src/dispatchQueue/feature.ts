@@ -18,6 +18,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
   let node = allQueue.head;
 
+  let sync = false;
+
   const typedInstance = fiber.instance as MyReactComponent;
 
   const typedComponent = fiber.elementType as MixinMyReactClassComponent;
@@ -30,7 +32,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
   const nextState = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
 
-  if (!node) return false;
+  if (!node) return { needUpdate: false, isSync: false };
 
   while (node) {
     const updater = node.value;
@@ -61,12 +63,14 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
       nextState.isForce = nextState.isForce || updater.isForce;
 
+      sync = sync || updater.isSync;
+
       updater.callback && nextState.callback.push(updater.callback);
     }
     node = nextNode;
   }
 
-  return true;
+  return { needUpdate: true, isSync: sync };
 };
 
 export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => {
@@ -81,6 +85,8 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
   let node = allQueue.head;
 
   let needUpdate = false;
+
+  let sync = false;
 
   while (node) {
     const updater = node.value;
@@ -112,11 +118,13 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
         typedFiber._debugUpdateQueue.push(typedNode);
       }
 
+      sync = sync || updater.isSync;
+
       if (!Object.is(lastResult, typedTrigger.result)) needUpdate = true;
     }
 
     node = nextNode;
   }
 
-  return needUpdate;
+  return { needUpdate, isSync: sync };
 };

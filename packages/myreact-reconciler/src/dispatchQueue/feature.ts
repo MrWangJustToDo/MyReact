@@ -2,6 +2,8 @@ import { type MixinMyReactClassComponent, type MyReactComponent } from "@my-reac
 import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
+import { syncComponentStateToFiber } from "../runtimeComponent";
+import { currentRenderDispatch } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
 import type { MyReactFiberNode, MyReactFiberNodeDev, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
@@ -16,7 +18,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
   if (__DEV__) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
-  let node = allQueue.head;
+  let node = allQueue?.head;
 
   let sync = false;
 
@@ -82,7 +84,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
 
   if (__DEV__) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
-  let node = allQueue.head;
+  let node = allQueue?.head;
 
   let needUpdate = false;
 
@@ -127,4 +129,36 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
   }
 
   return { needUpdate, isSync: sync };
+};
+
+/**
+ * @deprecated
+ */
+export const syncFiberStateToComponent = (fiber: MyReactFiberNode) => {
+  const typedInstance = fiber.instance as MyReactComponent;
+
+  const typedComponent = fiber.elementType as MixinMyReactClassComponent;
+
+  const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
+
+  const typedPendingState = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
+
+  typedInstance.state = Object.assign({}, typedInstance.state, typedPendingState.pendingState);
+
+  if (typedPendingState.callback.length) {
+    const callback = typedPendingState.callback;
+    const renderDispatch = currentRenderDispatch.current;
+    renderDispatch.pendingLayoutEffect(fiber, () => {
+      callback.forEach((cb) => cb?.());
+    });
+  }
+};
+
+/**
+ * @deprecated
+ */
+export const syncFlushComponentQueue = (fiber: MyReactFiberNode) => {
+  processClassComponentUpdateQueue(fiber);
+  syncFiberStateToComponent(fiber);
+  syncComponentStateToFiber(fiber);
 };

@@ -2,6 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
+import { syncFlushComponentQueue } from "../dispatchQueue";
 import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
 import type { MemoizedStateTypeWithError, MyReactFiberNode, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
@@ -328,6 +329,7 @@ export const classComponentMount = (fiber: MyReactFiberNode) => {
   // legacy lifeCycle
   if (enableLegacyLifeCycle.current) {
     processComponentWillMountOnMount(fiber);
+    syncFlushComponentQueue(fiber);
   }
 
   const children = processComponentRenderOnMountAndUpdate(fiber);
@@ -432,7 +434,7 @@ const classComponentUpdateFromError = (fiber: MyReactFiberNode) => {
   return { updated: true, children };
 };
 
-export const classComponentUpdate = (fiber: MyReactFiberNode) => {
+export const syncComponentStateToFiber = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   const typedComponent = fiber.elementType as MixinMyReactClassComponent;
@@ -443,8 +445,6 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
     const typedPendingState = fiber.pendingState as PendingStateTypeWithError;
     const typedMemoizedState = fiber.memoizedState as MemoizedStateTypeWithError;
     if (typedPendingState.error?.error) {
-      const res = classComponentUpdateFromError(fiber);
-
       const typedInstance = fiber.instance as MyReactComponent;
 
       // sync pendingState
@@ -460,11 +460,7 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
       typedPendingState.error.stack = null;
       typedPendingState.error.error = null;
       typedPendingState.error.revertState = null;
-
-      return res;
     } else {
-      const res = classComponentUpdateFromNormal(fiber);
-
       const typedInstance = fiber.instance as MyReactComponent;
 
       // sync pendingState
@@ -476,13 +472,9 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
       // clear pendingState
       typedPendingState.state.isForce = false;
       typedPendingState.state.callback = [];
-
-      return res;
     }
   } else {
     const typedPendingState = fiber.pendingState as PendingStateType;
-
-    const res = classComponentUpdateFromNormal(fiber);
 
     const typedInstance = fiber.instance as MyReactComponent;
 
@@ -492,6 +484,35 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
     // clear pendingState
     typedPendingState.isForce = false;
     typedPendingState.callback = [];
+  }
+};
+
+export const classComponentUpdate = (fiber: MyReactFiberNode) => {
+  const typedInstance = fiber.instance as MyReactComponent;
+
+  const typedComponent = fiber.elementType as MixinMyReactClassComponent;
+
+  const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
+
+  if (isErrorCatch) {
+    const typedPendingState = fiber.pendingState as PendingStateTypeWithError;
+    if (typedPendingState.error?.error) {
+      const res = classComponentUpdateFromError(fiber);
+
+      syncComponentStateToFiber(fiber);
+
+      return res;
+    } else {
+      const res = classComponentUpdateFromNormal(fiber);
+
+      syncComponentStateToFiber(fiber);
+
+      return res;
+    }
+  } else {
+    const res = classComponentUpdateFromNormal(fiber);
+
+    syncComponentStateToFiber(fiber);
 
     return res;
   }

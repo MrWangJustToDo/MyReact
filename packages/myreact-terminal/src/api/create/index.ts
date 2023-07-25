@@ -25,7 +25,7 @@ export const create = (fiber: MyReactFiberNode, dispatch: TerminalDispatch) => {
     if (__DEV__) validDomNesting(fiber, dispatch.runtimeDom.elementMap.get(fiber));
 
     if (fiber.type & NODE_TYPE.__text__) {
-      fiber.nativeNode = new TextElement(fiber.element as string);
+      fiber.nativeNode = new TextElement(fiber.elementType as string);
     } else if (fiber.type & NODE_TYPE.__plain__) {
       const typedElementType = fiber.elementType as string;
 

@@ -11,6 +11,7 @@ import {
   isProperty,
   isStyle,
   isUnitlessNumber,
+  log,
 } from "@my-react-dom-shared";
 
 import { addEventListener, removeEventListener } from "../helper";
@@ -97,7 +98,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
             } else if (key.startsWith("xlink")) {
               typedDom.setAttributeNS(XLINK_NS, "href", String(newProps[key]));
             } else {
-              typedDom.setAttribute(key, String(newProps[key]))
+              typedDom.setAttribute(key, String(newProps[key]));
             }
             return;
           }
@@ -109,11 +110,15 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
                 dom[key] = (newProps[key] as string) || "";
               }
             } else {
-              if (key in dom && !isSVG) {
-                dom[key] = newProps[key];
-              } else {
-                const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || key;
-                dom.setAttribute(attrKey, String(newProps[key]));
+              try {
+                if (key in dom && !isSVG) {
+                  dom[key] = newProps[key];
+                } else {
+                  const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || key;
+                  dom.setAttribute(attrKey, String(newProps[key]));
+                }
+              } catch (e) {
+                log({ fiber, message: `${(e as Error).message}, key: ${key}, value: ${newProps[key]}`, level: "error", triggerOnce: true });
               }
             }
           }

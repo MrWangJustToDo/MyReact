@@ -37,21 +37,23 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   renderDispatch.runtimeMap.useIdMap.delete(fiber);
 
-  fiber.child = null;
+  if (Boolean(__DEV__) === false) {
+    fiber.child = null;
 
-  fiber.parent = null;
+    fiber.parent = null;
 
-  fiber.sibling = null;
+    fiber.sibling = null;
 
-  fiber.instance = null;
+    fiber.instance = null;
 
-  fiber.hookList = null;
+    fiber.hookList = null;
 
-  fiber.dependence = null;
+    fiber.dependence = null;
 
-  fiber.nativeNode = null;
+    fiber.nativeNode = null;
 
-  fiber.updateQueue = null;
+    fiber.updateQueue = null;
+  }
 
   fiber.state = STATE_TYPE.__unmount__;
 

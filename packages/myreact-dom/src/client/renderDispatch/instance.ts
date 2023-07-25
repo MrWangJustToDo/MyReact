@@ -1,3 +1,4 @@
+import { createElement, type MyReactElement, type MyReactElementNode } from "@my-react/react";
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
@@ -6,7 +7,6 @@ import { asyncUpdateTimeLimit, log, patchToFiberInitial, patchToFiberUnmount, se
 
 import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
 
-import type { MyReactElement, MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
@@ -107,7 +107,11 @@ if (__DEV__) {
   ClientDomDispatch.prototype.remountOnDev = function () {
     const rootNode = this.rootNode;
 
-    const rootElement = this.rootFiber.element as MyReactElement;
+    const rootElementType = this.rootFiber.elementType;
+
+    const rootElementProps = this.rootFiber.pendingProps;
+
+    const rootElement = createElement(rootElementType, rootElementProps) as MyReactElement;
 
     render(rootElement, rootNode);
   };

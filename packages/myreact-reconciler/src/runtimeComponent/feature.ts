@@ -357,7 +357,10 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 
   processComponentStateFromProps(fiber);
 
-  if (enableLegacyLifeCycle.current) processComponentWillReceiveProps(fiber);
+  if (enableLegacyLifeCycle.current) {
+    processComponentWillReceiveProps(fiber);
+    // syncFlushComponentQueue(fiber);
+  }
 
   const typedInstance = fiber.instance as MyReactComponent;
 

@@ -13,7 +13,7 @@ export const update = (fiber: MyReactFiberNode) => {
 
   if (fiber.type & NODE_TYPE.__text__) {
     const typeNode = node as TextElement;
-    setTextNodeValue(typeNode, fiber.element as string);
+    setTextNodeValue(typeNode, fiber.elementType as string);
   } else if (fiber.type & NODE_TYPE.__plain__) {
     const dom = node as PlainElement;
 

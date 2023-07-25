@@ -26,7 +26,7 @@ export const setRef = (_fiber: MyReactFiberNode) => {
         if (typeof ref === "object" && ref !== null) {
           ref.current = _fiber.instance;
         } else if (typeof ref === "function") {
-          safeCallWithFiber({ fiber: _fiber, action: () => ref(_fiber.nativeNode) });
+          safeCallWithFiber({ fiber: _fiber, action: () => ref(_fiber.instance) });
         }
       } else {
         throw new Error("class component do not have a instance");

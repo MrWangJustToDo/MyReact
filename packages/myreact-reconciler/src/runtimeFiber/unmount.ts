@@ -66,8 +66,6 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
     delete typedFiber._debugContextMap;
 
-    delete typedFiber._debugChildren;
-
     delete typedFiber._debugSuspense;
 
     delete typedFiber._debugStrict;

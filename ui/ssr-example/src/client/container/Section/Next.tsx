@@ -1,24 +1,25 @@
-import { Box, Code, Container, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Heading, Spacer, Tag, Text, Tooltip, chakra, useColorModeValue } from "@chakra-ui/react";
 
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { mark } from "@client/utils/markdown";
 
-const shellMd = `
-\`\`\`bash
-// 1. 正常安装Next.js项目
+const Iframe = chakra("iframe");
 
-// 2. 安装@my-react
+const shellMd = `
+\`\`\`js
+// 1. create a Next.js 12 project
+
+// 2. install @my-react
 pnpm add @my-react/react @my-react/react-dom
 
 pnpm add -D @my-react/react-refresh @my-react/react-refresh-tools
 
-// 3. 配置next.config.js
-
+// 3. config next.config.js
 const withNext = require('@my-react/react-refresh-tools/withNext');
 
 module.exports = withNext(nextConfig);
 
-// 4. 启动
+// 4. start
 pnpm run dev
 
 \`\`\`
@@ -26,7 +27,24 @@ pnpm run dev
 
 const renderBody = mark.render(shellMd);
 
+const Preview = (
+  <Iframe
+    title="@my-react online example"
+    allowFullScreen
+    marginX="auto"
+    width={{ base: "100%", md: "80%" }}
+    height="660"
+    outline="1px solid #252525"
+    borderRadius="4"
+    zIndex="100"
+    marginBottom="1em"
+    src="https://codesandbox.io/p/sandbox/zen-allen-mfwmmg?embed=1"
+  />
+);
+
 export const NextSection = () => {
+  const bgColor = useColorModeValue("gray.300", "gray.600");
+
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh">
       <Flex justifyContent="space-between" marginTop="4%" flexDirection={{ base: "column", md: "row" }}>
@@ -37,14 +55,30 @@ export const NextSection = () => {
           maxWidth={{ base: "100%", md: "40%" }}
         >
           <Heading as="h1" fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} marginTop="6">
-            在 <Code fontSize="inherit">Next.js</Code> 项目中快速体验
+            Quick start in <Tag fontSize="inherit">Next.js</Tag>
           </Heading>
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
-            目前还不支持Next 13版本，也不支持RSC等React新推出的功能，遇到任何问题欢迎联系。
+            Currently not support Next.js 13+, also not support React `RSC`.
           </Text>
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
-            本项目由作者一人开发，本质上是一个学习项目，强烈不建议您使用在任何生产环境中。
+            This project is only a experimental project, very not recommend use in the production environment.
           </Text>
+          <Spacer marginTop="4" />
+          <Tooltip
+            label={
+              <Text>
+                A static <Tag>Next.js</Tag> site power by @my-react
+              </Text>
+            }
+            hasArrow
+            placement="top"
+            bg={bgColor}
+            color="black"
+          >
+            <Button as="a" href="https://mrwangjusttodo.github.io/MrWangJustToDo.io" colorScheme="purple" target="_blank">
+              Online Example
+            </Button>
+          </Tooltip>
         </Box>
         <Box
           className="typo"
@@ -65,6 +99,7 @@ export const NextSection = () => {
           dangerouslySetInnerHTML={{ __html: renderBody }}
         />
       </Flex>
+      {Preview}
     </Container>
   );
 };

@@ -14,9 +14,11 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugContextMap: Record<string, MyReactFiberNode>;
 
-  _debugDynamicChildren: MaybeArrayMyReactElementNode;
+  _debugDynamicElementNodes: MaybeArrayMyReactElementNode;
 
-  _debugChildren: MyReactFiberNode[];
+  _debugRenderChildren: MyReactFiberNode[];
+
+  _debugPrevRenderChildren: MyReactFiberNode[];
 
   _debugSuspense: MyReactElementNode;
 

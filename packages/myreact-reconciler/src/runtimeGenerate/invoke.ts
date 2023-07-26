@@ -19,7 +19,7 @@ export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyRe
   if (__DEV__) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
-    typedFiber._debugDynamicChildren = children;
+    typedFiber._debugDynamicElementNodes = children;
   }
 };
 

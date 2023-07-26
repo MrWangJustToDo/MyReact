@@ -19,23 +19,21 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
 
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const pendingProps = Object.assign({}, fiber.pendingProps);
-
-  const currentState = Object.assign({}, typedInstance.state);
-
   const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
 
-  const nextState = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
+  const pendingProps = Object.assign({}, fiber.pendingProps);
+
+  const currentState = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
 
   if (typedComponent.getDerivedStateFromProps) {
-    const payloadState = typedComponent.getDerivedStateFromProps?.(pendingProps, currentState);
+    const payloadState = typedComponent.getDerivedStateFromProps?.(pendingProps, currentState.pendingState);
     if (payloadState) {
-      nextState.pendingState = Object.assign({}, nextState.pendingState, payloadState);
-      // typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
+      currentState.pendingState = Object.assign({}, currentState.pendingState, payloadState);
     }
   }
 };
 
+// TODO
 const processComponentStateFromError = (fiber: MyReactFiberNode, error: Error) => {
   const Component = fiber.elementType;
 
@@ -352,6 +350,7 @@ export const classComponentActive = (fiber: MyReactFiberNode) => {
   return children;
 };
 
+// TODO
 const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
 
@@ -359,7 +358,7 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 
   if (enableLegacyLifeCycle.current) {
     processComponentWillReceiveProps(fiber);
-    // syncFlushComponentQueue(fiber);
+    syncFlushComponentQueue(fiber);
   }
 
   const typedInstance = fiber.instance as MyReactComponent;
@@ -368,20 +367,20 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 
   const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
 
-  const { pendingState, isForce, callback } = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
+  const pendingState = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
 
   const baseState = typedInstance.state;
 
   const baseProps = typedInstance.props;
 
   // const baseContext = typedInstance.context;
-  const nextState = Object.assign({}, pendingState);
+  const nextState = Object.assign({}, pendingState.pendingState);
 
   const nextProps = Object.assign({}, fiber.pendingProps);
 
   const nextContext = processComponentContextOnUpdate(fiber);
 
-  let shouldUpdate = isForce;
+  let shouldUpdate = pendingState.isForce;
 
   if (!shouldUpdate) {
     shouldUpdate = processComponentShouldUpdateOnUpdate(fiber, {
@@ -410,7 +409,7 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
       snapshot,
       baseProps,
       baseState,
-      callback,
+      callback: pendingState.callback,
     });
 
     return { updated: true, children };

@@ -15,6 +15,25 @@ let lastRenderComponentFiber: RenderFiber | null = null;
 
 let renderCount = 0;
 
+/**
+ * @deprecated
+ */
+let syncFlush = false;
+
+/**
+ * @deprecated
+ */
+export const beforeSync = () => {
+  syncFlush = true;
+};
+
+/**
+ * @deprecated
+ */
+export const afterSync = () => {
+  syncFlush = false;
+};
+
 export const processState = (_params: UpdateQueue) => {
   if (__DEV__) {
     const typedUpdateQueue = _params as UpdateQueueDev;
@@ -29,7 +48,7 @@ export const processState = (_params: UpdateQueue) => {
 
     if (!ownerFiber || ownerFiber.state & STATE_TYPE.__unmount__) return;
 
-    if (__DEV__ && currentComponentFiber.current) {
+    if (__DEV__ && !syncFlush && currentComponentFiber.current) {
       if (lastRenderComponentFiber === currentComponentFiber.current) {
         renderCount++;
       }
@@ -57,7 +76,7 @@ export const processState = (_params: UpdateQueue) => {
 
     if (!ownerFiber || ownerFiber?.state & STATE_TYPE.__unmount__) return;
 
-    if (__DEV__ && currentComponentFiber.current) {
+    if (__DEV__ && !syncFlush && currentComponentFiber.current) {
       if (lastRenderComponentFiber === currentComponentFiber.current) {
         renderCount++;
       }

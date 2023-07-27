@@ -3,6 +3,7 @@ import { Effect_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
 import { syncFlushComponentQueue } from "../dispatchQueue";
+import { afterSync, beforeSync } from "../processState";
 import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
 import type { MemoizedStateTypeWithError, MyReactFiberNode, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
@@ -326,8 +327,10 @@ export const classComponentMount = (fiber: MyReactFiberNode) => {
 
   // legacy lifeCycle
   if (enableLegacyLifeCycle.current) {
+    beforeSync();
     processComponentWillMountOnMount(fiber);
     syncFlushComponentQueue(fiber);
+    afterSync();
   }
 
   const children = processComponentRenderOnMountAndUpdate(fiber);
@@ -357,8 +360,10 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
   processComponentStateFromProps(fiber);
 
   if (enableLegacyLifeCycle.current) {
+    beforeSync();
     processComponentWillReceiveProps(fiber);
     syncFlushComponentQueue(fiber);
+    afterSync();
   }
 
   const typedInstance = fiber.instance as MyReactComponent;

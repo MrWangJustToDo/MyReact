@@ -27,8 +27,6 @@ export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: Cu
   // will happen when app crash
   list.listToFoot((f) => unmount(f, renderDispatch));
 
-  if (list.head.value) renderDispatch.commitClearNode(list.head.value);
-
   list.listToFoot((f) => unmountFiberNode(f, renderDispatch));
 };
 

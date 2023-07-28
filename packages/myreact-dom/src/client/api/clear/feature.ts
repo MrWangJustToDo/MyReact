@@ -1,18 +1,17 @@
 import { STATE_TYPE } from "@my-react/react-shared";
 
+import { log } from "@my-react-dom-shared";
+
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { DomNode } from "@my-react-dom-shared";
+import type { DomNode} from "@my-react-dom-shared";
 
 const clearFiberDom = (fiber: MyReactFiberNode) => {
   if (fiber.nativeNode) {
     const dom = fiber.nativeNode as DomNode;
-
-    dom.parentNode?.removeChild(dom);
-  } else {
-    let child = fiber.child;
-    while (child) {
-      clearFiberDom(child);
-      child = child.sibling;
+    try {
+      dom.parentNode?.removeChild(dom);
+    } catch (e) {
+      log({ fiber, message: `error for remove dom, ${(e as Error).message}` });
     }
   }
 };

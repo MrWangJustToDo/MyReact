@@ -11,6 +11,8 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   renderDispatch.commitUnsetRef(fiber);
 
+  renderDispatch.commitClearNode(fiber);
+
   renderDispatch.patchToFiberUnmount?.(fiber);
 
   __DEV__ ? "" : fiberToDispatchMap.delete(fiber);

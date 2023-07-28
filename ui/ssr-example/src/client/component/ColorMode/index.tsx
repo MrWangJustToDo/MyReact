@@ -3,7 +3,6 @@ import { MdOutlineDarkMode, MdOutlineLightMode } from "react-icons/md";
 
 export const ColorMode = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-  // toggleColorMode();
   return (
     <Button onClick={toggleColorMode} variant="ghost" size="sm">
       <Icon as={colorMode === "dark" ? MdOutlineDarkMode : MdOutlineLightMode} />

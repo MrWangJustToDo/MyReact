@@ -23,7 +23,7 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env, ass
 
   const content = (
     <CacheProvider value={emotionCache}>
-      <ChakraProvider theme={theme} colorModeManager={cookieStore}>
+      <ChakraProvider theme={theme} /* colorModeManager={cookieStore} */>
         <Provider store={store}>
           <Router location={req.url}>
             <HelmetProvider context={helmetContext}>

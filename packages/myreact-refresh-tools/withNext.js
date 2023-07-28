@@ -5,17 +5,19 @@ module.exports = function withNext(nextConfig = {}) {
     webpack: (config, options) => {
       const originalEntry = config.entry;
 
-      config.entry = async () => {
-        const entries = await originalEntry();
+      if (options.dev) {
+        config.entry = async () => {
+          const entries = await originalEntry();
 
-        if (entries["main.js"] && !entries["main.js"].includes(require.resolve("@my-react/react-refresh-tools/runtime"))) {
-          entries["main.js"].unshift(require.resolve("@my-react/react-refresh-tools/runtime"));
-        }
+          if (entries["main.js"] && !entries["main.js"].includes(require.resolve("@my-react/react-refresh-tools/runtime"))) {
+            entries["main.js"].unshift(require.resolve("@my-react/react-refresh-tools/runtime"));
+          }
 
-        return entries;
-      };
+          return entries;
+        };
 
-      config.plugins.push(new RefreshWebpackPlugin());
+        config.plugins.push(new RefreshWebpackPlugin());
+      }
 
       const { isServer, defaultLoaders } = options;
 
@@ -48,7 +50,7 @@ module.exports = function withNext(nextConfig = {}) {
         }
       }
 
-      if (typeof nextConfig.webpack === 'function') {
+      if (typeof nextConfig.webpack === "function") {
         config = nextConfig.webpack(config, options);
       }
 

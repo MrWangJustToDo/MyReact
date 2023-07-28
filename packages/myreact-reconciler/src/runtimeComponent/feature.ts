@@ -225,6 +225,9 @@ const processComponentDidUpdateOnUpdate = (
   }
 };
 
+/**
+ * @deprecated
+ */
 const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
@@ -256,6 +259,9 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @deprecated
+ */
 const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
@@ -291,6 +297,9 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @deprecated
+ */
 const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextState }: { nextProps: unknown; nextState: unknown }) => {
   const typedInstance = fiber.instance as MyReactComponent;
 

@@ -20,7 +20,7 @@ const Root = ({ store }: { store: ReturnType<typeof createUniversalStore> }) => 
   return (
     <StrictMode>
       <CacheProvider value={emotionCache}>
-        <ChakraProvider theme={theme} colorModeManager={cookieStore}>
+        <ChakraProvider theme={theme} /* colorModeManager={cookieStore} */>
           <Provider store={store} serverState={store.getState()}>
             <Router>
               <HelmetProvider>

@@ -1,8 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { effect, insertionEffect, layoutEffect, safeCallWithFiber } from "@my-react/react-reconciler";
+import { afterSyncUpdate, beforeSyncUpdate, effect, insertionEffect, layoutEffect, safeCallWithFiber } from "@my-react/react-reconciler";
 
 import { fallback } from "@my-react-dom-client";
-import { afterSync, beforeSync } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";
@@ -83,17 +82,17 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
   };
 
   const mountLoop = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
-    beforeSync();
+    beforeSyncUpdate();
     mountInsertionEffect(_fiber);
-    afterSync();
+    afterSyncUpdate();
 
     const re = mountCommit(_fiber, _hydrate);
 
     delete _dispatch._previousNativeNode;
 
-    beforeSync();
+    beforeSyncUpdate();
     mountLayoutEffect(_fiber);
-    afterSync();
+    afterSyncUpdate();
 
     currentRenderPlatform.current.microTask(() => mountEffect(_fiber));
 

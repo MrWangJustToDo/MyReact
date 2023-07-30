@@ -49,7 +49,7 @@ export const BASIC_VARIABLE = {
 const _BlogListWithInfinityScroll = () => {
   const ref = useRef<HTMLDivElement>();
 
-  const [disableGridLayout, setDisableGridLayout] = useState(true);
+  const [disableGridLayout, setDisableGridLayout] = useState(false);
 
   const isMobileWidth = useBreakpointValue({ base: true, md: false });
 

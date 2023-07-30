@@ -3,7 +3,7 @@ import { Component, createElement, useState, useCallback, useMemo } from "@my-re
 import { proxyRefs, ReactiveEffect } from "../api";
 
 import type { UnwrapRef } from "../api";
-import type { MyReactElementNode, LikeJSX , MyReactElement } from "@my-react/react";
+import type { MyReactElementNode, LikeJSX, MyReactElement } from "@my-react/react";
 
 type LifeCycle = {
   onBeforeMount: Array<() => void>;
@@ -61,7 +61,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
       ["$$__trigger__$$"]: () => void;
       ["$$__instance__$$"]: LifeCycle;
       ["$$__reactiveState__$$"]: UnwrapRef<S>;
-      children: (props: UnwrapRef<S> & P) => MyReactElementNode;
+      children?: (props: UnwrapRef<S> & P) => MyReactElementNode;
     } & P
   > {
     componentDidMount(): void {
@@ -100,7 +100,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     {
       ["$$__trigger__$$"]: () => void;
       ["$$__reactiveState__$$"]: UnwrapRef<S>;
-      children: (props: UnwrapRef<S> & P) => MyReactElementNode;
+      children?: (props: UnwrapRef<S> & P) => MyReactElementNode;
     } & P
   > {
     componentWillUnmount(): void {
@@ -119,7 +119,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     }
   }
 
-  const MyReactReactiveComponent = (props: P & {children: (props: UnwrapRef<S> & P) => MyReactElement}) => {
+  const MyReactReactiveComponent = (props: P & { children?: (props: UnwrapRef<S> & P) => MyReactElement }) => {
     const [instance] = useState(() => ({
       onBeforeMount: [],
       onBeforeUpdate: [],

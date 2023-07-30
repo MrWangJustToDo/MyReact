@@ -1,6 +1,8 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
+import { syncFlush } from "../share";
+
 import type { RenderFiber, UpdateQueue } from "@my-react/react";
 
 export type UpdateQueueDev = UpdateQueue<{ _debugCreateTime: number; _debugBeforeValue: any; _debugAfterValue: any; _debugRunTime: number }>;
@@ -14,25 +16,6 @@ const MAX_UPDATE_COUNT = 25;
 let lastRenderComponentFiber: RenderFiber | null = null;
 
 let renderCount = 0;
-
-/**
- * @deprecated
- */
-let syncFlush = false;
-
-/**
- * @deprecated
- */
-export const beforeSync = () => {
-  syncFlush = true;
-};
-
-/**
- * @deprecated
- */
-export const afterSync = () => {
-  syncFlush = false;
-};
 
 export const processState = (_params: UpdateQueue) => {
   if (__DEV__) {

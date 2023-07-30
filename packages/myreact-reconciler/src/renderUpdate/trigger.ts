@@ -33,7 +33,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
       revertState: Object.assign({}, typedInstance.state),
     };
 
-    triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__, cb);
+    triggerUpdate(errorBoundariesFiber, cb);
   } else {
     renderDispatch.pendingUpdateFiberArray.clear();
 
@@ -102,13 +102,6 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
       }
     }
   } else {
-    // while (!nextWorkFiber && renderDispatch.pendingUpdateFiberArray.length) {
-    //   const tempFiber = renderDispatch.pendingUpdateFiberArray.uniShift();
-
-    //   if (tempFiber.state & (STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) continue;
-
-    //   nextWorkFiber = tempFiber;
-    // }
     const allPending = renderDispatch.pendingUpdateFiberArray.getAll();
 
     for (let i = 0; i < allPending.length; i++) {
@@ -126,7 +119,7 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
       if (!nextWorkSyncFiber && item.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__)) nextWorkSyncFiber = item;
     }
 
-    nextWorkFiber = nextWorkFiber || nextWorkSyncFiber;
+    nextWorkFiber = nextWorkSyncFiber || nextWorkFiber;
 
     if (nextWorkFiber) {
       if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__)) {
@@ -173,7 +166,7 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   }
 };
 
-export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE, cb?: () => void) => {
+export const triggerUpdate = (fiber: MyReactFiberNode, cb?: () => void) => {
   const renderPlatform = currentRenderPlatform.current;
 
   const renderDispatch = fiberToDispatchMap.get(fiber);
@@ -183,12 +176,10 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state: STATE_TYPE, cb?: (
   if (!renderDispatch.isAppMounted) {
     if (__DEV__) console.log("pending, can not update component");
 
-    renderPlatform.macroTask(() => triggerUpdate(fiber, state, cb));
+    renderPlatform.macroTask(() => triggerUpdate(fiber, cb));
 
     return;
   }
-
-  fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : fiber.state & state ? void 0 : (fiber.state |= state);
 
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 

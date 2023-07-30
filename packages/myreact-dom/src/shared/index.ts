@@ -1,7 +1,6 @@
 export * from "./env";
 export * from "./ref";
 export * from "./dom";
-export * from "./sync";
 export * from "./tools";
 export * from "./debug";
 export * from "./portal";

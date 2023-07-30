@@ -1,6 +1,6 @@
-import { safeCallWithFiber } from "@my-react/react-reconciler";
+import { afterSyncUpdate, beforeSyncUpdate, safeCallWithFiber } from "@my-react/react-reconciler";
 
-import { afterSync, beforeSync, enableEventSystem } from "@my-react-dom-shared";
+import { enableEventSystem } from "@my-react-dom-shared";
 
 import { getNativeEventName } from "./getEventName";
 
@@ -20,13 +20,13 @@ const syncUpdateEvent = {
 
 const beforeEvent = (event: string) => {
   if (syncUpdateEvent[event]) {
-    beforeSync();
+    beforeSyncUpdate();
   }
 };
 
 const afterEvent = (event: string) => {
   if (syncUpdateEvent[event]) {
-    afterSync();
+    afterSyncUpdate();
   }
 };
 

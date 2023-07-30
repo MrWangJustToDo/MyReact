@@ -128,7 +128,11 @@ export class MyReactFiberNode implements RenderFiber {
   _update(state?: STATE_TYPE) {
     if (this.state & STATE_TYPE.__unmount__) return;
 
-    triggerUpdate(this, state || STATE_TYPE.__triggerSync__);
+    state = state || STATE_TYPE.__triggerSync__;
+
+    this.state === STATE_TYPE.__stable__ ? (this.state = state) : this.state & state ? void 0 : (this.state |= state);
+
+    triggerUpdate(this);
   }
   _error(error: Error) {
     if (this.state & STATE_TYPE.__unmount__) return;

@@ -1,8 +1,8 @@
 import { SimpleGrid } from "@chakra-ui/react";
-import { memo } from "react";
+import { memo, useEffect, useMemo } from "react";
 
 import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT } from "@client/config/gridLayout";
-import { useDomSize, useGetResponseListLayout } from "@client/hooks";
+import { useDomSize, useGetResponseListLayout, useListLayoutStore } from "@client/hooks";
 
 import { Card } from "../Card";
 import { Game } from "../Game";
@@ -14,20 +14,48 @@ import { Item } from "./Item";
 
 import type { GetBlogListQuery } from "@site/graphql";
 
-const BLOG_GRID_COLS = { lg: 3, md: 3, sm: 2, xs: 1, xxs: 1 };
+const BLOG_GRID_COLS = { lg: 4, md: 3, sm: 2, xs: 1, xxs: 1 };
 
 const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"]["issues"]["nodes"] }) => {
-  const layouts = useGetResponseListLayout(data);
+  const newLayout = useGetResponseListLayout(data);
+
+  const { updateLayout, data: layouts, mergeLayout } = useListLayoutStore();
 
   const { width } = useDomSize({ cssSelector: ".grid-card-list" });
+
+  useEffect(() => {
+    mergeLayout(newLayout);
+  }, [mergeLayout, newLayout]);
+
+  const mergedLayout = useMemo(() => {
+    const obj = {};
+    Object.keys(newLayout).forEach((key) => {
+      layouts[key] = layouts[key] || [];
+      obj[key] = [];
+      const oldValue = layouts[key];
+      const newValue = newLayout[key];
+      newValue.forEach((item) => {
+        const lastItem = oldValue.find((_i) => _i.i === item.i);
+        if (lastItem) {
+          obj[key].push(lastItem);
+        } else {
+          obj[key].push(item);
+        }
+      });
+    });
+    return obj;
+  }, [newLayout, layouts]);
 
   if (width === 0) return null;
 
   return (
     <ReactGridLayout
       width={width}
-      layouts={layouts}
+      layouts={mergedLayout}
       cols={BLOG_GRID_COLS}
+      onLayoutChange={(_, layouts) => {
+        updateLayout(layouts);
+      }}
       rowHeight={GRID_ROW_HEIGHT}
       draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
       draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}

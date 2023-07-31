@@ -31,6 +31,7 @@ const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"
     const obj = {};
     Object.keys(newLayout).forEach((key) => {
       layouts[key] = layouts[key] || [];
+      const hasItem = layouts[key].length > 0;
       obj[key] = [];
       const oldValue = layouts[key];
       const newValue = newLayout[key];
@@ -39,7 +40,11 @@ const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"
         if (lastItem) {
           obj[key].push(lastItem);
         } else {
-          obj[key].push(item);
+          if (hasItem) {
+            obj[key].push({ ...item, y: Infinity });
+          } else {
+            obj[key].push(item);
+          }
         }
       });
     });

@@ -2,20 +2,26 @@
 
 [![Deploy](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml/badge.svg)](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml)
 
-```shell
-// install
+### Online `Next.js` example [https://mrwangjusttodo.github.io/MrWangJustToDo.io/](https://mrwangjusttodo.github.io/MrWangJustToDo.io/)
+
+```bash
+# install
 pnpm add @my-react/react @my-react/react-dom
 
-# currently i think it is a better way to use `alias` method/option to try this project what provide by build framework like `webpack`/`vite` and this project currently not ready for production env
+pnpm add -D @my-react/react-refresh @my-react/react-refresh-tools
+
+# quick start in next.js (<= 12 version)
+# next.config.js
+
+const withNext = require('@my-react/react-refresh-tools');
+
+modules.export = withNext(nextConfig);
 ```
-
-This project provide a react like framework, for now contain `React17` & `React18` api by default 
-
 ---
 
+``` bash
 ### if you want to debug this project
 
-```
 clone this project
 
 pnpm install
@@ -24,7 +30,7 @@ pnpm gen:gql
 
 pnpm build
 
-pnpm dev:ssr / dev:csr
+pnpm dev:ssr / dev:csr / dev:next
 ```
 
 ---

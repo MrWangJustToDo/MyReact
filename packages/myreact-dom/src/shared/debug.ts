@@ -33,7 +33,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
         tree,
         "\n-----------------------------------------\n",
         "fiber: ",
-        fiber
+        currentFiber
       );
     }
     if (level === "error") {
@@ -46,7 +46,7 @@ export const log = ({ fiber, message, level = "warn", triggerOnce = false }: Log
         tree,
         "\n-----------------------------------------\n",
         "fiber: ",
-        fiber
+        currentFiber
       );
     }
     return;

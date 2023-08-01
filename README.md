@@ -13,13 +13,14 @@ pnpm add -D @my-react/react-refresh @my-react/react-refresh-tools
 # quick start in next.js (<= 12 version)
 # next.config.js
 
-const withNext = require('@my-react/react-refresh-tools');
+const withNext = require('@my-react/react-refresh-tools/withNext');
 
 modules.export = withNext(nextConfig);
 ```
+
 ---
 
-``` bash
+```bash
 ### if you want to debug this project
 
 clone this project
@@ -37,24 +38,24 @@ pnpm dev:ssr / dev:csr / dev:next
 
 ## api
 
-| @my-react/react | @my-react/react-dom    | @my-react/react-reactive | @my-react/react (hook) |
-| --------------- | ---------------------- | ------------------------ | ---------------------- |
-| createELement   | render                 | createReactive           | useState               |
-| cloneElement    | renderToString         | reactive                 | useEffect              |
-| isValidElement  | findDOMNode            | ref                      | useLayoutEffect        |
-| Children        | hydrate                | computed                 | useRef                 |
-| lazy            | createPortal           | watch                    | useMemo                |
-| forwardRef      | unmountComponentAtNode | onBeforeMount            | useReducer             |
-| createContext   | createRoot (new)       | onBeforeUnmount          | useCallback            |
-| createRef       | hydrateRoot (new)      | onBeforeUpdate           | useContext             |
-| memo            | renderToNodeStream     | onMounted                | useImperativeHandle    |
-| Component       |                        | onUnmounted              | useDebugValue          |
-| PureComponent   |                        | onUpdated                | useSignal              |
-| StrictMode      |                        |                          | useDeferredValue (new) |
-| Fragment        |                        |                          | useId (new)            |
-| Suspense        |                        |                          | useInsertionEffect (new)   
-| startTransition |                        |                          | useSyncExternalStore (new)
-|                 |                        |                          | useTransition (new)
+| @my-react/react | @my-react/react-dom    | @my-react/react-reactive | @my-react/react (hook)     |
+| --------------- | ---------------------- | ------------------------ | -------------------------- |
+| createELement   | render                 | createReactive           | useState                   |
+| cloneElement    | renderToString         | reactive                 | useEffect                  |
+| isValidElement  | findDOMNode            | ref                      | useLayoutEffect            |
+| Children        | hydrate                | computed                 | useRef                     |
+| lazy            | createPortal           | watch                    | useMemo                    |
+| forwardRef      | unmountComponentAtNode | onBeforeMount            | useReducer                 |
+| createContext   | createRoot (new)       | onBeforeUnmount          | useCallback                |
+| createRef       | hydrateRoot (new)      | onBeforeUpdate           | useContext                 |
+| memo            | renderToNodeStream     | onMounted                | useImperativeHandle        |
+| Component       |                        | onUnmounted              | useDebugValue              |
+| PureComponent   |                        | onUpdated                | useSignal                  |
+| StrictMode      |                        |                          | useDeferredValue (new)     |
+| Fragment        |                        |                          | useId (new)                |
+| Suspense        |                        |                          | useInsertionEffect (new)   |
+| startTransition |                        |                          | useSyncExternalStore (new) |
+|                 |                        |                          | useTransition (new)        |
 
 ## Vue like reactive api
 

@@ -20,7 +20,13 @@ initRenderPlatform(MyReactDomPlatform);
 if (__DEV__ && enableHMRForDev.current) {
   globalThis["__@my-react/hmr__"] = {};
 
-  initHMR(globalThis["__@my-react/hmr__"]);
+  try {
+    initHMR(globalThis["__@my-react/hmr__"]);
+  } catch (e) {
+    if (__DEV__) {
+      console.error(`[@my-react/react-dom] initHMR failed, error: ${(e as Error).message}`);
+    }
+  }
 }
 
 const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {};

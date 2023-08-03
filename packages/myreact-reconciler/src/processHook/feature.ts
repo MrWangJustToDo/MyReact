@@ -48,7 +48,7 @@ export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams
     currentHook = createHookNode({ type, reducer, value, deps }, fiber);
   } else {
     // update
-    currentHook = updateHookNode({ type, reducer, value, deps }, fiber);
+    currentHook = updateHookNode({ type, reducer, value, deps }, fiber, __DEV__ && Boolean(fiber.state & STATE_TYPE.__hmr__));
   }
 
   currentHookNodeIndex.current++;

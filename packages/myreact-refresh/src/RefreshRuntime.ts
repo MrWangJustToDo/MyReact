@@ -281,8 +281,6 @@ export const performReactRefresh = () => {
           hasRootUpdate = hasRootUpdate || f === container.rootFiber;
           typedSelf?.["__@my-react/hmr__"]?.hmr?.(f, nextType, forceReset);
         });
-      } else {
-        console.error(`[@my-react/react-refresh] current type ${prevType} not have a fiber node for the render tree`);
       }
     }
   });
@@ -301,6 +299,8 @@ export const performReactRefresh = () => {
     } else {
       container.rootFiber._update(hasRootUpdate ? 32 : 4);
     }
+  } else {
+    console.error(`[@my-react/react-refresh] refresh failed`);
   }
 };
 

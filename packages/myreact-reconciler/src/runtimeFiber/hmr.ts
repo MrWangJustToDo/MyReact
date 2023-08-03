@@ -2,18 +2,17 @@ import { createElement } from "@my-react/react";
 import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import { deleteEffect } from "../dispatchEffect";
-import { fiberToDispatchMap, getTypeFromElement, setRefreshTypeMap } from "../share";
+import { fiberToDispatchMap, setRefreshTypeMap } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
+import type { MyReactFiberNodeDev } from "./interface";
 import type { MixinMyReactFunctionComponent, MixinMyReactClassComponent } from "@my-react/react";
 
 export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionComponent | MixinMyReactClassComponent, forceRefresh?: boolean) => {
   if (__DEV__) {
-    const element = createElement(nextType as MixinMyReactFunctionComponent, null);
+    const element = createElement(nextType as MixinMyReactFunctionComponent, fiber.pendingProps);
 
-    const { elementType } = getTypeFromElement(element);
-
-    fiber.elementType = elementType;
+    fiber._installElement(element);
 
     setRefreshTypeMap(fiber);
 
@@ -38,15 +37,16 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
 
       const renderDispatch = fiberToDispatchMap.get(fiber);
 
+      const typedFiber = fiber as MyReactFiberNodeDev;
+
+      typedFiber._debugHookTypes = [];
+
+      typedFiber._debugHookNodes = [];
+
+      // TODO
       deleteEffect(fiber, renderDispatch);
     } else {
-      if (fiber.state === STATE_TYPE.__stable__) {
-        fiber.state = STATE_TYPE.__triggerSync__;
-      } else if (fiber.state & STATE_TYPE.__triggerSync__) {
-        fiber.state = STATE_TYPE.__triggerSync__;
-      } else {
-        fiber.state |= STATE_TYPE.__triggerSync__;
-      }
+      fiber.state = STATE_TYPE.__triggerSync__ | STATE_TYPE.__hmr__;
     }
 
     return fiber;

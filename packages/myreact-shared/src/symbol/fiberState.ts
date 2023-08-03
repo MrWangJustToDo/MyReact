@@ -7,4 +7,5 @@ export enum STATE_TYPE {
   __triggerConcurrent__ = 1 << 4,
   __triggerSync__ = 1 << 5,
   __unmount__ = 1 << 6,
+  __hmr__ = 1 << 7,
 }

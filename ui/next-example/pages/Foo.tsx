@@ -1,10 +1,37 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 export default function Foo() {
+  const [l, setL] = useState(0);
+
+  const { pathname } = useRouter();
+
+  useRouter();
+  // useEffect(() => {
+  //   console.log('update');
+  // },[])
+
+  useEffect(() => {
+    console.log('bbbb')
+  }, [])
+
+  // useEffect(() => {
+  //   const id = setInterval(() => {
+  //     setL(l => l + 1);
+  //   }, 200)
+
+  //   return () => clearInterval(id);
+  // }, [])
+
+  const [j] = useState(() => 'oooo');
+
+  console.log(pathname, l, j);
+
   return (
     <main className="w-full h-screen">
       <h2 className="text-center mt-6 text-[20px] text-[green] font-semibold font-mono">
-        This is <span>Foo</span> Page
+        This is <span>Foo</span> {l} Page
       </h2>
       <div className="w-[50%] h-[400px] m-auto mt-6 overflow-auto">
         <code>

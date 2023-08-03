@@ -178,7 +178,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, cb?: () => void) => {
   if (renderDispatch.isAppUnmounted) return;
 
   if (!renderDispatch.isAppMounted) {
-    if (__DEV__) console.log("[@my-react/react-reconciler] pending, can not update component");
+    if (__DEV__) console.log("[@my-react/react] pending, can not update component");
 
     renderPlatform.macroTask(() => triggerUpdate(fiber, cb));
 
@@ -200,7 +200,7 @@ export const triggerUnmount = (fiber: MyReactFiberNode, cb?: () => void) => {
   const renderDispatch = fiberToDispatchMap.get(fiber);
 
   if (renderDispatch.isAppUnmounted) {
-    throw new Error(`[@my-react/react-reconciler] can not unmount a node when current app has been unmounted`);
+    throw new Error(`[@my-react/react] can not unmount a node when current app has been unmounted`);
   }
 
   fiber.state = STATE_TYPE.__skippedSync__;

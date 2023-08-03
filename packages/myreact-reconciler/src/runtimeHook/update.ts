@@ -12,12 +12,16 @@ const { enableDebugLog } = __my_react_shared__;
 
 const { currentHookTreeNode, currentRenderPlatform } = __my_react_internal__;
 
-export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
+export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode, isHMR?: boolean) => {
   const renderDispatch = currentRenderDispatch.current;
 
   const renderPlatform = currentRenderPlatform.current;
 
-  const currentHook = currentHookTreeNode.current.value as MyReactHookNode;
+  const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
+
+  if (!currentHook) {
+    throw new Error(`[@my-react/react] should have a hookList for current node, this is a bug for @my-react`);
+  }
 
   if (type !== currentHook?.type) {
     throw new Error(
@@ -54,7 +58,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     currentHook.type === HOOK_TYPE.useInsertionEffect ||
     currentHook.type === HOOK_TYPE.useImperativeHandle
   ) {
-    if (!deps || !isArrayEquals(currentHook.deps, deps)) {
+    if (isHMR || !deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
       currentHook.reducer = reducer || currentHook.reducer;
@@ -71,7 +75,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
     const newStoreApi = value;
 
-    if (!Object.is(storeApi.subscribe, newStoreApi.subscribe)) {
+    if (isHMR || !Object.is(storeApi.subscribe, newStoreApi.subscribe)) {
       storeApi.subscribe = newStoreApi.subscribe;
 
       currentHook.effect = true;
@@ -80,6 +84,8 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     storeApi.getSnapshot = newStoreApi.getSnapshot;
 
     currentHook.result = storeApi.getSnapshot.call(null);
+
+    return currentHook;
   }
 
   if (currentHook.type === HOOK_TYPE.useCallback) {

@@ -15,7 +15,7 @@ export const typeToFibersMap = new MyWeakMap() as WeakMap<MixinMyReactClassCompo
 export const setRefreshHandler = (handler: RefreshHandler) => {
   if (__DEV__) {
     if (refreshHandler) {
-      throw new Error(`[@my-react/react-reconciler] "refreshHandler" can be only set once`);
+      throw new Error(`[@my-react/react] "refreshHandler" can be only set once`);
     }
 
     currentRefreshHandler.current = handler;

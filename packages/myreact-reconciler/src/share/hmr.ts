@@ -25,7 +25,7 @@ export const initHMR = (env: Record<string, any>) => {
       env["getCurrentFibersFromType"] = getCurrentFibersFromType;
       env["getCurrentDispatchFromType"] = getCurrentDispatchFromType;
     } catch (e) {
-      console.error(`[@my-react/react-reconciler] init HMR for current environment failed, ${(e as Error).message}`);
+      console.error(`[@my-react/react] init HMR for current environment failed, ${(e as Error).message}`);
     }
   }
 };

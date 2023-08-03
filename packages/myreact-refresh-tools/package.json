@@ -17,10 +17,6 @@
     "./RefreshWebpackPlugin": "./RefreshWebpackPlugin.js",
     "./package.json": "./package.json"
   },
-  "peerDependencies": {
-    "@my-react/react-refresh": "latest",
-    "webpack": "^4 || ^5"
-  },
   "buildOptions": [
     {
       "input": "./src/loader.ts",
@@ -77,6 +73,10 @@
       ]
     }
   ],
+  "peerDependencies": {
+    "@my-react/react-refresh": ">=0.2.0",
+    "webpack": "^4 || ^5"
+  },
   "peerDependenciesMeta": {
     "webpack": {
       "optional": true

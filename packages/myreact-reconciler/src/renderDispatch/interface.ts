@@ -46,6 +46,8 @@ type DefaultRenderDispatch = {
 
   isAppCrashed: boolean;
 
+  isAppUnmounted: boolean;
+
   pendingCommitFiberList: ListTree<MyReactFiberNode> | null;
 
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode>;

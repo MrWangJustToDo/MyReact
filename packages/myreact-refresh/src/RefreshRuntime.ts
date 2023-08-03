@@ -290,14 +290,14 @@ export const performReactRefresh = () => {
   if (container) {
     console.log(`[@my-react/react-refresh] updating ...`);
 
-    // has a error for prev render
-    if (container.runtimeFiber.errorCatchFiber) {
+    if (container.isAppCrashed || container.isAppUnmounted) {
+      // have a uncaught runtime error for prev render
+      container.remountOnDev?.();
+    } else if (container.runtimeFiber.errorCatchFiber) {
+      // has a error for prev render
       const fiber = container?.runtimeFiber.errorCatchFiber;
 
       fiber._revert();
-    } else if (container.isAppCrashed) {
-      // have a uncaught runtime error for prev render
-      container.remountOnDev?.();
     } else {
       container.rootFiber._update(hasRootUpdate ? 32 : 4);
     }

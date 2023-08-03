@@ -16,15 +16,15 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
   // TODO maybe need call `insertionEffect` in another function
   beforeSyncUpdate();
   _list.listToFoot((_fiber) => {
-    if (!(_fiber.state & STATE_TYPE.__unmount__)) {
+    if (!(_fiber.state & STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       unmount(_fiber, _dispatch);
       insertionEffect(_fiber, _dispatch);
     }
   });
   afterSyncUpdate();
-  
+
   _list.listToFoot((_fiber) => {
-    if (!(_fiber.state & STATE_TYPE.__unmount__)) {
+    if (!(_fiber.state & STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithFiber({
         fiber: _fiber,
         action: () => _dispatch.commitCreate(_fiber),
@@ -32,7 +32,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
     }
   });
   _list.listToHead((_fiber) => {
-    if (!(_fiber.state & STATE_TYPE.__unmount__)) {
+    if (!(_fiber.state & STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithFiber({
         fiber: _fiber,
         action: () => _dispatch.commitPosition(_fiber),
@@ -40,7 +40,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
     }
   });
   _list.listToFoot((_fiber) => {
-    if (!(_fiber.state & STATE_TYPE.__unmount__)) {
+    if (!(_fiber.state & STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithFiber({
         fiber: _fiber,
         action: () => {
@@ -54,12 +54,18 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   beforeSyncUpdate();
   _list.listToFoot((_fiber) => {
-    if (!(_fiber.state & STATE_TYPE.__unmount__)) {
+    if (!(_fiber.state & STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       context(_fiber, _dispatch);
       layoutEffect(_fiber, _dispatch);
     }
   });
   afterSyncUpdate();
-  
-  currentRenderPlatform.current.microTask(() => _list.listToFoot((_fiber) => effect(_fiber, _dispatch)));
+
+  currentRenderPlatform.current.microTask(() =>
+    _list.listToFoot((_fiber) => {
+      if (!(_fiber.state & STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
+        effect(_fiber, _dispatch);
+      }
+    })
+  );
 };

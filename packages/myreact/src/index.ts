@@ -85,7 +85,6 @@ const Children = {
 };
 
 export {
-  Profiler,
   Component,
   PureComponent,
   createElement,
@@ -98,6 +97,8 @@ export {
   createRef,
   forwardRef,
   createContext,
+  // symbol
+  Profiler,
   Fragment,
   Suspense,
   StrictMode,

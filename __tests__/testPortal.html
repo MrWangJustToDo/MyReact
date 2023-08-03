@@ -1,39 +1,42 @@
 <!DOCTYPE html>
 <html lang="zh_cn">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>测试react框架</title>
-    <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-    <style>
-      .red {
-        color: red;
-        font-size: 20px;
-      }
 
-      .box {
-        width: 100px;
-        height: 100px;
-        border: 1px solid red;
-        border-radius: 3px;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>测试react框架</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  <!-- <script src="../bundle/react.18.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
+  <style>
+    .red {
+      color: red;
+      font-size: 20px;
+    }
 
-      .green {
-        color: green;
-      }
-    </style>
-  </head>
+    .box {
+      width: 100px;
+      height: 100px;
+      border: 1px solid red;
+      border-radius: 3px;
+    }
 
-  <body>
-    <div id="root"></div>
-    <div id="foo"></div>
-    <div id="bar"></div>
+    .green {
+      color: green;
+    }
+  </style>
+</head>
 
-    <script type="text/babel" defer>
+<body>
+  <div id="root"></div>
+  <div id="foo"></div>
+  <div id="bar"></div>
+
+  <!-- <script type="text/babel" defer>
       const { memo, useState, useCallback, useEffect, useRef, useMemo, map, cloneElement, createContext, KeepLive } = React;
 
       const useCounter = (init = 1) => {
@@ -84,7 +87,7 @@
 
       function H({ children }) {
         const time = useTime();
-        console.warn('jjjjjj')
+        // console.warn('jjjjjj')
         return (
           <>
             <p>time {time}</p> {children}
@@ -139,6 +142,14 @@
       const container = document.getElementById("root");
       ReactDOM.render(<Tt />, container);
       // console.log(ReactDOM.renderToString(<Tt />))
-    </script>
-  </body>
+    </script> -->
+
+  <script type="text/babel">
+    const { render, createPortal } = ReactDOM;
+
+    render(createPortal(<div>portal</div>, document.querySelector('#foo')
+    ), document.querySelector('#root'))
+  </script>
+</body>
+
 </html>

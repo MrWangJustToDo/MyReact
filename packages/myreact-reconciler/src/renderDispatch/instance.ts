@@ -54,6 +54,8 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   isAppCrashed = false;
 
+  isAppUnmounted = false;
+
   pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
 
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();

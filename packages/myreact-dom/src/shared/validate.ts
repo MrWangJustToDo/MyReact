@@ -78,5 +78,9 @@ export const checkRoot = (fiber: MyReactFiberNode) => {
 
   if (fiber.type & NODE_TYPE.__function__) return;
 
-  throw new Error(`[@my-react/react-dom] the root element should be a dynamic node such as 'function' or 'class'`)
+  if (fiber.type & NODE_TYPE.__portal__) return;
+
+  return;
+
+  // throw new Error(`[@my-react/react-dom] the root element should be a dynamic node such as 'function' or 'class'`)
 }

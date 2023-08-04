@@ -33,7 +33,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
       revertState: Object.assign({}, typedInstance.state),
     };
 
-    triggerUpdate(errorBoundariesFiber, cb);
+    triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__, cb);
   } else {
     renderDispatch.pendingUpdateFiberArray.clear();
 
@@ -107,7 +107,7 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
     const allPending = renderDispatch.pendingUpdateFiberArray.getAll();
 
     for (let i = 0; i < allPending.length; i++) {
-      if (nextWorkFiber && nextWorkSyncFiber) continue;
+      if (nextWorkFiber && nextWorkSyncFiber) break;
 
       const item = allPending[i];
 
@@ -168,7 +168,7 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   }
 };
 
-export const triggerUpdate = (fiber: MyReactFiberNode, cb?: () => void) => {
+export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) => {
   const renderPlatform = currentRenderPlatform.current;
 
   const renderDispatch = fiberToDispatchMap.get(fiber);
@@ -180,10 +180,14 @@ export const triggerUpdate = (fiber: MyReactFiberNode, cb?: () => void) => {
   if (!renderDispatch.isAppMounted) {
     if (__DEV__) console.log("[@my-react/react] pending, can not update component");
 
-    renderPlatform.macroTask(() => triggerUpdate(fiber, cb));
+    renderPlatform.macroTask(() => triggerUpdate(fiber, state, cb));
 
     return;
   }
+
+  if (fiber.state & STATE_TYPE.__unmount__) return;
+
+  if (state !== undefined) fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : fiber.state & state ? void 0 : (fiber.state |= state);
 
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 
@@ -203,9 +207,7 @@ export const triggerUnmount = (fiber: MyReactFiberNode, cb?: () => void) => {
     throw new Error(`[@my-react/react] can not unmount a node when current app has been unmounted`);
   }
 
-  fiber.state = STATE_TYPE.__skippedSync__;
-
-  triggerUpdate(fiber, () => {
+  triggerUpdate(fiber, STATE_TYPE.__skippedSync__, () => {
     unmountFiber(fiber);
     cb?.();
   });

@@ -15,12 +15,6 @@ const { enablePerformanceLog } = __my_react_shared__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   transformChildrenFiber(fiber, children);
-
-  if (__DEV__) {
-    const typedFiber = fiber as MyReactFiberNodeDev;
-
-    typedFiber._debugDynamicElementNodes = children;
-  }
 };
 
 export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {

@@ -41,8 +41,6 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
 
       typedFiber._debugHookTypes = [];
 
-      typedFiber._debugHookNodes = [];
-
       // TODO
       deleteEffect(fiber, renderDispatch);
     } else {

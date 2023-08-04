@@ -11,7 +11,7 @@ const mark = new Mark({
   highlight: function (str, lang) {
     let code = "";
     try {
-      if (lang) {
+      if (lang && hljs.getLanguage(lang)) {
         code = hljs.highlight(str, {
           language: lang,
           ignoreIllegals: true,

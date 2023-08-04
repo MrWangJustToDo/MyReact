@@ -1,9 +1,10 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { HOOK_TYPE } from "@my-react/react-shared";
+import { HOOK_TYPE, ListTree } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
+import type { MixinMyReactFunctionComponent} from "@my-react/react";
 
 const { currentHookNodeIndex } = __my_react_internal__;
 
@@ -19,14 +20,21 @@ const isFiberWithUseId = (fiber: MyReactFiberNode) => {
   return withUseId;
 };
 
-export const defaultGenerateUseIdMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, { initial: number; latest: number }>) => {
+// TODO
+export const defaultGenerateUseIdMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>) => {
   const parent = fiber.parent;
 
   if (parent) {
+    let parentMap = map.get(parent);
+
     if (isFiberWithUseId(parent)) {
-      map.set(fiber, { initial: (map.get(parent)?.initial || 0) + 1, latest: (map.get(parent)?.initial || 0) + 1 });
-    } else if (map.get(parent)) {
-      map.set(fiber, map.get(parent));
+      parentMap = parentMap || new ListTree();
+      parentMap = parentMap.clone();
+      parentMap.push(parent);
+    }
+
+    if (parentMap) {
+      map.set(fiber, parentMap);
     }
   }
 
@@ -39,12 +47,16 @@ export const defaultGenerateUseIdMap = (fiber: MyReactFiberNode, map: WeakMap<My
   }
 };
 
-export const defaultGetCurrentId = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, { initial: number; latest: number }>) => {
+export const defaultGetCurrentId = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>) => {
   const config = map.get(fiber);
 
+  const typedElementType = fiber.elementType as MixinMyReactFunctionComponent;
+
+  const componentName = typedElementType.displayName;
+
   if (config) {
-    return `${config.latest++}--${currentHookNodeIndex.current}`;
+    return `${componentName}--${config.length}--${currentHookNodeIndex.current}`;
   } else {
-    return `0--${currentHookNodeIndex.current}`;
+    return `${componentName}--0--${currentHookNodeIndex.current}`;
   }
 };

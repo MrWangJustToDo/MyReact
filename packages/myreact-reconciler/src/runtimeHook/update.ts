@@ -89,7 +89,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (currentHook.type === HOOK_TYPE.useCallback) {
-    if (!deps || !isArrayEquals(currentHook.deps, deps)) {
+    if (isHMR || !deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
       currentHook.result = value;
@@ -100,7 +100,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (currentHook.type === HOOK_TYPE.useMemo) {
-    if (!deps || !isArrayEquals(currentHook.deps, deps)) {
+    if (isHMR || !deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
       currentHook.result = (value as () => unknown).call(null);

@@ -13,8 +13,8 @@ export default function Foo() {
   // },[])
 
   useEffect(() => {
-    console.log('bbbb')
-  }, [])
+    console.log("bbbb");
+  }, []);
 
   // useEffect(() => {
   //   const id = setInterval(() => {
@@ -24,7 +24,7 @@ export default function Foo() {
   //   return () => clearInterval(id);
   // }, [])
 
-  const [j] = useState(() => 'oooo');
+  const [j] = useState(() => "oooo");
 
   console.log(pathname, l, j);
 
@@ -50,6 +50,17 @@ export default function Foo() {
         >
           <Link href="/">Goto Home Page</Link>
         </div>
+        <button
+          onClick={() => {
+            console.log(456);
+          }}
+          // onClickCapture={() => {
+          //   console.log('456', 'capture')
+          // }}
+        >
+          {" "}
+          click
+        </button>
       </div>
     </main>
   );

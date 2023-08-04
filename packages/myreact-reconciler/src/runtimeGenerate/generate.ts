@@ -139,8 +139,8 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
     const typedParentFiber = parentFiber as MyReactFiberNodeDev;
 
     if (__DEV__) {
-      typedParentFiber._debugPrevRenderChildren = typedParentFiber._debugRenderChildren;
-      typedParentFiber._debugRenderChildren = [];
+      typedParentFiber._debugRenderChildrenPrevious = typedParentFiber._debugRenderChildrenCurrent;
+      typedParentFiber._debugRenderChildrenCurrent = [];
     }
 
     if (Array.isArray(children)) {
@@ -159,21 +159,21 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
         lastFiber = newFiber;
 
-        if (__DEV__) typedParentFiber._debugRenderChildren.push(newFiber);
+        if (__DEV__) typedParentFiber._debugRenderChildrenCurrent.push(newFiber);
 
         index++;
       }
     } else {
       const child = getNewFiberWithUpdate(children, parentFiber, existingChildrenMap, existingChildrenArray[0], 0);
 
-      if (__DEV__) typedParentFiber._debugRenderChildren.push(child);
+      if (__DEV__) typedParentFiber._debugRenderChildrenCurrent.push(child);
     }
 
     deleteIfNeed(parentFiber, existingChildrenMap);
   } else {
     const typedParentFiber = parentFiber as MyReactFiberNodeDev;
 
-    if (__DEV__) typedParentFiber._debugRenderChildren = [];
+    if (__DEV__) typedParentFiber._debugRenderChildrenCurrent = [];
 
     parentFiber.child = null;
 
@@ -193,14 +193,14 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
         lastFiber = newFiber;
 
-        if (__DEV__) typedParentFiber._debugRenderChildren.push(newFiber);
+        if (__DEV__) typedParentFiber._debugRenderChildrenCurrent.push(newFiber);
 
         index++;
       }
     } else {
       const child = getNewFiberWithInitial(children, parentFiber);
 
-      if (__DEV__) typedParentFiber._debugRenderChildren.push(child);
+      if (__DEV__) typedParentFiber._debugRenderChildrenCurrent.push(child);
     }
   }
 };

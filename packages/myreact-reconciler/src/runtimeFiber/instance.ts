@@ -117,13 +117,13 @@ export class MyReactFiberNode implements RenderFiber {
   _prepare(): void {
     const renderPlatform = currentRenderPlatform.current;
 
-    const callBack = () => {
+    const processQueue = () => {
       const needUpdate = this.type & NODE_TYPE.__class__ ? processClassComponentUpdateQueue(this) : processFunctionComponentUpdateQueue(this);
 
       if (needUpdate?.needUpdate) this._update(needUpdate.isSync ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__triggerConcurrent__);
     };
 
-    renderPlatform.microTask(callBack);
+    renderPlatform.microTask(processQueue);
   }
   _update(state?: STATE_TYPE) {
     if (this.state & STATE_TYPE.__unmount__) return;

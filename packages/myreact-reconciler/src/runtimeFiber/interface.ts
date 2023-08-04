@@ -1,6 +1,5 @@
 import type { MyReactFiberNode } from "./instance";
-import type { MyReactHookNode } from "../runtimeHook";
-import type { MaybeArrayMyReactElementNode, MyReactElementNode, UpdateQueue } from "@my-react/react";
+import type { MyReactElementNode, UpdateQueue } from "@my-react/react";
 import type { HOOK_TYPE, ListTree } from "@my-react/react-shared";
 
 export interface MyReactFiberNodeDev extends MyReactFiberNode {
@@ -10,15 +9,11 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugHookTypes: HOOK_TYPE[];
 
-  _debugHookNodes: MyReactHookNode[];
-
   _debugContextMap: Record<string, MyReactFiberNode>;
 
-  _debugDynamicElementNodes: MaybeArrayMyReactElementNode;
+  _debugRenderChildrenCurrent: MyReactFiberNode[];
 
-  _debugRenderChildren: MyReactFiberNode[];
-
-  _debugPrevRenderChildren: MyReactFiberNode[];
+  _debugRenderChildrenPrevious: MyReactFiberNode[];
 
   _debugSuspense: MyReactElementNode;
 
@@ -26,7 +21,7 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugIsMount: boolean;
 
-  _debugIdTree: { initial: number; latest: number };
+  _debugIdTree: ListTree<MyReactFiberNode>;
 
   _debugScope: MyReactFiberNode;
 

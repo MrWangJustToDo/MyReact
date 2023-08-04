@@ -10,21 +10,21 @@ export type RuntimeMap = {
 
   strictMap: WeakMap<MyReactFiberNode, boolean>;
 
-  useIdMap: WeakMap<MyReactFiberNode, { initial: number; latest: number }>;
+  useIdMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>;
 
   scopeMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
 
   errorBoundariesMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
 
-  effectMap: WeakMap<MyReactFiberNode, (() => void)[]>;
+  effectMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 
-  layoutEffectMap: WeakMap<MyReactFiberNode, (() => void)[]>;
+  layoutEffectMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 
-  insertionEffectMap: WeakMap<MyReactFiberNode, (() => void)[]>;
+  insertionEffectMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 
   contextMap: WeakMap<MyReactFiberNode, Record<string, MyReactFiberNode>>;
 
-  unmountMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>[]>;
+  unmountMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>;
 
   eventMap: WeakMap<MyReactFiberNode, Record<string, ((...args: any[]) => void) & { cb?: any[] }>>;
 };

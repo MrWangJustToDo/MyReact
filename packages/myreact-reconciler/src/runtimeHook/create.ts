@@ -83,11 +83,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
     typedFiber._debugHookTypes = typedFiber._debugHookTypes || [];
 
-    typedFiber._debugHookNodes = typedFiber._debugHookNodes || [];
-
     typedFiber._debugHookTypes.push(hookNode.type);
-
-    typedFiber._debugHookNodes.push(hookNode);
   }
 
   return hookNode;

@@ -1,28 +1,23 @@
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, ListTree } from "@my-react/react-shared";
 
 import { unmountFiberNode } from "../runtimeFiber";
 import { fiberToDispatchMap, generateFiberToList, safeCallWithFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { ListTree } from "@my-react/react-shared";
 
-export const defaultGenerateUnmountMap = (
-  fiber: MyReactFiberNode,
-  unmount: MyReactFiberNode,
-  map: WeakMap<MyReactFiberNode, Array<ListTree<MyReactFiberNode>>>
-) => {
-  const exist = map.get(fiber) || [];
+export const defaultGenerateUnmountMap = (fiber: MyReactFiberNode, unmount: MyReactFiberNode, map: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>) => {
+  const list = map.get(fiber) || new ListTree();
 
-  const newPending = generateFiberToList(unmount);
+  const newList = generateFiberToList(unmount);
 
-  exist.push(newPending);
+  list.concat(newList);
 
-  map.set(fiber, exist);
+  map.set(fiber, list);
 };
 
 export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: CustomRenderDispatch) => {
-  list.listToFoot((f) => f._unmount());
+  list.listToFoot((f) => safeCallWithFiber({ fiber: f, action: () => f._unmount() }));
 
   // will happen when app crash
   list.listToFoot((f) => unmount(f, renderDispatch));
@@ -45,11 +40,11 @@ export const unmount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDis
   if (fiber.patch & PATCH_TYPE.__unmount__) {
     const unmountMap = renderDispatch.runtimeMap.unmountMap;
 
-    const allUnmountFiber = unmountMap.get(fiber) || [];
+    const allUnmount = unmountMap.get(fiber);
 
     unmountMap.delete(fiber);
 
-    if (allUnmountFiber.length) safeCallWithFiber({ fiber, action: () => allUnmountFiber.forEach((l) => unmountList(l, renderDispatch)) });
+    if (allUnmount && allUnmount.length) safeCallWithFiber({ fiber, action: () => unmountList(allUnmount, renderDispatch) });
 
     if (fiber.patch & PATCH_TYPE.__unmount__) fiber.patch ^= PATCH_TYPE.__unmount__;
   }

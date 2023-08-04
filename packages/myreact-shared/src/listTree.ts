@@ -149,6 +149,10 @@ export class ListTree<T> {
     return false;
   }
 
+  concat(list: ListTree<T>) {
+    list.listToFoot((node) => this.push(node));
+  }
+
   clone(): ListTree<T> {
     const newList = new ListTree<T>();
 
@@ -156,4 +160,12 @@ export class ListTree<T> {
 
     return newList;
   }
+}
+
+if (__DEV__) {
+  Object.defineProperty(ListTree.prototype, "__array__", {
+    get(this: ListTree<unknown>) {
+      return this.toArray();
+    },
+  });
 }

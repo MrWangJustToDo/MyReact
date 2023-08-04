@@ -3,7 +3,7 @@ import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
 import { syncComponentStateToFiber } from "../runtimeComponent";
-import { currentRenderDispatch } from "../share";
+import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
 import type { MyReactFiberNode, MyReactFiberNodeDev, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
@@ -49,7 +49,16 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
       // TODO
       const lastResult = nextState.pendingState || baseState;
 
-      nextState.pendingState = Object.assign({}, lastResult, typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad);
+      safeCallWithFiber({
+        fiber,
+        action: () => {
+          nextState.pendingState = Object.assign(
+            {},
+            lastResult,
+            typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad
+          );
+        },
+      });
 
       if (__DEV__) {
         const typedNode = node.value as UpdateQueueDev;
@@ -106,7 +115,12 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
 
       const lastResult = typedTrigger.result;
 
-      typedTrigger.result = typedTrigger.reducer(lastResult, payLoad);
+      safeCallWithFiber({
+        fiber,
+        action: () => {
+          typedTrigger.result = typedTrigger.reducer(lastResult, payLoad);
+        },
+      });
 
       if (__DEV__) {
         const typedNode = node.value as UpdateQueueDev;
@@ -148,9 +162,7 @@ export const syncFiberStateToComponent = (fiber: MyReactFiberNode) => {
   if (typedPendingState.callback.length) {
     const callback = typedPendingState.callback;
     const renderDispatch = currentRenderDispatch.current;
-    renderDispatch.pendingLayoutEffect(fiber, () => {
-      callback.forEach((cb) => cb?.());
-    });
+    renderDispatch.pendingLayoutEffect(fiber, () => callback.forEach((cb) => cb?.()));
   }
 };
 

@@ -52,7 +52,7 @@ export const addEventListener = (fiber: MyReactFiberNode, renderDispatch: Client
     if (eventState[eventName]) {
       eventState[eventName].cb?.push(callback);
     } else {
-      const handler: ((...args: any[]) => void) & { cb?: any[] } = (...args: any[]) => {
+      const eventDispatcher: ((...args: any[]) => void) & { cb?: any[] } = (...args: any[]) => {
         const e = args[0];
 
         e.nativeEvent = e;
@@ -60,7 +60,7 @@ export const addEventListener = (fiber: MyReactFiberNode, renderDispatch: Client
         beforeEvent(nativeName);
 
         safeCallWithFiber({
-          action: () => handler.cb?.forEach((cb) => typeof cb === "function" && cb.call(null, ...args)),
+          action: () => eventDispatcher.cb?.forEach((cb) => typeof cb === "function" && cb.call(null, ...args)),
           fiber,
         });
 
@@ -79,11 +79,11 @@ export const addEventListener = (fiber: MyReactFiberNode, renderDispatch: Client
         }
       };
 
-      handler.cb = [callback];
+      eventDispatcher.cb = [callback];
 
-      eventState[eventName] = handler;
+      eventState[eventName] = eventDispatcher;
 
-      dom.addEventListener(nativeName, handler, isCapture);
+      dom.addEventListener(nativeName, eventDispatcher, isCapture);
     }
 
     eventMap.set(fiber, eventState);

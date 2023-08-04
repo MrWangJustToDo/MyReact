@@ -214,7 +214,7 @@ export const useId = (): string => {
 
   return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useId,
-    value: null,
+    value: 0,
     reducer: defaultReducer,
     deps: defaultDeps,
   }) as string;

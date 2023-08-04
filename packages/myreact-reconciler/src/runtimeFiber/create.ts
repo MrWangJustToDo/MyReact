@@ -38,8 +38,6 @@ export const createFiberNode = (
 
   renderDispatch.pendingRef(newFiberNode);
 
-  renderDispatch.resolveUseIdMap(newFiberNode);
-
   renderDispatch.resolveScopeMap(newFiberNode);
 
   renderDispatch.resolveStrictMap(newFiberNode);

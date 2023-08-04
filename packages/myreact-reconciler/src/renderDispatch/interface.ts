@@ -10,8 +10,6 @@ export type RuntimeMap = {
 
   strictMap: WeakMap<MyReactFiberNode, boolean>;
 
-  useIdMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>;
-
   scopeMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
 
   errorBoundariesMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
@@ -101,10 +99,6 @@ type DefaultRenderDispatch = {
   resolveStrictMap(_fiber: MyReactFiberNode): void;
 
   resolveStrict(_fiber: MyReactFiberNode): boolean;
-
-  resolveUseIdMap(_fiber: MyReactFiberNode): void;
-
-  resolveUseId(_fiber: MyReactFiberNode): string;
 
   resolveScopeMap(_fiber: MyReactFiberNode): void;
 

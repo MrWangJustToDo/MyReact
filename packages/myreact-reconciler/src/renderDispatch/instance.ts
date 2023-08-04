@@ -9,7 +9,6 @@ import { defaultGenerateStrictMap } from "../dispatchStrict";
 import { defaultGenerateSuspenseMap } from "../dispatchSuspense";
 import { defaultGenerateUnmountMap } from "../dispatchUnmount";
 import { defaultDispatchUpdate } from "../dispatchUpdate";
-import { defaultGenerateUseIdMap, defaultGetCurrentId } from "../dispatchUseId";
 import { MyWeakMap } from "../share";
 
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
@@ -24,8 +23,6 @@ export class CustomRenderDispatch implements RenderDispatch {
     suspenseMap: new MyWeakMap(),
 
     strictMap: new MyWeakMap(),
-
-    useIdMap: new MyWeakMap(),
 
     scopeMap: new MyWeakMap(),
 
@@ -46,7 +43,9 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   runtimeFiber: Record<fiberKey, MyReactFiberNode | null> = {
     scheduledFiber: null,
+
     errorCatchFiber: null,
+
     nextWorkingFiber: null,
   };
 
@@ -61,6 +60,8 @@ export class CustomRenderDispatch implements RenderDispatch {
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
 
   performanceLogTimeLimit = 2000;
+
+  uniqueIdCount = 0;
 
   constructor(readonly rootNode: any, readonly rootFiber: MyReactFiberNode) {
     const typedFiber = rootFiber as MyReactFiberContainer;
@@ -163,16 +164,12 @@ export class CustomRenderDispatch implements RenderDispatch {
     return null;
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateStrictMap(_fiber, this.runtimeMap.strictMap);
+    if (__DEV__) {
+      defaultGenerateStrictMap(_fiber, this.runtimeMap.strictMap);
+    }
   }
   resolveStrict(_fiber: MyReactFiberNode): boolean {
-    return this.runtimeMap.strictMap.get(_fiber) || false;
-  }
-  resolveUseIdMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateUseIdMap(_fiber, this.runtimeMap.useIdMap);
-  }
-  resolveUseId(_fiber: MyReactFiberNode): string {
-    return defaultGetCurrentId(_fiber, this.runtimeMap.useIdMap);
+    return __DEV__ ? this.runtimeMap.strictMap.get(_fiber) || false : false;
   }
   resolveScopeMap(_fiber: MyReactFiberNode): void {
     defaultGenerateScopeMap(_fiber, this.runtimeMap.scopeMap);

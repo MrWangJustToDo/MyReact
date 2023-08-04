@@ -37,8 +37,6 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   renderDispatch.runtimeMap.eventMap.delete(fiber);
 
-  renderDispatch.runtimeMap.useIdMap.delete(fiber);
-
   if (Boolean(__DEV__) === false) {
     fiber.child = null;
 

@@ -27,19 +27,19 @@ modules.export = withNext(nextConfig);
 
 ## Packages
 
-| Package| Version |
-| :----------------------------- | :-------------------------------------------------------|
-| [`@my-react/react`](packages/myreact) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react)   |
-| [`@my-react/react-dom`](packages/myreact-dom) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-dom)  |
-| **refresh**  |    |
-| [`@my-react/react-refresh`](packages/myreact-refresh) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh)  |
-| [`@my-react/react-refresh-tools`](packages/myreact-refresh-tools) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh-tools)  |
-| **internal** |     |
-| [`@my-react/react-jsx`](packages/myreact-jsx) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-jsx)  |
-| [`@my-react/react-shared`](packages/myreact-shared) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-shared)  |
-| [`@my-react/react-reconciler`](packages/myreact-reconciler) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reconciler)  |
-| **experimental** |  |
-| [`@my-react/react-reactive`](packages/myreact-reactivity) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reactive)  |
+| Package                                                           | Version                                                                                                                                      |
+| :---------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`@my-react/react`](packages/myreact)                             | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)                             |
+| [`@my-react/react-dom`](packages/myreact-dom)                     | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-dom)](https://www.npmjs.com/package/@my-react/react-dom)                     |
+| **refresh**                                                       |                                                                                                                                              |
+| [`@my-react/react-refresh`](packages/myreact-refresh)             | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh)](https://www.npmjs.com/package/@my-react/react-refresh)             |
+| [`@my-react/react-refresh-tools`](packages/myreact-refresh-tools) | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh-tools)](https://www.npmjs.com/package/@my-react/react-refresh-tools) |
+| **internal**                                                      |                                                                                                                                              |
+| [`@my-react/react-jsx`](packages/myreact-jsx)                     | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-jsx)](https://www.npmjs.com/package/@my-react/react-jsx)                     |
+| [`@my-react/react-shared`](packages/myreact-shared)               | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-shared)](https://www.npmjs.com/package/@my-react/react-shared)               |
+| [`@my-react/react-reconciler`](packages/myreact-reconciler)       | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reconciler)](https://www.npmjs.com/package/@my-react/react-reconciler)       |
+| **experimental**                                                  |                                                                                                                                              |
+| [`@my-react/react-reactive`](packages/myreact-reactivity)         | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reactive)](https://www.npmjs.com/package/@my-react/react-reactive)           |
 
 ## Development
 
@@ -130,6 +130,7 @@ const App = () => {
   );
 };
 ```
+
 ## License
 
 MIT

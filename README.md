@@ -1,8 +1,13 @@
-# MyReact -- a React like project
+# MyReact -- a React like framework
 
 [![Deploy](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml/badge.svg)](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml)
+[![License](https://img.shields.io/npm/l/%40my-react%2Freact)](https://www.npmjs.com/search?q=%40my-react)
 
-### Online `Next.js` example [https://mrwangjusttodo.github.io/MrWangJustToDo.io/](https://mrwangjusttodo.github.io/MrWangJustToDo.io/)
+## Examples
+
+Online `Next.js` example [https://mrwangjusttodo.github.io/MrWangJustToDo.io/](https://mrwangjusttodo.github.io/MrWangJustToDo.io/)
+
+## Install
 
 ```bash
 # install
@@ -20,9 +25,28 @@ modules.export = withNext(nextConfig);
 
 ---
 
-```bash
-### if you want to debug this project
+## Packages
 
+| Package| Version |
+| :----------------------------- | :-------------------------------------------------------|
+| [`@my-react/react`](packages/myreact) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react)   |
+| [`@my-react/react-dom`](packages/myreact-dom) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-dom)  |
+| **refresh**  |    |
+| [`@my-react/react-refresh`](packages/myreact-refresh) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh)  |
+| [`@my-react/react-refresh-tools`](packages/myreact-refresh-tools) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh-tools)  |
+| **internal** |     |
+| [`@my-react/react-jsx`](packages/myreact-jsx) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-jsx)  |
+| [`@my-react/react-shared`](packages/myreact-shred) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-shared)  |
+| [`@my-react/react-reconciler`](packages/myreact-reconciler) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reconciler)  |
+| **experimental** |  |
+| [`@my-react/react-reactive`](packages/myreact-reactivity) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reactive)  |
+
+## Development
+
+- [node@18.x](https://nodejs.org/en)
+- [pnpm@8.x](https://pnpm.io/installation)
+
+```bash
 clone this project
 
 pnpm install
@@ -36,7 +60,7 @@ pnpm dev:ssr / dev:csr / dev:next
 
 ---
 
-## api
+## Api
 
 | @my-react/react | @my-react/react-dom    | @my-react/react-reactive | @my-react/react (hook)     |
 | --------------- | ---------------------- | ------------------------ | -------------------------- |
@@ -106,3 +130,6 @@ const App = () => {
   );
 };
 ```
+## License
+
+MIT

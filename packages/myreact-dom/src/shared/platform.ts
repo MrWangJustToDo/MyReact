@@ -10,8 +10,18 @@ const microTask = typeof queueMicrotask === "undefined" ? (task: () => void) => 
 
 // TODO
 const yieldTask =
-  typeof scheduler !== "undefined"
-    ? (task: () => void) => scheduler.postTask(task, { priority: "background" })
+  typeof scheduler !== "undefined" && typeof AbortController !== "undefined"
+    ? (task: () => void) => {
+        const { signal, abort } = new AbortController();
+        scheduler.postTask(task, { priority: "background", signal });
+        return () => {
+          try {
+            abort("");
+          } catch {
+            void 0;
+          }
+        };
+      }
     : typeof requestIdleCallback === "function"
     ? (task: () => void) => {
         const id = requestIdleCallback(task);
@@ -82,7 +92,7 @@ class DomPlatform extends CustomRenderPlatform {
         // 更新结束后触发error事件
         this.yieldTask(() => {
           window.dispatchEvent(new ErrorEvent("error", { error: _params.error, message: _params.error?.message }));
-        })
+        });
       });
     }
   }

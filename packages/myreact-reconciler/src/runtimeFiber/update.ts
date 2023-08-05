@@ -55,12 +55,12 @@ export const updateFiberNode = (
       ) {
         fiber.state = STATE_TYPE.__stable__;
       } else {
-        fiber.state |= STATE_TYPE.__inherit__;
+        fiber.state !== STATE_TYPE.__initial__ && (fiber.state |= STATE_TYPE.__inherit__);
 
         renderDispatch.patchToFiberUpdate?.(fiber);
       }
     } else {
-      fiber.state |= STATE_TYPE.__inherit__;
+      fiber.state !== STATE_TYPE.__initial__ && (fiber.state |= STATE_TYPE.__inherit__);
 
       if (fiber.type & NODE_TYPE.__provider__) {
         if (!isNormalEquals(fiber.pendingProps.value as Record<string, unknown>, fiber.memoizedProps.value as Record<string, unknown>)) {

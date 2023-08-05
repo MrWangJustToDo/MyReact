@@ -36,7 +36,7 @@ modules.export = withNext(nextConfig);
 | [`@my-react/react-refresh-tools`](packages/myreact-refresh-tools) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh-tools)  |
 | **internal** |     |
 | [`@my-react/react-jsx`](packages/myreact-jsx) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-jsx)  |
-| [`@my-react/react-shared`](packages/myreact-shred) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-shared)  |
+| [`@my-react/react-shared`](packages/myreact-shared) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-shared)  |
 | [`@my-react/react-reconciler`](packages/myreact-reconciler) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reconciler)  |
 | **experimental** |  |
 | [`@my-react/react-reactive`](packages/myreact-reactivity) | ![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reactive)  |

@@ -149,6 +149,22 @@ export class ListTree<T> {
     return false;
   }
 
+  some(iterator: (node: T) => boolean | undefined) {
+    let re = false;
+    this.listToFoot((node) => {
+      re = re || iterator(node);
+    });
+    return re;
+  }
+
+  every(iterator: (node: T) => boolean | undefined) {
+    let re = true;
+    this.listToFoot((node) => {
+      re = re && iterator(node);
+    });
+    return re;
+  }
+
   concat(list: ListTree<T>) {
     list.listToFoot((node) => this.push(node));
   }

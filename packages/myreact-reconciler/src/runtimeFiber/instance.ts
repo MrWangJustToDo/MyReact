@@ -118,7 +118,7 @@ export class MyReactFiberNode implements RenderFiber {
     const renderPlatform = currentRenderPlatform.current;
 
     const processQueue = () => {
-      const needUpdate = this.type & NODE_TYPE.__class__ ? processClassComponentUpdateQueue(this) : processFunctionComponentUpdateQueue(this);
+      const needUpdate = this.type & NODE_TYPE.__class__ ? processClassComponentUpdateQueue(this, true) : processFunctionComponentUpdateQueue(this, true);
 
       if (needUpdate?.needUpdate) this._update(needUpdate.isSync ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__triggerConcurrent__);
     };

@@ -16,7 +16,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode) => {
 
   const typedFiber = fiber as MyReactFiberNodeDev;
 
-  if (__DEV__) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+  if (__DEV__ && allQueue) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
   let node = allQueue?.head;
 
@@ -91,7 +91,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode) => 
 
   const typedFiber = fiber as MyReactFiberNodeDev;
 
-  if (__DEV__) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+  if (__DEV__ && allQueue) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
   let node = allQueue?.head;
 

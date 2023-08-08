@@ -54,11 +54,11 @@ export class MyReactFiberNode implements RenderFiber {
 
   elementType: MyReactElementType | null;
 
-  hookList: ListTree<RenderHook> | null = null;
+  hookList: ListTree<RenderHook> | null;
 
-  dependence: Set<MyReactInternalInstance> | null = null;
+  dependence: Set<MyReactInternalInstance> | null;
 
-  instance: MyReactInternalInstance | null = null;
+  instance: MyReactInternalInstance | null;
 
   child: MyReactFiberNode | null = null;
 
@@ -66,7 +66,7 @@ export class MyReactFiberNode implements RenderFiber {
 
   sibling: MyReactFiberNode | null = null;
 
-  updateQueue: ListTree<UpdateQueue> | null = null;
+  updateQueue: ListTree<UpdateQueue> | null;
 
   pendingProps: MyReactElement["props"] = emptyProps;
 

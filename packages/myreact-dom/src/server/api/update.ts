@@ -28,7 +28,7 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
         if (isStyle(key)) {
           const typedProps = (props[key] as Record<string, unknown>) || {};
           Object.keys(typedProps).forEach((styleName) => {
-            if (typedProps[styleName] !== null && typedProps !== undefined) {
+            if (typedProps[styleName] !== null && typedProps[styleName] !== undefined) {
               if (!isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
                 dom[key][styleName] = `${typedProps[styleName]}px`;
                 return;

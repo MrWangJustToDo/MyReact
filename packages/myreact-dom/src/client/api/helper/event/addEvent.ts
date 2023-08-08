@@ -33,18 +33,24 @@ const afterEvent = (event: string) => {
 /**
  * @internal
  */
-export const addEventListener = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, dom: DomElement, key: string, isControlled: boolean) => {
+export const addEventListener = (
+  fiber: MyReactFiberNode,
+  eventMap: ClientDomDispatch["runtimeMap"]["eventMap"],
+  dom: DomElement,
+  key: string,
+  isControlled: boolean
+) => {
   const typedElementType = fiber.elementType as string;
 
   const pendingProps = fiber.pendingProps;
 
   const callback = pendingProps[key] as (...args: any[]) => void;
 
+  if (!callback) return;
+
   const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElementType, pendingProps);
 
   if (enableEventSystem.current) {
-    const eventMap = renderDispatch.runtimeMap.eventMap;
-
     const eventState = eventMap.get(fiber) || {};
 
     const eventName = `${nativeName}_${isCapture}`;

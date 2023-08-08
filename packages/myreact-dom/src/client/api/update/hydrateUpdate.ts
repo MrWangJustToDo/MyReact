@@ -1,9 +1,9 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { enableControlComponent, getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, isUnitlessNumber, log } from "@my-react-dom-shared";
+import { enableControlComponent, getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, log } from "@my-react-dom-shared";
 
-import { addEventListener } from "../helper";
+import { XLINK_NS, XML_NS, X_CHAR, addEventListener, setStyle } from "../helper";
 
 import { controlElementTag, mountControlElement, prepareControlProp } from "./controlled";
 
@@ -53,6 +53,35 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
           dom[key] == (value as string);
         }
       }
+    } else if (isSVG && key.charCodeAt(0) === X_CHAR) {
+      if (key.startsWith("xmlns")) {
+        const serverAttr = dom.getAttributeNS(XML_NS, key);
+        if (String(serverAttr) !== String(value)) {
+          log({
+            fiber,
+            message: `hydrate warning, dom '${key}' props not match from server. server: ${serverAttr}, client: ${value}`,
+          });
+          dom.setAttributeNS(XML_NS, key, String(value));
+        }
+      } else if (key.startsWith("xlink")) {
+        const serverAttr = dom.getAttributeNS(XLINK_NS, "href");
+        if (String(serverAttr) !== String(value)) {
+          log({
+            fiber,
+            message: `hydrate warning, dom 'href' props not match from server. server: ${serverAttr}, client: ${value}`,
+          });
+          dom.setAttributeNS(XLINK_NS, "href", String(value));
+        }
+      } else {
+        const serverAttr = dom.getAttribute(key);
+        if (String(serverAttr) !== String(value)) {
+          log({
+            fiber,
+            message: `hydrate warning, dom '${key}' attr not match from server. server: ${serverAttr}, client: ${value}`,
+          });
+        }
+        dom.setAttribute(key, String(value));
+      }
     } else {
       if (key in dom && !isSVG) {
         if (dom[key].toString() !== String(value)) {
@@ -60,7 +89,13 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
             fiber,
             message: `hydrate warning, dom '${key}' props not match from server. server: ${dom[key]}, client: ${value}`,
           });
-          dom[key] = value as string;
+          try {
+            dom[key] = value as string;
+          } catch (e) {
+            if (__DEV__) {
+              log({ fiber, message: `${(e as Error).message}, key: ${key}, value: ${value}`, level: "error", triggerOnce: true });
+            }
+          }
         }
       } else {
         const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || key;
@@ -78,18 +113,10 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
   }
 };
 
-const domStyleHydrate = (fiber: MyReactFiberNode, key: string, value: Record<string, unknown>) => {
-  const node = fiber.nativeNode as DomElement | DomNode;
+const domStyleHydrate = (fiber: MyReactFiberNode, _key: string, value: Record<string, unknown>) => {
+  const node = fiber.nativeNode as HTMLElement;
 
-  Object.keys(value).forEach((styleName) => {
-    if (!isUnitlessNumber[styleName] && typeof value[styleName] === "number") {
-      node[key][styleName] = `${value[styleName]}px`;
-      return;
-    }
-    if (value[styleName] !== null && value[styleName] !== undefined) {
-      node[key][styleName] = value[styleName];
-    }
-  });
+  Object.keys(value).forEach((styleName) => setStyle(node, styleName, value[styleName] as string | number | null | undefined));
 };
 
 const domEventHydrate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, key: string) => {
@@ -97,7 +124,7 @@ const domEventHydrate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispa
 
   const isCanControlledElement = controlElementTag[fiber.elementType as string];
 
-  addEventListener(fiber, renderDispatch, node as DomElement, key, isCanControlledElement);
+  addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key, isCanControlledElement);
 };
 
 const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {

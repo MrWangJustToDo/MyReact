@@ -1,24 +1,12 @@
 import { emptyProps, NODE_TYPE } from "@my-react/react-reconciler";
 
-import {
-  enableControlComponent,
-  enableHighlight,
-  getHTMLAttrKey,
-  getSVGAttrKey,
-  isEvent,
-  isGone,
-  isNew,
-  isProperty,
-  isStyle,
-  isUnitlessNumber,
-  log,
-} from "@my-react-dom-shared";
+import { enableControlComponent, enableHighlight, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
 
-import { addEventListener, removeEventListener } from "../helper";
+import { addEventListener, removeEventListener, setAttribute, setStyle } from "../helper";
 
 import { controlElementTag, mountControlElement, prepareControlProp, updateControlElement } from "./controlled";
 import { HighLight } from "./highlight";
-import { XLINK_NS, XML_NS, X_CHAR } from "./tool";
+import { getAllKeys } from "./tool";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";
@@ -54,94 +42,26 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
 
     const newProps = fiber.pendingProps || {};
 
-    Object.keys(oldProps)
-      .filter((key) => isGone(newProps)(key) || isNew(oldProps, newProps)(key))
-      .forEach((key) => {
-        if (isEvent(key)) {
-          removeEventListener(fiber, renderDispatch, node as DomElement, key);
-        } else if (isProperty(key)) {
-          if (newProps[key] === null || newProps[key] === undefined) {
-            if (key === "className") {
-              if (isSVG) {
-                dom.removeAttribute("class");
-              } else {
-                dom[key] = "";
-              }
-            } else {
-              if (key in dom && !isSVG) {
-                dom[key] = "";
-              } else {
-                const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || key;
-                dom.removeAttribute(attrKey as string);
-              }
-            }
-          }
-        } else if (isStyle(key)) {
-          Object.keys((oldProps[key] as Record<string, unknown>) || {})
-            .filter(isGone((newProps[key] as Record<string, unknown>) || {}))
-            .forEach((styleName) => {
-              dom.style[styleName] = "";
-            });
-        }
-      });
-    Object.keys(newProps)
-      .filter(isNew(oldProps, newProps))
-      .filter((key) => {
-        if (isEvent(key)) {
-          addEventListener(fiber, renderDispatch, node as DomElement, key, isCanControlledElement);
-        } else if (isProperty(key)) {
-          // from million package
-          if (key.charCodeAt(0) === X_CHAR && isSVG) {
-            const typedDom = node as SVGElement;
-            if (key.startsWith("xmlns")) {
-              typedDom.setAttributeNS(XML_NS, key, String(newProps[key]));
-            } else if (key.startsWith("xlink")) {
-              typedDom.setAttributeNS(XLINK_NS, "href", String(newProps[key]));
-            } else {
-              typedDom.setAttribute(key, String(newProps[key]));
-            }
-            return;
-          }
-          if (newProps[key] !== null && newProps[key] !== undefined) {
-            if (key === "className") {
-              if (isSVG) {
-                dom.setAttribute("class", (newProps[key] as string) || "");
-              } else {
-                dom[key] = (newProps[key] as string) || "";
-              }
-            } else {
-              try {
-                if (key in dom && !isSVG) {
-                  dom[key] = newProps[key];
-                } else {
-                  const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || key;
-                  dom.setAttribute(attrKey, String(newProps[key]));
-                }
-              } catch (e) {
-                log({ fiber, message: `${(e as Error).message}, key: ${key}, value: ${newProps[key]}`, level: "error", triggerOnce: true });
-              }
-            }
-          }
-        } else if (isStyle(key)) {
-          const typedNewProps = newProps[key] as Record<string, unknown>;
+    const allKeys = getAllKeys(oldProps, newProps);
 
-          const typedOldProps = oldProps[key] as Record<string, unknown>;
-
-          Object.keys(typedNewProps || {})
-            .filter(isNew(typedOldProps || {}, typedNewProps))
-            .forEach((styleName) => {
-              if (!isUnitlessNumber[styleName] && typeof typedNewProps[styleName] === "number") {
-                dom[key][styleName] = `${typedNewProps[styleName]}px`;
-                return;
-              }
-              if (typedNewProps[styleName] !== null && typedNewProps[styleName] !== undefined) {
-                dom[key][styleName] = typedNewProps[styleName];
-              } else {
-                dom[key][styleName] = "";
-              }
-            });
+    allKeys.forEach((key) => {
+      const oldValue = oldProps[key];
+      const newValue = newProps[key];
+      if (!Object.is(oldValue, newValue)) {
+        if (isEvent(key)) {
+          removeEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
+          addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key, isCanControlledElement);
+        } else if (isStyle(key)) {
+          const typedNewValue = (newValue as Record<string, unknown>) || {};
+          const typedOldValue = (oldValue as Record<string, unknown>) || {};
+          const allStyleKeys = getAllKeys(typedOldValue, typedNewValue);
+          allStyleKeys.forEach((key) => setStyle(dom, key, typedNewValue[key] as string | number | null | undefined));
+        } else if (isProperty(key)) {
+          setAttribute(fiber, dom, key, isSVG, newValue);
         }
-      });
+      }
+    });
+
     if (
       newProps["dangerouslySetInnerHTML"] &&
       newProps["dangerouslySetInnerHTML"] !== oldProps["dangerouslySetInnerHTML"] &&

@@ -9,18 +9,18 @@ import type { DomElement } from "@my-react-dom-shared";
 /**
  * @internal
  */
-export const removeEventListener = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, dom: DomElement, key: string) => {
+export const removeEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDispatch["runtimeMap"]["eventMap"], dom: DomElement, key: string) => {
   const typedElementType = fiber.elementType as string;
 
   const currentProps = fiber.memoizedProps || {};
 
   const callback = currentProps[key] as (...args: any[]) => void;
 
+  if (!callback) return;
+
   const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElementType, currentProps);
 
   if (enableEventSystem.current) {
-    const eventMap = renderDispatch.runtimeMap.eventMap;
-
     // TODO
     const eventState = eventMap.get(fiber) || {};
 

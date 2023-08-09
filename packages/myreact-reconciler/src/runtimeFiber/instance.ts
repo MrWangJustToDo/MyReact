@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
@@ -11,6 +11,8 @@ import type { ListTree } from "@my-react/react-shared";
 type NativeNode = Record<string, any>;
 
 const { currentRenderPlatform } = __my_react_internal__;
+
+const { enableConcurrentMode } = __my_react_shared__;
 
 export const emptyProps = {};
 
@@ -118,7 +120,9 @@ export class MyReactFiberNode implements RenderFiber {
     const renderPlatform = currentRenderPlatform.current;
 
     const processQueue = () => {
-      const needUpdate = this.type & NODE_TYPE.__class__ ? processClassComponentUpdateQueue(this, true) : processFunctionComponentUpdateQueue(this, true);
+      const flag = enableConcurrentMode.current;
+
+      const needUpdate = this.type & NODE_TYPE.__class__ ? processClassComponentUpdateQueue(this, flag) : processFunctionComponentUpdateQueue(this, flag);
 
       if (needUpdate?.needUpdate) this._update(needUpdate.isSync ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__triggerConcurrent__);
     };

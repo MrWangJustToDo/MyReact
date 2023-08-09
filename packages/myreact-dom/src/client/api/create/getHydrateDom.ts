@@ -1,6 +1,6 @@
 import { NODE_TYPE, getElementName } from "@my-react/react-reconciler";
 
-import { log } from "@my-react-dom-shared";
+import { commentE, commentS, log } from "@my-react-dom-shared";
 
 import { fallback } from "../fallback";
 
@@ -8,7 +8,8 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const isValidHydrateDom = (el: ChildNode) => {
   if (el.nodeType === Node.COMMENT_NODE) {
-    if (el.textContent === " " || el.textContent === "") return false;
+    if (el.textContent === commentS || el.textContent === commentE) return true;
+    return false;
   }
   return true;
 };
@@ -44,14 +45,20 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
   }
   if (fiber.type & NODE_TYPE.__text__) {
     if (dom.nodeType !== Node.TEXT_NODE) {
-      log({
-        fiber,
-        level: "error",
-        message: `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`,
-      });
-      return false;
+      if (fiber.elementType === " " || fiber.elementType === "") {
+        const textNode = document.createTextNode("");
+        dom?.parentElement?.insertBefore(textNode, dom);
+        return textNode;
+      } else {
+        log({
+          fiber,
+          level: "error",
+          message: `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`,
+        });
+        return false;
+      }
     }
-    return true;
+    return dom;
   }
   if (fiber.type & NODE_TYPE.__plain__) {
     if (dom.nodeType !== Node.ELEMENT_NODE) {
@@ -70,7 +77,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
       });
       return false;
     }
-    return true;
+    return dom;
   }
   if (fiber.type & NODE_TYPE.__comment__) {
     if (dom.nodeType !== Node.COMMENT_NODE) {
@@ -81,7 +88,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
       });
       return false;
     }
-    return true;
+    return dom;
   }
   throw new Error("hydrate error, look like a bug");
 };
@@ -89,13 +96,13 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
 export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element, previousDom?: ChildNode) => {
   const dom = getNextHydrateDom(parentDom, previousDom);
 
-  const result = checkHydrateDom(fiber, dom);
+  const resultDom = checkHydrateDom(fiber, dom);
 
-  if (result) {
-    fiber.nativeNode = dom;
+  if (resultDom) {
+    fiber.nativeNode = resultDom;
   } else {
     fallback(dom);
   }
 
-  return result;
+  return resultDom;
 };

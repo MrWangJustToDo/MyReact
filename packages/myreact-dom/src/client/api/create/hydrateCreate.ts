@@ -13,7 +13,7 @@ export const hydrateCreate = (fiber: MyReactFiberNode, parentFiberWithDom: MyRea
 
     const result = getHydrateDom(fiber, parentDom, previousDom);
 
-    return result;
+    return Boolean(result);
   }
 
   throw new Error("hydrate error, portal element can not hydrate");

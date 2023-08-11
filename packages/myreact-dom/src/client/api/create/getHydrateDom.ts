@@ -39,6 +39,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     log({
       fiber,
       level: "error",
+      dispatchError: true,
       message: `hydrate error, dom not render from server, client: "${getElementName(fiber)}"`,
     });
     return false;
@@ -53,6 +54,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
         log({
           fiber,
           level: "error",
+          dispatchError: true,
           message: `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`,
         });
         return false;
@@ -65,6 +67,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
       log({
         fiber,
         level: "error",
+        dispatchError: true,
         message: `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`,
       });
       return false;
@@ -73,6 +76,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
       log({
         fiber,
         level: "error",
+        dispatchError: true,
         message: `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`,
       });
       return false;
@@ -84,6 +88,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
       log({
         fiber,
         level: "error",
+        dispatchError: true,
         message: `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`,
       });
       return false;

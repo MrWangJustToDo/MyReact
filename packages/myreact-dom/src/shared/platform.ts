@@ -1,6 +1,6 @@
 import { CustomRenderPlatform, getFiberTree, getHookTree, triggerError } from "@my-react/react-reconciler";
 
-import { log } from "@my-react-dom-shared";
+import { isServer, log } from "@my-react-dom-shared";
 
 import type { LogProps, RenderFiber } from "@my-react/react";
 import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react-reconciler";
@@ -57,8 +57,6 @@ const flashTask = () => {
     pending = false;
   });
 };
-
-const isServer = typeof window === "undefined";
 
 // TODO server/client side platform
 class DomPlatform extends CustomRenderPlatform {

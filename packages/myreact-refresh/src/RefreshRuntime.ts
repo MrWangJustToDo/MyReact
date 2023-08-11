@@ -250,13 +250,16 @@ export const createSignatureFunctionForTransform = () => {
 export const performReactRefresh = () => {
   if (!pendingUpdates.length) return;
 
+  if (typeof typedSelf?.["__@my-react/hmr__"]?.hmr !== "function") {
+    console.log(`[@my-react/react-refresh] try to refresh current App failed, current environment not have a valid HMR runtime`);
+    return;
+  }
+
   const allPending = pendingUpdates.slice(0);
 
   pendingUpdates.length = 0;
 
-  let container: null | CustomRenderDispatch = null;
-
-  let hasRootUpdate = false;
+  const containers: Map<CustomRenderDispatch, boolean> = new Map();
 
   allPending.forEach(([family, _nextType]) => {
     const prevType = getRenderTypeFormType(family.current);
@@ -266,7 +269,9 @@ export const performReactRefresh = () => {
     if (prevType && nextType) {
       const fibers = typedSelf["__@my-react/hmr__"]?.getCurrentFibersFromType?.(prevType);
 
-      container = container || typedSelf["__@my-react/hmr__"]?.getCurrentDispatchFromType?.(prevType);
+      const container = typedSelf["__@my-react/hmr__"]?.getCurrentDispatchFromType?.(prevType);
+
+      let hasRootUpdate = containers.get(container) || false;
 
       updatedFamiliesByType.set(prevType, family);
 
@@ -281,24 +286,28 @@ export const performReactRefresh = () => {
           hasRootUpdate = hasRootUpdate || f === container.rootFiber;
           typedSelf?.["__@my-react/hmr__"]?.hmr?.(f, nextType, forceReset);
         });
+
+        containers.set(container, hasRootUpdate);
       }
     }
   });
 
-  if (container) {
+  if (containers.size > 0) {
     console.log(`[@my-react/react-refresh] updating ...`);
 
-    if (container.isAppCrashed || container.isAppUnmounted) {
-      // have a uncaught runtime error for prev render
-      container.remountOnDev?.();
-    } else if (container.runtimeFiber.errorCatchFiber) {
-      // has a error for prev render
-      const fiber = container?.runtimeFiber.errorCatchFiber;
+    containers.forEach((hasRootUpdate, container) => {
+      if (container.isAppCrashed || container.isAppUnmounted) {
+        // have a uncaught runtime error for prev render
+        container.remountOnDev?.();
+      } else if (container.runtimeFiber.errorCatchFiber) {
+        // has a error for prev render
+        const fiber = container?.runtimeFiber.errorCatchFiber;
 
-      fiber._revert();
-    } else {
-      container.rootFiber._update(hasRootUpdate ? 32 : 4);
-    }
+        fiber._revert();
+      } else {
+        container.rootFiber._update(hasRootUpdate ? 32 : 4);
+      }
+    });
   } else {
     console.error(`[@my-react/react-refresh] refresh failed`);
   }

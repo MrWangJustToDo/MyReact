@@ -18,6 +18,10 @@ export type HMR = {
 
 export const initHMR = (env: Record<string, any>) => {
   if (__DEV__) {
+    if (env["hmr"] || env["setRefreshHandler"] || env["currentComponentFiber"] || env["getCurrentFibersFromType"] || env["getCurrentDispatchFromType"]) {
+      console.error(`[@my-react/react] current HMR environment is invalid`);
+      return;
+    }
     try {
       env["hmr"] = hmr;
       env["setRefreshHandler"] = setRefreshHandler;

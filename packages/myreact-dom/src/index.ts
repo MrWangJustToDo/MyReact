@@ -3,7 +3,7 @@ import { initHMR, safeCall, safeCallWithSync } from "@my-react/react-reconciler"
 
 import { render, hydrate, hydrateRoot, createRoot } from "./client";
 import { renderToString, renderToNodeStream, renderToStaticMarkup, renderToStaticNodeStream } from "./server";
-import { createPortal, findDOMNode, MyReactDomPlatform, unmountComponentAtNode } from "./shared";
+import { createPortal, findDOMNode, isServer, MyReactDomPlatform, unmountComponentAtNode } from "./shared";
 
 const version = __VERSION__;
 
@@ -17,14 +17,20 @@ const { initRenderPlatform } = __my_react_internal__;
 
 initRenderPlatform(MyReactDomPlatform);
 
-if (__DEV__ && enableHMRForDev.current) {
-  globalThis["__@my-react/hmr__"] = {};
+if (__DEV__ && !isServer && enableHMRForDev.current) {
+  if (globalThis["__@my-react/hmr__"]) {
+    console.error(
+      `[@my-react/react-dom] current environment already have a HMR runtime, maybe current environment have multiple version of '@my-react/react-dom'`
+    );
+  } else {
+    globalThis["__@my-react/hmr__"] = {};
 
-  try {
-    initHMR(globalThis["__@my-react/hmr__"]);
-  } catch (e) {
-    if (__DEV__) {
-      console.error(`[@my-react/react-dom] initHMR failed, error: ${(e as Error).message}`);
+    try {
+      initHMR(globalThis["__@my-react/hmr__"]);
+    } catch (e) {
+      if (__DEV__) {
+        console.error(`[@my-react/react-dom] initHMR failed, error: ${(e as Error).message}`);
+      }
     }
   }
 }

@@ -25,3 +25,8 @@ export const enableEventSystem = createRef(true);
  * @internal
  */
 export const enableHighlight = createRef(false);
+
+/**
+ * @internal
+ */
+export const isServer = typeof window === "undefined";

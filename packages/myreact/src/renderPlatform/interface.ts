@@ -8,6 +8,7 @@ export type LogProps = {
   fiber?: RenderFiber;
   triggerOnce?: boolean;
   level?: "warn" | "error";
+  dispatchError?: boolean;
 };
 
 interface DefaultRenderPlatform {

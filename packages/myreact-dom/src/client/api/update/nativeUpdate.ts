@@ -24,13 +24,13 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
   } else if (fiber.type & NODE_TYPE.__plain__) {
     const dom = node as HTMLElement;
 
-    const isCanControlledElement = enableControlComponent.current && controlElementTag[fiber.elementType as string];
+    const isControlledElement = enableControlComponent.current && controlElementTag[fiber.elementType as string];
 
-    if (isCanControlledElement) {
+    if (isControlledElement) {
       prepareControlProp(fiber);
     }
 
-    if (isCanControlledElement) {
+    if (isControlledElement) {
       if (fiber.memoizedProps === emptyProps) {
         mountControlElement(fiber);
       } else {
@@ -50,7 +50,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
       if (!Object.is(oldValue, newValue)) {
         if (isEvent(key)) {
           removeEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
-          addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key, isCanControlledElement);
+          addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
         } else if (isStyle(key)) {
           const typedNewValue = (newValue as Record<string, unknown>) || {};
           const typedOldValue = (oldValue as Record<string, unknown>) || {};

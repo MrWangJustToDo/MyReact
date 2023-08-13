@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export class TextElement {
   content = "";
   constructor(content: string) {

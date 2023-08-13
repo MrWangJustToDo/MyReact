@@ -5,7 +5,7 @@ import { enableEventSystem } from "@my-react-dom-shared";
 import { getNativeEventName } from "./getEventName";
 
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomDispatch, ControlledElement } from "@my-react-dom-client";
+import type { ClientDomDispatch } from "@my-react-dom-client";
 import type { DomElement } from "@my-react-dom-shared";
 
 // TODO
@@ -33,13 +33,7 @@ const afterEvent = (event: string) => {
 /**
  * @internal
  */
-export const addEventListener = (
-  fiber: MyReactFiberNode,
-  eventMap: ClientDomDispatch["runtimeMap"]["eventMap"],
-  dom: DomElement,
-  key: string,
-  isControlled: boolean
-) => {
+export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDispatch["runtimeMap"]["eventMap"], dom: DomElement, key: string) => {
   const typedElementType = fiber.elementType as string;
 
   const pendingProps = fiber.pendingProps;
@@ -71,18 +65,6 @@ export const addEventListener = (
         });
 
         afterEvent(nativeName);
-
-        if (isControlled) {
-          requestAnimationFrame(() => {
-            const pendingProps = fiber.pendingProps;
-
-            if (typeof pendingProps["value"] !== "undefined") {
-              const typedDom = dom as ControlledElement;
-
-              typedDom["value"] = pendingProps["value"] as string;
-            }
-          });
-        }
       };
 
       eventDispatcher.cb = [callback];

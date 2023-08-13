@@ -122,9 +122,7 @@ const domStyleHydrate = (fiber: MyReactFiberNode, _key: string, value: Record<st
 const domEventHydrate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, key: string) => {
   const node = fiber.nativeNode;
 
-  const isCanControlledElement = controlElementTag[fiber.elementType as string];
-
-  addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key, isCanControlledElement);
+  addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
 };
 
 const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
@@ -151,20 +149,20 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
   const node = fiber.nativeNode as DomElement | DomNode;
 
   if (node) {
-    const props = fiber.pendingProps;
-
     const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
     if (fiber.type & NODE_TYPE.__plain__) {
-      const isCanControlledElement = enableControlComponent.current && controlElementTag[fiber.elementType as string];
+      const isControlledElement = enableControlComponent.current && controlElementTag[fiber.elementType as string];
 
-      if (isCanControlledElement) {
+      if (isControlledElement) {
         prepareControlProp(fiber);
       }
 
-      if (isCanControlledElement) {
+      if (isControlledElement) {
         mountControlElement(fiber);
       }
+
+      const props = fiber.pendingProps;
 
       Object.keys(props).forEach((key) => {
         if (isEvent(key)) {

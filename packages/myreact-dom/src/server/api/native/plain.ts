@@ -3,6 +3,9 @@ import { isSingleTag, kebabCase } from "@my-react-dom-shared";
 import { CommentEndElement, CommentStartElement } from "./comment";
 import { TextElement } from "./text";
 
+/**
+ * @internal
+ */
 export class PlainElement {
   type: string;
   style: Record<string, string | null | undefined> = {};

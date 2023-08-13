@@ -1,3 +1,6 @@
+/**
+ * @internal
+ */
 export const getNativeEventName = (eventName: string, tagName: string, props: Record<string, unknown>) => {
   let isCapture = false;
 

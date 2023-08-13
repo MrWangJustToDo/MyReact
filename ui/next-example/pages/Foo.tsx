@@ -26,14 +26,18 @@ export default function Foo() {
 
   const [j] = useState(() => "oooo");
 
-  console.log(pathname, l, j);
-
   return (
     <main className="w-full h-screen">
       <h2 className="text-center mt-6 text-[20px] text-[green] font-semibold font-mono">
         This is <span>Foo</span> {l} Page
       </h2>
       <div className="w-[50%] h-[400px] m-auto mt-6 overflow-auto">
+        <label>
+          Text input: <input name="myInput" value="00000" className="text-black" />
+        </label>
+        <label>
+          Checkbox: <input type="checkbox" name="myCheckbox" checked />
+        </label>
         <code>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta, suscipit. Reprehenderit voluptatum sit fugiat! Cumque perspiciatis itaque vel ex
           rerum fuga praesentium doloribus dicta dolorum harum sit amet sunt magni magnam temporibus voluptatum soluta alias, corporis iusto consequuntur

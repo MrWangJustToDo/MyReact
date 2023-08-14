@@ -3,8 +3,9 @@ import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { append, clearNode, clientDispatchMount, create, position, render, update } from "@my-react-dom-client";
-import { asyncUpdateTimeLimit, log, patchToFiberInitial, patchToFiberUnmount, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
+import { asyncUpdateTimeLimit, log, initialElementMap, unmountElementMap, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
 
+import { mountControlElement, unmountControlElement, updateControlElement } from "./control";
 import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -96,10 +97,15 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     return shouldPauseAsyncUpdate();
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
-    patchToFiberInitial(_fiber, this);
+    initialElementMap(_fiber, this);
+    mountControlElement(_fiber);
+  }
+  patchToFiberUpdate(_fiber: MyReactFiberNode) {
+    updateControlElement(_fiber);
   }
   patchToFiberUnmount(_fiber: MyReactFiberNode) {
-    patchToFiberUnmount(_fiber, this);
+    unmountElementMap(_fiber, this);
+    unmountControlElement(_fiber);
   }
 }
 

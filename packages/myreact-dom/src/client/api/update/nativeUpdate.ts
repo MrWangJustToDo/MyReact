@@ -1,10 +1,9 @@
-import { emptyProps, NODE_TYPE } from "@my-react/react-reconciler";
+import { NODE_TYPE } from "@my-react/react-reconciler";
 
-import { enableControlComponent, enableHighlight, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
+import { enableHighlight, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
 
 import { addEventListener, removeEventListener, setAttribute, setStyle } from "../helper";
 
-import { controlElementTag, mountControlElement, prepareControlProp, updateControlElement } from "./controlled";
 import { HighLight } from "./highlight";
 import { getAllKeys } from "./tool";
 
@@ -23,20 +22,6 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
     node.textContent = fiber.elementType as string;
   } else if (fiber.type & NODE_TYPE.__plain__) {
     const dom = node as HTMLElement;
-
-    const isControlledElement = enableControlComponent.current && controlElementTag[fiber.elementType as string];
-
-    if (isControlledElement) {
-      prepareControlProp(fiber);
-    }
-
-    if (isControlledElement) {
-      if (fiber.memoizedProps === emptyProps) {
-        mountControlElement(fiber);
-      } else {
-        updateControlElement(fiber);
-      }
-    }
 
     const oldProps = fiber.memoizedProps || {};
 

@@ -5,7 +5,7 @@ import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-serv
 /**
  * @internal
  */
-export const patchToFiberInitial = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch | ServerDomDispatch | ServerStreamDispatch) => {
+export const initialElementMap = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch | ServerDomDispatch | ServerStreamDispatch) => {
   let isSVG = _fiber.elementType === "svg";
 
   let parentFiberWithNode = null;
@@ -31,6 +31,6 @@ export const patchToFiberInitial = (_fiber: MyReactFiberNode, _dispatch: ClientD
 /**
  * @internal
  */
-export const patchToFiberUnmount = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
+export const unmountElementMap = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
   _dispatch.runtimeDom.elementMap.delete(_fiber);
 };

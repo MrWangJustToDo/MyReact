@@ -1,6 +1,6 @@
-import { log } from "@my-react-dom-shared";
+import { MyWeakMap, type MyReactFiberNode } from "@my-react/react-reconciler";
 
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import { log } from "@my-react-dom-shared";
 
 /**
  * @internal
@@ -9,33 +9,43 @@ export type ControlledElement = HTMLInputElement & {
   __isControlled__: boolean;
 };
 
+const inputEventMap = new MyWeakMap<MyReactFiberNode, () => void>();
+
 /**
  * @internal
  */
-export const generateOnChangeFun = (fiber: MyReactFiberNode) => () => {
-  if (__DEV__) {
-    log({
-      fiber,
-      level: "warn",
-      message: `[@my-react/react-dom] current controlled element is a readonly element, please provider a 'onChange' props to make the value update`,
-    });
-  }
-
-  requestAnimationFrame(() => {
-    const dom = fiber.nativeNode;
-
-    const props = fiber.pendingProps;
-
-    const typedDom = dom as ControlledElement;
-
-    const { type } = props;
-
-    const key = type === "radio" || type === "checkbox" ? "checked" : "value";
-
-    if (key in props) {
-      (typedDom as any)[key] = props[key];
+export const generateOnChangeFun = (fiber: MyReactFiberNode) => {
+  const _onChange = () => {
+    if (__DEV__) {
+      log({
+        fiber,
+        level: "warn",
+        message: `[@my-react/react-dom] current controlled element is a readonly element, please provider a 'onChange' props to make the value update`,
+      });
     }
-  });
+
+    requestAnimationFrame(() => {
+      const dom = fiber.nativeNode;
+
+      const props = fiber.pendingProps;
+
+      const typedDom = dom as ControlledElement;
+
+      const { type } = props;
+
+      const key = type === "radio" || type === "checkbox" ? "checked" : "value";
+
+      if (key in props) {
+        (typedDom as any)[key] = props[key];
+      }
+    });
+  };
+
+  const onChange = inputEventMap.get(fiber) || _onChange;
+
+  inputEventMap.set(fiber, onChange);
+
+  return onChange;
 };
 
 /**
@@ -48,13 +58,13 @@ export const prepareControlInputProp = (fiber: MyReactFiberNode) => {
 
   if (type === "radio" || type === "checkbox") {
     if ("checked" in props) {
-      fiber.pendingProps = { ["onChange"]: generateOnChangeFun(fiber), ...props };
+      fiber.pendingProps = { ["onChange"]: generateOnChangeFun(fiber), ...(__DEV__ ? { controlled: "@my-react" } : undefined), ...props, ["_control"]: true };
     } else {
       fiber.pendingProps = { ...props };
     }
   } else {
     if ("value" in props) {
-      fiber.pendingProps = { ["onChange"]: generateOnChangeFun(fiber), ...props };
+      fiber.pendingProps = { ["onChange"]: generateOnChangeFun(fiber), ...(__DEV__ ? { controlled: "@my-react" } : undefined), ...props, ["_control"]: true };
     } else {
       fiber.pendingProps = { ...props };
     }
@@ -65,26 +75,16 @@ export const prepareControlInputProp = (fiber: MyReactFiberNode) => {
  * @internal
  */
 export const mountControlInputElement = (fiber: MyReactFiberNode) => {
-  const dom = fiber.nativeNode;
-
   const props = fiber.pendingProps;
-
-  const typedDom = dom as ControlledElement;
 
   const { type } = props;
 
   if (type === "radio" || type === "checkbox") {
-    if ("checked" in props) {
-      typedDom.__isControlled__ = true;
-      typedDom.setAttribute("controlled", "@my-react");
-    } else if ("defaultChecked" in props) {
+    if (!("checked" in props) && "defaultChecked" in props) {
       props["checked"] = props["defaultChecked"];
     }
   } else {
-    if ("value" in props) {
-      typedDom.__isControlled__ = true;
-      typedDom.setAttribute("controlled", "@my-react");
-    } else if ("defaultValue" in props) {
+    if (!("value" in props) && "defaultValue" in props) {
       props["value"] = props["defaultValue"];
     }
   }
@@ -98,27 +98,28 @@ export const mountControlInputElement = (fiber: MyReactFiberNode) => {
  * @internal
  */
 export const updateControlInputElement = (fiber: MyReactFiberNode) => {
-  const dom = fiber.nativeNode;
+  const pendingProps = fiber.pendingProps;
 
-  const props = fiber.pendingProps;
+  const memoizedProps = fiber.memoizedProps;
 
-  const { type } = props;
-
-  const typedDom = dom as ControlledElement;
+  const { type } = pendingProps;
 
   const key = type === "radio" || type === "checkbox" ? "checked" : "value";
 
-  if (key in props) {
-    if (__DEV__ && !typedDom.__isControlled__) {
+  if (key in pendingProps) {
+    if (__DEV__ && !memoizedProps["_control"]) {
       log({ fiber, level: "warn", message: `current component change from 'unControlled' to 'controlled', this may case some bug` });
-      typedDom.setAttribute("controlled", "@my-react");
     }
-    typedDom.__isControlled__ = true;
   } else {
-    if (__DEV__ && typedDom.__isControlled__) {
+    if (__DEV__ && memoizedProps["_control"]) {
       log({ fiber, level: "warn", message: `current component change from 'controlled' to 'unControlled', this may case some bug` });
-      typedDom.removeAttribute("controlled");
     }
-    typedDom.__isControlled__ = false;
   }
+};
+
+/**
+ * @internal
+ */
+export const unmountControlInputElement = (fiber: MyReactFiberNode) => {
+  inputEventMap.delete(fiber);
 };

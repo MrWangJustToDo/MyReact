@@ -1,11 +1,9 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { enableControlComponent, getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, log } from "@my-react-dom-shared";
+import { getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, log } from "@my-react-dom-shared";
 
 import { XLINK_NS, XML_NS, X_CHAR, addEventListener, setStyle } from "../helper";
-
-import { controlElementTag, mountControlElement, prepareControlProp } from "./controlled";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -152,16 +150,6 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
     const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
     if (fiber.type & NODE_TYPE.__plain__) {
-      const isControlledElement = enableControlComponent.current && controlElementTag[fiber.elementType as string];
-
-      if (isControlledElement) {
-        prepareControlProp(fiber);
-      }
-
-      if (isControlledElement) {
-        mountControlElement(fiber);
-      }
-
       const props = fiber.pendingProps;
 
       Object.keys(props).forEach((key) => {

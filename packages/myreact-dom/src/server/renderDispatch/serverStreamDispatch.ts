@@ -1,7 +1,7 @@
 import { CustomRenderDispatch, NODE_TYPE, safeCallWithFiber } from "@my-react/react-reconciler";
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server";
-import { patchToFiberInitial } from "@my-react-dom-shared";
+import { initialElementMap } from "@my-react-dom-shared";
 
 import { resolveLazyElementSync, resolveLazyElementAsync, resolveLazyElementStatic } from "./lazy";
 
@@ -96,7 +96,7 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
-    patchToFiberInitial(_fiber, this);
+    initialElementMap(_fiber, this);
   }
 }
 
@@ -171,6 +171,6 @@ export class ServerStaticStreamDispatch extends CustomRenderDispatch {
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
-    patchToFiberInitial(_fiber, this);
+    initialElementMap(_fiber, this);
   }
 }

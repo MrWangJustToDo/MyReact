@@ -92,7 +92,7 @@ export const nextWorkLazyAsync = async (fiber: MyReactFiberNode) => {
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
   // for a comment element, will not have any children;
   // empty node normally a invalid node
-  if (!(fiber.type & (NODE_TYPE.__empty__ | NODE_TYPE.__comment__ | NODE_TYPE.__null__ | NODE_TYPE.__text__))) {
+  if (!(fiber.type & (NODE_TYPE.__empty__ | NODE_TYPE.__comment__ | NODE_TYPE.__null__ | NODE_TYPE.__text__)) && "children" in fiber.pendingProps) {
     const { children } = fiber.pendingProps;
 
     transformChildrenFiber(fiber, children);

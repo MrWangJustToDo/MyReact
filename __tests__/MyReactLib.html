@@ -9,6 +9,7 @@
     <!-- <script src="../bundle/react-dom.development.js"></script> -->
     <script src="../packages/myreact/dist/umd/index.development.js"></script>
     <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
     <style>
       .red {
         color: red;
@@ -456,7 +457,7 @@
 
       const container = document.getElementById("root");
       const app = document.getElementById("app");
-      const stringElement = ReactDOM.renderToString(<Test name="hello" />);
+      const stringElement = ReactServerDOM.renderToString(<Test name="hello" />);
       // container.append(stringElement);
       app.innerHTML = stringElement;
       window.start = () => {

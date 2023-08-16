@@ -3,7 +3,7 @@ import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 import { getFiberWithNativeDom, isSingleTag } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 /**

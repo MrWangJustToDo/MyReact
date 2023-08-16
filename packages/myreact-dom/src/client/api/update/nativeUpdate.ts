@@ -8,7 +8,7 @@ import { HighLight } from "./highlight";
 import { getAllKeys } from "./tool";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {

@@ -2,7 +2,9 @@ import { createElement, type MyReactElement, type MyReactElementNode } from "@my
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { append, clearNode, clientDispatchMount, create, position, render, update } from "@my-react-dom-client";
+import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
+import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
+import { render } from "@my-react-dom-client/mount";
 import { asyncUpdateTimeLimit, log, initialElementMap, unmountElementMap, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
 
 import { mountControlElement, unmountControlElement, updateControlElement } from "./control";

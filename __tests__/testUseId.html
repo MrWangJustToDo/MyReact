@@ -10,6 +10,7 @@
     <!-- <script src="../bundle/react-dom.development.js"></script> -->
     <script src="../packages/myreact/dist/umd/index.development.js"></script>
     <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
     <!-- <script src="../bundle/react.18.development.js"></script> -->
     <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
   </head>
@@ -94,7 +95,7 @@
 
       ReactDOM.render(<App />, root);
 
-      console.log(ReactDOM.renderToString(<App />));
+      console.log(ReactServerDOM.renderToString(<App />));
     </script>
   </body>
 </html>

@@ -3,7 +3,7 @@ import { enableEventSystem } from "@my-react-dom-shared";
 import { getNativeEventName } from "./getEventName";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { DomElement } from "@my-react-dom-shared";
 
 /**

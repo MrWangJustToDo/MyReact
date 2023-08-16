@@ -1,6 +1,6 @@
 import { once } from "@my-react/react-shared";
 
-import { unmountComponentAtNode } from "@my-react-dom-shared";
+import { unmountComponentAtNode } from "@my-react-dom-client/tools";
 
 import { render as originalRender } from "./render";
 

@@ -5,7 +5,13 @@ import { syncFlush } from "../share";
 
 import type { RenderFiber, UpdateQueue } from "@my-react/react";
 
-export type UpdateQueueDev = UpdateQueue<{ _debugCreateTime: number; _debugBeforeValue: any; _debugAfterValue: any; _debugRunTime: number }>;
+export type UpdateQueueDev = UpdateQueue<{
+  _debugCreateTime: number;
+  _debugBeforeValue: any;
+  _debugAfterValue: any;
+  _debugBaseValue: any;
+  _debugRunTime: number;
+}>;
 
 const { currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
 

@@ -1,5 +1,5 @@
 import { createElement, isValidElement } from "@my-react/react";
-import { Fragment, ListTree } from "@my-react/react-shared";
+import { Fragment, ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import { createFiberNode, updateFiberNode } from "../runtimeFiber";
 import { checkIsSameType, currentRenderDispatch, NODE_TYPE } from "../share";
@@ -129,7 +129,7 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
 };
 
 export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode): void => {
-  const isUpdate = !!parentFiber.child;
+  const isUpdate = parentFiber.state !== STATE_TYPE.__initial__;
 
   if (isUpdate) {
     const { existingChildrenMap, existingChildrenArray } = getExistingChildren(parentFiber);

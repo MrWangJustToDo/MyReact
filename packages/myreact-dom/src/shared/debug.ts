@@ -1,10 +1,10 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { getFiberTree, originalError, originalWarn, MyReactFiberNode } from "@my-react/react-reconciler";
 
-import { ClientDomDispatch } from "@my-react-dom-client";
+import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 import type { LogProps } from "@my-react/react";
-import type { RenderContainer } from "@my-react-dom-client";
+import type { RenderContainer } from "@my-react-dom-client/mount";
 
 const { currentRunningFiber } = __my_react_internal__;
 

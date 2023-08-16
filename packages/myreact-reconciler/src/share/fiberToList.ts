@@ -21,7 +21,9 @@ export const generateFiberToList = (fiber: MyReactFiberNode) => {
 
   let temp = fiber;
 
-  listTree.push(temp);
+  if (temp) {
+    listTree.push(temp);
+  }
 
   while (temp) {
     temp = getNext(temp, fiber);

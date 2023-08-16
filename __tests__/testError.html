@@ -10,6 +10,7 @@
     <!-- <script src="../bundle/react-dom.development.js"></script> -->
     <script src="../packages/myreact/dist/umd/index.development.js"></script>
     <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
   </head>
 
   <body>
@@ -87,7 +88,7 @@
         return <Baz />;
       };
 
-      ReactDOM.render(<App />, document.querySelector("#root"));
+      ReactServerDOM.renderToString(<App />);
     </script>
   </body>
 </html>

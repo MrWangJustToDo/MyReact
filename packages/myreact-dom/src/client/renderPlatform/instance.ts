@@ -1,14 +1,11 @@
-import { CustomRenderPlatform, getFiberTree, getHookTree, triggerError } from "@my-react/react-reconciler";
+import { CustomRenderPlatform } from "@my-react/react-reconciler";
 
-import { isServer, log } from "@my-react-dom-shared";
+import { log } from "@my-react-dom-shared";
 
-import type { LogProps, RenderFiber } from "@my-react/react";
-import type { MyReactFiberNode, MyReactHookNode } from "@my-react/react-reconciler";
-import type { ListTreeNode } from "@my-react/react-shared";
+import type { LogProps } from "@my-react/react";
 
 const microTask = typeof queueMicrotask === "undefined" ? (task: () => void) => Promise.resolve().then(task) : queueMicrotask;
 
-// TODO
 const yieldTask =
   typeof scheduler !== "undefined" && typeof AbortController !== "undefined"
     ? (task: () => void) => {
@@ -58,45 +55,28 @@ const flashTask = () => {
   });
 };
 
-// TODO server/client side platform
-class DomPlatform extends CustomRenderPlatform {
+export class ClientDomPlatform extends CustomRenderPlatform {
+  isServer: boolean;
+
+  constructor(isServer: boolean) {
+    super();
+    this.isServer = isServer;
+  }
+
   log(props: LogProps): void {
     log(props);
   }
   microTask(_task: () => void): void {
-    !isServer && microTask(_task);
+    !this.isServer && microTask(_task);
   }
   macroTask(_task: () => void): void {
-    !isServer && macroTask(_task);
+    !this.isServer && macroTask(_task);
   }
   yieldTask(_task: () => void): () => void {
-    if (!isServer) {
+    if (!this.isServer) {
       return yieldTask(_task);
     } else {
-      return void 0;
-    }
-  }
-  getFiberTree(fiber: MyReactFiberNode): string {
-    return getFiberTree(fiber);
-  }
-  getHookTree(treeHookNode: ListTreeNode<MyReactHookNode>, errorType: { lastRender: MyReactHookNode["type"]; nextRender: MyReactHookNode["type"] }): string {
-    return getHookTree(treeHookNode, errorType);
-  }
-  dispatchError(_params: { fiber?: RenderFiber; error?: Error }): void {
-    if (isServer) {
-      throw _params.error;
-    } else {
-      triggerError(_params.fiber as MyReactFiberNode, _params.error, () => {
-        // 更新结束后触发error事件
-        this.yieldTask(() => {
-          window.dispatchEvent(new ErrorEvent("error", { error: _params.error, message: _params.error?.message }));
-        });
-      });
+      return () => void 0;
     }
   }
 }
-
-/**
- * @internal
- */
-export const MyReactDomPlatform = new DomPlatform();

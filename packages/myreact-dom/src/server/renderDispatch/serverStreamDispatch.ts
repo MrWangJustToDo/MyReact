@@ -1,6 +1,6 @@
 import { CustomRenderDispatch, NODE_TYPE, safeCallWithFiber } from "@my-react/react-reconciler";
 
-import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server";
+import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
 import { resolveLazyElementSync, resolveLazyElementAsync, resolveLazyElementStatic } from "./lazy";

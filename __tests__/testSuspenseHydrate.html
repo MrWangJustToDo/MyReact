@@ -11,6 +11,7 @@
   <!-- <script src="../bundle/react-dom.development.js"></script> -->
   <script src="../packages/myreact/dist/umd/index.development.js"></script>
   <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
 </head>
 
 <body>
@@ -73,7 +74,7 @@
     const a = document.querySelector("#a");
     const b = document.querySelector("#b");
 
-    const aString = ReactDOM.renderToString(<App1 />);
+    const aString = ReactServerDOM.renderToString(<App1 />);
 
     a.innerHTML = aString;
 
@@ -81,7 +82,7 @@
       ReactDOM.hydrate(<App1 />, a);
     }
 
-    ReactDOM.renderToString(<App2 />, true).then((string) => b.innerHTML = string);
+    ReactServerDOM.renderToString(<App2 />, true).then((string) => b.innerHTML = string);
 
     const hydrate2 = async () => {
       await ReactDOM.hydrate(<App2 />, b, true)

@@ -1,8 +1,8 @@
 import { mount, mountAsync } from "@my-react/react-reconciler";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client";
-import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-server";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
+import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 /**
  * @internal

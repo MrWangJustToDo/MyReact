@@ -17,6 +17,16 @@ export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyRe
   transformChildrenFiber(fiber, children);
 };
 
+export const nextWorkNormal = (fiber: MyReactFiberNode) => {
+  // for a comment element, will not have any children;
+  // empty node normally a invalid node
+  if (!(fiber.type & (NODE_TYPE.__empty__ | NODE_TYPE.__comment__ | NODE_TYPE.__null__ | NODE_TYPE.__text__)) && "children" in fiber.pendingProps) {
+    const { children } = fiber.pendingProps;
+
+    transformChildrenFiber(fiber, children);
+  }
+};
+
 export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
   if (!fiber.instance) {
     const children = classComponentMount(fiber);
@@ -87,16 +97,6 @@ export const nextWorkLazyAsync = async (fiber: MyReactFiberNode) => {
   const children = await renderDispatch.resolveLazyElementAsync(fiber);
 
   nextWorkCommon(fiber, children);
-};
-
-export const nextWorkNormal = (fiber: MyReactFiberNode) => {
-  // for a comment element, will not have any children;
-  // empty node normally a invalid node
-  if (!(fiber.type & (NODE_TYPE.__empty__ | NODE_TYPE.__comment__ | NODE_TYPE.__null__ | NODE_TYPE.__text__)) && "children" in fiber.pendingProps) {
-    const { children } = fiber.pendingProps;
-
-    transformChildrenFiber(fiber, children);
-  }
 };
 
 export const nextWorkConsumer = (fiber: MyReactFiberNode) => {

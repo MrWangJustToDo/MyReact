@@ -1,6 +1,8 @@
 import { MyReactFiberNode, triggerUnmount } from "@my-react/react-reconciler";
 
-import { ClientDomDispatch, type RenderContainer } from "@my-react-dom-client";
+import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
+
+import type { RenderContainer } from "@my-react-dom-client/mount";
 
 export const unmountComponentAtNode = (container: RenderContainer) => {
   const fiber = container.__fiber__;

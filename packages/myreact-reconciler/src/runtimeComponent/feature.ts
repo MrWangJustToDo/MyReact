@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
@@ -21,14 +22,16 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
 
   const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
 
-  const pendingProps = Object.assign({}, fiber.pendingProps);
+  const pendingProps = fiber.pendingProps;
 
-  const currentState = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
+  const currentStateObj = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
+
+  const pendingState = currentStateObj.pendingState;
 
   if (typedComponent.getDerivedStateFromProps) {
-    const payloadState = typedComponent.getDerivedStateFromProps?.(pendingProps, currentState.pendingState);
+    const payloadState = typedComponent.getDerivedStateFromProps?.(pendingProps, pendingState);
     if (payloadState) {
-      currentState.pendingState = Object.assign({}, currentState.pendingState, payloadState);
+      currentStateObj.pendingState = Object.assign({}, pendingState, payloadState);
     }
   }
 };
@@ -63,7 +66,11 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   const props = Object.assign({}, fiber.pendingProps);
 
+  if (__DEV__) Object.freeze(props);
+
   const instance = new typedComponent(props, context);
+
+  if (__DEV__) Object.freeze(instance.state);
 
   instance.props = props;
 
@@ -75,7 +82,7 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   instance._setContext(ProviderFiber);
 
-  const pendingState = Object.assign({}, instance.state);
+  const pendingState = instance.state;
 
   const isErrorCatch = isErrorBoundariesInstance(instance, typedComponent);
 
@@ -232,8 +239,11 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
 
   const renderPlatform = currentRenderPlatform.current;
 
+  let hasLegacyLifeFunction = false;
+
   // TODO setState
   if (typedInstance.UNSAFE_componentWillMount) {
+    hasLegacyLifeFunction = true;
     typedInstance.UNSAFE_componentWillMount?.();
     if (__DEV__) {
       renderPlatform.log({
@@ -246,6 +256,7 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
   }
 
   if (typedInstance.componentWillMount) {
+    hasLegacyLifeFunction = true;
     typedInstance.componentWillMount?.();
     if (__DEV__) {
       renderPlatform.log({
@@ -256,6 +267,8 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
       });
     }
   }
+
+  return hasLegacyLifeFunction;
 };
 
 /**
@@ -266,9 +279,12 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
 
   const renderPlatform = currentRenderPlatform.current;
 
+  let hasLegacyLifeFunction = false;
+
   // only trigger on parent component update
   if (fiber.state & STATE_TYPE.__inherit__) {
     if (typedInstance.UNSAFE_componentWillReceiveProps) {
+      hasLegacyLifeFunction = true;
       const nextProps = Object.assign({}, fiber.pendingProps);
       typedInstance.UNSAFE_componentWillReceiveProps?.(nextProps);
       if (__DEV__) {
@@ -282,6 +298,7 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
     }
 
     if (typedInstance.componentWillReceiveProps) {
+      hasLegacyLifeFunction = true;
       const nextProps = Object.assign({}, fiber.pendingProps);
       typedInstance.componentWillReceiveProps?.(nextProps);
       if (__DEV__) {
@@ -294,6 +311,8 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
       }
     }
   }
+
+  return hasLegacyLifeFunction;
 };
 
 /**
@@ -336,8 +355,7 @@ export const classComponentMount = (fiber: MyReactFiberNode) => {
   // legacy lifeCycle
   if (enableLegacyLifeCycle.current) {
     beforeSyncFlush();
-    processComponentWillMountOnMount(fiber);
-    syncFlushComponentQueue(fiber);
+    processComponentWillMountOnMount(fiber) && syncFlushComponentQueue(fiber);
     afterSyncFlush();
   }
 
@@ -369,8 +387,7 @@ const classComponentUpdateFromNormal = (fiber: MyReactFiberNode) => {
 
   if (enableLegacyLifeCycle.current) {
     beforeSyncFlush();
-    processComponentWillReceiveProps(fiber);
-    syncFlushComponentQueue(fiber);
+    processComponentWillReceiveProps(fiber) && syncFlushComponentQueue(fiber);
     afterSyncFlush();
   }
 

@@ -6,7 +6,7 @@ import { hydrateUpdate } from "./hydrateUpdate";
 import { nativeUpdate } from "./nativeUpdate";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 /**
  * @internal

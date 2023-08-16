@@ -45,7 +45,7 @@ export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeF
   } else {
     if (typeof element === "object" && element !== null) {
       if (__DEV__) {
-        renderPlatform?.log({ message: `invalid object element type ${JSON.stringify(element)}`, level: "warn", triggerOnce: true });
+        renderPlatform?.log({ message: `invalid object element type "${JSON.stringify(element)}"`, level: "warn", triggerOnce: true });
       }
       nodeType |= NODE_TYPE.__empty__;
     } else if (element === null || element === undefined || typeof element === "boolean" || typeof element === "function") {
@@ -93,7 +93,7 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
         nodeType |= NODE_TYPE.__lazy__;
         break;
       default:
-        throw new Error(`invalid object element type ${typedElementType[TYPEKEY]?.toString()}`);
+        throw new Error(`invalid object element type "${typedElementType[TYPEKEY]?.toString()}"`);
     }
     if (typeof elementType === "object") {
       if (elementType[TYPEKEY] === ForwardRef) {
@@ -141,13 +141,13 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
         nodeType |= NODE_TYPE.__profiler__;
         break;
       default:
-        throw new Error(`invalid symbol element type ${elementType?.toString()}`);
+        throw new Error(`invalid symbol element type "${elementType?.toString()}"`);
     }
   } else if (typeof elementType === "string") {
     nodeType |= NODE_TYPE.__plain__;
   } else {
     if (__DEV__) {
-      renderPlatform?.log({ message: `invalid element type ${elementType?.toString()}`, level: "warn", triggerOnce: true });
+      renderPlatform?.log({ message: `invalid element type "${elementType?.toString()}"`, level: "warn", triggerOnce: true });
     }
     nodeType |= NODE_TYPE.__empty__;
   }

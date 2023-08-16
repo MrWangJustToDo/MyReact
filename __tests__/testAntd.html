@@ -69,7 +69,6 @@
       const App = () => {
 
         const click = () => {
-          debugger;
           message.info('click on the button');
         }
 
@@ -80,6 +79,9 @@
         );
       };
 
+      // React.__my_react_shared__.enableConcurrentMode.current = false;
+
+      // TODO
       ReactDOM.render(<App />, root);
     </script>
   </body>

@@ -7,7 +7,7 @@ import { getInsertBeforeDomFromSiblingAndParent } from "./getInsertBeforeDom";
 import { insertBefore } from "./insertBefore";
 
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 /**
  * @internal

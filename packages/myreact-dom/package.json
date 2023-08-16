@@ -55,35 +55,92 @@
     },
     "./package.json": "./package.json"
   },
-  "buildOptions": {
-    "input": "./src/index.ts",
-    "output": [
-      {
-        "dir": "./dist",
-        "entryFileNames": "cjs/index.js",
-        "format": "cjs",
-        "multiple": true,
-        "sourcemap": true
-      },
-      {
-        "dir": "./dist",
-        "entryFileNames": "esm/index.js",
-        "format": "esm",
-        "sourcemap": true
-      },
-      {
-        "dir": "./dist",
-        "entryFileNames": "umd/index.js",
-        "format": "umd",
-        "multiple": true,
-        "globals": {
-          "@my-react/react": "React"
+  "buildOptions": [
+    {
+      "input": "./src/index.ts",
+      "pkgName": "client",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/client.js",
+          "format": "cjs",
+          "multiple": true,
+          "sourcemap": true
         },
-        "name": "ReactDOM",
-        "sourcemap": true
-      }
-    ]
-  },
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/index.js",
+          "format": "cjs",
+          "multiple": true,
+          "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/client.js",
+          "format": "esm",
+          "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/index.js",
+          "format": "esm",
+          "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "umd/client.js",
+          "format": "umd",
+          "multiple": true,
+          "globals": {
+            "@my-react/react": "React"
+          },
+          "name": "ReactDOM",
+          "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "umd/index.js",
+          "format": "umd",
+          "multiple": true,
+          "globals": {
+            "@my-react/react": "React"
+          },
+          "name": "ReactDOM",
+          "sourcemap": true
+        }
+      ]
+    },
+    {
+      "input": "./src/server/index.ts",
+      "pkgName": "server",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/server.js",
+          "format": "cjs",
+          "multiple": true,
+          "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/server.js",
+          "format": "esm",
+          "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "umd/server.js",
+          "format": "umd",
+          "multiple": true,
+          "globals": {
+            "@my-react/react": "React"
+          },
+          "name": "ReactServerDOM",
+          "sourcemap": true
+        }
+      ]
+    }
+  ],
   "keywords": [
     "react-dom",
     "react-dom like",

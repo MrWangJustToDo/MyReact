@@ -1,5 +1,4 @@
-import { processHookNode } from "../processHook";
-import { processState } from "../processState";
+import { getFiberTree, getHookTree } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
@@ -20,20 +19,18 @@ export class CustomRenderPlatform implements RenderPlatform {
     return void 0;
   }
   getFiberTree(_fiber: MyReactFiberNode): string {
-    return "";
+    return getFiberTree(_fiber);
   }
   getHookTree(_treeHookNode: ListTreeNode<MyReactHookNode>, _errorType: { lastRender: HOOK_TYPE; nextRender: HOOK_TYPE }): string {
-    return "";
+    return getHookTree(_treeHookNode, _errorType);
   }
   dispatchHook(_params: Pick<RenderHook<Record<string, any>>, "reducer" | "deps" | "type" | "value">): unknown {
-    return processHookNode(_params);
+    return void 0;
   }
   dispatchState(_params: UpdateQueue): void {
-    processState(_params);
+    void 0;
   }
   dispatchError(_params: { fiber?: RenderFiber; error?: Error }): void {
-    const { fiber, error } = _params;
-
-    fiber?._error(error);
+    void 0;
   }
 }

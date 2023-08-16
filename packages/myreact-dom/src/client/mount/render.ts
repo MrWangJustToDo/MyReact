@@ -2,8 +2,10 @@ import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { checkIsSameType, initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 import { once, STATE_TYPE } from "@my-react/react-shared";
 
-import { ClientDomDispatch } from "@my-react-dom-client";
-import { checkRoot, prepareDevContainer, startRender, unmountComponentAtNode } from "@my-react-dom-shared";
+import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
+import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
+import { unmountComponentAtNode } from "@my-react-dom-client/tools";
+import { checkRoot, prepareDevContainer, startRender } from "@my-react-dom-shared";
 
 import type { MyReactElement, LikeJSX } from "@my-react/react";
 
@@ -48,6 +50,8 @@ export const onceLogLegacyLifeCycleMode = once(() => {
 
 export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) => {
   if (!isValidElement(_element)) throw new Error(`[@my-react/react-dom] 'render' can only render a '@my-react' element`);
+
+  prepareRenderPlatform();
 
   const container = _container as RenderContainer;
 

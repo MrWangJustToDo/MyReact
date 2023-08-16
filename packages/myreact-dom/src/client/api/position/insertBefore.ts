@@ -30,7 +30,6 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReac
     try {
       parentDOM.insertBefore(childDOM, beforeDOM);
     } catch {
-      console.error("position error, look like a bug for @my-react");
       parentDOM.append(childDOM);
     }
 

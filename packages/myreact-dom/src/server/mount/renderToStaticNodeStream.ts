@@ -1,8 +1,9 @@
 import { __my_react_shared__, isValidElement } from "@my-react/react";
 import { MyReactFiberNode, initialFiberNode } from "@my-react/react-reconciler";
 
-
-import { ContainerElement, ServerStaticStreamDispatch } from "@my-react-dom-server";
+import { ContainerElement } from "@my-react-dom-server/api";
+import { ServerStaticStreamDispatch } from "@my-react-dom-server/renderDispatch";
+import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
 import { checkRoot, startRender } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
@@ -19,6 +20,8 @@ export const renderToStaticNodeStream = (element: LikeJSX): Readable => {
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-empty-function
     const stream = typeof window === "undefined" ? new (require("stream").Readable)({ read() {} }) : temp;
+
+    prepareRenderPlatform();
 
     enableScopeTreeLog.current = false;
 

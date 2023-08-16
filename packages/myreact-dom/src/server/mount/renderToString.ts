@@ -1,7 +1,9 @@
 import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
-import { ContainerElement, ServerDomDispatch } from "@my-react-dom-server";
+import { ContainerElement } from "@my-react-dom-server/api";
+import { ServerDomDispatch } from "@my-react-dom-server/renderDispatch";
+import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
 import { checkRoot, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import type { MyReactElement, LikeJSX } from "@my-react/react";
@@ -54,6 +56,8 @@ export function renderToString(element: LikeJSX, asyncRender?: boolean) {
   // checkValidElement
   if (isValidElement(element)) {
     enableScopeTreeLog.current = false;
+
+    prepareRenderPlatform();
 
     if (asyncRender) {
       return renderToStringAsync(element);

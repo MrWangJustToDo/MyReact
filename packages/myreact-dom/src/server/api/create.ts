@@ -1,13 +1,13 @@
 import { isCommentStartElement, NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE } from "@my-react/react-shared";
 
-import { getSerializeProps } from "@my-react-dom-server";
 import { isSingleTag, validDomNesting, validDomTag } from "@my-react-dom-shared";
 
 import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
+import { getSerializeProps } from "./update";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ServerDomDispatch, ServerStaticStreamDispatch, ServerStreamDispatch } from "@my-react-dom-server";
+import type { ServerDomDispatch, ServerStaticStreamDispatch, ServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 /**
  * @internal

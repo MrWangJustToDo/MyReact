@@ -1,4 +1,3 @@
-
 import { getHTMLAttrKey, getSVGAttrKey, log } from "@my-react-dom-shared";
 
 import { XLINK_NS, XML_NS, X_CHAR } from "./namespace";
@@ -59,6 +58,9 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
         el.removeAttribute(attrKey);
       } else {
         el.setAttribute(attrKey, String(value));
+        if (el.nodeName === "INPUT" && attrKey === "autofocus") {
+          requestAnimationFrame(() => el.focus());
+        }
       }
     }
   } catch (e) {

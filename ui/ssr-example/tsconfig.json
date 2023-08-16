@@ -16,7 +16,7 @@
     "jsx": "react-jsx",
     "incremental": true,
     "baseUrl": ".",
-    "types": ["node", "jest", "webpack-env"],
+    "types": ["node", "webpack-env"],
     "paths": {
       "@build": ["./build"],
       "@build/*": ["./build/*"],

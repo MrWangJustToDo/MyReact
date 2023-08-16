@@ -10,6 +10,7 @@
   <!-- <script src="../bundle/react-dom.development.js"></script> -->
   <script src="../packages/myreact/dist/umd/index.development.js"></script>
   <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
   <style>
     .red {
       color: red;
@@ -89,10 +90,10 @@
       );
     };
 
-    const LazyFoo = lazy(async () => {
+    const LazyFoo = memo(lazy(async () => {
       await delay(60);
       return { default: Foo };
-    });
+    }));
 
 
     const LazyBar = lazy(async () => {
@@ -136,9 +137,10 @@
 
     const container = document.getElementById("root");
     // ReactDOM.render(<App />, container);
+    ReactServerDOM.renderToString(<App />)
 
     // lazy hydrate
-    ReactDOM.renderToString(<App />, true).then((r) => container.innerHTML = r).then(() => ReactDOM.hydrate(<App />, container, true))
+    // ReactDOM.renderToString(<App />, true).then((r) => container.innerHTML = r).then(() => ReactDOM.hydrate(<App />, container, true))
     // container.innerHTML = ReactDOM.renderToString(<App />)
   </script>
 </body>

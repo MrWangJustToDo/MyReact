@@ -10,6 +10,7 @@
     <!-- <script src="../bundle/react-dom.development.js"></script> -->
     <script src="../packages/myreact/dist/umd/index.development.js"></script>
     <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
   </head>
   <body>
     <div id="root"></div>
@@ -20,7 +21,7 @@
 
       const app = document.querySelector("#root");
 
-      app.innerHTML = ReactDOM.renderToString(<App />);
+      app.innerHTML = ReactServerDOM.renderToString(<App />);
 
       window.start = () => {
         ReactDOM.hydrate(<App text={0} />, app);

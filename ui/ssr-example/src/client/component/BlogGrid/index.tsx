@@ -30,10 +30,9 @@ const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"
   const mergedLayout = useMemo(() => {
     const obj = {};
     Object.keys(newLayout).forEach((key) => {
-      layouts[key] = layouts[key] || [];
-      const hasItem = layouts[key].length > 0;
+      const hasItem = layouts[key]?.length > 0;
       obj[key] = [];
-      const oldValue = layouts[key];
+      const oldValue = layouts[key] || [];
       const newValue = newLayout[key];
       newValue.forEach((item) => {
         const lastItem = oldValue.find((_i) => _i.i === item.i);

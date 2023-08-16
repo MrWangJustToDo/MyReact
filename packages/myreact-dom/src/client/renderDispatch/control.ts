@@ -6,7 +6,7 @@ import {
   mountControlElement as _mountControlElement,
   updateControlElement as _updateControlElement,
   unmountControlElement as _unmountControlElement,
-} from "@my-react-dom-client";
+} from "@my-react-dom-client/api";
 import { enableControlComponent } from "@my-react-dom-shared";
 
 export const mountControlElement = (fiber: MyReactFiberNode) => {

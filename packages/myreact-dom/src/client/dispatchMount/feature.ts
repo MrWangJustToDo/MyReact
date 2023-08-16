@@ -1,10 +1,10 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { afterSyncUpdate, beforeSyncUpdate, effect, insertionEffect, layoutEffect, safeCallWithFiber } from "@my-react/react-reconciler";
 
-import { fallback } from "@my-react-dom-client";
+import { fallback } from "@my-react-dom-client/api";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 const { currentRenderPlatform } = __my_react_internal__;
 

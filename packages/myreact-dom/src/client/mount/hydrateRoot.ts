@@ -1,4 +1,4 @@
-import { unmountComponentAtNode } from "@my-react-dom-shared";
+import { unmountComponentAtNode } from "@my-react-dom-client/tools";
 
 import { onceLogNewEntry } from "./createRoot";
 import { hydrate } from "./hydrate";

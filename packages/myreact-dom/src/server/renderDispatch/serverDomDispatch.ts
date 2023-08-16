@@ -1,6 +1,6 @@
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 
-import { append, create, update } from "@my-react-dom-server";
+import { append, create, update } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
 import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";

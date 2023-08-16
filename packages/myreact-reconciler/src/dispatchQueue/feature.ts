@@ -20,6 +20,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
 
   let node = allQueue?.head;
 
+  if (!node) return { needUpdate: false, isSync: false };
+
   let sync = false;
 
   const typedInstance = fiber.instance as MyReactComponent;
@@ -32,9 +34,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
 
   const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
 
-  const nextState = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
-
-  if (!node) return { needUpdate: false, isSync: false };
+  const nextStateObj = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
 
   if (enableTaskPriority && allQueue.some((l) => l.isSync)) {
     while (node) {
@@ -48,12 +48,12 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
         allQueue.delete(node);
 
         // TODO
-        const lastResult = nextState.pendingState || baseState;
+        const lastResult = nextStateObj.pendingState;
 
         safeCallWithFiber({
           fiber,
           action: () => {
-            nextState.pendingState = Object.assign(
+            nextStateObj.pendingState = Object.assign(
               {},
               lastResult,
               typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad
@@ -68,21 +68,21 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
 
           typedNode._debugBeforeValue = lastResult;
 
-          typedNode._debugAfterValue = nextState.pendingState;
+          typedNode._debugBaseValue = baseState;
+
+          typedNode._debugAfterValue = nextStateObj.pendingState;
 
           typedFiber._debugUpdateQueue.push(typedNode);
         }
 
-        nextState.isForce = nextState.isForce || updater.isForce;
+        nextStateObj.isForce = nextStateObj.isForce || updater.isForce;
 
-        updater.callback && nextState.callback.push(updater.callback);
+        updater.callback && nextStateObj.callback.push(updater.callback);
       }
       node = nextNode;
     }
 
-    if (allQueue.length) {
-      fiber._update(STATE_TYPE.__triggerConcurrent__);
-    }
+    if (allQueue.length) fiber._update(STATE_TYPE.__triggerConcurrent__);
 
     return { needUpdate: true, isSync: true };
   } else {
@@ -97,12 +97,12 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
         allQueue.delete(node);
 
         // TODO
-        const lastResult = nextState.pendingState || baseState;
+        const lastResult = nextStateObj.pendingState;
 
         safeCallWithFiber({
           fiber,
           action: () => {
-            nextState.pendingState = Object.assign(
+            nextStateObj.pendingState = Object.assign(
               {},
               lastResult,
               typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad
@@ -117,16 +117,18 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
 
           typedNode._debugBeforeValue = lastResult;
 
-          typedNode._debugAfterValue = nextState.pendingState;
+          typedNode._debugBaseValue = baseState;
+
+          typedNode._debugAfterValue = nextStateObj.pendingState;
 
           typedFiber._debugUpdateQueue.push(typedNode);
         }
 
-        nextState.isForce = nextState.isForce || updater.isForce;
+        nextStateObj.isForce = nextStateObj.isForce || updater.isForce;
 
         sync = sync || updater.isSync;
 
-        updater.callback && nextState.callback.push(updater.callback);
+        updater.callback && nextStateObj.callback.push(updater.callback);
       }
       node = nextNode;
     }
@@ -194,9 +196,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
       node = nextNode;
     }
 
-    if (allQueue.length) {
-      fiber._update(STATE_TYPE.__triggerConcurrent__);
-    }
+    if (allQueue.length) fiber._update(STATE_TYPE.__triggerConcurrent__);
 
     return { needUpdate, isSync: sync };
   } else {

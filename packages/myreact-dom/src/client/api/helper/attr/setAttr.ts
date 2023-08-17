@@ -47,7 +47,7 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
 
   try {
     if (name in el && !isSVG) {
-      if (value === null || value === undefined) {
+      if (value === null || value === undefined || value === false) {
         el[name] = "";
       } else {
         el[name] = String(value);
@@ -57,9 +57,17 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
       if (value === null || value === undefined) {
         el.removeAttribute(attrKey);
       } else {
-        el.setAttribute(attrKey, String(value));
-        if (el.nodeName === "INPUT" && attrKey === "autofocus") {
-          requestAnimationFrame(() => el.focus());
+        if (value === false) {
+          if (attrKey.includes("-")) {
+            el.setAttribute(attrKey, String(value));
+          } else {
+            el.removeAttribute(attrKey);
+          }
+        } else {
+          el.setAttribute(attrKey, String(value));
+          if (el.nodeName === "INPUT" && attrKey === "autofocus") {
+            requestAnimationFrame(() => el.focus());
+          }
         }
       }
     }

@@ -22,7 +22,15 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
         if (isProperty(key)) {
           if (props[key] !== null && props[key] !== undefined) {
             const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || propsToAttrMap[key] || key;
-            dom.setAttribute(attrKey as string, props[key] as string);
+            if (props[key] === false) {
+              if (attrKey.includes("-")) {
+                dom.setAttribute(attrKey as string, props[key] as string);
+              } else {
+                dom.removeAttribute(attrKey as string);
+              }
+            } else {
+              dom.setAttribute(attrKey as string, props[key] as string);
+            }
           }
         }
         if (isStyle(key)) {
@@ -62,7 +70,15 @@ export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       if (props[key] === null || props[key] === undefined) return;
       if (isProperty(key)) {
         const attrKey = (isSVG ? getSVGAttrKey(key) : getHTMLAttrKey(key)) || propsToAttrMap[key] || key;
-        attrs[attrKey] = props[key];
+        if (props[key] === false) {
+          if (attrKey.includes("-")) {
+            attrs[attrKey] = props[key];
+          } else {
+            delete attrs[attrKey];
+          }
+        } else {
+          attrs[attrKey] = props[key];
+        }
       }
       if (isStyle(key)) {
         const typedProps = (props[key] as Record<string, unknown>) || {};

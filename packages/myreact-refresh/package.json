@@ -32,6 +32,7 @@
   "buildOptions": [
     {
       "input": "./src/RefreshBabelPlugin.ts",
+      "pkgName": "RefreshBabelPlugin",
       "output": [
         {
           "dir": "./dist",
@@ -50,6 +51,7 @@
     },
     {
       "input": "./src/RefreshRuntime.ts",
+      "pkgName": "RefreshRuntime",
       "output": [
         {
           "dir": "./dist",
@@ -70,8 +72,8 @@
   "dependencies": {
     "@my-react/react-shared": "latest"
   },
-  "devDependencies": {
-    "@my-react/react": ">=0.2.1",
-    "@my-react/react-dom": ">=0.2.1"
+  "peerDependencies": {
+    "@my-react/react": ">=0.2.2",
+    "@my-react/react-dom": ">=0.2.2"
   }
 }

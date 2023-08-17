@@ -20,6 +20,7 @@
   "buildOptions": [
     {
       "input": "./src/loader.ts",
+      "pkgName": "loader",
       "output": [
         {
           "dir": "./dist",
@@ -38,6 +39,7 @@
     },
     {
       "input": "./src/runtime.ts",
+      "pkgName": "runtime",
       "output": [
         {
           "dir": "./dist",
@@ -56,6 +58,7 @@
     },
     {
       "input": "./src/webpackPlugin.ts",
+      "pkgName": "webpackPlugin",
       "output": [
         {
           "dir": "./dist",
@@ -73,17 +76,15 @@
       ]
     }
   ],
-  "peerDependencies": {
-    "@my-react/react-refresh": ">=0.2.0",
-    "webpack": "^4 || ^5"
-  },
   "peerDependenciesMeta": {
     "webpack": {
       "optional": true
     }
   },
-  "devDependencies": {
-    "@my-react/react-refresh": ">=0.2.0",
+  "dependencies": {
+    "@my-react/react-refresh": ">=0.2.0"
+  },
+  "peerDependencies": {
     "webpack": "^4 || ^5"
   }
 }

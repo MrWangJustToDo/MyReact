@@ -152,6 +152,6 @@
     "@my-react/react-reconciler": "latest"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.2.1"
+    "@my-react/react": ">=0.2.2"
   }
 }

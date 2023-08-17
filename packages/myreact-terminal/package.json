@@ -68,6 +68,6 @@
 		"@types/wrap-ansi": "^8.0.1"
   },
   "peerDependencies": {
-    "@my-react/react": "latest"
+    "@my-react/react": ">=0.2.2"
   }
 }

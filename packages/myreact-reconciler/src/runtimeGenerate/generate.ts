@@ -171,9 +171,19 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
     deleteIfNeed(parentFiber, existingChildrenMap);
   } else {
+    // only happen in hmr
+    if (include(parentFiber.state, STATE_TYPE.__hmr__)) {
+      const { existingChildrenMap } = getExistingChildren(parentFiber);
+
+      deleteIfNeed(parentFiber, existingChildrenMap);
+    }
+
     const typedParentFiber = parentFiber as MyReactFiberNodeDev;
 
-    if (__DEV__) typedParentFiber._debugRenderChildrenCurrent = [];
+    if (__DEV__) {
+      typedParentFiber._debugRenderChildrenPrevious = [];
+      typedParentFiber._debugRenderChildrenCurrent = [];
+    }
 
     parentFiber.child = null;
 

@@ -41,6 +41,8 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
 
       // TODO
       deleteEffect(fiber, renderDispatch);
+
+      fiber.state = merge(fiber.state, STATE_TYPE.__hmr__);
     } else {
       fiber.state = merge(STATE_TYPE.__triggerSync__, STATE_TYPE.__hmr__);
     }

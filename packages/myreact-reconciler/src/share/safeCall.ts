@@ -14,7 +14,7 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
 
     const renderPlatform = currentRenderPlatform.current;
 
-    console.error(e);
+    console.error(e.message);
 
     renderPlatform.dispatchError({ fiber, error: e });
   }
@@ -28,7 +28,7 @@ export const safeCallAsync = async <T extends any[] = any[], K = any>(action: (.
 
     const renderPlatform = currentRenderPlatform.current;
 
-    console.error(e);
+    console.error(e.message);
 
     renderPlatform.dispatchError({ fiber, error: e });
   }
@@ -46,7 +46,7 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
   } catch (e) {
     const renderPlatform = currentRenderPlatform.current;
 
-    console.error(e);
+    console.error(e.message);
 
     renderPlatform.dispatchError({ fiber, error: e });
 
@@ -65,7 +65,7 @@ export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...a
 
     const renderPlatform = currentRenderPlatform.current;
 
-    console.error(e);
+    console.error(e.message);
 
     renderPlatform.dispatchError({ fiber, error: e });
   } finally {

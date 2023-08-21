@@ -20,7 +20,7 @@ export const devWarn = (...args) => {
 
   const renderFiber = currentRunningFiber.current;
 
-  originalWarn.call(console, ...args, renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber);
+  originalWarn.call(console, ...args.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
 };
 
 export const devError = (...args) => {
@@ -28,7 +28,7 @@ export const devError = (...args) => {
 
   const renderFiber = currentRunningFiber.current;
 
-  originalError.call(console, ...args, renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber);
+  originalError.call(console, ...args.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
 };
 
 export const setLogScope = () => {

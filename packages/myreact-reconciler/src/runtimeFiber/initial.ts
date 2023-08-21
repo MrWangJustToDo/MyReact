@@ -1,4 +1,4 @@
-import { PATCH_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, exclude } from "@my-react/react-shared";
 
 import { fiberToDispatchMap } from "../share";
 
@@ -19,7 +19,7 @@ export const initialFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   renderDispatch.patchToFiberInitial?.(fiber);
 
-  if (!(fiber.patch & PATCH_TYPE.__update__)) {
+  if (exclude(fiber.patch, PATCH_TYPE.__update__)) {
     fiber.memoizedProps = fiber.pendingProps;
   }
   return fiber;

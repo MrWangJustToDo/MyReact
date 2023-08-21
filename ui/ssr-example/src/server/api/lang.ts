@@ -26,7 +26,7 @@ const getI18nFile = wrapperMiddlewareRequest({
       const data = await readFile(relativePath, { encoding: "utf-8" });
       res.status(200).json({ data: JSON.parse(data) });
     } else {
-      throw new RenderError(`unSupport lang`, 404);
+      throw new RenderError(`unsupported lang`, 404);
     }
   },
 });

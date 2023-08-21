@@ -1,6 +1,6 @@
 import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import { checkIsSameType, initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
-import { once, STATE_TYPE } from "@my-react/react-shared";
+import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
@@ -45,7 +45,7 @@ export const onceLogConcurrentMode = once(() => {
  * @internal
  */
 export const onceLogLegacyLifeCycleMode = once(() => {
-  console.log("[@my-react/react] legacy 'UNSAFE_' lifeCycle have been enabled!");
+  console.log("[@my-react/react] legacy 'UNSAFE' lifeCycle have been enabled!");
 });
 
 export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) => {
@@ -62,7 +62,7 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
   if (containerFiber instanceof MyReactFiberNode) {
     const renderDispatch = container.__container__;
 
-    if (renderDispatch.isAppCrashed || containerFiber.state & STATE_TYPE.__unmount__) {
+    if (renderDispatch.isAppCrashed || include(containerFiber.state, STATE_TYPE.__unmount__)) {
       // is there are not a valid render tree, try do the pure rerender
       container.__fiber__ = null;
 

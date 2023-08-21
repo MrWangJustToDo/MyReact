@@ -1,3 +1,5 @@
+import { include } from "@my-react/react-shared";
+
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
@@ -6,7 +8,7 @@ export const defaultGenerateStrictMap = (fiber: MyReactFiberNode, map: WeakMap<M
   const parent = fiber.parent;
 
   if (parent) {
-    if (parent.type & NODE_TYPE.__strict__) {
+    if (include(parent.type, NODE_TYPE.__strict__)) {
       map.set(fiber, true);
     } else {
       const parentIsStrict = map.get(parent);

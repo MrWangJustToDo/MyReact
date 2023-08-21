@@ -1,6 +1,7 @@
 import { MyReactFiberNode, triggerUnmount } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
+import { log } from "@my-react-dom-shared";
 
 import type { RenderContainer } from "@my-react-dom-client/mount";
 
@@ -10,7 +11,7 @@ export const unmountComponentAtNode = (container: RenderContainer) => {
   const renderDispatch = container.__container__;
 
   if (!fiber || !renderDispatch || !(fiber instanceof MyReactFiberNode) || !(renderDispatch instanceof ClientDomDispatch)) {
-    console.error(`[@my-react/react-dom] can not unmount app for current container`);
+    log(fiber, "error", `can not unmount app for current container`);
     return;
   }
 

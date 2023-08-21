@@ -8,9 +8,7 @@ const { enableHMRForDev } = __my_react_shared__;
 export const initGlobalHMR = () => {
   if (__DEV__ && !isServer && enableHMRForDev.current) {
     if (globalThis["__@my-react/hmr__"]) {
-      console.error(
-        `[@my-react/react-dom] current environment already have a HMR runtime, maybe current environment have multiple version of '@my-react/react-dom'`
-      );
+      console.error(`[@my-react/react-dom] current environment already have a HMR runtime, maybe current environment have multiple version of '@my-react/react-dom'`);
     } else {
       globalThis["__@my-react/hmr__"] = {};
 

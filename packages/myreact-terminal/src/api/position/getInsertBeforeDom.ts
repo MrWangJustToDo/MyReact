@@ -1,12 +1,12 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
-import { STATE_TYPE } from "@my-react/react-shared";
+import { STATE_TYPE, include } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const findFiberWithDOMFromFiber = (fiber: MyReactFiberNode | null): MyReactFiberNode | null => {
-  if (!fiber || fiber.state & STATE_TYPE.__unmount__) return null;
+  if (!fiber || include(fiber.state, STATE_TYPE.__unmount__)) return null;
 
-  if (fiber.type & NODE_TYPE.__portal__) return null;
+  if (include(fiber.type, NODE_TYPE.__portal__)) return null;
 
   if (fiber.nativeNode) return fiber;
 

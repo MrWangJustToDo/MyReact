@@ -1,79 +1,35 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { getFiberTree, originalError, originalWarn, MyReactFiberNode } from "@my-react/react-reconciler";
+import { MyReactFiberNode, devError, devWarn } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
-import type { LogProps } from "@my-react/react";
 import type { RenderContainer } from "@my-react-dom-client/mount";
 
 const { currentRunningFiber } = __my_react_internal__;
 
-const cache: Record<string, Record<string, boolean>> = {};
-
 /**
  * @internal
  */
-export const log = ({ fiber, message, level = "warn", triggerOnce = false }: LogProps) => {
+export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: any) => {
   if (__DEV__) {
-    const currentFiber = fiber || currentRunningFiber.current;
-    if (currentFiber) {
-      const tree = getFiberTree(currentFiber as MyReactFiberNode);
-      if (triggerOnce) {
-        const messageKey = message.toString();
-        cache[messageKey] = cache[messageKey] || {};
-        if (cache[messageKey][tree]) return;
-        cache[messageKey][tree] = true;
-      }
-      if (level === "warn") {
-        originalWarn(
-          `[${level}]:`,
-          "\n-----------------------------------------\n",
-          `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
-          "\n-----------------------------------------\n",
-          "Render Tree:",
-          tree,
-          "\n-----------------------------------------\n",
-          "fiber: ",
-          currentFiber
-        );
-      }
-      if (level === "error") {
-        originalError(
-          `[${level}]:`,
-          "\n-----------------------------------------\n",
-          `${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`,
-          "\n-----------------------------------------\n",
-          "Render Tree:",
-          tree,
-          "\n-----------------------------------------\n",
-          "fiber: ",
-          currentFiber
-        );
-      }
-    } else {
-      if (level === "warn") {
-        originalWarn(`[@my-react/react-dom] ${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`);
-      }
-      if (level === "error") {
-        originalError(`[@my-react/react-dom] ${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`);
-      }
+    const last = currentRunningFiber.current;
+
+    currentRunningFiber.current = fiber;
+    if (level === "warn") {
+      devWarn(`[@my-react/react-dom]`, ...rest);
     }
+    if (level === "error") {
+      devError(`[@my-react/react-dom]`, ...rest);
+    }
+    currentRunningFiber.current = last;
     return;
   }
-  const currentFiber = fiber || currentRunningFiber.current;
-  if (triggerOnce && currentFiber) {
-    const tree = getFiberTree(currentFiber as MyReactFiberNode);
-    const messageKey = message.toString();
-    cache[messageKey] = cache[messageKey] || {};
-    if (cache[messageKey][tree]) return;
-    cache[messageKey][tree] = true;
-  }
-  // look like a ts bug
+
   if (level === "warn") {
-    originalWarn(`[@my-react/react-dom] ${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`);
+    console.warn(`[@my-react/react-dom]`, ...rest);
   }
   if (level === "error") {
-    originalError(`[@my-react/react-dom] ${typeof message === "string" ? message : (message as Error).stack || (message as Error).message}`);
+    console.error(`[@my-react/react-dom]`, ...rest);
   }
 };
 
@@ -94,6 +50,6 @@ export const checkRehydrate = (container: Partial<RenderContainer>) => {
   const rootContainer = container.__container__;
 
   if (rootFiber instanceof MyReactFiberNode || rootContainer instanceof ClientDomDispatch) {
-    throw new Error(`[@my-react/react] hydrate error, current container have been hydrated`);
+    throw new Error(`[@my-react/react-dom] hydrate error, current container have been hydrated`);
   }
 };

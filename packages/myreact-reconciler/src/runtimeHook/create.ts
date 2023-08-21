@@ -1,7 +1,8 @@
-import { __my_react_shared__ } from "@my-react/react";
-import { HOOK_TYPE } from "@my-react/react-shared";
+import { __my_react_shared__, startTransition } from "@my-react/react";
+import { HOOK_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
-import { currentRenderDispatch } from "../share";
+import { triggerUpdate } from "../renderUpdate";
+import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
 import { checkHookValid } from "./check";
 import { MyReactHookNode } from "./instance";
@@ -51,7 +52,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
   if (hookNode.type === HOOK_TYPE.useDebugValue) {
     if (enableDebugLog.current) {
-      console.warn(`[@my-react/react]-[debug-log]`, ...hookNode.value);
+      console.warn(`[debug]`, ...hookNode.value);
     }
   }
 
@@ -70,7 +71,10 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
     const storeApi = hookNode.value;
 
-    hookNode.result = storeApi.getServerSnapshot ? storeApi.getServerSnapshot?.call(null) : storeApi.getSnapshot.call(null);
+    hookNode.result = safeCallWithFiber({
+      fiber,
+      action: () => (storeApi.getServerSnapshot ? storeApi.getServerSnapshot?.call(null) : storeApi.getSnapshot.call(null)),
+    });
 
     hookNode.effect = true;
   }
@@ -79,12 +83,41 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     hookNode.result = new MyReactSignal(hookNode.value.call(null), renderDispatch);
   }
 
+  if (hookNode.type === HOOK_TYPE.useTransition) {
+    hookNode.result = {
+      loading: false,
+      startTransition: (cb: () => void) => {
+        const loadingCallback = (cb: () => void) => {
+          triggerUpdate(fiber, STATE_TYPE.__triggerConcurrent__, () => {
+            hookNode.result.loading = true;
+            cb();
+          });
+        };
+
+        const loadedCallback = () => {
+          triggerUpdate(fiber, STATE_TYPE.__triggerConcurrent__, () => {
+            hookNode.result.loading = false;
+          });
+        };
+
+        const taskCallback = () => {
+          startTransition(() => {
+            safeCallWithFiber({ fiber, action: cb });
+            loadedCallback();
+          });
+        };
+
+        loadingCallback(taskCallback);
+      },
+    };
+  }
+
   if (__DEV__) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
     typedFiber._debugHookTypes = typedFiber._debugHookTypes || [];
 
-    typedFiber._debugHookTypes.push(hookNode.type);
+    typedFiber._debugHookTypes.push(HOOK_TYPE[hookNode.type]);
   }
 
   return hookNode;

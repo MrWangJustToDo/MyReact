@@ -40,6 +40,10 @@ export class ServerDomDispatch extends CustomRenderDispatch {
 
   hydrateTime: number | null;
 
+  pendingRef(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+
   pendingPosition(_fiber: MyReactFiberNode): void {
     void 0;
   }

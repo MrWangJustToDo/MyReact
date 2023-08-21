@@ -1,5 +1,5 @@
 import { type MixinMyReactClassComponent, type MyReactComponent } from "@my-react/react";
-import { ListTree, STATE_TYPE } from "@my-react/react-shared";
+import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
 import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
 import { syncComponentStateToFiber } from "../runtimeComponent";
@@ -10,17 +10,17 @@ import type { MyReactFiberNode, MyReactFiberNodeDev, PendingStateType, PendingSt
 import type { MyReactHookNode } from "../runtimeHook";
 
 export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enableTaskPriority?: boolean) => {
-  if (fiber.state & STATE_TYPE.__unmount__) return;
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const allQueue = fiber.updateQueue;
 
   const typedFiber = fiber as MyReactFiberNodeDev;
 
-  if (__DEV__ && allQueue) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
-
   let node = allQueue?.head;
 
   if (!node) return { needUpdate: false, isSync: false };
+
+  if (__DEV__) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
   let sync = false;
 
@@ -42,23 +42,18 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
 
       const nextNode = node.next;
 
-      if (updater.type === "component" && updater.isSync) {
-        if (__DEV__ && updater.trigger !== typedInstance) throw new Error("current update not valid, look like a bug for @my-react");
+      if (updater.type === UpdateQueueType.component && updater.isSync) {
+        if (__DEV__ && updater.trigger !== typedInstance) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
         allQueue.delete(node);
 
         // TODO
         const lastResult = nextStateObj.pendingState;
 
-        safeCallWithFiber({
+        nextStateObj.pendingState = safeCallWithFiber({
           fiber,
-          action: () => {
-            nextStateObj.pendingState = Object.assign(
-              {},
-              lastResult,
-              typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad
-            );
-          },
+          fallback: () => nextStateObj.pendingState,
+          action: () => Object.assign({}, lastResult, typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad),
         });
 
         if (__DEV__) {
@@ -91,23 +86,18 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
 
       const nextNode = node.next;
 
-      if (updater.type === "component") {
-        if (__DEV__ && updater.trigger !== typedInstance) throw new Error("current update not valid, look like a bug for @my-react");
+      if (updater.type === UpdateQueueType.component) {
+        if (__DEV__ && updater.trigger !== typedInstance) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
         allQueue.delete(node);
 
         // TODO
         const lastResult = nextStateObj.pendingState;
 
-        safeCallWithFiber({
+        nextStateObj.pendingState = safeCallWithFiber({
           fiber,
-          action: () => {
-            nextStateObj.pendingState = Object.assign(
-              {},
-              lastResult,
-              typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad
-            );
-          },
+          fallback: () => nextStateObj.pendingState,
+          action: () => Object.assign({}, lastResult, typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad),
         });
 
         if (__DEV__) {
@@ -138,7 +128,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
 };
 
 export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, enableTaskPriority?: boolean) => {
-  if (fiber.state & STATE_TYPE.__unmount__) return;
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const allQueue = fiber.updateQueue;
 
@@ -158,8 +148,8 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
 
       const nextNode = node.next;
 
-      if (updater.type === "hook" && updater.isSync) {
-        if (__DEV__ && updater.trigger._ownerFiber !== fiber) throw new Error("current update not valid, look like a bug for @my-react");
+      if (updater.type === UpdateQueueType.hook && updater.isSync) {
+        if (__DEV__ && updater.trigger._ownerFiber !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
         allQueue.delete(node);
 
@@ -169,11 +159,10 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
 
         const lastResult = typedTrigger.result;
 
-        safeCallWithFiber({
+        typedTrigger.result = safeCallWithFiber({
           fiber,
-          action: () => {
-            typedTrigger.result = typedTrigger.reducer(lastResult, payLoad);
-          },
+          fallback: () => lastResult,
+          action: () => typedTrigger.reducer(lastResult, payLoad),
         });
 
         if (__DEV__) {
@@ -205,8 +194,8 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
 
       const nextNode = node.next;
 
-      if (updater.type === "hook") {
-        if (__DEV__ && updater.trigger._ownerFiber !== fiber) throw new Error("current update not valid, look like a bug for @my-react");
+      if (updater.type === UpdateQueueType.hook) {
+        if (__DEV__ && updater.trigger._ownerFiber !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
         allQueue.delete(node);
 
@@ -216,11 +205,10 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
 
         const lastResult = typedTrigger.result;
 
-        safeCallWithFiber({
+        typedTrigger.result = safeCallWithFiber({
           fiber,
-          action: () => {
-            typedTrigger.result = typedTrigger.reducer(lastResult, payLoad);
-          },
+          fallback: () => lastResult,
+          action: () => typedTrigger.reducer(lastResult, payLoad),
         });
 
         if (__DEV__) {
@@ -263,7 +251,9 @@ export const syncFiberStateToComponent = (fiber: MyReactFiberNode) => {
 
   if (typedPendingState.callback.length) {
     const callback = typedPendingState.callback;
+
     const renderDispatch = currentRenderDispatch.current;
+
     renderDispatch.pendingLayoutEffect(fiber, () => callback.forEach((cb) => cb?.()));
   }
 };
@@ -273,6 +263,8 @@ export const syncFiberStateToComponent = (fiber: MyReactFiberNode) => {
  */
 export const syncFlushComponentQueue = (fiber: MyReactFiberNode) => {
   processClassComponentUpdateQueue(fiber);
+
   syncFiberStateToComponent(fiber);
+
   syncComponentStateToFiber(fiber);
 };

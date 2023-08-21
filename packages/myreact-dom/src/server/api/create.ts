@@ -1,5 +1,5 @@
 import { isCommentStartElement, NODE_TYPE } from "@my-react/react-reconciler";
-import { PATCH_TYPE } from "@my-react/react-shared";
+import { include, PATCH_TYPE, remove } from "@my-react/react-shared";
 
 import { isSingleTag, validDomNesting, validDomTag } from "@my-react-dom-shared";
 
@@ -13,28 +13,28 @@ import type { ServerDomDispatch, ServerStaticStreamDispatch, ServerStreamDispatc
  * @internal
  */
 export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatch) => {
-  if (fiber.patch & PATCH_TYPE.__create__) {
+  if (include(fiber.patch, PATCH_TYPE.__create__)) {
     if (__DEV__) validDomTag(fiber);
 
     if (__DEV__) validDomNesting(fiber, renderDispatch.runtimeDom.elementMap.get(fiber).parentFiberWithNode);
 
-    if (fiber.type & NODE_TYPE.__text__) {
+    if (include(fiber.type, NODE_TYPE.__text__)) {
       fiber.nativeNode = new TextElement(fiber.elementType as string);
-    } else if (fiber.type & NODE_TYPE.__plain__) {
+    } else if (include(fiber.type, NODE_TYPE.__plain__)) {
       const typedElementType = fiber.elementType as string;
 
       fiber.nativeNode = new PlainElement(typedElementType);
-    } else if (fiber.type & NODE_TYPE.__comment__) {
+    } else if (include(fiber.type, NODE_TYPE.__comment__)) {
       if (isCommentStartElement(fiber)) {
         fiber.nativeNode = new CommentStartElement();
       } else {
         fiber.nativeNode = new CommentEndElement();
       }
     } else {
-      throw new Error("createPortal() can not call on the server");
+      throw new Error("[@my-react/react-dom-server] createPortal() can not call on the server");
     }
 
-    if (fiber.patch & PATCH_TYPE.__create__) fiber.patch ^= PATCH_TYPE.__create__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__create__);
   }
 };
 
@@ -42,12 +42,12 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatc
  * @internal
  */
 export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch | ServerStaticStreamDispatch) => {
-  if (fiber.patch & PATCH_TYPE.__create__) {
+  if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const stream = renderDispatch.stream;
 
     const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
-    if (fiber.type & NODE_TYPE.__text__) {
+    if (include(fiber.type, NODE_TYPE.__text__)) {
       if (renderDispatch._lastIsStringNode) {
         stream.push("<!-- -->");
       }
@@ -57,7 +57,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
       renderDispatch._lastIsStringNode = true;
 
       fiber.patch = PATCH_TYPE.__initial__;
-    } else if (fiber.type & NODE_TYPE.__plain__) {
+    } else if (include(fiber.type, NODE_TYPE.__plain__)) {
       renderDispatch._lastIsStringNode = false;
 
       if (isSingleTag[fiber.elementType as string]) {
@@ -74,7 +74,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
           stream.push(typedProps.__html as string);
         }
       }
-    } else if (fiber.type & NODE_TYPE.__comment__) {
+    } else if (include(fiber.type, NODE_TYPE.__comment__)) {
       renderDispatch._lastIsStringNode = false;
 
       if (isCommentStartElement(fiber)) {
@@ -85,7 +85,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
 
       fiber.patch = PATCH_TYPE.__initial__;
     } else {
-      throw new Error("createPortal() can not call on the server");
+      throw new Error("[@my-react/react-dom-server] createPortal() can not call on the server");
     }
   }
 };
@@ -94,16 +94,16 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
  * @internal
  */
 export const createCloseTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch | ServerStaticStreamDispatch) => {
-  if (fiber.patch & PATCH_TYPE.__create__) {
+  if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const stream = renderDispatch.stream;
-    if (fiber.type & NODE_TYPE.__plain__) {
+    if (include(fiber.type, NODE_TYPE.__plain__)) {
       renderDispatch._lastIsStringNode = false;
 
       stream.push(`</${fiber.elementType as string}>`);
 
       fiber.patch = PATCH_TYPE.__initial__;
     } else {
-      throw new Error("unknown close tag for current element");
+      throw new Error("[@my-react/react-dom-server] unknown close tag for current element");
     }
   }
 };

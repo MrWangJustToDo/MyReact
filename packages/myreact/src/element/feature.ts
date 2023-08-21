@@ -1,7 +1,6 @@
 import { Consumer, Context, ForwardRef, isNormalEquals, Lazy, Memo, Provider, TYPEKEY } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
-import { currentRenderPlatform, currentRunningFiber } from "../share";
 
 import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "./instance";
 
@@ -99,24 +98,6 @@ export const memo = <P extends Record<string, unknown> = any>(
   return objectType;
 };
 
-const wrapperLoader = (config: ReturnType<typeof lazy>, loader: Parameters<typeof lazy>[0]) => {
-  const asyncLoader = async () => {
-    const renderPlatform = currentRenderPlatform.current;
-    config._loading = true;
-    try {
-      const res = await loader();
-      return res;
-    } catch (e) {
-      renderPlatform.log({ fiber: currentRunningFiber.current, level: "warn", message: `[@my-react/react] failed to load lazy component` });
-    } finally {
-      config._loading = false;
-      config._loaded = true;
-    }
-  };
-
-  config.loader = asyncLoader;
-};
-
 export const lazy = (
   loader: () => Promise<{ default: MixinMyReactFunctionComponent | MixinMyReactClassComponent } | MixinMyReactFunctionComponent | MixinMyReactClassComponent>
 ) => {
@@ -127,7 +108,6 @@ export const lazy = (
     _loaded: false,
     render: null,
   };
-  wrapperLoader(config, loader);
   return config as {
     [TYPEKEY]: symbol;
     loader: () => Promise<{ default: MixinMyReactFunctionComponent | MixinMyReactClassComponent } | MixinMyReactFunctionComponent | MixinMyReactClassComponent>;

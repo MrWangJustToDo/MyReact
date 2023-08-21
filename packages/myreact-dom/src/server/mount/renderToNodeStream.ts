@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_shared__ } from "@my-react/react";
+import { isValidElement } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement } from "@my-react-dom-server/api";
@@ -10,8 +10,6 @@ import type { MyReactElement, LikeJSX } from "@my-react/react";
 import type { SimpleReadable } from "@my-react-dom-server/renderDispatch";
 import type { Readable } from "stream";
 
-
-const { enableScopeTreeLog } = __my_react_shared__;
 
 const renderToStreamSync = <T extends SimpleReadable>(element: MyReactElement, stream: T) => {
   const container = new ContainerElement();
@@ -71,14 +69,12 @@ export function renderToNodeStream(element: LikeJSX, asyncRender?: boolean): Rea
 
     prepareRenderPlatform();
 
-    enableScopeTreeLog.current = false;
-
     if (asyncRender) {
       return renderToStreamSync(element, stream);
     } else {
       return renderToStreamAsync(element, stream);
     }
   } else {
-    throw new Error(`[@my-react/react-dom] 'renderToNodeStream' can only render a '@my-react' element`);
+    throw new Error(`[@my-react/react-dom-server] 'renderToNodeStream' can only render a '@my-react' element`);
   }
 }

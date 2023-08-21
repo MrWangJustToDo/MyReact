@@ -1,4 +1,5 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
+import { include } from "@my-react/react-shared";
 
 import { isGone, isNew, isProperty, isStyle, isUnitlessNumber, propsToAttrMap } from "../../shared";
 import { appendChildNode, setTextNodeValue, TextElement } from "../native";
@@ -11,10 +12,10 @@ export const update = (fiber: MyReactFiberNode) => {
 
   const node = fiber.nativeNode as PlainElement | TextElement;
 
-  if (fiber.type & NODE_TYPE.__text__) {
+  if (include(fiber.type, NODE_TYPE.__text__)) {
     const typeNode = node as TextElement;
     setTextNodeValue(typeNode, fiber.elementType as string);
-  } else if (fiber.type & NODE_TYPE.__plain__) {
+  } else if (include(fiber.type, NODE_TYPE.__plain__)) {
     const dom = node as PlainElement;
 
     const oldProps = fiber.memoizedProps || {};
@@ -31,7 +32,7 @@ export const update = (fiber: MyReactFiberNode) => {
           }
         }
       });
-      
+
     Object.keys(newProps)
       .filter(isNew(oldProps, newProps))
       .filter((key) => {

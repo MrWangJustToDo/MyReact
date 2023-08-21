@@ -1,3 +1,5 @@
+import { include } from "@my-react/react-shared";
+
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
@@ -7,7 +9,7 @@ export const defaultGenerateScopeMap = (fiber: MyReactFiberNode, map: WeakMap<My
   const parent = fiber.parent;
 
   if (parent) {
-    if (parent.type & NODE_TYPE.__scope__) {
+    if (include(parent.type, NODE_TYPE.__scope__)) {
       map.set(fiber, parent);
     } else {
       const parentScopeFiber = map.get(parent);

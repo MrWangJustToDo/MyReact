@@ -1,4 +1,4 @@
-import { isNormalEquals } from "@my-react/react-shared";
+import { UpdateQueueType, isNormalEquals } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
 import { currentRenderPlatform } from "../share";
@@ -13,7 +13,7 @@ type ErrorInfo = {
 export class MyReactComponent<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,
-  C extends Record<string, unknown> = any
+  C extends Record<string, unknown> = any,
 > extends MyReactInternalInstance {
   static contextType?: null | ReturnType<typeof createContext>;
 
@@ -80,7 +80,7 @@ export class MyReactComponent<
 
   setState = (payLoad: ComponentUpdateQueue<S, P>["payLoad"], callback?: ComponentUpdateQueue["callback"]) => {
     const updater: ComponentUpdateQueue = {
-      type: "component",
+      type: UpdateQueueType.component,
       payLoad,
       callback,
       trigger: this,
@@ -93,7 +93,7 @@ export class MyReactComponent<
 
   forceUpdate = () => {
     const updater: ComponentUpdateQueue = {
-      type: "component",
+      type: UpdateQueueType.component,
       isForce: true,
       trigger: this,
     };
@@ -119,7 +119,7 @@ export class MyReactComponent<
 export class MyReactPureComponent<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,
-  C extends Record<string, unknown> = any
+  C extends Record<string, unknown> = any,
 > extends MyReactComponent<P, S, C> {
   // for original react render, there are not a context judge for `shouldComponentUpdate` function
   shouldComponentUpdate(nextProps: P, nextState: S, nextContext: C) {

@@ -40,7 +40,7 @@ export const freePort = (port: number | string) => {
         resolve();
       }
     } else {
-      logger().error("unSupport platform");
+      logger().error("unsupported platform");
       resolve();
     }
   });

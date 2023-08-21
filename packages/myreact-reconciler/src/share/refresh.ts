@@ -1,3 +1,5 @@
+import { include } from "@my-react/react-shared";
+
 import { currentRefreshHandler, fiberToDispatchMap } from "./env";
 import { NODE_TYPE } from "./fiberType";
 import { MyWeakMap } from "./map";
@@ -25,7 +27,7 @@ export const setRefreshHandler = (handler: RefreshHandler) => {
 };
 
 export const setRefreshTypeMap = (fiber: MyReactFiberNode) => {
-  if (fiber.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+  if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
     const elementType = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
 
     const exist = typeToFibersMap.get(elementType) || new Set();

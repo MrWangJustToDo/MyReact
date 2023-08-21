@@ -27,7 +27,6 @@ export const toArray = (arrayLike: MaybeArrayMyReactElementNode) => {
   );
 };
 
-// TODO
 export const forEach = (
   arrayLike: MaybeArrayMyReactElementNode,
   action: (child: MyReactElement, index: number, children: ArrayMyReactElementNode) => MyReactElement
@@ -46,5 +45,5 @@ export const only = (child: MyReactElementNode) => {
 
   if (typeof child === "string" || typeof child === "number" || typeof child === "boolean") return true;
 
-  throw new Error("Children.only() expected to receive a single MyReact element child.");
+  throw new Error("[@my-react/react] Children.only() expected to receive a single MyReact element child.");
 };

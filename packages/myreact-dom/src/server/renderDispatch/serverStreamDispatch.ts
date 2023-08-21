@@ -49,6 +49,10 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
 
   hydrateTime: number | null;
 
+  pendingRef(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+
   pendingPosition(_fiber: MyReactFiberNode): void {
     void 0;
   }
@@ -124,6 +128,10 @@ export class ServerStaticStreamDispatch extends CustomRenderDispatch {
 
   hydrateTime: number | null;
 
+  pendingRef(_fiber: MyReactFiberNode): void {
+    void 0;
+  }
+
   pendingPosition(_fiber: MyReactFiberNode): void {
     void 0;
   }
@@ -149,7 +157,7 @@ export class ServerStaticStreamDispatch extends CustomRenderDispatch {
   }
 
   resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
-    throw new Error(`[@my-react/react-dom] 'renderToStaticNodeStream' not support resolve lazy component on the Server, this is a internal bug`);
+    throw new Error(`[@my-react/react-dom-server] 'renderToStaticNodeStream' not support resolve lazy component on the Server, this is a internal bug`);
   }
 
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {

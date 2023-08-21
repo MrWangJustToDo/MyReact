@@ -1,11 +1,19 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { TYPEKEY, Element } from "@my-react/react-shared";
 
-import { checkSingleChildrenKey, checkValidElement, checkValidProps } from "./check";
+import { checkSingleChildrenKey, checkValidElement } from "./check";
 
-import type { CreateElementProps, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement, MyReactElementType, Props , MaybeArrayMyReactElementNode} from "@my-react/react";
+import type {
+  CreateElementProps,
+  MixinMyReactClassComponent,
+  MixinMyReactFunctionComponent,
+  MyReactElement,
+  MyReactElementType,
+  Props,
+  MaybeArrayMyReactElementNode,
+} from "@my-react/react";
 
-const { currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
+const { currentComponentFiber } = __my_react_internal__;
 
 const RESERVED_PROPS = {
   key: true,
@@ -62,10 +70,11 @@ export const jsx = (
     key,
     ref,
     props,
-    _jsx: true,
   };
 
   if (__DEV__) {
+    element._jsx = true;
+
     element._owner = currentComponentFiber.current;
 
     element._self = self;
@@ -102,14 +111,10 @@ export const jsxDEV = (
 
         Object.freeze(children);
       } else {
-        const renderPlatform = currentRenderPlatform.current;
-
-        renderPlatform?.log({ message: "Static children should always be an array.", level: "warn" });
+        console.warn(`[@my-react/react] static children should always be an array`);
       }
       if (!Array.isArray(children)) {
-        const renderPlatform = currentRenderPlatform.current;
-
-        renderPlatform?.log({ message: "Static children should always be an array.", level: "warn" });
+        console.warn(`[@my-react/react] static children should always be an array.`);
       }
     } else {
       checkSingleChildrenKey(children);
@@ -117,8 +122,6 @@ export const jsxDEV = (
   }
 
   checkValidElement(element);
-
-  checkValidProps(element);
 
   return element;
 };

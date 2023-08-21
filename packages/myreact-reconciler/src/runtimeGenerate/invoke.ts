@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { STATE_TYPE } from "@my-react/react-shared";
+import { STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { currentRenderDispatch, debugWithNode, NODE_TYPE, safeCallWithFiber, setRefreshTypeMap } from "../share";
@@ -9,7 +9,7 @@ import { transformChildrenFiber } from "./generate";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext, forwardRef } from "@my-react/react";
 
-const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
+const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber } = __my_react_internal__;
 
 const { enablePerformanceLog } = __my_react_shared__;
 
@@ -20,7 +20,7 @@ export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyRe
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
   // for a comment element, will not have any children;
   // empty node normally a invalid node
-  if (!(fiber.type & (NODE_TYPE.__empty__ | NODE_TYPE.__comment__ | NODE_TYPE.__null__ | NODE_TYPE.__text__)) && "children" in fiber.pendingProps) {
+  if (exclude(fiber.type, NODE_TYPE.__comment__ | NODE_TYPE.__text__) && "children" in fiber.pendingProps) {
     const { children } = fiber.pendingProps;
 
     transformChildrenFiber(fiber, children);
@@ -50,7 +50,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
 
   let children: MyReactElementNode = null;
 
-  if (fiber.type & NODE_TYPE.__forwardRef__) {
+  if (include(fiber.type, NODE_TYPE.__forwardRef__)) {
     const typedElementTypeWithRef = typedElementType as ReturnType<typeof forwardRef>["render"];
 
     children = safeCallWithFiber({ fiber, action: () => typedElementTypeWithRef(fiber.pendingProps, fiber.ref) });
@@ -68,7 +68,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkComponent = (fiber: MyReactFiberNode) => {
-  if (fiber.type & NODE_TYPE.__function__) {
+  if (include(fiber.type, NODE_TYPE.__function__)) {
     currentComponentFiber.current = fiber;
 
     nextWorkFunctionComponent(fiber);
@@ -112,7 +112,7 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   currentComponentFiber.current = fiber;
 
-  if (!fiber.instance._contextFiber || fiber.instance._contextFiber.state & STATE_TYPE.__unmount__) {
+  if (!fiber.instance._contextFiber || include(fiber.instance._contextFiber.state, STATE_TYPE.__unmount__)) {
     const ProviderFiber = renderDispatch.resolveContextFiber(fiber, Context);
 
     const context = renderDispatch.resolveContextValue(ProviderFiber, Context);
@@ -136,11 +136,11 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 };
 
 export const runtimeNextWork = (fiber: MyReactFiberNode) => {
-  if (fiber.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) return nextWorkComponent(fiber);
+  if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) return nextWorkComponent(fiber);
 
-  if (fiber.type & NODE_TYPE.__lazy__) return nextWorkLazy(fiber);
+  if (include(fiber.type, NODE_TYPE.__lazy__)) return nextWorkLazy(fiber);
 
-  if (fiber.type & NODE_TYPE.__consumer__) return nextWorkConsumer(fiber);
+  if (include(fiber.type, NODE_TYPE.__consumer__)) return nextWorkConsumer(fiber);
 
   nextWorkNormal(fiber);
 };
@@ -150,8 +150,6 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
 
   setRefreshTypeMap(fiber);
 
-  const renderPlatform = currentRenderPlatform.current;
-
   const start = Date.now();
 
   const res = runtimeNextWork(fiber);
@@ -159,19 +157,14 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   const end = Date.now();
 
   if (enablePerformanceLog.current && end - start > renderDispatch.performanceLogTimeLimit) {
-    renderPlatform?.log({
-      fiber,
-      message: "render current component take a lot of time, there have a performance warning",
-      level: "warn",
-      triggerOnce: true,
-    });
+    console.warn(`[@my-react/react] render current component take a lot of time, there have a performance warning`);
   }
 
   const typedFiber = fiber as MyReactFiberNodeDev;
 
   const timeNow = end;
 
-  if (typedFiber.state === STATE_TYPE.__initial__) {
+  if (typedFiber.state === STATE_TYPE.__create__) {
     typedFiber._debugRenderState = {
       mountTime: timeNow,
     };
@@ -198,11 +191,11 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
 };
 
 export const runtimeNextWorkAsync = async (fiber: MyReactFiberNode) => {
-  if (fiber.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) return nextWorkComponent(fiber);
+  if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) return nextWorkComponent(fiber);
 
-  if (fiber.type & NODE_TYPE.__lazy__) return await nextWorkLazyAsync(fiber);
+  if (include(fiber.type, NODE_TYPE.__lazy__)) return await nextWorkLazyAsync(fiber);
 
-  if (fiber.type & NODE_TYPE.__consumer__) return nextWorkConsumer(fiber);
+  if (include(fiber.type, NODE_TYPE.__consumer__)) return nextWorkConsumer(fiber);
 
   nextWorkNormal(fiber);
 };

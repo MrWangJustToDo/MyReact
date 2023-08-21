@@ -1,4 +1,4 @@
-import { ListTree, PATCH_TYPE } from "@my-react/react-shared";
+import { ListTree, PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import { safeCallWithFiber } from "../share";
 
@@ -14,7 +14,7 @@ export const defaultGenerateEffectMap = (fiber: MyReactFiberNode, effect: () => 
 };
 
 export const effect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (fiber.patch & PATCH_TYPE.__effect__) {
+  if (include(fiber.patch, PATCH_TYPE.__effect__)) {
     const effectMap = renderDispatch.runtimeMap.effectMap;
 
     const allEffect = effectMap.get(fiber);
@@ -25,12 +25,12 @@ export const effect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDisp
       allEffect.listToFoot((effect) => safeCallWithFiber({ fiber, action: () => effect.call(null) }));
     }
 
-    if (fiber.patch & PATCH_TYPE.__effect__) fiber.patch ^= PATCH_TYPE.__effect__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__effect__);
   }
 };
 
 export const layoutEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (fiber.patch & PATCH_TYPE.__layoutEffect__) {
+  if (include(fiber.patch, PATCH_TYPE.__layoutEffect__)) {
     const layoutEffectMap = renderDispatch.runtimeMap.layoutEffectMap;
 
     const allLayoutEffect = layoutEffectMap.get(fiber);
@@ -41,12 +41,12 @@ export const layoutEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRend
       allLayoutEffect.listToFoot((effect) => safeCallWithFiber({ fiber, action: () => effect.call(null) }));
     }
 
-    if (fiber.patch & PATCH_TYPE.__layoutEffect__) fiber.patch ^= PATCH_TYPE.__layoutEffect__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__layoutEffect__);
   }
 };
 
 export const insertionEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (fiber.patch & PATCH_TYPE.__insertionEffect__) {
+  if (include(fiber.patch, PATCH_TYPE.__insertionEffect__)) {
     const insertionEffectMap = renderDispatch.runtimeMap.insertionEffectMap;
 
     const allInsertionEffect = insertionEffectMap.get(fiber);
@@ -57,32 +57,32 @@ export const insertionEffect = (fiber: MyReactFiberNode, renderDispatch: CustomR
       allInsertionEffect.listToFoot((effect) => safeCallWithFiber({ fiber, action: () => effect.call(null) }));
     }
 
-    if (fiber.patch & PATCH_TYPE.__insertionEffect__) fiber.patch ^= PATCH_TYPE.__insertionEffect__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__insertionEffect__);
   }
 };
 
 export const deleteEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (fiber.patch & PATCH_TYPE.__insertionEffect__) {
+  if (include(fiber.patch, PATCH_TYPE.__insertionEffect__)) {
     const insertionEffectMap = renderDispatch.runtimeMap.insertionEffectMap;
 
     insertionEffectMap.delete(fiber);
 
-    if (fiber.patch & PATCH_TYPE.__insertionEffect__) fiber.patch ^= PATCH_TYPE.__insertionEffect__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__insertionEffect__);
   }
 
-  if (fiber.patch & PATCH_TYPE.__layoutEffect__) {
+  if (include(fiber.patch, PATCH_TYPE.__layoutEffect__)) {
     const layoutEffectMap = renderDispatch.runtimeMap.layoutEffectMap;
 
     layoutEffectMap.delete(fiber);
 
-    if (fiber.patch & PATCH_TYPE.__layoutEffect__) fiber.patch ^= PATCH_TYPE.__layoutEffect__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__layoutEffect__);
   }
 
-  if (fiber.patch & PATCH_TYPE.__effect__) {
+  if (include(fiber.patch, PATCH_TYPE.__effect__)) {
     const effectMap = renderDispatch.runtimeMap.effectMap;
 
     effectMap.delete(fiber);
 
-    if (fiber.patch & PATCH_TYPE.__effect__) fiber.patch ^= PATCH_TYPE.__effect__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__effect__);
   }
 };

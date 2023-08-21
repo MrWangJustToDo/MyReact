@@ -1,4 +1,4 @@
-import { Effect_TYPE, HOOK_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { Effect_TYPE, HOOK_TYPE, STATE_TYPE, exclude } from "@my-react/react-shared";
 
 import { currentRenderDispatch } from "../share";
 
@@ -15,7 +15,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       renderDispatch.pendingEffect(fiber, () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (!(hookNode._ownerFiber.state & STATE_TYPE.__unmount__)) hookNode.cancel = hookNode.value();
+        if (exclude(hookNode._ownerFiber.state, STATE_TYPE.__unmount__)) hookNode.cancel = hookNode.value();
 
         hookNode.effect = false;
 

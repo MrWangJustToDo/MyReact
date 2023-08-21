@@ -1,11 +1,10 @@
 import { createElement, type MyReactElement, type MyReactElementNode } from "@my-react/react";
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
-import { PATCH_TYPE } from "@my-react/react-shared";
 
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
-import { asyncUpdateTimeLimit, log, initialElementMap, unmountElementMap, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
+import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
 
 import { mountControlElement, unmountControlElement, updateControlElement } from "./control";
 import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
@@ -47,23 +46,6 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   hydrateTime: number | null;
 
   performanceLogTimeLimit = asyncUpdateTimeLimit.current;
-
-  pendingRef(_fiber: MyReactFiberNode): void {
-    if (_fiber.ref) {
-      if (_fiber.type & this.runtimeRef.typeForRef) {
-        _fiber.patch |= PATCH_TYPE.__ref__;
-      } else {
-        if (__DEV__ && !(_fiber.type & NODE_TYPE.__forwardRef__)) {
-          log({
-            fiber: _fiber,
-            message: `can not set 'ref' for current component ${_fiber.elementType?.toString()}, 'ref' can only set for nativeNode or class component`,
-            level: "warn",
-            triggerOnce: true,
-          });
-        }
-      }
-    }
-  }
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(_fiber, this, !!_hydrate);

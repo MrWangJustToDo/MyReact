@@ -4,7 +4,7 @@ import { Portal } from "@my-react/react-shared";
 import type { MyReactElement } from "@my-react/react";
 
 const checkPortal = (element: MyReactElement) => {
-  if (!element.props["container"]) throw new Error(`a portal element need a "container" props`);
+  if (!element.props["container"]) throw new Error(`[@my-react/react-dom] a portal element need a "container" props`);
 };
 
 export const createPortal = (element: MyReactElement, container: HTMLElement) => {

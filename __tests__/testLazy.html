@@ -90,10 +90,11 @@
       );
     };
 
-    const LazyFoo = memo(lazy(async () => {
+    const LazyFoo = lazy(async () => {
       await delay(60);
+      throw new Error('lll')
       return { default: Foo };
-    }));
+    });
 
 
     const LazyBar = lazy(async () => {
@@ -136,8 +137,8 @@
     };
 
     const container = document.getElementById("root");
-    // ReactDOM.render(<App />, container);
-    ReactServerDOM.renderToString(<App />)
+    ReactDOM.render(<App />, container);
+    // ReactServerDOM.renderToString(<App />)
 
     // lazy hydrate
     // ReactDOM.renderToString(<App />, true).then((r) => container.innerHTML = r).then(() => ReactDOM.hydrate(<App />, container, true))

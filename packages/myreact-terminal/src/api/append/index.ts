@@ -1,4 +1,4 @@
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { include, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
 
 import { getFiberWithNativeDom } from "../../shared";
 import { appendChildNode, type PlainElement, type TextElement } from "../native";
@@ -7,10 +7,10 @@ import type { TerminalDispatch } from "../../renderDispatch";
 import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const append = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch) => {
-  if (fiber.patch & PATCH_TYPE.__append__) {
+  if (include(fiber.patch, PATCH_TYPE.__append__)) {
     let parentFiberWithNode = renderDispatch.runtimeDom.elementMap.get(fiber);
 
-    if (!parentFiberWithNode || parentFiberWithNode.state & STATE_TYPE.__unmount__) {
+    if (!parentFiberWithNode || include(parentFiberWithNode.state, STATE_TYPE.__unmount__)) {
       parentFiberWithNode = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
       renderDispatch.runtimeDom.elementMap.set(fiber, parentFiberWithNode);
@@ -30,6 +30,6 @@ export const append = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch
 
     if (currentDom) appendChildNode(parentDom, currentDom);
 
-    if (fiber.patch & PATCH_TYPE.__append__) fiber.patch ^= PATCH_TYPE.__append__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
   }
 };

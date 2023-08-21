@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { updateLoopConcurrentWithAll, updateLoopConcurrentWithTrigger, updateLoopSyncWithAll, updateLoopSyncWithTrigger } from "../runtimeUpdate";
-import { resetLogScope, safeCall, setLogScope } from "../share";
+import { resetLogScope, setLogScope } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 
@@ -14,11 +14,11 @@ export const updateSyncWithAll = (renderDispatch: CustomRenderDispatch, cb?: () 
 
   const renderPlatform = currentRenderPlatform.current;
 
-  enableScopeTreeLog.current && setLogScope();
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  safeCall(() => updateLoopSyncWithAll(renderDispatch));
+  updateLoopSyncWithAll(renderDispatch);
 
-  enableScopeTreeLog.current && resetLogScope();
+  __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   const commitList = renderDispatch.pendingCommitFiberList;
 
@@ -38,11 +38,11 @@ export const updateSyncWithTrigger = (renderDispatch: CustomRenderDispatch, cb?:
 
   const renderPlatform = currentRenderPlatform.current;
 
-  enableScopeTreeLog.current && setLogScope();
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  safeCall(() => updateLoopSyncWithTrigger(renderDispatch));
+  updateLoopSyncWithTrigger(renderDispatch);
 
-  enableScopeTreeLog.current && resetLogScope();
+  __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   const commitList = renderDispatch.pendingCommitFiberList;
 
@@ -62,11 +62,11 @@ export const updateConcurrentWithAll = (renderDispatch: CustomRenderDispatch, cb
 
   const renderPlatform = currentRenderPlatform.current;
 
-  enableScopeTreeLog.current && setLogScope();
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  safeCall(() => updateLoopConcurrentWithAll(renderDispatch));
+  updateLoopConcurrentWithAll(renderDispatch);
 
-  enableScopeTreeLog.current && resetLogScope();
+  __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   if (renderDispatch.runtimeFiber.nextWorkingFiber) {
     renderPlatform.yieldTask(() => updateConcurrentWithAll(renderDispatch, cb));
@@ -90,11 +90,11 @@ export const updateConcurrentWithTrigger = (renderDispatch: CustomRenderDispatch
 
   const renderPlatform = currentRenderPlatform.current;
 
-  enableScopeTreeLog.current && setLogScope();
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  safeCall(() => updateLoopConcurrentWithTrigger(renderDispatch));
+  updateLoopConcurrentWithTrigger(renderDispatch);
 
-  enableScopeTreeLog.current && resetLogScope();
+  __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   if (renderDispatch.runtimeFiber.nextWorkingFiber) {
     renderPlatform.yieldTask(() => updateConcurrentWithTrigger(renderDispatch, cb));

@@ -28,7 +28,7 @@ export class MyReactInternalInstance {
   }
 
   _unmount() {
-    this.mode = Effect_TYPE.__initial__;
+    this.mode = Effect_TYPE.__unmount__;
 
     this._contextFiber?._removeDependence(this);
 

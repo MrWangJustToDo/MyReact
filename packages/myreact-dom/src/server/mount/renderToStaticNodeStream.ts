@@ -1,4 +1,4 @@
-import { __my_react_shared__, isValidElement } from "@my-react/react";
+import { isValidElement } from "@my-react/react";
 import { MyReactFiberNode, initialFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement } from "@my-react-dom-server/api";
@@ -8,8 +8,6 @@ import { checkRoot, startRender } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 import type { Readable } from "stream";
-
-const { enableScopeTreeLog } = __my_react_shared__;
 
 export const renderToStaticNodeStream = (element: LikeJSX): Readable => {
   if (isValidElement(element)) {
@@ -22,8 +20,6 @@ export const renderToStaticNodeStream = (element: LikeJSX): Readable => {
     const stream = typeof window === "undefined" ? new (require("stream").Readable)({ read() {} }) : temp;
 
     prepareRenderPlatform();
-
-    enableScopeTreeLog.current = false;
 
     const container = new ContainerElement();
 
@@ -45,6 +41,6 @@ export const renderToStaticNodeStream = (element: LikeJSX): Readable => {
 
     return stream;
   } else {
-    throw new Error(`[@my-react/react-dom] 'renderToStaticNodeStream' can only render a '@my-react' element`);
+    throw new Error(`[@my-react/react-dom-server] 'renderToStaticNodeStream' can only render a '@my-react' element`);
   }
 };

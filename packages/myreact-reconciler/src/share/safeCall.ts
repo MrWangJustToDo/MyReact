@@ -14,7 +14,7 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
 
     const renderPlatform = currentRenderPlatform.current;
 
-    renderPlatform.log({ message: e as Error, level: "error", fiber });
+    console.error(e);
 
     renderPlatform.dispatchError({ fiber, error: e });
   }
@@ -28,24 +28,31 @@ export const safeCallAsync = async <T extends any[] = any[], K = any>(action: (.
 
     const renderPlatform = currentRenderPlatform.current;
 
-    renderPlatform.log({ message: e as Error, level: "error", fiber });
+    console.error(e);
 
     renderPlatform.dispatchError({ fiber, error: e });
   }
 };
 
 export const safeCallWithFiber = <T extends any[] = any[], K = any>(
-  { action, fiber }: { action: (...args: T) => K; fiber: MyReactFiberNode },
+  { action, fiber, fallback }: { action: (...args: T) => K; fiber: MyReactFiberNode; fallback?: () => K },
   ...args: T
 ): K => {
+  const last = currentRunningFiber.current;
+
+  currentRunningFiber.current = fiber;
   try {
     return action.call(null, ...args);
   } catch (e) {
     const renderPlatform = currentRenderPlatform.current;
 
-    renderPlatform.log({ message: e as Error, level: "error", fiber });
+    console.error(e);
 
     renderPlatform.dispatchError({ fiber, error: e });
+
+    return fallback?.();
+  } finally {
+    currentRunningFiber.current = last;
   }
 };
 
@@ -58,7 +65,7 @@ export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...a
 
     const renderPlatform = currentRenderPlatform.current;
 
-    renderPlatform.log({ message: e as Error, level: "error", fiber });
+    console.error(e);
 
     renderPlatform.dispatchError({ fiber, error: e });
   } finally {

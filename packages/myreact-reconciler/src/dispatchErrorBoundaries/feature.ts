@@ -1,3 +1,5 @@
+import { include } from "@my-react/react-shared";
+
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
@@ -8,7 +10,7 @@ export const isErrorBoundariesInstance = (instance: MyReactComponent, Component:
 };
 
 export const isErrorBoundariesComponent = (fiber: MyReactFiberNode) => {
-  if (fiber.type & NODE_TYPE.__class__) {
+  if (include(fiber.type, NODE_TYPE.__class__)) {
     const Component = fiber.elementType;
 
     const typedComponent = Component as MixinMyReactClassComponent;

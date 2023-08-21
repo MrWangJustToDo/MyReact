@@ -2,13 +2,10 @@ import { getFiberTree, getHookTree } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
-import type { LogProps, RenderFiber, RenderHook, RenderPlatform, UpdateQueue } from "@my-react/react";
+import type { RenderFiber, RenderHookParams, RenderPlatform, UpdateQueue } from "@my-react/react";
 import type { ListTreeNode, HOOK_TYPE } from "@my-react/react-shared";
 
 export class CustomRenderPlatform implements RenderPlatform {
-  log(_props: LogProps): void {
-    void 0;
-  }
   microTask(_task: () => void): void {
     void 0;
   }
@@ -24,7 +21,7 @@ export class CustomRenderPlatform implements RenderPlatform {
   getHookTree(_treeHookNode: ListTreeNode<MyReactHookNode>, _errorType: { lastRender: HOOK_TYPE; nextRender: HOOK_TYPE }): string {
     return getHookTree(_treeHookNode, _errorType);
   }
-  dispatchHook(_params: Pick<RenderHook<Record<string, any>>, "reducer" | "deps" | "type" | "value">): unknown {
+  dispatchHook(_params: RenderHookParams): unknown {
     return void 0;
   }
   dispatchState(_params: UpdateQueue): void {

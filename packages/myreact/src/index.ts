@@ -128,7 +128,7 @@ export {
 
 export type { Action, Reducer, RenderHook, RenderHookParams } from "./renderHook";
 
-export type { RenderPlatform, LogProps } from "./renderPlatform";
+export type { RenderPlatform } from "./renderPlatform";
 
 export type { RenderFiber } from "./renderFiber";
 

@@ -1,4 +1,5 @@
 import { isCommentStartElement, NODE_TYPE } from "@my-react/react-reconciler";
+import { include } from "@my-react/react-shared";
 
 import { commentS, commentE } from "@my-react-dom-shared";
 
@@ -7,9 +8,9 @@ import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-re
 const SVG = "http://www.w3.org/2000/svg";
 
 export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
-  if (fiber.type & NODE_TYPE.__text__) {
+  if (include(fiber.type, NODE_TYPE.__text__)) {
     fiber.nativeNode = document.createTextNode(fiber.elementType as string);
-  } else if (fiber.type & NODE_TYPE.__plain__) {
+  } else if (include(fiber.type, NODE_TYPE.__plain__)) {
     const typedElementType = fiber.elementType as string;
 
     if (isSVG) {
@@ -17,7 +18,7 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     } else {
       fiber.nativeNode = document.createElement(typedElementType);
     }
-  } else if (fiber.type & NODE_TYPE.__portal__) {
+  } else if (include(fiber.type, NODE_TYPE.__portal__)) {
     const fiberContainer = fiber as MyReactFiberContainer;
 
     const containerNode = fiber.pendingProps["container"] as Element;
@@ -25,7 +26,7 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     fiberContainer.containerNode = containerNode;
 
     if (__DEV__) containerNode.setAttribute?.("portal", "@my-react");
-  } else if (fiber.type & NODE_TYPE.__comment__) {
+  } else if (include(fiber.type, NODE_TYPE.__comment__)) {
     if (isCommentStartElement(fiber)) {
       fiber.nativeNode = document.createComment(commentS);
     } else {

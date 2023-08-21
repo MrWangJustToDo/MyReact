@@ -1,11 +1,11 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "./fiberType";
 
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement, lazy } from "@my-react/react";
-import type { ListTreeNode } from "@my-react/react-shared";
 
 const { currentRenderPlatform, currentRunningFiber } = __my_react_internal__;
 
@@ -15,13 +15,27 @@ export const originalWarn = console.warn;
 
 export const originalError = console.error;
 
+export const devWarn = (...args) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  const renderFiber = currentRunningFiber.current;
+
+  originalWarn.call(console, ...args, renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber);
+};
+
+export const devError = (...args) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  const renderFiber = currentRunningFiber.current;
+
+  originalError.call(console, ...args, renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber);
+};
+
 export const setLogScope = () => {
   if (__DEV__) {
-    const renderPlatform = currentRenderPlatform.current;
+    console.warn = devWarn;
 
-    console.warn = (...args) => originalWarn.call(console, ...args.concat(renderPlatform.getFiberTree(currentRunningFiber.current)));
-
-    console.error = (...args) => originalError.call(console, ...args.concat(renderPlatform.getFiberTree(currentRunningFiber.current)));
+    console.error = devError;
   }
 };
 
@@ -56,7 +70,7 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
     if (owner) {
       const ownerElement = owner as MyReactFiberNode;
       const ownerElementType = ownerElement.elementType;
-      if (ownerElement.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+      if (include(ownerElement.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
         const typedOwnerElementType = ownerElementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
         const name = typedOwnerElementType.name || typedOwnerElementType.displayName;
         preString = name ? `${preString} (render dy ${name})` : preString;
@@ -69,7 +83,7 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
 };
 
 const shouldIncludeLog = (fiber: MyReactFiberNode) => {
-  if (fiber.type & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+  if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
     return true;
   }
   return false;
@@ -85,10 +99,18 @@ export const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__memo__) {
     const targetRender = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
     let name = "";
-    if (typeof targetRender === "function") {
+    let res = "memo";
+    if (fiber.type & NODE_TYPE.__provider__) {
+      name = "Provider";
+    } else if (fiber.type & NODE_TYPE.__consumer__) {
+      name = "Consumer";
+    } else if (typeof targetRender === "function") {
       name = targetRender?.displayName || targetRender?.name || name;
     }
-    return `<${name ? name : "anonymous"} - (memo) />`;
+    if (fiber.type & NODE_TYPE.__forwardRef__) {
+      res += "-forwardRef";
+    }
+    return `<${name ? name : "anonymous"} - (${res}) />`;
   }
   if (fiber.type & NODE_TYPE.__lazy__) {
     const typedElementType = fiber.elementType as ReturnType<typeof lazy>;
@@ -155,12 +177,12 @@ export const getHookTree = (
   errorType: { lastRender: MyReactHookNode["type"]; nextRender: MyReactHookNode["type"] }
 ) => {
   const pre = "".toString().padEnd(5);
-  const message = "hook for current component has a different state on current render and previous render, this is not a valid usage.";
+  const message = "[@my-react/react] hook for current component has a different state on current render and previous render, this is not a valid usage.";
   const re = "\n" + pre + "Last render:".padEnd(28) + "Next render:".padEnd(10) + "\n" + pre + "-".repeat(44) + "\n";
-  let stack = pre + errorType.lastRender.padEnd(28) + errorType.nextRender.padEnd(10) + "\n";
+  let stack = pre + HOOK_TYPE[errorType.lastRender].padEnd(28) + HOOK_TYPE[errorType.nextRender].padEnd(10) + "\n";
   while (treeHookNode && treeHookNode.value) {
     const t = treeHookNode.value.type;
-    stack = pre + t.padEnd(28) + t.padEnd(10) + "\n" + stack;
+    stack = pre + HOOK_TYPE[t].padEnd(28) + HOOK_TYPE[t].padEnd(10) + "\n" + stack;
     treeHookNode = treeHookNode.prev;
   }
   stack += pre + "^".repeat(44) + "\n";

@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, exclude, include, remove } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
@@ -18,7 +18,7 @@ export const defaultGenerateContextMap = (fiber: MyReactFiberNode, map: WeakMap<
   if (parent) {
     let parentMap = map.get(parent) || emptyObj;
 
-    if (parent.type & NODE_TYPE.__provider__) {
+    if (include(parent.type, NODE_TYPE.__provider__)) {
       const typedElementType = parent.elementType as ReturnType<typeof createContext>["Provider"];
 
       const contextObj = typedElementType["Context"];
@@ -63,15 +63,15 @@ export const defaultGetContextFiber = (
 };
 
 export const context = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (fiber.patch & PATCH_TYPE.__context__) {
+  if (include(fiber.patch, PATCH_TYPE.__context__)) {
     const set = new Set(fiber.dependence);
 
     const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 
     renderPlatform.microTask(() => {
       set.forEach((i) => {
-        if (i._ownerFiber && !(i._ownerFiber.state & STATE_TYPE.__unmount__)) {
-          i._ownerFiber.state = STATE_TYPE.__triggerConcurrent__;
+        if (i._ownerFiber && exclude(i._ownerFiber.state, STATE_TYPE.__unmount__)) {
+          i._ownerFiber.state = STATE_TYPE.__triggerSync__;
         }
       });
       // TODO
@@ -80,15 +80,15 @@ export const context = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDis
       renderDispatch.rootFiber._update(STATE_TYPE.__skippedSync__);
     });
 
-    if (fiber.patch & PATCH_TYPE.__context__) fiber.patch ^= PATCH_TYPE.__context__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__context__);
   }
 };
 
 // used for root loop
 export const prepareUpdateAllDependence = (fiber: MyReactFiberNode) => {
   fiber?.dependence?.forEach((i) => {
-    if (i._ownerFiber && !(i._ownerFiber.state & STATE_TYPE.__unmount__)) {
-      i._ownerFiber.state = STATE_TYPE.__triggerConcurrent__;
+    if (i._ownerFiber && exclude(i._ownerFiber.state, STATE_TYPE.__unmount__)) {
+      i._ownerFiber.state = STATE_TYPE.__triggerSync__;
     }
   });
 };

@@ -3,17 +3,7 @@ import type { RenderHook, RenderHookParams } from "../renderHook";
 import type { UpdateQueue } from "../renderQueue";
 import type { ListTreeNode } from "@my-react/react-shared";
 
-export type LogProps = {
-  message: string | Error;
-  fiber?: RenderFiber;
-  triggerOnce?: boolean;
-  level?: "warn" | "error";
-  dispatchError?: boolean;
-};
-
 interface DefaultRenderPlatform {
-  log(_props: LogProps): void;
-
   microTask(_task: () => void): void;
 
   macroTask(_task: () => void): void;

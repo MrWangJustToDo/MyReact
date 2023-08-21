@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_shared__ } from "@my-react/react";
+import { isValidElement } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement } from "@my-react-dom-server/api";
@@ -7,8 +7,6 @@ import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
 import { checkRoot, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import type { MyReactElement, LikeJSX } from "@my-react/react";
-
-const { enableScopeTreeLog } = __my_react_shared__;
 
 const renderToStringSync = (element: MyReactElement) => {
   const container = new ContainerElement();
@@ -55,8 +53,6 @@ export function renderToString(element: LikeJSX, asyncRender: true): Promise<str
 export function renderToString(element: LikeJSX, asyncRender?: boolean) {
   // checkValidElement
   if (isValidElement(element)) {
-    enableScopeTreeLog.current = false;
-
     prepareRenderPlatform();
 
     if (asyncRender) {
@@ -65,6 +61,6 @@ export function renderToString(element: LikeJSX, asyncRender?: boolean) {
       return renderToStringSync(element);
     }
   } else {
-    throw new Error(`[@my-react/react-dom] 'renderToString' can only render a '@my-react' element`);
+    throw new Error(`[@my-react/react-dom-server] 'renderToString' can only render a '@my-react' element`);
   }
 }

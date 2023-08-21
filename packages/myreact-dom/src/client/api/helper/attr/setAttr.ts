@@ -73,7 +73,7 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
     }
   } catch (e) {
     if (__DEV__) {
-      log({ fiber, message: `${(e as Error).message}, key: ${name}, value: ${value}`, level: "error", triggerOnce: true });
+      log(fiber, "error", `${(e as Error).message}, key: ${name}, value: ${value}`);
     }
   }
 };

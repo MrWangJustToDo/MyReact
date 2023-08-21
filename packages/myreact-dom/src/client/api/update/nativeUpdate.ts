@@ -1,4 +1,5 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
+import { include } from "@my-react/react-shared";
 
 import { enableHighlight, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
 
@@ -12,15 +13,15 @@ import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
-  if (!fiber.nativeNode) throw new Error("update error, dom not exist");
+  if (!fiber.nativeNode) throw new Error("[@my-react/react-dom] update error, dom not exist");
 
   const node = fiber.nativeNode as DomElement | DomNode;
 
   const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
-  if (fiber.type & NODE_TYPE.__text__) {
+  if (include(fiber.type, NODE_TYPE.__text__)) {
     node.textContent = fiber.elementType as string;
-  } else if (fiber.type & NODE_TYPE.__plain__) {
+  } else if (include(fiber.type, NODE_TYPE.__plain__)) {
     const dom = node as HTMLElement;
 
     const oldProps = fiber.memoizedProps || {};

@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { HOOK_TYPE, STATE_TYPE, isArrayEquals } from "@my-react/react-shared";
+import { HOOK_TYPE, STATE_TYPE, include, isArrayEquals } from "@my-react/react-shared";
 
-import { currentRenderDispatch } from "../share";
+import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -26,7 +26,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   if (type !== currentHook?.type) {
     throw new Error(
       renderPlatform.getHookTree(currentHookTreeNode.current.prev as ListTreeNode<MyReactHookNode>, {
-        lastRender: currentHook?.type || ("undefined" as HOOK_TYPE),
+        lastRender: currentHook?.type,
         nextRender: type,
       })
     );
@@ -45,10 +45,10 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     currentHook.type === HOOK_TYPE.useImperativeHandle
   ) {
     if (deps && !currentHook.deps) {
-      throw new Error("deps state change");
+      throw new Error("[@my-react/react] deps state change");
     }
     if (!deps && currentHook.deps) {
-      throw new Error("deps state change");
+      throw new Error("[@my-react/react] deps state change");
     }
   }
 
@@ -83,7 +83,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
     storeApi.getSnapshot = newStoreApi.getSnapshot;
 
-    currentHook.result = storeApi.getSnapshot.call(null);
+    currentHook.result = safeCallWithFiber({ fiber, action: () => storeApi.getSnapshot.call(null) });
 
     return currentHook;
   }
@@ -103,7 +103,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     if (isHMR || !deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
-      currentHook.result = (value as () => unknown).call(null);
+      currentHook.result = safeCallWithFiber({ fiber, action: () => (value as () => unknown).call(null) });
 
       currentHook.deps = deps;
     }
@@ -111,7 +111,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (currentHook.type === HOOK_TYPE.useContext) {
-    if (!currentHook._contextFiber || currentHook._contextFiber.state & STATE_TYPE.__unmount__ || !Object.is(currentHook.value, value)) {
+    if (!currentHook._contextFiber || include(currentHook._contextFiber.state, STATE_TYPE.__unmount__) || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
 
       const ProviderFiber = renderDispatch.resolveContextFiber(currentHook._ownerFiber as MyReactFiberNode, currentHook.value);
@@ -157,7 +157,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     if (!isArrayEquals(currentHook.value, value)) {
       currentHook.value = value;
       if (enableDebugLog.current) {
-        console.warn(`[@my-react/react]-[debug-log]`, ...currentHook.value);
+        console.warn(`[@my-react/react/debug]`, ...currentHook.value);
       }
     }
   }

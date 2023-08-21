@@ -1,4 +1,4 @@
-import { STATE_TYPE } from "@my-react/react-shared";
+import { STATE_TYPE, include } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -25,6 +25,7 @@ export class HighLight {
    */
   static getHighLightInstance = () => {
     HighLight.instance = HighLight.instance || new HighLight();
+
     return HighLight.instance;
   };
 
@@ -86,7 +87,7 @@ export class HighLight {
     context.strokeStyle = "rgb(200,0,0)";
 
     allPending.forEach((fiber) => {
-      if (fiber.state & STATE_TYPE.__unmount__) return;
+      if (include(fiber.state, STATE_TYPE.__unmount__)) return;
       const node = fiber.nativeNode as HTMLElement;
       if (node.nodeType === Node.TEXT_NODE) {
         this.range.selectNodeContents(node);

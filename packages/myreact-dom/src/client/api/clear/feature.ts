@@ -1,9 +1,9 @@
-import { STATE_TYPE } from "@my-react/react-shared";
+import { STATE_TYPE, include } from "@my-react/react-shared";
 
 import { log } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { DomNode} from "@my-react-dom-shared";
+import type { DomNode } from "@my-react-dom-shared";
 
 const clearFiberDom = (fiber: MyReactFiberNode) => {
   if (fiber.nativeNode) {
@@ -11,7 +11,7 @@ const clearFiberDom = (fiber: MyReactFiberNode) => {
     try {
       dom.parentNode?.removeChild(dom);
     } catch (e) {
-      log({ fiber, message: `error for remove dom, ${(e as Error).message}` });
+      log(fiber, "error", `error for remove dom`, e);
     }
   }
 };
@@ -20,7 +20,7 @@ const clearFiberDom = (fiber: MyReactFiberNode) => {
  * @internal
  */
 export const clearNode = (fiber: MyReactFiberNode) => {
-  if (fiber.state & STATE_TYPE.__unmount__) return;
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   clearFiberDom(fiber);
 };

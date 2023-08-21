@@ -1,4 +1,4 @@
-import { STATE_TYPE } from "@my-react/react-shared";
+import { STATE_TYPE, include } from "@my-react/react-shared";
 
 import { fiberToDispatchMap } from "../share";
 
@@ -7,7 +7,7 @@ import type { MyReactFiberNodeDev } from "./interface";
 import type { CustomRenderDispatch } from "../renderDispatch";
 
 export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (fiber.state & STATE_TYPE.__unmount__) return;
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   renderDispatch.commitUnsetRef(fiber);
 

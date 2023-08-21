@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { STATE_TYPE } from "@my-react/react-shared";
+import { STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
 
 import { unmountFiber } from "../dispatchUnmount";
 import { fiberToDispatchMap } from "../share";
@@ -43,11 +43,13 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
     renderDispatch.isAppCrashed = true;
 
-    const rootFiber = renderDispatch.rootFiber;
+    if (__DEV__) {
+      const rootFiber = renderDispatch.rootFiber;
 
-    unmountFiber(rootFiber);
+      unmountFiber(rootFiber);
 
-    console.error(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
+      console.error(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
+    }
   }
 };
 
@@ -86,9 +88,9 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   if (renderDispatch.isAppUnmounted) return;
 
   if (enableLoopFromRoot.current) {
-    const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => !(f.state & STATE_TYPE.__unmount__));
+    const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
 
-    const hasSync = allLive.some((f) => f.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__));
+    const hasSync = allLive.some((f) => include(f.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__));
 
     renderDispatch.pendingUpdateFiberArray.clear();
 
@@ -111,35 +113,35 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
 
       const item = allPending[i];
 
-      if (item.state & (STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) {
+      if (include(item.state, STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) {
         renderDispatch.pendingUpdateFiberArray.uniDelete(item);
         continue;
       }
 
       if (!nextWorkFiber) nextWorkFiber = item;
 
-      if (!nextWorkSyncFiber && item.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__)) nextWorkSyncFiber = item;
+      if (!nextWorkSyncFiber && include(item.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__)) nextWorkSyncFiber = item;
     }
 
     nextWorkFiber = nextWorkSyncFiber || nextWorkFiber;
 
     if (nextWorkFiber) {
-      if (nextWorkFiber.state & (STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__)) {
+      if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 
         renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
-        if (nextWorkFiber.state & STATE_TYPE.__skippedSync__) {
+        if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__)) {
           updateSyncWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
         } else {
           updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
         }
-      } else if (nextWorkFiber.state & (STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__)) {
+      } else if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 
         renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
-        if (nextWorkFiber.state & STATE_TYPE.__skippedConcurrent__) {
+        if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__)) {
           if (enableConcurrentMode.current) {
             updateConcurrentWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
           } else {
@@ -154,7 +156,7 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
         }
       } else {
         // TODO
-        throw new Error(`un handler state, ${nextWorkFiber.state}, ${nextWorkFiber}`);
+        throw new Error(`[@my-react/react] unknown state, ${nextWorkFiber.state}, ${nextWorkFiber}`);
       }
     } else {
       globalLoop.current = false;
@@ -185,9 +187,15 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
     return;
   }
 
-  if (fiber.state & STATE_TYPE.__unmount__) return;
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
-  if (state !== undefined) fiber.state === STATE_TYPE.__stable__ ? (fiber.state = state) : fiber.state & state ? void 0 : (fiber.state |= state);
+  if (state !== undefined && state !== STATE_TYPE.__stable__) {
+    if (fiber.state === STATE_TYPE.__stable__) {
+      fiber.state = state;
+    } else {
+      fiber.state = merge(fiber.state, state);
+    }
+  }
 
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 

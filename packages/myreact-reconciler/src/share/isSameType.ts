@@ -1,4 +1,5 @@
 import { isValidElement, __my_react_shared__ } from "@my-react/react";
+import { include } from "@my-react/react-shared";
 
 import { MyReactFiberNode } from "../runtimeFiber";
 
@@ -17,7 +18,7 @@ export function checkIsSameType(p: MyReactFiberNode | MyReactElementNode, elemen
     const { nodeType, elementType } = getTypeFromElementNode(element);
     if (p.type === nodeType) {
       if (isValidElement(element)) {
-        if (__DEV__ && enableHMRForDev.current && nodeType & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+        if (__DEV__ && enableHMRForDev.current && include(nodeType, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
           // type error
           return Object.is(getCurrentTypeFromRefresh((p as MyReactFiberNode).elementType), getCurrentTypeFromRefresh(elementType));
         } else {
@@ -36,7 +37,7 @@ export function checkIsSameType(p: MyReactFiberNode | MyReactElementNode, elemen
       if (isValidElement(element)) {
         const typedExistElement = p as MyReactElement;
         const typedIncomingElement = element as MyReactElement;
-        if (__DEV__ && enableHMRForDev.current && existElementType.nodeType & (NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+        if (__DEV__ && enableHMRForDev.current && include(existElementType.nodeType, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
           return Object.is(getCurrentTypeFromRefresh(typedIncomingElement.type), getCurrentTypeFromRefresh(typedExistElement.type));
         } else {
           return Object.is(typedIncomingElement.type, typedExistElement.type);

@@ -1,5 +1,5 @@
 import { Component } from "@my-react/react";
-import { STATE_TYPE } from "@my-react/react-shared";
+import { STATE_TYPE, include } from "@my-react/react-shared";
 
 import type { MyReactInternalInstance } from "@my-react/react";
 import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
@@ -9,7 +9,7 @@ import type { DomElement } from "@my-react-dom-shared";
  * @internal
  */
 export const findDOMFromFiber = (fiber: MyReactFiberNode | null): DomElement | undefined => {
-  if (!fiber || fiber.state & STATE_TYPE.__unmount__) return;
+  if (!fiber || include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const mayFiberContainer = fiber as MyReactFiberContainer;
 

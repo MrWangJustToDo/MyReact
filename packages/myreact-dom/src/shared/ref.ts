@@ -1,5 +1,7 @@
 import { NODE_TYPE, safeCallWithFiber } from "@my-react/react-reconciler";
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, include, remove } from "@my-react/react-shared";
+
+import { log } from "./debug";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -7,8 +9,8 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
  * @internal
  */
 export const setRef = (_fiber: MyReactFiberNode) => {
-  if (_fiber.patch & PATCH_TYPE.__ref__) {
-    if (_fiber.type & NODE_TYPE.__plain__) {
+  if (include(_fiber.patch, PATCH_TYPE.__ref__)) {
+    if (include(_fiber.type, NODE_TYPE.__plain__)) {
       if (_fiber.nativeNode) {
         const ref = _fiber.ref;
         if (typeof ref === "object" && ref !== null) {
@@ -17,10 +19,9 @@ export const setRef = (_fiber: MyReactFiberNode) => {
           safeCallWithFiber({ fiber: _fiber, action: () => ref(_fiber.nativeNode) });
         }
       } else {
-        throw new Error("plain element do not have a native node");
+        throw new Error("[@my-react/react-dom] plain element do not have a native node");
       }
-    }
-    if (_fiber.type & NODE_TYPE.__class__) {
+    } else if (include(_fiber.type, NODE_TYPE.__class__)) {
       if (_fiber.instance) {
         const ref = _fiber.ref;
         if (typeof ref === "object" && ref !== null) {
@@ -29,10 +30,13 @@ export const setRef = (_fiber: MyReactFiberNode) => {
           safeCallWithFiber({ fiber: _fiber, action: () => ref(_fiber.instance) });
         }
       } else {
-        throw new Error("class component do not have a instance");
+        throw new Error("[@my-react/react-dom] class component do not have a instance");
       }
+    } else {
+      log(_fiber, "error", "can not set ref for current element");
     }
-    if (_fiber.patch & PATCH_TYPE.__ref__) _fiber.patch ^= PATCH_TYPE.__ref__;
+
+    _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__ref__);
   }
 };
 

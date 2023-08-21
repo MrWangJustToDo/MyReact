@@ -1,5 +1,5 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { isNormalEquals, PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { exclude, include, isNormalEquals, merge, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
 
 import { prepareUpdateAllDependence } from "../dispatchContext";
 import { currentRenderDispatch, NODE_TYPE } from "../share";
@@ -35,7 +35,7 @@ export const updateFiberNode = (
 
   parent.child = parent.child || fiber;
 
-  fiber._installElement(nextElement);
+  fiber._updateElement(nextElement);
 
   const nextElementType = fiber.elementType;
 
@@ -44,25 +44,29 @@ export const updateFiberNode = (
   const nextRef = fiber.ref;
 
   if (prevElementType !== nextElementType || prevProps !== nextProps) {
-    if (fiber.type & NODE_TYPE.__memo__) {
+    if (include(fiber.type, NODE_TYPE.__memo__)) {
       const typedElement = nextElement as MyReactElement;
 
       const typedElementType = typedElement.type as ReturnType<typeof memo>;
 
       if (
-        !(fiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) &&
+        exclude(fiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__) &&
         typedElementType.compare(fiber.pendingProps, fiber.memoizedProps)
       ) {
         fiber.state = STATE_TYPE.__stable__;
       } else {
-        fiber.state !== STATE_TYPE.__initial__ && (fiber.state |= STATE_TYPE.__inherit__);
+        fiber.state = remove(fiber.state, STATE_TYPE.__stable__);
+
+        fiber.state = merge(fiber.state, STATE_TYPE.__inherit__);
 
         renderDispatch.patchToFiberUpdate?.(fiber);
       }
     } else {
-      fiber.state !== STATE_TYPE.__initial__ && (fiber.state |= STATE_TYPE.__inherit__);
+      fiber.state = remove(fiber.state, STATE_TYPE.__stable__);
 
-      if (fiber.type & NODE_TYPE.__provider__) {
+      fiber.state = merge(fiber.state, STATE_TYPE.__inherit__);
+
+      if (include(fiber.type, NODE_TYPE.__provider__)) {
         if (!isNormalEquals(fiber.pendingProps.value as Record<string, unknown>, fiber.memoizedProps.value as Record<string, unknown>)) {
           // if current is root loop mode, should not delay context update
           if (enableLoopFromRoot.current) {
@@ -73,13 +77,13 @@ export const updateFiberNode = (
         }
       }
 
-      if (fiber.type & NODE_TYPE.__plain__) {
+      if (include(fiber.type, NODE_TYPE.__plain__)) {
         if (!isNormalEquals(fiber.pendingProps, fiber.memoizedProps, (key: string) => key === "children")) {
           renderDispatch.pendingUpdate(fiber);
         }
       }
 
-      if (fiber.type & NODE_TYPE.__text__) {
+      if (include(fiber.type, NODE_TYPE.__text__)) {
         renderDispatch.pendingUpdate(fiber);
       }
 
@@ -95,7 +99,7 @@ export const updateFiberNode = (
     renderDispatch.pendingPosition(fiber);
   }
 
-  if (!(fiber.patch & PATCH_TYPE.__update__)) {
+  if (exclude(fiber.patch, PATCH_TYPE.__update__)) {
     fiber.memoizedProps = fiber.pendingProps;
   }
 

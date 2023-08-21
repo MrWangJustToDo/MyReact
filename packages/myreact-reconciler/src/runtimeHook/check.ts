@@ -10,19 +10,19 @@ export const checkHookValid = (hookNode: MyReactHookNode) => {
     hookNode.type === HOOK_TYPE.useLayoutEffect
   ) {
     if (typeof hookNode.value !== "function") {
-      throw new Error(`${hookNode.type} initial error`);
+      throw new Error(`[@my-react/react] ${HOOK_TYPE[hookNode.type]} initial error`);
     }
   }
   if (hookNode.type === HOOK_TYPE.useContext) {
     if (typeof hookNode.value !== "object" || hookNode.value === null) {
-      throw new Error(`${hookNode.type} initial error`);
+      throw new Error(`[@my-react/react] ${HOOK_TYPE[hookNode.type]} initial error`);
     }
   }
 
   if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
     const storeApi = hookNode.value;
     if (typeof storeApi.subscribe !== "function" || typeof storeApi.getSnapshot !== "function") {
-      throw new Error(`${hookNode.type} initial error`);
+      throw new Error(`[@my-react/react] ${HOOK_TYPE[hookNode.type]} initial error`);
     }
   }
 };

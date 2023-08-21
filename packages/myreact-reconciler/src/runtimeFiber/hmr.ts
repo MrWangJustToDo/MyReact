@@ -1,5 +1,5 @@
 import { createElement } from "@my-react/react";
-import { ListTree, STATE_TYPE } from "@my-react/react-shared";
+import { ListTree, STATE_TYPE, include, merge } from "@my-react/react-shared";
 
 import { deleteEffect } from "../dispatchEffect";
 import { fiberToDispatchMap, setRefreshTypeMap } from "../share";
@@ -10,13 +10,13 @@ import type { MixinMyReactFunctionComponent, MixinMyReactClassComponent } from "
 
 export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionComponent | MixinMyReactClassComponent, forceRefresh?: boolean) => {
   if (__DEV__) {
+    if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+
     const element = createElement(nextType as MixinMyReactFunctionComponent, fiber.pendingProps);
 
-    fiber._installElement(element);
+    forceRefresh ? fiber._installElement(element) : fiber._updateElement(element);
 
     setRefreshTypeMap(fiber);
-
-    if (fiber.state & STATE_TYPE.__unmount__) return;
 
     if (forceRefresh) {
       const existingHookList = fiber.hookList;
@@ -33,8 +33,6 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
 
       fiber.updateQueue = new ListTree();
 
-      fiber.state = STATE_TYPE.__initial__;
-
       const renderDispatch = fiberToDispatchMap.get(fiber);
 
       const typedFiber = fiber as MyReactFiberNodeDev;
@@ -44,11 +42,11 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
       // TODO
       deleteEffect(fiber, renderDispatch);
     } else {
-      fiber.state = STATE_TYPE.__triggerSync__ | STATE_TYPE.__hmr__;
+      fiber.state = merge(STATE_TYPE.__triggerSync__, STATE_TYPE.__hmr__);
     }
 
     return fiber;
   } else {
-    throw new Error(`can not try to dev refresh this app in prod env!`);
+    throw new Error(`[@my-react/react] can not try to dev refresh this app in prod env!`);
   }
 };

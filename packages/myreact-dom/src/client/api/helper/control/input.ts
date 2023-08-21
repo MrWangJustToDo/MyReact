@@ -17,11 +17,7 @@ const inputEventMap = new MyWeakMap<MyReactFiberNode, () => void>();
 export const generateOnChangeFun = (fiber: MyReactFiberNode) => {
   const _onChange = () => {
     if (__DEV__) {
-      log({
-        fiber,
-        level: "warn",
-        message: `[@my-react/react-dom] current controlled element is a readonly element, please provider a 'onChange' props to make the value update`,
-      });
+      log(fiber, "warn", `current controlled element is a readonly element, please provider a 'onChange' props to make the value update`);
     }
 
     requestAnimationFrame(() => {
@@ -58,13 +54,13 @@ export const prepareControlInputProp = (fiber: MyReactFiberNode) => {
 
   if (type === "radio" || type === "checkbox") {
     if ("checked" in props) {
-      fiber.pendingProps = { ["onChange"]: generateOnChangeFun(fiber), ...(__DEV__ ? { controlled: "@my-react" } : undefined), ...props, ["_control"]: true };
+      fiber.pendingProps = { ["onChange"]: generateOnChangeFun(fiber), ...props, ["_control"]: true };
     } else {
       fiber.pendingProps = { ...props };
     }
   } else {
     if ("value" in props) {
-      fiber.pendingProps = { ["onChange"]: generateOnChangeFun(fiber), ...(__DEV__ ? { controlled: "@my-react" } : undefined), ...props, ["_control"]: true };
+      fiber.pendingProps = { ["onChange"]: generateOnChangeFun(fiber), ...props, ["_control"]: true };
     } else {
       fiber.pendingProps = { ...props };
     }
@@ -108,11 +104,11 @@ export const updateControlInputElement = (fiber: MyReactFiberNode) => {
 
   if (key in pendingProps) {
     if (__DEV__ && !memoizedProps["_control"]) {
-      log({ fiber, level: "warn", message: `current component change from 'unControlled' to 'controlled', this may case some bug` });
+      log(fiber, "warn", `current component change from 'unControlled' to 'controlled', this may case some bug`);
     }
   } else {
     if (__DEV__ && memoizedProps["_control"]) {
-      log({ fiber, level: "warn", message: `current component change from 'controlled' to 'unControlled', this may case some bug` });
+      log(fiber, "warn", `current component change from 'controlled' to 'unControlled', this may case some bug`);
     }
   }
 };

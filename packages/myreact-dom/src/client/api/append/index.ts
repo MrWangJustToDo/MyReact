@@ -1,4 +1,4 @@
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, include, remove } from "@my-react/react-shared";
 
 import { getFiberWithNativeDom, isSingleTag } from "@my-react-dom-shared";
 
@@ -10,10 +10,10 @@ import type { DomElement, DomNode } from "@my-react-dom-shared";
  * @internal
  */
 export const append = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
-  if (fiber.patch & PATCH_TYPE.__append__) {
+  if (include(fiber.patch, PATCH_TYPE.__append__)) {
     let { parentFiberWithNode } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
-    if (!parentFiberWithNode || parentFiberWithNode.state & STATE_TYPE.__unmount__) {
+    if (!parentFiberWithNode || include(parentFiberWithNode.state, STATE_TYPE.__unmount__)) {
       parentFiberWithNode = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
 
       const elementObj = renderDispatch.runtimeDom.elementMap.get(fiber);
@@ -25,10 +25,10 @@ export const append = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
 
     const maybeContainer = parentFiberWithNode as MyReactFiberContainer;
 
-    if (!fiber?.nativeNode) throw new Error(`append error, current render node not have a native node`);
+    if (!fiber?.nativeNode) throw new Error(`[@my-react/react-dom] append error, current render node not have a native node`);
 
     if (!parentFiberWithNode?.nativeNode && !maybeContainer?.containerNode) {
-      throw new Error(`append error, current render node not have a container native node`);
+      throw new Error(`[@my-react/react-dom] append error, current render node not have a container native node`);
     }
 
     const parentDom = (parentFiberWithNode.nativeNode || maybeContainer.containerNode) as DomElement;
@@ -39,6 +39,6 @@ export const append = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       parentDom.appendChild(currentDom);
     }
 
-    if (fiber.patch & PATCH_TYPE.__append__) fiber.patch ^= PATCH_TYPE.__append__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
   }
 };

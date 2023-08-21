@@ -1,9 +1,5 @@
 import { CustomRenderPlatform } from "@my-react/react-reconciler";
 
-import { log } from "@my-react-dom-shared";
-
-import type { LogProps } from "@my-react/react";
-
 const microTask = typeof queueMicrotask === "undefined" ? (task: () => void) => Promise.resolve().then(task) : queueMicrotask;
 
 const yieldTask =
@@ -63,9 +59,6 @@ export class ClientDomPlatform extends CustomRenderPlatform {
     this.isServer = isServer;
   }
 
-  log(props: LogProps): void {
-    log(props);
-  }
   microTask(_task: () => void): void {
     !this.isServer && microTask(_task);
   }

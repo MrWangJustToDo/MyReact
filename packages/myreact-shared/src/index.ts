@@ -1,3 +1,4 @@
+export * from "./bit";
 export * from "./once";
 export * from "./type";
 export * from "./tools";

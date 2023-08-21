@@ -1,8 +1,9 @@
 import type { MyReactComponent } from "../component";
 import type { Action, RenderHook } from "../renderHook";
+import type { UpdateQueueType } from "@my-react/react-shared";
 
 export type ComponentUpdateQueue<State = Record<string, unknown>, Props = Record<string, unknown>> = {
-  type: "component";
+  type: UpdateQueueType.component;
   trigger: MyReactComponent;
   isForce?: boolean;
   isSync?: boolean;
@@ -11,7 +12,7 @@ export type ComponentUpdateQueue<State = Record<string, unknown>, Props = Record
 };
 
 export type HookUpdateQueue = {
-  type: "hook";
+  type: UpdateQueueType.hook;
   trigger: RenderHook;
   isForce?: boolean;
   isSync?: boolean;

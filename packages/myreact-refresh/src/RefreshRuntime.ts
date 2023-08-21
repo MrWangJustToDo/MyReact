@@ -1,4 +1,4 @@
-import { ForwardRef, Memo, TYPEKEY } from "@my-react/react-shared";
+import { ForwardRef, Memo, STATE_TYPE, TYPEKEY } from "@my-react/react-shared";
 
 import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType } from "@my-react/react";
 import type { CustomRenderDispatch, HMR, setRefreshHandler } from "@my-react/react-reconciler";
@@ -305,7 +305,7 @@ export const performReactRefresh = () => {
 
         fiber._revert();
       } else {
-        container.rootFiber._update(hasRootUpdate ? 32 : 4);
+        container.rootFiber._update(hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__);
       }
     });
   } else {

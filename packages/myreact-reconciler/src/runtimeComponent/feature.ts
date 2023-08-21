@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { Effect_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { __my_react_shared__ } from "@my-react/react";
+import { Effect_TYPE, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
 import { syncFlushComponentQueue } from "../dispatchQueue";
@@ -10,8 +10,6 @@ import type { MemoizedStateTypeWithError, MyReactFiberNode, PendingStateType, Pe
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
 const { enableLegacyLifeCycle } = __my_react_shared__;
-
-const { currentRenderPlatform } = __my_react_internal__;
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const Component = fiber.elementType;
@@ -29,7 +27,8 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const pendingState = currentStateObj.pendingState;
 
   if (typedComponent.getDerivedStateFromProps) {
-    const payloadState = typedComponent.getDerivedStateFromProps?.(pendingProps, pendingState);
+    const payloadState = safeCallWithFiber({ fiber, action: () => typedComponent.getDerivedStateFromProps?.(pendingProps, pendingState) });
+
     if (payloadState) {
       currentStateObj.pendingState = Object.assign({}, pendingState, payloadState);
     }
@@ -45,7 +44,8 @@ const processComponentStateFromError = (fiber: MyReactFiberNode, error: Error) =
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedComponent.getDerivedStateFromError) {
-    const payloadState = typedComponent.getDerivedStateFromError?.(error);
+    const payloadState = safeCallWithFiber({ fiber, action: () => typedComponent.getDerivedStateFromError?.(error) });
+
     if (payloadState) {
       // if there are a error happen, ignore all the updateQueue
       typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
@@ -68,7 +68,7 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   if (__DEV__) Object.freeze(props);
 
-  const instance = new typedComponent(props, context);
+  const instance = safeCallWithFiber({ fiber, action: () => new typedComponent(props, context) });
 
   if (__DEV__) Object.freeze(instance.state);
 
@@ -91,6 +91,7 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
     fiber.pendingState = { pendingState: pendingState, callback: [], isForce: false };
   } else {
     fiber.pendingState = { state: { pendingState: pendingState, callback: [], isForce: false }, error: { revertState: null, error: null, stack: null } };
+
     fiber.memoizedState = { stableState: null, revertState: null };
   }
 };
@@ -113,10 +114,12 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
 
   const renderDispatch = currentRenderDispatch.current;
 
-  if (typedInstance.componentDidMount && !(typedInstance.mode & Effect_TYPE.__effect__)) {
+  if (typedInstance.componentDidMount && exclude(typedInstance.mode, Effect_TYPE.__effect__)) {
     typedInstance.mode = Effect_TYPE.__effect__;
+
     renderDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
+
       typedInstance.componentDidMount?.();
     });
   }
@@ -127,10 +130,12 @@ const processComponentDidCatchOnMountAndUpdate = (fiber: MyReactFiberNode, error
 
   const renderDispatch = currentRenderDispatch.current;
 
-  if (typedInstance.componentDidCatch && !(typedInstance.mode & Effect_TYPE.__effect__)) {
+  if (typedInstance.componentDidCatch && exclude(typedInstance.mode, Effect_TYPE.__effect__)) {
     typedInstance.mode = Effect_TYPE.__effect__;
+
     renderDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
+
       typedInstance.componentDidCatch?.(error, { componentStack: stack });
     });
   }
@@ -146,7 +151,7 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedComponent.contextType) {
-    if (!typedInstance?._contextFiber || typedInstance._contextFiber.state & STATE_TYPE.__unmount__) {
+    if (!typedInstance?._contextFiber || include(typedInstance._contextFiber.state, STATE_TYPE.__unmount__)) {
       const ProviderFiber = renderDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
       const context = renderDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
@@ -182,10 +187,10 @@ const processComponentShouldUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  if (fiber.state & (STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) return true;
+  if (include(fiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) return true;
 
   if (typedInstance.shouldComponentUpdate) {
-    return typedInstance.shouldComponentUpdate?.(nextProps, nextState, nextContext);
+    return safeCallWithFiber({ fiber, action: () => typedInstance.shouldComponentUpdate?.(nextProps, nextState, nextContext) });
   }
 
   return true;
@@ -195,7 +200,7 @@ const processComponentGetSnapshotOnUpdate = (fiber: MyReactFiberNode, { baseStat
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedInstance.getSnapshotBeforeUpdate) {
-    return typedInstance.getSnapshotBeforeUpdate?.(baseProps, baseState);
+    return safeCallWithFiber({ fiber, action: () => typedInstance.getSnapshotBeforeUpdate?.(baseProps, baseState) });
   }
 
   return null;
@@ -221,11 +226,14 @@ const processComponentDidUpdateOnUpdate = (
 
   const hasEffect = typedInstance.componentDidUpdate || callback.length;
 
-  if (hasEffect && !(typedInstance.mode & Effect_TYPE.__effect__)) {
+  if (hasEffect && exclude(typedInstance.mode, Effect_TYPE.__effect__)) {
     typedInstance.mode = Effect_TYPE.__effect__;
+
     renderDispatch.pendingLayoutEffect(fiber, () => {
       typedInstance.mode = Effect_TYPE.__initial__;
-      callback.forEach((c) => c.call(null));
+
+      safeCallWithFiber({ fiber, action: () => callback.forEach((c) => c.call(null)) });
+
       typedInstance.componentDidUpdate?.(baseProps, baseState, snapshot);
     });
   }
@@ -237,34 +245,22 @@ const processComponentDidUpdateOnUpdate = (
 const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderPlatform = currentRenderPlatform.current;
-
   let hasLegacyLifeFunction = false;
 
   // TODO setState
   if (typedInstance.UNSAFE_componentWillMount) {
     hasLegacyLifeFunction = true;
-    typedInstance.UNSAFE_componentWillMount?.();
+    safeCallWithFiber({ fiber, action: () => typedInstance.UNSAFE_componentWillMount?.() });
     if (__DEV__) {
-      renderPlatform.log({
-        message: "should not invoke legacy lifeCycle function `UNSAFE_componentWillMount`",
-        fiber,
-        level: "warn",
-        triggerOnce: true,
-      });
+      console.warn(`[@my-react/react] current component have legacy lifeCycle function 'UNSAFE_componentWillMount'`);
     }
   }
 
   if (typedInstance.componentWillMount) {
     hasLegacyLifeFunction = true;
-    typedInstance.componentWillMount?.();
+    safeCallWithFiber({ fiber, action: () => typedInstance.componentWillMount?.() });
     if (__DEV__) {
-      renderPlatform.log({
-        message: "should not invoke legacy lifeCycle function `componentWillMount`",
-        fiber,
-        level: "warn",
-        triggerOnce: true,
-      });
+      console.warn(`[@my-react/react] current component have legacy lifeCycle function 'componentWillMount'`);
     }
   }
 
@@ -277,37 +273,25 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
 const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderPlatform = currentRenderPlatform.current;
-
   let hasLegacyLifeFunction = false;
 
   // only trigger on parent component update
-  if (fiber.state & STATE_TYPE.__inherit__) {
+  if (include(fiber.state, STATE_TYPE.__inherit__)) {
     if (typedInstance.UNSAFE_componentWillReceiveProps) {
       hasLegacyLifeFunction = true;
       const nextProps = Object.assign({}, fiber.pendingProps);
-      typedInstance.UNSAFE_componentWillReceiveProps?.(nextProps);
+      safeCallWithFiber({ fiber, action: () => typedInstance.UNSAFE_componentWillReceiveProps?.(nextProps) });
       if (__DEV__) {
-        renderPlatform.log({
-          message: "should not invoke legacy lifeCycle function `UNSAFE_componentWillReceiveProps`",
-          fiber,
-          level: "warn",
-          triggerOnce: true,
-        });
+        console.warn(`[@my-react/react] current component have legacy lifeCycle function 'UNSAFE_componentWillReceiveProps'`);
       }
     }
 
     if (typedInstance.componentWillReceiveProps) {
       hasLegacyLifeFunction = true;
       const nextProps = Object.assign({}, fiber.pendingProps);
-      typedInstance.componentWillReceiveProps?.(nextProps);
+      safeCallWithFiber({ fiber, action: () => typedInstance.componentWillReceiveProps?.(nextProps) });
       if (__DEV__) {
-        renderPlatform.log({
-          message: "should not invoke legacy lifeCycle function `componentWillReceiveProps`",
-          fiber,
-          level: "warn",
-          triggerOnce: true,
-        });
+        console.warn(`[@my-react/react] current component have legacy lifeCycle function 'componentWillReceiveProps'`);
       }
     }
   }
@@ -321,28 +305,17 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
 const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextState }: { nextProps: unknown; nextState: unknown }) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderPlatform = currentRenderPlatform.current;
-
   if (typedInstance.UNSAFE_componentWillUpdate) {
-    typedInstance.UNSAFE_componentWillUpdate?.(nextProps, nextState);
+    safeCallWithFiber({ fiber, action: () => typedInstance.UNSAFE_componentWillUpdate?.(nextProps, nextState) });
     if (__DEV__) {
-      renderPlatform.log({
-        message: "should not invoke legacy lifeCycle function `UNSAFE_componentWillUpdate`",
-        fiber,
-        level: "warn",
-        triggerOnce: true,
-      });
+      console.warn(`[@my-react/react] current component have legacy lifeCycle function 'UNSAFE_componentWillUpdate'`);
     }
   }
 
   if (typedInstance.componentWillUpdate) {
+    safeCallWithFiber({ fiber, action: () => typedInstance.componentWillUpdate?.(nextProps, nextState) });
     if (__DEV__) {
-      renderPlatform.log({
-        message: "should not invoke legacy lifeCycle function `componentWillUpdate`",
-        fiber,
-        level: "warn",
-        triggerOnce: true,
-      });
+      console.warn(`[@my-react/react] current component have legacy lifeCycle function 'componentWillUpdate'`);
     }
   }
 };
@@ -475,7 +448,9 @@ export const syncComponentStateToFiber = (fiber: MyReactFiberNode) => {
 
   if (isErrorCatch) {
     const typedPendingState = fiber.pendingState as PendingStateTypeWithError;
+
     const typedMemoizedState = fiber.memoizedState as MemoizedStateTypeWithError;
+
     if (typedPendingState.error?.error) {
       const typedInstance = fiber.instance as MyReactComponent;
 

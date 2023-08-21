@@ -1,6 +1,6 @@
-import { once, TYPEKEY, Element, Consumer, ForwardRef, Memo, Lazy, Provider, Fragment, Suspense, Context } from "@my-react/react-shared";
+import { TYPEKEY, Element, Consumer, ForwardRef, Memo, Lazy, Provider, Fragment, Suspense, Context } from "@my-react/react-shared";
 
-import { currentRenderPlatform } from "../share";
+import { currentRenderPlatform, currentComponentFiber } from "../share";
 
 import type { forwardRef, lazy, memo } from "./feature";
 import type {
@@ -16,6 +16,8 @@ export const isValidElement = (element?: MyReactElementNode | any): element is M
   return typeof element === "object" && !Array.isArray(element) && element?.[TYPEKEY] === Element;
 };
 
+const keysMap = {};
+
 /**
  * @internal
  */
@@ -24,24 +26,29 @@ export const checkValidKey = (children: ArrayMyReactElementNode) => {
 
   const renderPlatform = currentRenderPlatform.current;
 
-  const onceWarnDuplicate = once(renderPlatform?.log);
-
-  const onceWarnUndefined = once(renderPlatform?.log);
+  const currentFiber = currentComponentFiber.current;
 
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
 
-  if (validElement.length > 0) {
+  if (validElement.length) {
     validElement.forEach((c) => {
       if (!c._store["validKey"]) {
         if (typeof c.key === "string") {
-          if (obj[c.key]) onceWarnDuplicate({ message: `array child have duplicate key` });
+          if (obj[c.key]) {
+            const renderTree = renderPlatform.getFiberTree(currentFiber);
+
+            if (!keysMap[renderTree]) console.warn(`[@my-react/react] array child have duplicate key ${c.key}`);
+
+            keysMap[renderTree] = true;
+          }
 
           obj[c.key] = true;
         } else {
-          onceWarnUndefined({
-            message: "each array child must have a unique key props",
-            triggerOnce: true,
-          });
+          const renderTree = renderPlatform.getFiberTree(currentFiber);
+
+          if (!keysMap[renderTree]) console.warn(`[@my-react/react] each array child must have a unique key props`);
+
+          keysMap[renderTree] = true;
         }
         c._store["validKey"] = true;
       }
@@ -49,104 +56,142 @@ export const checkValidKey = (children: ArrayMyReactElementNode) => {
   }
 };
 
+// TODO
 /**
  * @internal
+ *
  */
 export const checkValidElement = (element: MyReactElementNode) => {
   if (isValidElement(element)) {
     if (!element._store["validType"]) {
       const rawType = element.type;
 
+      if (element.ref && typeof element.ref !== "object" && typeof element.ref !== "function") {
+        console.error(`[@my-react/react] invalid ref type, ref should be a function or a object like {current:  any}, but got a ${element.ref}`);
+      }
+
+      if (element.key && typeof element.key !== "string") {
+        console.error(`[@my-react/react] invalid key type, key should be a string, but got a ${element.key}`);
+      }
+
       if (typeof rawType === "object") {
         const typedRawType = rawType as MyReactObjectComponent;
-        // check <Consumer /> usage
+        // check <Context.Consumer />
         if (typedRawType[TYPEKEY] === Consumer) {
-          if (typeof element.props.children !== "function") {
-            throw new Error(`@my-react <Consumer /> need a render function as children`);
+          const props = element.props;
+
+          for (const key in props) {
+            if (key !== "key" && key !== "children" && !key.startsWith("_")) {
+              console.warn(`[@my-react/react] <Context.Consumer /> element only support 'key' / 'children' props, but got ${key}`);
+            }
           }
-          if (element.props.children.prototype?.isMyReactComponent) {
-            throw new Error(`@my-react <Consumer /> expect a function children, but got a class Element`);
+
+          if (!props?.children) {
+            throw new Error(`[@my-react/react] <Context.Consumer /> need a render function as children, this is unsupported usage`);
+          }
+
+          if (typeof props.children !== "function") {
+            throw new Error(`[@my-react/react] <Context.Consumer /> expect a render function as children but got ${props.children}, this is unsupported usage`);
+          }
+
+          if (props.children?.prototype?.isMyReactComponent) {
+            throw new Error(
+              `[@my-react/react] invalid render type for <Context.Consumer />, expect a render function but got a class element ${props.children}`
+            );
           }
         }
-        // check invalid context usage
+        // check <Context />
         else if (typedRawType[TYPEKEY] === Context) {
-          throw new Error(`@my-react <Context /> unSupport usage, please use <Context.Provider /> / <Context.Consumer />`);
+          throw new Error(
+            `[@my-react/react] look like you are using Context like <Context />, this is unsupported usage, please use <Context.Provider /> or <Context.Consumer />`
+          );
         }
-        // check forward function
+        // check <Context.Provider />
+        else if (typedRawType[TYPEKEY] === Provider) {
+          const props = element.props;
+
+          for (const key in props) {
+            if (key !== "key" && key !== "children" && key !== "value" && !key.startsWith("_")) {
+              console.warn(`[@my-react/react] <Context.Provider /> element only support 'key' / 'value' / 'children' props, but got ${key}`);
+            }
+          }
+        }
+        // check forwardRef()
         else if (typedRawType[TYPEKEY] === ForwardRef) {
           const CurrentTypedRawType = rawType as ReturnType<typeof forwardRef>;
 
           const targetRender = CurrentTypedRawType.render;
           if (typeof targetRender !== "function") {
-            throw new Error(`invalid render function for 'forwardRef()' element`);
+            throw new Error(`[@my-react/react] 'forwardRef()' expect a render function but got ${targetRender}, this is unsupported usage`);
           }
+
           if (targetRender.prototype?.isMyReactComponent) {
-            throw new Error(`invalid render type for 'forwardRef()', expect a render function, but got a element class`);
+            throw new Error(`[@my-react/react] invalid render type for 'forwardRef()', expect a render function, but got a element class ${targetRender}`);
           }
         }
-        // check memo function
+        // check memo()
         else if (typedRawType[TYPEKEY] === Memo) {
           const CurrentTypedRawType = rawType as ReturnType<typeof memo>;
-          if (typeof CurrentTypedRawType.render !== "function") {
+
+          if (typeof CurrentTypedRawType.render === "object") {
             if (isValidElement(CurrentTypedRawType.render)) {
-              throw new Error(`look like you are using memo like memo(<Foo />), this is not a support usage, please change to memo(Foo)`);
+              throw new Error(`[@my-react/react] look like you are using memo like memo(<Foo />), this is unsupported usage, please change to memo(Foo)`);
             }
             if (CurrentTypedRawType.render[TYPEKEY] === Memo) {
-              throw new Error(`look like you are using memo like memo(memo(Foo)), please do not wrapper memo more than once`);
+              throw new Error(
+                `[@my-react/react] look like you are using memo like memo(memo(Foo)), this is unsupported usage, please do not wrapper memo more than once`
+              );
             }
             if (CurrentTypedRawType.render[TYPEKEY] === Lazy) {
-              throw new Error(`for now, the memo(lazy(loader fun)) is unSupport usage`);
+              throw new Error(`[@my-react/react] look like you are using memo like memo(lazy(loader fun)), this is unsupported usage`);
+            }
+            if (CurrentTypedRawType.render[TYPEKEY] === Context) {
+              throw new Error(`[@my-react/react] look like you are using memo like memo(Context), this is unsupported usage`);
+            }
+          } else if (typeof CurrentTypedRawType.render !== "function") {
+            throw new Error(
+              `[@my-react/react] invalid render type for 'memo()', expect a render function or a render object, but got a ${CurrentTypedRawType.render}`
+            );
+          }
+        }
+        // check lazy()
+        else if (typedRawType[TYPEKEY] === Lazy) {
+          const CurrentTypedRawType = rawType as ReturnType<typeof lazy>;
+
+          const targetRender = CurrentTypedRawType.loader;
+
+          if (typeof targetRender !== "function") {
+            throw new Error(`[@my-react/react] invalid argument for lazy(loader), the loader expect a function, but got a ${CurrentTypedRawType.loader}`);
+          }
+
+          if (targetRender.prototype?.isMyReactComponent) {
+            throw new Error(
+              `[@my-react/react] invalid argument for lazy(loader), the loader expect a function, but got a element class ${CurrentTypedRawType.loader}`
+            );
+          }
+        }
+        // check invalid object element
+        else {
+          throw new Error(`[@my-react/react] invalid object element type, current type is: ${typedRawType}`);
+        }
+      } else {
+        if (rawType === Fragment) {
+          for (const key in element.props) {
+            if (key !== "key" && key !== "children" && key !== "wrap" && !key.startsWith("_")) {
+              console.warn(`[@my-react/react] <Fragment /> element only support 'key' / 'children' props, but got ${key}`);
             }
           }
         }
-        // check lazy
-        else if (typedRawType[TYPEKEY] === Lazy) {
-          const CurrentTypedRawType = rawType as ReturnType<typeof lazy>;
-          if (typeof CurrentTypedRawType.loader !== "function") {
-            throw new Error(`invalid argument for lazy(loader), the loader expect a function, but got a ${CurrentTypedRawType.loader}`);
+        if (rawType === Suspense) {
+          for (const key in element.props) {
+            if (key !== "key" && key !== "children" && key !== "fallback" && !key.startsWith("_")) {
+              console.warn(`[@my-react/react] <Suspense /> element only support 'key' / 'children' / 'fallback' props, but got ${key}`);
+            }
           }
-          if (CurrentTypedRawType.loader.prototype?.isMyReactComponent) {
-            throw new Error(`invalid argument for lazy(loader), the loader expect a function, but got a element class`);
-          }
-        }
-        // check invalid
-        else if (typedRawType[TYPEKEY] !== Provider) {
-          throw new Error(`invalid object element type, current type is: ${typedRawType[TYPEKEY]?.toString()}`);
         }
       }
     }
     element._store["validType"] = true;
-  }
-};
-
-/**
- * @internal
- */
-export const checkValidProps = (element: MyReactElementNode) => {
-  const renderPlatform = currentRenderPlatform.current;
-  if (isValidElement(element)) {
-    if (element.ref) {
-      if (typeof element.ref !== "object" && typeof element.ref !== "function") {
-        throw new Error("unSupport ref usage, should be a function or a object like `{current: any}`");
-      }
-    }
-    if (element.key && typeof element.key !== "string") {
-      throw new Error(`invalid key type, ${element.key}`);
-    }
-    if (element.type === Fragment) {
-      for (const key in element.props) {
-        if (key !== "key" && key !== "children" && key !== "wrap") {
-          renderPlatform.log({ message: `a Fragment element only support "key" or "children" props`, level: "warn", triggerOnce: true });
-        }
-      }
-    }
-    if (element.type === Suspense) {
-      for (const key in element.props) {
-        if (key !== "key" && key !== "children" && key !== "fallback") {
-          renderPlatform.log({ message: `a Suspense element only support "key"、"children" or "fallback" props`, level: "warn", triggerOnce: true });
-        }
-      }
-    }
   }
 };
 

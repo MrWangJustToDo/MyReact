@@ -1,3 +1,5 @@
+import { include } from "@my-react/react-shared";
+
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
@@ -7,7 +9,7 @@ export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: WeakMap
   const parent = fiber.parent;
 
   if (parent) {
-    if (parent.type & NODE_TYPE.__suspense__) {
+    if (include(parent.type, NODE_TYPE.__suspense__)) {
       let fallback = parent.pendingProps["fallback"] as MyReactElementNode;
 
       fallback = fallback || map.get(parent);

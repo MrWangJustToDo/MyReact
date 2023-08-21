@@ -1,10 +1,11 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, include, merge } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
 import { triggerError, triggerRevert, triggerUpdate } from "../renderUpdate";
 import { getTypeFromElementNode, NODE_TYPE } from "../share";
 
+import type { MyReactFiberNodeDev } from "./interface";
 import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
@@ -96,6 +97,33 @@ export class MyReactFiberNode implements RenderFiber {
     this.elementType = elementType;
 
     this.pendingProps = pendingProps;
+
+    this.state = STATE_TYPE.__create__;
+
+    if (__DEV__) {
+      const typeThis = this as unknown as MyReactFiberNodeDev;
+
+      typeThis._debugElement = element;
+    }
+  }
+  _updateElement(element: MyReactElementNode) {
+    const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
+
+    this.ref = ref;
+
+    this.key = key;
+
+    this.type = nodeType;
+
+    this.elementType = elementType;
+
+    this.pendingProps = pendingProps;
+
+    if (__DEV__) {
+      const typeThis = this as unknown as MyReactFiberNodeDev;
+
+      typeThis._debugElement = element;
+    }
   }
   _addDependence(instance: MyReactInternalInstance): void {
     this.dependence = this.dependence || new Set();
@@ -106,7 +134,7 @@ export class MyReactFiberNode implements RenderFiber {
     this.dependence.delete(instance);
   }
   _unmount(): void {
-    if (this.state & STATE_TYPE.__unmount__) return;
+    if (include(this.state, STATE_TYPE.__unmount__)) return;
 
     this.hookList?.listToFoot((h) => h._unmount());
 
@@ -122,7 +150,9 @@ export class MyReactFiberNode implements RenderFiber {
     const processQueue = () => {
       const flag = enableConcurrentMode.current;
 
-      const needUpdate = this.type & NODE_TYPE.__class__ ? processClassComponentUpdateQueue(this, flag) : processFunctionComponentUpdateQueue(this, flag);
+      const needUpdate = include(this.type, NODE_TYPE.__class__)
+        ? processClassComponentUpdateQueue(this, flag)
+        : processFunctionComponentUpdateQueue(this, flag);
 
       if (needUpdate?.needUpdate) this._update(needUpdate.isSync ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__triggerConcurrent__);
     };
@@ -130,16 +160,20 @@ export class MyReactFiberNode implements RenderFiber {
     renderPlatform.microTask(processQueue);
   }
   _update(state?: STATE_TYPE) {
-    if (this.state & STATE_TYPE.__unmount__) return;
+    if (include(this.state, STATE_TYPE.__unmount__)) return;
 
     state = state || STATE_TYPE.__triggerSync__;
 
-    this.state === STATE_TYPE.__stable__ ? (this.state = state) : this.state & state ? void 0 : (this.state |= state);
+    if (this.state === STATE_TYPE.__stable__) {
+      this.state = state;
+    } else {
+      this.state = merge(this.state, state);
+    }
 
     triggerUpdate(this);
   }
   _error(error: Error) {
-    if (this.state & STATE_TYPE.__unmount__) return;
+    if (include(this.state, STATE_TYPE.__unmount__)) return;
 
     triggerError(this, error);
   }
@@ -147,25 +181,9 @@ export class MyReactFiberNode implements RenderFiber {
 
 if (__DEV__) {
   MyReactFiberNode.prototype._revert = function () {
-    if (this.state & STATE_TYPE.__unmount__) return;
+    if (include(this.state, STATE_TYPE.__unmount__)) return;
 
     triggerRevert(this);
-  };
-
-  MyReactFiberNode.prototype._installElement = function (element: MyReactElementNode) {
-    const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
-
-    this.ref = ref;
-
-    this.key = key;
-
-    this.type = nodeType;
-
-    this.elementType = elementType;
-
-    this.pendingProps = pendingProps;
-
-    this._debugElement = element;
   };
 }
 

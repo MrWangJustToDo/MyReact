@@ -3,7 +3,7 @@ import { TYPEKEY, Element } from "@my-react/react-shared";
 
 import { currentComponentFiber } from "../share";
 
-import { checkArrayChildrenKey, checkSingleChildrenKey, checkValidElement, checkValidProps } from "./tool";
+import { checkArrayChildrenKey, checkSingleChildrenKey, checkValidElement } from "./tool";
 
 import type { createContext, forwardRef, lazy, memo } from "./feature";
 import type { MyReactComponent } from "../component";
@@ -16,7 +16,7 @@ type MyReactFunctionComponent<P extends Record<string, unknown> = any> = (props:
 type MyReactClassComponent<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,
-  C extends Record<string, unknown> = any
+  C extends Record<string, unknown> = any,
 > = typeof MyReactComponent<P, S, C>;
 
 export type MyReactObjectComponent<P extends Record<string, unknown> = any> =
@@ -34,7 +34,7 @@ export type MixinMyReactObjectComponent<P extends Record<string, unknown> = any>
 export type MixinMyReactClassComponent<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,
-  C extends Record<string, unknown> = any
+  C extends Record<string, unknown> = any,
 > = MyReactClassComponent<P, S, C> & {
   displayName?: string;
   defaultProps?: Record<string, unknown>;
@@ -107,10 +107,11 @@ const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }:
     key,
     ref,
     props,
-    _legacy: true,
   };
 
   if (__DEV__) {
+    element._legacy = true;
+
     element._owner = _owner;
 
     element._self = _self;
@@ -241,8 +242,6 @@ export function createElement<P extends Record<string, unknown> = any, S extends
 
   if (__DEV__) checkValidElement(element);
 
-  if (__DEV__) checkValidProps(element);
-
   return element;
 }
 
@@ -251,7 +250,7 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
   config?: CreateElementConfig,
   children?: Props["children"]
 ) {
-  if (element === null || element === undefined) throw new Error("cloneElement(...) need a valid element as params");
+  if (element === null || element === undefined) throw new Error("[@my-react/react] cloneElement(...) need a valid element as params");
 
   if (typeof element !== "object") return element;
 
@@ -319,9 +318,7 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
 
   if (__DEV__) clonedElement._store["clonedEle"] = true;
 
-  if (__DEV__) clonedElement._store["validType"] = true;
-
-  if (__DEV__) checkValidProps(clonedElement);
+  if (__DEV__) checkValidElement(clonedElement);
 
   return clonedElement;
 }

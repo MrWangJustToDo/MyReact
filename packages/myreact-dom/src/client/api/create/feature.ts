@@ -1,5 +1,5 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
-import { PATCH_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import { validDomTag, type DomComment, type DomElement, type DomNode, validDomNesting } from "@my-react-dom-shared";
 
@@ -13,7 +13,7 @@ import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
  * @internal
  */
 export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, hydrate: boolean): boolean => {
-  if (fiber.patch & PATCH_TYPE.__create__) {
+  if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const { isSVG, parentFiberWithNode } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
 
     let re = false;
@@ -35,7 +35,7 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
     if (renderDispatch.isHydrateRender) {
       const element = fiber.nativeNode as DomElement | DomNode | DomComment;
 
-      if (__DEV__ && fiber.type & NODE_TYPE.__plain__) {
+      if (__DEV__ && include(fiber.type, NODE_TYPE.__plain__)) {
         const typedDom = element as Element;
 
         if (!re) {
@@ -46,7 +46,7 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       }
     }
 
-    if (fiber.patch & PATCH_TYPE.__create__) fiber.patch ^= PATCH_TYPE.__create__;
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__create__);
 
     return re;
   }

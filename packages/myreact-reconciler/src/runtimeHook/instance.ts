@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
+import { UpdateQueueType, type HOOK_TYPE } from "@my-react/react-shared";
 
 import type { RenderHook, Action, HookUpdateQueue } from "@my-react/react";
-import type { HOOK_TYPE } from "@my-react/react-shared";
 
 const { MyReactInternalInstance, currentRenderPlatform } = __my_react_internal__;
 
@@ -40,7 +40,7 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
 
   _dispatch = (action: Action) => {
     const updater: HookUpdateQueue = {
-      type: "hook",
+      type: UpdateQueueType.hook,
       trigger: this,
       payLoad: action,
     };

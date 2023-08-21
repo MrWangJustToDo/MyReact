@@ -1,4 +1,4 @@
-import { PATCH_TYPE, ListTree, UniqueArray } from "@my-react/react-shared";
+import { PATCH_TYPE, ListTree, UniqueArray, include, merge, exclude } from "@my-react/react-shared";
 
 import { defaultGenerateContextMap, defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
 import { defaultGenerateEffectMap } from "../dispatchEffect";
@@ -9,11 +9,10 @@ import { defaultGenerateStrictMap } from "../dispatchStrict";
 import { defaultGenerateSuspenseMap } from "../dispatchSuspense";
 import { defaultGenerateUnmountMap } from "../dispatchUnmount";
 import { defaultDispatchUpdate } from "../dispatchUpdate";
-import { MyWeakMap } from "../share";
+import { MyWeakMap , NODE_TYPE } from "../share";
 
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
 import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
-import type { NODE_TYPE } from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
 
 export class CustomRenderDispatch implements RenderDispatch {
@@ -63,7 +62,10 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   uniqueIdCount = 0;
 
-  constructor(readonly rootNode: any, readonly rootFiber: MyReactFiberNode) {
+  constructor(
+    readonly rootNode: any,
+    readonly rootFiber: MyReactFiberNode
+  ) {
     const typedFiber = rootFiber as MyReactFiberContainer;
 
     typedFiber.containerNode = rootNode;
@@ -82,48 +84,52 @@ export class CustomRenderDispatch implements RenderDispatch {
   }
 
   pendingCreate(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & this.runtimeRef.typeForCreate) {
-      _fiber.patch |= PATCH_TYPE.__create__;
+    if (include(_fiber.type, this.runtimeRef.typeForCreate)) {
+      _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__create__);
     }
   }
   pendingUpdate(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & this.runtimeRef.typeForUpdate) {
-      _fiber.patch |= PATCH_TYPE.__update__;
+    if (include(_fiber.type, this.runtimeRef.typeForUpdate)) {
+      _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__update__);
     }
   }
   pendingAppend(_fiber: MyReactFiberNode): void {
-    if (_fiber.type & this.runtimeRef.typeForAppend) {
-      _fiber.patch |= PATCH_TYPE.__append__;
+    if (include(_fiber.type, this.runtimeRef.typeForAppend)) {
+      _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__append__);
     }
   }
   pendingContext(_fiber: MyReactFiberNode): void {
-    _fiber.patch |= PATCH_TYPE.__context__;
+    _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__context__);
   }
   pendingPosition(_fiber: MyReactFiberNode): void {
-    _fiber.patch |= PATCH_TYPE.__position__;
+    _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__position__);
   }
   pendingRef(_fiber: MyReactFiberNode): void {
-    if (_fiber.ref && _fiber.type & this.runtimeRef.typeForRef) {
-      _fiber.patch |= PATCH_TYPE.__ref__;
+    if (_fiber.ref) {
+      if (include(_fiber.type, this.runtimeRef.typeForRef)) {
+        _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__ref__);
+      } else if (exclude(_fiber.type, NODE_TYPE.__forwardRef__)) {
+        console.warn(`[@my-react/react] set ref for current element will be ignored`);
+      }
     }
   }
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
-    _fiber.patch |= PATCH_TYPE.__unmount__;
+    _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__unmount__);
 
     defaultGenerateUnmountMap(_fiber, _pendingUnmount, this.runtimeMap.unmountMap);
   }
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
-    _fiber.patch |= PATCH_TYPE.__effect__;
+    _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__effect__);
 
     defaultGenerateEffectMap(_fiber, _effect, this.runtimeMap.effectMap);
   }
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
-    _fiber.patch |= PATCH_TYPE.__layoutEffect__;
+    _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__layoutEffect__);
 
     defaultGenerateEffectMap(_fiber, _layoutEffect, this.runtimeMap.layoutEffectMap);
   }
   pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void): void {
-    _fiber.patch |= PATCH_TYPE.__insertionEffect__;
+    _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__insertionEffect__);
 
     defaultGenerateEffectMap(_fiber, _insertionEffect, this.runtimeMap.insertionEffectMap);
   }
@@ -164,9 +170,7 @@ export class CustomRenderDispatch implements RenderDispatch {
     return null;
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {
-    if (__DEV__) {
-      defaultGenerateStrictMap(_fiber, this.runtimeMap.strictMap);
-    }
+    __DEV__ && defaultGenerateStrictMap(_fiber, this.runtimeMap.strictMap);
   }
   resolveStrict(_fiber: MyReactFiberNode): boolean {
     return __DEV__ ? this.runtimeMap.strictMap.get(_fiber) || false : false;

@@ -1,8 +1,5 @@
 import { CustomRenderPlatform, getFiberTree, getHookTree } from "@my-react/react-reconciler";
 
-import { log } from "../shared";
-
-import type { LogProps } from "@my-react/react";
 import type { MyReactFiberNode, MyReactHookNode} from "@my-react/react-reconciler";
 import type { ListTreeNode } from "@my-react/react-shared";
 
@@ -50,9 +47,6 @@ const flashTask = () => {
 };
 
 export class TerminalPlatform extends CustomRenderPlatform {
-  log(props: LogProps): void {
-    log(props);
-  }
   microTask(_task: () => void): void {
     microTask(_task);
   }

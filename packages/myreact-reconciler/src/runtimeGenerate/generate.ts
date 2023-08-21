@@ -1,5 +1,5 @@
 import { createElement, isValidElement } from "@my-react/react";
-import { Fragment, ListTree, STATE_TYPE } from "@my-react/react-shared";
+import { Fragment, ListTree, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { createFiberNode, updateFiberNode } from "../runtimeFiber";
 import { checkIsSameType, currentRenderDispatch, NODE_TYPE } from "../share";
@@ -88,8 +88,8 @@ const getNewFiberWithUpdate = (
     }
 
     // same type
-    if (draftFiber?.type & NODE_TYPE.__fragment__) {
-      const newElement = createElement(Fragment, null, newChild);
+    if (include(draftFiber?.type, NODE_TYPE.__fragment__)) {
+      const newElement = createElement(Fragment, dynamicFragmentProps, newChild);
 
       return updateFiberNode({ fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newElement);
     } else {
@@ -129,7 +129,7 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
 };
 
 export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode): void => {
-  const isUpdate = parentFiber.state !== STATE_TYPE.__initial__;
+  const isUpdate = exclude(parentFiber.state, STATE_TYPE.__create__);
 
   if (isUpdate) {
     const { existingChildrenMap, existingChildrenArray } = getExistingChildren(parentFiber);

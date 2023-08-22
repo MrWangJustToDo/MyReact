@@ -39,9 +39,9 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
         const typedDom = element as Element;
 
         if (!re) {
-          typedDom.setAttribute("debug_hydrate", "fail");
+          typedDom.setAttribute("data-hydrate", "false");
         } else {
-          typedDom.setAttribute("debug_hydrate", "success");
+          typedDom.setAttribute("data-hydrate", "true");
         }
       }
     }

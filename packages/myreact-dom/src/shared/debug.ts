@@ -25,9 +25,9 @@ export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: a
     return;
   }
 
-  if (level === "warn") {
-    console.warn(`[@my-react/react-dom]`, ...rest);
-  }
+  // if (level === "warn") {
+  //   console.warn(`[@my-react/react-dom]`, ...rest);
+  // }
   if (level === "error") {
     console.error(`[@my-react/react-dom]`, ...rest);
   }

@@ -43,7 +43,7 @@ export class HighLight {
 
   constructor() {
     this.mask = document.createElement("canvas");
-    this.mask.setAttribute("debug_highlight", "@my-react");
+    this.mask.setAttribute("data-highlight", "@my-react");
     this.mask.style.cssText = `
       position: fixed;
       z-index: 99999999;

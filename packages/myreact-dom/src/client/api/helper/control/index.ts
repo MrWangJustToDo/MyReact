@@ -1,4 +1,11 @@
-import { mountControlInputElement, prepareControlInputProp, unmountControlInputElement, updateControlInputElement } from "./input";
+import {
+  isControlledInputElement,
+  isReadonlyInputElement,
+  mountControlInputElement,
+  prepareControlInputProp,
+  unmountControlInputElement,
+  updateControlInputElement,
+} from "./input";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -55,4 +62,26 @@ export const unmountControlElement = (fiber: MyReactFiberNode) => {
     case "input":
       unmountControlInputElement(fiber);
   }
-}
+};
+
+/**
+ * @internal
+ */
+export const isControlledElement = (fiber: MyReactFiberNode) => {
+  const elementType = fiber.elementType;
+  switch (elementType) {
+    case "input":
+      return isControlledInputElement(fiber);
+  }
+};
+
+/**
+ * @internal
+ */
+export const isReadonlyElement = (fiber: MyReactFiberNode) => {
+  const elementType = fiber.elementType;
+  switch (elementType) {
+    case "input":
+      return isReadonlyInputElement(fiber);
+  }
+};

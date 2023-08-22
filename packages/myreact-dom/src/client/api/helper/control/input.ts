@@ -2,23 +2,34 @@ import { MyWeakMap, type MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { log } from "@my-react-dom-shared";
 
+type ControlledElement = HTMLInputElement;
+
+const inputEventMap = new MyWeakMap<MyReactFiberNode, () => void>();
+
+const changeEventMap = new MyWeakMap<MyReactFiberNode, () => void>();
+
+const controlElementSet = new Set<MyReactFiberNode>();
+
+const readOnlyElementSet = new Set<MyReactFiberNode>();
+
 /**
  * @internal
  */
-export type ControlledElement = HTMLInputElement & {
-  __isControlled__: boolean;
-};
+export const isReadonlyInputElement = (fiber: MyReactFiberNode) => readOnlyElementSet.has(fiber);
 
-const inputEventMap = new MyWeakMap<MyReactFiberNode, () => void>();
+/**
+ * @internal
+ */
+export const isControlledInputElement = (fiber: MyReactFiberNode) => controlElementSet.has(fiber);
 
 /**
  * @internal
  */
 export const generateOnChangeFun = (fiber: MyReactFiberNode) => {
-  const _onChange = () => {
-    if (__DEV__) {
-      log(fiber, "warn", `current controlled element is a readonly element, please provider a 'onChange' props to make the value update`);
-    }
+  const _onChange = (...args) => {
+    const originalOnChange = changeEventMap.get(fiber);
+
+    originalOnChange?.call?.(null, ...args);
 
     requestAnimationFrame(() => {
       const dom = fiber.nativeNode;
@@ -44,6 +55,14 @@ export const generateOnChangeFun = (fiber: MyReactFiberNode) => {
   return onChange;
 };
 
+const generateEmptyChangeFun = (fiber: MyReactFiberNode) => {
+  return () => {
+    if (__DEV__) {
+      log(fiber, "warn", `current controlled element is a readonly element, please provider a 'onChange' props to make the value update`);
+    }
+  };
+};
+
 /**
  * @internal
  */
@@ -52,17 +71,43 @@ export const prepareControlInputProp = (fiber: MyReactFiberNode) => {
 
   const { type } = props;
 
+  changeEventMap.set(fiber, props.onChange || generateEmptyChangeFun(fiber));
+
   if (type === "radio" || type === "checkbox") {
     if ("checked" in props) {
-      fiber.pendingProps = { ["onChange"]: generateOnChangeFun(fiber), ...props, ["_control"]: true };
+      fiber.pendingProps = { ...props, ["onChange"]: generateOnChangeFun(fiber) };
+      if (__DEV__) {
+        controlElementSet.add(fiber);
+        if (!props["onChange"]) {
+          readOnlyElementSet.add(fiber);
+        } else {
+          readOnlyElementSet.delete(fiber);
+        }
+      }
     } else {
       fiber.pendingProps = { ...props };
+      if (__DEV__) {
+        controlElementSet.delete(fiber);
+        readOnlyElementSet.delete(fiber);
+      }
     }
   } else {
     if ("value" in props) {
-      fiber.pendingProps = { ["onChange"]: generateOnChangeFun(fiber), ...props, ["_control"]: true };
+      fiber.pendingProps = { ...props, ["onChange"]: generateOnChangeFun(fiber) };
+      if (__DEV__) {
+        controlElementSet.add(fiber);
+        if (!props["onChange"]) {
+          readOnlyElementSet.add(fiber);
+        } else {
+          readOnlyElementSet.delete(fiber);
+        }
+      }
     } else {
       fiber.pendingProps = { ...props };
+      if (__DEV__) {
+        controlElementSet.delete(fiber);
+        readOnlyElementSet.delete(fiber);
+      }
     }
   }
 };
@@ -102,13 +147,15 @@ export const updateControlInputElement = (fiber: MyReactFiberNode) => {
 
   const key = type === "radio" || type === "checkbox" ? "checked" : "value";
 
-  if (key in pendingProps) {
-    if (__DEV__ && !memoizedProps["_control"]) {
-      log(fiber, "warn", `current component change from 'unControlled' to 'controlled', this may case some bug`);
-    }
-  } else {
-    if (__DEV__ && memoizedProps["_control"]) {
-      log(fiber, "warn", `current component change from 'controlled' to 'unControlled', this may case some bug`);
+  if (__DEV__) {
+    if (key in pendingProps) {
+      if (!(key in memoizedProps)) {
+        log(fiber, "warn", `current component change from 'unControlled' to 'controlled', this may case some bug`);
+      }
+    } else {
+      if (key in memoizedProps) {
+        log(fiber, "warn", `current component change from 'controlled' to 'unControlled', this may case some bug`);
+      }
     }
   }
 };
@@ -118,4 +165,8 @@ export const updateControlInputElement = (fiber: MyReactFiberNode) => {
  */
 export const unmountControlInputElement = (fiber: MyReactFiberNode) => {
   inputEventMap.delete(fiber);
+  if (__DEV__) {
+    controlElementSet.delete(fiber);
+    readOnlyElementSet.delete(fiber);
+  }
 };

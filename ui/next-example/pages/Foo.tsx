@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Foo() {
   const [l, setL] = useState(0);
@@ -8,21 +8,24 @@ export default function Foo() {
   const { pathname } = useRouter();
 
   useRouter();
-  // useEffect(() => {
-  //   console.log('update');
-  // },[])
+  useEffect(() => {
+    console.log('update');
+  },[])
 
   useEffect(() => {
     console.log("bbbb");
+    // useState()
   }, []);
 
-  // useEffect(() => {
-  //   const id = setInterval(() => {
-  //     setL(l => l + 1);
-  //   }, 200)
+  // Math.random() > 0.5 ? useState() : useRef()
 
-  //   return () => clearInterval(id);
-  // }, [])
+  useEffect(() => {
+    const id = setInterval(() => {
+      setL(l => l + 1);
+    }, 200)
+
+    return () => clearInterval(id);
+  }, [])
 
   const [j] = useState(() => "oooo");
 

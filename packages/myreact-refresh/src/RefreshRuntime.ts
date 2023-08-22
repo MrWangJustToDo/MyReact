@@ -284,6 +284,7 @@ export const performReactRefresh = () => {
 
         fibers.forEach((f) => {
           hasRootUpdate = hasRootUpdate || f === container.rootFiber;
+          
           typedSelf?.["__@my-react/hmr__"]?.hmr?.(f, nextType, forceReset);
         });
 

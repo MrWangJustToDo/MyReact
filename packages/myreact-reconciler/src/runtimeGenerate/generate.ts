@@ -171,12 +171,9 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
     deleteIfNeed(parentFiber, existingChildrenMap);
   } else {
-    // only happen in hmr
-    if (include(parentFiber.state, STATE_TYPE.__hmr__)) {
-      const { existingChildrenMap } = getExistingChildren(parentFiber);
+    const { existingChildrenMap } = getExistingChildren(parentFiber);
 
-      deleteIfNeed(parentFiber, existingChildrenMap);
-    }
+    deleteIfNeed(parentFiber, existingChildrenMap);
 
     const typedParentFiber = parentFiber as MyReactFiberNodeDev;
 

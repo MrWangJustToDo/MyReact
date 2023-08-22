@@ -1,4 +1,4 @@
-import { __my_react_shared__, startTransition } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, startTransition } from "@my-react/react";
 import { HOOK_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { triggerUpdate } from "../renderUpdate";
@@ -13,12 +13,20 @@ import type { Action, Reducer, RenderHookParams } from "@my-react/react";
 
 const { enableDebugLog } = __my_react_shared__;
 
+const { currentHookTreeNode } = __my_react_internal__;
+
 const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;
 };
 
 export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
   const renderDispatch = currentRenderDispatch.current;
+
+  const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
+
+  if (currentHook) {
+    throw new Error(`[@my-react/react] should not have a hookList for current node, this is a bug for @my-react`);
+  }
 
   const hookNode = new MyReactHookNode(type, value, reducer || defaultReducer, deps);
 

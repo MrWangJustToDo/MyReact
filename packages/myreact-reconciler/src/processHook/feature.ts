@@ -44,12 +44,8 @@ export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams
 
   let currentHook: MyReactHookNode | null = null;
 
-  if (__DEV__ && include(fiber.state, STATE_TYPE.__create__) && fiber.state !== STATE_TYPE.__create__) {
-    console.error(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
-  }
-
   // initial
-  if (fiber.state === STATE_TYPE.__create__) {
+  if (include(fiber.state, STATE_TYPE.__create__)) {
     currentHook = createHookNode({ type, reducer, value, deps }, fiber);
   } else {
     // update

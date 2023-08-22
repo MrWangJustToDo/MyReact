@@ -192,7 +192,7 @@ importers:
   packages/myreact-refresh-tools:
     dependencies:
       '@my-react/react-refresh':
-        specifier: '>=0.2.0'
+        specifier: '>=0.2.4'
         version: link:../myreact-refresh
       webpack:
         specifier: ^4 || ^5

@@ -34,8 +34,6 @@ export const onErrorLink = onError(({ networkError, graphQLErrors }) => {
   }
 });
 
-console.log(tokenString);
-
 export const authLink = setContext((_, { headers }) => {
   return {
     headers: {

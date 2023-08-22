@@ -1,6 +1,6 @@
 {
   "name": "@my-react/react-refresh-tools",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "An experimental package providing utilities for @my-react Refresh.",
   "files": [
     "dist",
@@ -82,7 +82,7 @@
     }
   },
   "dependencies": {
-    "@my-react/react-refresh": ">=0.2.0"
+    "@my-react/react-refresh": ">=0.2.4"
   },
   "peerDependencies": {
     "webpack": "^4 || ^5"

@@ -1,180 +1,213 @@
 <!DOCTYPE html>
 <html lang="zh_cn">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>测试react框架</title>
-    <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
 
-    <style>
-      .red {
-        color: red;
-        font-size: 20px;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>测试react框架</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+
+  <style>
+    .red {
+      color: red;
+      font-size: 20px;
+    }
+
+    .box {
+      width: 100px;
+      height: 100px;
+      border: 1px solid red;
+      border-radius: 3px;
+    }
+
+    .green {
+      color: green;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" async>
+    const {
+      memo,
+      useState,
+      useCallback,
+      useEffect,
+      useRef,
+      useContext,
+      useMemo,
+      Children: { map },
+      Component,
+      cloneElement,
+      createContext,
+    } = React;
+
+    const useCounter = (init = 1) => {
+      const [count, setCount] = useState(init);
+      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+
+      return [count, i, j];
+    };
+
+    const useTime = () => {
+      const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
+      useEffect(() => {
+        console.log("init");
+        const id = setInterval(() => {
+          setCurrentTime(new Date().toLocaleString());
+        }, 1000);
+        // const id = setTimeout(() => {
+        // setCurrentTime(new Date().toLocaleString());
+        // }, 1000);
+        return () => clearInterval(id);
+      }, []);
+
+      return currentTime;
+    };
+
+    const usePosition = () => {
+      const [currentPosition, setCurrentPosition] = useState({
+        x: 0,
+        y: 0,
+      });
+
+      useEffect(() => {
+        const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
+        window.addEventListener("mousemove", action);
+        return () => window.removeEventListener("mousemove", action);
+      }, []);
+
+      return [currentPosition.x, currentPosition.y];
+    };
+
+    const Context = createContext("123");
+
+    const Po = memo(() => {
+      const [x, y] = usePosition();
+      console.log("rerun po");
+      return (
+        <div>
+          {x}, {y}
+        </div>
+      );
+    });
+
+    const C = memo(() => {
+      const value = useContext(Context);
+      console.log("run Context", value);
+      return [<p>context {value}</p>];
+    });
+
+    class Y extends Component {
+      static contextType = Context;
+
+      constructor(p, c) {
+        super(p, c);
+        console.log(p, c);
       }
 
-      .box {
-        width: 100px;
-        height: 100px;
-        border: 1px solid red;
-        border-radius: 3px;
+      render() {
+        return <p>class component context: {this.context}</p>;
       }
+    }
 
-      .green {
-        color: green;
-      }
-    </style>
-  </head>
+    const Cum = memo(() => {
+      const foo = useCallback((val) => <p>{val}</p>, []);
+      console.log("run");
+      return (
+        <>
+          <p>234</p>
+          <Context.Consumer key="1">{foo}</Context.Consumer>
+          <Context.Consumer key="2">{(val) => <p style={{ color: "red" }}>{val}</p>}</Context.Consumer>
+          <p>123</p>
+        </>
+      );
+    });
 
-  <body>
-    <div id="root"></div>
+    const MemoProvider = memo(Context.Provider);
 
-    <script type="text/babel" async>
-      const {
-        memo,
-        useState,
-        useCallback,
-        useEffect,
-        useRef,
-        useContext,
-        useMemo,
-        Children: { map },
-        Component,
-        cloneElement,
-        createContext,
-      } = React;
+    const AC = function ({ value }) {
+      console.log(value);
+      return (
+        <MemoProvider value={value}>
+          <Cum />
+          <Y />
+          <C />
+        </MemoProvider>
+      );
+    };
 
-      const useCounter = (init = 1) => {
-        const [count, setCount] = useState(init);
-        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
-        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+    function TestContext() {
+      const [value, add, del] = useCounter();
+      // const time = useTime();
+      const [x] = usePosition();
 
-        return [count, i, j];
-      };
+      const time = 100;
+      // const x = 0;
+      // const value = "200";
 
-      const useTime = () => {
-        const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
-        useEffect(() => {
-          console.log("init");
-          const id = setInterval(() => {
-            setCurrentTime(new Date().toLocaleString());
-          }, 1000);
-          // const id = setTimeout(() => {
-          // setCurrentTime(new Date().toLocaleString());
-          // }, 1000);
-          return () => clearInterval(id);
-        }, []);
-
-        return currentTime;
-      };
-
-      const usePosition = () => {
-        const [currentPosition, setCurrentPosition] = useState({
-          x: 0,
-          y: 0,
-        });
-
-        useEffect(() => {
-          const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
-          window.addEventListener("mousemove", action);
-          return () => window.removeEventListener("mousemove", action);
-        }, []);
-
-        return [currentPosition.x, currentPosition.y];
-      };
-
-      const Context = createContext("123");
-
-      const Po = memo(() => {
-        const [x, y] = usePosition();
-        console.log("rerun po");
-        return (
+      return (
+        <div>
+          <p>{time}</p>
+          <p>{value}</p>
+          <AC value={x} />
           <div>
-            {x}, {y}
+            <p>
+              <button onClick={add}>add</button>
+            </p>
+            <p>
+              <button onClick={del}>del</button>
+            </p>
           </div>
-        );
-      });
+        </div>
+      );
+    }
 
-      const C = memo(() => {
-        const value = useContext(Context);
-        console.log("run Context", value);
-        return [<p>context {value}</p>];
-      });
+    const CountContext = createContext('123');
 
-      class Y extends Component {
-        static contextType = Context;
+    const App2 = memo(() => {
+      console.log('run')
+      return <CountContext.Consumer>{x => x}</CountContext.Consumer>
+    })
 
-        constructor(p, c) {
-          super(p, c);
-          console.log(p, c);
-        }
+    const App3 = memo(CountContext.Consumer);
 
-        render() {
-          return <p>class component context: {this.context}</p>;
-        }
-      }
+    const App4 = memo(CountContext.Provider);
 
-      const Cum = memo(() => {
-        const foo = useCallback((val) => <p>{val}</p>, []);
-        console.log("run");
-        return (
-          <>
-            <p>234</p>
-            <Context.Consumer key="1">{foo}</Context.Consumer>
-            <Context.Consumer key="2">{(val) => <p style={{ color: "red" }}>{val}</p>}</Context.Consumer>
-            <p>123</p>
-          </>
-        );
-      });
+    const BBB = () => {
+      console.log('bbb');
+      return <App3>{x => x + '----'}</App3>;
+    }
 
-      const MemoProvider = memo(Context.Provider);
+    const VVV = <BBB />
 
-      const AC = function ({ value }) {
-        console.log(value);
-        return (
-          <MemoProvider value={value}>
-            <Cum />
-            <Y />
-            <C />
-          </MemoProvider>
-        );
-      };
+    const App1 = () => {
+      const [x] = usePosition();
 
-      function TestContext() {
-        const [value, add, del] = useCounter();
-        // const time = useTime();
-        const [x] = usePosition();
+      const ele = <App4 value={x}>
+        <App2 />
+        {VVV}
+      </App4>;
 
-        const time = 100;
-        // const x = 0;
-        // const value = "200";
+      // console.log(ele);
 
-        return (
-          <div>
-            <p>{time}</p>
-            <p>{value}</p>
-            <AC value={x} />
-            <div>
-              <p>
-                <button onClick={add}>add</button>
-              </p>
-              <p>
-                <button onClick={del}>del</button>
-              </p>
-            </div>
-          </div>
-        );
-      }
+      return ele;
+    }
 
-      const container = document.getElementById("root");
-      ReactDOM.render(<TestContext />, container);
+    const container = document.getElementById("root");
+    ReactDOM.render(<App1 />, container);
       // window.start = () => {
       // ReactDOM.hydrate(<TestContext />, container);
 
       // }
-    </script>
-  </body>
+  </script>
+</body>
+
 </html>

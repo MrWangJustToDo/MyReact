@@ -58,37 +58,37 @@ export const updateFiberNode = (
         fiber.state = remove(fiber.state, STATE_TYPE.__stable__);
 
         fiber.state = merge(fiber.state, STATE_TYPE.__inherit__);
-
-        renderDispatch.patchToFiberUpdate?.(fiber);
       }
     } else {
       fiber.state = remove(fiber.state, STATE_TYPE.__stable__);
 
       fiber.state = merge(fiber.state, STATE_TYPE.__inherit__);
+    }
+  }
 
-      if (include(fiber.type, NODE_TYPE.__provider__)) {
-        if (!isNormalEquals(fiber.pendingProps.value as Record<string, unknown>, fiber.memoizedProps.value as Record<string, unknown>)) {
-          // if current is root loop mode, should not delay context update
-          if (enableLoopFromRoot.current) {
-            prepareUpdateAllDependence(fiber);
-          } else {
-            renderDispatch.pendingContext(fiber);
-          }
+  if (fiber.state !== STATE_TYPE.__stable__) {
+    if (include(fiber.type, NODE_TYPE.__provider__)) {
+      if (!isNormalEquals(fiber.pendingProps.value as Record<string, unknown>, fiber.memoizedProps.value as Record<string, unknown>)) {
+        // if current is root loop mode, should not delay context update
+        if (enableLoopFromRoot.current) {
+          prepareUpdateAllDependence(fiber);
+        } else {
+          renderDispatch.pendingContext(fiber);
         }
       }
+    }
 
-      if (include(fiber.type, NODE_TYPE.__plain__)) {
-        if (!isNormalEquals(fiber.pendingProps, fiber.memoizedProps, (key: string) => key === "children")) {
-          renderDispatch.pendingUpdate(fiber);
-        }
-      }
-
-      if (include(fiber.type, NODE_TYPE.__text__)) {
+    if (include(fiber.type, NODE_TYPE.__plain__)) {
+      if (!isNormalEquals(fiber.pendingProps, fiber.memoizedProps, (key: string) => key === "children")) {
         renderDispatch.pendingUpdate(fiber);
       }
-
-      renderDispatch.patchToFiberUpdate?.(fiber);
     }
+
+    if (include(fiber.type, NODE_TYPE.__text__)) {
+      renderDispatch.pendingUpdate(fiber);
+    }
+
+    renderDispatch.patchToFiberUpdate?.(fiber);
   }
 
   if (nextRef && prevRef !== nextRef) {

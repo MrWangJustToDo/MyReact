@@ -96,3 +96,8 @@ export const enableLegacyLifeCycle = createRef(true);
  * @internal
  */
 export const enableStrictLifeCycle = createRef(false);
+
+/**
+ * @internal
+ */
+export const enableDebugFiled = createRef(true);

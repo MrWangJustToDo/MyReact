@@ -1,4 +1,4 @@
-import { createElement, isValidElement } from "@my-react/react";
+import { __my_react_shared__, createElement, isValidElement } from "@my-react/react";
 import { Fragment, ListTree, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { createFiberNode, updateFiberNode } from "../runtimeFiber";
@@ -6,6 +6,8 @@ import { checkIsSameType, currentRenderDispatch, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactElementNode, MaybeArrayMyReactElementNode, ArrayMyReactElementChildren } from "@my-react/react";
+
+const { enableDebugFiled } = __my_react_shared__;
 
 const getIsSameTypeNode = (newChild: MyReactElementNode, draftFiber?: MyReactFiberNode) => {
   if (!draftFiber) return false;
@@ -138,7 +140,7 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
     const typedParentFiber = parentFiber as MyReactFiberNodeDev;
 
-    if (__DEV__) {
+    if (__DEV__ && enableDebugFiled.current) {
       typedParentFiber._debugRenderChildrenPrevious = typedParentFiber._debugRenderChildrenCurrent;
       typedParentFiber._debugRenderChildrenCurrent = [];
     }
@@ -159,14 +161,14 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
         lastFiber = newFiber;
 
-        if (__DEV__) typedParentFiber._debugRenderChildrenCurrent.push(newFiber);
+        if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(newFiber);
 
         index++;
       }
     } else {
       const child = getNewFiberWithUpdate(children, parentFiber, existingChildrenMap, existingChildrenArray[0], 0);
 
-      if (__DEV__) typedParentFiber._debugRenderChildrenCurrent.push(child);
+      if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(child);
     }
 
     deleteIfNeed(parentFiber, existingChildrenMap);
@@ -177,7 +179,7 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
     const typedParentFiber = parentFiber as MyReactFiberNodeDev;
 
-    if (__DEV__) {
+    if (__DEV__ && enableDebugFiled.current) {
       typedParentFiber._debugRenderChildrenPrevious = [];
       typedParentFiber._debugRenderChildrenCurrent = [];
     }
@@ -200,14 +202,14 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
         lastFiber = newFiber;
 
-        if (__DEV__) typedParentFiber._debugRenderChildrenCurrent.push(newFiber);
+        if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(newFiber);
 
         index++;
       }
     } else {
       const child = getNewFiberWithInitial(children, parentFiber);
 
-      if (__DEV__) typedParentFiber._debugRenderChildrenCurrent.push(child);
+      if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(child);
     }
   }
 };

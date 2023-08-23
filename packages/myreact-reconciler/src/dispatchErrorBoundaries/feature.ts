@@ -1,9 +1,12 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { include } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
+import type { MixinMyReactClassComponent, MyReactComponent} from "@my-react/react";
+
+const { enableDebugFiled } = __my_react_shared__;
 
 export const isErrorBoundariesInstance = (instance: MyReactComponent, Component: MixinMyReactClassComponent) => {
   return typeof instance.componentDidCatch === "function" || typeof Component.getDerivedStateFromError === "function";
@@ -36,7 +39,7 @@ export const defaultGenerateErrorBoundariesMap = (fiber: MyReactFiberNode, map: 
     }
   }
 
-  if (__DEV__) {
+  if (__DEV__ && enableDebugFiled.current) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
     const errorBoundaries = map.get(fiber);

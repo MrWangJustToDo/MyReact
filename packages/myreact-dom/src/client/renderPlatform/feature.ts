@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { processHookNode, processState, triggerError } from "@my-react/react-reconciler";
 
 import { ClientDomPlatform } from "./instance";
@@ -7,6 +7,8 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ServerDomPlatform } from "@my-react-dom-server/renderPlatform";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
+
+const { enableDebugFiled } = __my_react_shared__;
 
 export const initGlobalRenderPlatform = () => {
   const MyReactServerDomPlatform = new ClientDomPlatform(true);
@@ -18,6 +20,8 @@ export const prepareRenderPlatform = () => {
   let renderPlatform = currentRenderPlatform.current as ClientDomPlatform | ServerDomPlatform;
 
   if (!renderPlatform) initGlobalRenderPlatform();
+
+  enableDebugFiled.current = true;
 
   renderPlatform = currentRenderPlatform.current as ClientDomPlatform | ServerDomPlatform;
 

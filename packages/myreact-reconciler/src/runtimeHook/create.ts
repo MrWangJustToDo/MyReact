@@ -11,7 +11,7 @@ import { MyReactSignal } from "./signal";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { Action, Reducer, RenderHookParams } from "@my-react/react";
 
-const { enableDebugLog } = __my_react_shared__;
+const { enableDebugLog, enableDebugFiled } = __my_react_shared__;
 
 const { currentHookTreeNode } = __my_react_internal__;
 
@@ -120,7 +120,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     };
   }
 
-  if (__DEV__) {
+  if (__DEV__ && enableDebugFiled.current) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
     typedFiber._debugHookTypes = typedFiber._debugHookTypes || [];

@@ -1,4 +1,4 @@
-import { type MixinMyReactClassComponent, type MyReactComponent } from "@my-react/react";
+import { __my_react_shared__, type MixinMyReactClassComponent, type MyReactComponent } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
 import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
@@ -8,6 +8,8 @@ import { currentRenderDispatch, safeCallWithFiber } from "../share";
 import type { UpdateQueueDev } from "../processState";
 import type { MyReactFiberNode, MyReactFiberNodeDev, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
+
+const { enableDebugFiled } = __my_react_shared__;
 
 export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enableTaskPriority?: boolean) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
@@ -20,7 +22,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
 
   if (!node) return { needUpdate: false, isSync: false };
 
-  if (__DEV__) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+  if (__DEV__ && enableDebugFiled.current) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
   let sync = false;
 
@@ -43,7 +45,9 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
       const nextNode = node.next;
 
       if (updater.type === UpdateQueueType.component && updater.isSync) {
-        if (__DEV__ && updater.trigger !== typedInstance) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+        if (__DEV__ && updater.trigger !== typedInstance) {
+          throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+        }
 
         allQueue.delete(node);
 
@@ -56,7 +60,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
           action: () => Object.assign({}, lastResult, typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad),
         });
 
-        if (__DEV__) {
+        if (__DEV__ && enableDebugFiled.current) {
           const typedNode = node.value as UpdateQueueDev;
 
           typedNode._debugRunTime = Date.now();
@@ -100,7 +104,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
           action: () => Object.assign({}, lastResult, typeof updater.payLoad === "function" ? updater.payLoad(baseState, baseProps) : updater.payLoad),
         });
 
-        if (__DEV__) {
+        if (__DEV__ && enableDebugFiled.current) {
           const typedNode = node.value as UpdateQueueDev;
 
           typedNode._debugRunTime = Date.now();
@@ -134,7 +138,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
 
   const typedFiber = fiber as MyReactFiberNodeDev;
 
-  if (__DEV__ && allQueue) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+  if (__DEV__ && enableDebugFiled.current && allQueue) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
   let node = allQueue?.head;
 
@@ -165,7 +169,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
           action: () => typedTrigger.reducer(lastResult, payLoad),
         });
 
-        if (__DEV__) {
+        if (__DEV__ && enableDebugFiled.current) {
           const typedNode = node.value as UpdateQueueDev;
 
           typedNode._debugRunTime = Date.now();
@@ -211,7 +215,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
           action: () => typedTrigger.reducer(lastResult, payLoad),
         });
 
-        if (__DEV__) {
+        if (__DEV__ && enableDebugFiled.current) {
           const typedNode = node.value as UpdateQueueDev;
 
           typedNode._debugRunTime = Date.now();

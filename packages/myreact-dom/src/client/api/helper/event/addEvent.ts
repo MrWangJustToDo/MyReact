@@ -1,3 +1,4 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { afterSyncUpdate, beforeSyncUpdate, safeCallWithFiber } from "@my-react/react-reconciler";
 
 import { enableEventSystem } from "@my-react-dom-shared";
@@ -7,6 +8,8 @@ import { getNativeEventName } from "./getEventName";
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { DomElement } from "@my-react-dom-shared";
+
+const { enableDebugFiled } = __my_react_shared__;
 
 // TODO
 const syncUpdateEvent = {
@@ -76,7 +79,7 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
 
     eventMap.set(fiber, eventState);
 
-    if (__DEV__) {
+    if (__DEV__ && enableDebugFiled.current) {
       const typedFiber = fiber as MyReactFiberNodeDev;
 
       typedFiber._debugEventMap = eventState;

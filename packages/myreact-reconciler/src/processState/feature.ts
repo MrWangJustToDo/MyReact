@@ -16,7 +16,7 @@ export type UpdateQueueDev = UpdateQueue<{
 
 const { currentComponentFiber } = __my_react_internal__;
 
-const { enableSyncFlush } = __my_react_shared__;
+const { enableSyncFlush, enableDebugFiled } = __my_react_shared__;
 
 const MAX_UPDATE_COUNT = 25;
 
@@ -25,7 +25,7 @@ let lastRenderComponentFiber: RenderFiber | null = null;
 let renderCount = 0;
 
 export const processState = (_params: UpdateQueue) => {
-  if (__DEV__) {
+  if (__DEV__ && enableDebugFiled.current) {
     const typedUpdateQueue = _params as UpdateQueueDev;
 
     typedUpdateQueue._debugCreateTime = Date.now();

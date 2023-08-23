@@ -82,7 +82,6 @@ export class MyReactFiberNode implements RenderFiber {
   _revert: () => void;
 
   constructor(element: MyReactElementNode) {
-
     this.state = STATE_TYPE.__create__;
 
     this._installElement(element);

@@ -1,8 +1,11 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { include } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
+
+const { enableDebugFiled } = __my_react_shared__;
 
 export const defaultGenerateStrictMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, boolean>) => {
   const parent = fiber.parent;
@@ -17,7 +20,7 @@ export const defaultGenerateStrictMap = (fiber: MyReactFiberNode, map: WeakMap<M
     }
   }
 
-  if (__DEV__) {
+  if (__DEV__ && enableDebugFiled.current) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
     const isStrict = map.get(fiber);

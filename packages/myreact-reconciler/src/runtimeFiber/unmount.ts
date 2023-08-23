@@ -1,3 +1,4 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, include } from "@my-react/react-shared";
 
 import { fiberToDispatchMap } from "../share";
@@ -5,6 +6,8 @@ import { fiberToDispatchMap } from "../share";
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
 import type { CustomRenderDispatch } from "../renderDispatch";
+
+const { enableDebugFiled } = __my_react_shared__;
 
 export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
@@ -57,7 +60,7 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   fiber.state = STATE_TYPE.__unmount__;
 
-  if (__DEV__) {
+  if (__DEV__ && enableDebugFiled.current) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
     typedFiber._debugIsMount = false;

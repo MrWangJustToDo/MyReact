@@ -11,7 +11,7 @@ import type { MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyRea
 
 const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber } = __my_react_internal__;
 
-const { enablePerformanceLog } = __my_react_shared__;
+const { enablePerformanceLog, enableDebugFiled } = __my_react_shared__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   transformChildrenFiber(fiber, children);
@@ -164,23 +164,25 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
 
   const timeNow = end;
 
-  if (typedFiber.state === STATE_TYPE.__create__) {
-    typedFiber._debugRenderState = {
-      mountTime: timeNow,
-    };
+  if (enableDebugFiled.current) {
+    if (typedFiber.state === STATE_TYPE.__create__) {
+      typedFiber._debugRenderState = {
+        mountTime: timeNow,
+      };
 
-    typedFiber._debugIsMount = true;
-  } else {
-    const prevRenderState = Object.assign({}, typedFiber._debugRenderState);
+      typedFiber._debugIsMount = true;
+    } else {
+      const prevRenderState = Object.assign({}, typedFiber._debugRenderState);
 
-    const prevRenderTime = prevRenderState.updateTime || prevRenderState.mountTime;
+      const prevRenderTime = prevRenderState.updateTime || prevRenderState.mountTime;
 
-    typedFiber._debugRenderState = {
-      renderCount: (prevRenderState.renderCount || 0) + 1,
-      mountTime: prevRenderState.mountTime,
-      updateTime: timeNow,
-      updateTimeInterval: timeNow - prevRenderTime,
-    };
+      typedFiber._debugRenderState = {
+        renderCount: (prevRenderState.renderCount || 0) + 1,
+        mountTime: prevRenderState.mountTime,
+        updateTime: timeNow,
+        updateTimeInterval: timeNow - prevRenderTime,
+      };
+    }
   }
 
   if (include(typedFiber.type, renderDispatch.runtimeRef.typeForNativeNode)) {

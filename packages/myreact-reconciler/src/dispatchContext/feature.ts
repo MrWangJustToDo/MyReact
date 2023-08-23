@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE, exclude, include, remove } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
@@ -9,6 +9,8 @@ import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { createContext } from "@my-react/react";
 
 const { currentRenderPlatform } = __my_react_internal__;
+
+const { enableDebugFiled } = __my_react_shared__;
 
 const emptyObj = {};
 
@@ -31,7 +33,7 @@ export const defaultGenerateContextMap = (fiber: MyReactFiberNode, map: WeakMap<
     if (parentMap !== emptyObj) {
       map.set(fiber, parentMap);
 
-      if (__DEV__) {
+      if (__DEV__ && enableDebugFiled.current) {
         const typedFiber = fiber as MyReactFiberNodeDev;
 
         typedFiber._debugContextMap = parentMap;

@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
+import { HOOK_TYPE, include, isObject, type ListTreeNode } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "./fiberType";
 
@@ -20,7 +20,20 @@ export const devWarn = (...args) => {
 
   const renderFiber = currentRunningFiber.current;
 
-  originalWarn.call(console, ...args.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
+  const logObj = [];
+
+  const logString = args
+    .map((i) => {
+      if (isObject(i)) {
+        logObj.push(i);
+        return "%o";
+      } else {
+        return i;
+      }
+    })
+    .join(" ");
+
+  originalWarn.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
 };
 
 export const devError = (...args) => {
@@ -28,7 +41,20 @@ export const devError = (...args) => {
 
   const renderFiber = currentRunningFiber.current;
 
-  originalError.call(console, ...args.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
+  const logObj = [];
+
+  const logString = args
+    .map((i) => {
+      if (isObject(i)) {
+        logObj.push(i);
+        return "%o";
+      } else {
+        return i;
+      }
+    })
+    .join(" ");
+
+  originalError.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
 };
 
 export const setLogScope = () => {
@@ -151,7 +177,7 @@ export const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(f
 
 export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   if (fiber) {
-    const preString = "".padEnd(4) + "at".padEnd(4);
+    const preString = "".padEnd(4) + "at".padEnd(3);
     let res = "";
     let temp = fiber;
     if (enableOptimizeTreeLog.current) {

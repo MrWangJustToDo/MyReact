@@ -1,4 +1,4 @@
-import { STATE_TYPE } from "@my-react/react-shared";
+import { STATE_TYPE, exclude } from "@my-react/react-shared";
 
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
@@ -6,9 +6,9 @@ export const getFiberWithNativeDom = (fiber: MyReactFiberNode | null, transform:
   if (fiber) {
     const maybeContainer = fiber as MyReactFiberContainer;
 
-    if (fiber.nativeNode && !(fiber.state & STATE_TYPE.__unmount__)) return fiber;
+    if (fiber.nativeNode && exclude(fiber.state, STATE_TYPE.__unmount__)) return fiber;
 
-    if (maybeContainer.containerNode && !(maybeContainer.state & STATE_TYPE.__unmount__)) return fiber;
+    if (maybeContainer.containerNode && exclude(maybeContainer.state, STATE_TYPE.__unmount__)) return fiber;
 
     return getFiberWithNativeDom(transform(fiber), transform);
   }

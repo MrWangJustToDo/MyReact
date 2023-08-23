@@ -183,7 +183,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
     };
   }
 
-  if (typedFiber.type & renderDispatch.runtimeRef.typeForNativeNode) {
+  if (include(typedFiber.type, renderDispatch.runtimeRef.typeForNativeNode)) {
     renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
   }
 

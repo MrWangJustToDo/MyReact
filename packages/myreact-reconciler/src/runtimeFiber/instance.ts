@@ -82,31 +82,13 @@ export class MyReactFiberNode implements RenderFiber {
   _revert: () => void;
 
   constructor(element: MyReactElementNode) {
+
+    this.state = STATE_TYPE.__create__;
+
     this._installElement(element);
   }
 
   _installElement(element: MyReactElementNode) {
-    const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
-
-    this.ref = ref;
-
-    this.key = key;
-
-    this.type = nodeType;
-
-    this.elementType = elementType;
-
-    this.pendingProps = pendingProps;
-
-    this.state = STATE_TYPE.__create__;
-
-    if (__DEV__) {
-      const typeThis = this as unknown as MyReactFiberNodeDev;
-
-      typeThis._debugElement = element;
-    }
-  }
-  _updateElement(element: MyReactElementNode) {
     const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
 
     this.ref = ref;

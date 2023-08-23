@@ -14,7 +14,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
 
     const element = createElement(nextType as MixinMyReactFunctionComponent, fiber.pendingProps);
 
-    forceRefresh ? fiber._installElement(element) : fiber._updateElement(element);
+    fiber._installElement(element);
 
     setRefreshTypeMap(fiber);
 
@@ -42,7 +42,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
       // TODO
       deleteEffect(fiber, renderDispatch);
 
-      fiber.state = merge(fiber.state, STATE_TYPE.__hmr__);
+      fiber.state = merge(STATE_TYPE.__create__, STATE_TYPE.__hmr__);
     } else {
       fiber.state = merge(STATE_TYPE.__triggerSync__, STATE_TYPE.__hmr__);
     }

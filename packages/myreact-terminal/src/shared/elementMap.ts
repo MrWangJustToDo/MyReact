@@ -1,3 +1,5 @@
+import { include } from "@my-react/react-shared";
+
 import type { TerminalDispatch } from "../renderDispatch";
 import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -8,7 +10,7 @@ export const patchToFiberInitial = (_fiber: MyReactFiberNode, _dispatch: Termina
     const mayFiberContainer = _fiber.parent as MyReactFiberContainer;
     if (mayFiberContainer.containerNode) {
       parentFiberWithNode = _fiber.parent;
-    } else if (_fiber.parent.type & _dispatch.runtimeRef.typeForNativeNode) {
+    } else if (include(_fiber.parent.type, _dispatch.runtimeRef.typeForNativeNode)) {
       parentFiberWithNode = _fiber.parent;
     } else {
       parentFiberWithNode = _dispatch.runtimeDom.elementMap.get(_fiber.parent);

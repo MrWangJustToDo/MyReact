@@ -1,3 +1,5 @@
+import { include } from "@my-react/react-shared";
+
 import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
@@ -18,7 +20,7 @@ export const initialElementMap = (_fiber: MyReactFiberNode, _dispatch: ClientDom
     const mayFiberContainer = _fiber.parent as MyReactFiberContainer;
     if (mayFiberContainer.containerNode) {
       parentFiberWithNode = _fiber.parent;
-    } else if (_fiber.parent.type & _dispatch.runtimeRef.typeForNativeNode) {
+    } else if (include(_fiber.parent.type, _dispatch.runtimeRef.typeForNativeNode)) {
       parentFiberWithNode = _fiber.parent;
     } else {
       parentFiberWithNode = _dispatch.runtimeDom.elementMap.get(_fiber.parent)?.parentFiberWithNode;

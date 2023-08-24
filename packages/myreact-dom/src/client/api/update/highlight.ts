@@ -13,6 +13,9 @@ const debounce = <T extends Function>(callback: T): T => {
   }) as unknown as T;
 };
 
+/**
+ * @internal
+ */
 export class HighLight {
   /**
    * @type HighLight

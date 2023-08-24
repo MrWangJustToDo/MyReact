@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { afterSyncUpdate, beforeSyncUpdate, safeCallWithFiber } from "@my-react/react-reconciler";
 
-import { enableEventSystem } from "@my-react-dom-shared";
+import { enableEventSystem, log } from "@my-react-dom-shared";
 
 import { getNativeEventName } from "./getEventName";
 
@@ -44,6 +44,12 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
   const callback = pendingProps[key] as (...args: any[]) => void;
 
   if (!callback) return;
+
+  if (typeof callback !== "function") {
+    if (__DEV__) log(fiber, "warn", `current props with key '${key}' is not a valid props`);
+
+    return;
+  }
 
   const { nativeName, isCapture } = getNativeEventName(key.slice(2), typedElementType, pendingProps);
 

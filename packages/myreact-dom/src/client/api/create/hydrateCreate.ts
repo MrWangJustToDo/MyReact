@@ -6,6 +6,9 @@ import { getHydrateDom } from "./getHydrateDom";
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 import type { DomElement } from "@my-react-dom-shared";
 
+/**
+ * @internal
+ */
 export const hydrateCreate = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode, previousDom: ChildNode | null): boolean => {
   if (include(fiber.type, NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__)) {
     const maybeContainer = parentFiberWithDom as MyReactFiberContainer;

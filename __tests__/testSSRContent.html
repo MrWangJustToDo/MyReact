@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script>
+  </script>
+
+  <script type="text/babel">
+    // React.__my_react_shared__.enableOptimizeTreeLog.current = false
+    const App = ({ s, ...rest }) => {
+      return <div {...rest}>{s}</div>
+    }
+
+    const render = (s) => {
+      root.innerHTML = ReactServerDOM.renderToString(<App s={s} />)
+    }
+
+    ReactDOM.render(<App s={'111'} onClick={'122'} />, root)
+  </script>
+</body>
+
+</html>

@@ -5,6 +5,9 @@ import { log, type DomElement, type DomNode } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
+/**
+ * @internal
+ */
 export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
   if (!fiber) throw new Error("[@my-react/react-dom] position error, look like a bug for @my-react");
 

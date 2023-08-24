@@ -74,6 +74,9 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
   throw new Error("[@my-react/react-dom] hydrate error, look like a bug");
 };
 
+/**
+ * @internal
+ */
 export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element, previousDom?: ChildNode) => {
   const dom = getNextHydrateDom(parentDom, previousDom);
 

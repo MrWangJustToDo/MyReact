@@ -1,5 +1,8 @@
 import { CustomRenderPlatform } from "@my-react/react-reconciler";
 
+/**
+ * @internal
+ */
 export class ServerDomPlatform extends CustomRenderPlatform {
   isServer: boolean;
 

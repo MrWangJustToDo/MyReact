@@ -9,12 +9,18 @@ const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
 
 const { enableDebugFiled } = __my_react_shared__;
 
+/**
+ * @internal
+ */
 export const initGlobalRenderPlatform = () => {
   const MyReactServerDomPlatform = new ServerDomPlatform(true);
 
   initRenderPlatform(MyReactServerDomPlatform);
 };
 
+/**
+ * @internal
+ */
 export const prepareRenderPlatform = () => {
   let renderPlatform = currentRenderPlatform.current as ClientDomPlatform | ServerDomPlatform;
 

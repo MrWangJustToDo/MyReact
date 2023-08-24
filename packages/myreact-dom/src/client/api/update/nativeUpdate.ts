@@ -12,6 +12,9 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
+/**
+ * @internal
+ */
 export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
   if (!fiber.nativeNode) throw new Error("[@my-react/react-dom] update error, dom not exist");
 
@@ -41,7 +44,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
           const typedNewValue = (newValue as Record<string, unknown>) || {};
           const typedOldValue = (oldValue as Record<string, unknown>) || {};
           const allStyleKeys = getAllKeys(typedOldValue, typedNewValue);
-          allStyleKeys.forEach((key) => setStyle(dom, key, typedNewValue[key] as string | number | null | undefined));
+          allStyleKeys.forEach((key) => setStyle(fiber, dom, key, typedNewValue[key] as string | number | null | undefined));
         } else if (isProperty(key)) {
           setAttribute(fiber, dom, key, isSVG, newValue);
         }

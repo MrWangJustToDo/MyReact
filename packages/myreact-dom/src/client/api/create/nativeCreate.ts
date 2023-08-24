@@ -7,6 +7,9 @@ import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-re
 
 const SVG = "http://www.w3.org/2000/svg";
 
+/**
+ * @internal
+ */
 export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
   if (include(fiber.type, NODE_TYPE.__text__)) {
     fiber.nativeNode = document.createTextNode(fiber.elementType as string);

@@ -10,6 +10,9 @@ import {
 } from "@my-react-dom-client/api";
 import { enableControlComponent } from "@my-react-dom-shared";
 
+/**
+ * @internal
+ */
 export const mountControlElement = (fiber: MyReactFiberNode) => {
   if (enableControlComponent.current && include(fiber.type, NODE_TYPE.__plain__)) {
     const isControlledElement = controlElementTag[fiber.elementType as string];
@@ -20,6 +23,9 @@ export const mountControlElement = (fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const updateControlElement = (fiber: MyReactFiberNode) => {
   if (enableControlComponent.current && include(fiber.type, NODE_TYPE.__plain__)) {
     const isControlledElement = controlElementTag[fiber.elementType as string];
@@ -30,6 +36,9 @@ export const updateControlElement = (fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const unmountControlElement = (fiber: MyReactFiberNode) => {
   if (enableControlComponent.current && include(fiber.type, NODE_TYPE.__plain__)) {
     const isControlledElement = controlElementTag[fiber.elementType as string];

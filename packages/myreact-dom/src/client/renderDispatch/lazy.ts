@@ -8,6 +8,9 @@ import type { lazy, MixinMyReactFunctionComponent } from "@my-react/react";
 import type { MyReactFiberNode, CustomRenderDispatch } from "@my-react/react-reconciler";
 
 // TODO
+/**
+ * @internal
+ */
 export const resolveLazyElementSync = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
   if (typedElementType._loaded === true) {
@@ -36,6 +39,9 @@ export const resolveLazyElementSync = (_fiber: MyReactFiberNode, _dispatch: Cust
   return WrapperByScope(_dispatch.resolveSuspense(_fiber));
 };
 
+/**
+ * @internal
+ */
 export const resolveLazyElementAsync = async (_fiber: MyReactFiberNode) => {
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
 

@@ -100,7 +100,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
 const domStyleHydrate = (fiber: MyReactFiberNode, _key: string, value: Record<string, unknown>) => {
   const node = fiber.nativeNode as HTMLElement;
 
-  Object.keys(value).forEach((styleName) => setStyle(node, styleName, value[styleName] as string | number | null | undefined));
+  Object.keys(value).forEach((styleName) => setStyle(fiber, node, styleName, value[styleName] as string | number | null | undefined));
 };
 
 const domEventHydrate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, key: string) => {
@@ -129,6 +129,9 @@ const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
   }
 };
 
+/**
+ * @internal
+ */
 export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
   const node = fiber.nativeNode as DomElement | DomNode;
 

@@ -1,11 +1,14 @@
 import type { MyReactElementNode, ArrayMyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
 
-export const flatten = (children: MaybeArrayMyReactElementNode): ArrayMyReactElementNode => {
+const flatten = (children: MaybeArrayMyReactElementNode): ArrayMyReactElementNode => {
   if (Array.isArray(children)) return children.reduce<ArrayMyReactElementNode>((p, c) => p.concat(flatten(c)), []);
 
   return [children];
 };
 
+/**
+ * @internal
+ */
 export const mapByJudge = <T extends MaybeArrayMyReactElementNode>(
   arrayLike: T,
   judge: (t: MyReactElementNode) => boolean,

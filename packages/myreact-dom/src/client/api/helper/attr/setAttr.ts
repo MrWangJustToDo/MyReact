@@ -4,6 +4,9 @@ import { XLINK_NS, XML_NS, X_CHAR } from "./namespace";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
+/**
+ * @internal
+ */
 export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: string, isSVG: boolean, value?: string | boolean | null): void => {
   if (isSVG && name.charCodeAt(0) === X_CHAR) {
     if (name.startsWith("xmlns")) {

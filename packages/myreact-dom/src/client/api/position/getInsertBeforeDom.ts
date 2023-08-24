@@ -29,6 +29,9 @@ const getInsertBeforeDomFromSibling = (fiber: MyReactFiberNode | null): MyReactF
   return findFiberWithDOMFromFiber(fiber) || getInsertBeforeDomFromSibling(fiber?.sibling);
 };
 
+/**
+ * @internal
+ */
 export const getInsertBeforeDomFromSiblingAndParent = (fiber: MyReactFiberNode | null, parentFiber: MyReactFiberNode | null): MyReactFiberNode | null => {
   if (!fiber) return null;
 

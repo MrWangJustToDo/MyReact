@@ -12,10 +12,10 @@ export default function Foo() {
     console.log('update');
   },[])
 
-  useEffect(() => {
-    console.log("bbbb");
-    // useState()
-  }, []);
+  // useEffect(() => {
+  //   console.log("bbbb");
+  //   // useState()
+  // }, []);
 
   // Math.random() > 0.5 ? useState() : useRef()
 

@@ -5,6 +5,9 @@ import { isServer } from "@my-react-dom-shared";
 
 const { enableHMRForDev } = __my_react_shared__;
 
+/**
+ * @internal
+ */
 export const initGlobalHMR = () => {
   if (__DEV__ && !isServer && enableHMRForDev.current) {
     if (globalThis["__@my-react/hmr__"]) {

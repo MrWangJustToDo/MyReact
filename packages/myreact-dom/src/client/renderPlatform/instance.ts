@@ -51,6 +51,9 @@ const flashTask = () => {
   });
 };
 
+/**
+ * @internal
+ */
 export class ClientDomPlatform extends CustomRenderPlatform {
   isServer: boolean;
 

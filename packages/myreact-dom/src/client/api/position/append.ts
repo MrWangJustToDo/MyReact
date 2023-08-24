@@ -4,6 +4,9 @@ import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
+/**
+ * @internal
+ */
 export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
   if (!fiber) throw new Error("[@my-react/react-dom] position error, look like a bug for @my-react");
 

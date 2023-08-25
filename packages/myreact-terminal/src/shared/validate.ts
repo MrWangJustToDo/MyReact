@@ -13,12 +13,7 @@ export const validDomNesting = (fiber: MyReactFiberNode, parentFiberWithNode?: M
     const typedElementType = fiber.elementType;
 
     if (parentFiberWithNode?.elementType === "terminal-text" && (typedElementType === "terminal-box" || typedElementType === "terminal-virtual-text")) {
-      log({
-        fiber,
-        level: "warn",
-        triggerOnce: true,
-        message: `invalid element nesting: <${typedElementType}> cannot appear as a child of <terminal-text>`,
-      });
+      log(fiber, "warn", `invalid element nesting: <${typedElementType}> cannot appear as a child of <terminal-text>`);
     }
   }
 };
@@ -28,7 +23,7 @@ export const validDomTag = (fiber: MyReactFiberNode) => {
     const tagName = fiber.elementType as string;
 
     if (!isValidTag[tagName]) {
-      log({ fiber, level: "error", triggerOnce: true, message: `invalid element tag, current is ${tagName}` });
+      log(fiber, "error", `invalid element tag, current is ${tagName}`);
     }
   }
 };
@@ -39,12 +34,7 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
 
     Object.keys(props).forEach((key) => {
       if (isProperty(key) && props[key] && typeof props[key] === "object" && props[key] !== null) {
-        log({
-          fiber,
-          level: "warn",
-          triggerOnce: true,
-          message: `invalid element props, expect a string or number but get a object. key: ${key} value: ${props[key]}`,
-        });
+        log(fiber, "warn", `invalid element props, expect a string or number but get a object. key: ${key} value: ${props[key]}`);
       }
       if (isStyle(key) && props[key] && typeof props[key] !== "object") {
         throw new Error("style or the element props should be a object");

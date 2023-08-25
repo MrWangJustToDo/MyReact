@@ -1,7 +1,7 @@
 import { isCommentStartElement, NODE_TYPE } from "@my-react/react-reconciler";
 import { include, PATCH_TYPE, remove } from "@my-react/react-shared";
 
-import { isSingleTag, validDomNesting, validDomTag } from "@my-react-dom-shared";
+import { escapeHtml, isSingleTag, validDomNesting, validDomTag } from "@my-react-dom-shared";
 
 import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
 import { getSerializeProps } from "./update";
@@ -52,7 +52,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
         stream.push("<!-- -->");
       }
 
-      stream.push(fiber.elementType as string);
+      stream.push(escapeHtml(fiber.elementType as string));
 
       renderDispatch._lastIsStringNode = true;
 

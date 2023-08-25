@@ -49,7 +49,7 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       if (props["dangerouslySetInnerHTML"]) {
         const typedProps = props["dangerouslySetInnerHTML"] as Record<string, unknown>;
         if (typedProps.__html) {
-          dom.append(new TextElement(typedProps.__html as string));
+          dom.append(new TextElement(typedProps.__html as string, true));
         }
       }
     }

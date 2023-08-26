@@ -41,6 +41,6 @@ export const renderToStaticNodeStream = (element: LikeJSX): Readable => {
 
     return stream;
   } else {
-    throw new Error(`[@my-react/react-dom-server] 'renderToStaticNodeStream' can only render a '@my-react' element`);
+    throw new Error(`[@my-react/react-dom] 'renderToStaticNodeStream' can only render a '@my-react' element`);
   }
 };

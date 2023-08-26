@@ -62,6 +62,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
   }
 
   if (
+    __DEV__ &&
     renderDispatch.isAppMounted &&
     !renderDispatch.isHydrateRender &&
     !renderDispatch.isServerRender &&

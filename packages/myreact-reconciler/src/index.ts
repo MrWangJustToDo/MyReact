@@ -23,3 +23,5 @@ export * from "./runtimeHook";
 export * from "./runtimeMount";
 export * from "./runtimeScope";
 export * from "./runtimeUpdate";
+
+export const version = __VERSION__;

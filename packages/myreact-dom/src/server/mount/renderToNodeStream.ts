@@ -75,6 +75,6 @@ export function renderToNodeStream(element: LikeJSX, asyncRender?: boolean): Rea
       return renderToStreamAsync(element, stream);
     }
   } else {
-    throw new Error(`[@my-react/react-dom-server] 'renderToNodeStream' can only render a '@my-react' element`);
+    throw new Error(`[@my-react/react-dom] 'renderToNodeStream' can only render a '@my-react' element`);
   }
 }

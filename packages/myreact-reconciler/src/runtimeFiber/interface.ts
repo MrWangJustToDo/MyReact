@@ -5,7 +5,13 @@ import type { ListTree } from "@my-react/react-shared";
 export interface MyReactFiberNodeDev extends MyReactFiberNode {
   _debugElement: MyReactElementNode;
 
-  _debugRenderState: { mountTime: number; renderCount?: number; updateTime?: number; updateTimeInterval?: number };
+  _debugRenderState: {
+    mountTime: number;
+    renderCount?: number;
+    updateTime?: number;
+    updateTimeInterval?: number;
+    trigger?: MyReactFiberNode;
+  };
 
   _debugHookTypes: string[];
 

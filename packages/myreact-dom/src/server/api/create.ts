@@ -31,7 +31,7 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatc
         fiber.nativeNode = new CommentEndElement();
       }
     } else {
-      throw new Error("[@my-react/react-dom-server] createPortal() can not call on the server");
+      throw new Error("[@my-react/react-dom] createPortal() can not call on the server");
     }
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__create__);
@@ -85,7 +85,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
 
       fiber.patch = PATCH_TYPE.__initial__;
     } else {
-      throw new Error("[@my-react/react-dom-server] createPortal() can not call on the server");
+      throw new Error("[@my-react/react-dom] createPortal() can not call on the server");
     }
   }
 };
@@ -103,7 +103,7 @@ export const createCloseTagWithStream = (fiber: MyReactFiberNode, renderDispatch
 
       fiber.patch = PATCH_TYPE.__initial__;
     } else {
-      throw new Error("[@my-react/react-dom-server] unknown close tag for current element");
+      throw new Error("[@my-react/react-dom] unknown close tag for current element");
     }
   }
 };

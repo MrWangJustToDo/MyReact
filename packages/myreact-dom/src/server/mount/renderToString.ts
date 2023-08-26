@@ -61,6 +61,6 @@ export function renderToString(element: LikeJSX, asyncRender?: boolean) {
       return renderToStringSync(element);
     }
   } else {
-    throw new Error(`[@my-react/react-dom-server] 'renderToString' can only render a '@my-react' element`);
+    throw new Error(`[@my-react/react-dom] 'renderToString' can only render a '@my-react' element`);
   }
 }

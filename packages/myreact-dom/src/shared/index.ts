@@ -4,6 +4,7 @@ export * from "./dom";
 export * from "./tools";
 export * from "./debug";
 export * from "./render";
+export * from "./version";
 export * from "./comment";
 export * from "./validate";
 export * from "./kebabCase";

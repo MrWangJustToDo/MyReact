@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
 
 import { unmountFiber } from "../dispatchUnmount";
-import { fiberToDispatchMap } from "../share";
+import { currentTriggerFiber, fiberToDispatchMap } from "../share";
 
 import { updateConcurrentWithAll, updateConcurrentWithTrigger, updateSyncWithAll, updateSyncWithTrigger } from "./feature";
 
@@ -14,73 +14,7 @@ const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 
 const { enableConcurrentMode, enableLoopFromRoot } = __my_react_shared__;
 
-export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => void) => {
-  const renderDispatch = fiberToDispatchMap.get(fiber);
-
-  const renderPlatform = currentRenderPlatform.current;
-
-  const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
-
-  if (errorBoundariesFiber) {
-    const typedInstance = errorBoundariesFiber.instance as MyReactComponent;
-
-    const typedPendingState = errorBoundariesFiber.pendingState as PendingStateTypeWithError;
-
-    // prepare error catch flow
-    typedPendingState.error = {
-      error,
-      stack: renderPlatform.getFiberTree(fiber),
-      revertState: Object.assign({}, typedInstance.state),
-    };
-
-    triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__, cb);
-  } else {
-    renderDispatch.pendingUpdateFiberArray.clear();
-
-    renderDispatch.runtimeFiber.scheduledFiber = null;
-
-    renderDispatch.runtimeFiber.nextWorkingFiber = null;
-
-    renderDispatch.isAppCrashed = true;
-
-    if (__DEV__) {
-      const rootFiber = renderDispatch.rootFiber;
-
-      unmountFiber(rootFiber);
-
-      console.error(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
-    }
-  }
-};
-
-/**
- * only used for dev HMR
- */
-export const triggerRevert = (fiber: MyReactFiberNode) => {
-  if (__DEV__) {
-    const renderDispatch = fiberToDispatchMap.get(fiber);
-
-    const errorBoundariesFiber = renderDispatch.runtimeFiber.errorCatchFiber;
-
-    if (errorBoundariesFiber) {
-      const instance = errorBoundariesFiber.instance as MyReactComponent;
-
-      instance?.setState(errorBoundariesFiber.memoizedState?.revertState, () => {
-        renderDispatch.runtimeFiber.errorCatchFiber = null;
-        errorBoundariesFiber.memoizedState.revertState = null;
-      });
-    } else {
-      // there are not a ErrorBoundariesFiber
-      console.warn(`[@my-react/react] there are not a ErrorBoundary Component, try to remount current App`);
-
-      renderDispatch.remountOnDev?.();
-    }
-  } else {
-    console.error(`[@my-react/react] can not call revert on prod mode`);
-  }
-};
-
-export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
+const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   let nextWorkFiber: MyReactFiberNode | null = null;
 
   let nextWorkSyncFiber: MyReactFiberNode | null = null;
@@ -96,6 +30,8 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
 
     if (allLive.length) {
       renderDispatch.runtimeFiber.scheduledFiber = renderDispatch.rootFiber;
+
+      if (__DEV__) currentTriggerFiber.current = renderDispatch.rootFiber;
 
       renderDispatch.runtimeFiber.nextWorkingFiber = renderDispatch.rootFiber;
 
@@ -129,6 +65,8 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
       if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 
+        if (__DEV__) currentTriggerFiber.current = nextWorkFiber;
+
         renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
         if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__)) {
@@ -138,6 +76,8 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
         }
       } else if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
+
+        if (__DEV__) currentTriggerFiber.current = nextWorkFiber;
 
         renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
@@ -163,10 +103,39 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
 
       renderDispatch.runtimeFiber.scheduledFiber = null;
 
+      if (__DEV__) currentTriggerFiber.current = null;
+
       renderDispatch.runtimeFiber.nextWorkingFiber = null;
 
       renderDispatch.pendingCommitFiberList = null;
     }
+  }
+};
+
+/**
+ * only used for dev HMR
+ */
+export const triggerRevert = (fiber: MyReactFiberNode) => {
+  if (__DEV__) {
+    const renderDispatch = fiberToDispatchMap.get(fiber);
+
+    const errorBoundariesFiber = renderDispatch.runtimeFiber.errorCatchFiber;
+
+    if (errorBoundariesFiber) {
+      const instance = errorBoundariesFiber.instance as MyReactComponent;
+
+      instance?.setState(errorBoundariesFiber.memoizedState?.revertState, () => {
+        renderDispatch.runtimeFiber.errorCatchFiber = null;
+        errorBoundariesFiber.memoizedState.revertState = null;
+      });
+    } else {
+      // there are not a ErrorBoundariesFiber
+      console.warn(`[@my-react/react] there are not a ErrorBoundary Component, try to remount current App`);
+
+      renderDispatch.remountOnDev?.();
+    }
+  } else {
+    console.error(`[@my-react/react] can not call revert on prod mode`);
   }
 };
 
@@ -208,6 +177,47 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
   scheduleUpdate(renderDispatch);
 };
 
+export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => void) => {
+  const renderDispatch = fiberToDispatchMap.get(fiber);
+
+  const renderPlatform = currentRenderPlatform.current;
+
+  const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
+
+  if (errorBoundariesFiber) {
+    const typedInstance = errorBoundariesFiber.instance as MyReactComponent;
+
+    const typedPendingState = errorBoundariesFiber.pendingState as PendingStateTypeWithError;
+
+    // prepare error catch flow
+    typedPendingState.error = {
+      error,
+      stack: renderPlatform.getFiberTree(fiber),
+      revertState: Object.assign({}, typedInstance.state),
+    };
+
+    triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__, cb);
+  } else {
+    renderDispatch.pendingUpdateFiberArray.clear();
+
+    renderDispatch.runtimeFiber.scheduledFiber = null;
+
+    renderDispatch.runtimeFiber.nextWorkingFiber = null;
+
+    renderDispatch.isAppCrashed = true;
+
+    if (__DEV__) {
+      const rootFiber = renderDispatch.rootFiber;
+
+      currentTriggerFiber.current = null;
+
+      unmountFiber(rootFiber);
+
+      console.error(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
+    }
+  }
+};
+
 export const triggerUnmount = (fiber: MyReactFiberNode, cb?: () => void) => {
   const renderDispatch = fiberToDispatchMap.get(fiber);
 
@@ -217,6 +227,9 @@ export const triggerUnmount = (fiber: MyReactFiberNode, cb?: () => void) => {
 
   triggerUpdate(fiber, STATE_TYPE.__skippedSync__, () => {
     unmountFiber(fiber);
+
     cb?.();
+
+    if (__DEV__) currentTriggerFiber.current = null;
   });
 };

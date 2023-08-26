@@ -30,6 +30,6 @@ export const renderToStaticMarkup = (element: LikeJSX) => {
 
     return container.toString();
   } else {
-    throw new Error(`[@my-react/react-dom-server] 'renderToStaticMarkup' can only render a '@my-react' element`);
+    throw new Error(`[@my-react/react-dom] 'renderToStaticMarkup' can only render a '@my-react' element`);
   }
 };

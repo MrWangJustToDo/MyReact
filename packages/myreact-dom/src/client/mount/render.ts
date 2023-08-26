@@ -25,6 +25,13 @@ export const onceLog = once(() => {
     "color: white;background-color: rgba(10, 190, 235, 0.8); border-radius: 2px; padding: 2px 5px",
     ""
   );
+  if (__DEV__ && Math.random() > 0.5) {
+    console.log(
+      `try to set %cwindow.__highlight__ = true;%c to enable dev highlight!`,
+      "color: white;background-color: rgba(10, 190, 235, 0.8); border-radius: 2px; padding: 2px 5px",
+      ""
+    );
+  }
 });
 
 /**

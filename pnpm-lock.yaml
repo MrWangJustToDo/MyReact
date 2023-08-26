@@ -141,7 +141,7 @@ importers:
   packages/myreact-dom:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.2.2'
+        specifier: '>=0.2.4'
         version: link:../myreact
       '@my-react/react-reconciler':
         specifier: latest
@@ -153,7 +153,7 @@ importers:
   packages/myreact-jsx:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.2.2'
+        specifier: '>=0.2.4'
         version: link:../myreact
       '@my-react/react-shared':
         specifier: latest
@@ -171,7 +171,7 @@ importers:
   packages/myreact-reconciler:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.2.2'
+        specifier: '>=0.2.4'
         version: link:../myreact
       '@my-react/react-shared':
         specifier: latest
@@ -180,10 +180,10 @@ importers:
   packages/myreact-refresh:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.2.2'
+        specifier: '>=0.2.4'
         version: link:../myreact
       '@my-react/react-dom':
-        specifier: '>=0.2.2'
+        specifier: '>=0.2.4'
         version: link:../myreact-dom
       '@my-react/react-shared':
         specifier: latest

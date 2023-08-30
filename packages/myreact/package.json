@@ -54,12 +54,6 @@
       },
       {
         "dir": "./dist",
-        "entryFileNames": "esm/index.js",
-        "format": "esm",
-        "sourcemap": true
-      },
-      {
-        "dir": "./dist",
         "entryFileNames": "umd/index.js",
         "format": "umd",
         "multiple": true,
@@ -73,7 +67,9 @@
     "react like"
   ],
   "dependencies": {
-    "@my-react/react-jsx": "latest",
-    "@my-react/react-shared": "latest"
+    "@my-react/react-jsx": "^0.2.5"
+  },
+  "devDependencies": {
+    "@my-react/react-shared": "^0.2.5"
   }
 }

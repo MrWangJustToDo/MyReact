@@ -1,6 +1,13 @@
 import RefreshRuntime from "@my-react/react-refresh/runtime";
+import { compareVersion } from "@my-react/react-shared";
 
 import RefreshHelpers from "./internal/helpers";
+
+if (!RefreshRuntime.version || !compareVersion(RefreshRuntime.version, "0.2.4")) {
+  console.error(
+    `[@my-react/react-refresh-tools] current RefreshRuntime version not match for the package required, please reinstall "@my-react/react-refresh" to fix this issue`
+  );
+}
 
 export type RefreshRuntimeGlobals = {
   $RefreshReg$: (type: any, id: string) => void;

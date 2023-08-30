@@ -39,8 +39,6 @@
     ]
   },
   "dependencies": {
-    "@my-react/react-shared": "latest",
-    "@my-react/react-reconciler": "latest",
     "ansi-escapes": "^6.2.0",
     "auto-bind": "^5.0.1",
     "chalk": "^5.2.0",
@@ -61,6 +59,8 @@
     "yoga-wasm-web": "^0.3.3"
   },
   "devDependencies": {
+    "@my-react/react-shared": "^0.2.5",
+    "@my-react/react-reconciler": "^0.2.5",
     "@types/lodash": "^4.14.195",
     "@types/signal-exit": "^3.0.1",
 		"@types/slice-ansi": "^5.0.0",
@@ -68,6 +68,6 @@
 		"@types/wrap-ansi": "^8.0.1"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.2.2"
+    "@my-react/react": ">=0.2.5"
   }
 }

@@ -59,10 +59,10 @@
       }
     ]
   },
-  "dependencies": {
-    "@my-react/react-shared": "latest"
+  "devDependencies": {
+    "@my-react/react-shared": "^0.2.5"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.2.4"
+    "@my-react/react": ">=0.2.5"
   }
 }

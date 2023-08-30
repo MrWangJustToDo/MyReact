@@ -1,7 +1,7 @@
 {
-  "name": "@my-react/react-refresh-tools",
-  "version": "0.0.6",
-  "description": "An experimental package providing utilities for @my-react Refresh.",
+  "name": "@my-react/react-vite",
+  "version": "0.0.1",
+  "description": "make @my-react work for vite",
   "files": [
     "dist",
     "loader.js",
@@ -28,6 +28,12 @@
           "format": "cjs",
           "multiple": true,
           "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/loader.js",
+          "format": "esm",
+          "sourcemap": true
         }
       ]
     },
@@ -40,6 +46,12 @@
           "entryFileNames": "cjs/runtime.js",
           "format": "cjs",
           "multiple": true,
+          "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/runtime.js",
+          "format": "esm",
           "sourcemap": true
         }
       ]
@@ -54,17 +66,18 @@
           "format": "cjs",
           "multiple": true,
           "sourcemap": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/webpackPlugin.js",
+          "format": "esm",
+          "sourcemap": true
         }
       ]
     }
   ],
-  "peerDependenciesMeta": {
-    "webpack": {
-      "optional": true
-    }
-  },
   "peerDependencies": {
     "@my-react/react-refresh": ">=0.2.5",
-    "webpack": "^4 || ^5"
+    "vite": "^4"
   }
 }

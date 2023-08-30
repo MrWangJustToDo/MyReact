@@ -284,7 +284,7 @@ export const performReactRefresh = () => {
 
         fibers.forEach((f) => {
           hasRootUpdate = hasRootUpdate || f === container.rootFiber;
-          
+
           typedSelf?.["__@my-react/hmr__"]?.hmr?.(f, nextType, forceReset);
         });
 
@@ -375,6 +375,8 @@ const tryToRegister = () => {
 };
 
 export const injectIntoGlobalHook = (globalThis: Window) => globalThis.addEventListener("load", tryToRegister);
+
+export const version = __VERSION__;
 
 if (__DEV__) {
   typedSelf["__@my-react/react-refresh__"] = {

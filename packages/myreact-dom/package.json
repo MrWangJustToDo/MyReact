@@ -147,11 +147,11 @@
     "react-dom server",
     "react-dom client"
   ],
-  "dependencies": {
-    "@my-react/react-shared": "latest",
-    "@my-react/react-reconciler": "latest"
+  "devDependencies": {
+    "@my-react/react-shared": "^0.2.5",
+    "@my-react/react-reconciler": "^0.2.5"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.2.4"
+    "@my-react/react": ">=0.2.5"
   }
 }

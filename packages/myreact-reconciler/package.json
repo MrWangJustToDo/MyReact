@@ -30,19 +30,13 @@
         "format": "cjs",
         "multiple": true,
         "sourcemap": true
-      },
-      {
-        "dir": "./dist",
-        "entryFileNames": "esm/index.js",
-        "format": "esm",
-        "sourcemap": true
       }
     ]
   },
-  "dependencies": {
-    "@my-react/react-shared": "latest"
+  "devDependencies": {
+    "@my-react/react-shared": "^0.2.5"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.2.4"
+    "@my-react/react": ">=0.2.5"
   }
 }

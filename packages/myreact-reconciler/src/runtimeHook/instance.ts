@@ -50,3 +50,7 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
     renderPlatform?.dispatchState(updater);
   };
 }
+
+export interface MyReactHookNodeDev extends MyReactHookNode {
+  _debugType: string;
+}

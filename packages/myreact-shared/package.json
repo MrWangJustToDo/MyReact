@@ -29,12 +29,6 @@
         "format": "cjs",
         "multiple": true,
         "sourcemap": true
-      },
-      {
-        "dir": "./dist",
-        "entryFileNames": "esm/index.js",
-        "format": "esm",
-        "sourcemap": true
       }
     ]
   }

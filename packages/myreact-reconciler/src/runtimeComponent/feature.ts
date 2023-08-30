@@ -30,7 +30,11 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
     const payloadState = safeCallWithFiber({ fiber, action: () => typedComponent.getDerivedStateFromProps?.(pendingProps, pendingState) });
 
     if (payloadState) {
-      currentStateObj.pendingState = Object.assign({}, pendingState, payloadState);
+      const newState = Object.assign({}, pendingState, payloadState);
+
+      typedInstance.state = newState;
+
+      currentStateObj.pendingState = newState;
     }
   }
 };
@@ -44,11 +48,17 @@ const processComponentStateFromError = (fiber: MyReactFiberNode, error: Error) =
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedComponent.getDerivedStateFromError) {
+    const currentStateObj = (fiber.pendingState as PendingStateTypeWithError).state
+
     const payloadState = safeCallWithFiber({ fiber, action: () => typedComponent.getDerivedStateFromError?.(error) });
 
     if (payloadState) {
       // if there are a error happen, ignore all the updateQueue
-      typedInstance.state = Object.assign({}, typedInstance.state, payloadState);
+      const newState = Object.assign({}, typedInstance.state, payloadState);
+
+      typedInstance.state = newState;
+
+      currentStateObj.pendingState = newState;
     }
   }
 };

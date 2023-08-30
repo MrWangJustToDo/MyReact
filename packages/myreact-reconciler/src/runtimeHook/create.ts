@@ -8,6 +8,7 @@ import { checkHookValid } from "./check";
 import { MyReactHookNode } from "./instance";
 import { MyReactSignal } from "./signal";
 
+import type { MyReactHookNodeDev } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { Action, Reducer, RenderHookParams } from "@my-react/react";
 
@@ -126,6 +127,10 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     typedFiber._debugHookTypes = typedFiber._debugHookTypes || [];
 
     typedFiber._debugHookTypes.push(HOOK_TYPE[hookNode.type]);
+
+    const typedHook = hookNode as MyReactHookNodeDev;
+
+    typedHook._debugType = HOOK_TYPE[hookNode.type];
   }
 
   return hookNode;

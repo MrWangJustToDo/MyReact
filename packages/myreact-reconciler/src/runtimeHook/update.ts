@@ -157,7 +157,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     if (!isArrayEquals(currentHook.value, value)) {
       currentHook.value = value;
       if (enableDebugLog.current) {
-        console.warn(`[@my-react/react/debug]`, ...currentHook.value);
+        console.warn(`[debug]`, ...currentHook.value);
       }
     }
   }

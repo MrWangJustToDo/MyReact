@@ -15,13 +15,16 @@ export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: a
     const last = currentRunningFiber.current;
 
     currentRunningFiber.current = fiber;
+
     if (level === "warn") {
       devWarn(`[@my-react/react-dom]`, ...rest);
     }
     if (level === "error") {
       devError(`[@my-react/react-dom]`, ...rest);
     }
+
     currentRunningFiber.current = last;
+    
     return;
   }
 

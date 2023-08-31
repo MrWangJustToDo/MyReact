@@ -2,18 +2,16 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
-import { currentRenderDispatch, currentTriggerFiber, debugWithNode, NODE_TYPE, safeCallWithFiber, setRefreshTypeMap } from "../share";
+import { currentRenderDispatch, currentTriggerFiber, debugWithNode, NODE_TYPE, onceWarnWithKey, safeCallWithFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext, forwardRef } from "@my-react/react";
 
-const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
+const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber } = __my_react_internal__;
 
 const { enablePerformanceLog, enableDebugFiled } = __my_react_shared__;
-
-const performanceTree = {};
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   transformChildrenFiber(fiber, children);
@@ -150,8 +148,6 @@ export const runtimeNextWork = (fiber: MyReactFiberNode) => {
 export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   const renderDispatch = currentRenderDispatch.current;
 
-  const renderPlatform = currentRenderPlatform.current;
-
   setRefreshTypeMap(fiber);
 
   const start = Date.now();
@@ -161,12 +157,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   const end = Date.now();
 
   if (enablePerformanceLog.current && end - start > renderDispatch.performanceLogTimeLimit) {
-    const tree = renderPlatform.getFiberTree(fiber);
-    if (!performanceTree[tree]) {
-      performanceTree[tree] = true;
-
-      console.warn(`[@my-react/react] render current component take a lot of time, there have a performance warning`);
-    }
+    onceWarnWithKey(fiber, "performance", `[@my-react/react] render current component take a lot of time, there have a performance warning`);
   }
 
   const typedFiber = fiber as MyReactFiberNodeDev;

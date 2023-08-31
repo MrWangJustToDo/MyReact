@@ -11,6 +11,8 @@ const { currentRenderPlatform, currentRunningFiber } = __my_react_internal__;
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
+const warnMap = {};
+
 export const originalWarn = console.warn;
 
 export const originalError = console.error;
@@ -213,4 +215,29 @@ export const getHookTree = (
   }
   stack += pre + "^".repeat(44);
   return message + re + stack;
+};
+
+export const onceWarnWithKey = (fiber: MyReactFiberNode, key: string, ...args: any[]) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  const logObj = [];
+
+  const tree = renderPlatform.getFiberTree(fiber);
+
+  if (warnMap?.[tree]?.[key]) return;
+
+  warnMap[tree] = { ...warnMap?.[tree], [key]: true };
+
+  const logString = args
+    .map((i) => {
+      if (isObject(i)) {
+        logObj.push(i);
+        return "%o";
+      } else {
+        return i;
+      }
+    })
+    .join(" ");
+
+  originalWarn.call(console, logString, ...logObj.concat([tree, "\n", fiber]));
 };

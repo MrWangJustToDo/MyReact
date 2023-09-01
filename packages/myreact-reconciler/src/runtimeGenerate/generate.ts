@@ -180,7 +180,7 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
     const typedParentFiber = parentFiber as MyReactFiberNodeDev;
 
     if (__DEV__ && enableDebugFiled.current) {
-      typedParentFiber._debugRenderChildrenPrevious = [];
+      delete typedParentFiber._debugRenderChildrenPrevious;
       typedParentFiber._debugRenderChildrenCurrent = [];
     }
 

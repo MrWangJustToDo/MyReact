@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { TYPEKEY, Element, Consumer, ForwardRef, Fragment, Lazy, Memo, Provider, Suspense, Context } from "@my-react/react-shared";
 
 import type {
@@ -14,16 +14,15 @@ import type {
 
 const { currentRenderPlatform, currentComponentFiber } = __my_react_internal__;
 
+const { enableOptimizeTreeLog } = __my_react_shared__;
+
 export function isValidElement(element?: MyReactElementNode | any): element is MyReactElement {
   return typeof element === "object" && !Array.isArray(element) && element?.[TYPEKEY] === Element;
 }
 
 const keysMap = {};
 
-/**
- * @internal
- */
-export const checkValidKey = (children: ArrayMyReactElementNode) => {
+const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
 
   const renderPlatform = currentRenderPlatform.current;
@@ -62,17 +61,27 @@ export const checkValidKey = (children: ArrayMyReactElementNode) => {
  * @internal
  */
 export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) => {
+  const last = enableOptimizeTreeLog.current;
+
+  enableOptimizeTreeLog.current = false;
+
   if (Array.isArray(children)) {
     checkValidKey(children);
   } else {
     if (isValidElement(children)) children._store["validKey"] = true;
   }
+
+  enableOptimizeTreeLog.current = last;
 };
 
 /**
  * @internal
  */
 export const checkValidElement = (element: MyReactElementNode) => {
+  const last = enableOptimizeTreeLog.current;
+
+  enableOptimizeTreeLog.current = false;
+
   if (isValidElement(element)) {
     if (!element._store["validType"]) {
       const rawType = element.type;
@@ -204,4 +213,6 @@ export const checkValidElement = (element: MyReactElementNode) => {
     }
     element._store["validType"] = true;
   }
+
+  enableOptimizeTreeLog.current = last;
 };

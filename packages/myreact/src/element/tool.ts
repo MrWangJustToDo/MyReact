@@ -1,6 +1,6 @@
 import { TYPEKEY, Element, Consumer, ForwardRef, Memo, Lazy, Provider, Fragment, Suspense, Context } from "@my-react/react-shared";
 
-import { currentRenderPlatform, currentComponentFiber } from "../share";
+import { currentRenderPlatform, currentComponentFiber, enableOptimizeTreeLog } from "../share";
 
 import type { forwardRef, lazy, memo } from "./feature";
 import type {
@@ -18,10 +18,7 @@ export const isValidElement = (element?: MyReactElementNode | any): element is M
 
 const keysMap = {};
 
-/**
- * @internal
- */
-export const checkValidKey = (children: ArrayMyReactElementNode) => {
+const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
 
   const renderPlatform = currentRenderPlatform.current;
@@ -62,6 +59,10 @@ export const checkValidKey = (children: ArrayMyReactElementNode) => {
  *
  */
 export const checkValidElement = (element: MyReactElementNode) => {
+  const last = enableOptimizeTreeLog.current;
+
+  enableOptimizeTreeLog.current = false;
+
   if (isValidElement(element)) {
     if (!element._store["validType"]) {
       const rawType = element.type;
@@ -193,12 +194,18 @@ export const checkValidElement = (element: MyReactElementNode) => {
     }
     element._store["validType"] = true;
   }
+
+  enableOptimizeTreeLog.current = last;
 };
 
 /**
  * @internal
  */
 export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => {
+  const last = enableOptimizeTreeLog.current;
+
+  enableOptimizeTreeLog.current = false;
+
   children.forEach((child) => {
     if (Array.isArray(child)) {
       checkValidKey(child);
@@ -206,15 +213,23 @@ export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => 
       if (isValidElement(child)) child._store["validKey"] = true;
     }
   });
+
+  enableOptimizeTreeLog.current = last;
 };
 
 /**
  * @internal
  */
 export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) => {
+  const last = enableOptimizeTreeLog.current;
+
+  enableOptimizeTreeLog.current = false;
+
   if (Array.isArray(children)) {
     checkValidKey(children);
   } else {
     if (isValidElement(children)) children._store["validKey"] = true;
   }
+
+  enableOptimizeTreeLog.current = last;
 };

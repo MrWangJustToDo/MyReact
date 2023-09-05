@@ -5,7 +5,6 @@
   "license": "MIT",
   "version": "0.2.5",
   "main": "index.js",
-  "module": "./dist/esm/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist",
@@ -22,24 +21,9 @@
   },
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
-    ".": {
-      "require": "./index.js",
-      "node": "./index.js",
-      "import": "./dist/esm/index.js",
-      "default": "./index.js"
-    },
-    "./jsx-runtime": {
-      "import": "./dist/esm/index.js",
-      "node": "./jsx-runtime.js",
-      "default": "./jsx-runtime.js",
-      "types": "./jsx-runtime.d.ts"
-    },
-    "./jsx-dev-runtime": {
-      "import": "./dist/esm/index.js",
-      "node": "./jsx-dev-runtime.js",
-      "default": "./jsx-dev-runtime.js",
-      "types": "./jsx-dev-runtime.d.ts"
-    }
+    ".": "./index.js",
+    "./jsx-runtime": "./jsx-runtime.js",
+    "./jsx-dev-runtime": "./jsx-dev-runtime.js"
   },
   "buildOptions": {
     "input": "./src/index.ts",
@@ -48,14 +32,7 @@
         "dir": "./dist",
         "entryFileNames": "cjs/index.js",
         "format": "cjs",
-        "multiple": true,
-        "sourcemap": true
-      },
-      {
-        "dir": "./dist",
-        "entryFileNames": "esm/index.js",
-        "format": "esm",
-        "sourcemap": true
+        "multiple": true
       }
     ]
   },

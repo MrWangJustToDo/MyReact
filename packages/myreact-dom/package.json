@@ -5,16 +5,19 @@
   "license": "MIT",
   "version": "0.2.5",
   "main": "index.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "index.d.ts",
   "unpkg": "./dist/umd/index.development.js",
   "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
     "client.js",
+    "client.d.ts",
     "server.js",
+    "server.d.ts",
     "server.node.js",
     "server.browser.js",
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -23,36 +26,11 @@
   },
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
-    ".": {
-      "require": "./index.js",
-      "node": "./index.js",
-      "types": "./index.d.ts",
-      "default": "./index.js"
-    },
-    "./client": {
-      "require": "./client.js",
-      "node": "./client.js",
-      "types": "./client.d.ts",
-      "default": "./client.js"
-    },
-    "./server": {
-      "require": "./server.js",
-      "node": "./server.js",
-      "types": "./server.d.ts",
-      "default": "./server.js"
-    },
-    "./server.browser": {
-      "require": "./server.browser.js",
-      "node": "./server.browser.js",
-      "types": "./server.d.ts",
-      "default": "./server.browser.js"
-    },
-    "./server.node": {
-      "require": "./server.node.js",
-      "node": "./server.node.js",
-      "types": "./server.d.ts",
-      "default": "./server.node.js"
-    },
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./server": "./server.js",
+    "./server.browser": "./server.browser.js",
+    "./server.node": "./server.node.js",
     "./package.json": "./package.json"
   },
   "buildOptions": [
@@ -62,39 +40,9 @@
       "output": [
         {
           "dir": "./dist",
-          "entryFileNames": "cjs/client.js",
-          "format": "cjs",
-          "multiple": true,
-          "sourcemap": true
-        },
-        {
-          "dir": "./dist",
           "entryFileNames": "cjs/index.js",
           "format": "cjs",
           "multiple": true,
-          "sourcemap": true
-        },
-        {
-          "dir": "./dist",
-          "entryFileNames": "esm/client.js",
-          "format": "esm",
-          "sourcemap": true
-        },
-        {
-          "dir": "./dist",
-          "entryFileNames": "esm/index.js",
-          "format": "esm",
-          "sourcemap": true
-        },
-        {
-          "dir": "./dist",
-          "entryFileNames": "umd/client.js",
-          "format": "umd",
-          "multiple": true,
-          "globals": {
-            "@my-react/react": "React"
-          },
-          "name": "ReactDOM",
           "sourcemap": true
         },
         {
@@ -119,12 +67,6 @@
           "entryFileNames": "cjs/server.js",
           "format": "cjs",
           "multiple": true,
-          "sourcemap": true
-        },
-        {
-          "dir": "./dist",
-          "entryFileNames": "esm/server.js",
-          "format": "esm",
           "sourcemap": true
         },
         {

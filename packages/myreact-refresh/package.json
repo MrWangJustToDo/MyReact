@@ -18,14 +18,8 @@
     "directory": "packages/myreact-refresh"
   },
   "exports": {
-    ".": {
-      "require": "./runtime.js",
-      "types": "./runtime.d.ts"
-    },
-    "./runtime": {
-      "require": "./runtime.js",
-      "types": "./runtime.d.ts"
-    },
+    ".": "./runtime.js",
+    "./runtime": "./runtime.js",
     "./babel": "./babel.js",
     "./package.json": "./package.json"
   },
@@ -38,8 +32,7 @@
           "dir": "./dist",
           "entryFileNames": "cjs/RefreshBabelPlugin.js",
           "format": "cjs",
-          "multiple": true,
-          "sourcemap": true
+          "multiple": true
         }
       ]
     },
@@ -51,8 +44,7 @@
           "dir": "./dist",
           "entryFileNames": "cjs/RefreshRuntime.js",
           "format": "cjs",
-          "multiple": true,
-          "sourcemap": true
+          "multiple": true
         }
       ]
     }

@@ -5,12 +5,13 @@
   "license": "MIT",
   "version": "0.2.5",
   "main": "index.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "index.d.ts",
   "unpkg": "./dist/umd/index.development.js",
   "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
     "index.js",
+    "index.d.ts",
     "jsx-runtime.js",
     "jsx-runtime.d.ts",
     "jsx-dev-runtime.js",
@@ -23,23 +24,9 @@
   },
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
-    ".": {
-      "require": "./index.js",
-      "node": "./index.js",
-      "default": "./index.js"
-    },
-    "./jsx-runtime": {
-      "import": "./jsx-runtime.js",
-      "require": "./jsx-runtime.js",
-      "node": "./jsx-runtime.js",
-      "types": "./jsx-runtime.d.ts"
-    },
-    "./jsx-dev-runtime": {
-      "import": "./jsx-dev-runtime.js",
-      "require": "./jsx-dev-runtime.js",
-      "node": "./jsx-dev-runtime.js",
-      "types": "./jsx-dev-runtime.d.ts"
-    },
+    ".": "./index.js",
+    "./jsx-runtime": "./jsx-runtime.js",
+    "./jsx-dev-runtime": "./jsx-dev-runtime.js",
     "./package.json": "./package.json"
   },
   "buildOptions": {

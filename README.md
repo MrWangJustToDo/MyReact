@@ -55,7 +55,7 @@ pnpm gen:gql
 
 pnpm build
 
-pnpm dev:ssr / dev:csr / dev:next
+pnpm dev:ssr / dev:csr / dev:next / dev:vite
 ```
 
 ---

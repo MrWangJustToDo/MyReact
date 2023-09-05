@@ -165,7 +165,7 @@ importers:
   packages/myreact-reactivity:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.2.2'
+        specifier: '>=0.2.5'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
@@ -213,7 +213,7 @@ importers:
         version: link:../myreact
       ansi-escapes:
         specifier: ^6.2.0
-        version: 6.2.0(typescript@4.9.5)
+        version: 6.2.0(typescript@5.2.2)
       auto-bind:
         specifier: ^5.0.1
         version: 5.0.1
@@ -255,7 +255,7 @@ importers:
         version: 6.1.0
       type-fest:
         specifier: ^3.10.0
-        version: 3.10.0(typescript@4.9.5)
+        version: 3.10.0(typescript@5.2.2)
       widest-line:
         specifier: ^4.0.1
         version: 4.0.1
@@ -6652,11 +6652,11 @@ packages:
     dependencies:
       type-fest: 0.21.3
 
-  /ansi-escapes@6.2.0(typescript@4.9.5):
+  /ansi-escapes@6.2.0(typescript@5.2.2):
     resolution: {integrity: sha512-kzRaCqXnpzWs+3z5ABPQiVke+iq0KXkHo8xiWV4RPTi5Yli0l97BEQuhXV1s7+aSU/fu1kUuxgS4MsQ0fRuygw==}
     engines: {node: '>=14.16'}
     dependencies:
-      type-fest: 3.10.0(typescript@4.9.5)
+      type-fest: 3.10.0(typescript@5.2.2)
     transitivePeerDependencies:
       - typescript
     dev: false
@@ -13952,13 +13952,13 @@ packages:
     resolution: {integrity: sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==}
     engines: {node: '>=10'}
 
-  /type-fest@3.10.0(typescript@4.9.5):
+  /type-fest@3.10.0(typescript@5.2.2):
     resolution: {integrity: sha512-hmAPf1datm+gt3c2mvu0sJyhFy6lTkIGf0GzyaZWxRLnabQfPUqg6tF95RPg6sLxKI7nFLGdFxBcf2/7+GXI+A==}
     engines: {node: '>=14.16'}
     peerDependencies:
       typescript: '>=4.7.0'
     dependencies:
-      typescript: 4.9.5
+      typescript: 5.2.2
     dev: false
 
   /type-is@1.6.18:
@@ -14031,7 +14031,6 @@ packages:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: true
 
   /ua-parser-js@0.7.33:
     resolution: {integrity: sha512-s8ax/CeZdK9R/56Sui0WM6y9OFREJarMRHqLB2EwkovemBxNQ+Bqu8GAsUnVcXKgphb++ghr/B2BZx4mahujPw==}

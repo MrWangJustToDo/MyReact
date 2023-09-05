@@ -12,15 +12,30 @@ Online `Next.js` example [https://mrwangjusttodo.github.io/MrWangJustToDo.io/](h
 ```bash
 # install
 pnpm add @my-react/react @my-react/react-dom
+```
 
+## start in Next.js
+```bash
+# quick start in next.js (<= 12 version)
 pnpm add -D @my-react/react-refresh @my-react/react-refresh-tools
 
-# quick start in next.js (<= 12 version)
 # next.config.js
-
-const withNext = require('@my-react/react-refresh-tools/withNext');
+const withNext = require("@my-react/react-refresh-tools/withNext");
 
 modules.export = withNext(nextConfig);
+```
+
+## start in Vite
+```bash
+# quick start in vite
+pnpm add -D @my-react/react-refresh @my-react/react-vite
+
+# vite.config.ts
+import react from "@my-react/react-vite";
+
+export default defineConfig({
+  plugins: [react()],
+});
 ```
 
 ---
@@ -34,6 +49,7 @@ modules.export = withNext(nextConfig);
 | **refresh**                                                       |                                                                                                                                              |
 | [`@my-react/react-refresh`](packages/myreact-refresh)             | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh)](https://www.npmjs.com/package/@my-react/react-refresh)             |
 | [`@my-react/react-refresh-tools`](packages/myreact-refresh-tools) | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh-tools)](https://www.npmjs.com/package/@my-react/react-refresh-tools) |
+| [`@my-react/react-vite`](packages/myreact-vite)                   | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-vite)](https://www.npmjs.com/package/@my-react/react-vite)                   |
 | **internal**                                                      |                                                                                                                                              |
 | [`@my-react/react-jsx`](packages/myreact-jsx)                     | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-jsx)](https://www.npmjs.com/package/@my-react/react-jsx)                     |
 | [`@my-react/react-shared`](packages/myreact-shared)               | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-shared)](https://www.npmjs.com/package/@my-react/react-shared)               |
@@ -62,11 +78,11 @@ pnpm dev:ssr / dev:csr / dev:next / dev:vite
 
 ## Api
 
-| @my-react/react | @my-react/react-dom    | @my-react/react-reactive | @my-react/react (hook)     |
-| --------------- | ---------------------- | ------------------------ | -------------------------- |
-| createELement   | render                 | createReactive           | useState                   |
-| cloneElement    | renderToString         | reactive                 | useEffect                  |
-| isValidElement  | findDOMNode            | ref                      | useLayoutEffect            |
+| @my-react/react | @my-react/react-dom    | @my-react/react-reactive | @my-react/react (hook)     | @my-react/react-refresh | @my-react/react-refresh-tools | @my-react/react-vite |
+| --------------- | ---------------------- | ------------------------ | -------------------------- | ----------------------- | ----------------------------- | -------------------- |
+| createELement   | render                 | createReactive           | useState                   | babel plugin            | webpack plugin                | vite plugin          |
+| cloneElement    | renderToString         | reactive                 | useEffect                  | refresh runtime         | next.js plugin                |
+| isValidElement  | findDOMNode            | ref                      | useLayoutEffect            |                         | webpack loader                |
 | Children        | hydrate                | computed                 | useRef                     |
 | lazy            | createPortal           | watch                    | useMemo                    |
 | forwardRef      | unmountComponentAtNode | onBeforeMount            | useReducer                 |

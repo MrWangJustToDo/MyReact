@@ -6,9 +6,30 @@ import { CONTAINER_WIDTH } from "@client/config/container";
 const { Column } = Table;
 
 const data = [
-  { "@my-react/react (hook)": "useState", "@my-react/react": "createELement", "@my-react/react-dom": "render", "@my-react/react-reactive": "createReactive" },
-  { "@my-react/react (hook)": "useCallback", "@my-react/react": "cloneElement", "@my-react/react-dom": "hydrate", "@my-react/react-reactive": "reactive" },
-  { "@my-react/react (hook)": "useMemo", "@my-react/react": "isValidElement", "@my-react/react-dom": "renderToString", "@my-react/react-reactive": "ref" },
+  {
+    "@my-react/react (hook)": "useState",
+    "@my-react/react": "createELement",
+    "@my-react/react-dom": "render",
+    "@my-react/react-reactive": "createReactive",
+    "@my-react/react-refresh": "babel plugin",
+    "@my-react/react-refresh-tools": "webpack plugin",
+    "@my-react/react-vite": "vite plugin",
+  },
+  {
+    "@my-react/react (hook)": "useCallback",
+    "@my-react/react": "cloneElement",
+    "@my-react/react-dom": "hydrate",
+    "@my-react/react-reactive": "reactive",
+    "@my-react/react-refresh": "refresh runtime",
+    "@my-react/react-refresh-tools": "next.js plugin",
+  },
+  {
+    "@my-react/react (hook)": "useMemo",
+    "@my-react/react": "isValidElement",
+    "@my-react/react-dom": "renderToString",
+    "@my-react/react-reactive": "ref",
+    "@my-react/react-refresh-tools": "webpack loader",
+  },
   { "@my-react/react (hook)": "useReducer", "@my-react/react": "Children", "@my-react/react-dom": "findDOMNode", "@my-react/react-reactive": "computed" },
   { "@my-react/react (hook)": "useRef", "@my-react/react": "forwardRef", "@my-react/react-dom": "createPortal", "@my-react/react-reactive": "watch" },
   {
@@ -30,13 +51,23 @@ const data = [
     "@my-react/react-reactive": "onBeforeUpdate",
   },
   { "@my-react/react (hook)": "useContext", "@my-react/react": "memo", "@my-react/react-dom": "hydrateRoot", "@my-react/react-reactive": "onMounted" },
-  { "@my-react/react (hook)": "useDebugValue", "@my-react/react": "Component", "@my-react/react-dom": "renderToStaticMarkup", "@my-react/react-reactive": "onUnmounted" },
-  { "@my-react/react (hook)": "useSignal", "@my-react/react": "PureComponent", "@my-react/react-dom": "renderToStaticNodeStream", "@my-react/react-reactive": "onUpdated" },
-  { "@my-react/react (hook)": "useDeferredValue", "@my-react/react": "StrictMode", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
-  { "@my-react/react (hook)": "useId", "@my-react/react": "Fragment", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
-  { "@my-react/react (hook)": "useInsertionEffect", "@my-react/react": "Suspense", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
-  { "@my-react/react (hook)": "useSyncExternalStore", "@my-react/react": "KeepLive(TODO)", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
-  { "@my-react/react (hook)": "useTransition", "@my-react/react": "", "@my-react/react-dom": "", "@my-react/react-reactive": "" },
+  {
+    "@my-react/react (hook)": "useDebugValue",
+    "@my-react/react": "Component",
+    "@my-react/react-dom": "renderToStaticMarkup",
+    "@my-react/react-reactive": "onUnmounted",
+  },
+  {
+    "@my-react/react (hook)": "useSignal",
+    "@my-react/react": "PureComponent",
+    "@my-react/react-dom": "renderToStaticNodeStream",
+    "@my-react/react-reactive": "onUpdated",
+  },
+  { "@my-react/react (hook)": "useDeferredValue", "@my-react/react": "StrictMode" },
+  { "@my-react/react (hook)": "useId", "@my-react/react": "Fragment" },
+  { "@my-react/react (hook)": "useInsertionEffect", "@my-react/react": "Suspense" },
+  { "@my-react/react (hook)": "useSyncExternalStore", "@my-react/react": "createFactory" },
+  { "@my-react/react (hook)": "useTransition" },
 ];
 
 export const ApiSection = () => {
@@ -105,6 +136,42 @@ export const ApiSection = () => {
             Render: "@my-react/react-reactive",
           }}
           dataIndex="@my-react/react-reactive"
+          bodyCellRender={{
+            Render: ({ cellData }) => {
+              return <Code>{cellData}</Code>;
+            },
+          }}
+        />
+        <Column<(typeof data)[0]>
+          headCellRender={{
+            cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
+            Render: "@my-react/react-refresh",
+          }}
+          dataIndex="@my-react/react-refresh"
+          bodyCellRender={{
+            Render: ({ cellData }) => {
+              return <Code>{cellData}</Code>;
+            },
+          }}
+        />
+        <Column<(typeof data)[0]>
+          headCellRender={{
+            cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
+            Render: "@my-react/react-refresh-tools",
+          }}
+          dataIndex="@my-react/react-refresh-tools"
+          bodyCellRender={{
+            Render: ({ cellData }) => {
+              return <Code>{cellData}</Code>;
+            },
+          }}
+        />
+        <Column<(typeof data)[0]>
+          headCellRender={{
+            cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
+            Render: "@my-react/react-vite",
+          }}
+          dataIndex="@my-react/react-vite"
           bodyCellRender={{
             Render: ({ cellData }) => {
               return <Code>{cellData}</Code>;

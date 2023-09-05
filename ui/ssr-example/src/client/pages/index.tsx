@@ -4,6 +4,7 @@ import { ScrollContent, ScrollControl, ScrollControlTool, ScrollSection, ScrollT
 import { MainSection } from "@client/container/Section";
 import { ApiSection as _ApiSection } from "@client/container/Section/Api";
 import { NextSection } from "@client/container/Section/Next";
+import { ViteSection } from "@client/container/Section/Vite";
 
 const ApiSection = __REACT__ ? _ApiSection : lazy(() => import("@client/container/Section").then(({ ApiSection }) => ({ default: ApiSection })));
 
@@ -18,6 +19,10 @@ const Page = () => {
 
           <ScrollSection>
             <NextSection />
+          </ScrollSection>
+
+          <ScrollSection>
+            <ViteSection />
           </ScrollSection>
 
           <ScrollSection>

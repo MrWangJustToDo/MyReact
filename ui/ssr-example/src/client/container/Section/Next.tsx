@@ -1,4 +1,4 @@
-import { Box, Button, Container, Flex, Heading, Spacer, Tag, Text, Tooltip, chakra, useColorModeValue } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, HStack, Heading, Spacer, Tag, Text, Tooltip, chakra, useColorModeValue } from "@chakra-ui/react";
 
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { mark } from "@client/utils/markdown";
@@ -61,24 +61,41 @@ export const NextSection = () => {
             Currently not support Next.js 13+, also not support React `RSC`.
           </Text>
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
-            This project is only a experimental project, very not recommend use in the production environment.
+            This project is only a experimental project, not recommend use in the production environment.
           </Text>
           <Spacer marginTop="4" />
-          <Tooltip
-            label={
-              <Text>
-                A static <Tag>Next.js</Tag> site power by @my-react
-              </Text>
-            }
-            hasArrow
-            placement="top"
-            bg={bgColor}
-            color="black"
-          >
-            <Button as="a" href="https://mrwangjusttodo.github.io/MrWangJustToDo.io" colorScheme="purple" target="_blank">
-              Online Example
-            </Button>
-          </Tooltip>
+          <HStack>
+            <Tooltip
+              label={
+                <Text>
+                  A static <Tag>Next.js</Tag> site power by @my-react
+                </Text>
+              }
+              hasArrow
+              placement="top"
+              bg={bgColor}
+              color="black"
+            >
+              <Button as="a" href="https://mrwangjusttodo.github.io/MrWangJustToDo.io" colorScheme="purple" target="_blank">
+                Online Example
+              </Button>
+            </Tooltip>
+            <Tooltip
+              label={
+                <Text>
+                  A <Tag>Next.js</Tag> template power by @my-react
+                </Text>
+              }
+              hasArrow
+              placement="top"
+              bg={bgColor}
+              color="black"
+            >
+              <Button as="a" href="https://github.com/MrWangJustToDo/MyReact/tree/main/ui/next-example" colorScheme="purple" target="_blank">
+                Example
+              </Button>
+            </Tooltip>
+          </HStack>
         </Box>
         <Box
           className="typo"

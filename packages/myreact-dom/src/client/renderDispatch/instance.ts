@@ -103,6 +103,8 @@ if (__DEV__) {
 
     const rootElement = createElement(rootElementType, rootElementProps) as MyReactElement;
 
+    rootNode.__fiber__ = null;
+
     render(rootElement, rootNode);
   };
 }

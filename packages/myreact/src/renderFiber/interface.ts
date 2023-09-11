@@ -28,8 +28,6 @@ interface DefaultRenderFiber {
 
   _update(state?: STATE_TYPE): void;
 
-  _error(error: Error): void;
-
   _prepare(): void;
 
   _unmount(): void;

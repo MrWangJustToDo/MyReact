@@ -1,5 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
+import { originalError } from "./debug";
+
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { enableSyncFlush } = __my_react_shared__;
@@ -14,7 +16,7 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
 
     const renderPlatform = currentRenderPlatform.current;
 
-    console.error(e);
+    originalError(e);
 
     renderPlatform.dispatchError({ fiber, error: e });
   }
@@ -28,7 +30,7 @@ export const safeCallAsync = async <T extends any[] = any[], K = any>(action: (.
 
     const renderPlatform = currentRenderPlatform.current;
 
-    console.error(e);
+    originalError(e);
 
     renderPlatform.dispatchError({ fiber, error: e });
   }
@@ -46,7 +48,7 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
   } catch (e) {
     const renderPlatform = currentRenderPlatform.current;
 
-    console.error(e);
+    originalError(e);
 
     renderPlatform.dispatchError({ fiber, error: e });
 
@@ -65,7 +67,7 @@ export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...a
 
     const renderPlatform = currentRenderPlatform.current;
 
-    console.error(e);
+    originalError(e);
 
     renderPlatform.dispatchError({ fiber, error: e });
   } finally {

@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE, include, merge } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
-import { triggerError, triggerRevert, triggerUpdate } from "../renderUpdate";
+import { triggerRevert, triggerUpdate } from "../renderUpdate";
 import { getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
@@ -152,11 +152,6 @@ export class MyReactFiberNode implements RenderFiber {
     }
 
     triggerUpdate(this);
-  }
-  _error(error: Error) {
-    if (include(this.state, STATE_TYPE.__unmount__)) return;
-
-    triggerError(this, error);
   }
 }
 

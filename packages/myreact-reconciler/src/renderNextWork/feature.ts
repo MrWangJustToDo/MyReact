@@ -10,7 +10,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 const { currentRunningFiber } = __my_react_internal__;
 
 export const performToNextFiberWithAll = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (include(fiber.state, STATE_TYPE.__unmount__)) return null;
+  if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__) currentRunningFiber.current = fiber;
 
@@ -52,7 +52,7 @@ export const performToNextFiberWithAll = (fiber: MyReactFiberNode, renderDispatc
 };
 
 export const performToNextFiberWithTrigger = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (include(fiber.state, STATE_TYPE.__unmount__)) return null;
+  if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__) currentRunningFiber.current = fiber;
 
@@ -94,7 +94,7 @@ export const performToNextFiberWithTrigger = (fiber: MyReactFiberNode, renderDis
 };
 
 export const performToNextFiberAsyncWithAll = async (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (include(fiber.state, STATE_TYPE.__unmount__)) return null;
+  if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__) currentRunningFiber.current = fiber;
 
@@ -132,7 +132,7 @@ export const performToNextFiberAsyncWithAll = async (fiber: MyReactFiberNode, re
 };
 
 export const performToNextFiberAsyncWithTrigger = async (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (include(fiber.state, STATE_TYPE.__unmount__)) return null;
+  if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__) currentRunningFiber.current = fiber;
 

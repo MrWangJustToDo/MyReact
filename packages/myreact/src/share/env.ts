@@ -69,7 +69,7 @@ export const enableOptimizeTreeLog = createRef(true);
 /**
  * @internal
  */
-export const enableScopeTreeLog = createRef(false);
+export const enableScopeTreeLog = createRef(true);
 
 /**
  * @internal

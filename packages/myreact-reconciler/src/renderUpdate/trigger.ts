@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
 
 import { unmountFiber } from "../dispatchUnmount";
-import { currentTriggerFiber, fiberToDispatchMap } from "../share";
+import { currentTriggerFiber, devError, devWarn, fiberToDispatchMap } from "../share";
 
 import { updateConcurrentWithAll, updateConcurrentWithTrigger, updateSyncWithAll, updateSyncWithTrigger } from "./feature";
 
@@ -10,7 +10,7 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode, PendingStateTypeWithError } from "../runtimeFiber";
 import type { MyReactComponent } from "@my-react/react";
 
-const { globalLoop, currentRenderPlatform } = __my_react_internal__;
+const { globalLoop, currentRenderPlatform, currentRunningFiber } = __my_react_internal__;
 
 const { enableConcurrentMode, enableLoopFromRoot } = __my_react_shared__;
 
@@ -129,8 +129,14 @@ export const triggerRevert = (fiber: MyReactFiberNode) => {
         errorBoundariesFiber.memoizedState.revertState = null;
       });
     } else {
+      const last = currentRunningFiber.current;
+
+      currentRunningFiber.current = fiber;
+
       // there are not a ErrorBoundariesFiber
-      console.warn(`[@my-react/react] there are not a ErrorBoundary Component, try to remount current App`);
+      devWarn(`[@my-react/react] there are not a ErrorBoundary Component, try to remount current App`);
+
+      currentRunningFiber.current = last;
 
       renderDispatch.remountOnDev?.();
     }
@@ -149,7 +155,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
   if (renderDispatch.isAppUnmounted) return;
 
   if (!renderDispatch.isAppMounted) {
-    if (__DEV__) console.log("[@my-react/react] pending, can not update component");
+    if (__DEV__) devWarn("[@my-react/react] pending, can not update component");
 
     renderPlatform.macroTask(() => triggerUpdate(fiber, state, cb));
 
@@ -211,9 +217,19 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
       currentTriggerFiber.current = null;
 
+      const last = currentRunningFiber.current;
+
+      currentRunningFiber.current = fiber;
+
+      devError(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
+
+      currentRunningFiber.current = last;
+
       unmountFiber(rootFiber);
 
-      console.error(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
+      cb?.();
+
+      throw error;
     }
   }
 };

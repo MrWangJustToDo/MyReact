@@ -90,6 +90,8 @@
       );
     };
 
+    const Bbb = ({ children }) => children
+
     const LazyFoo = lazy(async () => {
       await delay(60);
       throw new Error('lll')
@@ -127,9 +129,13 @@
               <Bar />
               <div>last render</div>
               <LazyBgg />
-              <LazyFoo />
-              <LazyFoo t={time} />
-              <LazyFoo t={x} />
+              <Bbb>
+                <Bbb>
+                  <LazyFoo />
+                  <LazyFoo t={time} />
+                  <LazyFoo t={x} />
+                </Bbb>
+              </Bbb>
             </div>
           </Suspense>
         </div>

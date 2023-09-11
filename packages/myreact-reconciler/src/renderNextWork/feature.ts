@@ -2,7 +2,7 @@ import { __my_react_internal__ } from "@my-react/react";
 import { STATE_TYPE, include } from "@my-react/react-shared";
 
 import { runtimeNextWork, runtimeNextWorkDev, runtimeNextWorkAsync } from "../runtimeGenerate";
-import { currentRenderDispatch } from "../share";
+import { currentRenderDispatch, devError } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -15,7 +15,7 @@ export const performToNextFiberWithAll = (fiber: MyReactFiberNode, renderDispatc
   if (__DEV__) currentRunningFiber.current = fiber;
 
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
-    console.error(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
+    devError(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
   }
 
   if (include(fiber.state, STATE_TYPE.__create__ | STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
@@ -57,7 +57,7 @@ export const performToNextFiberWithTrigger = (fiber: MyReactFiberNode, renderDis
   if (__DEV__) currentRunningFiber.current = fiber;
 
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
-    console.error(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
+    devError(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
   }
 
   if (include(fiber.state, STATE_TYPE.__create__ | STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
@@ -99,7 +99,7 @@ export const performToNextFiberAsyncWithAll = async (fiber: MyReactFiberNode, re
   if (__DEV__) currentRunningFiber.current = fiber;
 
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
-    console.error(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
+    devError(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
   }
 
   if (include(fiber.state, STATE_TYPE.__create__ | STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
@@ -137,7 +137,7 @@ export const performToNextFiberAsyncWithTrigger = async (fiber: MyReactFiberNode
   if (__DEV__) currentRunningFiber.current = fiber;
 
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
-    console.error(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
+    devError(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
   }
 
   if (include(fiber.state, STATE_TYPE.__create__ | STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {

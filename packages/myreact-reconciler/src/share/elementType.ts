@@ -18,6 +18,7 @@ import {
   include,
 } from "@my-react/react-shared";
 
+import { devWarn } from "./debug";
 import { NODE_TYPE } from "./fiberType";
 import { getCurrentTypeFromRefresh } from "./refresh";
 
@@ -44,7 +45,7 @@ export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeF
   } else {
     if (typeof element === "object" && element !== null) {
       if (__DEV__) {
-        console.warn(`[@my-react/react] invalid object element type "${JSON.stringify(element)}"`);
+        devWarn(`[@my-react/react] invalid object element type "${JSON.stringify(element)}"`);
       }
       nodeType = merge(nodeType, NODE_TYPE.__empty__);
     } else if (element === null || element === undefined || typeof element === "boolean" || typeof element === "function") {
@@ -150,7 +151,7 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
     nodeType = merge(nodeType, NODE_TYPE.__plain__);
   } else {
     if (__DEV__) {
-      console.warn(`[@my-react/react] invalid element type "${elementType?.toString()}"`);
+      devWarn(`[@my-react/react] invalid element type "${elementType?.toString()}"`);
     }
     nodeType = merge(nodeType, NODE_TYPE.__empty__);
   }

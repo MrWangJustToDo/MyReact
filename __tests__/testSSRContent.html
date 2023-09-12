@@ -26,7 +26,7 @@
     }
 
     const render = (s) => {
-      root.innerHTML = ReactServerDOM.renderToString(<App s={s} />)
+      root.innerHTML = ReactDOMServer.renderToString(<App s={s} />)
     }
 
     ReactDOM.render(<App s={'111'} onClick={'122'} />, root)

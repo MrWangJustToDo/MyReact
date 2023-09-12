@@ -74,7 +74,7 @@
     const a = document.querySelector("#a");
     const b = document.querySelector("#b");
 
-    const aString = ReactServerDOM.renderToString(<App1 />);
+    const aString = ReactDOMServer.renderToString(<App1 />);
 
     a.innerHTML = aString;
 
@@ -82,7 +82,7 @@
       ReactDOM.hydrate(<App1 />, a);
     }
 
-    ReactServerDOM.renderToString(<App2 />, true).then((string) => b.innerHTML = string);
+    ReactDOMServer.renderToString(<App2 />, true).then((string) => b.innerHTML = string);
 
     const hydrate2 = async () => {
       await ReactDOM.hydrate(<App2 />, b, true)

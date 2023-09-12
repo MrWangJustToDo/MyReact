@@ -21,7 +21,7 @@
 
       const app = document.querySelector("#root");
 
-      app.innerHTML = ReactServerDOM.renderToString(<App />);
+      app.innerHTML = ReactDOMServer.renderToString(<App />);
 
       window.start = () => {
         ReactDOM.hydrate(<App text={0} />, app);

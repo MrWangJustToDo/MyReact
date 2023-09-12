@@ -95,19 +95,20 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (hookNode.type === HOOK_TYPE.useTransition) {
-    hookNode.result = {
-      loading: false,
-      startTransition: (cb: () => void) => {
+    hookNode.result = [
+      false,
+      (cb: () => void) => {
         const loadingCallback = (cb: () => void) => {
-          triggerUpdate(fiber, STATE_TYPE.__triggerConcurrent__, () => {
-            hookNode.result.loading = true;
-            cb();
+          startTransition(() => {
+            hookNode.result[0] = true;
+            triggerUpdate(fiber, STATE_TYPE.__triggerConcurrent__, cb);
           });
         };
 
         const loadedCallback = () => {
-          triggerUpdate(fiber, STATE_TYPE.__triggerConcurrent__, () => {
-            hookNode.result.loading = false;
+          startTransition(() => {
+            hookNode.result[0] = false;
+            triggerUpdate(fiber, STATE_TYPE.__triggerConcurrent__);
           });
         };
 
@@ -120,7 +121,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
         loadingCallback(taskCallback);
       },
-    };
+    ];
   }
 
   if (__DEV__ && enableDebugFiled.current) {

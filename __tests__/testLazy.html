@@ -144,7 +144,7 @@
 
     const container = document.getElementById("root");
     ReactDOM.render(<App />, container);
-    // ReactServerDOM.renderToString(<App />)
+    // ReactDOMServer.renderToString(<App />)
 
     // lazy hydrate
     // ReactDOM.renderToString(<App />, true).then((r) => container.innerHTML = r).then(() => ReactDOM.hydrate(<App />, container, true))

@@ -60,7 +60,7 @@
       };
 
       const app = document.querySelector("#root");
-      const string = ReactServerDOM.renderToString(<App text="" />);
+      const string = ReactDOMServer.renderToString(<App text="" />);
       app.innerHTML = string;
 
       window.start = () => {

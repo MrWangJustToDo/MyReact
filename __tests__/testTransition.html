@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, startTransition, useTransition, useLayoutEffect } = React;
+    const App = () => {
+      const [i, setI] = useState(0);
+
+      const [pending, transition] = useTransition();
+
+      useLayoutEffect(() => {
+        console.log('layout effect:', pending);
+      })
+
+      console.log(pending);
+
+      return <div>app: {i} <br />
+        <button onClick={() => setI(i + 1)}>add</button>
+        <button onClick={() => startTransition(() => setI(i + 1))}>transition add</button>
+        <button onClick={() => transition(() => {
+          const now = performance.now();
+          while (performance.now() - now < 800) {
+
+          }
+          setI(i + 1);
+        })} ref={n => {
+          console.log(n.innerText)
+        }} >useTransition add, pending: {pending + ''}</button>
+      </div>
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+
+    // root.innerHTML = ReactDOMServer.renderToString(<App />);
+  </script>
+</body>
+
+</html>

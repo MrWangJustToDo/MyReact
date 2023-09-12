@@ -1,288 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-    <!-- <script src="../packages/myreact/dist/umd/index.production.js"></script> -->
-    <!-- <script src="../packages/myreact-dom/dist/umd/index.production.js"></script> -->
-    <style>
-      * {
-        touch-action: none;
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  <!-- <script src="../packages/myreact/dist/umd/index.production.js"></script> -->
+  <!-- <script src="../packages/myreact-dom/dist/umd/index.production.js"></script> -->
+  <style>
+    * {
+      touch-action: none;
+    }
+
+    #outer {
+      width: 400px;
+      height: 500px;
+      margin: 40px auto;
+      border: 6px solid pink;
+      overflow: auto;
+    }
+  </style>
+
+  <script>
+    Number.prototype[Symbol.iterator] = function* () {
+      const value = this.valueOf();
+      for (let i = 0; i < value; i++) {
+        yield i;
+      }
+    };
+
+    function throtle(action, time) {
+      let flag = false;
+      return function (...args) {
+        if (!flag) {
+          action.call(this, ...args);
+          flag = true;
+          setTimeout(() => (flag = false), time);
+        }
+      };
+    }
+    var data = [...100];
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { Component, createRef, useState, useEffect, PureComponent, useTransition } = React;
+
+    class Item extends PureComponent {
+      static createDiv = (props = {}) =>
+        React.createElement("div", {
+          ...props,
+          style: {
+            height: Math.random() > 0.5 ? "20px" : "70px",
+            fontSize: "18px",
+            padding: "2px 5px",
+            textAlign: "center",
+            border: "1px solid red",
+          },
+        });
+
+      constructor(props) {
+        super(props);
+        this.container = Item.createDiv({ ref: this.ref });
       }
 
-      #outer {
-        width: 400px;
-        height: 500px;
-        margin: 40px auto;
-        border: 6px solid pink;
-        overflow: auto;
-      }
-    </style>
+      ref = createRef();
 
-    <script>
-      Number.prototype[Symbol.iterator] = function* () {
-        const value = this.valueOf();
-        for (let i = 0; i < value; i++) {
-          yield i;
+      componentDidMount() {
+        const { init } = this.props;
+        init(this.ref.current);
+      }
+
+      // componentDidUpdate() {
+      //   console.log("child update");
+      // }
+
+      render() {
+        const { children } = this.props;
+        return React.cloneElement(this.container, {}, children);
+      }
+    }
+
+    class List extends Component {
+      constructor(props) {
+        super(props);
+        this.hover = false;
+        this.totalHeight = 0;
+        this.avarageHeight = 0;
+        this.totalElement = [];
+        this.totalHeightObj = { 0: 0 };
+        this.displayRangeArr = [0, 0];
+        this.displayLength = props.displayLength || 18;
+      }
+
+      state = {
+        allHeight: 0,
+        allLength: 18,
+        paddingTop: 0,
+        needUpdate: false,
+      };
+
+      container = createRef();
+
+      initChildren = (ele) => {
+        console.log(ele.textContent);
+        this.totalHeight += ele.offsetHeight;
+        this.totalElement.push(ele);
+        const length = this.totalElement.length;
+        this.totalHeightObj[length] = this.totalHeight;
+        ele.remove();
+      };
+
+      initAutoUpdate = () => {
+        const { list } = this.props;
+        const { allLength, needUpdate } = this.state;
+        if (list.length > allLength && !needUpdate) {
+          this.setState({ needUpdate: true });
         }
       };
 
-      function throtle(action, time) {
-        let flag = false;
-        return function (...args) {
-          if (!flag) {
-            action.call(this, ...args);
-            flag = true;
-            setTimeout(() => (flag = false), time);
+      initAvarage = () => {
+        this.avarageHeight = this.totalHeight / this.totalElement.length;
+      };
+
+      initTotal = () => {
+        const { list } = this.props;
+        const temp = this.avarageHeight * list.length;
+        this.setState({
+          allHeight: temp,
+        });
+      };
+
+      mouseIn = () => {
+        this.hover = true;
+      };
+
+      mouseOut = () => {
+        this.hover = false;
+        requestIdleCallback(this.autoInit);
+      };
+
+      displayRange = (startIndex, endIndex, container) => {
+        const [preStartIndex, preEndIndex] = this.displayRangeArr;
+        if ((startIndex >= 0 && startIndex !== preStartIndex) || endIndex !== preEndIndex) {
+          const paddingTop = this.totalHeightObj[startIndex];
+          for (let i = preStartIndex; i <= preEndIndex; i++) {
+            this.totalElement[i] && this.totalElement[i].remove();
           }
-        };
-      }
-      var data = [...100];
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-      const { Component, createRef, useState, useEffect, PureComponent } = React;
-
-      class Item extends PureComponent {
-        static createDiv = (props = {}) =>
-          React.createElement("div", {
-            ...props,
-            style: {
-              height: Math.random() > 0.5 ? "20px" : "70px",
-              fontSize: "18px",
-              padding: "2px 5px",
-              textAlign: "center",
-              border: "1px solid red",
-            },
-          });
-
-        constructor(props) {
-          super(props);
-          this.container = Item.createDiv({ ref: this.ref });
-        }
-
-        ref = createRef();
-
-        componentDidMount() {
-          const { init } = this.props;
-          init(this.ref.current);
-        }
-
-        // componentDidUpdate() {
-        //   console.log("child update");
-        // }
-
-        render() {
-          const { children } = this.props;
-          return React.cloneElement(this.container, {}, children);
-        }
-      }
-
-      class List extends Component {
-        constructor(props) {
-          super(props);
-          this.hover = false;
-          this.totalHeight = 0;
-          this.avarageHeight = 0;
-          this.totalElement = [];
-          this.totalHeightObj = { 0: 0 };
-          this.displayRangeArr = [0, 0];
-          this.displayLength = props.displayLength || 18;
-        }
-
-        state = {
-          allHeight: 0,
-          allLength: 18,
-          paddingTop: 0,
-          needUpdate: false,
-        };
-
-        container = createRef();
-
-        initChildren = (ele) => {
-          console.log(ele.textContent);
-          this.totalHeight += ele.offsetHeight;
-          this.totalElement.push(ele);
-          const length = this.totalElement.length;
-          this.totalHeightObj[length] = this.totalHeight;
-          ele.remove();
-        };
-
-        initAutoUpdate = () => {
-          const { list } = this.props;
-          const { allLength, needUpdate } = this.state;
-          if (list.length > allLength && !needUpdate) {
-            this.setState({ needUpdate: true });
-          }
-        };
-
-        initAvarage = () => {
-          this.avarageHeight = this.totalHeight / this.totalElement.length;
-        };
-
-        initTotal = () => {
-          const { list } = this.props;
-          const temp = this.avarageHeight * list.length;
+          const temp = this.totalElement.slice(startIndex, endIndex);
+          this.displayRangeArr[0] = startIndex;
+          this.displayRangeArr[1] = endIndex;
+          container.append(...temp);
           this.setState({
-            allHeight: temp,
+            paddingTop,
           });
-        };
+        }
+      };
 
-        mouseIn = () => {
-          this.hover = true;
-        };
-
-        mouseOut = () => {
-          this.hover = false;
-          requestIdleCallback(this.autoInit);
-        };
-
-        displayRange = (startIndex, endIndex, container) => {
-          const [preStartIndex, preEndIndex] = this.displayRangeArr;
-          if ((startIndex >= 0 && startIndex !== preStartIndex) || endIndex !== preEndIndex) {
-            const paddingTop = this.totalHeightObj[startIndex];
-            for (let i = preStartIndex; i <= preEndIndex; i++) {
-              this.totalElement[i] && this.totalElement[i].remove();
-            }
-            const temp = this.totalElement.slice(startIndex, endIndex);
-            this.displayRangeArr[0] = startIndex;
-            this.displayRangeArr[1] = endIndex;
-            container.append(...temp);
-            this.setState({
-              paddingTop,
-            });
-          }
-        };
-
-        scrollEve = throtle((e) => {
-          clearTimeout(this.timmer);
-          const scrollTop = e.target.scrollTop;
-          const length = parseInt(scrollTop / this.avarageHeight);
-          if (length > this.state.allLength - this.displayLength) {
-            this.setState({
-              allLength: length + this.displayLength,
-            });
-            this.timmer = setTimeout(() => {
-              this.initAvarage();
-              this.initTotal();
-              if (length > 4) {
-                this.displayRange(length - 4, length + this.displayLength - 4, this.container.current);
-              } else {
-                this.displayRange(length, length + this.displayLength, this.container.current);
-              }
-            }, 0);
-          } else {
+      scrollEve = throtle((e) => {
+        clearTimeout(this.timmer);
+        const scrollTop = e.target.scrollTop;
+        const length = parseInt(scrollTop / this.avarageHeight);
+        if (length > this.state.allLength - this.displayLength) {
+          this.setState({
+            allLength: length + this.displayLength,
+          });
+          this.timmer = setTimeout(() => {
+            this.initAvarage();
+            this.initTotal();
             if (length > 4) {
               this.displayRange(length - 4, length + this.displayLength - 4, this.container.current);
             } else {
               this.displayRange(length, length + this.displayLength, this.container.current);
             }
+          }, 0);
+        } else {
+          if (length > 4) {
+            this.displayRange(length - 4, length + this.displayLength - 4, this.container.current);
+          } else {
+            this.displayRange(length, length + this.displayLength, this.container.current);
           }
-        }, 30);
+        }
+      }, 30);
 
-        // 空闲时自动添加生成数据
-        autoInit = () => {
-          const { list } = this.props;
-          const { needUpdate, allLength } = this.state;
-          if (!this.hover) {
-            if (needUpdate && list.length > allLength) {
-              if (allLength + this.displayLength < list.length) {
-                this.setState((last) => ({
-                  allLength: last.allLength + this.displayLength,
-                }));
-              } else {
-                this.setState((last) => ({
-                  needUpdate: false,
-                  allLength: list.length,
-                }));
-              }
-              this.initAvarage();
-              requestIdleCallback(this.autoInit);
+      // 空闲时自动添加生成数据
+      autoInit = () => {
+        const { list } = this.props;
+        const { needUpdate, allLength } = this.state;
+        if (!this.hover) {
+          if (needUpdate && list.length > allLength) {
+            if (allLength + this.displayLength < list.length) {
+              this.setState((last) => ({
+                allLength: last.allLength + this.displayLength,
+              }));
             } else {
-              this.initTotal();
+              this.setState((last) => ({
+                needUpdate: false,
+                allLength: list.length,
+              }));
             }
-          }
-        };
-
-        componentDidUpdate(preProps, preState) {
-          // console.log(preProps, preState)
-          if (preProps.list !== this.props.list) {
-            this.initAutoUpdate();
-          }
-          if (preState.needUpdate !== this.state.needUpdate && this.state.needUpdate) {
+            this.initAvarage();
             requestIdleCallback(this.autoInit);
+          } else {
+            this.initTotal();
           }
         }
+      };
 
-        componentDidMount() {
+      componentDidUpdate(preProps, preState) {
+        // console.log(preProps, preState)
+        if (preProps.list !== this.props.list) {
           this.initAutoUpdate();
-          this.initAvarage();
-          this.initTotal();
-          // console.log(this.container.current, this.totalElement);
-          // this.displayRange(0, 30, this.container.current)
-          this.displayRange(0, this.displayLength, this.container.current);
         }
-
-        render() {
-          const { list } = this.props;
-          const { allLength, paddingTop, allHeight } = this.state;
-          const currentList = list.slice(0, allLength);
-          // console.log(currentList, this, list);
-          return (
-            <>
-              <h3>{this.avarageHeight}</h3>
-              <div id="outer" onScroll={this.scrollEve} onMouseEnter={this.mouseIn} onMouseLeave={this.mouseOut}>
-                <div
-                  id="inner"
-                  ref={this.container}
-                  style={{
-                    paddingTop: `${paddingTop}px`,
-                    height: `${allHeight}px`,
-                    boxSizing: "border-box",
-                  }}
-                >
-                  {currentList.map((it) => (
-                    <Item key={it.id ? it.id : it} init={this.initChildren}>
-                      {it}
-                    </Item>
-                  ))}
-                </div>
-              </div>
-            </>
-          );
+        if (preState.needUpdate !== this.state.needUpdate && this.state.needUpdate) {
+          requestIdleCallback(this.autoInit);
         }
       }
 
-      var a = 10;
+      componentDidMount() {
+        this.initAutoUpdate();
+        this.initAvarage();
+        this.initTotal();
+        // console.log(this.container.current, this.totalElement);
+        // this.displayRange(0, 30, this.container.current)
+        this.displayRange(0, this.displayLength, this.container.current);
+      }
 
-      const Test = () => {
-        const [list, setList] = useState(data);
-        useEffect(() => {
-          console.log('run')
-          setInterval(() => {
+      render() {
+        const { list } = this.props;
+        const { allLength, paddingTop, allHeight } = this.state;
+        const currentList = list.slice(0, allLength);
+        // console.log(currentList, this, list);
+        return (
+          <>
+            <h3>{this.avarageHeight}</h3>
+            <div id="outer" onScroll={this.scrollEve} onMouseEnter={this.mouseIn} onMouseLeave={this.mouseOut}>
+              <div
+                id="inner"
+                ref={this.container}
+                style={{
+                  paddingTop: `${paddingTop}px`,
+                  height: `${allHeight}px`,
+                  boxSizing: "border-box",
+                }}
+              >
+                {currentList.map((it) => (
+                  <Item key={it.id ? it.id : it} init={this.initChildren}>
+                    {it}
+                  </Item>
+                ))}
+              </div>
+            </div>
+          </>
+        );
+      }
+    }
+
+    var a = 10;
+
+    const Test = () => {
+      const [list, setList] = useState(data);
+
+      const [pending, transition] = useTransition();
+
+      useEffect(() => {
+        console.log('run')
+        setInterval(() => {
+          transition(() => {
             if (a > 0) {
               a--;
               setList((last) => [...(last.length + 60)]);
             }
-          }, 1000);
-        }, []);
+          })
+        }, 1000);
+      }, []);
 
-        // console.log(list);
+      console.log(pending);
 
-        return <List list={list} />;
-      };
+      return <List list={list} />;
+    };
 
-      ReactDOM.render(<Test />, document.querySelector("#root"));
-    </script>
-  </body>
+    ReactDOM.render(<Test />, document.querySelector("#root"));
+  </script>
+</body>
+
 </html>

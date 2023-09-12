@@ -14,7 +14,7 @@ import type { Action, Reducer, RenderHookParams } from "@my-react/react";
 
 const { enableDebugLog, enableDebugFiled } = __my_react_shared__;
 
-const { currentHookTreeNode } = __my_react_internal__;
+const { currentHookTreeNode, currentHookNodeIndex } = __my_react_internal__;
 
 const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;
@@ -24,6 +24,8 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   const renderDispatch = currentRenderDispatch.current;
 
   const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
+
+  const currentHookIndex = currentHookNodeIndex.current;
 
   if (currentHook) {
     throw new Error(`[@my-react/react] should not have a hookList for current node, this is a bug for @my-react`);
@@ -55,7 +57,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (hookNode.type === HOOK_TYPE.useId) {
-    hookNode.result = `:-${renderDispatch.uniqueIdCount++}-:`;
+    hookNode.result = `:-${currentHookIndex}-${renderDispatch.uniqueIdCount++}-:`;
     hookNode.cancel = () => renderDispatch.uniqueIdCount--;
   }
 

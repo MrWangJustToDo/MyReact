@@ -29,4 +29,9 @@ export const enableHighlight = createRef(false);
 /**
  * @internal
  */
+export const enableASyncHydrate = createRef(false);
+
+/**
+ * @internal
+ */
 export const isServer = typeof window === "undefined";

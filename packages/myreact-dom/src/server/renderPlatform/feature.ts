@@ -1,9 +1,11 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { processHookNode } from "@my-react/react-reconciler";
+import { fiberToDispatchMap, getFiberTree, processHookNode } from "@my-react/react-reconciler";
 
 import { ServerDomPlatform } from "./instance";
 
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomPlatform } from "@my-react-dom-client/renderPlatform";
+import type { ServerPipeableStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
 
@@ -16,6 +18,26 @@ export const initGlobalRenderPlatform = () => {
   const MyReactServerDomPlatform = new ServerDomPlatform(true);
 
   initRenderPlatform(MyReactServerDomPlatform);
+};
+
+const dispatchError = ({ fiber, error }: { fiber: MyReactFiberNode; error: Error }) => {
+  const renderDispatch = fiberToDispatchMap.get(fiber);
+
+  if (!renderDispatch) {
+    throw error;
+  }
+
+  const typedRenderDispatch = renderDispatch as ServerPipeableStreamDispatch;
+
+  if (typedRenderDispatch.onError) {
+    typedRenderDispatch.onShellError?.(error);
+
+    const tree = getFiberTree(fiber);
+
+    typedRenderDispatch.onError(error, { componentStack: tree, digest: error.message });
+  } else {
+    throw error;
+  }
 };
 
 /**
@@ -36,7 +58,5 @@ export const prepareRenderPlatform = () => {
 
   renderPlatform.dispatchHook = processHookNode;
 
-  renderPlatform.dispatchError = ({ error }) => {
-    throw error;
-  };
+  renderPlatform.dispatchError = dispatchError;
 };

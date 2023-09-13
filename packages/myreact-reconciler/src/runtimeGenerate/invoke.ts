@@ -202,3 +202,43 @@ export const runtimeNextWorkAsync = async (fiber: MyReactFiberNode) => {
 
   nextWorkNormal(fiber);
 };
+
+export const runtimeNextWorkAsyncDev = async (fiber: MyReactFiberNode) => {
+  const renderDispatch = currentRenderDispatch.current;
+
+  setRefreshTypeMap(fiber);
+
+  const res = await runtimeNextWorkAsync(fiber);
+
+  const typedFiber = fiber as MyReactFiberNodeDev;
+
+  const timeNow = Date.now();
+
+  if (enableDebugFiled.current) {
+    if (typedFiber.state === STATE_TYPE.__create__) {
+      typedFiber._debugRenderState = {
+        mountTime: timeNow,
+      };
+
+      typedFiber._debugIsMount = true;
+    } else {
+      const prevRenderState = Object.assign({}, typedFiber._debugRenderState);
+
+      const prevRenderTime = prevRenderState.updateTime || prevRenderState.mountTime;
+
+      typedFiber._debugRenderState = {
+        renderCount: (prevRenderState.renderCount || 0) + 1,
+        mountTime: prevRenderState.mountTime,
+        updateTime: timeNow,
+        trigger: currentTriggerFiber.current,
+        updateTimeInterval: timeNow - prevRenderTime,
+      };
+    }
+  }
+
+  if (include(typedFiber.type, renderDispatch.runtimeRef.typeForNativeNode)) {
+    renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
+  }
+
+  return res;
+};

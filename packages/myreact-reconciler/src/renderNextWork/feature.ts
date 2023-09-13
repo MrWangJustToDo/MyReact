@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { STATE_TYPE, include } from "@my-react/react-shared";
 
-import { runtimeNextWork, runtimeNextWorkDev, runtimeNextWorkAsync } from "../runtimeGenerate";
+import { runtimeNextWork, runtimeNextWorkDev, runtimeNextWorkAsync, runtimeNextWorkAsyncDev } from "../runtimeGenerate";
 import { currentRenderDispatch, devError } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -105,7 +105,11 @@ export const performToNextFiberAsyncWithAll = async (fiber: MyReactFiberNode, re
   if (include(fiber.state, STATE_TYPE.__create__ | STATE_TYPE.__inherit__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) {
     currentRenderDispatch.current = renderDispatch;
 
-    await runtimeNextWorkAsync(fiber);
+    if (__DEV__) {
+      await runtimeNextWorkAsyncDev(fiber);
+    } else {
+      await runtimeNextWorkAsync(fiber);
+    }
 
     currentRenderDispatch.current = null;
   }
@@ -145,7 +149,11 @@ export const performToNextFiberAsyncWithTrigger = async (fiber: MyReactFiberNode
 
     currentRenderDispatch.current = renderDispatch;
 
-    await runtimeNextWorkAsync(fiber);
+    if (__DEV__) {
+      await runtimeNextWorkAsyncDev(fiber);
+    } else {
+      await runtimeNextWorkAsync(fiber);
+    }
 
     currentRenderDispatch.current = null;
 

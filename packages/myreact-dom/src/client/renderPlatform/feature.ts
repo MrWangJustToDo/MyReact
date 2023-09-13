@@ -3,12 +3,30 @@ import { processHookNode, processState, triggerError } from "@my-react/react-rec
 
 import { ClientDomPlatform } from "./instance";
 
+import type { UpdateQueue } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ServerDomPlatform } from "@my-react-dom-server/renderPlatform";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
 
 const { enableDebugFiled } = __my_react_shared__;
+
+function dispatchState(this: ClientDomPlatform, _params: UpdateQueue) {
+  if (!this.isServer) {
+    processState(_params);
+  }
+}
+
+function dispatchError(this: ClientDomPlatform, _params: { fiber: MyReactFiberNode; error: Error }) {
+  if (!this.isServer) {
+    triggerError(_params.fiber, _params.error, () => {
+      // 更新结束后触发error事件
+      this.yieldTask(() => {
+        window.dispatchEvent(new ErrorEvent("error", { error: _params.error, message: _params.error?.message }));
+      });
+    });
+  }
+}
 
 /**
  * @internal
@@ -33,24 +51,9 @@ export const prepareRenderPlatform = () => {
 
   renderPlatform.isServer = false;
 
-  renderPlatform.dispatchState = function (this: ClientDomPlatform, _params) {
-    if (!this.isServer) {
-      processState(_params);
-    }
-  };
+  renderPlatform.dispatchState = dispatchState;
 
   renderPlatform.dispatchHook = processHookNode;
 
-  renderPlatform.dispatchError = function (this: ClientDomPlatform, _params) {
-    if (this.isServer) {
-      throw _params.error;
-    } else {
-      triggerError(_params.fiber as MyReactFiberNode, _params.error, () => {
-        // 更新结束后触发error事件
-        this.yieldTask(() => {
-          window.dispatchEvent(new ErrorEvent("error", { error: _params.error, message: _params.error?.message }));
-        });
-      });
-    }
-  };
+  renderPlatform.dispatchError = dispatchError;
 };

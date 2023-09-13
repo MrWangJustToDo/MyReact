@@ -11,15 +11,18 @@ import type { Readable } from "stream";
 
 export const renderToStaticNodeStream = (element: LikeJSX): Readable => {
   if (isValidElement(element)) {
+    prepareRenderPlatform();
+
     const temp = [];
     (temp as any).destroy = () => {
       void 0;
     };
+    (temp as any).pipe = () => {
+      return temp;
+    };
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-empty-function
     const stream = typeof window === "undefined" ? new (require("stream").Readable)({ read() {} }) : temp;
-
-    prepareRenderPlatform();
 
     const container = new ContainerElement();
 
@@ -36,8 +39,6 @@ export const renderToStaticNodeStream = (element: LikeJSX): Readable => {
     initialFiberNode(fiber, renderDispatch);
 
     startRender(fiber, renderDispatch);
-
-    delete renderDispatch.isServerRender;
 
     return stream;
   } else {

@@ -18,7 +18,7 @@ export const renderSSR = composeRender(
   initStore,
   loadStore,
   loadLang,
-  loadAsset,
+  loadAsset
 )(async (args) => {
   const targetRender = webpackRender({ mode: "SSR" });
   await targetRender(args);
@@ -79,5 +79,26 @@ export const renderStreamSSR = composeRender(
   loadAsset
 )(async (args) => {
   const targetRender = webpackRender({ mode: "StreamSSR" });
+  await targetRender(args);
+});
+
+export const renderPipeStreamSSR = composeRender(
+  generateGlobalEnv({
+    isSSR: true,
+    isSTREAM: true,
+    isSTATIC: getIsStaticGenerate(),
+    isPURE_CSR: false,
+    isMIDDLEWARE: getIsMiddleware(),
+    isDEVELOPMENT: __DEVELOPMENT__,
+    isANIMATE_ROUTER: getIsAnimateRouter(),
+    PUBLIC_API_HOST: __DEVELOPMENT__ ? process.env.PUBLIC_DEV_API_HOST : process.env.PUBLIC_PROD_API_HOST,
+  }),
+  initLang,
+  initStore,
+  loadStore,
+  loadLang,
+  loadAsset
+)(async (args) => {
+  const targetRender = webpackRender({ mode: "PipeStreamSSR" });
   await targetRender(args);
 });

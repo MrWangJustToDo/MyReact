@@ -1,5 +1,5 @@
 import { isValidElement, __my_react_shared__ } from "@my-react/react";
-import { checkIsSameType, initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
+import { checkIsSameType, initialFiberNode, MyReactFiberNode, triggerUpdate } from "@my-react/react-reconciler";
 import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -7,7 +7,7 @@ import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { unmountComponentAtNode } from "@my-react-dom-client/tools";
 import { checkRoot, prepareDevContainer, startRender } from "@my-react-dom-shared";
 
-import type { MyReactElement, LikeJSX } from "@my-react/react";
+import type { LikeJSX } from "@my-react/react";
 
 export type RenderContainer = Element & {
   __fiber__: MyReactFiberNode;
@@ -55,16 +55,14 @@ export const onceLogLegacyLifeCycleMode = once(() => {
   console.log("[@my-react/react] legacy 'UNSAFE' lifeCycle have been enabled!");
 });
 
-export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) => {
-  if (!isValidElement(_element)) throw new Error(`[@my-react/react-dom] 'render' can only render a '@my-react' element`);
+export const render = (element: LikeJSX, _container: Partial<RenderContainer>, cb?: () => void) => {
+  if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'render' can only render a '@my-react' element`);
 
   prepareRenderPlatform();
 
   const container = _container as RenderContainer;
 
   const containerFiber = container.__fiber__;
-
-  const element = _element as MyReactElement;
 
   if (containerFiber instanceof MyReactFiberNode) {
     const renderDispatch = container.__container__;
@@ -83,7 +81,7 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
     if (checkIsSameType(containerFiber, element)) {
       containerFiber._installElement(element);
 
-      containerFiber._update(STATE_TYPE.__triggerSync__);
+      triggerUpdate(containerFiber, STATE_TYPE.__triggerSync__, cb);
 
       return;
     } else {
@@ -113,6 +111,8 @@ export const render = (_element: LikeJSX, _container: Partial<RenderContainer>) 
   __DEV__ && prepareDevContainer(renderDispatch);
 
   Array.from(container.children).forEach((n) => n.remove?.());
+
+  cb && renderDispatch.pendingEffect(fiber, cb);
 
   container.removeAttribute?.("hydrate");
 

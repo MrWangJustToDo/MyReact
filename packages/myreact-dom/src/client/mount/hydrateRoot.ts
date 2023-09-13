@@ -1,7 +1,8 @@
 import { unmountComponentAtNode } from "@my-react-dom-client/tools";
+// import { enableASyncHydrate } from "@my-react-dom-shared";
 
 import { onceLogNewEntry } from "./createRoot";
-import { hydrate } from "./hydrate";
+import { internalHydrate } from "./hydrate";
 import { render as originalRender } from "./render";
 
 import type { Options } from "./createRoot";
@@ -15,7 +16,10 @@ export const hydrateRoot = (container: Partial<RenderContainer>, element: LikeJS
 
   __DEV__ && onceLogNewEntry("hydrateRoot");
 
-  hydrate(element, container);
+  // TODO
+  // enableASyncHydrate.current = true;
+
+  internalHydrate(element, container);
 
   return {
     render,

@@ -22,6 +22,12 @@ export const devWarn = (...args) => {
 
   const renderFiber = currentRunningFiber.current;
 
+  if (!renderFiber) {
+    originalWarn.call(console, ...args);
+
+    return;
+  }
+
   const logObj = [];
 
   const logString = args
@@ -42,6 +48,12 @@ export const devError = (...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
   const renderFiber = currentRunningFiber.current;
+
+  if (!renderFiber) {
+    originalError.call(console, ...args);
+
+    return;
+  }
 
   const logObj = [];
 

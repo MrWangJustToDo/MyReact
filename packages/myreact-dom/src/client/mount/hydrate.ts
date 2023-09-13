@@ -3,7 +3,7 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
-import { checkRehydrate, checkRoot, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { checkRehydrate, checkRoot, enableASyncHydrate, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogPerformanceWarn } from "./render";
 
@@ -12,7 +12,7 @@ import type { MyReactElement, LikeJSX } from "@my-react/react";
 
 const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __my_react_shared__;
 
-const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
+const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: () => void) => {
   const fiber = new MyReactFiberNode(element);
 
   const renderDispatch = new ClientDomDispatch(container, fiber);
@@ -20,6 +20,8 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
   __DEV__ && checkRoot(fiber);
 
   __DEV__ && prepareDevContainer(renderDispatch);
+
+  cb && renderDispatch.pendingEffect(fiber, cb);
 
   container.setAttribute?.("hydrate", "@my-react");
 
@@ -36,7 +38,7 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer) => {
   delete renderDispatch.isHydrateRender;
 };
 
-const hydrateAsync = async (element: MyReactElement, container: RenderContainer) => {
+const hydrateAsync = async (element: MyReactElement, container: RenderContainer, cb?: () => void) => {
   const fiber = new MyReactFiberNode(element);
 
   const renderDispatch = new ClientDomDispatch(container, fiber);
@@ -44,6 +46,8 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
   __DEV__ && checkRoot(fiber);
 
   __DEV__ && prepareDevContainer(renderDispatch);
+
+  cb && renderDispatch.pendingEffect(fiber, cb);
 
   container.setAttribute?.("hydrate", "@my-react");
 
@@ -60,10 +64,11 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer)
   delete renderDispatch.isHydrateRender;
 };
 
-export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>): void;
-export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>, asyncRender: true): Promise<void>;
-export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>, asyncRender?: boolean) {
-  if (!isValidElement(_element)) throw new Error(`[@my-react/react-dom] 'hydrate' can only render a '@my-react' element`);
+/**
+ * @internal
+ */
+export const internalHydrate = (element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) => {
+  if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'hydrate' can only render a '@my-react' element`);
 
   prepareRenderPlatform();
 
@@ -86,11 +91,17 @@ export function hydrate(_element: LikeJSX, container: Partial<RenderContainer>, 
     checkRehydrate(container);
   }
 
-  const element = _element as MyReactElement;
+  const asyncHydrate = enableASyncHydrate.current;
 
-  if (asyncRender) {
-    return hydrateAsync(element, container as RenderContainer);
+  if (asyncHydrate) {
+    return hydrateAsync(element, container as RenderContainer, cb);
   } else {
-    return hydrateSync(element, container as RenderContainer);
+    return hydrateSync(element, container as RenderContainer, cb);
   }
-}
+};
+
+export const hydrate = (element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) => {
+  enableASyncHydrate.current = false;
+
+  internalHydrate(element, container, cb);
+};

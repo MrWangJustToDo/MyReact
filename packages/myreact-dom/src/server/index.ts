@@ -1,6 +1,6 @@
 import { checkMyReactVersion, checkReconcilerVersion } from "../shared";
 
-import { renderToString, renderToNodeStream, renderToStaticMarkup, renderToStaticNodeStream } from "./mount";
+import { renderToString, renderToNodeStream, renderToStaticMarkup, renderToStaticNodeStream, renderToPipeableStream } from "./mount";
 import { initGlobalRenderPlatform } from "./renderPlatform";
 
 const version = __VERSION__;
@@ -13,4 +13,12 @@ checkReconcilerVersion();
 
 checkMyReactVersion();
 
-export { renderToString, renderToNodeStream, renderToStaticMarkup, renderToStaticNodeStream, version, __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED };
+export {
+  renderToString,
+  renderToNodeStream,
+  renderToStaticMarkup,
+  renderToPipeableStream,
+  renderToStaticNodeStream,
+  version,
+  __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
+};

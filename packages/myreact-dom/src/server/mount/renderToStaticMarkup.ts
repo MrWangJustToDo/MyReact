@@ -26,8 +26,6 @@ export const renderToStaticMarkup = (element: LikeJSX) => {
 
     startRender(fiber, renderDispatch);
 
-    delete renderDispatch.isServerRender;
-
     return container.toString();
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToStaticMarkup' can only render a '@my-react' element`);

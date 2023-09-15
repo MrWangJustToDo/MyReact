@@ -28,7 +28,9 @@ export const outputConfig = ({
         // 按需加载的chunk名
         chunkFilename: isDEV ? "[name].js" : "[name]-[contenthash].js",
         // 引入资源的url路径
-        publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `http://${PROD_HOST}:${PROD_PORT}/${_OUTPUT_SCOPE__}client/`,
+        // publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `http://${PROD_HOST}:${PROD_PORT}/${_OUTPUT_SCOPE__}client/`,
+        // githubPage 
+        publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `client/`,
       }
     : {
         clean: true,
@@ -38,7 +40,9 @@ export const outputConfig = ({
         // 按需加载的chunk名
         chunkFilename: isDEV ? "[name].js" : "[name]-[contenthash].js",
         // 引入资源的url路径
-        publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `http://${PROD_HOST}:${PROD_PORT}/${_OUTPUT_SCOPE__}client/`,
+        // publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `http://${PROD_HOST}:${PROD_PORT}/${_OUTPUT_SCOPE__}client/`,
+        // githubPage
+        publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `client/`,
         library: {
           type: "commonjs2",
         },

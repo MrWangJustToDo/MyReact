@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Fragment } from "react";
+import { Fragment, Suspense } from "react";
 import { useRoutes } from "react-router";
 
 import { getIsAnimateRouter } from "@shared";
@@ -38,12 +38,12 @@ export const RenderMatch = () => {
                 stiffness: 50,
               }}
             >
-              {all}
+              <Suspense>{all}</Suspense>
             </motion.div>
           </Fragment>
         </AnimatePresence>
       ) : (
-        all
+        <Suspense>{all}</Suspense>
       )}
     </>
   );

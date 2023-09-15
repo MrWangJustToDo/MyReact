@@ -39,6 +39,9 @@ module.exports = (api) => {
   plugins.push("@babel/plugin-transform-runtime");
   plugins.push("@babel/plugin-proposal-export-default-from");
   plugins.push("@loadable/babel-plugin");
+  if (!api.env("production") && web) {
+    plugins.push(process.env.REACT === "react" ? "react-refresh/babel" : "@my-react/react-refresh/babel");
+  }
 
   return {
     presets,

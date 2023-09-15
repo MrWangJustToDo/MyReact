@@ -1,6 +1,6 @@
-import { getIsSSR, getIsStream } from "@shared";
+import { getIsSSR } from "@shared";
 
-import { renderSSR, renderCSR, renderStreamSSR, renderPipeStreamSSR } from "./renderPage";
+import { renderSSR, renderCSR, renderStreamSSR } from "./renderPage";
 
 import type { RenderType } from "../type";
 
@@ -8,10 +8,9 @@ import type { RenderType } from "../type";
 const render: RenderType = async ({ req, res }) => {
   const { isSSR } = req.query;
   if (isSSR || getIsSSR()) {
-    if (getIsStream()) {
+    if (__STREAM__) {
       await renderStreamSSR({ req, res });
     } else {
-      // await renderPipeStreamSSR({ req, res });
       await renderSSR({ req, res });
     }
   } else {

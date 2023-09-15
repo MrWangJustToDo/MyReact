@@ -1,6 +1,5 @@
 import { ChunkExtractor } from "@loadable/server";
 import { readFile } from "fs/promises";
-import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 
 import { HTML } from "./template";
@@ -32,7 +31,7 @@ export const generateRender = () => async (_req: Request, res: Response) => {
   if (process.env.REACT === "myreact") {
     const refreshScriptPath = obj["__refresh__.js"];
 
-    refreshElements.push(createElement("script", { ["data-refresh"]: "@my-react/react-refresh", src: refreshScriptPath }));
+    refreshScriptPath && refreshElements.push(<script data-refresh="@my-react/react-refresh" src={refreshScriptPath}></script>);
   }
 
   res.send(

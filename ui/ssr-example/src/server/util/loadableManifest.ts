@@ -1,6 +1,5 @@
+import { MANIFEST } from "@site/webpack";
 import path from "path";
-
-import { MANIFEST } from "@build/webpack/utils";
 
 const outputPath = (env: "server" | "client"): string => (__DEVELOPMENT__ ? path.resolve(process.cwd(), "dev", env) : path.resolve(process.cwd(), "dist", env));
 

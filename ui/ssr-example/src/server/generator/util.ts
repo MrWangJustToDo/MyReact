@@ -6,7 +6,7 @@ import { pipeline } from "stream/promises";
 
 import { getAllStateFileContent, manifestDepsFile } from "../util/webpackManifest";
 
-export const getStaticPageOutputPath = (fileName: string) => path.resolve(process.cwd(), "dist", "pages", fileName);
+export const getStaticPageOutputPath = (fileName: string) => path.resolve(process.cwd(), __BUNDLE_SCOPE__, "dist", __OUTPUT_SCOPE__, "pages", fileName);
 
 export const getGithubPageOutputPath = (fileName: string) => path.resolve(process.cwd(), "dist", fileName);
 

@@ -16,6 +16,7 @@ const start = async () => {
   await rollupBuild({ packageName: "myreact-vite", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-refresh-tools", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "graphql", packageScope: "site", external });
+  await rollupBuild({ packageName: "webpack", packageScope: "site", external });
   process.exit(0);
 };
 

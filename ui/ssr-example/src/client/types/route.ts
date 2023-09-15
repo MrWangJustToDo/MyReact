@@ -4,9 +4,10 @@ import type { RouteObject } from "react-router";
 
 export type PreLoadRouteConfig = RouteObject & {
   children?: PreLoadRouteConfig[];
+  preLoad?: () => PreLoadComponentType | Promise<PreLoadComponentType | { default: PreLoadComponentType }>;
   component?: LoadableComponent<Record<string, unknown>> | PreLoadComponentType;
   getInitialState?: GetInitialStateType;
-}
+};
 
 export interface TransformType {
   (props: PreLoadRouteConfig[]): PreLoadRouteConfig[];

@@ -3,12 +3,16 @@ declare global {
   const __SERVER__: boolean;
   const __CSR__: boolean;
   const __SSR__: boolean;
+  const __BUNDLE_SCOPE__: string;
+  const __OUTPUT_SCOPE__: string;
   // current application is build by React or not
   const __REACT__: boolean;
   const __DEVELOPMENT__: boolean;
   const __MIDDLEWARE__: boolean;
   const __ANIMATE_ROUTER__: boolean;
   const __BUILD_TIME__: string;
+
+  const __STREAM__: boolean;
 
   const __BASENAME__: string;
 
@@ -40,6 +44,8 @@ declare global {
       STREAM: string;
       SSR: string;
       CSR: string;
+      BUNDLE_SCOPE: string;
+      OUTPUT_SCOPE: string;
       BASENAME: string;
       REACT: "react" | "myreact";
       STATIC_GENERATE: "true" | "false";

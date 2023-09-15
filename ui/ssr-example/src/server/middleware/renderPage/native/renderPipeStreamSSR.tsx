@@ -31,8 +31,8 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env, ass
 
   const stream = renderToPipeableStream(
     <HTML
+      lang={lang}
       env={JSON.stringify(env)}
-      lang={JSON.stringify(lang)}
       // cookieStorage={cookieStore}
       helmetContext={helmetContext}
       preloadedState={JSON.stringify(store.getState())}

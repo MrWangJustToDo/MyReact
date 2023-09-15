@@ -92,24 +92,41 @@ const resolvePreLoadStateFunction = async ({ route }: Pick<PreLoadProps, "route"
   if (route.getInitialState) {
     preLoadStateArray.push(route.getInitialState);
   }
-  if (route.component) {
-    const WrapperComponent = route.component;
-    if (WrapperComponent["load"] && typeof WrapperComponent["load"] === "function") {
-      const loadAbleComponent = WrapperComponent as LoadableComponent<Record<string, unknown>>;
-      const preLoadComponent: PreLoadComponentType & { readonly default?: PreLoadComponentType } = await loadAbleComponent.load();
-      if (preLoadComponent.getInitialState && typeof preLoadComponent.getInitialState === "function") {
-        preLoadStateArray.push(preLoadComponent.getInitialState);
-      }
-      if (typeof preLoadComponent.default !== "undefined") {
-        const c = preLoadComponent.default;
-        if (c.getInitialState && typeof c.getInitialState === "function") {
-          preLoadStateArray.push(c.getInitialState);
+
+  if (__STREAM__) {
+    if (route.preLoad) {
+      const component = await route.preLoad();
+      if (component["default"]) {
+        const typedComponent = component["default"] as PreLoadComponentType;
+        if (typedComponent.getInitialState) {
+          preLoadStateArray.push(typedComponent.getInitialState);
         }
       }
-    } else {
-      const preLoadComponent = WrapperComponent as PreLoadComponentType;
-      if (preLoadComponent.getInitialState && typeof preLoadComponent.getInitialState === "function") {
-        preLoadStateArray.push(preLoadComponent.getInitialState);
+      if (component["getInitialState"]) {
+        const typedComponent = component as PreLoadComponentType;
+        preLoadStateArray.push(typedComponent.getInitialState);
+      }
+    }
+  } else {
+    if (route.component) {
+      const WrapperComponent = route.component;
+      if (WrapperComponent["load"] && typeof WrapperComponent["load"] === "function") {
+        const loadAbleComponent = WrapperComponent as LoadableComponent<Record<string, unknown>>;
+        const preLoadComponent: PreLoadComponentType & { readonly default?: PreLoadComponentType } = await loadAbleComponent.load();
+        if (preLoadComponent.getInitialState && typeof preLoadComponent.getInitialState === "function") {
+          preLoadStateArray.push(preLoadComponent.getInitialState);
+        }
+        if (typeof preLoadComponent.default !== "undefined") {
+          const c = preLoadComponent.default;
+          if (c.getInitialState && typeof c.getInitialState === "function") {
+            preLoadStateArray.push(c.getInitialState);
+          }
+        }
+      } else {
+        const preLoadComponent = WrapperComponent as PreLoadComponentType;
+        if (preLoadComponent.getInitialState && typeof preLoadComponent.getInitialState === "function") {
+          preLoadStateArray.push(preLoadComponent.getInitialState);
+        }
       }
     }
   }

@@ -186,7 +186,7 @@ export class CustomRenderDispatch implements RenderDispatch {
     defaultGenerateSuspenseMap(_fiber, this.runtimeMap.suspenseMap);
   }
   resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode {
-    return this.runtimeMap.suspenseMap.get(_fiber) || null;
+    return this.runtimeMap.suspenseMap.get(_fiber)?.pendingProps?.["fallback"] || null;
   }
   resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
     defaultGenerateErrorBoundariesMap(_fiber, this.runtimeMap.errorBoundariesMap);

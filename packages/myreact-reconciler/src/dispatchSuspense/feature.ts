@@ -1,4 +1,4 @@
-import { __my_react_shared__, type MyReactElementNode } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react";
 import { include } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
@@ -7,28 +7,24 @@ import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 
 const { enableDebugFiled } = __my_react_shared__;
 
-export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, MyReactElementNode>) => {
+export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, MyReactFiberNode>) => {
   const parent = fiber.parent;
 
   if (parent) {
     if (include(parent.type, NODE_TYPE.__suspense__)) {
-      let fallback = parent.pendingProps["fallback"] as MyReactElementNode;
-
-      fallback = fallback || map.get(parent);
-
-      map.set(fiber, fallback);
+      map.set(fiber, parent);
     } else {
-      const fallbackElement = map.get(parent);
+      const parentFiber = map.get(parent);
 
-      fallbackElement && map.set(fiber, fallbackElement);
+      parentFiber && map.set(fiber, parentFiber);
     }
   }
 
   if (__DEV__ && enableDebugFiled.current) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
-    const fallbackElement = map.get(fiber);
+    const parentFiber = map.get(fiber);
 
-    fallbackElement && (typedFiber._debugSuspense = fallbackElement);
+    parentFiber && (typedFiber._debugSuspense = parentFiber);
   }
 };

@@ -21,7 +21,7 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugRenderChildrenPrevious: MyReactFiberNode[];
 
-  _debugSuspense: MyReactElementNode;
+  _debugSuspense: MyReactFiberNode;
 
   _debugStrict: boolean;
 

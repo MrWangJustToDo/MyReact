@@ -85,10 +85,10 @@ export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
         Object.keys(typedProps).forEach((styleName) => {
           if (typedProps[styleName] === null || typedProps[styleName] === undefined) return;
           if (!isUnitlessNumber[styleName] && typeof typedProps[styleName] === "number") {
-            styles[kebabCase(styleName)] = `${typedProps[styleName]}px`;
+            styles[styleName] = `${typedProps[styleName]}px`;
             return;
           }
-          styles[kebabCase(styleName)] = typedProps[styleName];
+          styles[styleName] = typedProps[styleName];
         });
       }
     });
@@ -96,9 +96,9 @@ export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       .map((key) => `${key}="${attrs[key]?.toString()}"`)
       .reduce((p, c) => `${p} ${c}`, "");
     let serializedStyles = Object.keys(styles)
-      .map((key) => `${key}: ${styles[key]?.toString()}`)
+      .map((key) => `${kebabCase(key)}: ${styles[key]?.toString()}`)
       .reduce((p, c) => p + c, "");
-    serializedStyles = serializedStyles.length ? `style=${serializedStyles}` : "";
+    serializedStyles = serializedStyles.length ? `style="${serializedStyles}"` : "";
     const arr = [serializedAttrs.slice(1), serializedStyles].filter((i) => i.length);
     if (arr.length) return arr.reduce((p, c) => `${p} ${c}`);
     return "";

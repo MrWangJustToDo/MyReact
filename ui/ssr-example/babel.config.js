@@ -38,7 +38,7 @@ module.exports = (api) => {
   plugins.push(["@babel/plugin-proposal-private-property-in-object", { loose: true }]);
   plugins.push("@babel/plugin-transform-runtime");
   plugins.push("@babel/plugin-proposal-export-default-from");
-  plugins.push("@loadable/babel-plugin");
+  process.env.STREAM === "false" && plugins.push("@loadable/babel-plugin");
 
   return {
     presets,

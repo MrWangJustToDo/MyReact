@@ -6,7 +6,7 @@ import type { ListTree, UniqueArray } from "@my-react/react-shared";
 export type refKey = "typeForRef" | "typeForCreate" | "typeForUpdate" | "typeForAppend" | "typeForNativeNode";
 
 export type RuntimeMap = {
-  suspenseMap: WeakMap<MyReactFiberNode, MyReactElementNode>;
+  suspenseMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
 
   strictMap: WeakMap<MyReactFiberNode, boolean>;
 

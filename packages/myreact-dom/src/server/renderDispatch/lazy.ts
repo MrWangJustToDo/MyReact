@@ -1,5 +1,6 @@
 import { createElement } from "@my-react/react";
-import { triggerError, WrapperByScope } from "@my-react/react-reconciler";
+import { WrapperByScope } from "@my-react/react-reconciler";
+import { ListTree } from "@my-react/react-shared";
 
 import type { lazy, MixinMyReactFunctionComponent } from "@my-react/react";
 import type { MyReactFiberNode, CustomRenderDispatch } from "@my-react/react-reconciler";
@@ -7,32 +8,21 @@ import type { MyReactFiberNode, CustomRenderDispatch } from "@my-react/react-rec
 /**
  * @internal
  */
-export const resolveLazyElementSync = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
+export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
   return WrapperByScope(_dispatch.resolveSuspense(_fiber));
 };
 
 /**
  * @internal
  */
-export const resolveLazyElementStatic = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
-  return _dispatch.resolveSuspense(_fiber);
-};
-
-/**
- * @internal
- */
-export const resolveLazyElementAsync = async (_fiber: MyReactFiberNode) => {
+export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
 
   if (typedElementType._loaded) return WrapperByScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
 
-  const loaded = await typedElementType.loader().catch((e) => triggerError(_fiber, e));
+  _dispatch.pendingAsyncLoadFiberList = _dispatch.pendingAsyncLoadFiberList || new ListTree<MyReactFiberNode>();
 
-  const render = typeof loaded === "object" && typeof loaded?.default === "function" ? loaded.default : loaded;
+  _dispatch.pendingAsyncLoadFiberList.push(_fiber);
 
-  typedElementType.render = render as ReturnType<typeof lazy>["render"];
-
-  typedElementType._loaded = true;
-
-  return WrapperByScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
+  return null;
 };

@@ -86,15 +86,7 @@ export const nextWorkComponent = (fiber: MyReactFiberNode) => {
 export const nextWorkLazy = (fiber: MyReactFiberNode) => {
   const renderDispatch = currentRenderDispatch.current;
 
-  const children = renderDispatch.resolveLazyElementSync(fiber);
-
-  nextWorkCommon(fiber, children);
-};
-
-export const nextWorkLazyAsync = async (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current;
-
-  const children = await renderDispatch.resolveLazyElementAsync(fiber);
+  const children = renderDispatch.resolveLazyElement(fiber);
 
   nextWorkCommon(fiber, children);
 };
@@ -163,56 +155,6 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   const typedFiber = fiber as MyReactFiberNodeDev;
 
   const timeNow = end;
-
-  if (enableDebugFiled.current) {
-    if (typedFiber.state === STATE_TYPE.__create__) {
-      typedFiber._debugRenderState = {
-        mountTime: timeNow,
-      };
-
-      typedFiber._debugIsMount = true;
-    } else {
-      const prevRenderState = Object.assign({}, typedFiber._debugRenderState);
-
-      const prevRenderTime = prevRenderState.updateTime || prevRenderState.mountTime;
-
-      typedFiber._debugRenderState = {
-        renderCount: (prevRenderState.renderCount || 0) + 1,
-        mountTime: prevRenderState.mountTime,
-        updateTime: timeNow,
-        trigger: currentTriggerFiber.current,
-        updateTimeInterval: timeNow - prevRenderTime,
-      };
-    }
-  }
-
-  if (include(typedFiber.type, renderDispatch.runtimeRef.typeForNativeNode)) {
-    renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
-  }
-
-  return res;
-};
-
-export const runtimeNextWorkAsync = async (fiber: MyReactFiberNode) => {
-  if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) return nextWorkComponent(fiber);
-
-  if (include(fiber.type, NODE_TYPE.__lazy__)) return await nextWorkLazyAsync(fiber);
-
-  if (include(fiber.type, NODE_TYPE.__consumer__)) return nextWorkConsumer(fiber);
-
-  nextWorkNormal(fiber);
-};
-
-export const runtimeNextWorkAsyncDev = async (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current;
-
-  setRefreshTypeMap(fiber);
-
-  const res = await runtimeNextWorkAsync(fiber);
-
-  const typedFiber = fiber as MyReactFiberNodeDev;
-
-  const timeNow = Date.now();
 
   if (enableDebugFiled.current) {
     if (typedFiber.state === STATE_TYPE.__create__) {

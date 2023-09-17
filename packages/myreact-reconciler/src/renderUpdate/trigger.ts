@@ -155,7 +155,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
   if (renderDispatch.isAppUnmounted) return;
 
   if (!renderDispatch.isAppMounted) {
-    if (__DEV__) devWarn("[@my-react/react] pending, can not update component");
+    if (__DEV__) devWarn("[@my-react/react] pending, can not update component,", fiber);
 
     renderPlatform.macroTask(() => triggerUpdate(fiber, state, cb));
 

@@ -82,10 +82,12 @@
       ReactDOM.hydrate(<App1 />, a);
     }
 
-    ReactDOMServer.renderToString(<App2 />, true).then((string) => b.innerHTML = string);
+    const bString = ReactDOMServer.renderToString(<App2 />);
 
-    const hydrate2 = async () => {
-      await ReactDOM.hydrate(<App2 />, b, true)
+    b.innerHTML = bString;
+
+    const hydrate2 = () => {
+      ReactDOM.hydrate(<App2 />, b)
     }
   </script>
 </body>

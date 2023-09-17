@@ -1,20 +1,28 @@
 import { createElement } from "@my-react/react";
 import { triggerError, WrapperByScope } from "@my-react/react-reconciler";
-import { STATE_TYPE } from "@my-react/react-shared";
+import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
+import type { ClientDomDispatch } from "./instance";
 import type { lazy, MixinMyReactFunctionComponent } from "@my-react/react";
-import type { MyReactFiberNode, CustomRenderDispatch } from "@my-react/react-reconciler";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 // TODO
 /**
  * @internal
  */
-export const resolveLazyElementSync = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
+export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
   if (typedElementType._loaded === true) {
-    const render = typedElementType.render as ReturnType<typeof lazy>["render"];
+    if (_dispatch.isHydrateRender) {
+      Promise.resolve().then(() => {
+        _fiber._update(STATE_TYPE.__triggerSync__);
+      });
+      return WrapperByScope(_dispatch.resolveSuspense(_fiber));
+    } else {
+      const render = typedElementType.render as ReturnType<typeof lazy>["render"];
 
-    return WrapperByScope(createElement(render as MixinMyReactFunctionComponent, _fiber.pendingProps));
+      return WrapperByScope(createElement(render as MixinMyReactFunctionComponent, _fiber.pendingProps));
+    }
   } else if (typedElementType._loading === false) {
     typedElementType._loading = true;
 
@@ -25,13 +33,12 @@ export const resolveLazyElementSync = (_fiber: MyReactFiberNode, _dispatch: Cust
 
         typedElementType._loaded = true;
 
-        typedElementType._loading = false;
-
         typedElementType.render = render as ReturnType<typeof lazy>["render"];
 
         _fiber._update(STATE_TYPE.__triggerSync__);
       })
-      .catch((e) => triggerError(_fiber, e));
+      .catch((e) => triggerError(_fiber, e))
+      .finally(() => (typedElementType._loading = false));
   }
 
   return WrapperByScope(_dispatch.resolveSuspense(_fiber));
@@ -40,18 +47,36 @@ export const resolveLazyElementSync = (_fiber: MyReactFiberNode, _dispatch: Cust
 /**
  * @internal
  */
-export const resolveLazyElementAsync = async (_fiber: MyReactFiberNode) => {
+export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
 
-  if (typedElementType._loaded) return WrapperByScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
+  if (typedElementType._loaded === true) {
+    return WrapperByScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
+  } else {
+    if (_dispatch.isHydrateRender) {
+      _dispatch.pendingAsyncLoadFiberList = _dispatch.pendingAsyncLoadFiberList || new ListTree<MyReactFiberNode>();
 
-  const loaded = await typedElementType.loader().catch((e) => triggerError(_fiber, e));
+      _dispatch.pendingAsyncLoadFiberList.push(_fiber);
 
-  const render = typeof loaded === "object" && typeof loaded?.default === "function" ? loaded.default : loaded;
+      return null;
+    } else if (typedElementType._loading === false) {
+      typedElementType._loading = true;
 
-  typedElementType.render = render as ReturnType<typeof lazy>["render"];
+      Promise.resolve()
+        .then(() => typedElementType.loader())
+        .then((re) => {
+          const render = typeof re === "object" && typeof re?.default === "function" ? re.default : re;
 
-  typedElementType._loaded = true;
+          typedElementType._loaded = true;
 
-  return WrapperByScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
+          typedElementType.render = render as ReturnType<typeof lazy>["render"];
+
+          _fiber._update(STATE_TYPE.__triggerSync__);
+        })
+        .catch((e) => triggerError(_fiber, e))
+        .finally(() => (typedElementType._loading = false));
+    }
+
+    return WrapperByScope(_dispatch.resolveSuspense(_fiber));
+  }
 };

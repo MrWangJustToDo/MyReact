@@ -56,6 +56,8 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
 
+  pendingAsyncLoadFiberList: ListTree<MyReactFiberNode> | null = null;
+
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
 
   performanceLogTimeLimit = 2000;
@@ -110,7 +112,6 @@ export class CustomRenderDispatch implements RenderDispatch {
         _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__ref__);
       } else if (exclude(_fiber.type, NODE_TYPE.__forwardRef__)) {
         onceWarnWithKey(_fiber, "ref", `[@my-react/react] set ref for current element will be ignored`);
-        // console.warn(`[@my-react/react] set ref for current element will be ignored`);
       }
     }
   }
@@ -164,10 +165,7 @@ export class CustomRenderDispatch implements RenderDispatch {
   commitClearNode(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
-    return null;
-  }
-  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
     return null;
   }
   resolveStrictMap(_fiber: MyReactFiberNode): void {

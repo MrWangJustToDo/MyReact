@@ -3,7 +3,7 @@ import { CustomRenderDispatch, NODE_TYPE, safeCallWithFiber } from "@my-react/re
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
-import { resolveLazyElementSync, resolveLazyElementAsync, resolveLazyElementStatic } from "./lazy";
+import { resolveLazyElementLatest, resolveLazyElementLegacy } from "./lazy";
 
 import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -78,91 +78,8 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
     void 0;
   }
 
-  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementSync(_fiber, this);
-  }
-
-  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
-    return resolveLazyElementAsync(_fiber);
-  }
-
-  reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
-    const mountLoop = (_fiber: MyReactFiberNode) => {
-      safeCallWithFiber({ fiber: _fiber, action: () => createStartTagWithStream(_fiber, this) });
-
-      if (_fiber.child) mountLoop(_fiber.child);
-
-      safeCallWithFiber({ fiber: _fiber, action: () => createCloseTagWithStream(_fiber, this) });
-
-      if (_fiber.sibling) mountLoop(_fiber.sibling);
-    };
-
-    Promise.resolve()
-      .then(() => mountLoop(_fiber))
-      .then(() => this.stream.push(null));
-
-    return true;
-  }
-
-  patchToFiberInitial(_fiber: MyReactFiberNode) {
-    initialElementMap(_fiber, this);
-  }
-}
-
-/**
- * @internal
- */
-export class ServerStaticStreamDispatch extends CustomRenderDispatch {
-  runtimeDom = {
-    elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
-  };
-
-  runtimeRef = runtimeRef;
-
-  stream: SimpleReadable;
-
-  _lastIsStringNode: boolean;
-
-  isHydrateRender: boolean;
-
-  isClientRender: boolean;
-
-  isServerRender: boolean;
-
-  renderTime: number | null;
-
-  hydrateTime: number | null;
-
-  pendingRef(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-
-  pendingPosition(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-
-  pendingContext(_fiber: MyReactFiberNode): void {
-    void 0;
-  }
-
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | (MyReactFiberNode | MyReactFiberNode[])[]): void {
-    void 0;
-  }
-
-  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
-    void 0;
-  }
-
-  pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
-    void 0;
-  }
-
-  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementStatic(_fiber, this);
-  }
-
-  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
-    throw new Error(`[@my-react/react-dom] 'renderToStaticNodeStream' not support resolve lazy component on the Server, this is a internal bug`);
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
+    return resolveLazyElementLegacy(_fiber, this);
   }
 
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
@@ -253,12 +170,8 @@ export class ServerPipeableStreamDispatch extends CustomRenderDispatch {
     void 0;
   }
 
-  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementSync(_fiber, this);
-  }
-
-  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
-    return resolveLazyElementAsync(_fiber);
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
+    return resolveLazyElementLatest(_fiber, this);
   }
 
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
@@ -278,10 +191,9 @@ export class ServerPipeableStreamDispatch extends CustomRenderDispatch {
 
     this.bootstrapScriptContent && (generatedScript += `<script>${this.bootstrapScriptContent}</script>`);
 
-    this.onShellReady?.();
-
     Promise.resolve()
       .then(() => mountLoop(_fiber))
+      .then(() => this.onShellReady?.())
       .then(() => this.stream.push(generatedScript))
       .then(() => this.stream.push(null))
       .then(() => this.onAllReady?.());

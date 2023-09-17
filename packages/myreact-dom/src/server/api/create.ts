@@ -7,7 +7,7 @@ import { CommentEndElement, CommentStartElement, PlainElement, TextElement } fro
 import { getSerializeProps } from "./update";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ServerDomDispatch, ServerStaticStreamDispatch, ServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
+import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 /**
  * @internal
@@ -41,7 +41,7 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatc
 /**
  * @internal
  */
-export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch | ServerStaticStreamDispatch) => {
+export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch) => {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const stream = renderDispatch.stream;
 
@@ -93,7 +93,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
 /**
  * @internal
  */
-export const createCloseTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch | ServerStaticStreamDispatch) => {
+export const createCloseTagWithStream = (fiber: MyReactFiberNode, renderDispatch: ServerStreamDispatch) => {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const stream = renderDispatch.stream;
     if (include(fiber.type, NODE_TYPE.__plain__)) {

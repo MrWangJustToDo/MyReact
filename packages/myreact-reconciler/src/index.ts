@@ -9,6 +9,7 @@ export * from "./dispatchSuspense";
 export * from "./dispatchUnmount";
 export * from "./dispatchUpdate";
 export * from "./processHook";
+export * from "./processLazy";
 export * from "./processState";
 export * from "./share";
 export * from "./renderDispatch";

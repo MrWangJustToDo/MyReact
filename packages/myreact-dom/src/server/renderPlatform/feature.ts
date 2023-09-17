@@ -9,7 +9,7 @@ import type { ServerPipeableStreamDispatch } from "@my-react-dom-server/renderDi
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
 
-const { enableDebugFiled } = __my_react_shared__;
+const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
 
 /**
  * @internal
@@ -49,6 +49,8 @@ export const prepareRenderPlatform = () => {
   if (!renderPlatform) initGlobalRenderPlatform();
 
   enableDebugFiled.current = false;
+
+  enableScopeTreeLog.current = false;
 
   renderPlatform = currentRenderPlatform.current as ClientDomPlatform | ServerDomPlatform;
 

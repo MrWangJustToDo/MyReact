@@ -9,7 +9,7 @@ import type { ServerDomPlatform } from "@my-react-dom-server/renderPlatform";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
 
-const { enableDebugFiled } = __my_react_shared__;
+const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
 
 function dispatchState(this: ClientDomPlatform, _params: UpdateQueue) {
   if (!this.isServer) {
@@ -46,6 +46,8 @@ export const prepareRenderPlatform = () => {
   if (!renderPlatform) initGlobalRenderPlatform();
 
   enableDebugFiled.current = true;
+
+  enableScopeTreeLog.current = true;
 
   renderPlatform = currentRenderPlatform.current as ClientDomPlatform | ServerDomPlatform;
 

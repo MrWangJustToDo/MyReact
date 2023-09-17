@@ -3,7 +3,7 @@ import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 import { append, create, update } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
-import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
+import { resolveLazyElementLegacy } from "./lazy";
 
 import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -82,12 +82,8 @@ export class ServerDomDispatch extends CustomRenderDispatch {
     append(_fiber, parentFiberWithNode);
   }
 
-  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementSync(_fiber, this);
-  }
-
-  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
-    return resolveLazyElementAsync(_fiber);
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
+    return resolveLazyElementLegacy(_fiber, this);
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {

@@ -2,7 +2,7 @@ import { isValidElement } from "@my-react/react";
 import { MyReactFiberNode, initialFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement } from "@my-react-dom-server/api";
-import { ServerStaticDispatch } from "@my-react-dom-server/renderDispatch";
+import { ServerDomDispatch } from "@my-react-dom-server/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
 import { checkRoot, startRender } from "@my-react-dom-shared";
 
@@ -18,7 +18,7 @@ export const renderToStaticMarkup = (element: LikeJSX) => {
 
     __DEV__ && checkRoot(fiber);
 
-    const renderDispatch = new ServerStaticDispatch(container, fiber);
+    const renderDispatch = new ServerDomDispatch(container, fiber);
 
     renderDispatch.isServerRender = true;
 

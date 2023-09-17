@@ -4,10 +4,10 @@ import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
-import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, setRef, shouldPauseAsyncUpdate, unsetRef } from "@my-react-dom-shared";
+import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, setRef, shouldPauseAsyncUpdate, unsetRef, enableASyncHydrate } from "@my-react-dom-shared";
 
 import { mountControlElement, unmountControlElement, updateControlElement } from "./control";
-import { resolveLazyElementSync, resolveLazyElementAsync } from "./lazy";
+import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -68,11 +68,12 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   commitClearNode(_fiber: MyReactFiberNode): void {
     clearNode(_fiber);
   }
-  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementSync(_fiber, this);
-  }
-  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
-    return resolveLazyElementAsync(_fiber);
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
+    if (enableASyncHydrate.current) {
+      return resolveLazyElementLatest(_fiber, this);
+    } else {
+      return resolveLazyElementLegacy(_fiber, this);
+    }
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
     return clientDispatchMount(_fiber, this, _hydrate);

@@ -1,4 +1,4 @@
-import { performToNextFiberWithTrigger, performToNextFiberAsyncWithTrigger } from "../renderNextWork";
+import { performToNextFiberWithTrigger } from "../renderNextWork";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -7,12 +7,5 @@ export const mountLoop = (fiber: MyReactFiberNode, renderDispatch: CustomRenderD
   let pendingFiber = fiber;
   while (pendingFiber) {
     pendingFiber = performToNextFiberWithTrigger(pendingFiber, renderDispatch);
-  }
-};
-
-export const mountLoopAsync = async (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  let pendingFiber = fiber;
-  while (pendingFiber) {
-    pendingFiber = await performToNextFiberAsyncWithTrigger(pendingFiber, renderDispatch);
   }
 };

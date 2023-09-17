@@ -2,7 +2,7 @@ import { isValidElement } from "@my-react/react";
 import { MyReactFiberNode, initialFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement } from "@my-react-dom-server/api";
-import { ServerStaticStreamDispatch } from "@my-react-dom-server/renderDispatch";
+import { ServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
 import { checkRoot, startRender } from "@my-react-dom-shared";
 
@@ -30,7 +30,7 @@ export const renderToStaticNodeStream = (element: LikeJSX): Readable => {
 
     __DEV__ && checkRoot(fiber);
 
-    const renderDispatch = new ServerStaticStreamDispatch(container, fiber);
+    const renderDispatch = new ServerStreamDispatch(container, fiber);
 
     renderDispatch.stream = stream;
 

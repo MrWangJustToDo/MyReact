@@ -54,9 +54,6 @@ export const processState = (_params: UpdateQueue) => {
           "updateWhenCurrentFlowIsRunning",
           `[@my-react/react] trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`
         );
-        // console.warn(
-        //   `[@my-react/react] trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`
-        // );
       }
       lastRenderComponentFiber = currentComponentFiber.current;
     }
@@ -84,9 +81,6 @@ export const processState = (_params: UpdateQueue) => {
           "updateWhenCurrentFlowIsRunning",
           `[@my-react/react] trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`
         );
-        // console.warn(
-        //   `[@my-react/react] trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`
-        // );
       }
       lastRenderComponentFiber = currentComponentFiber.current;
     }

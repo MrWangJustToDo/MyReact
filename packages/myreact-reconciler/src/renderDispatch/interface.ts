@@ -48,6 +48,8 @@ type DefaultRenderDispatch = {
 
   pendingCommitFiberList: ListTree<MyReactFiberNode> | null;
 
+  pendingAsyncLoadFiberList: ListTree<MyReactFiberNode> | null;
+
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode>;
 
   generateCommitList(_fiber: MyReactFiberNode): void;
@@ -92,9 +94,7 @@ type DefaultRenderDispatch = {
 
   commitClearNode(_fiber: MyReactFiberNode): void;
 
-  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode;
-
-  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode>;
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode;
 
   resolveStrictMap(_fiber: MyReactFiberNode): void;
 

@@ -1,5 +1,8 @@
+import { UniqueArray } from "@my-react/react-shared";
+
 import { getFiberTree, getHookTree } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { RenderFiber, RenderHookParams, RenderPlatform, UpdateQueue } from "@my-react/react";
@@ -30,4 +33,6 @@ export class CustomRenderPlatform implements RenderPlatform {
   dispatchError(_params: { fiber?: RenderFiber; error?: Error }): void {
     void 0;
   }
+
+  dispatchSet = new UniqueArray<CustomRenderDispatch>();
 }

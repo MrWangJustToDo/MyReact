@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -9,6 +9,9 @@ import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogPerf
 
 import type { RenderContainer } from "./render";
 import type { MyReactElement, LikeJSX } from "@my-react/react";
+import type { CustomRenderPlatform} from "@my-react/react-reconciler";
+
+const { currentRenderPlatform } = __my_react_internal__;
 
 const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __my_react_shared__;
 
@@ -16,6 +19,10 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
   const fiber = new MyReactFiberNode(element);
 
   const renderDispatch = new ClientDomDispatch(container, fiber);
+
+  const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
+
+  renderPlatform.dispatchSet.uniPush(renderDispatch);
 
   __DEV__ && checkRoot(fiber);
 
@@ -42,6 +49,10 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
   const fiber = new MyReactFiberNode(element);
 
   const renderDispatch = new ClientDomDispatch(container, fiber);
+
+  const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
+
+  renderPlatform.dispatchSet.uniPush(renderDispatch);
 
   __DEV__ && checkRoot(fiber);
 

@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react";
 import { checkIsSameType, initialFiberNode, MyReactFiberNode, triggerUpdate } from "@my-react/react-reconciler";
 import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
@@ -8,11 +8,14 @@ import { unmountComponentAtNode } from "@my-react-dom-client/tools";
 import { checkRoot, prepareDevContainer, startRender } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
+import type { CustomRenderPlatform} from "@my-react/react-reconciler";
 
 export type RenderContainer = Element & {
   __fiber__: MyReactFiberNode;
   __container__: ClientDomDispatch;
 };
+
+const { currentRenderPlatform } = __my_react_internal__;
 
 const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __my_react_shared__;
 
@@ -105,6 +108,10 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
   const fiber = new MyReactFiberNode(element);
 
   const renderDispatch = new ClientDomDispatch(container, fiber);
+
+  const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
+
+  renderPlatform.dispatchSet.uniPush(renderDispatch);
 
   __DEV__ && checkRoot(fiber);
 

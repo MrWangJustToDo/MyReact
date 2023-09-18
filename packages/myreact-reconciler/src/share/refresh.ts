@@ -51,7 +51,9 @@ export const getCurrentFibersFromType = (type: MixinMyReactClassComponent | Mixi
 export const getCurrentDispatchFromType = (type: MixinMyReactClassComponent | MixinMyReactFunctionComponent) => {
   const fibers = getCurrentFibersFromType(type);
 
-  const [fiber] = Array.from(fibers || []);
+  return new Set(Array.from(fibers || []).map((fiber) => fiberToDispatchMap.get(fiber)));
+};
 
-  return fiber ? fiberToDispatchMap.get(fiber) : null;
+export const getCurrentDispatchFromFiber = (fiber: MyReactFiberNode) => {
+  return fiberToDispatchMap.get(fiber);
 };

@@ -7,6 +7,7 @@ import { currentTriggerFiber, devError, devWarn, fiberToDispatchMap } from "../s
 import { updateConcurrentWithAll, updateConcurrentWithTrigger, updateSyncWithAll, updateSyncWithTrigger } from "./feature";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
+import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberNode, PendingStateTypeWithError } from "../runtimeFiber";
 import type { MyReactComponent } from "@my-react/react";
 
@@ -14,12 +15,36 @@ const { globalLoop, currentRenderPlatform, currentRunningFiber } = __my_react_in
 
 const { enableConcurrentMode, enableLoopFromRoot } = __my_react_shared__;
 
+const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
+  if (!renderDispatch.isAppUnmounted && !renderDispatch.isAppCrashed && renderDispatch.pendingUpdateFiberArray.length) {
+    scheduleUpdate(renderDispatch);
+    return;
+  }
+
+  const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
+
+  if (!renderPlatform.dispatchSet || renderPlatform.dispatchSet?.length === 1) return;
+
+  const allDispatch = renderPlatform.dispatchSet;
+
+  const hasPending = allDispatch
+    .getAll()
+    .find((d) => d !== renderDispatch && d.isAppMounted && !d.isAppCrashed && !d.isAppUnmounted && d.pendingUpdateFiberArray.length);
+
+  if (hasPending) {
+    scheduleUpdate(hasPending);
+  }
+};
+
 const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   let nextWorkFiber: MyReactFiberNode | null = null;
 
   let nextWorkSyncFiber: MyReactFiberNode | null = null;
 
-  if (renderDispatch.isAppUnmounted) return;
+  if (renderDispatch.isAppUnmounted) {
+    scheduleNext(renderDispatch);
+    return;
+  }
 
   if (enableLoopFromRoot.current) {
     const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
@@ -36,10 +61,12 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
       renderDispatch.runtimeFiber.nextWorkingFiber = renderDispatch.rootFiber;
 
       if (hasSync) {
-        updateSyncWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
+        updateSyncWithAll(renderDispatch, () => scheduleNext(renderDispatch));
       } else {
-        updateConcurrentWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
+        updateConcurrentWithAll(renderDispatch, () => scheduleNext(renderDispatch));
       }
+    } else {
+      scheduleNext(renderDispatch);
     }
   } else {
     const allPending = renderDispatch.pendingUpdateFiberArray.getAll();
@@ -70,9 +97,9 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
         renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
         if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__)) {
-          updateSyncWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
+          updateSyncWithAll(renderDispatch, () => scheduleNext(renderDispatch));
         } else {
-          updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+          updateSyncWithTrigger(renderDispatch, () => scheduleNext(renderDispatch));
         }
       } else if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
@@ -83,15 +110,15 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
 
         if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__)) {
           if (enableConcurrentMode.current) {
-            updateConcurrentWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
+            updateConcurrentWithAll(renderDispatch, () => scheduleNext(renderDispatch));
           } else {
-            updateSyncWithAll(renderDispatch, () => scheduleUpdate(renderDispatch));
+            updateSyncWithAll(renderDispatch, () => scheduleNext(renderDispatch));
           }
         } else {
           if (enableConcurrentMode.current) {
-            updateConcurrentWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+            updateConcurrentWithTrigger(renderDispatch, () => scheduleNext(renderDispatch));
           } else {
-            updateSyncWithTrigger(renderDispatch, () => scheduleUpdate(renderDispatch));
+            updateSyncWithTrigger(renderDispatch, () => scheduleNext(renderDispatch));
           }
         }
       } else {
@@ -108,6 +135,8 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
       renderDispatch.runtimeFiber.nextWorkingFiber = null;
 
       renderDispatch.pendingCommitFiberList = null;
+
+      scheduleNext(renderDispatch);
     }
   }
 };

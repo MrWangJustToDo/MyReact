@@ -269,10 +269,6 @@ export const performReactRefresh = () => {
     if (prevType && nextType) {
       const fibers = typedSelf["__@my-react/hmr__"]?.getCurrentFibersFromType?.(prevType);
 
-      const container = typedSelf["__@my-react/hmr__"]?.getCurrentDispatchFromType?.(prevType);
-
-      let hasRootUpdate = containers.get(container) || false;
-
       updatedFamiliesByType.set(prevType, family);
 
       updatedFamiliesByType.set(_nextType, family);
@@ -283,12 +279,14 @@ export const performReactRefresh = () => {
         const forceReset = !canPreserveStateBetween(prevType, nextType);
 
         fibers.forEach((f) => {
-          hasRootUpdate = hasRootUpdate || f === container.rootFiber;
+          const container = typedSelf["__@my-react/hmr__"]?.getCurrentDispatchFromFiber?.(f);
+
+          const hasRootUpdate = containers.get(container) || f === container.rootFiber;
 
           typedSelf?.["__@my-react/hmr__"]?.hmr?.(f, nextType, forceReset);
-        });
 
-        containers.set(container, hasRootUpdate);
+          containers.set(container, hasRootUpdate);
+        });
       }
     }
   });

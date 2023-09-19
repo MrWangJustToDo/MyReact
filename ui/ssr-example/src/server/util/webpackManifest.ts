@@ -47,7 +47,7 @@ const mainScriptsPath = (content: Record<string, string>) =>
   baseScriptsPath(
     content,
     (f) => f.startsWith("main") || f.startsWith("vendor"),
-    // (f) => (f.startsWith("main") ? 0 : -1)
+    (f) => (f.startsWith("main") ? 0 : -1)
   );
 
 const runtimeScriptsPath = (content: Record<string, string>) => baseScriptsPath(content, (f) => f.startsWith("runtime"));

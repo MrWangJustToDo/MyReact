@@ -44,6 +44,8 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
 
   _lastIsStringNode: boolean;
 
+  _hasSetDoctype: boolean;
+
   isHydrateRender: boolean;
 
   isClientRender: boolean;
@@ -118,6 +120,8 @@ export class ServerPipeableStreamDispatch extends CustomRenderDispatch {
   stream: SimpleReadable;
 
   _lastIsStringNode: boolean;
+
+  _hasSetDoctype: boolean;
 
   isHydrateRender: boolean;
 

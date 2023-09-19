@@ -60,6 +60,13 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
     } else if (include(fiber.type, NODE_TYPE.__plain__)) {
       renderDispatch._lastIsStringNode = false;
 
+      // TODO
+      // <!doctype html>
+      if (fiber.elementType === "html" && !renderDispatch._hasSetDoctype) {
+        renderDispatch._hasSetDoctype = true;
+        stream.push("<!doctype html>");
+      }
+
       if (isSingleTag[fiber.elementType as string]) {
         stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}/>`);
 

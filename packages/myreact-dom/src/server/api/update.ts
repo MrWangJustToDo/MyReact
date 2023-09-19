@@ -79,6 +79,9 @@ export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
         } else {
           attrs[attrKey] = props[key];
         }
+        if (fiber.elementType === "html") {
+          attrs["data-stream"] = "@my-react";
+        }
       }
       if (isStyle(key)) {
         const typedProps = (props[key] as Record<string, unknown>) || {};

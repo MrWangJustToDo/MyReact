@@ -1,19 +1,19 @@
 {
-  "./Blog": {
-    "path": [
-      "pages-Blog.js"
-    ],
-    "static": true
-  },
   "./": {
     "path": [
-      "pages-.js"
+      "page-.js"
     ],
     "static": true
   },
   "./404": {
     "path": [
-      "pages-404.js"
+      "page-404.js"
+    ],
+    "static": true
+  },
+  "./Blog": {
+    "path": [
+      "page-Blog.js"
     ],
     "static": true
   }

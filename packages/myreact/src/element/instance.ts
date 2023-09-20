@@ -11,14 +11,23 @@ import type { MyReactInternalInstance } from "../internal";
 import type { RenderFiber } from "../renderFiber";
 import type { createRef } from "../share";
 
-type MyReactFunctionComponent<P extends Record<string, unknown> = any> = (props: P) => MyReactElementNode;
+/**
+ * @public
+ */
+export type MyReactFunctionComponent<P extends Record<string, unknown> = any> = (props: P) => MyReactElementNode;
 
-type MyReactClassComponent<
+/**
+ * @public
+ */
+export type MyReactClassComponent<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,
   C extends Record<string, unknown> = any,
 > = typeof MyReactComponent<P, S, C>;
 
+/**
+ * @public
+ */
 export type MyReactObjectComponent<P extends Record<string, unknown> = any> =
   | ReturnType<typeof createContext<P>>["Consumer"]
   | ReturnType<typeof createContext<P>>["Provider"]
@@ -26,11 +35,17 @@ export type MyReactObjectComponent<P extends Record<string, unknown> = any> =
   | ReturnType<typeof memo<P>>
   | ReturnType<typeof lazy>;
 
+/**
+ * @public
+ */
 export type MixinMyReactObjectComponent<P extends Record<string, unknown> = any> = MyReactObjectComponent<P> & {
   displayName?: string;
   defaultProps?: Record<string, unknown>;
 };
 
+/**
+ * @public
+ */
 export type MixinMyReactClassComponent<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,
@@ -40,11 +55,17 @@ export type MixinMyReactClassComponent<
   defaultProps?: Record<string, unknown>;
 };
 
+/**
+ * @public
+ */
 export type MixinMyReactFunctionComponent<P extends Record<string, unknown> = any> = MyReactFunctionComponent<P> & {
   displayName?: string;
   defaultProps?: Record<string, unknown>;
 };
 
+/**
+ * @public
+ */
 export type MyReactElementType<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any> =
   | symbol
   | string
@@ -52,6 +73,9 @@ export type MyReactElementType<P extends Record<string, unknown> = any, S extend
   | MixinMyReactClassComponent<P, S, C>
   | MixinMyReactFunctionComponent<P>;
 
+/**
+ * @public
+ */
 export interface LikeJSX<T extends MyReactElementType<P> = any, P extends Record<string, unknown> = any, Key extends string | number = string | number> {
   type: T;
   props: P;
@@ -63,6 +87,9 @@ export interface LikeJSX<T extends MyReactElementType<P> = any, P extends Record
   _store?: Record<string, unknown>;
 }
 
+/**
+ * @public
+ */
 export type MyReactElement = LikeJSX & {
   [TYPEKEY]?: symbol;
   // createElement
@@ -71,18 +98,36 @@ export type MyReactElement = LikeJSX & {
   _jsx?: boolean;
 };
 
+/**
+ * @public
+ */
 export type MyReactElementNode = MyReactElement | ((p: any) => MyReactElementNode) | string | number | boolean | null | undefined;
 
+/**
+ * @public
+ */
 export type MaybeArrayMyReactElementNode = MyReactElementNode | MyReactElementNode[];
 
+/**
+ * @public
+ */
 export type ArrayMyReactElementNode = MyReactElementNode[];
 
+/**
+ * @public
+ */
 export type ArrayMyReactElementChildren = MaybeArrayMyReactElementNode[];
 
+/**
+ * @public
+ */
 export type Props = {
   [key: string]: unknown;
 };
 
+/**
+ * @public
+ */
 export type CreateElementProps<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any> = {
   type: MyReactElementType<P, S, C>;
   key: string | number | null;
@@ -93,6 +138,9 @@ export type CreateElementProps<P extends Record<string, unknown> = any, S extend
   _owner: RenderFiber | null;
 };
 
+/**
+ * @public
+ */
 export type CreateElementConfig<P extends Record<string, unknown> = any> = {
   ref?: CreateElementProps<P>["ref"];
   key?: CreateElementProps<P>["key"];
@@ -129,60 +177,81 @@ const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }:
   return element;
 };
 
+/**
+ * @public
+ */
 export function createElement<P extends Record<string, unknown> = any>(
   type: string,
   config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
   ...children: ArrayMyReactElementChildren
 ): MyReactElement;
-
+/**
+ * @public
+ */
 export function createElement<P extends Record<string, unknown> = any>(
   type: symbol,
   config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
   ...children: ArrayMyReactElementChildren
 ): MyReactElement;
-
+/**
+ * @public
+ */
 export function createElement<P extends Record<string, unknown> = any>(
   type: ReturnType<typeof memo<P>>,
   config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
   ...children: ArrayMyReactElementChildren
 ): MyReactElement;
-
+/**
+ * @public
+ */
 export function createElement<P extends Record<string, unknown> = any>(
   type: ReturnType<typeof forwardRef<P>>,
   config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
   ...children: ArrayMyReactElementChildren
 ): MyReactElement;
-
+/**
+ * @public
+ */
 export function createElement<P extends Record<string, unknown> = any>(
   type: ReturnType<typeof createContext<P>>["Provider"],
   config?: CreateElementConfig<P> & { value: CreateElementProps<P>["props"] },
   ...children: ArrayMyReactElementChildren
 ): MyReactElement;
-
+/**
+ * @public
+ */
 export function createElement<P extends Record<string, unknown> = any>(
   type: ReturnType<typeof createContext<P>>["Consumer"],
   config?: CreateElementConfig<P> & { children: (props: P) => MyReactElement },
   ...children: ArrayMyReactElementChildren
 ): MyReactElement;
-
+/**
+ * @public
+ */
 export function createElement<P extends Record<string, unknown> = any>(
   type: MixinMyReactObjectComponent<P>,
   config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
   ...children: ArrayMyReactElementChildren
 ): MyReactElement;
-
+/**
+ * @public
+ */
 export function createElement<P extends Record<string, unknown> = any>(
   type: MixinMyReactFunctionComponent<P>,
   config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
   ...children: ArrayMyReactElementChildren
 ): MyReactElement;
-
+/**
+ * @public
+ */
 export function createElement<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>(
   type: MixinMyReactClassComponent<P, S, C>,
   config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
   ...children: ArrayMyReactElementChildren
 ): MyReactElement;
-
+/**
+ * @public
+ */
 export function createElement<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>(
   type: MyReactElementType<P, S, C>,
   config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
@@ -245,6 +314,9 @@ export function createElement<P extends Record<string, unknown> = any, S extends
   return element;
 }
 
+/**
+ * @public
+ */
 export function cloneElement<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>(
   element: MyReactElementNode,
   config?: CreateElementConfig,
@@ -325,6 +397,7 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
 
 /**
  * @deprecated
+ * @public
  */
 export function createFactory(type: MyReactElementType) {
   return (config?: CreateElementConfig & CreateElementProps["props"], ...children: ArrayMyReactElementChildren) => {

@@ -45,14 +45,29 @@ import {
   enablePerformanceLog,
 } from "./share";
 
+/**
+ * @public
+ */
 const Component = MyReactComponent;
 
+/**
+ * @public
+ */
 const PureComponent = MyReactPureComponent as typeof MyReactComponent;
 
+/**
+ * @public
+ */
 const version = __VERSION__;
 
+/**
+ * @beta
+ */
 const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {};
 
+/**
+ * @public
+ */
 const __my_react_shared__ = {
   enableDebugLog,
   enableSyncFlush,
@@ -67,6 +82,9 @@ const __my_react_shared__ = {
   enablePerformanceLog,
 };
 
+/**
+ * @public
+ */
 const __my_react_internal__ = {
   MyReactInternalInstance,
   globalLoop,
@@ -78,6 +96,9 @@ const __my_react_internal__ = {
   currentRenderPlatform,
 };
 
+/**
+ * @public
+ */
 const Children = {
   map,
   only,
@@ -128,29 +149,34 @@ export {
   version,
 };
 
-export type { Action, Reducer, RenderHook, RenderHookParams } from "./renderHook";
+export type { Action, Reducer, RenderHook, RenderHookParams, DefaultRenderHook } from "./renderHook";
 
-export type { RenderPlatform } from "./renderPlatform";
+export type { RenderPlatform, DefaultRenderPlatform } from "./renderPlatform";
 
-export type { RenderFiber } from "./renderFiber";
+export type { RenderFiber, DefaultRenderFiber } from "./renderFiber";
 
 export type { UpdateQueue, ComponentUpdateQueue, HookUpdateQueue } from "./renderQueue";
 
 export type {
   LikeJSX,
   Props,
+  ContextObjectType,
   CreateElementProps,
+  CreateElementConfig,
   MyReactElement,
   MyReactElementType,
   MyReactElementNode,
   ArrayMyReactElementNode,
   ArrayMyReactElementChildren,
   MaybeArrayMyReactElementNode,
+  MyReactClassComponent,
   MyReactObjectComponent,
+  MyReactFunctionComponent,
   MixinMyReactClassComponent,
+  MixinMyReactObjectComponent,
   MixinMyReactFunctionComponent,
 } from "./element";
 
 export type { MyReactInternalInstance } from "./internal";
 
-export type { MyReactComponent } from "./component";
+export type { MyReactComponent, ErrorInfo } from "./component";

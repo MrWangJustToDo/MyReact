@@ -10,7 +10,10 @@ const defaultObject = { [TYPEKEY]: Context, contextId: 0 };
 
 const defaultCompare = <P extends Record<string, unknown>>(oldProps: P, newProps: P) => isNormalEquals(oldProps, newProps);
 
-type ContextObjectType<T, K> = {
+/**
+ * @public
+ */
+export type ContextObjectType<T, K> = {
   displayName?: string;
   [TYPEKEY]: symbol;
   contextId: number;
@@ -18,6 +21,9 @@ type ContextObjectType<T, K> = {
   Consumer: K;
 };
 
+/**
+ * @public
+ */
 export const createContext = <T = any>(value: T) => {
   const ContextObject: ContextObjectType<typeof ProviderObject, typeof ConsumerObject> = {
     [TYPEKEY]: Context,
@@ -61,6 +67,9 @@ export const createContext = <T = any>(value: T) => {
   return ContextObject;
 };
 
+/**
+ * @public
+ */
 export const forwardRef = <P extends Record<string, unknown> = any, T extends CreateElementConfig<P>["ref"] = any>(
   render: (props: P, ref?: T) => MyReactElement
 ) => {
@@ -78,6 +87,9 @@ export const forwardRef = <P extends Record<string, unknown> = any, T extends Cr
   return objectType;
 };
 
+/**
+ * @public
+ */
 export const memo = <P extends Record<string, unknown> = any>(
   render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown },
   compare = defaultCompare<P>
@@ -98,6 +110,9 @@ export const memo = <P extends Record<string, unknown> = any>(
   return objectType;
 };
 
+/**
+ * @public
+ */
 export const lazy = (
   loader: () => Promise<{ default: MixinMyReactFunctionComponent | MixinMyReactClassComponent } | MixinMyReactFunctionComponent | MixinMyReactClassComponent>
 ) => {

@@ -12,6 +12,9 @@ import type {
   MyReactObjectComponent,
 } from "./instance";
 
+/**
+ * @public
+ */
 export const isValidElement = (element?: MyReactElementNode | any): element is MyReactElement => {
   return typeof element === "object" && !Array.isArray(element) && element?.[TYPEKEY] === Element;
 };

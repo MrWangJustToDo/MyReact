@@ -24,6 +24,9 @@ const RESERVED_PROPS = {
 
 export { Fragment } from "@my-react/react-shared";
 
+/**
+ * @public
+ */
 export const jsx = (
   type: MyReactElementType,
   config: Props,
@@ -92,6 +95,9 @@ export const jsx = (
   return element;
 };
 
+/**
+ * @public
+ */
 export const jsxDEV = (
   type: MyReactElementType,
   config: Props,
@@ -126,6 +132,9 @@ export const jsxDEV = (
   return element;
 };
 
+/**
+ * @public
+ */
 export const jsxs = (type: MyReactElementType, config: Props, key: string | null, source: CreateElementProps["_source"], self: CreateElementProps["_self"]) => {
   if (__DEV__) {
     return jsxDEV(type, config, key, true, source, self);

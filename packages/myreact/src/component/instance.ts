@@ -6,10 +6,16 @@ import { currentRenderPlatform } from "../share";
 import type { MyReactElementNode, createContext } from "../element";
 import type { ComponentUpdateQueue } from "../renderQueue";
 
-type ErrorInfo = {
+/**
+ * @public
+ */
+export type ErrorInfo = {
   componentStack: string;
 };
 
+/**
+ * @public
+ */
 export class MyReactComponent<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,

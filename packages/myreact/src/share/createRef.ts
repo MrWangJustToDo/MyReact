@@ -1,3 +1,6 @@
+/**
+ * @public
+ */
 export const createRef = <T = any>(value: T) => {
   const refValue = { current: value };
 

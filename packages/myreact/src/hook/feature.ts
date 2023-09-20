@@ -11,6 +11,9 @@ const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;
 };
 
+/**
+ * @public
+ */
 export const useState = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) => T)) => void] => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -27,6 +30,9 @@ export const useState = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) 
   }) as [T, (t?: T | ((t: T) => T)) => void];
 };
 
+/**
+ * @public
+ */
 export const useEffect = (action: () => any, deps?: any[]): void => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -43,6 +49,9 @@ export const useEffect = (action: () => any, deps?: any[]): void => {
   }) as void;
 };
 
+/**
+ * @public
+ */
 export const useLayoutEffect = (action: () => any, deps?: any[]): void => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -59,6 +68,9 @@ export const useLayoutEffect = (action: () => any, deps?: any[]): void => {
   }) as void;
 };
 
+/**
+ * @public
+ */
 export const useCallback = <T extends (...args: any) => any = (...args: any) => any>(callback: T, deps?: any[]): T => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -75,6 +87,9 @@ export const useCallback = <T extends (...args: any) => any = (...args: any) => 
   }) as T;
 };
 
+/**
+ * @public
+ */
 export const useMemo = <T = any>(action: () => T, deps?: any[]): T => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -91,6 +106,9 @@ export const useMemo = <T = any>(action: () => T, deps?: any[]): T => {
   }) as T;
 };
 
+/**
+ * @public
+ */
 export const useRef = <T = any>(value: T): { current: T } => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -107,6 +125,9 @@ export const useRef = <T = any>(value: T): { current: T } => {
   }) as { current: T };
 };
 
+/**
+ * @public
+ */
 export const useContext = <T = any>(Context: ReturnType<typeof createContext<T>>): T => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -123,6 +144,9 @@ export const useContext = <T = any>(Context: ReturnType<typeof createContext<T>>
   }) as T;
 };
 
+/**
+ * @public
+ */
 export const useReducer = (reducer: Reducer, initialArgs: any, init?: (...args: any) => any) => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -139,6 +163,9 @@ export const useReducer = (reducer: Reducer, initialArgs: any, init?: (...args: 
   });
 };
 
+/**
+ * @public
+ */
 export const useImperativeHandle = (ref: any, createHandle: Reducer, deps: any[]) => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -155,6 +182,9 @@ export const useImperativeHandle = (ref: any, createHandle: Reducer, deps: any[]
   });
 };
 
+/**
+ * @public
+ */
 export const useDebugValue = (...args: any[]) => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -171,6 +201,9 @@ export const useDebugValue = (...args: any[]) => {
   });
 };
 
+/**
+ * @public
+ */
 export const useSignal = <T = any>(initial: T | (() => T)) => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -188,6 +221,9 @@ export const useSignal = <T = any>(initial: T | (() => T)) => {
 };
 
 // TODO
+/**
+ * @public
+ */
 export const useDeferredValue = <T = any>(value: T): T => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -204,6 +240,9 @@ export const useDeferredValue = <T = any>(value: T): T => {
   }) as T;
 };
 
+/**
+ * @public
+ */
 export const useId = (): string => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -220,6 +259,9 @@ export const useId = (): string => {
   }) as string;
 };
 
+/**
+ * @public
+ */
 export const useInsertionEffect = (action: () => any, deps: any[]) => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -236,6 +278,9 @@ export const useInsertionEffect = (action: () => any, deps: any[]) => {
   });
 };
 
+/**
+ * @public
+ */
 export const useSyncExternalStore = (subscribe: () => any, getSnapshot: () => any, getServerSnapshot?: () => any) => {
   const renderPlatform = currentRenderPlatform.current;
 
@@ -252,6 +297,9 @@ export const useSyncExternalStore = (subscribe: () => any, getSnapshot: () => an
   });
 };
 
+/**
+ * @public
+ */
 export const useTransition = (): [boolean, (cb: () => void) => void] => {
   const renderPlatform = currentRenderPlatform.current;
 

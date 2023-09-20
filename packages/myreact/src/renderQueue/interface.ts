@@ -2,6 +2,9 @@ import type { MyReactComponent } from "../component";
 import type { Action, RenderHook } from "../renderHook";
 import type { UpdateQueueType } from "@my-react/react-shared";
 
+/**
+ * @public
+ */
 export type ComponentUpdateQueue<State = Record<string, unknown>, Props = Record<string, unknown>> = {
   type: UpdateQueueType.component;
   trigger: MyReactComponent;
@@ -11,6 +14,9 @@ export type ComponentUpdateQueue<State = Record<string, unknown>, Props = Record
   callback?: () => void;
 };
 
+/**
+ * @public
+ */
 export type HookUpdateQueue = {
   type: UpdateQueueType.hook;
   trigger: RenderHook;
@@ -20,4 +26,7 @@ export type HookUpdateQueue = {
   callback?: () => void;
 };
 
+/**
+ * @public
+ */
 export type UpdateQueue<T = Record<string, any>> = (ComponentUpdateQueue | HookUpdateQueue) & T;

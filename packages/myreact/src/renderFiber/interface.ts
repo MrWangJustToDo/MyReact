@@ -3,7 +3,10 @@ import type { RenderHook } from "../renderHook";
 import type { UpdateQueue } from "../renderQueue";
 import type { ListTree, PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
-interface DefaultRenderFiber {
+/**
+ * @public
+ */
+export interface DefaultRenderFiber {
   state: STATE_TYPE;
 
   patch: PATCH_TYPE;
@@ -33,4 +36,7 @@ interface DefaultRenderFiber {
   _unmount(): void;
 }
 
+/**
+ * @public
+ */
 export type RenderFiber<T = Record<string, any>> = DefaultRenderFiber & T;

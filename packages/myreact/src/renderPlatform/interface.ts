@@ -3,7 +3,10 @@ import type { RenderHook, RenderHookParams } from "../renderHook";
 import type { UpdateQueue } from "../renderQueue";
 import type { ListTreeNode } from "@my-react/react-shared";
 
-interface DefaultRenderPlatform {
+/**
+ * @public
+ */
+export interface DefaultRenderPlatform {
   microTask(_task: () => void): void;
 
   macroTask(_task: () => void): void;
@@ -21,4 +24,7 @@ interface DefaultRenderPlatform {
   dispatchError(_params: { fiber?: RenderFiber; error?: Error }): void;
 }
 
+/**
+ * @public
+ */
 export type RenderPlatform<T = Record<string, any>> = DefaultRenderPlatform & T;

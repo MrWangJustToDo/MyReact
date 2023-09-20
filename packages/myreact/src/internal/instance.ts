@@ -2,6 +2,9 @@ import { Effect_TYPE } from "@my-react/react-shared";
 
 import type { RenderFiber } from "../renderFiber";
 
+/**
+ * @public
+ */
 export class MyReactInternalInstance {
   get isMyReactInstance() {
     return true;

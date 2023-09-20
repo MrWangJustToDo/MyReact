@@ -63,11 +63,11 @@ const data = [
     "@my-react/react-dom": "renderToStaticNodeStream",
     "@my-react/react-reactive": "onUpdated",
   },
-  { "@my-react/react (hook)": "useDeferredValue", "@my-react/react": "StrictMode" },
+  { "@my-react/react (hook)": "useDeferredValue", "@my-react/react": "StrictMode", "@my-react/react-dom": "renderToPipeableStream" },
   { "@my-react/react (hook)": "useId", "@my-react/react": "Fragment" },
   { "@my-react/react (hook)": "useInsertionEffect", "@my-react/react": "Suspense" },
   { "@my-react/react (hook)": "useSyncExternalStore", "@my-react/react": "createFactory" },
-  { "@my-react/react (hook)": "useTransition" },
+  { "@my-react/react (hook)": "useTransition", "@my-react/react": "startTransition" },
 ];
 
 export const ApiSection = () => {

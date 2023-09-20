@@ -40,7 +40,7 @@ export const ViteSection = () => {
           maxWidth={{ base: "100%", md: "40%" }}
         >
           <Heading as="h1" fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} marginTop="6">
-            Quick start in <Tag fontSize="inherit">Vite</Tag> (upcoming)
+            Quick start in <Tag fontSize="inherit">Vite</Tag>
           </Heading>
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
             This project is only a experimental project, not recommend use in the production environment.

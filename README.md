@@ -89,9 +89,9 @@ pnpm dev:ssr / dev:csr / dev:next / dev:vite
 | createContext   | createRoot (new)       | onBeforeUnmount          | useCallback                |
 | createRef       | hydrateRoot (new)      | onBeforeUpdate           | useContext                 |
 | memo            | renderToNodeStream     | onMounted                | useImperativeHandle        |
-| Component       |                        | onUnmounted              | useDebugValue              |
-| PureComponent   |                        | onUpdated                | useSignal                  |
-| StrictMode      |                        |                          | useDeferredValue (new)     |
+| Component       | renderToStaticMarkup   | onUnmounted              | useDebugValue              |
+| PureComponent   | renderToStaticNodeStream | onUpdated                | useSignal                  |
+| StrictMode      | renderToPipeableStream (new) |                          | useDeferredValue (new)     |
 | Fragment        |                        |                          | useId (new)                |
 | Suspense        |                        |                          | useInsertionEffect (new)   |
 | startTransition |                        |                          | useSyncExternalStore (new) |

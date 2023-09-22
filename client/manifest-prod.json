@@ -1,6 +1,6 @@
 {
   "main.css": "client/main-899432e8b2b128d5a9e0.css",
-  "main.js": "client/main-c8faa4b9cf6fc4c4d9a2.js",
+  "main.js": "client/main-9484474843cbd121d065.js",
   "runtime.js": "client/runtime-a9aa3eecb84a25699bfb.js",
   "page-.js": "client/page--38978517ea1eaf12e5dc.js",
   "page-404.js": "client/page-404-bf657922209b25b31968.js",
@@ -15,7 +15,7 @@
   "vendor-emotion.js": "client/vendor-emotion-dc7100a2ed40176bbc8a.js",
   "manifest-deps.json": "client/manifest-deps.json",
   "main-css.map": "client/main-899432e8b2b128d5a9e0.css.map",
-  "main-js.map": "client/main-c8faa4b9cf6fc4c4d9a2.js.map",
+  "main-js.map": "client/main-9484474843cbd121d065.js.map",
   "runtime-js.map": "client/runtime-a9aa3eecb84a25699bfb.js.map",
   "page--js.map": "client/page--38978517ea1eaf12e5dc.js.map",
   "page-404-js.map": "client/page-404-bf657922209b25b31968.js.map",

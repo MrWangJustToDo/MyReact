@@ -9,7 +9,7 @@ import { defaultGenerateStrictMap } from "../dispatchStrict";
 import { defaultGenerateSuspenseMap } from "../dispatchSuspense";
 import { defaultGenerateUnmountMap } from "../dispatchUnmount";
 import { defaultDispatchUpdate } from "../dispatchUpdate";
-import { MyWeakMap, NODE_TYPE, onceWarnWithKey } from "../share";
+import { MyWeakMap, NODE_TYPE, onceWarnWithKeyAndFiber } from "../share";
 
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
 import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
@@ -111,7 +111,7 @@ export class CustomRenderDispatch implements RenderDispatch {
       if (include(_fiber.type, this.runtimeRef.typeForRef)) {
         _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__ref__);
       } else if (exclude(_fiber.type, NODE_TYPE.__forwardRef__)) {
-        onceWarnWithKey(_fiber, "ref", `[@my-react/react] set ref for current element will be ignored`);
+        onceWarnWithKeyAndFiber(_fiber, "ref", `[@my-react/react] set ref for current element will be ignored`);
       }
     }
   }

@@ -3,7 +3,7 @@ import { PATCH_TYPE, STATE_TYPE, include, merge } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
 import { triggerRevert, triggerUpdate } from "../renderUpdate";
-import { getTypeFromElementNode, NODE_TYPE } from "../share";
+import { getFiberTreeWithFiber, getTrackDevLog, getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
 import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
@@ -156,11 +156,27 @@ export class MyReactFiberNode implements RenderFiber {
 }
 
 if (__DEV__) {
-  MyReactFiberNode.prototype._revert = function () {
-    if (include(this.state, STATE_TYPE.__unmount__)) return;
+  Object.defineProperty(MyReactFiberNode.prototype, "_revert", {
+    value: function () {
+      if (include(this.state, STATE_TYPE.__unmount__)) return;
 
-    triggerRevert(this);
-  };
+      triggerRevert(this);
+    },
+  });
+  Object.defineProperty(MyReactFiberNode.prototype, "_debugLogTree", {
+    get() {
+      const { str, arr } = getFiberTreeWithFiber(this);
+
+      console.log(str, ...arr);
+
+      return true;
+    },
+  });
+  Object.defineProperty(MyReactFiberNode.prototype, "_debugSource", {
+    get() {
+      return getTrackDevLog(this);
+    },
+  });
 }
 
 export interface MyReactFiberContainer extends MyReactFiberNode {

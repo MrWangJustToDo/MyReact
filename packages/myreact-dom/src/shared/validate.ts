@@ -1,7 +1,7 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
-import { isHTMLTag, isProperty, isSVGTag, isStyle, log } from "@my-react-dom-shared";
+import { isHTMLTag, isProperty, isSVGTag, isStyle, logOnce } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -15,7 +15,7 @@ export const validDomNesting = (fiber: MyReactFiberNode, parentFiberWithNode?: M
     const typedElementType = fiber.elementType;
 
     if (typedElementType === "p" && parentFiberWithNode?.elementType === "p") {
-      log(fiber, "warn", `invalid dom nesting: <p> cannot appear as a child of <p>`);
+      logOnce(fiber, "warn", "invalid dom nesting: <p> cannot appear as a child of <p>", `invalid dom nesting: <p> cannot appear as a child of <p>`);
     }
   }
 };
@@ -28,7 +28,7 @@ export const validDomTag = (fiber: MyReactFiberNode) => {
     const tagName = fiber.elementType as string;
 
     if (!isHTMLTag[tagName] && !isSVGTag[tagName]) {
-      log(fiber, "error", `invalid dom tag, current is ${tagName}`);
+      logOnce(fiber, "error", "invalid dom tag", `invalid dom tag, current is ${tagName}`);
     }
   }
 };
@@ -42,7 +42,12 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
 
     Object.keys(props).forEach((key) => {
       if (isProperty(key) && props[key] && typeof props[key] === "object" && props[key] !== null) {
-        log(fiber, 'warn', `invalid dom props, expect a string or number but get a object. key: ${key} value: ${props[key]}`)
+        logOnce(
+          fiber,
+          "warn",
+          "invalid dom props, expect a string or number but get a object.",
+          `invalid dom props, expect a string or number but get a object. key: ${key} value: ${props[key]}`
+        );
       }
       if (isStyle(key) && props[key] && typeof props[key] !== "object") {
         throw new Error("[@my-react/react-dom] style or the element props should be a object");

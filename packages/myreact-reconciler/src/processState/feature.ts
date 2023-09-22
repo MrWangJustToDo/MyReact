@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
-import { onceWarnWithKey, syncFlush } from "../share";
+import { onceWarnWithKeyAndFiber, syncFlush } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { RenderFiber, UpdateQueue } from "@my-react/react";
@@ -49,7 +49,7 @@ export const processState = (_params: UpdateQueue) => {
         renderCount = 0;
         throw new Error("[@my-react/react] look like there are infinity update for current component");
       } else {
-        onceWarnWithKey(
+        onceWarnWithKeyAndFiber(
           ownerFiber as MyReactFiberNode,
           "updateWhenCurrentFlowIsRunning",
           `[@my-react/react] trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`
@@ -76,7 +76,7 @@ export const processState = (_params: UpdateQueue) => {
         renderCount = 0;
         throw new Error("[@my-react/react] look like there are infinity update for current component");
       } else {
-        onceWarnWithKey(
+        onceWarnWithKeyAndFiber(
           ownerFiber as MyReactFiberNode,
           "updateWhenCurrentFlowIsRunning",
           `[@my-react/react] trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`

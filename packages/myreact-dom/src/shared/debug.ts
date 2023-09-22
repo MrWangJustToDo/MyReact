@@ -1,37 +1,50 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { MyReactFiberNode, devError, devWarn } from "@my-react/react-reconciler";
+import { MyReactFiberNode, devErrorWithFiber, devWarnWithFiber, onceErrorWithKeyAndFiber, onceWarnWithKeyAndFiber } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 import type { RenderContainer } from "@my-react-dom-client/mount";
-
-const { currentRunningFiber } = __my_react_internal__;
 
 /**
  * @internal
  */
 export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: any) => {
   if (__DEV__) {
-    const last = currentRunningFiber.current;
-
-    currentRunningFiber.current = fiber;
-
     if (level === "warn") {
-      devWarn(`[@my-react/react-dom]`, ...rest);
+      devWarnWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
     }
     if (level === "error") {
-      devError(`[@my-react/react-dom]`, ...rest);
+      devErrorWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
     }
-
-    currentRunningFiber.current = last;
-    
     return;
   }
 
-  // if (level === "warn") {
-  //   console.warn(`[@my-react/react-dom]`, ...rest);
-  // }
   if (level === "error") {
+    console.error(`[@my-react/react-dom]`, ...rest);
+  }
+};
+
+const onceMap: Record<string, boolean> = {};
+
+/**
+ * @internal
+ */
+export const logOnce = (fiber: MyReactFiberNode, level: "warn" | "error", key: string, ...rest: any) => {
+  if (__DEV__) {
+    if (level === "warn") {
+      onceWarnWithKeyAndFiber(fiber, key, `[@my-react/react-dom]`, ...rest);
+    }
+    if (level === "error") {
+      onceErrorWithKeyAndFiber(fiber, key, `[@my-react/react-dom]`, ...rest);
+    }
+    return;
+  }
+
+  if (level === "error") {
+    if (onceMap[key]) return;
+
+    onceMap[key] = true;
+
     console.error(`[@my-react/react-dom]`, ...rest);
   }
 };

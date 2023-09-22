@@ -1,7 +1,7 @@
 import { NODE_TYPE, safeCallWithFiber } from "@my-react/react-reconciler";
 import { PATCH_TYPE, STATE_TYPE, include, remove } from "@my-react/react-shared";
 
-import { log } from "./debug";
+import { logOnce } from "./debug";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -33,7 +33,7 @@ export const setRef = (_fiber: MyReactFiberNode) => {
         throw new Error("[@my-react/react-dom] class component do not have a instance");
       }
     } else {
-      log(_fiber, "error", "can not set ref for current element");
+      logOnce(_fiber, "error", "can not set ref for current element", "can not set ref for current element");
     }
 
     _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__ref__);
@@ -46,7 +46,7 @@ export const setRef = (_fiber: MyReactFiberNode) => {
 export const unsetRef = (_fiber: MyReactFiberNode) => {
   if (include(_fiber.state, STATE_TYPE.__unmount__)) return;
 
-  if (_fiber.ref && include(_fiber.type, (NODE_TYPE.__plain__ | NODE_TYPE.__class__))) {
+  if (_fiber.ref && include(_fiber.type, NODE_TYPE.__plain__ | NODE_TYPE.__class__)) {
     const ref = _fiber.ref;
     if (typeof ref === "object" && ref !== null) {
       ref.current = null;

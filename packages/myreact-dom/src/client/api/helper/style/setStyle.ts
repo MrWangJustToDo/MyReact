@@ -1,4 +1,4 @@
-import { isUnitlessNumber, log } from "@my-react-dom-shared";
+import { isUnitlessNumber, logOnce } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -13,7 +13,7 @@ export const setStyle = (fiber: MyReactFiberNode, el: HTMLElement, name: string,
     style.setProperty(name, String(value));
   } else {
     if (__DEV__ && !(name in style) && prefixes.every((pre) => !name.startsWith(pre))) {
-      log(fiber, "warn", `unknown style name '${name}' for current element`);
+      logOnce(fiber, "warn", "unknown style name", `unknown style name '${name}' for current element`);
     }
     if (typeof value === "number" && !isUnitlessNumber[name]) {
       style[name] = `${value}px`;

@@ -13,6 +13,8 @@ const { enableOptimizeTreeLog } = __my_react_shared__;
 
 const warnMap = {};
 
+const errorMap = {};
+
 export const originalWarn = console.warn;
 
 export const originalError = console.error;
@@ -21,12 +23,6 @@ export const devWarn = (...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
   const renderFiber = currentRunningFiber.current;
-
-  if (!renderFiber) {
-    originalWarn.call(console, ...args);
-
-    return;
-  }
 
   const logObj = [];
 
@@ -41,7 +37,32 @@ export const devWarn = (...args) => {
     })
     .join(" ");
 
-  originalWarn.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
+  if (renderFiber) {
+    originalWarn.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
+  } else {
+    originalWarn.call(console, logString, ...logObj);
+  }
+};
+
+export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  const renderFiber = fiber;
+
+  const logObj = [];
+
+  const logString = args
+    .map((i) => {
+      if (isObject(i)) {
+        logObj.push(i);
+        return "%o";
+      } else {
+        return i;
+      }
+    })
+    .join(" ");
+
+  originalWarn.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(fiber), "\n", renderFiber]));
 };
 
 export const devError = (...args) => {
@@ -68,7 +89,32 @@ export const devError = (...args) => {
     })
     .join(" ");
 
-  originalError.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
+  if (renderFiber) {
+    originalError.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
+  } else {
+    originalError.call(console, logString, ...logObj);
+  }
+};
+
+export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  const renderFiber = fiber;
+
+  const logObj = [];
+
+  const logString = args
+    .map((i) => {
+      if (isObject(i)) {
+        logObj.push(i);
+        return "%o";
+      } else {
+        return i;
+      }
+    })
+    .join(" ");
+
+  originalError.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(fiber), "\n", renderFiber]));
 };
 
 export const setLogScope = () => {
@@ -96,7 +142,7 @@ export const debugWithNode = (fiber: MyReactFiberNode) => {
   }
 };
 
-const getTrackDevLog = (fiber: MyReactFiberNode) => {
+export const getTrackDevLog = (fiber: MyReactFiberNode) => {
   if (__DEV__) {
     const typedFiber = fiber as MyReactFiberNodeDev;
     const element = typedFiber._debugElement;
@@ -105,7 +151,7 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
     let preString = "";
     if (source) {
       const { fileName, lineNumber } = source || {};
-      preString = `${preString} (${fileName}:${lineNumber})`;
+      preString = `${preString}(${fileName}:${lineNumber}) `;
     }
     if (owner) {
       const ownerElement = owner as MyReactFiberNode;
@@ -113,7 +159,7 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
       if (include(ownerElement.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
         const typedOwnerElementType = ownerElementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
         const name = typedOwnerElementType.name || typedOwnerElementType.displayName;
-        preString = name ? `${preString} (render dy ${name})` : preString;
+        preString = name ? `${preString}(render dy ${name})` : preString;
       }
     }
     return preString;
@@ -127,12 +173,6 @@ const shouldIncludeLog = (fiber: MyReactFiberNode) => {
     return true;
   }
   return false;
-};
-
-export const getRenderFiber = (fiber: MyReactFiberNode): MyReactFiberNode | null => {
-  if (!fiber) return null;
-  if (shouldIncludeLog(fiber)) return fiber;
-  return getRenderFiber(fiber.parent);
 };
 
 export const getElementName = (fiber: MyReactFiberNode) => {
@@ -187,7 +227,9 @@ export const getElementName = (fiber: MyReactFiberNode) => {
   return `<text (${fiber.elementType?.toString()}) />`;
 };
 
-export const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)}${getTrackDevLog(fiber)}`;
+const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)} ${getTrackDevLog(fiber)}`;
+
+const getFiberNodeNameWithFiber = (fiber: MyReactFiberNode) => `%c${getElementName(fiber)}%c (fiber: %o)`;
 
 export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   if (fiber) {
@@ -212,6 +254,21 @@ export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   return "";
 };
 
+export const getFiberTreeWithFiber = (fiber: MyReactFiberNode) => {
+  const preString = "at".padEnd(3);
+  let res = "";
+  const arr = [];
+  let temp = fiber;
+  while (temp) {
+    res ? (res += `\n${preString}${getFiberNodeNameWithFiber(temp)}`) : (res = `${preString}${getFiberNodeNameWithFiber(temp)}`);
+    arr.push("color: white;background-color: rgba(10, 190, 235, 0.8); border-radius: 2px; padding: 1px 5px; margin: 1px 0px");
+    arr.push("");
+    arr.push(temp);
+    temp = temp.parent;
+  }
+  return { str: `${res}`, arr };
+};
+
 export const getHookTree = (
   treeHookNode: ListTreeNode<MyReactHookNode>,
   errorType: { lastRender: MyReactHookNode["type"]; nextRender: MyReactHookNode["type"] }
@@ -229,7 +286,81 @@ export const getHookTree = (
   return message + re + stack;
 };
 
-export const onceWarnWithKey = (fiber: MyReactFiberNode, key: string, ...args: any[]) => {
+export const onceWarnWithKey = (key: string, ...args: any[]) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  const renderFiber = currentRunningFiber.current;
+
+  if (!renderFiber) {
+    if (warnMap?.[key]) return;
+
+    warnMap[key] = true;
+
+    devWarn(...args);
+
+    return;
+  }
+
+  const logObj = [];
+
+  const tree = renderPlatform.getFiberTree(renderFiber);
+
+  if (warnMap?.[tree]?.[key]) return;
+
+  warnMap[tree] = { ...warnMap?.[tree], [key]: true };
+
+  const logString = args
+    .map((i) => {
+      if (isObject(i)) {
+        logObj.push(i);
+        return "%o";
+      } else {
+        return i;
+      }
+    })
+    .join(" ");
+
+  originalWarn.call(console, logString, ...logObj.concat([tree, "\n", renderFiber]));
+};
+
+export const onceErrorWithKey = (key: string, ...args: any[]) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  const renderFiber = currentRunningFiber.current;
+
+  if (!renderFiber) {
+    if (errorMap?.[key]) return;
+
+    errorMap[key] = true;
+
+    devError(...args);
+
+    return;
+  }
+
+  const logObj = [];
+
+  const tree = renderPlatform.getFiberTree(renderFiber);
+
+  if (errorMap?.[tree]?.[key]) return;
+
+  errorMap[tree] = { ...errorMap?.[tree], [key]: true };
+
+  const logString = args
+    .map((i) => {
+      if (isObject(i)) {
+        logObj.push(i);
+        return "%o";
+      } else {
+        return i;
+      }
+    })
+    .join(" ");
+
+  originalError.call(console, logString, ...logObj.concat([tree, "\n", renderFiber]));
+};
+
+export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: any[]) => {
   const renderPlatform = currentRenderPlatform.current;
 
   const logObj = [];
@@ -252,4 +383,29 @@ export const onceWarnWithKey = (fiber: MyReactFiberNode, key: string, ...args: a
     .join(" ");
 
   originalWarn.call(console, logString, ...logObj.concat([tree, "\n", fiber]));
+};
+
+export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: any[]) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  const logObj = [];
+
+  const tree = renderPlatform.getFiberTree(fiber);
+
+  if (errorMap?.[tree]?.[key]) return;
+
+  errorMap[tree] = { ...errorMap?.[tree], [key]: true };
+
+  const logString = args
+    .map((i) => {
+      if (isObject(i)) {
+        logObj.push(i);
+        return "%o";
+      } else {
+        return i;
+      }
+    })
+    .join(" ");
+
+  originalError.call(console, logString, ...logObj.concat([tree, "\n", fiber]));
 };

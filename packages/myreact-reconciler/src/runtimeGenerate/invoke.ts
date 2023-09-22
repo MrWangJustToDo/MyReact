@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
-import { currentRenderDispatch, currentTriggerFiber, debugWithNode, NODE_TYPE, onceWarnWithKey, safeCallWithFiber, setRefreshTypeMap } from "../share";
+import { currentRenderDispatch, currentTriggerFiber, debugWithNode, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
 
@@ -149,7 +149,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   const end = Date.now();
 
   if (enablePerformanceLog.current && end - start > renderDispatch.performanceLogTimeLimit) {
-    onceWarnWithKey(fiber, "performance", `[@my-react/react] render current component take a lot of time, there have a performance warning`);
+    onceWarnWithKeyAndFiber(fiber, "performance", `[@my-react/react] render current component take a lot of time, there have a performance warning`);
   }
 
   const typedFiber = fiber as MyReactFiberNodeDev;

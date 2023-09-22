@@ -34,4 +34,6 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
   _debugErrorBoundaries: MyReactFiberNode;
 
   _debugUpdateQueue: ListTree<UpdateQueue>;
+
+  _debugLogTree: boolean;
 }

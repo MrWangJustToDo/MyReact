@@ -1,12 +1,12 @@
 import { PATCH_TYPE, ListTree, UniqueArray, include, merge, exclude } from "@my-react/react-shared";
 
-import { defaultGenerateContextMap, defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
+import { defaultGenerateContextMap,/*  defaultGetContextFiber, */ defaultGetContextFiber_New, defaultGetContextValue } from "../dispatchContext";
 import { defaultGenerateEffectMap } from "../dispatchEffect";
-import { defaultGenerateErrorBoundariesMap } from "../dispatchErrorBoundaries";
+import { defaultGenerateErrorBoundariesMap, defaultResolveErrorBoundaries } from "../dispatchErrorBoundaries";
 import { defaultDispatchMount } from "../dispatchMount";
 import { defaultGenerateScopeMap } from "../dispatchScope";
-import { defaultGenerateStrictMap } from "../dispatchStrict";
-import { defaultGenerateSuspenseMap } from "../dispatchSuspense";
+import { defaultGenerateStrict, defaultGenerateStrictMap } from "../dispatchStrict";
+import { defaultGenerateSuspenseMap, defaultResolveSuspense } from "../dispatchSuspense";
 import { defaultGenerateUnmountMap } from "../dispatchUnmount";
 import { defaultDispatchUpdate } from "../dispatchUpdate";
 import { MyWeakMap, NODE_TYPE, onceWarnWithKeyAndFiber } from "../share";
@@ -172,7 +172,8 @@ export class CustomRenderDispatch implements RenderDispatch {
     __DEV__ && defaultGenerateStrictMap(_fiber, this.runtimeMap.strictMap);
   }
   resolveStrict(_fiber: MyReactFiberNode): boolean {
-    return __DEV__ ? this.runtimeMap.strictMap.get(_fiber) || false : false;
+    // return __DEV__ ? this.runtimeMap.strictMap.get(_fiber) || false : false;
+    return defaultGenerateStrict(_fiber);
   }
   resolveScopeMap(_fiber: MyReactFiberNode): void {
     defaultGenerateScopeMap(_fiber, this.runtimeMap.scopeMap);
@@ -184,19 +185,21 @@ export class CustomRenderDispatch implements RenderDispatch {
     defaultGenerateSuspenseMap(_fiber, this.runtimeMap.suspenseMap);
   }
   resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode {
-    return this.runtimeMap.suspenseMap.get(_fiber)?.pendingProps?.["fallback"] || null;
+    // return this.runtimeMap.suspenseMap.get(_fiber)?.pendingProps?.["fallback"] || null;
+    return defaultResolveSuspense(_fiber);
   }
   resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
     defaultGenerateErrorBoundariesMap(_fiber, this.runtimeMap.errorBoundariesMap);
   }
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
-    return this.runtimeMap.errorBoundariesMap.get(_fiber) || null;
+    // return this.runtimeMap.errorBoundariesMap.get(_fiber) || null;
+    return defaultResolveErrorBoundaries(_fiber);
   }
   resolveContextMap(_fiber: MyReactFiberNode): void {
     defaultGenerateContextMap(_fiber, this.runtimeMap.contextMap);
   }
   resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): MyReactFiberNode | null {
-    return defaultGetContextFiber(_fiber, this, _contextObject);
+    return defaultGetContextFiber_New(_fiber, this, _contextObject);
   }
   resolveContextValue(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return defaultGetContextValue(_fiber, _contextObject);

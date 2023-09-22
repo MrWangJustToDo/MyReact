@@ -28,3 +28,32 @@ export const defaultGenerateStrictMap = (fiber: MyReactFiberNode, map: WeakMap<M
     isStrict && (typedFiber._debugStrict = true);
   }
 };
+
+export const defaultGenerateStrict = (fiber: MyReactFiberNode): boolean => {
+  if (__DEV__) {
+    const parent = fiber.parent;
+
+    let isStrict = false;
+
+    const typedParent = parent as MyReactFiberNodeDev;
+
+    if (parent) {
+      if (include(parent.type, NODE_TYPE.__strict__)) {
+        isStrict = true;
+      }
+      if (typedParent._debugStrict) {
+        isStrict = true;
+      }
+    }
+
+    if (__DEV__ && enableDebugFiled.current) {
+      const typedFiber = fiber as MyReactFiberNodeDev;
+
+      isStrict && (typedFiber._debugStrict = true);
+    }
+
+    return isStrict;
+  }
+  
+  return false;
+};

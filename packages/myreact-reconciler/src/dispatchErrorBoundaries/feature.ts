@@ -4,7 +4,7 @@ import { include } from "@my-react/react-shared";
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MixinMyReactClassComponent, MyReactComponent} from "@my-react/react";
+import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
 
 const { enableDebugFiled } = __my_react_shared__;
 
@@ -46,4 +46,16 @@ export const defaultGenerateErrorBoundariesMap = (fiber: MyReactFiberNode, map: 
 
     errorBoundaries && (typedFiber._debugErrorBoundaries = errorBoundaries);
   }
+};
+
+export const defaultResolveErrorBoundaries = (fiber: MyReactFiberNode): MyReactFiberNode | null => {
+  let parent = fiber.parent;
+  while (parent) {
+    if (isErrorBoundariesComponent(parent)) {
+      return parent;
+    }
+    parent = parent.parent;
+  }
+
+  return null;
 };

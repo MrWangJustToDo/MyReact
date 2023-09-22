@@ -52,7 +52,9 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
         stream.push("<!-- -->");
       }
 
-      stream.push(escapeHtml(fiber.elementType as string));
+      const text = escapeHtml(fiber.elementType as string);
+
+      stream.push(text === "" ? " " : text);
 
       renderDispatch._lastIsStringNode = true;
 

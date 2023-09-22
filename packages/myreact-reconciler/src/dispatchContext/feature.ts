@@ -64,6 +64,30 @@ export const defaultGetContextFiber = (
   }
 };
 
+export const defaultGetContextFiber_New = (
+  fiber: MyReactFiberNode,
+  renderDispatch: CustomRenderDispatch,
+  ContextObject?: ReturnType<typeof createContext> | null
+) => {
+  if (fiber.parent && ContextObject) {
+    let parent = fiber.parent;
+    while (parent) {
+      if (include(parent.type, NODE_TYPE.__provider__)) {
+        const typedElementType = parent.elementType as ReturnType<typeof createContext>["Provider"];
+
+        const contextObj = typedElementType["Context"];
+
+        if (contextObj === ContextObject) {
+          return parent;
+        }
+      }
+      parent = parent.parent;
+    }
+  } else {
+    return null;
+  }
+};
+
 export const context = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (include(fiber.patch, PATCH_TYPE.__context__)) {
     const set = new Set(fiber.dependence);

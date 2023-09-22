@@ -38,15 +38,15 @@ export const createFiberNode = (
 
   renderDispatch.pendingRef(newFiberNode);
 
-  renderDispatch.resolveScopeMap(newFiberNode);
+  // renderDispatch.resolveScopeMap(newFiberNode);
 
-  renderDispatch.resolveStrictMap(newFiberNode);
+  // renderDispatch.resolveStrictMap(newFiberNode);
 
-  renderDispatch.resolveContextMap(newFiberNode);
+  // renderDispatch.resolveContextMap(newFiberNode);
 
-  renderDispatch.resolveSuspenseMap(newFiberNode);
+  // renderDispatch.resolveSuspenseMap(newFiberNode);
 
-  renderDispatch.resolveErrorBoundariesMap(newFiberNode);
+  // renderDispatch.resolveErrorBoundariesMap(newFiberNode);
 
   renderDispatch.patchToFiberInitial?.(newFiberNode);
 

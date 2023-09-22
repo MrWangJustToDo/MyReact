@@ -3,7 +3,7 @@ import { PATCH_TYPE, STATE_TYPE, include, merge } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
 import { triggerRevert, triggerUpdate } from "../renderUpdate";
-import { getFiberTreeWithFiber, getTrackDevLog, getTypeFromElementNode, NODE_TYPE } from "../share";
+import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
 import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
@@ -170,11 +170,6 @@ if (__DEV__) {
       console.log(str, ...arr);
 
       return true;
-    },
-  });
-  Object.defineProperty(MyReactFiberNode.prototype, "_debugSource", {
-    get() {
-      return getTrackDevLog(this);
     },
   });
 }

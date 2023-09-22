@@ -142,7 +142,7 @@ export const debugWithNode = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const getTrackDevLog = (fiber: MyReactFiberNode) => {
+const getTrackDevLog = (fiber: MyReactFiberNode) => {
   if (__DEV__) {
     const typedFiber = fiber as MyReactFiberNodeDev;
     const element = typedFiber._debugElement;
@@ -218,18 +218,19 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     const name = targetRender?.displayName || targetRender?.name || "";
     return `<${name ? name : "anonymous"} - (forwardRef) />`;
   }
-  if (typeof fiber.elementType === "string") return `<${fiber.elementType} />`;
   if (typeof fiber.elementType === "function") {
     const typedElementType = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
     const name = typedElementType.displayName || typedElementType.name || "anonymous";
     return `<${name} />`;
   }
-  return `<text (${fiber.elementType?.toString()}) />`;
+  if (fiber.type & NODE_TYPE.__text__) return `<text (${fiber.elementType?.toString()}) />`;
+  if (typeof fiber.elementType === "string") return `<${fiber.elementType} />`;
+  return `<unknown (${fiber.elementType?.toString()}) />`;
 };
 
 const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)} ${getTrackDevLog(fiber)}`;
 
-const getFiberNodeNameWithFiber = (fiber: MyReactFiberNode) => `%c${getElementName(fiber)}%c (fiber: %o)`;
+const getFiberNodeNameWithFiber = (fiber: MyReactFiberNode) => `%c${getElementName(fiber)}%c (%o)`;
 
 export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   if (fiber) {

@@ -705,6 +705,9 @@ importers:
       eslint:
         specifier: ^8.48.0
         version: 8.48.0
+      module-alias:
+        specifier: ^2.2.3
+        version: 2.2.3
       next:
         specifier: ^12.3.4
         version: 12.3.4(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)

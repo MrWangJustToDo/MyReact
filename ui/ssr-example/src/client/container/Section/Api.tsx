@@ -107,11 +107,11 @@ export const ApiSection = () => {
           }}
         />
         <Column<(typeof data)[0]>
+          dataIndex="@my-react/react (hook)"
           headCellRender={{
             cellProps: { fontSize: "1.1rem" },
-            Render: "@my-react/react-dom",
+            Render: "@my-react/react (hook)",
           }}
-          dataIndex="@my-react/react-dom"
           bodyCellRender={{
             Render: ({ cellData }) => {
               return <Code>{cellData}</Code>;
@@ -119,11 +119,11 @@ export const ApiSection = () => {
           }}
         />
         <Column<(typeof data)[0]>
-          dataIndex="@my-react/react (hook)"
           headCellRender={{
             cellProps: { fontSize: "1.1rem" },
-            Render: "@my-react/react (hook)",
+            Render: "@my-react/react-dom",
           }}
+          dataIndex="@my-react/react-dom"
           bodyCellRender={{
             Render: ({ cellData }) => {
               return <Code>{cellData}</Code>;

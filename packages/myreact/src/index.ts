@@ -43,6 +43,7 @@ import {
   enableConcurrentMode,
   enableLegacyLifeCycle,
   enablePerformanceLog,
+  enableMockReact,
 } from "./share";
 
 /**
@@ -58,7 +59,7 @@ const PureComponent = MyReactPureComponent as typeof MyReactComponent;
 /**
  * @public
  */
-const version = __VERSION__;
+const version = enableMockReact.current ? "18.2.0" : __VERSION__;
 
 /**
  * @beta
@@ -69,6 +70,7 @@ const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {};
  * @public
  */
 const __my_react_shared__ = {
+  enableMockReact,
   enableDebugLog,
   enableSyncFlush,
   enableHMRForDev,

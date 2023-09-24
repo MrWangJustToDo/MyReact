@@ -1,3 +1,4 @@
+import { __my_react_shared__ } from "@my-react/react";
 import { safeCall, safeCallWithSync } from "@my-react/react-reconciler";
 
 import { checkMyReactVersion, checkReconcilerVersion } from "../shared";
@@ -6,7 +7,9 @@ import { render, hydrate, hydrateRoot, createRoot } from "./mount";
 import { initGlobalRenderPlatform } from "./renderPlatform";
 import { findDOMNode, createPortal, unmountComponentAtNode, initGlobalHMR } from "./tools";
 
-const version = __VERSION__;
+const { enableMockReact } = __my_react_shared__;
+
+const version = enableMockReact.current ? "18.2.0" : __VERSION__;
 
 const flushSync = safeCallWithSync;
 

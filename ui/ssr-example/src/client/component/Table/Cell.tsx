@@ -4,6 +4,10 @@ import { Td } from "./Td";
 
 import type { BodyCellProps, BodyCellRender } from "./type";
 
+const WrapperCom = ({ Render, ...props }) => {
+  return <>{Render(props)}</>;
+};
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 const CellRender = <T extends {}>({ Render, CustomRender, dataIndex, rowIndex, colIndex, rowData, cellProps, ...restProps }: BodyCellRender<T>) => {
   if (typeof CustomRender === "function") {
@@ -28,15 +32,18 @@ const CellRender = <T extends {}>({ Render, CustomRender, dataIndex, rowIndex, c
 
   return (
     <Td fontWeight="medium" {...restProps} {...cellProps}>
-      {typeof Render === "function"
-        ? Render({
-            dataIndex: dataIndex || ("" as keyof T),
-            rowIndex,
-            colIndex,
-            cellData: dataIndex ? rowData[dataIndex] : ({} as T[keyof T]),
-            rowData,
-          })
-        : Render}
+      {typeof Render === "function" ? (
+        <WrapperCom
+          Render={Render}
+          dataIndex={dataIndex || ("" as keyof T)}
+          rowIndex={rowIndex}
+          colIndex={colIndex}
+          cellData={dataIndex ? rowData[dataIndex] : ({} as T[keyof T])}
+          rowData={rowData}
+        />
+      ) : (
+        Render
+      )}
     </Td>
   );
 };

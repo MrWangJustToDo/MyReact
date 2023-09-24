@@ -1,8 +1,10 @@
-import * as react from "@my-react/react";
-import * as reconciler from "@my-react/react-reconciler";
+import { version as ReactVersion, __my_react_shared__ } from "@my-react/react";
+import { version as ReconcilerVersion } from "@my-react/react-reconciler";
+
+const { enableMockReact } = __my_react_shared__;
 
 export const checkReconcilerVersion = () => {
-  if (!reconciler.version || reconciler.version !== __VERSION__) {
+  if (!ReconcilerVersion || ReconcilerVersion !== __VERSION__) {
     console.error(
       `[@my-react/react-dom] the version of '@my-react/react-reconciler' not match for '@my-react/react-dom', this may cause some bug, try to reinstall the 'node_modules' to fix this error`
     );
@@ -10,7 +12,7 @@ export const checkReconcilerVersion = () => {
 };
 
 export const checkMyReactVersion = () => {
-  if (!react.version || react.version !== __VERSION__) {
+  if (!ReactVersion || ReactVersion !== (enableMockReact.current ? "18.2.0" : __VERSION__)) {
     console.error(
       `[@my-react/react-dom] the version of '@my-react/react' not match for '@my-react/react-dom', this may cause some bug, try to reinstall the 'node_modules' to fix this error`
     );

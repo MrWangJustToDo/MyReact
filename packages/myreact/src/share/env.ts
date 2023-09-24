@@ -101,3 +101,8 @@ export const enableStrictLifeCycle = createRef(false);
  * @internal
  */
 export const enableDebugFiled = createRef(true);
+
+/**
+ * @internal
+ */
+export const enableMockReact = createRef(false);

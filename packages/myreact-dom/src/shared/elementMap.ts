@@ -2,12 +2,12 @@ import { include } from "@my-react/react-shared";
 
 import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
-import type { ServerDomDispatch, ServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
+import type { ServerDomDispatch, LegacyServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 /**
  * @internal
  */
-export const initialElementMap = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch | ServerDomDispatch | ServerStreamDispatch) => {
+export const initialElementMap = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch) => {
   let isSVG = _fiber.elementType === "svg";
 
   let parentFiberWithNode = null;

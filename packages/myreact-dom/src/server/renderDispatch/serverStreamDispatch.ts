@@ -3,6 +3,7 @@ import { CustomRenderDispatch, NODE_TYPE, safeCallWithFiber } from "@my-react/re
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
+import { generateBootstrap, generateModuleBootstrap } from "./generateBootstrap";
 import { resolveLazyElementLatest, resolveLazyElementLegacy } from "./lazy";
 
 import type { MyReactElementNode } from "@my-react/react";
@@ -11,6 +12,12 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 export type SimpleReadable = {
   push(chunk: string | null): void;
   destroy(err: any): void;
+};
+
+export type BootstrapScriptDescriptor = {
+  src: string;
+  integrity?: string;
+  crossOrigin?: string;
 };
 
 export type ErrorInfo = {
@@ -33,7 +40,7 @@ const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
 /**
  * @internal
  */
-export class ServerStreamDispatch extends CustomRenderDispatch {
+export class LegacyServerStreamDispatch extends CustomRenderDispatch {
   runtimeDom = {
     elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
   };
@@ -110,7 +117,7 @@ export class ServerStreamDispatch extends CustomRenderDispatch {
 /**
  * @internal
  */
-export class ServerPipeableStreamDispatch extends CustomRenderDispatch {
+export class LatestServerStreamDispatch extends CustomRenderDispatch {
   runtimeDom = {
     elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
   };
@@ -136,9 +143,9 @@ export class ServerPipeableStreamDispatch extends CustomRenderDispatch {
   // dynamic inject content
   bootstrapScriptContent?: string;
 
-  bootstrapScripts?: string[];
+  bootstrapScripts?: Array<string | BootstrapScriptDescriptor>;
 
-  bootstrapModules?: string[];
+  bootstrapModules?: Array<string | BootstrapScriptDescriptor>;
 
   onShellError?: (error: unknown) => void;
 
@@ -189,9 +196,9 @@ export class ServerPipeableStreamDispatch extends CustomRenderDispatch {
       if (_fiber.sibling) mountLoop(_fiber.sibling);
     };
 
-    let generatedScript = (this.bootstrapModules || []).map((src) => `<script type="module" src="${src}"></script>`).join("");
+    let generatedScript = (this.bootstrapModules || []).map(generateModuleBootstrap).join("");
 
-    generatedScript += (this.bootstrapScripts || []).map((src) => `<script src="${src}"></script>`).join("");
+    generatedScript += (this.bootstrapScripts || []).map(generateBootstrap).join("");
 
     this.bootstrapScriptContent && (generatedScript += `<script>${this.bootstrapScriptContent}</script>`);
 

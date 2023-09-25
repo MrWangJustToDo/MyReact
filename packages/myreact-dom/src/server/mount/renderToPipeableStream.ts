@@ -2,17 +2,19 @@ import { isValidElement, type LikeJSX } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement } from "@my-react-dom-server/api";
-import { ServerPipeableStreamDispatch, type ErrorInfo } from "@my-react-dom-server/renderDispatch";
+import { LatestServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
 import { checkRoot, startRenderAsync } from "@my-react-dom-shared";
+
+import type { BootstrapScriptDescriptor, ErrorInfo} from "@my-react-dom-server/renderDispatch";
 
 type RenderToPipeableStreamOptions = {
   identifierPrefix?: string;
   namespaceURI?: string;
   nonce?: string;
   bootstrapScriptContent?: string;
-  bootstrapScripts?: string[];
-  bootstrapModules?: string[];
+  bootstrapScripts?: Array<string | BootstrapScriptDescriptor>;
+  bootstrapModules?: Array<string | BootstrapScriptDescriptor>;
   progressiveChunkSize?: number;
   onShellReady?: () => void;
   onShellError?: (error: unknown) => void;
@@ -46,7 +48,7 @@ export const renderToPipeableStream = (element: LikeJSX, options?: RenderToPipea
 
     __DEV__ && checkRoot(fiber);
 
-    const renderDispatch = new ServerPipeableStreamDispatch(container, fiber);
+    const renderDispatch = new LatestServerStreamDispatch(container, fiber);
 
     renderDispatch.stream = stream;
 

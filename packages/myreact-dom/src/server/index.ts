@@ -2,7 +2,7 @@ import { __my_react_shared__ } from "@my-react/react";
 
 import { checkMyReactVersion, checkReconcilerVersion } from "../shared";
 
-import { renderToString, renderToNodeStream, renderToStaticMarkup, renderToStaticNodeStream, renderToPipeableStream } from "./mount";
+import { renderToString, renderToNodeStream, renderToStaticMarkup, renderToStaticNodeStream, renderToPipeableStream, renderToReadableStream } from "./mount";
 import { initGlobalRenderPlatform } from "./renderPlatform";
 
 const { enableMockReact } = __my_react_shared__;
@@ -21,6 +21,7 @@ export {
   renderToString,
   renderToNodeStream,
   renderToStaticMarkup,
+  renderToReadableStream,
   renderToPipeableStream,
   renderToStaticNodeStream,
   version,

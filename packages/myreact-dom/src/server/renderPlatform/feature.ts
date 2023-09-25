@@ -5,7 +5,7 @@ import { ServerDomPlatform } from "./instance";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomPlatform } from "@my-react-dom-client/renderPlatform";
-import type { ServerPipeableStreamDispatch } from "@my-react-dom-server/renderDispatch";
+import type { LatestServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
 
@@ -27,7 +27,7 @@ const dispatchError = ({ fiber, error }: { fiber: MyReactFiberNode; error: Error
     throw error;
   }
 
-  const typedRenderDispatch = renderDispatch as ServerPipeableStreamDispatch;
+  const typedRenderDispatch = renderDispatch as LatestServerStreamDispatch;
 
   if (typedRenderDispatch.onError) {
     typedRenderDispatch.onShellError?.(error);

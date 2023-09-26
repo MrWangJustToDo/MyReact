@@ -203,8 +203,8 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
     this.bootstrapScriptContent && (generatedScript += `<script>${this.bootstrapScriptContent}</script>`);
 
     Promise.resolve()
-      .then(() => mountLoop(_fiber))
       .then(() => this.onShellReady?.())
+      .then(() => mountLoop(_fiber))
       .then(() => this.stream.push(generatedScript))
       .then(() => this.stream.push(null))
       .then(() => this.onAllReady?.());

@@ -19,7 +19,7 @@ type RenderToReadableStreamOptions = {
   onPostpone?: (reason: string) => void;
 };
 
-export const renderToReadableStream = (element: LikeJSX, options?: RenderToReadableStreamOptions): ReadableStream => {
+export const renderToReadableStream = (element: LikeJSX, options?: RenderToReadableStreamOptions): Promise<ReadableStream> => {
   if (isValidElement(element)) {
     prepareRenderPlatform();
 
@@ -45,37 +45,49 @@ export const renderToReadableStream = (element: LikeJSX, options?: RenderToReada
 
     let canceled = false;
 
-    const stream = new ReadableStream({
-      start: (controller) => {
-        const internalStream = {
-          push: (chunk: string) => {
-            if (canceled) return;
-            if (chunk !== null) {
-              controller.enqueue(encoder.encode(chunk));
-            }
-          },
-          destroy: (error) => {
-            controller.error(error);
-          },
-        };
-        const onAllReady = () => {
-          controller.close();
-        };
-
-        renderDispatch.stream = internalStream;
-
-        renderDispatch.onAllReady = onAllReady;
-
-        startRenderAsync(fiber, renderDispatch);
-      },
-      cancel: () => {
-        canceled = true;
-      },
-    });
-
     initialFiberNode(fiber, renderDispatch);
 
-    return stream;
+    return new Promise((resolve, reject) => {
+      const stream = new ReadableStream({
+        start: (controller) => {
+          const internalStream = {
+            push: (chunk: string) => {
+              if (canceled) return;
+              if (chunk) {
+                controller.enqueue(encoder.encode(chunk));
+              }
+            },
+            destroy: (error) => {
+              controller.error(error);
+            },
+          };
+          const onAllReady = () => {
+            controller.close();
+          };
+
+          const onShellReady = () => {
+            resolve(stream);
+          };
+
+          const onShellError = (error: unknown) => {
+            reject(error);
+          };
+
+          renderDispatch.stream = internalStream;
+
+          renderDispatch.onAllReady = onAllReady;
+
+          renderDispatch.onShellReady = onShellReady;
+
+          renderDispatch.onShellError = onShellError;
+
+          startRenderAsync(fiber, renderDispatch);
+        },
+        cancel: () => {
+          canceled = true;
+        },
+      });
+    });
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToReadableStream' can only render a '@my-react' element`);
   }

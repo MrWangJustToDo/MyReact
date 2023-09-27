@@ -34,14 +34,11 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
 
     const allKeys = getAllKeys(oldProps, newProps);
 
-    let hasSetOnChange = false;
-
     allKeys.forEach((key) => {
       const oldValue = oldProps[key];
       const newValue = newProps[key];
       if (!Object.is(oldValue, newValue)) {
         if (isEvent(key)) {
-          hasSetOnChange = hasSetOnChange || key === "onChange";
           removeEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
           addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
         } else if (isStyle(key)) {

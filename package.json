@@ -12,6 +12,7 @@
     "dev:csr": "cd ./ui/csr-example && pnpm run dev",
     "dev:next": "cd ./ui/next-example && pnpm run dev",
     "dev:vite": "cd ./ui/vite-example && pnpm run dev",
+    "dev:vite-ssr": "cd ./ui/vite-ssr-example && pnpm run dev",
     "build:site": "cd ./ui/ssr-example && pnpm run build:static",
     "gen:gql": "graphql-codegen --config site/graphql/codegen.yaml",
     "dev": "ts-node ./scripts/rollupWatch.ts",

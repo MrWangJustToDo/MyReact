@@ -1,0 +1,34 @@
+{
+  "name": "vite-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "vite build --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.jsx --outDir dist/server",
+    "serve": "NODE_ENV=production node server",
+    "debug": "node --inspect-brk server"
+  },
+  "dependencies": {
+    "@my-react/react": "workspace:*",
+    "@my-react/react-dom": "workspace:*",
+    "express": "^4.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router": "^6.10.0",
+    "react-router-dom": "^6.10.0"
+  },
+  "devDependencies": {
+    "@my-react/react-refresh": "workspace:*",
+    "@my-react/react-vite": "workspace:*",
+    "@types/node": "^20.5.7",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "eslint": "^8.48.0",
+    "serve-static": "^1.15.0",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9"
+  }
+}

@@ -63,7 +63,7 @@ export const hasControlledInputProps = (fiber: MyReactFiberNode) => {
 
   const key = type === "radio" || type === "checkbox" ? "checked" : "value";
 
-  return key in props;
+  return props[key] !== undefined;
 };
 
 /**
@@ -79,12 +79,12 @@ export const updateControlInputElement = (fiber: MyReactFiberNode) => {
   const key = type === "radio" || type === "checkbox" ? "checked" : "value";
 
   if (__DEV__) {
-    if (key in pendingProps) {
-      if (!(key in memoizedProps)) {
+    if (pendingProps[key] !== undefined) {
+      if (!(key in memoizedProps) || memoizedProps[key] === undefined) {
         log(fiber, "warn", `current component change from 'unControlled' to 'controlled', this may case some bug`);
       }
     } else {
-      if (key in memoizedProps) {
+      if (memoizedProps[key] !== undefined) {
         log(fiber, "warn", `current component change from 'controlled' to 'unControlled', this may case some bug`);
       }
     }

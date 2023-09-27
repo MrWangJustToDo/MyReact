@@ -1,11 +1,4 @@
-import {
-  isControlledInputElement,
-  isReadonlyInputElement,
-  mountControlInputElement,
-  prepareControlInputProp,
-  unmountControlInputElement,
-  updateControlInputElement,
-} from "./input";
+import { generateInputOnChangeFun, hasControlledInputProps, isControlledInputElement, isReadonlyInputElement, updateControlInputElement } from "./input";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -14,18 +7,6 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
  */
 export const controlElementTag: Record<string, boolean> = {
   input: true,
-};
-
-/**
- * @internal
- */
-export const mountControlElement = (fiber: MyReactFiberNode) => {
-  const elementType = fiber.elementType;
-
-  switch (elementType) {
-    case "input":
-      mountControlInputElement(fiber);
-  }
 };
 
 /**
@@ -43,26 +24,26 @@ export const updateControlElement = (fiber: MyReactFiberNode) => {
 /**
  * @internal
  */
-export const prepareControlProp = (fiber: MyReactFiberNode) => {
+export const generateOnChangeFun = (fiber: MyReactFiberNode) => {
   const elementType = fiber.elementType;
 
   switch (elementType) {
     case "input":
-      prepareControlInputProp(fiber);
+      return generateInputOnChangeFun(fiber);
   }
 };
 
 /**
  * @internal
  */
-export const unmountControlElement = (fiber: MyReactFiberNode) => {
+export const hasControlledProps = (fiber: MyReactFiberNode) => {
   const elementType = fiber.elementType;
 
   switch (elementType) {
     case "input":
-      unmountControlInputElement(fiber);
+      return hasControlledInputProps(fiber);
   }
-};
+}
 
 /**
  * @internal

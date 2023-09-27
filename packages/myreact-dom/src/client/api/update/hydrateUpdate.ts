@@ -1,9 +1,11 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
-import { getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, log } from "@my-react-dom-shared";
+import { enableControlComponent, enableEventSystem, getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, log } from "@my-react-dom-shared";
 
-import { XLINK_NS, XML_NS, X_CHAR, addEventListener, setStyle } from "../helper";
+import { XLINK_NS, XML_NS, X_CHAR, addEventListener, controlElementTag, setStyle } from "../helper";
+
+import { mountControl } from "./control";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -141,8 +143,11 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
     if (include(fiber.type, NODE_TYPE.__plain__)) {
       const props = fiber.pendingProps;
 
+      let hasSetOnChange = false;
+
       Object.keys(props).forEach((key) => {
         if (isEvent(key)) {
+          hasSetOnChange = hasSetOnChange || key === "onChange";
           domEventHydrate(fiber, renderDispatch, key);
         } else if (isStyle(key)) {
           domStyleHydrate(fiber, key, (props[key] as Record<string, unknown>) || {});
@@ -150,6 +155,11 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
           domPropsHydrate(fiber, isSVG, key, props[key]);
         }
       });
+
+      if (enableEventSystem.current && enableControlComponent.current && controlElementTag[fiber.elementType as string]) {
+        mountControl(fiber, renderDispatch);
+      }
+      
       domInnerHTMLHydrate(fiber);
     }
 

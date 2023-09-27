@@ -6,7 +6,6 @@ import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
 import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, setRef, shouldPauseAsyncUpdate, unsetRef, enableASyncHydrate } from "@my-react-dom-shared";
 
-import { mountControlElement, unmountControlElement, updateControlElement } from "./control";
 import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -83,14 +82,9 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     initialElementMap(_fiber, this);
-    mountControlElement(_fiber);
-  }
-  patchToFiberUpdate(_fiber: MyReactFiberNode) {
-    updateControlElement(_fiber);
   }
   patchToFiberUnmount(_fiber: MyReactFiberNode) {
     unmountElementMap(_fiber, this);
-    unmountControlElement(_fiber);
   }
 }
 

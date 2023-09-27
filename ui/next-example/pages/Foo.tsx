@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Foo() {
   const [l, setL] = useState(0);
 
-  const { pathname } = useRouter();
+  useRouter();
 
   useRouter();
   useEffect(() => {
-    console.log('update');
-  },[])
+    console.log("update");
+  }, []);
 
   // useEffect(() => {
   //   console.log("bbbb");
@@ -20,12 +20,12 @@ export default function Foo() {
   // Math.random() > 0.5 ? useState() : useRef()
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setL(l => l + 1);
-    }, 200)
+    // const id = setInterval(() => {
+    //   setL((l) => l + 1);
+    // }, 200);
 
-    return () => clearInterval(id);
-  }, [])
+    // return () => clearInterval(id);
+  }, []);
 
   const [j] = useState(() => "oooo");
 
@@ -36,7 +36,7 @@ export default function Foo() {
       </h2>
       <div className="w-[50%] h-[400px] m-auto mt-6 overflow-auto">
         <label>
-          Text input: <input name="myInput" value="00000" className="text-black" />
+          Text input: <input name="myInput" value="00000" className="text-black" onChange={()=>{}} />
         </label>
         <label>
           Checkbox: <input type="checkbox" name="myCheckbox" checked />

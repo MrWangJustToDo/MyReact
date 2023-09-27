@@ -1,7 +1,9 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { afterSyncUpdate, beforeSyncUpdate, safeCallWithFiber } from "@my-react/react-reconciler";
 
-import { enableEventSystem, log } from "@my-react-dom-shared";
+import { enableControlComponent, enableEventSystem, log } from "@my-react-dom-shared";
+
+import { controlElementTag, generateOnChangeFun } from "../control";
 
 import { getNativeEventName } from "./getEventName";
 
@@ -43,9 +45,15 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
 
   const callback = pendingProps[key] as (...args: any[]) => void;
 
-  if (!callback) return;
+  let targetCallback = callback;
 
-  if (typeof callback !== "function") {
+  if (enableEventSystem.current && enableControlComponent.current && controlElementTag[typedElementType] && key === "onChange") {
+    targetCallback = generateOnChangeFun(fiber);
+  }
+
+  if (!targetCallback) return;
+
+  if (typeof targetCallback !== "function") {
     if (__DEV__) log(fiber, "warn", `current props with key '${key}' is not a valid props`);
 
     return;
@@ -59,9 +67,9 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
     const eventName = `${nativeName}_${isCapture}`;
 
     if (eventState[eventName]) {
-      eventState[eventName].cb?.push(callback);
+      eventState[eventName].cb = targetCallback;
     } else {
-      const eventDispatcher: ((...args: any[]) => void) & { cb?: any[] } = (...args: any[]) => {
+      const eventDispatcher: ((...args: any[]) => void) & { cb?: any } = (...args: any[]) => {
         const e = args[0];
 
         e.nativeEvent = e;
@@ -69,14 +77,14 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
         beforeEvent(nativeName);
 
         safeCallWithFiber({
-          action: () => eventDispatcher.cb?.forEach((cb) => typeof cb === "function" && cb.call(null, ...args)),
+          action: () => eventDispatcher.cb?.call?.(null, ...args),
           fiber,
         });
 
         afterEvent(nativeName);
       };
 
-      eventDispatcher.cb = [callback];
+      eventDispatcher.cb = targetCallback;
 
       eventState[eventName] = eventDispatcher;
 

@@ -24,7 +24,7 @@ export type RuntimeMap = {
 
   unmountMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>;
 
-  eventMap: WeakMap<MyReactFiberNode, Record<string, ((...args: any[]) => void) & { cb?: any[] }>>;
+  eventMap: WeakMap<MyReactFiberNode, Record<string, ((...args: any[]) => void) & { cb?: any }>>;
 };
 
 export type fiberKey = "scheduledFiber" | "errorCatchFiber" | "nextWorkingFiber";

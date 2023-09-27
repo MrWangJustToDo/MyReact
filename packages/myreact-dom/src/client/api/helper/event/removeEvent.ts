@@ -28,7 +28,7 @@ export const removeEventListener = (fiber: MyReactFiberNode, eventMap: ClientDom
 
     if (!eventState[eventName]) return;
 
-    eventState[eventName].cb = eventState[eventName].cb?.filter((c) => c !== callback || typeof c !== "function");
+    eventState[eventName].cb = null;
   } else {
     dom.removeEventListener(nativeName, callback, isCapture);
   }

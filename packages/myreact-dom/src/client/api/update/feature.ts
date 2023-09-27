@@ -1,3 +1,4 @@
+import { emptyProps, type MyReactFiberNode } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import { validDomProps } from "@my-react-dom-shared";
@@ -7,7 +8,6 @@ import { controlElementTag, isControlledElement, isReadonlyElement } from "../he
 import { hydrateUpdate } from "./hydrateUpdate";
 import { nativeUpdate } from "./nativeUpdate";
 
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 /**
@@ -20,7 +20,7 @@ export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
     if (hydrate) {
       hydrateUpdate(fiber, renderDispatch);
     } else {
-      nativeUpdate(fiber, renderDispatch);
+      nativeUpdate(fiber, renderDispatch, fiber.memoizedProps === emptyProps);
     }
 
     if (__DEV__) {

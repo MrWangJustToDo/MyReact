@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { processHookNode, processState, triggerError } from "@my-react/react-reconciler";
+import { devErrorWithFiber, processHookNode, processState, triggerError } from "@my-react/react-reconciler";
 
 import { ClientDomPlatform } from "./instance";
 
@@ -19,6 +19,7 @@ function dispatchState(this: ClientDomPlatform, _params: UpdateQueue) {
 
 function dispatchError(this: ClientDomPlatform, _params: { fiber: MyReactFiberNode; error: Error }) {
   if (!this.isServer) {
+    if (__DEV__) devErrorWithFiber(_params.fiber, _params.error);
     triggerError(_params.fiber, _params.error, () => {
       // 更新结束后触发error事件
       this.yieldTask(() => {

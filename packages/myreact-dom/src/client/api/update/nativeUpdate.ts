@@ -1,10 +1,11 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
-import { enableHighlight, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
+import { enableControlComponent, enableEventSystem, enableHighlight, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
 
-import { addEventListener, removeEventListener, setAttribute, setStyle } from "../helper";
+import { addEventListener, controlElementTag, removeEventListener, setAttribute, setStyle } from "../helper";
 
+import { mountControl, updateControl } from "./control";
 import { HighLight } from "./highlight";
 import { getAllKeys } from "./tool";
 
@@ -15,7 +16,7 @@ import type { DomElement, DomNode } from "@my-react-dom-shared";
 /**
  * @internal
  */
-export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
+export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, isMount: boolean) => {
   if (!fiber.nativeNode) throw new Error("[@my-react/react-dom] update error, dom not exist");
 
   const node = fiber.nativeNode as DomElement | DomNode;
@@ -33,11 +34,14 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
 
     const allKeys = getAllKeys(oldProps, newProps);
 
+    let hasSetOnChange = false;
+
     allKeys.forEach((key) => {
       const oldValue = oldProps[key];
       const newValue = newProps[key];
       if (!Object.is(oldValue, newValue)) {
         if (isEvent(key)) {
+          hasSetOnChange = hasSetOnChange || key === "onChange";
           removeEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
           addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
         } else if (isStyle(key)) {
@@ -50,6 +54,14 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
         }
       }
     });
+
+    if (enableEventSystem.current && enableControlComponent.current && controlElementTag[fiber.elementType as string]) {
+      if (isMount) {
+        mountControl(fiber, renderDispatch);
+      } else {
+        updateControl(fiber, renderDispatch);
+      }
+    }
 
     if (
       newProps["dangerouslySetInnerHTML"] &&

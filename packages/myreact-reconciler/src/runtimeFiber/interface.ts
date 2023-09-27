@@ -29,7 +29,7 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugScope: MyReactFiberNode;
 
-  _debugEventMap: Record<string, ((...args: any[]) => void) & { cb?: any[] }>;
+  _debugEventMap: Record<string, ((...args: any[]) => void) & { cb?: any }>;
 
   _debugErrorBoundaries: MyReactFiberNode;
 

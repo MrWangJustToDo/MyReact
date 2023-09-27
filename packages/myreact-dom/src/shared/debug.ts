@@ -5,17 +5,26 @@ import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 import type { RenderContainer } from "@my-react-dom-client/mount";
 
+const { enableOptimizeTreeLog } = __my_react_shared__;
+
 /**
  * @internal
  */
 export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: any) => {
   if (__DEV__) {
+    const last = enableOptimizeTreeLog.current;
+
+    enableOptimizeTreeLog.current = false;
+
     if (level === "warn") {
       devWarnWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
     }
     if (level === "error") {
       devErrorWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
     }
+
+    enableOptimizeTreeLog.current = last;
+
     return;
   }
 

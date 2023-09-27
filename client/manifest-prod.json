@@ -1,6 +1,6 @@
 {
   "main.css": "client/main-899432e8b2b128d5a9e0.css",
-  "main.js": "client/main-86184111d83185427486.js",
+  "main.js": "client/main-98e56a3e71d5fb9470c9.js",
   "runtime.js": "client/runtime-80236f2a0aa6a1c7c149.js",
   "page-.js": "client/page--c18cd282d6e9e5c89da4.js",
   "page-404.js": "client/page-404-bf657922209b25b31968.js",
@@ -11,11 +11,11 @@
   "vendor-lodash.js": "client/vendor-lodash-a40f13786dbe93a36605.js",
   "vendor-babel.js": "client/vendor-babel-49c244f84bf728b16eba.js",
   "vendor-icons.js": "client/vendor-icons-448879aa5dc2149eb55a.js",
-  "vendor-react.js": "client/vendor-react-0d877c7c5ced5db30ead.js",
+  "vendor-react.js": "client/vendor-react-8b2dfa7cb8340d6fc9c4.js",
   "vendor-emotion.js": "client/vendor-emotion-dc7100a2ed40176bbc8a.js",
   "manifest-deps.json": "client/manifest-deps.json",
   "main-css.map": "client/main-899432e8b2b128d5a9e0.css.map",
-  "main-js.map": "client/main-86184111d83185427486.js.map",
+  "main-js.map": "client/main-98e56a3e71d5fb9470c9.js.map",
   "runtime-js.map": "client/runtime-80236f2a0aa6a1c7c149.js.map",
   "page--js.map": "client/page--c18cd282d6e9e5c89da4.js.map",
   "page-404-js.map": "client/page-404-bf657922209b25b31968.js.map",
@@ -26,6 +26,6 @@
   "vendor-lodash-js.map": "client/vendor-lodash-a40f13786dbe93a36605.js.map",
   "vendor-babel-js.map": "client/vendor-babel-49c244f84bf728b16eba.js.map",
   "vendor-icons-js.map": "client/vendor-icons-448879aa5dc2149eb55a.js.map",
-  "vendor-react-js.map": "client/vendor-react-0d877c7c5ced5db30ead.js.map",
+  "vendor-react-js.map": "client/vendor-react-8b2dfa7cb8340d6fc9c4.js.map",
   "vendor-emotion-js.map": "client/vendor-emotion-dc7100a2ed40176bbc8a.js.map"
 }

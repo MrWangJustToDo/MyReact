@@ -1,13 +1,15 @@
 import { useState } from "react";
 import "./App.css";
+import "@mantine/core/styles.css";
+import { Card, MantineProvider, ScrollAreaAutosize } from "@mantine/core";
+import { theme } from "./theme";
+import { Example } from "./Example";
 
 function App() {
   const [count, setCount] = useState(0);
-  useState();
-  // useState();
 
   return (
-    <>
+    <MantineProvider theme={theme}>
       <div>
         <a href="https://vitejs.dev" target="_blank">
           Vite
@@ -24,8 +26,13 @@ function App() {
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>
+      <Card>
+        <ScrollAreaAutosize mah={200}>
+          <Example />
+        </ScrollAreaAutosize>
+      </Card>
       <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-    </>
+    </MantineProvider>
   );
 }
 

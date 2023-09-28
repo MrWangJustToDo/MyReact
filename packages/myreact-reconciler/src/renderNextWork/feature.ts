@@ -78,6 +78,8 @@ export const performToNextFiberWithTrigger = (fiber: MyReactFiberNode, renderDis
     if (fiber.child) return fiber.child;
   }
 
+  if (__DEV__) currentRunningFiber.current = null;
+
   let nextFiber: MyReactFiberNode | null = fiber;
 
   while (nextFiber && nextFiber !== renderDispatch.runtimeFiber.scheduledFiber) {

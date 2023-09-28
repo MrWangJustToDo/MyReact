@@ -9,8 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mantine/core": "7.1.0",
+    "@mantine/hooks": "7.1.0",
+    "@mantine/vanilla-extract": "7.1.0",
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
+    "@vanilla-extract/css": "^1.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
@@ -20,7 +24,11 @@
     "@types/node": "^20.5.7",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
+    "@vanilla-extract/vite-plugin": "^3.9.0",
     "eslint": "^8.48.0",
+    "postcss": "^8.4.28",
+    "postcss-preset-mantine": "^1.7.0",
+    "postcss-simple-vars": "^7.0.1",
     "typescript": "^5.2.2",
     "vite": "^4.4.9"
   }

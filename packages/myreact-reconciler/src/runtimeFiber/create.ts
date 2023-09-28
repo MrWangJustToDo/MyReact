@@ -38,20 +38,22 @@ export const createFiberNode = (
 
   renderDispatch.pendingRef(newFiberNode);
 
-  // renderDispatch.resolveScopeMap(newFiberNode);
-
-  // renderDispatch.resolveStrictMap(newFiberNode);
-
-  // renderDispatch.resolveContextMap(newFiberNode);
-
-  // renderDispatch.resolveSuspenseMap(newFiberNode);
-
-  // renderDispatch.resolveErrorBoundariesMap(newFiberNode);
-
   renderDispatch.patchToFiberInitial?.(newFiberNode);
 
   if (exclude(newFiberNode.patch, PATCH_TYPE.__update__)) {
     newFiberNode.memoizedProps = newFiberNode.pendingProps;
+  }
+
+  if (__DEV__) {
+    renderDispatch.resolveScopeMap(newFiberNode);
+
+    renderDispatch.resolveStrictMap(newFiberNode);
+
+    renderDispatch.resolveContextMap(newFiberNode);
+
+    renderDispatch.resolveSuspenseMap(newFiberNode);
+
+    renderDispatch.resolveErrorBoundariesMap(newFiberNode);
   }
 
   return newFiberNode;

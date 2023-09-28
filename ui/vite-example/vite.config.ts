@@ -1,7 +1,8 @@
 import { defineConfig } from "vite";
-import my_react from "@my-react/react-vite";
+import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
+import react from "@my-react/react-vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [my_react()],
+  plugins: [react(), vanillaExtractPlugin()],
 });

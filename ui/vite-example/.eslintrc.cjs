@@ -4,6 +4,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
+  exclude: [".eslintrc.cjs", "postcss.config.cjs"],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,

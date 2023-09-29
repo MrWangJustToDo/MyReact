@@ -201,6 +201,8 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
     }
   }
 
+  fiber.mode = 1;
+
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 
   cb && renderDispatch.pendingEffect(fiber, cb);

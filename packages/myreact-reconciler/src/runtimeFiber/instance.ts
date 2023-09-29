@@ -53,6 +53,8 @@ export class MyReactFiberNode implements RenderFiber {
 
   type: NODE_TYPE = NODE_TYPE.__initial__;
 
+  mode: 0 | 1 = 0;
+
   nativeNode: Record<string, any>;
 
   elementType: MyReactElementType | null;
@@ -125,23 +127,29 @@ export class MyReactFiberNode implements RenderFiber {
 
     this.state = STATE_TYPE.__initial__;
   }
-  _prepare(): void {
+  _prepare(initial?: boolean): void {
     const renderPlatform = currentRenderPlatform.current;
 
     const processQueue = () => {
       const flag = enableConcurrentMode.current;
 
-      const needUpdate = include(this.type, NODE_TYPE.__class__)
+      const updateState = include(this.type, NODE_TYPE.__class__)
         ? processClassComponentUpdateQueue(this, flag)
         : processFunctionComponentUpdateQueue(this, flag);
 
-      if (needUpdate?.needUpdate) this._update(needUpdate.isSync ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__triggerConcurrent__);
+      if (updateState?.needUpdate) this._update(updateState.isSync ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__triggerConcurrent__);
     };
 
-    renderPlatform.microTask(processQueue);
+    if (initial) {
+      processQueue();
+    } else {
+      renderPlatform.microTask(processQueue);
+    }
   }
   _update(state?: STATE_TYPE) {
     if (include(this.state, STATE_TYPE.__unmount__)) return;
+
+    const renderPlatform = currentRenderPlatform.current;
 
     state = state || STATE_TYPE.__triggerSync__;
 
@@ -151,7 +159,7 @@ export class MyReactFiberNode implements RenderFiber {
       this.state = merge(this.state, state);
     }
 
-    triggerUpdate(this);
+    renderPlatform.microTask(() => triggerUpdate(this));
   }
 }
 

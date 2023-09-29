@@ -10,6 +10,7 @@ export type ComponentUpdateQueue<State = Record<string, unknown>, Props = Record
   trigger: MyReactComponent;
   isForce?: boolean;
   isSync?: boolean;
+  isInitial?: boolean;
   payLoad?: Partial<State> | ((state: State, props: Props) => Partial<State>);
   callback?: () => void;
 };
@@ -22,6 +23,7 @@ export type HookUpdateQueue = {
   trigger: RenderHook;
   isForce?: boolean;
   isSync?: boolean;
+  isInitial?: boolean;
   payLoad?: Action;
   callback?: () => void;
 };

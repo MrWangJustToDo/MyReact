@@ -11,6 +11,8 @@ export interface DefaultRenderFiber {
 
   patch: PATCH_TYPE;
 
+  mode: 0 | 1;
+
   hookList: ListTree<RenderHook> | null;
 
   dependence: Set<MyReactInternalInstance> | null;
@@ -31,7 +33,7 @@ export interface DefaultRenderFiber {
 
   _update(state?: STATE_TYPE): void;
 
-  _prepare(): void;
+  _prepare(initial?: boolean): void;
 
   _unmount(): void;
 }

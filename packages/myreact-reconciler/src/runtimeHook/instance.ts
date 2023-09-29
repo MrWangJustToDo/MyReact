@@ -1,9 +1,11 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { UpdateQueueType, type HOOK_TYPE } from "@my-react/react-shared";
 
 import type { RenderHook, Action, HookUpdateQueue } from "@my-react/react";
 
 const { MyReactInternalInstance, currentRenderPlatform } = __my_react_internal__;
+
+const { enableSyncFlush } = __my_react_shared__;
 
 export class MyReactHookNode extends MyReactInternalInstance implements RenderHook {
   type: HOOK_TYPE;
@@ -43,6 +45,8 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
       type: UpdateQueueType.hook,
       trigger: this,
       payLoad: action,
+      isSync: enableSyncFlush.current,
+      isInitial: this._ownerFiber?.mode === 0,
     };
 
     const renderPlatform = currentRenderPlatform.current;

@@ -1,7 +1,7 @@
 import { UpdateQueueType, isNormalEquals } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
-import { currentRenderPlatform } from "../share";
+import { currentRenderPlatform, enableSyncFlush } from "../share";
 
 import type { MyReactElementNode, createContext } from "../element";
 import type { ComponentUpdateQueue } from "../renderQueue";
@@ -90,6 +90,8 @@ export class MyReactComponent<
       payLoad,
       callback,
       trigger: this,
+      isSync: enableSyncFlush.current,
+      isInitial: this._ownerFiber.mode === 0,
     };
 
     const renderPlatform = currentRenderPlatform.current;
@@ -102,6 +104,8 @@ export class MyReactComponent<
       type: UpdateQueueType.component,
       isForce: true,
       trigger: this,
+      isSync: enableSyncFlush.current,
+      isInitial: this._ownerFiber?.mode === 0,
     };
 
     const renderPlatform = currentRenderPlatform.current;

@@ -17,7 +17,7 @@ export type UpdateQueueDev = UpdateQueue<{
 
 const { currentComponentFiber } = __my_react_internal__;
 
-const { enableSyncFlush, enableDebugFiled } = __my_react_shared__;
+const { enableDebugFiled } = __my_react_shared__;
 
 const MAX_UPDATE_COUNT = 25;
 
@@ -33,8 +33,6 @@ export const processState = (_params: UpdateQueue) => {
 
     typedUpdateQueue._debugType = UpdateQueueType[_params.type];
   }
-
-  _params.isSync = enableSyncFlush.current;
 
   if (_params.type === UpdateQueueType.component) {
     const ownerFiber = _params.trigger._ownerFiber;
@@ -62,7 +60,7 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    ownerFiber._prepare();
+    ownerFiber._prepare(_params.isInitial);
   } else {
     const ownerFiber = _params.trigger._ownerFiber;
 
@@ -89,6 +87,6 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    ownerFiber._prepare();
+    ownerFiber._prepare(_params.isInitial);
   }
 };

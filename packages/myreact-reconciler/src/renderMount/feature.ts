@@ -24,10 +24,12 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
+  renderDispatch.isAppMounted = true;
+
   globalLoop.current = false;
 };
 
-export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, _hydrate?: boolean) => {
+export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, hydrate?: boolean) => {
   globalLoop.current = true;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
@@ -55,7 +57,13 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
     }
   }
 
+  renderDispatch.pendingCommitFiberList = null;
+
+  renderDispatch.reconcileCommit(fiber, hydrate);
+  
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
+
+  renderDispatch.isAppMounted = true;
 
   globalLoop.current = false;
 };

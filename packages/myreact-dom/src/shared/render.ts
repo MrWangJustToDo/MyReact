@@ -14,8 +14,6 @@ export const startRender = (fiber: MyReactFiberNode, renderDispatch: ClientDomDi
 
   const endTime = Date.now();
 
-  renderDispatch.isAppMounted = true;
-
   if (hydrate) {
     renderDispatch.hydrateTime = endTime - startTime;
   } else {
@@ -35,13 +33,7 @@ export const startRenderAsync = async (
 
   await mountAsync(fiber, renderDispatch, hydrate);
 
-  renderDispatch.pendingCommitFiberList = null;
-
-  renderDispatch.reconcileCommit(fiber, hydrate);
-
   const endTime = Date.now();
-
-  renderDispatch.isAppMounted = true;
 
   if (hydrate) {
     renderDispatch.hydrateTime = endTime - startTime;

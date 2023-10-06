@@ -5,7 +5,7 @@ import { NODE_TYPE } from "./fiberType";
 
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
-import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement, lazy } from "@my-react/react";
+import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement, createContext, lazy } from "@my-react/react";
 
 const { currentRenderPlatform, currentRunningFiber } = __my_react_internal__;
 
@@ -179,15 +179,20 @@ const shouldIncludeLog = (fiber: MyReactFiberNode) => {
   return false;
 };
 
+// TODO
 export const getElementName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__memo__) {
     const targetRender = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
     let name = "";
     let res = "memo";
     if (fiber.type & NODE_TYPE.__provider__) {
-      name = "Provider";
+      const typedTargetRender = fiber.elementType as ReturnType<typeof createContext>["Provider"];
+      name = typedTargetRender.Context.displayName;
+      res += "-provider";
     } else if (fiber.type & NODE_TYPE.__consumer__) {
-      name = "Consumer";
+      const typedTargetRender = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
+      name = typedTargetRender.Context.displayName;
+      res += "-consumer";
     } else if (typeof targetRender === "function") {
       name = targetRender?.displayName || targetRender?.name || name;
     }
@@ -214,8 +219,16 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     return `<Fragment />`;
   }
   if (fiber.type & NODE_TYPE.__keepLive__) return `<KeepAlive />`;
-  if (fiber.type & NODE_TYPE.__provider__) return `<Provider />`;
-  if (fiber.type & NODE_TYPE.__consumer__) return `<Consumer />`;
+  if (fiber.type & NODE_TYPE.__provider__) {
+    const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Provider"];
+    const name = typedElementType.Context.displayName;
+    return `<${name ? name : "anonymous"} - (provider) />`;
+  }
+  if (fiber.type & NODE_TYPE.__consumer__) {
+    const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
+    const name = typedElementType.Context.displayName;
+    return `<${name ? name : "anonymous"} - (consumer) />`;
+  }
   if (fiber.type & NODE_TYPE.__comment__) return `<Comment />`;
   if (fiber.type & NODE_TYPE.__forwardRef__) {
     const targetRender = fiber.elementType as MixinMyReactFunctionComponent;

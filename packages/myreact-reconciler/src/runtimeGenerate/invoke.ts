@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { STATE_TYPE, exclude, include } from "@my-react/react-shared";
+import { STATE_TYPE, exclude, include, isPromise } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { currentRenderDispatch, currentTriggerFiber, debugWithNode, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithFiber, setRefreshTypeMap } from "../share";
@@ -14,6 +14,10 @@ const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber } = __m
 const { enablePerformanceLog, enableDebugFiled } = __my_react_shared__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
+  if (__DEV__ && isPromise(children)) {
+    console.error(`[@my-react/react] render function should not return a promise, please check your code`);
+  }
+
   transformChildrenFiber(fiber, children);
 };
 

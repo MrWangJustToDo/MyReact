@@ -6,7 +6,7 @@ import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunct
 
 let contextId = 0;
 
-const defaultObject = { [TYPEKEY]: Context, contextId: 0 };
+const defaultObject = { [TYPEKEY]: Context, contextId: 0, displayName: "" };
 
 const defaultCompare = <P extends Record<string, unknown>>(oldProps: P, newProps: P) => isNormalEquals(oldProps, newProps);
 

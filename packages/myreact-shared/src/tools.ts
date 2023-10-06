@@ -29,3 +29,7 @@ export function isNumber(target: unknown): target is number {
 export function isCollection(target: unknown): target is Iterable<unknown> {
   return target instanceof Map || target instanceof Set || target instanceof WeakMap || target instanceof WeakSet;
 }
+
+export const isPromise = <T = any>(val: unknown): val is Promise<T> => {
+  return (isObject(val) || isFunction(val)) && isFunction((val as any).then) && isFunction((val as any).catch);
+};

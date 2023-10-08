@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
-import { onceWarnWithKeyAndFiber, syncFlush } from "../share";
+import { getCurrentDispatchFromFiber, onceWarnWithKeyAndFiber, syncFlush } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { RenderFiber, UpdateQueue } from "@my-react/react";
@@ -60,7 +60,9 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    ownerFiber._prepare(_params.isInitial);
+    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber as MyReactFiberNode);
+
+    ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
   } else {
     const ownerFiber = _params.trigger._ownerFiber;
 
@@ -87,6 +89,8 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    ownerFiber._prepare(_params.isInitial);
+    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber as MyReactFiberNode);
+
+    ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
   }
 };

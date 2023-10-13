@@ -87,6 +87,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
               dom.setAttribute(attrKey, value);
             }
           } else if (v !== null && v !== undefined) {
+            if (v === 'false') return;
             log(fiber, "warn", `hydrate warning, dom '${attrKey}' attr not match from server. server: ${v}, client: ${value}`);
             dom.removeAttribute(attrKey);
           }
@@ -124,7 +125,7 @@ const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
     const incomingInnerHTML = typedProps.__html as string;
 
     if (existInnerHTML !== incomingInnerHTML) {
-      log(fiber, "warn", `hydrate error, 'innerHTML' not match from server.`);
+      // log(fiber, "warn", `hydrate error, 'innerHTML' not match from server.`);
 
       typedDOM.innerHTML = typedProps.__html as string;
     }

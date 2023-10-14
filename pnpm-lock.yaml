@@ -841,8 +841,8 @@ importers:
         specifier: ^6.10.0
         version: 6.10.0(react-dom@18.2.0)(react@18.2.0)
       reactivity-store:
-        specifier: ^0.2.2
-        version: 0.2.2(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^0.2.4
+        version: 0.2.4(react-dom@18.2.0)(react@18.2.0)
       redux:
         specifier: ^4.2.1
         version: 4.2.1
@@ -12702,8 +12702,8 @@ packages:
     dependencies:
       loose-envify: 1.4.0
 
-  /reactivity-store@0.2.2(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-ZrKq6u5VDhcGLvj4V0xBghLSnVS6JEdwhFYtT4T2Fm09e50tf0tvWl8sv8L80mWI0NHbIS0LI15uvpPB3nociw==}
+  /reactivity-store@0.2.4(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-S+OhsHeUrswq8YpFDsGyaX/lkxs+ndsnvhGFlwDGhYo88Tu5JUDQNJAUCfqzKMC1R41tb6HVH5BDItySElBC+w==}
     peerDependencies:
       react: ^17.0.2 || ^18.2.0
       react-dom: ^17.0.2 || ^18.2.0

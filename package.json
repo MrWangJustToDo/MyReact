@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=16"
   },
-  "packageManager": "pnpm@8.6.1",
+  "packageManager": "pnpm@8.9.0",
   "scripts": {
     "dev:ssr": "cd ./ui/ssr-example && pnpm run dev",
     "dev:csr": "cd ./ui/csr-example && pnpm run dev",

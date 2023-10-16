@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { HOOK_TYPE, include, isObject, type ListTreeNode } from "@my-react/react-shared";
+import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "./fiberType";
 
@@ -26,21 +26,21 @@ export const devWarn = (...args) => {
 
   const logObj = [];
 
-  const logString = args
-    .map((i) => {
-      if (isObject(i)) {
-        logObj.push(i);
-        return "%o";
-      } else {
-        return i;
-      }
-    })
-    .join(" ");
+  // const logString = args
+  //   .map((i) => {
+  //     if (isObject(i)) {
+  //       logObj.push(i);
+  //       return "%o";
+  //     } else {
+  //       return i;
+  //     }
+  //   })
+  //   .join(" ");
 
   if (renderFiber) {
-    originalWarn.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
+    originalWarn.call(console, ...args, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
   } else {
-    originalWarn.call(console, logString, ...logObj);
+    originalWarn.call(console, ...args, ...logObj);
   }
 };
 
@@ -51,18 +51,18 @@ export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
 
   const logObj = [];
 
-  const logString = args
-    .map((i) => {
-      if (isObject(i)) {
-        logObj.push(i);
-        return "%o";
-      } else {
-        return i;
-      }
-    })
-    .join(" ");
+  // const logString = args
+  //   .map((i) => {
+  //     if (isObject(i)) {
+  //       logObj.push(i);
+  //       return "%o";
+  //     } else {
+  //       return i;
+  //     }
+  //   })
+  //   .join(" ");
 
-  originalWarn.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(fiber), "\n", renderFiber]));
+  originalWarn.call(console, ...args, ...logObj.concat([renderPlatform.getFiberTree(fiber), "\n", renderFiber]));
 };
 
 export const devError = (...args) => {
@@ -78,21 +78,21 @@ export const devError = (...args) => {
 
   const logObj = [];
 
-  const logString = args
-    .map((i) => {
-      if (isObject(i)) {
-        logObj.push(i);
-        return "%o";
-      } else {
-        return i;
-      }
-    })
-    .join(" ");
+  // const logString = args
+  //   .map((i) => {
+  //     if (isObject(i)) {
+  //       logObj.push(i);
+  //       return "%o";
+  //     } else {
+  //       return i;
+  //     }
+  //   })
+  //   .join(" ");
 
   if (renderFiber) {
-    originalError.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
+    originalError.call(console, ...args, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
   } else {
-    originalError.call(console, logString, ...logObj);
+    originalError.call(console, ...args, ...logObj);
   }
 };
 
@@ -103,21 +103,21 @@ export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
 
   const logObj = [];
 
-  const logString = args
-    .map((i) => {
-      if (isObject(i)) {
-        logObj.push(i);
-        return "%o";
-      } else {
-        return i;
-      }
-    })
-    .join(" ");
+  // const logString = args
+  //   .map((i) => {
+  //     if (isObject(i)) {
+  //       logObj.push(i);
+  //       return "%o";
+  //     } else {
+  //       return i;
+  //     }
+  //   })
+  //   .join(" ");
 
   if (logObj.some((i) => i instanceof Error)) {
-    originalError.call(console, logString, ...logObj.concat(["\n", renderFiber]));
+    originalError.call(console, ...args, ...logObj.concat(["\n", renderFiber]));
   } else {
-    originalError.call(console, logString, ...logObj.concat([renderPlatform.getFiberTree(fiber), "\n", renderFiber]));
+    originalError.call(console, ...args, ...logObj.concat([renderPlatform.getFiberTree(fiber), "\n", renderFiber]));
   }
 };
 
@@ -327,18 +327,18 @@ export const onceWarnWithKey = (key: string, ...args: any[]) => {
 
   warnMap[tree] = { ...warnMap?.[tree], [key]: true };
 
-  const logString = args
-    .map((i) => {
-      if (isObject(i)) {
-        logObj.push(i);
-        return "%o";
-      } else {
-        return i;
-      }
-    })
-    .join(" ");
+  // const logString = args
+  //   .map((i) => {
+  //     if (isObject(i)) {
+  //       logObj.push(i);
+  //       return "%o";
+  //     } else {
+  //       return i;
+  //     }
+  //   })
+  //   .join(" ");
 
-  originalWarn.call(console, logString, ...logObj.concat([tree, "\n", renderFiber]));
+  originalWarn.call(console, ...args, ...logObj.concat([tree, "\n", renderFiber]));
 };
 
 export const onceErrorWithKey = (key: string, ...args: any[]) => {
@@ -364,18 +364,18 @@ export const onceErrorWithKey = (key: string, ...args: any[]) => {
 
   errorMap[tree] = { ...errorMap?.[tree], [key]: true };
 
-  const logString = args
-    .map((i) => {
-      if (isObject(i)) {
-        logObj.push(i);
-        return "%o";
-      } else {
-        return i;
-      }
-    })
-    .join(" ");
+  // const logString = args
+  //   .map((i) => {
+  //     if (isObject(i)) {
+  //       logObj.push(i);
+  //       return "%o";
+  //     } else {
+  //       return i;
+  //     }
+  //   })
+  //   .join(" ");
 
-  originalError.call(console, logString, ...logObj.concat([tree, "\n", renderFiber]));
+  originalError.call(console, ...args, ...logObj.concat([tree, "\n", renderFiber]));
 };
 
 export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: any[]) => {
@@ -389,18 +389,18 @@ export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ..
 
   warnMap[tree] = { ...warnMap?.[tree], [key]: true };
 
-  const logString = args
-    .map((i) => {
-      if (isObject(i)) {
-        logObj.push(i);
-        return "%o";
-      } else {
-        return i;
-      }
-    })
-    .join(" ");
+  // const logString = args
+  //   .map((i) => {
+  //     if (isObject(i)) {
+  //       logObj.push(i);
+  //       return "%o";
+  //     } else {
+  //       return i;
+  //     }
+  //   })
+  //   .join(" ");
 
-  originalWarn.call(console, logString, ...logObj.concat([tree, "\n", fiber]));
+  originalWarn.call(console, ...args, ...logObj.concat([tree, "\n", fiber]));
 };
 
 export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: any[]) => {
@@ -414,16 +414,16 @@ export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, .
 
   errorMap[tree] = { ...errorMap?.[tree], [key]: true };
 
-  const logString = args
-    .map((i) => {
-      if (isObject(i)) {
-        logObj.push(i);
-        return "%o";
-      } else {
-        return i;
-      }
-    })
-    .join(" ");
+  // const logString = args
+  //   .map((i) => {
+  //     if (isObject(i)) {
+  //       logObj.push(i);
+  //       return "%o";
+  //     } else {
+  //       return i;
+  //     }
+  //   })
+  //   .join(" ");
 
-  originalError.call(console, logString, ...logObj.concat([tree, "\n", fiber]));
+  originalError.call(console, ...args, ...logObj.concat([tree, "\n", fiber]));
 };

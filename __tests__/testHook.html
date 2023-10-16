@@ -90,6 +90,7 @@
         const [state, dispatch] = useReducer(reducer, initialCount, (i) => ({
           count: i + initialCount,
         }));
+        console.warn('3333%o', {a: 1})
         return (
           <>
             Count: {state.count}
@@ -112,6 +113,8 @@
 
       function App() {
         const [val, add] = useCounter();
+
+        useMemo(useCallback(useMemo(() => () => 100, []), []),[])
 
         console.log(val);
 

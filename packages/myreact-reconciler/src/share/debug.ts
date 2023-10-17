@@ -97,8 +97,6 @@ export const devError = (...args) => {
 };
 
 export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
-  const renderPlatform = currentRenderPlatform.current;
-
   const renderFiber = fiber;
 
   const logObj = [];
@@ -114,11 +112,7 @@ export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
   //   })
   //   .join(" ");
 
-  if (logObj.some((i) => i instanceof Error)) {
-    originalError.call(console, ...args, ...logObj.concat(["\n", renderFiber]));
-  } else {
-    originalError.call(console, ...args, ...logObj.concat([renderPlatform.getFiberTree(fiber), "\n", renderFiber]));
-  }
+  originalError.call(console, ...args, ...logObj.concat([renderFiber]));
 };
 
 export const setLogScope = () => {

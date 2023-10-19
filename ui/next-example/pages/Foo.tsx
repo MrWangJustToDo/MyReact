@@ -61,9 +61,10 @@ export default function Foo() {
           onClick={() => {
             console.log(456);
           }}
-          // onClickCapture={() => {
-          //   console.log('456', 'capture')
-          // }}
+          onClickCapture={() => {
+            console.log('456', 'capture')
+            throw 1111
+          }}
         >
           {" "}
           click

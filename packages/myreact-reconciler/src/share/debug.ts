@@ -24,23 +24,10 @@ export const devWarn = (...args) => {
 
   const renderFiber = currentRunningFiber.current;
 
-  const logObj = [];
-
-  // const logString = args
-  //   .map((i) => {
-  //     if (isObject(i)) {
-  //       logObj.push(i);
-  //       return "%o";
-  //     } else {
-  //       return i;
-  //     }
-  //   })
-  //   .join(" ");
-
   if (renderFiber) {
-    originalWarn.call(console, ...args, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
+    originalWarn.call(console, ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
   } else {
-    originalWarn.call(console, ...args, ...logObj);
+    originalWarn.call(console, ...args);
   }
 };
 
@@ -49,20 +36,7 @@ export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
 
   const renderFiber = fiber;
 
-  const logObj = [];
-
-  // const logString = args
-  //   .map((i) => {
-  //     if (isObject(i)) {
-  //       logObj.push(i);
-  //       return "%o";
-  //     } else {
-  //       return i;
-  //     }
-  //   })
-  //   .join(" ");
-
-  originalWarn.call(console, ...args, ...logObj.concat([renderPlatform.getFiberTree(fiber), "\n", renderFiber]));
+  originalWarn.call(console, ...args, ...[renderPlatform.getFiberTree(fiber), "\n", renderFiber]);
 };
 
 export const devError = (...args) => {
@@ -70,49 +44,25 @@ export const devError = (...args) => {
 
   const renderFiber = currentRunningFiber.current;
 
-  if (!renderFiber) {
+  if (!renderFiber || args.some((i) => i instanceof Error)) {
     originalError.call(console, ...args);
 
     return;
   }
 
-  const logObj = [];
-
-  // const logString = args
-  //   .map((i) => {
-  //     if (isObject(i)) {
-  //       logObj.push(i);
-  //       return "%o";
-  //     } else {
-  //       return i;
-  //     }
-  //   })
-  //   .join(" ");
-
-  if (renderFiber) {
-    originalError.call(console, ...args, ...logObj.concat([renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]));
-  } else {
-    originalError.call(console, ...args, ...logObj);
-  }
+  originalError.call(console, "", ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
 };
 
 export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
+  const renderPlatform = currentRenderPlatform.current;
+
   const renderFiber = fiber;
 
-  const logObj = [];
-
-  // const logString = args
-  //   .map((i) => {
-  //     if (isObject(i)) {
-  //       logObj.push(i);
-  //       return "%o";
-  //     } else {
-  //       return i;
-  //     }
-  //   })
-  //   .join(" ");
-
-  originalError.call(console, ...args, ...logObj.concat([renderFiber]));
+  if (args.some((i) => i instanceof Error)) {
+    originalError.call(console, "", ...args, "\n", renderFiber);
+  } else {
+    originalError.call(console, "", ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
+  }
 };
 
 export const setLogScope = () => {
@@ -313,26 +263,13 @@ export const onceWarnWithKey = (key: string, ...args: any[]) => {
     return;
   }
 
-  const logObj = [];
-
   const tree = renderPlatform.getFiberTree(renderFiber);
 
   if (warnMap?.[tree]?.[key]) return;
 
   warnMap[tree] = { ...warnMap?.[tree], [key]: true };
 
-  // const logString = args
-  //   .map((i) => {
-  //     if (isObject(i)) {
-  //       logObj.push(i);
-  //       return "%o";
-  //     } else {
-  //       return i;
-  //     }
-  //   })
-  //   .join(" ");
-
-  originalWarn.call(console, ...args, ...logObj.concat([tree, "\n", renderFiber]));
+  originalWarn.call(console, ...args, ...[tree, "\n", renderFiber]);
 };
 
 export const onceErrorWithKey = (key: string, ...args: any[]) => {
@@ -350,32 +287,17 @@ export const onceErrorWithKey = (key: string, ...args: any[]) => {
     return;
   }
 
-  const logObj = [];
-
   const tree = renderPlatform.getFiberTree(renderFiber);
 
   if (errorMap?.[tree]?.[key]) return;
 
   errorMap[tree] = { ...errorMap?.[tree], [key]: true };
 
-  // const logString = args
-  //   .map((i) => {
-  //     if (isObject(i)) {
-  //       logObj.push(i);
-  //       return "%o";
-  //     } else {
-  //       return i;
-  //     }
-  //   })
-  //   .join(" ");
-
-  originalError.call(console, ...args, ...logObj.concat([tree, "\n", renderFiber]));
+  originalError.call(console, "", ...args, ...[tree, "\n", renderFiber]);
 };
 
 export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: any[]) => {
   const renderPlatform = currentRenderPlatform.current;
-
-  const logObj = [];
 
   const tree = renderPlatform.getFiberTree(fiber);
 
@@ -383,24 +305,11 @@ export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ..
 
   warnMap[tree] = { ...warnMap?.[tree], [key]: true };
 
-  // const logString = args
-  //   .map((i) => {
-  //     if (isObject(i)) {
-  //       logObj.push(i);
-  //       return "%o";
-  //     } else {
-  //       return i;
-  //     }
-  //   })
-  //   .join(" ");
-
-  originalWarn.call(console, ...args, ...logObj.concat([tree, "\n", fiber]));
+  originalWarn.call(console, ...args, ...[tree, "\n", fiber]);
 };
 
 export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: any[]) => {
   const renderPlatform = currentRenderPlatform.current;
-
-  const logObj = [];
 
   const tree = renderPlatform.getFiberTree(fiber);
 
@@ -408,16 +317,5 @@ export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, .
 
   errorMap[tree] = { ...errorMap?.[tree], [key]: true };
 
-  // const logString = args
-  //   .map((i) => {
-  //     if (isObject(i)) {
-  //       logObj.push(i);
-  //       return "%o";
-  //     } else {
-  //       return i;
-  //     }
-  //   })
-  //   .join(" ");
-
-  originalError.call(console, ...args, ...logObj.concat([tree, "\n", fiber]));
+  originalError.call(console, "", ...args, ...[tree, "\n", fiber]);
 };

@@ -1,5 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense, lazy } from "react";
+
+const Bar = lazy(() => import("../components/Bar").then(({ Bar }) => ({ default: Bar })));
 
 export default function Home() {
   return (
@@ -36,6 +39,10 @@ export default function Home() {
       >
         <Link href="/Foo">Goto Foo Page</Link>
       </div>
+
+      <Suspense fallback={<div className="text-lg font-mono text-red-700">loading...</div>}>
+        <Bar />
+      </Suspense>
 
       <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
         <a

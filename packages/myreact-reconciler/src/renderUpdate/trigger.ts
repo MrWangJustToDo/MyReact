@@ -175,6 +175,8 @@ export const triggerRevert = (fiber: MyReactFiberNode) => {
 };
 
 export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) => {
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+
   const renderPlatform = currentRenderPlatform.current;
 
   const renderDispatch = fiberToDispatchMap.get(fiber);
@@ -190,8 +192,6 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
 
     return;
   }
-
-  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (state !== undefined && state !== STATE_TYPE.__stable__) {
     if (fiber.state === STATE_TYPE.__stable__) {

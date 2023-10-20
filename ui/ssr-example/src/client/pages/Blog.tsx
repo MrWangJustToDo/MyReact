@@ -7,6 +7,7 @@ import { CONTAINER_WIDTH } from "@client/config/container";
 import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT } from "@client/config/gridLayout";
 import { BASIC_VARIABLE, BlogGridWithInfinityScroll } from "@client/container/BlogList";
 import { User } from "@client/container/User";
+import { useMainCard } from "@client/hooks/useMainCard";
 
 import type { GetInitialStateType } from "@client/types/common";
 
@@ -59,6 +60,8 @@ const GRID_LAYOUTS = {
 };
 
 const Page = () => {
+  const { drag, onDragEnd, onDragStart } = useMainCard();
+
   return (
     <Container maxWidth={CONTAINER_WIDTH}>
       <StyledResponsiveReactGridLayout
@@ -69,11 +72,13 @@ const Page = () => {
         rowHeight={GRID_ROW_HEIGHT}
         draggableHandle={`.${DRAG_HANDLER_SELECTOR}`}
         draggableCancel={`.${DISABLE_DRAG_HANDLER_SELECTOR}`}
+        onDragStart={onDragStart}
+        onDragStop={onDragEnd}
       >
         <GridCard key="a" contentProps={{ overflow: "auto" }}>
           <User />
         </GridCard>
-        <GridCard key="b" className="grid-card-list">
+        <GridCard key="b" className="grid-card-list" enableBlur={drag}>
           <BlogGridWithInfinityScroll />
         </GridCard>
       </StyledResponsiveReactGridLayout>
@@ -103,7 +108,7 @@ export const getInitialState: GetInitialStateType = async () => {
         },
       }),
     ]);
-  
+
     return { props: { ["$$__apollo__$$"]: client.cache.extract() } };
   }
 };

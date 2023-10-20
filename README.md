@@ -92,7 +92,7 @@ pnpm dev:ssr / dev:csr / dev:next / dev:vite
 | Component       | renderToStaticMarkup   | onUnmounted              | useDebugValue              |
 | PureComponent   | renderToStaticNodeStream | onUpdated                | useSignal                  |
 | StrictMode      | renderToPipeableStream (new) |                          | useDeferredValue (new)     |
-| Fragment        |                        |                          | useId (new)                |
+| Fragment        | renderToReadableStream (new) |                          | useId (new)                |
 | Suspense        |                        |                          | useInsertionEffect (new)   |
 | startTransition |                        |                          | useSyncExternalStore (new) |
 |                 |                        |                          | useTransition (new)        |

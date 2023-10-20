@@ -93,10 +93,15 @@ const _BlogListWithInfinityScroll = () => {
         <ErrorCom error={error} />
         <Portal>
           <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
-            <Button color="red" textTransform="capitalize" onClick={() => refetch()}>
+            <Button colorScheme="facebook" textTransform="capitalize" onClick={() => refetch()}>
               refresh
             </Button>
-            <Button color="red" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
+            <Button
+              colorScheme="facebook"
+              textTransform="capitalize"
+              display={{ base: "none", lg: "block" }}
+              onClick={() => setDisableGridLayout((last) => !last)}
+            >
               {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
             </Button>
           </ButtonGroup>
@@ -116,10 +121,15 @@ const _BlogListWithInfinityScroll = () => {
       </Box>
       <Portal>
         <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
-          <Button color="red" textTransform="capitalize" onClick={() => refetch()}>
+          <Button colorScheme="facebook" textTransform="capitalize" onClick={() => refetch()}>
             refresh
           </Button>
-          <Button color="red" textTransform="capitalize" display={{ base: "none", lg: "block" }} onClick={() => setDisableGridLayout((last) => !last)}>
+          <Button
+            colorScheme="facebook"
+            textTransform="capitalize"
+            display={{ base: "none", lg: "block" }}
+            onClick={() => setDisableGridLayout((last) => !last)}
+          >
             {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
           </Button>
         </ButtonGroup>

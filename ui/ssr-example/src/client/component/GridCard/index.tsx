@@ -7,15 +7,15 @@ import { Card } from "../Card";
 
 import type { BoxProps } from "@chakra-ui/react";
 
-export const GridCard = forwardRef<BoxProps & { contentProps?: Omit<BoxProps, "children"> }, "div">(
-  ({ children, className, contentProps, ...boxProps }, ref) => {
+export const GridCard = forwardRef<BoxProps & { contentProps?: Omit<BoxProps, "children">; enableBlur?: boolean }, "div">(
+  ({ children, className, enableBlur = true, contentProps, ...boxProps }, ref) => {
     return (
       <Card
         ref={ref}
         {...boxProps}
         className={cx(DRAG_HANDLER_SELECTOR, className)}
         backgroundColor={{ base: "mobileCardBackgroundColor", sm: "transparent" }}
-        backdropFilter={{ base: "initial", sm: "blur(8px)" }}
+        backdropFilter={{ base: "initial", sm: enableBlur ? "blur(8px)" : "initial" }}
       >
         <Flex justifyContent="center" cursor="move">
           <Box as="span" width="8" height="1" backgroundColor="gray.300" borderRadius="full" marginY="2" />
@@ -35,5 +35,5 @@ export const GridCard = forwardRef<BoxProps & { contentProps?: Omit<BoxProps, "c
         </Box>
       </Card>
     );
-  },
+  }
 );

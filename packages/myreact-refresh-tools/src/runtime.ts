@@ -3,7 +3,7 @@ import { compareVersion } from "@my-react/react-shared";
 
 import RefreshHelpers from "./internal/helpers";
 
-if (!RefreshRuntime.version || !compareVersion(RefreshRuntime.version, "0.2.4")) {
+if (!RefreshRuntime.version || !compareVersion(RefreshRuntime.version, "0.2.5")) {
   console.error(
     `[@my-react/react-refresh-tools] current RefreshRuntime version not match for the package required, please reinstall "@my-react/react-refresh" to fix this issue`
   );

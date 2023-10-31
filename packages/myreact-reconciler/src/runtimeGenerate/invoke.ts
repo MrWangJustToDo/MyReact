@@ -152,7 +152,9 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
 
   const end = Date.now();
 
-  if (enablePerformanceLog.current && end - start > renderDispatch.performanceLogTimeLimit) {
+  const renderTime = end - start;
+
+  if (enablePerformanceLog.current && renderTime > renderDispatch.performanceLogTimeLimit) {
     onceWarnWithKeyAndFiber(fiber, "performance", `[@my-react/react] render current component take a lot of time, there have a performance warning`);
   }
 
@@ -163,21 +165,23 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   if (enableDebugFiled.current) {
     if (typedFiber.state === STATE_TYPE.__create__) {
       typedFiber._debugRenderState = {
-        mountTime: timeNow,
+        mountTimeStep: timeNow,
+        timeForRender: renderTime,
       };
 
       typedFiber._debugIsMount = true;
     } else {
       const prevRenderState = Object.assign({}, typedFiber._debugRenderState);
 
-      const prevRenderTime = prevRenderState.updateTime || prevRenderState.mountTime;
+      const prevRenderTime = prevRenderState.updateTimeStep || prevRenderState.mountTimeStep;
 
       typedFiber._debugRenderState = {
         renderCount: (prevRenderState.renderCount || 0) + 1,
-        mountTime: prevRenderState.mountTime,
-        updateTime: timeNow,
+        mountTimeStep: prevRenderState.mountTimeStep,
+        updateTimeStep: timeNow,
         trigger: currentTriggerFiber.current,
-        updateTimeInterval: timeNow - prevRenderTime,
+        timeForRender: renderTime,
+        timeForUpdate: timeNow - prevRenderTime,
       };
     }
   }

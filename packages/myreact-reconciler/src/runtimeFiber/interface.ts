@@ -6,10 +6,13 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
   _debugElement: MyReactElementNode;
 
   _debugRenderState: {
-    mountTime: number;
+    mountTimeStep: number;
     renderCount?: number;
-    updateTime?: number;
-    updateTimeInterval?: number;
+    updateTimeStep?: number;
+    // 本次更新距离上次时间差
+    timeForUpdate?: number;
+    // 本地render花费时间
+    timeForRender?: number;
     trigger?: MyReactFiberNode;
   };
 

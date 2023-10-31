@@ -49,9 +49,11 @@ export const updateFiberNode = (
 
       const typedElementType = typedElement.type as ReturnType<typeof memo>;
 
+      const compare = typedElementType.compare || isNormalEquals;
+
       if (
         exclude(fiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__) &&
-        typedElementType.compare(fiber.pendingProps, fiber.memoizedProps)
+        compare(fiber.pendingProps, fiber.memoizedProps)
       ) {
         fiber.state = STATE_TYPE.__stable__;
       } else {

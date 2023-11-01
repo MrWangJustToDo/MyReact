@@ -4,7 +4,7 @@ import { version as ReconcilerVersion } from "@my-react/react-reconciler";
 const { enableMockReact } = __my_react_shared__;
 
 export const checkReconcilerVersion = () => {
-  if (!ReconcilerVersion || ReconcilerVersion !== __VERSION__) {
+  if (__DEV__ && (!ReconcilerVersion || ReconcilerVersion !== __VERSION__)) {
     console.error(
       `[@my-react/react-dom] the version of '@my-react/react-reconciler' not match for '@my-react/react-dom', this may cause some bug, try to reinstall the 'node_modules' to fix this error`
     );

@@ -11,14 +11,14 @@
     <script src="../packages/myreact/dist/umd/index.development.js"></script>
     <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
-    <script src="https://unpkg.com/antd@5.2.2/dist/antd-with-locales.js"></script>
+    <script src="https://unpkg.com/antd@latest/dist/antd-with-locales.js"></script>
   </head>
   <body>
     <div id="root"></div>
 
     <script type="text/babel">
       const { useState } = React;
-      const { AutoComplete, message } = antd;
+      const { AutoComplete, message, ColorPicker } = antd;
 
       const mockVal = (str, repeat = 1) => ({
         value: str.repeat(repeat),
@@ -83,7 +83,7 @@
       // React.__my_react_shared__.enableLoopFromRoot.current = true;
 
       // TODO
-      ReactDOM.render(<App />, root);
+      ReactDOM.render(<ColorPicker />, root);
     </script>
   </body>
 </html>

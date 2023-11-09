@@ -44,6 +44,9 @@ import {
   enableLegacyLifeCycle,
   enablePerformanceLog,
   enableMockReact,
+  yieldTask,
+  macroTask,
+  microTask,
 } from "./share";
 
 /**
@@ -83,6 +86,15 @@ const __my_react_shared__ = {
   enableOptimizeTreeLog,
   enablePerformanceLog,
 };
+
+/**
+ * @public
+ */
+const __my_react_scheduler__ = {
+  yieldTask,
+  macroTask,
+  microTask,
+}
 
 /**
  * @public
@@ -145,6 +157,7 @@ export {
   useImperativeHandle,
   useSyncExternalStore,
   Children,
+  __my_react_scheduler__,
   __my_react_internal__,
   __my_react_shared__,
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,

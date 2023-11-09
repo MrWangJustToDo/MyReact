@@ -1,31 +1,31 @@
-import { __my_react_internal__ } from "@my-react/react";
-import { devError, devWarn } from "@my-react/react-reconciler";
+import { __my_react_shared__ } from "@my-react/react";
+import { devErrorWithFiber, devWarnWithFiber } from "@my-react/react-reconciler";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-const { currentRunningFiber } = __my_react_internal__;
+const { enableOptimizeTreeLog } = __my_react_shared__;
 
 /**
  * @internal
  */
 export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: any) => {
   if (__DEV__) {
-    const last = currentRunningFiber.current;
+    const last = enableOptimizeTreeLog.current;
 
-    currentRunningFiber.current = fiber;
+    enableOptimizeTreeLog.current = false;
+
     if (level === "warn") {
-      devWarn(`[@my-react/react-dom]`, ...rest);
+      devWarnWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
     }
     if (level === "error") {
-      devError(`[@my-react/react-dom]`, ...rest);
+      devErrorWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
     }
-    currentRunningFiber.current = last;
+
+    enableOptimizeTreeLog.current = last;
+
     return;
   }
 
-  if (level === "warn") {
-    console.warn(`[@my-react/react-dom]`, ...rest);
-  }
   if (level === "error") {
     console.error(`[@my-react/react-dom]`, ...rest);
   }

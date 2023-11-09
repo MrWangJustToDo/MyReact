@@ -1,89 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
-    <script src="https://unpkg.com/antd@latest/dist/antd-with-locales.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
 
-    <script type="text/babel">
-      const { useState } = React;
-      const { AutoComplete, message, ColorPicker } = antd;
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
+  <script src="https://unpkg.com/antd@latest/dist/antd-with-locales.js"></script>
+</head>
 
-      const mockVal = (str, repeat = 1) => ({
-        value: str.repeat(repeat),
-      });
+<body>
+  <div id="root"></div>
 
-      // const App = () => {
-      //   const [value, setValue] = useState("");
-      //   const [options, setOptions] = useState([]);
-      //   const [options_2, setOptions_2] = useState([]);
+  <script type="text/babel">
+    const { useState } = React;
+    const { AutoComplete, message, ColorPicker, Select, Popover, Button } = antd;
 
-      //   const onSearch = (searchText) => {
-      //     setOptions(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
-      //   };
+    const mockVal = (str, repeat = 1) => ({
+      value: str.repeat(repeat),
+    });
 
-      //   const onSearch_2 = (searchText) => {
-      //     setOptions_2(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
-      //   };
+    // const App = () => {
+    //   const [value, setValue] = useState("");
+    //   const [options, setOptions] = useState([]);
+    //   const [options_2, setOptions_2] = useState([]);
 
-      //   const onSelect = (data) => {
-      //     console.log("onSelect", data);
-      //   };
+    //   const onSearch = (searchText) => {
+    //     setOptions(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
+    //   };
 
-      //   const onChange = (data) => {
-      //     setValue(data);
-      //   };
+    //   const onSearch_2 = (searchText) => {
+    //     setOptions_2(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
+    //   };
 
-      //   console.log(value, options);
+    //   const onSelect = (data) => {
+    //     console.log("onSelect", data);
+    //   };
 
-      //   return (
-      //     <>
-      //       <AutoComplete options={options_2} style={{ width: 200 }} onSelect={onSelect} onSearch={onSearch_2} placeholder="input here" />
-      //       <br />
-      //       <br />
-      //       <AutoComplete
-      //         value={value}
-      //         options={options}
-      //         style={{ width: 200 }}
-      //         onSelect={onSelect}
-      //         onSearch={onSearch}
-      //         onChange={onChange}
-      //         placeholder="control mode"
-      //       />
-      //     </>
-      //   );
-      // };
+    //   const onChange = (data) => {
+    //     setValue(data);
+    //   };
 
-      // TODO
-      const App = () => {
+    //   console.log(value, options);
 
-        const click = () => {
-          message.info('click on the button');
-        }
+    //   return (
+    //     <>
+    //       <AutoComplete options={options_2} style={{ width: 200 }} onSelect={onSelect} onSearch={onSearch_2} placeholder="input here" />
+    //       <br />
+    //       <br />
+    //       <AutoComplete
+    //         value={value}
+    //         options={options}
+    //         style={{ width: 200 }}
+    //         onSelect={onSelect}
+    //         onSearch={onSearch}
+    //         onChange={onChange}
+    //         placeholder="control mode"
+    //       />
+    //     </>
+    //   );
+    // };
 
-        return (
-          <div>
-            <button onClick={click}>click</button>
-          </div>
-        );
-      };
+    const _Select = () => {
+      const [open, setOpen] = useState(false);
+      const [v, setV] = useState();
 
-      // React.__my_react_shared__.enableConcurrentMode.current = false;
-      // React.__my_react_shared__.enableLoopFromRoot.current = true;
+      return <Select getPopupContainer={(current) => current} placement
+        ="bottomRight"
+        size=
+        "small" value={v} onChange={setV} options={[
+          {
+            "value": "hex",
+            "label": "HEX"
+          },
+          {
+            "value": "hsb",
+            "label": "HSB"
+          },
+          {
+            "value": "rgb",
+            "label": "RGB"
+          }
+        ]} />
 
-      // TODO
-      ReactDOM.render(<ColorPicker />, root);
-    </script>
-  </body>
+      // return <Popover trigger="click" open={open} onOpenChange={setOpen} content={<Select getPopupContainer={(current) => current} placement
+      //   ="bottomRight"
+      //   size=
+      //   "small" value={v} onChange={setV} options={[
+      //     {
+      //       "value": "hex",
+      //       "label": "HEX"
+      //     },
+      //     {
+      //       "value": "hsb",
+      //       "label": "HSB"
+      //     },
+      //     {
+      //       "value": "rgb",
+      //       "label": "RGB"
+      //     }
+      //   ]} optionRender={(...args) => {
+      //     console.log(args);
+      //     return args[0];
+      //   }} />}><Button onClick={setOpen}>open</Button></Popover>
+    }
+
+    // TODO
+    const App = () => {
+
+      const click = () => {
+        message.info('click on the button');
+      }
+
+      return (
+        <div>
+          <button onClick={click}>click</button>
+        </div>
+      );
+    };
+
+    // React.__my_react_shared__.enableConcurrentMode.current = false;
+    // React.__my_react_shared__.enableLoopFromRoot.current = true;
+
+    // const Test = () => {
+    //   return <Popover content='123'><div>123</div></Popover>
+    // }
+
+    // TODO 点击无法选择，初步判断mousedown事件触发后导致组件收起，click事件来不及触发
+    ReactDOM.render(<_Select />, root);
+  </script>
+</body>
+
 </html>

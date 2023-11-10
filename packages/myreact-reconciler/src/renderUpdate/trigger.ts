@@ -261,6 +261,8 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
       cb?.();
 
       throw error;
+    } else {
+      throw error;
     }
   }
 };

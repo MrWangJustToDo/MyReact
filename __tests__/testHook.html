@@ -7,8 +7,11 @@
     <script src="../bundle/babel.min.js"></script>
     <!-- <script src="../bundle/react.development.js"></script> -->
     <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.production.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.production.js"></script>
+    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
     <style>
       .red {
         color: red;
@@ -117,6 +120,8 @@
         useMemo(useCallback(useMemo(() => () => 100, []), []),[])
 
         console.log(val);
+
+        val % 2 === 0 ? useState() : useRef();
 
         return (
           <div>

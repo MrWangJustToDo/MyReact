@@ -246,7 +246,8 @@ export const getFiberTreeWithFiber = (fiber: MyReactFiberNode) => {
   let temp = fiber;
   while (temp) {
     res ? (res += `\n${preString}${getFiberNodeNameWithFiber(temp)}`) : (res = `${preString}${getFiberNodeNameWithFiber(temp)}`);
-    arr.push("color: white;background-color: rgba(10, 190, 235, 0.8); border-radius: 2px; padding: 1px 5px; margin: 1px 0px");
+    const isMount = (temp as MyReactFiberNodeDev)._debugIsMount;
+    arr.push(`color: white;background-color: ${isMount ? "rgba(10, 190, 235, 0.8)" : "red"}; border-radius: 2px; padding: 1px 5px; margin: 1px 0px`);
     arr.push("");
     arr.push(temp);
     temp = temp.parent;

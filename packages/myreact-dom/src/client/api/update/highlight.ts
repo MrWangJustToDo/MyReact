@@ -99,16 +99,17 @@ export class HighLight {
       }
       const rect = this.range.getBoundingClientRect();
       if (
+        (rect.width || rect.height) &&
         rect.top >= 0 &&
         rect.left >= 0 &&
         rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
         rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
       ) {
         // do the highlight paint
-        const left = rect.left - 2;
-        const top = rect.top - 2;
-        const width = rect.width + 4;
-        const height = rect.height + 4;
+        const left = rect.left - 0.5;
+        const top = rect.top - 0.5;
+        const width = rect.width + 1;
+        const height = rect.height + 1;
         context.strokeRect(
           left < 0 ? 0 : left,
           top < 0 ? 0 : top,

@@ -46,6 +46,12 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   performanceLogTimeLimit = asyncUpdateTimeLimit.current;
 
+  pathToCommitAppend?: (_fiber: MyReactFiberNode) => void;
+
+  pathToCommitUpdate?: (_fiber: MyReactFiberNode) => void;
+
+  pathToCommitSetRef?: (_fiber: MyReactFiberNode) => void;
+
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(_fiber, this, !!_hydrate);
   }
@@ -59,7 +65,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     position(_fiber, this);
   }
   commitSetRef(_fiber: MyReactFiberNode): void {
-    setRef(_fiber);
+    setRef(_fiber, this);
   }
   commitUnsetRef(_fiber: MyReactFiberNode): void {
     unsetRef(_fiber);

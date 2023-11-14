@@ -1,12 +1,11 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
-import { enableControlComponent, enableEventSystem, enableHighlight, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
+import { enableControlComponent, enableEventSystem, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
 
 import { addEventListener, controlElementTag, removeEventListener, setAttribute, setStyle } from "../helper";
 
 import { mountControl, updateControl } from "./control";
-import { HighLight } from "./highlight";
 import { getAllKeys } from "./tool";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -69,15 +68,5 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
       const typedProps = newProps["dangerouslySetInnerHTML"] as Record<string, unknown>;
       dom.innerHTML = typedProps.__html as string;
     }
-  }
-
-  if (
-    __DEV__ &&
-    renderDispatch.isAppMounted &&
-    !renderDispatch.isHydrateRender &&
-    !renderDispatch.isServerRender &&
-    (enableHighlight.current || (window as any).__highlight__)
-  ) {
-    HighLight.getHighLightInstance().highLight(fiber);
   }
 };

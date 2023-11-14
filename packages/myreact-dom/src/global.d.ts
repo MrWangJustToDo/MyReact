@@ -9,6 +9,10 @@ declare global {
       NODE_ENV: "development" | "production" | "test";
     }
   }
+
+  interface Window {
+    __highlight__: boolean;
+  }
 }
 
 export {};

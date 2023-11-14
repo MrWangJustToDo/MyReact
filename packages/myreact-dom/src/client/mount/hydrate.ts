@@ -3,13 +3,14 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
+import { highlightUpdateFiber } from "@my-react-dom-client/tools";
 import { checkRehydrate, checkRoot, enableASyncHydrate, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogPerformanceWarn } from "./render";
 
 import type { RenderContainer } from "./render";
 import type { MyReactElement, LikeJSX } from "@my-react/react";
-import type { CustomRenderPlatform} from "@my-react/react-reconciler";
+import type { CustomRenderPlatform } from "@my-react/react-reconciler";
 
 const { currentRenderPlatform } = __my_react_internal__;
 
@@ -23,6 +24,8 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
   const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 
   renderPlatform.dispatchSet.uniPush(renderDispatch);
+
+  __DEV__ && (renderDispatch.pathToCommitUpdate = highlightUpdateFiber);
 
   __DEV__ && checkRoot(fiber);
 
@@ -53,6 +56,8 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
   const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 
   renderPlatform.dispatchSet.uniPush(renderDispatch);
+
+  __DEV__ && (renderDispatch.pathToCommitUpdate = highlightUpdateFiber);
 
   __DEV__ && checkRoot(fiber);
 

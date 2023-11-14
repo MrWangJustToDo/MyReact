@@ -4,7 +4,7 @@ import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
-import { unmountComponentAtNode } from "@my-react-dom-client/tools";
+import { unmountComponentAtNode, highlightUpdateFiber } from "@my-react-dom-client/tools";
 import { checkRoot, prepareDevContainer, startRender } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
@@ -112,6 +112,8 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
   const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 
   renderPlatform.dispatchSet.uniPush(renderDispatch);
+
+  __DEV__ && (renderDispatch.pathToCommitUpdate = highlightUpdateFiber);
 
   __DEV__ && checkRoot(fiber);
 

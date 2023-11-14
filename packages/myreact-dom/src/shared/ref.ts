@@ -4,11 +4,12 @@ import { PATCH_TYPE, STATE_TYPE, include, remove } from "@my-react/react-shared"
 import { logOnce } from "./debug";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 /**
  * @internal
  */
-export const setRef = (_fiber: MyReactFiberNode) => {
+export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
   if (include(_fiber.patch, PATCH_TYPE.__ref__)) {
     if (include(_fiber.type, NODE_TYPE.__plain__)) {
       if (_fiber.nativeNode) {
@@ -35,6 +36,8 @@ export const setRef = (_fiber: MyReactFiberNode) => {
     } else {
       logOnce(_fiber, "error", "can not set ref for current element", "can not set ref for current element");
     }
+
+    renderDispatch.pathToCommitSetRef?.(_fiber);
 
     _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__ref__);
   }

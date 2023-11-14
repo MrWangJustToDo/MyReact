@@ -43,6 +43,8 @@ export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       }
     }
 
+    renderDispatch.pathToCommitUpdate?.(fiber)
+
     fiber.memoizedProps = fiber.pendingProps;
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__update__);

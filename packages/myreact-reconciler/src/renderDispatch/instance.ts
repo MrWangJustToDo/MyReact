@@ -1,6 +1,6 @@
 import { PATCH_TYPE, ListTree, UniqueArray, include, merge, exclude } from "@my-react/react-shared";
 
-import { defaultGenerateContextMap,/*  defaultGetContextFiber, */ defaultGetContextFiber_New, defaultGetContextValue } from "../dispatchContext";
+import { defaultGenerateContextMap, /*  defaultGetContextFiber, */ defaultGetContextFiber_New, defaultGetContextValue } from "../dispatchContext";
 import { defaultGenerateEffectMap } from "../dispatchEffect";
 import { defaultGenerateErrorBoundariesMap, defaultResolveErrorBoundaries } from "../dispatchErrorBoundaries";
 import { defaultDispatchMount } from "../dispatchMount";
@@ -73,7 +73,7 @@ export class CustomRenderDispatch implements RenderDispatch {
     typedFiber.containerNode = rootNode;
   }
 
-  remountOnDev: () => void;
+  remountOnDev: (cb?: () => void) => void;
 
   generateCommitList(_fiber: MyReactFiberNode) {
     if (!_fiber) return;

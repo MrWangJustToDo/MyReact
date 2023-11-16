@@ -1,3 +1,5 @@
+import { version } from "@my-react/react";
+
 import { noBase } from "@shared";
 
 import type { HTMLProps } from ".";
@@ -7,6 +9,7 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     <meta charSet="utf-8" />
     <meta name="build-time" content={__BUILD_TIME__} />
     <meta name="power-by" content={`@my-react ꒰ঌ( ⌯' '⌯)໒꒱`} />
+    <meta name="version" content={version} />
     <meta name="author" content="MrWangJustToDo" />
     <meta
       name="description"

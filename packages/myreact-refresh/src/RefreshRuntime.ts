@@ -294,17 +294,29 @@ export const performReactRefresh = () => {
   if (containers.size > 0) {
     console.log(`[@my-react/react-refresh] updating ...`);
 
+    console.time(`[@my-react/react-refresh] update take`);
+
+    let count = 0;
+
+    const updateDone = () => {
+      count++;
+
+      if (count === containers.size) {
+        console.timeEnd(`[@my-react/react-refresh] update take`);
+      }
+    };
+
     containers.forEach((hasRootUpdate, container) => {
       if (container.isAppCrashed || container.isAppUnmounted) {
         // have a uncaught runtime error for prev render
-        container.remountOnDev?.();
+        container.remountOnDev?.(updateDone);
       } else if (container.runtimeFiber.errorCatchFiber) {
         // has a error for prev render
         const fiber = container?.runtimeFiber.errorCatchFiber;
 
-        fiber._revert();
+        fiber._devRevert(updateDone);
       } else {
-        container.rootFiber._update(hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__);
+        container.rootFiber._devUpdate(hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__, updateDone);
       }
     });
   } else {

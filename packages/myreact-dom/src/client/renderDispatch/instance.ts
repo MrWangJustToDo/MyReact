@@ -95,7 +95,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 }
 
 if (__DEV__) {
-  ClientDomDispatch.prototype.remountOnDev = function () {
+  ClientDomDispatch.prototype.remountOnDev = function (cb?: () => void) {
     const rootNode = this.rootNode;
 
     const rootElementType = this.rootFiber.elementType;
@@ -106,6 +106,6 @@ if (__DEV__) {
 
     rootNode.__fiber__ = null;
 
-    render(rootElement, rootNode);
+    render(rootElement, rootNode, cb);
   };
 }

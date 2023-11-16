@@ -144,7 +144,7 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
 /**
  * only used for dev HMR
  */
-export const triggerRevert = (fiber: MyReactFiberNode) => {
+export const triggerRevert = (fiber: MyReactFiberNode, cb?: () => void) => {
   if (__DEV__) {
     const renderDispatch = fiberToDispatchMap.get(fiber);
 
@@ -156,6 +156,7 @@ export const triggerRevert = (fiber: MyReactFiberNode) => {
       instance?.setState(errorBoundariesFiber.memoizedState?.revertState, () => {
         renderDispatch.runtimeFiber.errorCatchFiber = null;
         errorBoundariesFiber.memoizedState.revertState = null;
+        cb?.();
       });
     } else {
       const last = currentRunningFiber.current;
@@ -167,7 +168,7 @@ export const triggerRevert = (fiber: MyReactFiberNode) => {
 
       currentRunningFiber.current = last;
 
-      renderDispatch.remountOnDev?.();
+      renderDispatch.remountOnDev?.(cb);
     }
   } else {
     console.error(`[@my-react/react] can not call revert on prod mode`);
@@ -193,12 +194,18 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
     return;
   }
 
-  if (state !== undefined && state !== STATE_TYPE.__stable__) {
-    if (fiber.state === STATE_TYPE.__stable__) {
-      fiber.state = state;
-    } else {
-      fiber.state = merge(fiber.state, state);
-    }
+  if (typeof state === "function") {
+    cb = state;
+
+    state = STATE_TYPE.__triggerConcurrent__;
+  }
+
+  state = state || STATE_TYPE.__triggerSync__;
+
+  if (fiber.state === STATE_TYPE.__stable__) {
+    fiber.state = state;
+  } else {
+    fiber.state = merge(fiber.state, state);
   }
 
   fiber.mode = 1;

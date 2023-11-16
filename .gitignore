@@ -1,5 +1,6 @@
 *.log
 .cache
+.idea
 .eslintcache
 .DS_Store
 node_modules

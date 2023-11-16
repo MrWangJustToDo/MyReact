@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { PATCH_TYPE, STATE_TYPE, include, merge } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
 import { triggerRevert, triggerUpdate } from "../renderUpdate";
@@ -81,7 +81,9 @@ export class MyReactFiberNode implements RenderFiber {
 
   memoizedState: MemoizedStateTypeWithError | MemoizedStateType;
 
-  _revert: () => void;
+  _devRevert: (cb?: () => void) => void;
+
+  _devUpdate: (state?: STATE_TYPE, cb?: () => void) => void;
 
   constructor(element: MyReactElementNode) {
     this.state = STATE_TYPE.__create__;
@@ -151,26 +153,11 @@ export class MyReactFiberNode implements RenderFiber {
 
     const renderPlatform = currentRenderPlatform.current;
 
-    state = state || STATE_TYPE.__triggerSync__;
-
-    if (this.state === STATE_TYPE.__stable__) {
-      this.state = state;
-    } else {
-      this.state = merge(this.state, state);
-    }
-
-    renderPlatform.microTask(() => triggerUpdate(this));
+    renderPlatform.microTask(() => triggerUpdate(this, state));
   }
 }
 
 if (__DEV__) {
-  Object.defineProperty(MyReactFiberNode.prototype, "_revert", {
-    value: function () {
-      if (include(this.state, STATE_TYPE.__unmount__)) return;
-
-      triggerRevert(this);
-    },
-  });
   Object.defineProperty(MyReactFiberNode.prototype, "_debugLogTree", {
     get() {
       const { str, arr } = getFiberTreeWithFiber(this);
@@ -178,6 +165,22 @@ if (__DEV__) {
       console.log(str, ...arr);
 
       return true;
+    },
+  });
+  Object.defineProperty(MyReactFiberNode.prototype, "_devRevert", {
+    value: function (cb?: () => void) {
+      if (include(this.state, STATE_TYPE.__unmount__)) return;
+
+      triggerRevert(this, cb);
+    },
+  });
+  Object.defineProperty(MyReactFiberNode.prototype, "_devUpdate", {
+    value: function (state?: STATE_TYPE, cb?: () => void) {
+      if (include(this.state, STATE_TYPE.__unmount__)) return;
+
+      const renderPlatform = currentRenderPlatform.current;
+
+      renderPlatform.microTask(() => triggerUpdate(this, state, cb));
     },
   });
 }

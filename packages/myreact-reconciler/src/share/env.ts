@@ -15,3 +15,5 @@ export const currentRefreshHandler = createRef<RefreshHandler | null>(null);
 export const currentTriggerFiber = createRef<MyReactFiberNode | null>(null);
 
 export const fiberToDispatchMap = new MyWeakMap() as WeakMap<MyReactFiberNode, CustomRenderDispatch>;
+
+export const enableFiberForLog = createRef(false);

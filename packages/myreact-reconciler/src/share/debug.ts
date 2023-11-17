@@ -1,6 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
 
+import { enableFiberForLog } from "./env";
 import { NODE_TYPE } from "./fiberType";
 
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
@@ -32,7 +33,11 @@ export const devWarn = (...args) => {
   const renderFiber = currentRunningFiber.current;
 
   if (renderFiber) {
-    originalWarn.call(console, ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
+    if (enableFiberForLog.current) {
+      originalWarn.call(console, ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
+    } else {
+      originalWarn.call(console, ...args, renderPlatform.getFiberTree(currentRunningFiber.current));
+    }
   } else {
     originalWarn.call(console, ...args);
   }
@@ -43,7 +48,11 @@ export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
 
   const renderFiber = fiber;
 
-  originalWarn.call(console, ...args, ...[renderPlatform.getFiberTree(fiber), "\n", renderFiber]);
+  if (enableFiberForLog.current) {
+    originalWarn.call(console, ...args, ...[renderPlatform.getFiberTree(fiber), "\n", renderFiber]);
+  } else {
+    originalWarn.call(console, ...args, renderPlatform.getFiberTree(fiber));
+  }
 };
 
 export const devError = (...args) => {
@@ -57,7 +66,11 @@ export const devError = (...args) => {
     return;
   }
 
-  originalError.call(console, "", ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
+  if (enableFiberForLog.current) {
+    originalError.call(console, "", ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
+  } else {
+    originalError.call(console, "", ...args, renderPlatform.getFiberTree(currentRunningFiber.current));
+  }
 };
 
 export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
@@ -68,7 +81,11 @@ export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
   if (args.some((i) => i instanceof Error)) {
     originalError.call(console, "", ...args, "\n", renderFiber);
   } else {
-    originalError.call(console, "", ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
+    if (enableFiberForLog.current) {
+      originalError.call(console, "", ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
+    } else {
+      originalError.call(console, "", ...args, renderPlatform.getFiberTree(currentRunningFiber.current));
+    }
   }
 };
 
@@ -293,7 +310,11 @@ export const onceWarnWithKey = (key: string, ...args: any[]) => {
 
   warnMap[tree] = { ...warnMap?.[tree], [key]: true };
 
-  originalWarn.call(console, ...args, ...[tree, "\n", renderFiber]);
+  if (enableFiberForLog.current) {
+    originalWarn.call(console, ...args, ...[tree, "\n", renderFiber]);
+  } else {
+    originalWarn.call(console, ...args, tree);
+  }
 };
 
 export const onceErrorWithKey = (key: string, ...args: any[]) => {
@@ -317,7 +338,11 @@ export const onceErrorWithKey = (key: string, ...args: any[]) => {
 
   errorMap[tree] = { ...errorMap?.[tree], [key]: true };
 
-  originalError.call(console, "", ...args, ...[tree, "\n", renderFiber]);
+  if (enableFiberForLog.current) {
+    originalError.call(console, "", ...args, ...[tree, "\n", renderFiber]);
+  } else {
+    originalError.call(console, "", ...args, tree);
+  }
 };
 
 export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: any[]) => {
@@ -329,7 +354,11 @@ export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ..
 
   warnMap[tree] = { ...warnMap?.[tree], [key]: true };
 
-  originalWarn.call(console, ...args, ...[tree, "\n", fiber]);
+  if (enableFiberForLog.current) {
+    originalWarn.call(console, ...args, ...[tree, "\n", fiber]);
+  } else {
+    originalWarn.call(console, ...args, tree);
+  }
 };
 
 export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: any[]) => {
@@ -341,5 +370,9 @@ export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, .
 
   errorMap[tree] = { ...errorMap?.[tree], [key]: true };
 
-  originalError.call(console, "", ...args, ...[tree, "\n", fiber]);
+  if (enableFiberForLog.current) {
+    originalError.call(console, "", ...args, ...[tree, "\n", fiber]);
+  } else {
+    originalError.call(console, "", ...args, tree);
+  }
 };

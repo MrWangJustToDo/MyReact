@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { devErrorWithFiber, processHookNode, processState, triggerError } from "@my-react/react-reconciler";
+import { devErrorWithFiber, enableFiberForLog, processHookNode, processState, triggerError } from "@my-react/react-reconciler";
 
 import { ClientDomPlatform } from "./instance";
 
@@ -33,6 +33,8 @@ function dispatchError(this: ClientDomPlatform, _params: { fiber: MyReactFiberNo
  * @internal
  */
 export const initGlobalRenderPlatform = () => {
+  enableFiberForLog.current = true;
+
   const MyReactServerDomPlatform = new ClientDomPlatform(true);
 
   initRenderPlatform(MyReactServerDomPlatform);

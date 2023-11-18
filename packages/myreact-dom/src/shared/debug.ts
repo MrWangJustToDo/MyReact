@@ -1,8 +1,19 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { MyReactFiberNode, devErrorWithFiber, devWarnWithFiber, onceErrorWithKeyAndFiber, onceWarnWithKeyAndFiber } from "@my-react/react-reconciler";
+import {
+  MyReactFiberNode,
+  debugWithNode,
+  devErrorWithFiber,
+  devWarnWithFiber,
+  onceErrorWithKeyAndFiber,
+  onceWarnWithKeyAndFiber,
+} from "@my-react/react-reconciler";
+import { include } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
+import { enableDOMField } from "./env";
+
+import type { CustomRenderDispatch } from "@my-react/react-reconciler";
 import type { RenderContainer } from "@my-react-dom-client/mount";
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
@@ -76,5 +87,14 @@ export const checkRehydrate = (container: Partial<RenderContainer>) => {
 
   if (rootFiber instanceof MyReactFiberNode || rootContainer instanceof ClientDomDispatch) {
     throw new Error(`[@my-react/react-dom] hydrate error, current container have been hydrated`);
+  }
+};
+
+/**
+ * @internal
+ */
+export const initDOMField = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+  if ((enableDOMField.current || __DEV__) && include(fiber.type, renderDispatch.runtimeRef.typeForNativeNode)) {
+    renderDispatch.pendingLayoutEffect(fiber, () => debugWithNode(fiber));
   }
 };

@@ -4,11 +4,11 @@ import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
-import { unmountComponentAtNode, highlightUpdateFiber } from "@my-react-dom-client/tools";
+import { unmountComponentAtNode } from "@my-react-dom-client/tools";
 import { checkRoot, prepareDevContainer, startRender } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
-import type { CustomRenderPlatform} from "@my-react/react-reconciler";
+import type { CustomRenderPlatform } from "@my-react/react-reconciler";
 
 export type RenderContainer = Element & {
   __fiber__: MyReactFiberNode;
@@ -112,8 +112,6 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
   const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 
   renderPlatform.dispatchSet.uniPush(renderDispatch);
-
-  __DEV__ && (renderDispatch.pathToCommitUpdate = highlightUpdateFiber);
 
   __DEV__ && checkRoot(fiber);
 

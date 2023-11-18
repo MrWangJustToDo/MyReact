@@ -7,7 +7,7 @@ import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
 import type { MyReactFiberNode, MyReactFiberNodeDev, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
-import type { MyReactHookNode } from "../runtimeHook";
+import type { MyReactHookNodeDev } from "../runtimeHook";
 
 const { enableDebugFiled } = __my_react_shared__;
 
@@ -159,7 +159,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
 
         const { trigger, payLoad } = updater;
 
-        const typedTrigger = trigger as MyReactHookNode;
+        const typedTrigger = trigger as MyReactHookNodeDev;
 
         const lastResult = typedTrigger.result;
 
@@ -179,6 +179,10 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
           typedNode._debugAfterValue = typedTrigger.result;
 
           typedFiber._debugUpdateQueue.push(typedNode);
+
+          typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
+
+          typedTrigger._debugUpdateQueue.push(typedNode);
         }
 
         sync = sync || updater.isSync;
@@ -205,7 +209,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
 
         const { trigger, payLoad } = updater;
 
-        const typedTrigger = trigger as MyReactHookNode;
+        const typedTrigger = trigger as MyReactHookNodeDev;
 
         const lastResult = typedTrigger.result;
 
@@ -225,6 +229,10 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
           typedNode._debugAfterValue = typedTrigger.result;
 
           typedFiber._debugUpdateQueue.push(typedNode);
+
+          typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
+
+          typedTrigger._debugUpdateQueue.push(typedNode);
         }
 
         sync = sync || updater.isSync;

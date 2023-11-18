@@ -34,4 +34,9 @@ export const enableASyncHydrate = createRef(false);
 /**
  * @internal
  */
+export const enableDOMField = createRef(false);
+
+/**
+ * @internal
+ */
 export const isServer = typeof window === "undefined";

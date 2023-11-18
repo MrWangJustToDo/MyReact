@@ -4,7 +4,17 @@ import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
-import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, setRef, shouldPauseAsyncUpdate, unsetRef, enableASyncHydrate } from "@my-react-dom-shared";
+import { highlightUpdateFiber } from "@my-react-dom-client/tools";
+import {
+  asyncUpdateTimeLimit,
+  initialElementMap,
+  unmountElementMap,
+  setRef,
+  shouldPauseAsyncUpdate,
+  unsetRef,
+  enableASyncHydrate,
+  initDOMField,
+} from "@my-react-dom-shared";
 
 import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
 
@@ -46,11 +56,11 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   performanceLogTimeLimit = asyncUpdateTimeLimit.current;
 
-  pathToCommitAppend?: (_fiber: MyReactFiberNode) => void;
+  patchToCommitAppend?: (_fiber: MyReactFiberNode) => void;
 
-  pathToCommitUpdate?: (_fiber: MyReactFiberNode) => void;
+  patchToCommitUpdate?: (_fiber: MyReactFiberNode) => void;
 
-  pathToCommitSetRef?: (_fiber: MyReactFiberNode) => void;
+  patchToCommitSetRef?: (_fiber: MyReactFiberNode) => void;
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(_fiber, this, !!_hydrate);
@@ -88,6 +98,10 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     initialElementMap(_fiber, this);
+    initDOMField(_fiber, this);
+  }
+  patchToFiberUpdate(_fiber: MyReactFiberNode) {
+    initDOMField(_fiber, this);
   }
   patchToFiberUnmount(_fiber: MyReactFiberNode) {
     unmountElementMap(_fiber, this);
@@ -108,4 +122,6 @@ if (__DEV__) {
 
     render(rootElement, rootNode, cb);
   };
+
+  ClientDomDispatch.prototype.patchToCommitUpdate = highlightUpdateFiber;
 }

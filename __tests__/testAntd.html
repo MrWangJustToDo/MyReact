@@ -13,13 +13,60 @@
   <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
   <script src="https://unpkg.com/antd@latest/dist/antd-with-locales.js"></script>
+  <style>
+    #_1 {
+      width: 300px;
+      height: 300px;
+      border: 1px solid red;
+    }
+
+    #_2 {
+      width: 200px;
+      height: 200px;
+      border: 1px solid green;
+    }
+
+    #_3 {
+      width: 100px;
+      height: 100px;
+      border: 1px solid blue;
+    }
+  </style>
 </head>
 
 <body>
   <div id="root"></div>
+  <!-- <div id="room">
+    <div id="_1">
+      1
+      <div id="_2">
+        2
+        <div id="_3">3</div>
+      </div>
+    </div>
+  </div> -->
+
+
+
+  <!-- <script>
+    const div1 =document.querySelector('#_1');
+    const div2 =document.querySelector('#_2');
+    const div3 =document.querySelector('#_3');
+
+    div1.addEventListener('mousedown', () => {
+      console.log('div1 mousedown')
+    })
+    div2.addEventListener('mousedown', () => {
+      console.log('div2 mousedown')
+    })
+    div3.addEventListener('mousedown', () => {
+      console.log('div3 mousedown')
+    })
+  </script> -->
 
   <script type="text/babel">
-    const { useState } = React;
+    const { useState, useEffect, useLayoutEffect } = React;
+    const antd = antd || {};
     const { AutoComplete, message, ColorPicker, Select, Popover, Button } = antd;
 
     const mockVal = (str, repeat = 1) => ({
@@ -69,7 +116,7 @@
 
     const _Select = () => {
       const [open, setOpen] = useState(false);
-      const [v, setV] = useState();
+      const [v, setV] = useState('hex');
 
       return <Select getPopupContainer={(current) => current} placement
         ="bottomRight"
@@ -125,14 +172,34 @@
       );
     };
 
-    // React.__my_react_shared__.enableConcurrentMode.current = false;
+    React.__my_react_shared__.enableConcurrentMode.current = false;
     // React.__my_react_shared__.enableLoopFromRoot.current = true;
 
-    // const Test = () => {
-    //   return <Popover content='123'><div>123</div></Popover>
-    // }
+    const Test = () => {
+      const [state, setState] = useState(false);
+      const [_state, _setState] = useState(false);
 
-    // TODO 点击无法选择，初步判断mousedown事件触发后导致组件收起，click事件来不及触发
+      useEffect(() => {
+        setTimeout(() => {
+          _setState(state);
+        }, 50)
+      }, [state]);
+
+
+      return <div id='_1' style={{ pointerEvents: _state ? 'none' : 'initial' }}>
+        1
+        <div id='_2' onMouseDown={() => {
+          console.log('mousedown');
+          setState(true)
+        }} onClick={() => {
+          console.log('click')
+        }}>2</div>
+      </div>
+    }
+
+    // TODO 点击无法选择
+    // 原因 点击事件被父元素的pointer-events: "none"给阻止了
+    // React的事件调度
     ReactDOM.render(<_Select />, root);
   </script>
 </body>

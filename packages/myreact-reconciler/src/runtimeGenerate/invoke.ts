@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude, include, isPromise } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
-import { currentRenderDispatch, currentTriggerFiber, debugWithNode, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithFiber, setRefreshTypeMap } from "../share";
+import { currentRenderDispatch, currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
 
@@ -184,10 +184,6 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
         timeForUpdate: timeNow - prevRenderTime,
       };
     }
-  }
-
-  if (include(typedFiber.type, renderDispatch.runtimeRef.typeForNativeNode)) {
-    renderDispatch.pendingLayoutEffect(typedFiber, () => debugWithNode(typedFiber));
   }
 
   return res;

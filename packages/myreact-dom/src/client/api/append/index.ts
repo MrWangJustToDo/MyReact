@@ -39,7 +39,7 @@ export const append = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       parentDom.appendChild(currentDom);
     }
 
-    renderDispatch.pathToCommitAppend?.(fiber);
+    renderDispatch.patchToCommitAppend?.(fiber);
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
   }

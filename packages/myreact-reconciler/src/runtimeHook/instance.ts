@@ -1,7 +1,9 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { UpdateQueueType, type HOOK_TYPE } from "@my-react/react-shared";
+import { UpdateQueueType } from "@my-react/react-shared";
 
+import type { UpdateQueueDev } from "../processState";
 import type { RenderHook, Action, HookUpdateQueue } from "@my-react/react";
+import type { ListTree, HOOK_TYPE } from "@my-react/react-shared";
 
 const { MyReactInternalInstance, currentRenderPlatform } = __my_react_internal__;
 
@@ -57,4 +59,5 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
 
 export interface MyReactHookNodeDev extends MyReactHookNode {
   _debugType: string;
+  _debugUpdateQueue: ListTree<UpdateQueueDev>;
 }

@@ -91,7 +91,7 @@ export class MyReactComponent<
       callback,
       trigger: this,
       isSync: enableSyncFlush.current,
-      isInitial: this._ownerFiber.mode === 0,
+      isInitial: this._ownerFiber?.mode === 0,
     };
 
     const renderPlatform = currentRenderPlatform.current;

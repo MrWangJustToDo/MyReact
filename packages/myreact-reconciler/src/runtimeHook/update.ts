@@ -147,7 +147,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     if (!Object.is(currentHook.value, currentHook.result)) {
       currentHook.cancel = renderPlatform.yieldTask(() => {
         currentHook.result = currentHook.value;
-        currentHook._ownerFiber._update();
+        currentHook._ownerFiber?._update();
         currentHook.cancel = null;
       });
     }

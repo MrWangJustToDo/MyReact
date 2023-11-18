@@ -15,7 +15,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       renderDispatch.pendingEffect(fiber, () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (exclude(hookNode._ownerFiber.state, STATE_TYPE.__unmount__)) hookNode.cancel = hookNode.value();
+        if (hookNode._ownerFiber && exclude(hookNode._ownerFiber.state, STATE_TYPE.__unmount__)) hookNode.cancel = hookNode.value();
 
         hookNode.effect = false;
 

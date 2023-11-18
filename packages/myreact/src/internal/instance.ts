@@ -10,6 +10,32 @@ export class MyReactInternalInstance {
     return true;
   }
 
+  constructor() {
+    if (__DEV__) {
+      let _ownerFiber: RenderFiber | null = null;
+
+      Object.defineProperty(this, "_ownerFiber", {
+        get() {
+          return _ownerFiber;
+        },
+        set(_newOwnerFiber) {
+          _ownerFiber = _newOwnerFiber;
+        },
+      });
+
+      let _contextFiber: RenderFiber | null = null;
+
+      Object.defineProperty(this, "_contextFiber", {
+        get() {
+          return _contextFiber;
+        },
+        set(_newContextFiber) {
+          _contextFiber = _newContextFiber;
+        },
+      });
+    }
+  }
+
   mode: Effect_TYPE = Effect_TYPE.__initial__;
 
   context: null | unknown = null;

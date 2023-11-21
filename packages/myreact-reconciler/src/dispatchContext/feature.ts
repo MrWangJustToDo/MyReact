@@ -69,7 +69,7 @@ export const defaultGetContextFiber_New = (
   renderDispatch: CustomRenderDispatch,
   ContextObject?: ReturnType<typeof createContext> | null
 ) => {
-  if (fiber.parent && ContextObject) {
+  if (fiber?.parent && ContextObject) {
     let parent = fiber.parent;
     while (parent) {
       if (include(parent.type, NODE_TYPE.__provider__)) {

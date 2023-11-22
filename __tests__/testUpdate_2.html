@@ -103,8 +103,11 @@
         );
       };
 
-      const Baz = () => {
+      const Baz = ({add}) => {
         console.log("run");
+
+        useEffect(add, []);
+        // add();
 
         return <div>baz</div>;
       };
@@ -120,7 +123,7 @@
           <div>
             {state}
             <button onClick={add}>add</button>
-            <Baz />
+            <Baz add={add} />
           </div>
         );
       };

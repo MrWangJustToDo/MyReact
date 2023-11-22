@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
-import { getCurrentDispatchFromFiber, onceWarnWithKeyAndFiber, syncFlush } from "../share";
+import { getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, syncFlush } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { RenderFiber, UpdateQueue } from "@my-react/react";
@@ -15,7 +15,7 @@ export type UpdateQueueDev = UpdateQueue<{
   _debugRunTime: number;
 }>;
 
-const { currentComponentFiber } = __my_react_internal__;
+const { currentComponentFiber, currentRunningFiber } = __my_react_internal__;
 
 const { enableDebugFiled } = __my_react_shared__;
 
@@ -35,7 +35,7 @@ export const processState = (_params: UpdateQueue) => {
   }
 
   if (_params.type === UpdateQueueType.component) {
-    const ownerFiber = _params.trigger._ownerFiber;
+    const ownerFiber = _params.trigger._ownerFiber as MyReactFiberNode;
 
     if (!ownerFiber || include(ownerFiber.state, STATE_TYPE.__unmount__)) return;
 
@@ -47,10 +47,12 @@ export const processState = (_params: UpdateQueue) => {
         renderCount = 0;
         throw new Error("[@my-react/react] look like there are infinity update for current component");
       } else {
+        const triggeredElementName = getElementName(ownerFiber);
+        const currentElementName = getElementName(currentComponentFiber.current as MyReactFiberNode);
         onceWarnWithKeyAndFiber(
-          ownerFiber as MyReactFiberNode,
-          "updateWhenCurrentFlowIsRunning",
-          `[@my-react/react] trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`
+          currentRunningFiber.current as MyReactFiberNode,
+          `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
+          `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
         );
       }
       lastRenderComponentFiber = currentComponentFiber.current;
@@ -60,11 +62,11 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber as MyReactFiberNode);
+    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
     ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
   } else {
-    const ownerFiber = _params.trigger._ownerFiber;
+    const ownerFiber = _params.trigger._ownerFiber as MyReactFiberNode;
 
     if (!ownerFiber || include(ownerFiber?.state, STATE_TYPE.__unmount__)) return;
 
@@ -76,10 +78,12 @@ export const processState = (_params: UpdateQueue) => {
         renderCount = 0;
         throw new Error("[@my-react/react] look like there are infinity update for current component");
       } else {
+        const triggeredElementName = getElementName(ownerFiber);
+        const currentElementName = getElementName(currentComponentFiber.current as MyReactFiberNode);
         onceWarnWithKeyAndFiber(
-          ownerFiber as MyReactFiberNode,
-          "updateWhenCurrentFlowIsRunning",
-          `[@my-react/react] trigger an update when current update flow is running, this is a unexpected behavior, please make sure current render function is a pure function`
+          currentRunningFiber.current as MyReactFiberNode,
+          `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
+          `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
         );
       }
       lastRenderComponentFiber = currentComponentFiber.current;
@@ -89,7 +93,7 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber as MyReactFiberNode);
+    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
     ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
   }

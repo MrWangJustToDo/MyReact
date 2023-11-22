@@ -3,7 +3,7 @@
   "description": "@my-react/react-dom",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "main": "index.js",
   "types": "index.d.ts",
   "unpkg": "./dist/umd/index.development.js",

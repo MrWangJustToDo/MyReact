@@ -61,7 +61,7 @@ export class HighLight {
       top: 0;
       pointer-events: none;
       `;
-    document.body.append(this.mask);
+    document.documentElement.prepend(this.mask);
     this.setSize();
     window.addEventListener("resize", this.setSize);
   }

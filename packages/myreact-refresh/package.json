@@ -3,7 +3,7 @@
   "description": "@my-react/react-refresh",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "main": "runtime.js",
   "types": "runtime.d.ts",
   "files": [

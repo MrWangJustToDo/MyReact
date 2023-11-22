@@ -34,7 +34,7 @@ export const devWarn = (...args) => {
 
   if (renderFiber) {
     if (enableFiberForLog.current) {
-      originalWarn.call(console, ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
+      originalWarn.call(console, ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n  ", renderFiber]);
     } else {
       originalWarn.call(console, ...args, renderPlatform.getFiberTree(currentRunningFiber.current));
     }
@@ -49,7 +49,7 @@ export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
   const renderFiber = fiber;
 
   if (enableFiberForLog.current) {
-    originalWarn.call(console, ...args, ...[renderPlatform.getFiberTree(fiber), "\n", renderFiber]);
+    originalWarn.call(console, ...args, ...[renderPlatform.getFiberTree(fiber), "\n  ", renderFiber]);
   } else {
     originalWarn.call(console, ...args, renderPlatform.getFiberTree(fiber));
   }
@@ -67,9 +67,9 @@ export const devError = (...args) => {
   }
 
   if (enableFiberForLog.current) {
-    originalError.call(console, "", ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
+    originalError.call(console, ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n  ", renderFiber]);
   } else {
-    originalError.call(console, "", ...args, renderPlatform.getFiberTree(currentRunningFiber.current));
+    originalError.call(console, ...args, renderPlatform.getFiberTree(currentRunningFiber.current));
   }
 };
 
@@ -79,12 +79,12 @@ export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
   const renderFiber = fiber;
 
   if (args.some((i) => i instanceof Error)) {
-    originalError.call(console, "", ...args, "\n", renderFiber);
+    originalError.call(console, "", ...args, "\n  ", renderFiber);
   } else {
     if (enableFiberForLog.current) {
-      originalError.call(console, "", ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n", renderFiber]);
+      originalError.call(console, ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n  ", renderFiber]);
     } else {
-      originalError.call(console, "", ...args, renderPlatform.getFiberTree(currentRunningFiber.current));
+      originalError.call(console, ...args, renderPlatform.getFiberTree(currentRunningFiber.current));
     }
   }
 };
@@ -311,7 +311,7 @@ export const onceWarnWithKey = (key: string, ...args: any[]) => {
   warnMap[tree] = { ...warnMap?.[tree], [key]: true };
 
   if (enableFiberForLog.current) {
-    originalWarn.call(console, ...args, ...[tree, "\n", renderFiber]);
+    originalWarn.call(console, ...args, ...[tree, "\n  ", renderFiber]);
   } else {
     originalWarn.call(console, ...args, tree);
   }
@@ -339,9 +339,9 @@ export const onceErrorWithKey = (key: string, ...args: any[]) => {
   errorMap[tree] = { ...errorMap?.[tree], [key]: true };
 
   if (enableFiberForLog.current) {
-    originalError.call(console, "", ...args, ...[tree, "\n", renderFiber]);
+    originalError.call(console, ...args, ...[tree, "\n  ", renderFiber]);
   } else {
-    originalError.call(console, "", ...args, tree);
+    originalError.call(console, ...args, tree);
   }
 };
 
@@ -355,7 +355,7 @@ export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ..
   warnMap[tree] = { ...warnMap?.[tree], [key]: true };
 
   if (enableFiberForLog.current) {
-    originalWarn.call(console, ...args, ...[tree, "\n", fiber]);
+    originalWarn.call(console, ...args, ...[tree, "\n  ", fiber]);
   } else {
     originalWarn.call(console, ...args, tree);
   }
@@ -371,8 +371,8 @@ export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, .
   errorMap[tree] = { ...errorMap?.[tree], [key]: true };
 
   if (enableFiberForLog.current) {
-    originalError.call(console, "", ...args, ...[tree, "\n", fiber]);
+    originalError.call(console, ...args, ...[tree, "\n  ", fiber]);
   } else {
-    originalError.call(console, "", ...args, tree);
+    originalError.call(console, ...args, tree);
   }
 };

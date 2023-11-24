@@ -5,6 +5,12 @@
     ],
     "static": true
   },
+  "./Tldraw": {
+    "path": [
+      "page-Tldraw.js"
+    ],
+    "static": true
+  },
   "./404": {
     "path": [
       "page-404.js"

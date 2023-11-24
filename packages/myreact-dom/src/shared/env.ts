@@ -39,4 +39,9 @@ export const enableDOMField = createRef(false);
 /**
  * @internal
  */
+export const enableEventTrack = createRef(false);
+
+/**
+ * @internal
+ */
 export const isServer = typeof window === "undefined";

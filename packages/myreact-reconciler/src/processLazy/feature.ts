@@ -1,10 +1,11 @@
+import { __my_react_internal__, type lazy } from "@my-react/react";
 import { STATE_TYPE, include } from "@my-react/react-shared";
 
-import { triggerError } from "../renderUpdate";
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { lazy } from "@my-react/react";
+
+const { currentRenderPlatform } = __my_react_internal__;
 
 export const processLazy = async (_fiber: MyReactFiberNode) => {
   if (include(_fiber.type, NODE_TYPE.__lazy__)) {
@@ -15,7 +16,7 @@ export const processLazy = async (_fiber: MyReactFiberNode) => {
     try {
       const loaded = await typedElementType.loader();
 
-      const render = typeof loaded === "object" && typeof loaded?.default === "function" ? loaded.default : loaded;
+      const render = typeof loaded === "object" && (typeof loaded?.default === "function" || typeof loaded?.default === "object") ? loaded.default : loaded;
 
       typedElementType.render = render as ReturnType<typeof lazy>["render"];
 
@@ -23,7 +24,7 @@ export const processLazy = async (_fiber: MyReactFiberNode) => {
 
       typedElementType._loaded = true;
     } catch (e) {
-      triggerError(_fiber, e);
+      currentRenderPlatform.current.dispatchError?.({ fiber: _fiber, error: e });
     } finally {
       typedElementType._loading = false;
     }

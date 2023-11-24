@@ -20,6 +20,8 @@ export const getNativeEventName = (eventName: string, tagName: string, props: Re
       } else {
         nativeName = "input";
       }
+    } else if (tagName === "textarea") {
+      nativeName = "input";
     } else {
       nativeName = "change";
     }

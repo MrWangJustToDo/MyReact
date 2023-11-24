@@ -67,7 +67,7 @@
   <script type="text/babel">
     const { useState, useEffect, useLayoutEffect } = React;
     const antd = antd || {};
-    const { AutoComplete, message, ColorPicker, Select, Popover, Button } = antd;
+    const { AutoComplete, message, ColorPicker, Select, Popover, Button, Input } = antd;
 
     const mockVal = (str, repeat = 1) => ({
       value: str.repeat(repeat),
@@ -172,7 +172,7 @@
       );
     };
 
-    React.__my_react_shared__.enableConcurrentMode.current = false;
+    // React.__my_react_shared__.enableConcurrentMode.current = false;
     // React.__my_react_shared__.enableLoopFromRoot.current = true;
 
     const Test = () => {
@@ -200,7 +200,29 @@
     // TODO 点击无法选择
     // 原因 点击事件被父元素的pointer-events: "none"给阻止了
     // React的事件调度
-    ReactDOM.render(<_Select />, root);
+    // ReactDOM.render(<_Select />, root);
+  </script>
+
+  <script type="text/babel">
+
+    const App = () => {
+      // return <antd.Input.TextArea autoSize onChange={() => {
+      //   console.log('onChange')
+      // }} onInput={() => {
+      //   console.log('onInput')
+      // }} />
+
+      return <textarea onChange={() => {
+        console.log('onChange')
+      }} />
+      // return <input onChange={() => {
+      //   console.log('onChange')
+      // }} onInput={() => {
+      //   console.log('onInput')
+      // }} />
+    }
+
+    ReactDOM.render(<App />, root);
   </script>
 </body>
 

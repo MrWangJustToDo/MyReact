@@ -144,11 +144,8 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
     if (include(fiber.type, NODE_TYPE.__plain__)) {
       const props = fiber.pendingProps;
 
-      let hasSetOnChange = false;
-
       Object.keys(props).forEach((key) => {
         if (isEvent(key)) {
-          hasSetOnChange = hasSetOnChange || key === "onChange";
           domEventHydrate(fiber, renderDispatch, key);
         } else if (isStyle(key)) {
           domStyleHydrate(fiber, key, (props[key] as Record<string, unknown>) || {});

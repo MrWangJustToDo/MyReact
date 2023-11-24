@@ -46,7 +46,7 @@ const _Header = () => {
 
   return (
     <>
-      <Container maxWidth={CONTAINER_WIDTH} paddingX={{ base: "3", lg: "6" }}>
+      <Container maxWidth={CONTAINER_WIDTH} paddingX={{ base: "3", lg: "6" }} className="site-header">
         <GlobalStyle />
         <Flex paddingY="2" justifyContent="space-between" alignItems="center">
           <Text as="h1" fontSize={{ base: "xl", md: "2xl" }} fontWeight={{ base: "semibold", md: "bold" }} noOfLines={1}>
@@ -58,6 +58,9 @@ const _Header = () => {
             </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
               Example
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Tldraw" : `/${__BASENAME__}/Tldraw`)}>
+              Tldraw
             </Button>
             <ColorMode />
             <Button variant="outline" size="sm" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">

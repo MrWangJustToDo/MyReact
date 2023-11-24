@@ -2,19 +2,19 @@ import { type MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { log } from "@my-react-dom-shared";
 
-type ControlledElement = HTMLInputElement;
+type ControlledElement = HTMLTextAreaElement;
 
 /**
  * @internal
  */
-export const isReadonlyInputElement = (fiber: MyReactFiberNode) =>
-  hasControlledInputProps(fiber) && !fiber.pendingProps.onChange && !fiber.pendingProps.onInput;
+export const isReadonlyTextAreaElement = (fiber: MyReactFiberNode) =>
+  hasControlledTextAreaProps(fiber) && !fiber.pendingProps.onChange && !fiber.pendingProps.onInput;
 
 /**
  * @internal
  */
-export const isControlledInputElement = (fiber: MyReactFiberNode) =>
-  hasControlledInputProps(fiber) && (typeof fiber.pendingProps.onChange === "function" || typeof fiber.pendingProps.onInput === "function");
+export const isControlledTextAreaElement = (fiber: MyReactFiberNode) =>
+  hasControlledTextAreaProps(fiber) && (typeof fiber.pendingProps.onChange === "function" || typeof fiber.pendingProps.onInput === "function");
 
 const generateEmptyChangeFun = (fiber: MyReactFiberNode) => {
   return () => {
@@ -27,7 +27,7 @@ const generateEmptyChangeFun = (fiber: MyReactFiberNode) => {
 /**
  * @internal
  */
-export const generateInputOnChangeFun = (fiber: MyReactFiberNode) => {
+export const generateTextAreaOnChangeFun = (fiber: MyReactFiberNode) => {
   const onChange = (...args) => {
     const originalOnInput = fiber.pendingProps.onInput;
 
@@ -51,9 +51,7 @@ export const generateInputOnChangeFun = (fiber: MyReactFiberNode) => {
 
       const typedDom = dom as ControlledElement;
 
-      const { type } = props;
-
-      const key = type === "radio" || type === "checkbox" ? "checked" : "value";
+      const key = "value";
 
       if (key in props) {
         (typedDom as any)[key] = props[key];
@@ -67,12 +65,10 @@ export const generateInputOnChangeFun = (fiber: MyReactFiberNode) => {
 /**
  * @internal
  */
-export const hasControlledInputProps = (fiber: MyReactFiberNode) => {
+export const hasControlledTextAreaProps = (fiber: MyReactFiberNode) => {
   const props = fiber.pendingProps;
 
-  const { type } = props;
-
-  const key = type === "radio" || type === "checkbox" ? "checked" : "value";
+  const key = "value";
 
   return props[key] !== undefined;
 };
@@ -80,14 +76,12 @@ export const hasControlledInputProps = (fiber: MyReactFiberNode) => {
 /**
  * @internal
  */
-export const updateControlInputElement = (fiber: MyReactFiberNode) => {
+export const updateControlTextAreaElement = (fiber: MyReactFiberNode) => {
   const pendingProps = fiber.pendingProps;
 
   const memoizedProps = fiber.memoizedProps;
 
-  const { type } = pendingProps;
-
-  const key = type === "radio" || type === "checkbox" ? "checked" : "value";
+  const key = "value";
 
   if (__DEV__) {
     if (pendingProps[key] !== undefined) {

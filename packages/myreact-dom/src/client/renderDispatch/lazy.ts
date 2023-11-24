@@ -1,10 +1,12 @@
-import { createElement } from "@my-react/react";
-import { triggerError, WrapperByScope } from "@my-react/react-reconciler";
+import { __my_react_internal__, createElement } from "@my-react/react";
+import { WrapperByScope } from "@my-react/react-reconciler";
 import { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import type { ClientDomDispatch } from "./instance";
 import type { lazy, MixinMyReactFunctionComponent } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
+
+const { currentRenderPlatform } = __my_react_internal__;
 
 // TODO
 /**
@@ -29,7 +31,7 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cl
     Promise.resolve()
       .then(() => typedElementType.loader())
       .then((re) => {
-        const render = typeof re === "object" && typeof re?.default === "function" ? re.default : re;
+        const render = typeof re === "object" && (typeof re?.default === "function" || typeof re?.default === "object") ? re.default : re;
 
         typedElementType._loaded = true;
 
@@ -37,7 +39,7 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cl
 
         _fiber._update(STATE_TYPE.__triggerSync__);
       })
-      .catch((e) => triggerError(_fiber, e))
+      .catch((e) => currentRenderPlatform.current.dispatchError({ fiber: _fiber, error: e }))
       .finally(() => (typedElementType._loading = false));
   }
 
@@ -65,7 +67,7 @@ export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: Cl
       Promise.resolve()
         .then(() => typedElementType.loader())
         .then((re) => {
-          const render = typeof re === "object" && typeof re?.default === "function" ? re.default : re;
+          const render = typeof re === "object" && (typeof re?.default === "function" || typeof re?.default === "object") ? re.default : re;
 
           typedElementType._loaded = true;
 
@@ -73,7 +75,7 @@ export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: Cl
 
           _fiber._update(STATE_TYPE.__triggerSync__);
         })
-        .catch((e) => triggerError(_fiber, e))
+        .catch((e) => currentRenderPlatform.current.dispatchError({ fiber: _fiber, error: e }))
         .finally(() => (typedElementType._loading = false));
     }
 

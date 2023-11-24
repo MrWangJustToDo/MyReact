@@ -231,7 +231,16 @@ export const getElementName = (fiber: MyReactFiberNode) => {
 
 const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)} ${getTrackDevLog(fiber)}`;
 
-const getFiberNodeNameWithFiber = (fiber: MyReactFiberNode) => `%c${getElementName(fiber)}%c (%o)`;
+const getFiberNodeMaxRenderTime = (_fiber: MyReactFiberNode) => {
+  // const typedFiber = fiber as MyReactFiberNodeDev;
+  // if (typedFiber._debugRenderState) {
+  //   const { maxTimeForRender, timeForRender } = typedFiber._debugRenderState;
+  //   return ` - ${timeForRender}|${maxTimeForRender}ms`;
+  // }
+  return "";
+};
+
+const getFiberNodeNameWithFiber = (fiber: MyReactFiberNode) => `%c${getElementName(fiber)}${getFiberNodeMaxRenderTime(fiber)}%c (%o)`;
 
 export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   if (fiber) {

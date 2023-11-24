@@ -84,7 +84,12 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
     hookNode.result = safeCallWithFiber({
       fiber,
-      action: () => (storeApi.getServerSnapshot ? storeApi.getServerSnapshot?.call(null) : storeApi.getSnapshot.call(null)),
+      action: () =>
+        renderDispatch.isAppMounted
+          ? storeApi.getSnapshot.call(null)
+          : storeApi.getServerSnapshot
+          ? storeApi.getServerSnapshot?.call(null)
+          : storeApi.getSnapshot.call(null),
     });
 
     hookNode.effect = true;

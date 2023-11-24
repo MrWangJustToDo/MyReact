@@ -167,6 +167,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
       typedFiber._debugRenderState = {
         mountTimeStep: timeNow,
         timeForRender: renderTime,
+        maxTimeForRender: renderTime,
       };
 
       typedFiber._debugIsMount = true;
@@ -182,6 +183,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
         trigger: currentTriggerFiber.current,
         timeForRender: renderTime,
         timeForUpdate: timeNow - prevRenderTime,
+        maxTimeForRender: Math.max(prevRenderState.maxTimeForRender, renderTime),
       };
     }
   }

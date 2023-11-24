@@ -98,3 +98,18 @@ export const initDOMField = (fiber: MyReactFiberNode, renderDispatch: CustomRend
     renderDispatch.pendingLayoutEffect(fiber, () => debugWithNode(fiber));
   }
 };
+
+const eventArray: string[] = [];
+
+/**
+ * @internal
+ */
+export const triggerEvent = (eventName: string, fiber: MyReactFiberNode) => {
+  eventArray.push(eventName);
+
+  console.log(`eventFlow: ${eventArray.join(" -> ")} (%o)`, fiber);
+};
+
+export const clearEvent = () => {
+  eventArray.pop();
+};

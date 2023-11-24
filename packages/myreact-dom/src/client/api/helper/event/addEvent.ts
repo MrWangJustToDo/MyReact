@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { afterSyncUpdate, beforeSyncUpdate, safeCallWithFiber } from "@my-react/react-reconciler";
 
-import { enableControlComponent, enableEventSystem, log } from "@my-react-dom-shared";
+import { clearEvent, enableControlComponent, enableEventSystem, enableEventTrack, log, triggerEvent } from "@my-react-dom-shared";
 
 import { controlElementTag, generateOnChangeFun } from "../control";
 
@@ -17,7 +17,8 @@ const { enableDebugFiled } = __my_react_shared__;
 const syncUpdateEvent = {
   click: true,
   input: true,
-  chang: true,
+  change: true,
+  keydown: true,
   scroll: true,
   dblclick: true,
   mousedown: true,
@@ -47,7 +48,7 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
 
   let targetCallback = callback;
 
-  if (enableEventSystem.current && enableControlComponent.current && controlElementTag[typedElementType] && key === "onChange") {
+  if (enableEventSystem.current && enableControlComponent.current && controlElementTag[typedElementType] && (key === "onChange" || key === "onInput")) {
     targetCallback = generateOnChangeFun(fiber);
   }
 
@@ -76,10 +77,18 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
 
         beforeEvent(nativeName);
 
+        if (enableEventTrack.current) {
+          triggerEvent(nativeName, fiber);
+        }
+
         safeCallWithFiber({
           action: () => eventDispatcher.cb?.call?.(null, ...args),
           fiber,
         });
+
+        if (enableEventTrack.current) {
+          clearEvent();
+        }
 
         afterEvent(nativeName);
       };

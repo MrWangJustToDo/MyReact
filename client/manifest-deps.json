@@ -1,4 +1,10 @@
 {
+  "./About": {
+    "path": [
+      "page-About.js"
+    ],
+    "static": true
+  },
   "./": {
     "path": [
       "page-.js"

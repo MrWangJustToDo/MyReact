@@ -31,8 +31,6 @@ export default function Tldraw({ isDarkMode }: { isDarkMode: boolean }) {
 
   const darkMode = isMounted ? _isDarkMode : isDarkMode;
 
-  console.log("isDarkMode", darkMode);
-
   return (
     <Box height={`calc(100vh - ${height}px)`} position={loading ? "relative" : "fixed"} top={height + "px"} width="100vw">
       {loading ? (

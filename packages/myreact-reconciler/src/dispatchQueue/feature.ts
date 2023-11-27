@@ -1,12 +1,11 @@
-import { __my_react_shared__, type MixinMyReactClassComponent, type MyReactComponent } from "@my-react/react";
+import { __my_react_shared__, type MyReactComponent } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
-import { isErrorBoundariesInstance } from "../dispatchErrorBoundaries";
 import { syncComponentStateToFiber } from "../runtimeComponent";
 import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
-import type { MyReactFiberNode, MyReactFiberNodeDev, PendingStateType, PendingStateTypeWithError } from "../runtimeFiber";
+import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactHookNodeDev } from "../runtimeHook";
 
 const { enableDebugFiled } = __my_react_shared__;
@@ -28,15 +27,11 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
 
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const typedComponent = fiber.elementType as MixinMyReactClassComponent;
-
   const baseState = Object.assign({}, typedInstance.state);
 
   const baseProps = Object.assign({}, typedInstance.props);
 
-  const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
-
-  const nextStateObj = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
+  const nextStateObj = fiber.pendingState;
 
   if (enableTaskPriority && allQueue.some((l) => l.isSync)) {
     while (node) {
@@ -253,11 +248,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
 export const syncFiberStateToComponent = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const typedComponent = fiber.elementType as MixinMyReactClassComponent;
-
-  const isErrorCatch = isErrorBoundariesInstance(typedInstance, typedComponent);
-
-  const typedPendingState = isErrorCatch ? (fiber.pendingState as PendingStateTypeWithError).state : (fiber.pendingState as PendingStateType);
+  const typedPendingState = fiber.pendingState;
 
   typedInstance.state = Object.assign({}, typedInstance.state, typedPendingState.pendingState);
 

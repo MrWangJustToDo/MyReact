@@ -1,5 +1,15 @@
 import { createRef } from "@my-react/react";
 
+type ReadOnlyRef<T> = { readonly: boolean; current: T };
+
+const createReadonlyRef = <T>(v: T) => {
+  const a: ReadOnlyRef<T> = { current: v, readonly: true };
+
+  Object.freeze(a);
+
+  return a;
+};
+
 /**
  * @internal
  */
@@ -14,12 +24,12 @@ export const asyncUpdateTimeStep = createRef<number | null>(null);
 /**
  * @internal
  */
-export const enableControlComponent = createRef(true);
+export const enableControlComponent = createReadonlyRef(true);
 
 /**
  * @internal
  */
-export const enableEventSystem = createRef(true);
+export const enableEventSystem = createReadonlyRef(true);
 
 /**
  * @internal

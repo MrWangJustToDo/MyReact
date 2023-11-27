@@ -13,7 +13,7 @@ import {
   shouldPauseAsyncUpdate,
   unsetRef,
   enableASyncHydrate,
-  initDOMField,
+  patchDOMField,
 } from "@my-react-dom-shared";
 
 import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
@@ -98,10 +98,10 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     initialElementMap(_fiber, this);
-    initDOMField(_fiber, this);
+    patchDOMField(_fiber, this);
   }
   patchToFiberUpdate(_fiber: MyReactFiberNode) {
-    initDOMField(_fiber, this);
+    patchDOMField(_fiber, this);
   }
   patchToFiberUnmount(_fiber: MyReactFiberNode) {
     unmountElementMap(_fiber, this);

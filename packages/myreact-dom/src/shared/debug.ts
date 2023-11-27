@@ -93,7 +93,7 @@ export const checkRehydrate = (container: Partial<RenderContainer>) => {
 /**
  * @internal
  */
-export const initDOMField = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const patchDOMField = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if ((enableDOMField.current || __DEV__) && include(fiber.type, renderDispatch.runtimeRef.typeForNativeNode)) {
     renderDispatch.pendingLayoutEffect(fiber, () => debugWithNode(fiber));
   }

@@ -45,7 +45,9 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
           const typedOldValue = (oldValue as Record<string, unknown>) || {};
           const allStyleKeys = getAllKeys(typedOldValue, typedNewValue);
           const arrayStyleKeys = Array.from(allStyleKeys);
-          arrayStyleKeys.filter((key) => !Object.is(typedOldValue[key], typedNewValue[key])).forEach((key) => setStyle(fiber, dom, key, typedNewValue[key] as string | number | null | undefined));
+          arrayStyleKeys
+            .filter((key) => !Object.is(typedOldValue[key], typedNewValue[key]))
+            .forEach((key) => setStyle(fiber, dom, key, typedNewValue[key] as string | number | null | undefined));
         } else if (isProperty(key)) {
           setAttribute(fiber, dom, key, isSVG, newValue);
         }

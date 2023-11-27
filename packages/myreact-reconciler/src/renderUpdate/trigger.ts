@@ -8,8 +8,8 @@ import { updateConcurrentWithAll, updateConcurrentWithTrigger, updateSyncWithAll
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { CustomRenderPlatform } from "../renderPlatform";
-import type { MyReactFiberNode, PendingStateTypeWithError } from "../runtimeFiber";
-import type { MyReactComponent } from "@my-react/react";
+import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
 
 const { globalLoop, currentRenderPlatform, currentRunningFiber } = __my_react_internal__;
 
@@ -153,9 +153,11 @@ export const triggerRevert = (fiber: MyReactFiberNode, cb?: () => void) => {
     if (errorBoundariesFiber) {
       const instance = errorBoundariesFiber.instance as MyReactComponent;
 
-      instance?.setState(errorBoundariesFiber.memoizedState?.revertState, () => {
+      instance?.setState(errorBoundariesFiber.memoizedState, () => {
         renderDispatch.runtimeFiber.errorCatchFiber = null;
-        errorBoundariesFiber.memoizedState.revertState = null;
+
+        errorBoundariesFiber.memoizedState = null;
+
         cb?.();
       });
     } else {
@@ -229,18 +231,21 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
   const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
 
   if (errorBoundariesFiber) {
+    const typedComponent = errorBoundariesFiber.elementType as MixinMyReactClassComponent;
+
     const typedInstance = errorBoundariesFiber.instance as MyReactComponent;
 
-    const typedPendingState = errorBoundariesFiber.pendingState as PendingStateTypeWithError;
+    const payloadState = typedComponent.getDerivedStateFromError?.(error);
 
-    // prepare error catch flow
-    typedPendingState.error = {
-      error,
-      stack: renderPlatform.getFiberTree(fiber),
-      revertState: Object.assign({}, typedInstance.state),
-    };
+    errorBoundariesFiber.memoizedState = Object.assign({}, errorBoundariesFiber.pendingState.pendingState);
 
-    triggerUpdate(errorBoundariesFiber, STATE_TYPE.__triggerSync__, cb);
+    typedInstance.setState(payloadState, () => {
+      typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
+
+      renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
+
+      cb?.();
+    });
   } else {
     renderDispatch.pendingUpdateFiberArray.clear();
 

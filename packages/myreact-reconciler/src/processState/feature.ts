@@ -42,6 +42,8 @@ export const processState = (_params: UpdateQueue) => {
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
       if (lastRenderComponentFiber === currentComponentFiber.current) {
         renderCount++;
+      } else {
+        renderCount = 0;
       }
       if (renderCount > MAX_UPDATE_COUNT) {
         renderCount = 0;
@@ -73,6 +75,8 @@ export const processState = (_params: UpdateQueue) => {
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
       if (lastRenderComponentFiber === currentComponentFiber.current) {
         renderCount++;
+      } else {
+        renderCount = 0;
       }
       if (renderCount > MAX_UPDATE_COUNT) {
         renderCount = 0;

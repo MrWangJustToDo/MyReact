@@ -23,25 +23,6 @@ export type PendingStateType = {
   pendingState: Record<string, unknown>;
 };
 
-export type PendingStateTypeWithError = {
-  state?: PendingStateType;
-  error?: ErrorType;
-};
-
-export type MemoizedStateType = Record<string, unknown>;
-
-export type MemoizedStateTypeWithError = {
-  stableState?: MemoizedStateType;
-  revertState?: MemoizedStateType;
-};
-
-export type ErrorType = {
-  stack: string;
-  error: Error;
-  // used for revert from error for hmr
-  revertState: Record<string, unknown>;
-};
-
 export class MyReactFiberNode implements RenderFiber {
   ref: MyReactElement["ref"];
 
@@ -77,9 +58,9 @@ export class MyReactFiberNode implements RenderFiber {
 
   memoizedProps: MyReactElement["props"] = emptyProps;
 
-  pendingState: PendingStateTypeWithError | PendingStateType;
+  pendingState:  PendingStateType;
 
-  memoizedState: MemoizedStateTypeWithError | MemoizedStateType;
+  memoizedState:  Record<string, unknown>;
 
   _devRevert: (cb?: () => void) => void;
 

@@ -62,6 +62,11 @@ const _Header = () => {
             <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Tldraw" : `/${__BASENAME__}/Tldraw`)}>
               Tldraw
             </Button>
+            {!__REACT__ && __DEVELOPMENT__ && (
+              <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/About" : `/${__BASENAME__}/About`)}>
+                About
+              </Button>
+            )}
             <ColorMode />
             <Button variant="outline" size="sm" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
               <Icon as={SiGithub} />

@@ -87,11 +87,11 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
               dom.setAttribute(attrKey, value);
             }
           } else if (v !== null && v !== undefined) {
-            if (v === 'false') return;
+            if (v === "false") return;
             log(fiber, "warn", `hydrate warning, dom '${attrKey}' attr not match from server. server: ${v}, client: ${value}`);
             dom.removeAttribute(attrKey);
           }
-        } else if (v.toString() !== String(value)) {
+        } else if (v?.toString() !== String(value)) {
           log(fiber, "warn", `hydrate warning, dom '${attrKey}' attr not match from server. server: ${v}, client: ${value}`);
           dom.setAttribute(attrKey, String(value));
         }
@@ -157,7 +157,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
       if (enableEventSystem.current && enableControlComponent.current && controlElementTag[fiber.elementType as string]) {
         mountControl(fiber, renderDispatch);
       }
-      
+
       domInnerHTMLHydrate(fiber);
     }
 

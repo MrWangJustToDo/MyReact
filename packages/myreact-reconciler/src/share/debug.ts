@@ -79,7 +79,7 @@ export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
   const renderFiber = fiber;
 
   if (args.some((i) => i instanceof Error)) {
-    originalError.call(console, "", ...args, "\n  ", renderFiber);
+    originalError.call(console, ...args, renderFiber);
   } else {
     if (enableFiberForLog.current) {
       originalError.call(console, ...args, ...[renderPlatform.getFiberTree(currentRunningFiber.current), "\n  ", renderFiber]);

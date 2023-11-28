@@ -23,6 +23,8 @@ const MAX_UPDATE_COUNT = 25;
 
 let lastRenderComponentFiber: RenderFiber | null = null;
 
+let lastRenderComponentTimeStep: number | null = null;
+
 let renderCount = 0;
 
 export const processState = (_params: UpdateQueue) => {
@@ -40,14 +42,19 @@ export const processState = (_params: UpdateQueue) => {
     if (!ownerFiber || include(ownerFiber.state, STATE_TYPE.__unmount__)) return;
 
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
+      const now = Date.now();
       if (lastRenderComponentFiber === currentComponentFiber.current) {
-        renderCount++;
+        if (lastRenderComponentTimeStep && now - lastRenderComponentTimeStep < 4) {
+          renderCount++;
+        } else {
+          renderCount = 0;
+        }
       } else {
         renderCount = 0;
       }
       if (renderCount > MAX_UPDATE_COUNT) {
         renderCount = 0;
-        throw new Error("[@my-react/react] look like there are infinity update for current component");
+        throw new Error(`[@my-react/react] look like there are infinity update for current component ${currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)}`);
       } else {
         const triggeredElementName = getElementName(ownerFiber);
         const currentElementName = getElementName(currentComponentFiber.current as MyReactFiberNode);
@@ -58,6 +65,7 @@ export const processState = (_params: UpdateQueue) => {
         );
       }
       lastRenderComponentFiber = currentComponentFiber.current;
+      lastRenderComponentTimeStep = now;
     }
 
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
@@ -73,14 +81,19 @@ export const processState = (_params: UpdateQueue) => {
     if (!ownerFiber || include(ownerFiber?.state, STATE_TYPE.__unmount__)) return;
 
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
+      const now = Date.now();
       if (lastRenderComponentFiber === currentComponentFiber.current) {
-        renderCount++;
+        if (lastRenderComponentTimeStep && now - lastRenderComponentTimeStep < 4) {
+          renderCount++;
+        } else {
+          renderCount = 0;
+        }
       } else {
         renderCount = 0;
       }
       if (renderCount > MAX_UPDATE_COUNT) {
         renderCount = 0;
-        throw new Error("[@my-react/react] look like there are infinity update for current component");
+        throw new Error(`[@my-react/react] look like there are infinity update for current component ${currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)}`);
       } else {
         const triggeredElementName = getElementName(ownerFiber);
         const currentElementName = getElementName(currentComponentFiber.current as MyReactFiberNode);
@@ -91,6 +104,7 @@ export const processState = (_params: UpdateQueue) => {
         );
       }
       lastRenderComponentFiber = currentComponentFiber.current;
+      lastRenderComponentTimeStep = now;
     }
 
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  <!-- <script src="../bundle/react.18.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
+</head>
+
+<body>
+  <div id="root"></div>
+  <div id="a"></div>
+
+  <script type="text/babel">
+    const {useState, useEffect} = React;
+
+    const App = () => {
+      const [s, setS] = useState(0);
+
+      setS(i => i + 1);
+
+      // useEffect(() => setS(i => i + 1), []);
+      // console.log(ReactDOM.createPortal(<input type="text" autoFocus />, document.getElementById('a')));
+      return <><input type="text" autoFocus />
+        <br />
+        <input type="text" autoFocus value={s} />
+        {ReactDOM.createPortal(<input type="text" autoFocus value={s} />, document.getElementById('a'))}
+      </>
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+
+</html>

@@ -1,6 +1,6 @@
 {
   "main.css": "client/main-899432e8b2b128d5a9e0.css",
-  "main.js": "client/main-f2045c3ad2a771adb74b.js",
+  "main.js": "client/main-c7a848e6e90867b213bb.js",
   "runtime.js": "client/runtime-18902de44b332a0c2184.js",
   "page-.js": "client/page--43c1201b68e67026dc91.js",
   "page-404.js": "client/page-404-bf657922209b25b31968.js",
@@ -46,7 +46,7 @@
   "recursive-cyrillic-ext-400-normal.woff2": "client/recursive-cyrillic-ext-400-normal-bd74e81400bd97d268766b87c8aeb9c8.woff2",
   "manifest-deps.json": "client/manifest-deps.json",
   "main-css.map": "client/main-899432e8b2b128d5a9e0.css.map",
-  "main-js.map": "client/main-f2045c3ad2a771adb74b.js.map",
+  "main-js.map": "client/main-c7a848e6e90867b213bb.js.map",
   "runtime-js.map": "client/runtime-18902de44b332a0c2184.js.map",
   "page--js.map": "client/page--43c1201b68e67026dc91.js.map",
   "page-404-js.map": "client/page-404-bf657922209b25b31968.js.map",

@@ -35,7 +35,7 @@ function dispatchError(this: ClientDomPlatform, _params: { fiber: MyReactFiberNo
 export const initGlobalRenderPlatform = () => {
   enableFiberForLog.current = true;
 
-  const MyReactServerDomPlatform = new ClientDomPlatform(true);
+  const MyReactServerDomPlatform = new ClientDomPlatform(false);
 
   initRenderPlatform(MyReactServerDomPlatform);
 };
@@ -53,6 +53,10 @@ export const prepareRenderPlatform = () => {
   enableScopeTreeLog.current = true;
 
   renderPlatform = currentRenderPlatform.current as ClientDomPlatform | ServerDomPlatform;
+
+  if (__DEV__ && renderPlatform.isServer) {
+    console.warn(`[@my-react/react-dom] current environment is server, please use 'renderToString' instead of 'render'`);
+  }
 
   renderPlatform.isServer = false;
 

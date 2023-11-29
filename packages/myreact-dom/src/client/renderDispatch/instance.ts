@@ -1,10 +1,12 @@
 import { createElement, type MyReactElement, type MyReactElementNode } from "@my-react/react";
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
+import { isPromise } from "@my-react/react-shared";
 
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
 import { highlightUpdateFiber } from "@my-react-dom-client/tools";
+import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount";
 import {
   asyncUpdateTimeLimit,
   initialElementMap,
@@ -14,6 +16,7 @@ import {
   unsetRef,
   enableASyncHydrate,
   patchDOMField,
+  draw,
 } from "@my-react-dom-shared";
 
 import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
@@ -32,13 +35,12 @@ const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
 };
 
-/**
- * @internal
- */
 export class ClientDomDispatch extends CustomRenderDispatch {
   runtimeDom = {
     elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
   };
+
+  enableUpdate = true;
 
   runtimeRef = runtimeRef;
 
@@ -53,6 +55,8 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   renderTime: number | null;
 
   hydrateTime: number | null;
+
+  _remountOnDev: (cb?: () => void) => void;
 
   performanceLogTimeLimit = asyncUpdateTimeLimit.current;
 
@@ -109,7 +113,11 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 }
 
 if (__DEV__) {
-  ClientDomDispatch.prototype.remountOnDev = function (cb?: () => void) {
+  // dev highlight
+  ClientDomDispatch.prototype.patchToCommitUpdate = highlightUpdateFiber;
+
+  // dev remount
+  ClientDomDispatch.prototype._remountOnDev = function (cb?: () => void) {
     const rootNode = this.rootNode;
 
     const rootElementType = this.rootFiber.elementType;
@@ -123,5 +131,32 @@ if (__DEV__) {
     render(rootElement, rootNode, cb);
   };
 
-  ClientDomDispatch.prototype.patchToCommitUpdate = highlightUpdateFiber;
+  // dev log tree
+  Object.defineProperty(ClientDomDispatch.prototype, "_debugLogTree", {
+    get() {
+      const rootElementType = this.rootFiber.elementType;
+
+      const rootElementProps = this.rootFiber.pendingProps;
+
+      const rootElement = createElement(rootElementType, rootElementProps) as MyReactElement;
+
+      const get = () => {
+        if (enableASyncHydrate.current) {
+          return latestNoopRender(rootElement);
+        } else {
+          return legacyNoopRender(rootElement);
+        }
+      };
+
+      const re = get();
+
+      if (isPromise(re)) {
+        re.then((res) => draw(res));
+      } else {
+        draw(re);
+      }
+
+      return get();
+    },
+  });
 }

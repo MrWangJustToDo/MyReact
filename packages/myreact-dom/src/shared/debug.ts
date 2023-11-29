@@ -11,11 +11,13 @@ import { include } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { debounce } from "@my-react-dom-client/tools";
+import { PlainElement , ContainerElement , CommentStartElement } from "@my-react-dom-server/api";
 
 import { enableDOMField } from "./env";
 
 import type { CustomRenderDispatch } from "@my-react/react-reconciler";
 import type { RenderContainer } from "@my-react-dom-client/mount";
+import type { CommentEndElement, TextElement } from "@my-react-dom-server/api";
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
@@ -123,4 +125,28 @@ export const triggerEvent = (eventName: string, fiber: MyReactFiberNode) => {
  */
 export const clearEvent = () => {
   eventArray.pop();
+};
+
+/**
+ * @internal
+ */
+export const draw = (node: PlainElement | ContainerElement | string | TextElement | CommentStartElement | CommentEndElement, level = 0) => {
+  if (node instanceof PlainElement) {
+    const indentation = " ".repeat(level);
+    console.log(indentation + node.type);
+    node.children.forEach((c) => draw(c, level + 1));
+  }
+  if (node instanceof ContainerElement) {
+    node.children.forEach((c) => draw(c, level));
+  }
+
+  // if (node instanceof TextElement) {
+  //   const indentation = "  ".repeat(level);
+  //   console.log(indentation + node);
+  // }
+
+  if (node instanceof CommentStartElement) {
+    const indentation = " ".repeat(level);
+    console.log(indentation + '<-- -->');
+  }
 };

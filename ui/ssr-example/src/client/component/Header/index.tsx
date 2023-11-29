@@ -18,9 +18,9 @@ import { GlobalStyle } from "./GlobalStyle";
 
 const map = {
   "/": "@my-react",
-  "/blog": "Blog",
-  "/about": "Config",
-  "/tldraw": "Tldraw",
+  "/blog": "blog",
+  "/about": "config",
+  "/tldraw": "tldraw",
 };
 
 const _Header = () => {

@@ -1,6 +1,7 @@
 import { ForwardRef, Memo, STATE_TYPE, TYPEKEY } from "@my-react/react-shared";
 
 import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType } from "@my-react/react";
+import type { ClientDomDispatch } from "@my-react/react-dom";
 import type { CustomRenderDispatch, HMR, setRefreshHandler } from "@my-react/react-reconciler";
 
 type Family = {
@@ -306,15 +307,15 @@ export const performReactRefresh = () => {
       }
     };
 
-    containers.forEach((hasRootUpdate, container) => {
+    containers.forEach((hasRootUpdate, container: ClientDomDispatch) => {
       if (container.isAppCrashed || container.isAppUnmounted) {
         // have a uncaught runtime error for prev render
-        container.remountOnDev?.(updateDone);
+        container._remountOnDev?.(updateDone);
       } else if (container.runtimeFiber.errorCatchFiber) {
         // has a error for prev render
-        const fiber = container?.runtimeFiber.errorCatchFiber;
+        const errorCatchFiber = container?.runtimeFiber.errorCatchFiber;
 
-        fiber._devRevert(updateDone);
+        errorCatchFiber._devRevert(updateDone);
       } else {
         container.rootFiber._devUpdate(hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__, updateDone);
       }

@@ -45,6 +45,8 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
     elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
   };
 
+  enableUpdate = false;
+
   runtimeRef = runtimeRef;
 
   stream: SimpleReadable;
@@ -121,6 +123,8 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
   runtimeDom = {
     elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
   };
+
+  enableUpdate = false;
 
   runtimeRef = runtimeRef;
 

@@ -2,12 +2,17 @@ import { mount, mountAsync } from "@my-react/react-reconciler";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
+import type { NoopLatestRenderDispatch, NoopLegacyRenderDispatch } from "@my-react-dom-noop/renderDispatch/noopDispatch";
 import type { ServerDomDispatch, LegacyServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 /**
  * @internal
  */
-export const startRender = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch, hydrate = false) => {
+export const startRender = (
+  fiber: MyReactFiberNode,
+  renderDispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch | NoopLegacyRenderDispatch,
+  hydrate = false
+) => {
   const startTime = Date.now();
 
   mount(fiber, renderDispatch, hydrate);
@@ -26,7 +31,7 @@ export const startRender = (fiber: MyReactFiberNode, renderDispatch: ClientDomDi
  */
 export const startRenderAsync = async (
   fiber: MyReactFiberNode,
-  renderDispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch,
+  renderDispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch | NoopLatestRenderDispatch,
   hydrate = false
 ) => {
   const startTime = Date.now();

@@ -2,5 +2,7 @@
   "blog": "@my-react 博客",
   "@my-react": "@my-react",
   "description": "一个React like 项目，基本可以替换 react/react-dom 的所有api",
-  "hmr": "热模块重载"
+  "hmr": "热模块重载",
+  "config": "Internal config",
+  "tldraw": "画图✍️"
 }

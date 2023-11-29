@@ -1,6 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
 
+import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { unmountFiber } from "../dispatchUnmount";
 import { currentTriggerFiber, devError, devWarn, fiberToDispatchMap } from "../share";
 
@@ -16,7 +17,7 @@ const { globalLoop, currentRenderPlatform, currentRunningFiber } = __my_react_in
 const { enableConcurrentMode, enableLoopFromRoot } = __my_react_shared__;
 
 const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
-  if (!renderDispatch.isAppUnmounted && !renderDispatch.isAppCrashed && renderDispatch.pendingUpdateFiberArray.length) {
+  if (!renderDispatch.isAppUnmounted && !renderDispatch.isAppCrashed && renderDispatch.enableUpdate && renderDispatch.pendingUpdateFiberArray.length) {
     scheduleUpdate(renderDispatch);
     return;
   }
@@ -29,7 +30,7 @@ const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
 
   const hasPending = allDispatch
     .getAll()
-    .find((d) => d !== renderDispatch && d.isAppMounted && !d.isAppCrashed && !d.isAppUnmounted && d.pendingUpdateFiberArray.length);
+    .find((d) => d !== renderDispatch && d.isAppMounted && d.enableUpdate && !d.isAppCrashed && !d.isAppUnmounted && d.pendingUpdateFiberArray.length);
 
   if (hasPending) {
     scheduleUpdate(hasPending);
@@ -143,35 +144,23 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
 
 /**
  * only used for dev HMR
+ * only invoke on the errorCatchFiber
  */
 export const triggerRevert = (fiber: MyReactFiberNode, cb?: () => void) => {
   if (__DEV__) {
+    if (!isErrorBoundariesComponent(fiber)) return;
+
     const renderDispatch = fiberToDispatchMap.get(fiber);
 
-    const errorBoundariesFiber = renderDispatch.runtimeFiber.errorCatchFiber;
+    const instance = fiber.instance as MyReactComponent;
 
-    if (errorBoundariesFiber) {
-      const instance = errorBoundariesFiber.instance as MyReactComponent;
+    instance?.setState(fiber.memoizedState, () => {
+      renderDispatch.runtimeFiber.errorCatchFiber = null;
 
-      instance?.setState(errorBoundariesFiber.memoizedState, () => {
-        renderDispatch.runtimeFiber.errorCatchFiber = null;
+      fiber.memoizedState = null;
 
-        errorBoundariesFiber.memoizedState = null;
-
-        cb?.();
-      });
-    } else {
-      const last = currentRunningFiber.current;
-
-      currentRunningFiber.current = fiber;
-
-      // there are not a ErrorBoundariesFiber
-      devWarn(`[@my-react/react] there are not a ErrorBoundary Component, try to remount current App`);
-
-      currentRunningFiber.current = last;
-
-      renderDispatch.remountOnDev?.(cb);
-    }
+      cb?.();
+    });
   } else {
     console.error(`[@my-react/react] can not call revert on prod mode`);
   }

@@ -9,7 +9,9 @@
       "@my-react-dom-server": ["./src/server"],
       "@my-react-dom-server/*": ["./src/server/*"],
       "@my-react-dom-client": ["./src/client"],
-      "@my-react-dom-client/*": ["./src/client/*"]
+      "@my-react-dom-client/*": ["./src/client/*"],
+      "@my-react-dom-noop": ["./src/noop"],
+      "@my-react-dom-noop/*": ["./src/noop/*"]
     }
   },
   "include": ["./src"],

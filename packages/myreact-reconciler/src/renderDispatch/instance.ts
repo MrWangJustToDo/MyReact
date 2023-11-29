@@ -54,6 +54,8 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   isAppUnmounted = false;
 
+  enableUpdate: boolean;
+
   pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
 
   pendingAsyncLoadFiberList: ListTree<MyReactFiberNode> | null = null;
@@ -72,8 +74,6 @@ export class CustomRenderDispatch implements RenderDispatch {
 
     typedFiber.containerNode = rootNode;
   }
-
-  remountOnDev: (cb?: () => void) => void;
 
   generateCommitList(_fiber: MyReactFiberNode) {
     if (!_fiber) return;

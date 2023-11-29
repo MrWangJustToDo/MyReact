@@ -1,0 +1,58 @@
+import { isValidElement } from "@my-react/react";
+import { MyReactFiberNode, initialFiberNode } from "@my-react/react-reconciler";
+
+import { ContainerElement } from "@my-react-dom-server/api";
+import { checkRoot, startRender, startRenderAsync } from "@my-react-dom-shared";
+
+import { NoopLegacyRenderDispatch, NoopLatestRenderDispatch } from "../renderDispatch/noopDispatch";
+// import { beforeNoopRender, afterNoopRender } from "../renderPlatform";
+
+import type { LikeJSX } from "@my-react/react";
+
+export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
+  if (isValidElement(element)) {
+    // beforeNoopRender();
+
+    const container = new ContainerElement();
+
+    const fiber = new MyReactFiberNode(element);
+
+    __DEV__ && checkRoot(fiber);
+
+    const renderDispatch = new NoopLegacyRenderDispatch(container, fiber);
+
+    renderDispatch.isServerRender = true;
+
+    initialFiberNode(fiber, renderDispatch);
+
+    startRender(fiber, renderDispatch);
+
+    // afterNoopRender();
+
+    return container;
+  }
+};
+
+export const latestNoopRender = async (element: LikeJSX): Promise<ContainerElement | null> => {
+  if (isValidElement(element)) {
+    // beforeNoopRender();
+
+    const container = new ContainerElement();
+
+    const fiber = new MyReactFiberNode(element);
+
+    __DEV__ && checkRoot(fiber);
+
+    const renderDispatch = new NoopLatestRenderDispatch(container, fiber);
+
+    renderDispatch.isServerRender = true;
+
+    initialFiberNode(fiber, renderDispatch);
+
+    await startRenderAsync(fiber, renderDispatch);
+
+    // afterNoopRender();
+
+    return container;
+  }
+};

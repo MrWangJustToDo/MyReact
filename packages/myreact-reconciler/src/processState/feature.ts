@@ -41,6 +41,11 @@ export const processState = (_params: UpdateQueue) => {
 
     if (!ownerFiber || include(ownerFiber.state, STATE_TYPE.__unmount__)) return;
 
+    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
+
+    // if current dispatch is a server || noop
+    if (!renderDispatch.enableUpdate) return;
+
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
       const now = Date.now();
       if (lastRenderComponentFiber === currentComponentFiber.current) {
@@ -71,8 +76,6 @@ export const processState = (_params: UpdateQueue) => {
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
 
     ownerFiber.updateQueue.push(_params);
-
-    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
     ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
   } else {
@@ -80,6 +83,10 @@ export const processState = (_params: UpdateQueue) => {
 
     if (!ownerFiber || include(ownerFiber?.state, STATE_TYPE.__unmount__)) return;
 
+    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
+
+    if (!renderDispatch.enableUpdate) return;
+
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
       const now = Date.now();
       if (lastRenderComponentFiber === currentComponentFiber.current) {
@@ -110,8 +117,6 @@ export const processState = (_params: UpdateQueue) => {
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
 
     ownerFiber.updateQueue.push(_params);
-
-    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
     ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
   }

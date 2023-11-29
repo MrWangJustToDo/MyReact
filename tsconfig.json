@@ -14,6 +14,8 @@
       "@my-react-dom-server/*": ["./packages/myreact-dom/src/server/*"],
       "@my-react-dom-client": ["./packages/myreact-dom/src/client"],
       "@my-react-dom-client/*": ["./packages/myreact-dom/src/client/*"],
+      "@my-react-dom-noop": ["./packages/myreact-dom/src/noop"],
+      "@my-react-dom-noop/*": ["./packages/myreact-dom/src/noop/*"],
       "@build": ["./ui/ssr-example/build"],
       "@build/*": ["./ui/ssr-example/build/*"],
       "@server": ["./ui/ssr-example/src/server"],

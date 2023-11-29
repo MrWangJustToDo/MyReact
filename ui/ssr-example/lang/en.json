@@ -2,5 +2,7 @@
   "blog": "@my-react Blog",
   "@my-react": "@my-react",
   "description": "A React like framework, can be used to replace all the react/react-dom api for test、learn、debug ...",
-  "hmr": "Hot module replacement"
+  "hmr": "Hot module replacement",
+  "config": "Internal config",
+  "tldraw": "Painting ✍️"
 }

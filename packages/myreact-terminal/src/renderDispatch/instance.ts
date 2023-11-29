@@ -23,6 +23,8 @@ export class TerminalDispatch extends CustomRenderDispatch {
     elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode | null>(),
   };
 
+  enableUpdate = false;
+
   runtimeRef = runtimeRef;
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {

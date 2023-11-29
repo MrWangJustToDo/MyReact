@@ -78,7 +78,7 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
         beforeEvent(nativeName);
 
         if (enableEventTrack.current) {
-          triggerEvent(nativeName, fiber);
+          triggerEvent(eventName, fiber);
         }
 
         safeCallWithFiber({

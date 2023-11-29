@@ -180,13 +180,14 @@
       const [_state, _setState] = useState(false);
 
       useEffect(() => {
-        setTimeout(() => {
-          _setState(state);
-        }, 50)
+        // setTimeout(() => {
+        //   _setState(state);
+        // }, 50)
+        _setState(state);
       }, [state]);
 
 
-      return <div id='_1' style={{ pointerEvents: _state ? 'none' : 'initial' }}>
+      return <div id='_1' style={{ pointerEvents: state ? 'none' : 'initial' }}>
         1
         <div id='_2' onMouseDown={() => {
           console.log('mousedown');
@@ -200,7 +201,7 @@
     // TODO 点击无法选择
     // 原因 点击事件被父元素的pointer-events: "none"给阻止了
     // React的事件调度
-    // ReactDOM.render(<_Select />, root);
+    ReactDOM.render(<_Select />, root);
   </script>
 
   <script type="text/babel">
@@ -222,7 +223,7 @@
       // }} />
     }
 
-    ReactDOM.render(<App />, root);
+    // ReactDOM.render(<App />, root);
   </script>
 </body>
 

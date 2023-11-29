@@ -10,6 +10,7 @@ import {
 import { include } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
+import { debounce } from "@my-react-dom-client/tools";
 
 import { enableDOMField } from "./env";
 
@@ -104,12 +105,22 @@ const eventArray: string[] = [];
 /**
  * @internal
  */
+const logEvent = debounce((eventArray: string[], fiber: MyReactFiberNode) => {
+  console.log(`eventFlow: ${eventArray.join(" -> ")} (%o)`, fiber);
+}, 16);
+
+/**
+ * @internal
+ */
 export const triggerEvent = (eventName: string, fiber: MyReactFiberNode) => {
   eventArray.push(eventName);
 
-  console.log(`eventFlow: ${eventArray.join(" -> ")} (%o)`, fiber);
+  logEvent(Array.from(eventArray), fiber);
 };
 
+/**
+ * @internal
+ */
 export const clearEvent = () => {
   eventArray.pop();
 };

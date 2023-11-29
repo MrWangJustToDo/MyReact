@@ -6,13 +6,13 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-const debounce = <T extends Function>(callback: T): T => {
+export const debounce = <T extends Function>(callback: T, time?: number): T => {
   let id = null;
   return ((...args) => {
     clearTimeout(id);
     id = setTimeout(() => {
       callback.call(null, ...args);
-    }, 40);
+    }, time || 40);
   }) as unknown as T;
 };
 

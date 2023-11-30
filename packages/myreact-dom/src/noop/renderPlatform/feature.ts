@@ -1,16 +1,13 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { processHookNode, enableFiberForLog } from "@my-react/react-reconciler";
 
-import { NoopDomPlatform } from "./instance";
+import { DomPlatform } from "@my-react-dom-shared";
 
-import type { RenderPlatform} from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
 
 const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
-
-let lastPlatform: RenderPlatform | null = null;
 
 /**
  * @internal
@@ -18,13 +15,7 @@ let lastPlatform: RenderPlatform | null = null;
 export const initGlobalRenderPlatform = () => {
   enableFiberForLog.current = false;
 
-  const MyReactNoopDomPlatform = new NoopDomPlatform();
-
-  if (!currentRenderPlatform.current || currentRenderPlatform.current instanceof NoopDomPlatform) {
-    throw new Error("invalid environment for current render platform");
-  }
-
-  lastPlatform = currentRenderPlatform.current;
+  const MyReactNoopDomPlatform = new DomPlatform(true);
 
   initRenderPlatform(MyReactNoopDomPlatform);
 };
@@ -43,7 +34,7 @@ export const beforeNoopRender = () => {
 
   enableScopeTreeLog.current = false;
 
-  const renderPlatform = currentRenderPlatform.current as NoopDomPlatform;
+  const renderPlatform = currentRenderPlatform.current as DomPlatform;
 
   renderPlatform.dispatchState = () => void 0;
 
@@ -51,10 +42,3 @@ export const beforeNoopRender = () => {
 
   renderPlatform.dispatchError = dispatchError;
 };
-
-/**
- * @internal
- */
-export const afterNoopRender = () => {
-  initRenderPlatform(lastPlatform);
-}

@@ -1,5 +1,7 @@
 import { Effect_TYPE } from "@my-react/react-shared";
 
+import { enableGetterInstance } from "../share";
+
 import type { RenderFiber } from "../renderFiber";
 
 /**
@@ -11,7 +13,7 @@ export class MyReactInternalInstance {
   }
 
   constructor() {
-    if (__DEV__) {
+    if (enableGetterInstance.current) {
       let _ownerFiber: RenderFiber | null = null;
 
       Object.defineProperty(this, "_ownerFiber", {

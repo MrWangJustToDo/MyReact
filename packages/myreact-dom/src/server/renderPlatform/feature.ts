@@ -1,10 +1,9 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { fiberToDispatchMap, getFiberTree, processHookNode, enableFiberForLog } from "@my-react/react-reconciler";
 
-import { ServerDomPlatform } from "./instance";
+import { DomPlatform } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomPlatform } from "@my-react-dom-client/renderPlatform";
 import type { LatestServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
@@ -17,7 +16,7 @@ const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
 export const initGlobalRenderPlatform = () => {
   enableFiberForLog.current = false;
 
-  const MyReactServerDomPlatform = new ServerDomPlatform(true);
+  const MyReactServerDomPlatform = new DomPlatform(true);
 
   initRenderPlatform(MyReactServerDomPlatform);
 };
@@ -46,7 +45,7 @@ const dispatchError = ({ fiber, error }: { fiber: MyReactFiberNode; error: Error
  * @internal
  */
 export const prepareRenderPlatform = () => {
-  let renderPlatform = currentRenderPlatform.current as ClientDomPlatform | ServerDomPlatform;
+  let renderPlatform = currentRenderPlatform.current as DomPlatform
 
   if (!renderPlatform) initGlobalRenderPlatform();
 
@@ -54,7 +53,7 @@ export const prepareRenderPlatform = () => {
 
   enableScopeTreeLog.current = false;
 
-  renderPlatform = currentRenderPlatform.current as ClientDomPlatform | ServerDomPlatform;
+  renderPlatform = currentRenderPlatform.current as DomPlatform;
 
   if (__DEV__ && !renderPlatform.isServer) {
     console.warn(`[@my-react/react-dom] current environment is not server, please use 'render' instead of 'renderToString'`);

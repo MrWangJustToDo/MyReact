@@ -3,10 +3,7 @@ import { CustomRenderPlatform } from "@my-react/react-reconciler";
 
 const { yieldTask, macroTask, microTask } = __my_react_scheduler__;
 
-/**
- * @internal
- */
-export class ClientDomPlatform extends CustomRenderPlatform {
+export class DomPlatform extends CustomRenderPlatform {
   isServer: boolean;
 
   constructor(isServer: boolean) {

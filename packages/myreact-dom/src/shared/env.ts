@@ -1,14 +1,6 @@
-import { createRef } from "@my-react/react";
+import { createRef, __my_react_internal__ } from "@my-react/react";
 
-type ReadOnlyRef<T> = { readonly: boolean; current: T };
-
-const createReadonlyRef = <T>(v: T) => {
-  const a: ReadOnlyRef<T> = { current: v, readonly: true };
-
-  Object.freeze(a);
-
-  return a;
-};
+const { createReadonlyRef } = __my_react_internal__;
 
 /**
  * @internal

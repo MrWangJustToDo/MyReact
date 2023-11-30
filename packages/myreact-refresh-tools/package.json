@@ -55,6 +55,9 @@
       ]
     }
   ],
+  "devDependencies": {
+    "@my-react/react-shared": "^0.2.5"
+  },
   "peerDependenciesMeta": {
     "webpack": {
       "optional": true

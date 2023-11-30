@@ -24,6 +24,7 @@ import {
 import { MyReactInternalInstance } from "./internal";
 import {
   createRef,
+  createReadonlyRef,
   startTransition,
   currentRunningFiber,
   currentHookTreeNode,
@@ -102,7 +103,10 @@ const __my_react_scheduler__ = {
 const __my_react_internal__ = {
   MyReactInternalInstance,
   globalLoop,
+  
   initRenderPlatform,
+  createReadonlyRef,
+
   currentRunningFiber,
   currentHookTreeNode,
   currentHookNodeIndex,

@@ -6,6 +6,7 @@ export * from "./debug";
 export * from "./render";
 export * from "./version";
 export * from "./comment";
+export * from "./platform";
 export * from "./validate";
 export * from "./kebabCase";
 export * from "./elementMap";

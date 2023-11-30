@@ -5,7 +5,7 @@ import { ContainerElement } from "@my-react-dom-server/api";
 import { checkRoot, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { NoopLegacyRenderDispatch, NoopLatestRenderDispatch } from "../renderDispatch/noopDispatch";
-// import { beforeNoopRender, afterNoopRender } from "../renderPlatform";
+// import { beforeNoopRender } from "../renderPlatform";
 
 import type { LikeJSX } from "@my-react/react";
 
@@ -26,8 +26,6 @@ export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
     initialFiberNode(fiber, renderDispatch);
 
     startRender(fiber, renderDispatch);
-
-    // afterNoopRender();
 
     return container;
   }
@@ -50,8 +48,6 @@ export const latestNoopRender = async (element: LikeJSX): Promise<ContainerEleme
     initialFiberNode(fiber, renderDispatch);
 
     await startRenderAsync(fiber, renderDispatch);
-
-    // afterNoopRender();
 
     return container;
   }

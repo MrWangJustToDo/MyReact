@@ -1,23 +1,22 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { devErrorWithFiber, enableFiberForLog, processHookNode, processState, triggerError } from "@my-react/react-reconciler";
 
-import { ClientDomPlatform } from "./instance";
+import { DomPlatform } from "@my-react-dom-shared";
 
 import type { UpdateQueue } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ServerDomPlatform } from "@my-react-dom-server/renderPlatform";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
 
 const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
 
-function dispatchState(this: ClientDomPlatform, _params: UpdateQueue) {
+function dispatchState(this: DomPlatform, _params: UpdateQueue) {
   if (!this.isServer) {
     processState(_params);
   }
 }
 
-function dispatchError(this: ClientDomPlatform, _params: { fiber: MyReactFiberNode; error: Error }) {
+function dispatchError(this: DomPlatform, _params: { fiber: MyReactFiberNode; error: Error }) {
   if (!this.isServer) {
     if (__DEV__) devErrorWithFiber(_params.fiber, _params.error);
     triggerError(_params.fiber, _params.error, () => {
@@ -35,7 +34,7 @@ function dispatchError(this: ClientDomPlatform, _params: { fiber: MyReactFiberNo
 export const initGlobalRenderPlatform = () => {
   enableFiberForLog.current = true;
 
-  const MyReactServerDomPlatform = new ClientDomPlatform(false);
+  const MyReactServerDomPlatform = new DomPlatform(false);
 
   initRenderPlatform(MyReactServerDomPlatform);
 };
@@ -44,7 +43,7 @@ export const initGlobalRenderPlatform = () => {
  * @internal
  */
 export const prepareRenderPlatform = () => {
-  let renderPlatform = currentRenderPlatform.current as ClientDomPlatform | ServerDomPlatform;
+  let renderPlatform = currentRenderPlatform.current as DomPlatform;
 
   if (!renderPlatform) initGlobalRenderPlatform();
 
@@ -52,7 +51,7 @@ export const prepareRenderPlatform = () => {
 
   enableScopeTreeLog.current = true;
 
-  renderPlatform = currentRenderPlatform.current as ClientDomPlatform | ServerDomPlatform;
+  renderPlatform = currentRenderPlatform.current as DomPlatform;
 
   if (__DEV__ && renderPlatform.isServer) {
     console.warn(`[@my-react/react-dom] current environment is server, please use 'renderToString' instead of 'render'`);

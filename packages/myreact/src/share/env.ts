@@ -1,4 +1,4 @@
-import { createRef } from "./createRef";
+import { createReadonlyRef, createRef } from "./createRef";
 
 import type { RenderFiber } from "../renderFiber";
 import type { RenderHook } from "../renderHook";
@@ -54,7 +54,7 @@ export const enableSyncFlush = createRef(false);
 /**
  * @internal
  */
-export const enableHMRForDev = createRef(true);
+export const enableHMRForDev = createReadonlyRef(true);
 
 /**
  * @internal
@@ -87,7 +87,7 @@ export const enableDoubleRender = createRef(true);
 /**
  * @internal
  */
-export const enableLegacyLifeCycle = createRef(true);
+export const enableLegacyLifeCycle = createReadonlyRef(true);
 
 // enable react-18 strict lifecycle method
 // for now there are some bug for current flow, should not enable this feature flag
@@ -105,4 +105,9 @@ export const enableDebugFiled = createRef(true);
 /**
  * @internal
  */
-export const enableMockReact = createRef(false);
+export const enableMockReact = createReadonlyRef(false);
+
+/**
+ * @internal
+ */
+export const enableGetterInstance = createReadonlyRef(true);

@@ -8,3 +8,14 @@ export const createRef = <T = any>(value: T) => {
 
   return refValue;
 };
+
+/**
+ * @internal
+ */
+export const createReadonlyRef = <T = any>(value: T) => {
+  const refValue = { current: value, readonly: true };
+
+  if (typeof Object.freeze === "function") Object.freeze(refValue);
+
+  return refValue;
+};

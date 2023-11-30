@@ -188,6 +188,9 @@ importers:
         specifier: '>=0.2.5'
         version: link:../myreact-dom
     devDependencies:
+      '@my-react/react-reconciler':
+        specifier: ^0.2.5
+        version: link:../myreact-reconciler
       '@my-react/react-shared':
         specifier: ^0.2.5
         version: link:../myreact-shared
@@ -200,6 +203,10 @@ importers:
       webpack:
         specifier: ^4 || ^5
         version: 5.88.1(@swc/core@1.3.76)
+    devDependencies:
+      '@my-react/react-shared':
+        specifier: ^0.2.5
+        version: link:../myreact-shared
 
   packages/myreact-shared: {}
 

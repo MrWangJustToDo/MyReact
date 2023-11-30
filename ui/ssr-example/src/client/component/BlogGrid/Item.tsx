@@ -45,7 +45,7 @@ export const Item = (props: GetBlogListQuery["repository"]["issues"]["nodes"][0]
   const renderedBody = useMemo(() => markNOLineNumber.render(body), [body]);
   return (
     <Flex flexDirection="column" height="100%">
-      <Box padding="2" backgroundColor="cardBackgroundColor" borderTopRadius="md">
+      <Box padding="2" borderTopRadius="md">
         <ItemHeader title={title} externalUrl={url} detailNumber={number} />
         <Actor
           avatarUrl={author?.avatarUrl}
@@ -66,7 +66,6 @@ export const Item = (props: GetBlogListQuery["repository"]["issues"]["nodes"][0]
         padding="2"
         fontSize="sm"
         borderBottomRadius="md"
-        backgroundColor="cardBackgroundColor"
         dangerouslySetInnerHTML={{ __html: renderedBody }}
       />
     </Flex>

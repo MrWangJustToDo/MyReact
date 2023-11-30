@@ -1,4 +1,4 @@
-import { emptyProps, type MyReactFiberNode } from "@my-react/react-reconciler";
+import { emptyProps, NODE_TYPE, type MyReactFiberNode } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import { validDomProps } from "@my-react-dom-shared";
@@ -24,7 +24,7 @@ export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
     }
 
     if (__DEV__) {
-      const isControlledElementNode = controlElementTag[fiber.elementType as string];
+      const isControlledElementNode = include(fiber.type, NODE_TYPE.__plain__) && controlElementTag[fiber.elementType as string];
       if (isControlledElementNode) {
         if (isReadonlyElement(fiber)) {
           if (fiber.nativeNode?.getAttribute("data-readonly") !== "@my-react") {

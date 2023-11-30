@@ -16,7 +16,7 @@ import {
   unsetRef,
   enableASyncHydrate,
   patchDOMField,
-  draw,
+  parse,
 } from "@my-react-dom-shared";
 
 import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
@@ -151,12 +151,12 @@ if (__DEV__) {
       const re = get();
 
       if (isPromise(re)) {
-        re.then((res) => draw(res));
+        re.then((res) => parse(res));
       } else {
-        draw(re);
+        parse(re);
       }
 
-      return get();
+      return re;
     },
   });
 }

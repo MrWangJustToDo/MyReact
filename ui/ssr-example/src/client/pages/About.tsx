@@ -20,7 +20,7 @@ const Edit = ({ name, source }: { name: string; source?: Source }) => {
     if (source && !source.readonly) {
       source.current = state;
     }
-  }, [state, source])
+  }, [state, source]);
 
   if (!source || !name) return null;
 
@@ -70,7 +70,7 @@ export default function About() {
         tableProps={{ borderRadius: "md" }}
         rowProps={{
           theadRow: {
-            backgroundColor: "cardBorderColor",
+            backgroundColor: "cardBackgroundColor",
           },
         }}
       >
@@ -81,6 +81,7 @@ export default function About() {
           }}
           dataIndex="@my-react/react"
           bodyCellRender={{
+            cellProps: { textTransform: "capitalize" },
             Render: ({ cellData }) => {
               return <Edit name={cellData} source={__my_react_shared__[cellData]} />;
             },
@@ -93,6 +94,7 @@ export default function About() {
           }}
           dataIndex="@my-react/react-dom"
           bodyCellRender={{
+            cellProps: { textTransform: "capitalize" },
             Render: ({ cellData }) => {
               return <Edit name={cellData} source={__my_react_dom_shared__[cellData]} />;
             },

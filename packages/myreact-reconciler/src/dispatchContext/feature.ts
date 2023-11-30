@@ -44,9 +44,9 @@ export const defaultGenerateContextMap = (fiber: MyReactFiberNode, map: WeakMap<
 
 export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextObject?: ReturnType<typeof createContext> | null) => {
   if (fiber) {
-    return (fiber.pendingProps["value"] as Record<string, unknown>) ?? null;
+    return (fiber.pendingProps["value"] as Record<string, unknown>);
   } else {
-    return (ContextObject?.Provider["value"] as Record<string, unknown>) ?? null;
+    return (ContextObject?.Provider["value"] as Record<string, unknown>);
   }
 };
 

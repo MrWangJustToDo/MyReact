@@ -90,7 +90,7 @@ export const ApiSection = () => {
         tableProps={{ borderRadius: "md" }}
         rowProps={{
           theadRow: {
-            backgroundColor: "cardBorderColor",
+            backgroundColor: "cardBackgroundColor",
           },
         }}
       >

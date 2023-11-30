@@ -9,6 +9,8 @@ import { NoopLegacyRenderDispatch, NoopLatestRenderDispatch } from "../renderDis
 
 import type { LikeJSX } from "@my-react/react";
 
+// !only used for test
+
 export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
   if (isValidElement(element)) {
     // beforeNoopRender();

@@ -11,9 +11,9 @@ import { include } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { debounce } from "@my-react-dom-client/tools";
-import { PlainElement , ContainerElement , CommentStartElement } from "@my-react-dom-server/api";
+import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-dom-server/api";
 
-import { enableDOMField } from "./env";
+import { enableDOMField, isServer } from "./env";
 
 import type { CustomRenderDispatch } from "@my-react/react-reconciler";
 import type { RenderContainer } from "@my-react-dom-client/mount";
@@ -147,6 +147,19 @@ export const draw = (node: PlainElement | ContainerElement | string | TextElemen
 
   if (node instanceof CommentStartElement) {
     const indentation = " ".repeat(level);
-    console.log(indentation + '<-- -->');
+    console.log(indentation + "<-- -->");
+  }
+};
+
+/**
+ * @internal
+ */
+export const parse = (node: ContainerElement) => {
+  if (!isServer) {
+    const p = new DOMParser();
+
+    const document = p.parseFromString(node.toString(), "text/html");
+
+    console.log(document);
   }
 };

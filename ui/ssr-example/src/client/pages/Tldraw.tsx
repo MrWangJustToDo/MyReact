@@ -19,6 +19,7 @@ export default function Tldraw({ isDarkMode }: { isDarkMode: boolean }) {
 
   useEffect(() => {
     const fetch = async () => {
+      // also have some error
       const { Tldraw } = await import("@tldraw/tldraw");
 
       setRender(() => Tldraw);

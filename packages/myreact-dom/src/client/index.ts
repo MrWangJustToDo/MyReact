@@ -1,6 +1,8 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { safeCall, safeCallWithSync } from "@my-react/react-reconciler";
 
+import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount";
+
 import {
   checkMyReactVersion,
   checkReconcilerVersion,
@@ -43,6 +45,11 @@ const __my_react_dom_shared__ = {
   enableHighlight,
 };
 
+const __my_react_dom_internal__ = {
+  legacyNoopRender,
+  latestNoopRender,
+};
+
 export {
   render,
   hydrate,
@@ -54,6 +61,7 @@ export {
   flushSync,
   unstable_batchedUpdates,
   __my_react_dom_shared__,
+  __my_react_dom_internal__,
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
   version,
 };

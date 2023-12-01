@@ -1,4 +1,4 @@
-import { makeMap } from "./elementTag";
+import { makeMap } from "./tools";
 
 /**
  * @internal

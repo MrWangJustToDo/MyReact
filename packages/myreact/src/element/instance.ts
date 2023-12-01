@@ -256,6 +256,14 @@ export function createElement<P extends Record<string, unknown> = any, S extends
   type: MyReactElementType<P, S, C>,
   config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
   ...children: ArrayMyReactElementChildren
+): MyReactElement;
+/**
+ * @public
+ */
+export function createElement<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any>(
+  type: MyReactElementType<P, S, C>,
+  config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
+  ...children: ArrayMyReactElementChildren
 ) {
   let key: CreateElementProps["key"] = null;
 

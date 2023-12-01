@@ -4,7 +4,7 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 import { ContainerElement } from "@my-react-dom-server/api";
 import { LatestServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
-import { checkRoot, startRenderAsync } from "@my-react-dom-shared";
+import { checkRoot, isServer, startRenderAsync } from "@my-react-dom-shared";
 
 import type { BootstrapScriptDescriptor, ErrorInfo} from "@my-react-dom-server/renderDispatch";
 
@@ -40,7 +40,7 @@ export const renderToPipeableStream = (element: LikeJSX, options?: RenderToPipea
     };
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-empty-function
-    const stream = typeof window === "undefined" ? new (require("stream").Readable)({ read() {} }) : temp;
+    const stream = isServer ? new (require("stream").Readable)({ read() {} }) : temp;
 
     const container = new ContainerElement();
 

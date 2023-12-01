@@ -4,7 +4,7 @@ import { MyReactFiberNode, initialFiberNode } from "@my-react/react-reconciler";
 import { ContainerElement } from "@my-react-dom-server/api";
 import { LegacyServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
-import { checkRoot, startRender } from "@my-react-dom-shared";
+import { checkRoot, isServer, startRender } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 import type { Readable } from "stream";
@@ -22,7 +22,7 @@ export const renderToStaticNodeStream = (element: LikeJSX): Readable => {
     };
 
     // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-empty-function
-    const stream = typeof window === "undefined" ? new (require("stream").Readable)({ read() {} }) : temp;
+    const stream = isServer ? new (require("stream").Readable)({ read() {} }) : temp;
 
     const container = new ContainerElement();
 

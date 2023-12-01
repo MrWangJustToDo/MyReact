@@ -1,4 +1,4 @@
-import { createElement, type MyReactElement, type MyReactElementNode } from "@my-react/react";
+import { createElement, type MyReactElement, type MyReactElementNode, type MyReactElementType } from "@my-react/react";
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 import { isPromise } from "@my-react/react-shared";
 
@@ -114,31 +114,35 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
 if (__DEV__) {
   // dev highlight
-  ClientDomDispatch.prototype.patchToCommitUpdate = highlightUpdateFiber;
+  Object.defineProperty(ClientDomDispatch.prototype, 'patchToCommitUpdate', {
+    value: highlightUpdateFiber,
+  })
 
   // dev remount
-  ClientDomDispatch.prototype._remountOnDev = function (cb?: () => void) {
-    const rootNode = this.rootNode;
+  Object.defineProperty(ClientDomDispatch.prototype, '_remountOnDev', {
+    value: function(this: ClientDomDispatch, cb?: () => void) {
+      const rootNode = this.rootNode;
 
-    const rootElementType = this.rootFiber.elementType;
-
-    const rootElementProps = this.rootFiber.pendingProps;
-
-    const rootElement = createElement(rootElementType, rootElementProps) as MyReactElement;
-
-    rootNode.__fiber__ = null;
-
-    render(rootElement, rootNode, cb);
-  };
-
-  // dev log tree
-  Object.defineProperty(ClientDomDispatch.prototype, "_debugLogTree", {
-    get() {
       const rootElementType = this.rootFiber.elementType;
 
       const rootElementProps = this.rootFiber.pendingProps;
 
-      const rootElement = createElement(rootElementType, rootElementProps) as MyReactElement;
+      const rootElement = createElement(rootElementType as MyReactElementType, rootElementProps) as MyReactElement;
+
+      rootNode.__fiber__ = null;
+
+      render(rootElement, rootNode, cb);
+    }
+  })
+
+  // dev log tree
+  Object.defineProperty(ClientDomDispatch.prototype, "_debugLogTree", {
+    get: function (this: ClientDomDispatch) {
+      const rootElementType = this.rootFiber.elementType;
+
+      const rootElementProps = this.rootFiber.pendingProps;
+
+      const rootElement = createElement(rootElementType, rootElementProps);
 
       const get = () => {
         if (enableASyncHydrate.current) {

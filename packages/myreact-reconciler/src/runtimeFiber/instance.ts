@@ -58,9 +58,9 @@ export class MyReactFiberNode implements RenderFiber {
 
   memoizedProps: MyReactElement["props"] = emptyProps;
 
-  pendingState:  PendingStateType;
+  pendingState: PendingStateType;
 
-  memoizedState:  Record<string, unknown>;
+  memoizedState: Record<string, unknown>;
 
   _devRevert: (cb?: () => void) => void;
 
@@ -140,7 +140,7 @@ export class MyReactFiberNode implements RenderFiber {
 
 if (__DEV__) {
   Object.defineProperty(MyReactFiberNode.prototype, "_debugLogTree", {
-    get() {
+    get: function (this: MyReactFiberNode) {
       const { str, arr } = getFiberTreeWithFiber(this);
 
       console.log(str, ...arr);
@@ -149,14 +149,14 @@ if (__DEV__) {
     },
   });
   Object.defineProperty(MyReactFiberNode.prototype, "_devRevert", {
-    value: function (cb?: () => void) {
+    value: function (this: MyReactFiberNode, cb?: () => void) {
       if (include(this.state, STATE_TYPE.__unmount__)) return;
 
       triggerRevert(this, cb);
     },
   });
   Object.defineProperty(MyReactFiberNode.prototype, "_devUpdate", {
-    value: function (state?: STATE_TYPE, cb?: () => void) {
+    value: function (this: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) {
       if (include(this.state, STATE_TYPE.__unmount__)) return;
 
       const renderPlatform = currentRenderPlatform.current;

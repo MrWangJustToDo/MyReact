@@ -62,6 +62,7 @@ export default function About() {
         containerProps={{
           padding: { base: "2", md: "4", lg: "6" },
           marginX: "auto",
+          marginY: "50px",
           maxWidth: { base: "90%", lg: "80%" },
           border: "1px solid",
           borderRadius: "md",

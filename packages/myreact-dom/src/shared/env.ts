@@ -46,4 +46,9 @@ export const enableEventTrack = createRef(false);
 /**
  * @internal
  */
+export const enableHydrateWarn = createRef(false);
+
+/**
+ * @internal
+ */
 export const isServer = typeof window === "undefined";

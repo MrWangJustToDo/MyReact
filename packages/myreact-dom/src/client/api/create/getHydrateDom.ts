@@ -1,7 +1,7 @@
 import { NODE_TYPE, getElementName } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
-import { commentE, commentS, log } from "@my-react-dom-shared";
+import { commentE, commentS, enableHydrateWarn, log } from "@my-react-dom-shared";
 
 import { fallback } from "../fallback";
 
@@ -37,7 +37,9 @@ const getNextHydrateDom = (parentDom: Element, previousDom?: ChildNode) => {
 
 const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
   if (!dom) {
-    log(fiber, "error", `hydrate error, dom not render from server, client: "${getElementName(fiber)}"`);
+    if (enableHydrateWarn.current) {
+      log(fiber, "error", `hydrate error, dom not render from server, client: "${getElementName(fiber)}"`);
+    }
     return false;
   }
   if (include(fiber.type, NODE_TYPE.__text__)) {
@@ -47,7 +49,9 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
         dom?.parentElement?.insertBefore(textNode, dom);
         return textNode;
       } else {
-        log(fiber, "error", `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`);
+        if (enableHydrateWarn.current) {
+          log(fiber, "error", `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`);
+        }
         return false;
       }
     }
@@ -55,18 +59,24 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
   }
   if (include(fiber.type, NODE_TYPE.__plain__)) {
     if (dom.nodeType !== Node.ELEMENT_NODE) {
-      log(fiber, "error", `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`);
+      if (enableHydrateWarn.current) {
+        log(fiber, "error", `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`);
+      }
       return false;
     }
     if (fiber.elementType.toString() !== dom.nodeName.toLowerCase()) {
-      log(fiber, "error", `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`);
+      if (enableHydrateWarn.current) {
+        log(fiber, "error", `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`);
+      }
       return false;
     }
     return dom;
   }
   if (include(fiber.type, NODE_TYPE.__comment__)) {
     if (dom.nodeType !== Node.COMMENT_NODE) {
-      log(fiber, "error", `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`);
+      if (enableHydrateWarn.current) {
+        log(fiber, "error", `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`);
+      }
       return false;
     }
     return dom;

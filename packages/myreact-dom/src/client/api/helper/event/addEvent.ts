@@ -6,6 +6,7 @@ import { clearEvent, enableControlComponent, enableEventSystem, enableEventTrack
 import { controlElementTag, generateOnChangeFun } from "../control";
 
 import { getNativeEventName } from "./getEventName";
+import { wrapper } from "./wrapper";
 
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -73,7 +74,7 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
       const eventDispatcher: ((...args: any[]) => void) & { cb?: any } = (...args: any[]) => {
         const e = args[0];
 
-        e.nativeEvent = e;
+        wrapper(e);
 
         beforeEvent(nativeName);
 

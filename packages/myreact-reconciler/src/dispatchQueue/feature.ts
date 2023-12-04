@@ -1,4 +1,4 @@
-import { __my_react_shared__, type MyReactComponent } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, type MyReactComponent } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
 import { syncComponentStateToFiber } from "../runtimeComponent";
@@ -9,9 +9,12 @@ import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactHookNodeDev } from "../runtimeHook";
 
 const { enableDebugFiled } = __my_react_shared__;
+const { currentRenderPlatform } = __my_react_internal__;
 
 export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enableTaskPriority?: boolean) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+
+  const renderPlatform = currentRenderPlatform.current;
 
   const allQueue = fiber.updateQueue;
 
@@ -76,7 +79,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
       node = nextNode;
     }
 
-    if (allQueue.length) fiber._update(STATE_TYPE.__triggerConcurrent__);
+    if (allQueue.length) renderPlatform.microTask(() => fiber._prepare());
 
     return { needUpdate: true, isSync: true };
   } else {
@@ -129,6 +132,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, enable
 export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, enableTaskPriority?: boolean) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
+  const renderPlatform = currentRenderPlatform.current;
+
   const allQueue = fiber.updateQueue;
 
   const typedFiber = fiber as MyReactFiberNodeDev;
@@ -173,6 +178,8 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
 
           typedNode._debugAfterValue = typedTrigger.result;
 
+          typedNode._debugUpdateState = { needUpdate, isSync: sync };
+
           typedFiber._debugUpdateQueue.push(typedNode);
 
           typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
@@ -188,7 +195,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
       node = nextNode;
     }
 
-    if (allQueue.length) fiber._update(STATE_TYPE.__triggerConcurrent__);
+    if (allQueue.length) renderPlatform.microTask(() => fiber._prepare());
 
     return { needUpdate, isSync: sync };
   } else {
@@ -222,6 +229,8 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
           typedNode._debugBeforeValue = lastResult;
 
           typedNode._debugAfterValue = typedTrigger.result;
+
+          typedNode._debugUpdateState = { needUpdate, isSync: sync };
 
           typedFiber._debugUpdateQueue.push(typedNode);
 

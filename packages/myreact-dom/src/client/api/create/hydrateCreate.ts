@@ -20,5 +20,7 @@ export const hydrateCreate = (fiber: MyReactFiberNode, parentFiberWithDom: MyRea
     return Boolean(result);
   }
 
-  throw new Error("[@my-react/react-dom] hydrate error, portal element can not hydrate");
+  return false;
+
+  // throw new Error("[@my-react/react-dom] hydrate error, portal element can not hydrate");
 };

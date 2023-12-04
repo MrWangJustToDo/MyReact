@@ -50,13 +50,13 @@ export default function About() {
   const { height } = useDomSize({ cssSelector: ".site-header" });
 
   useEffect(() => {
-    if (__REACT__) {
+    if (__REACT__ || !__DEVELOPMENT__) {
       navigate(noBase ? "/" : `/${__BASENAME__}/`);
     }
   }, [navigate]);
 
   return (
-    <Container maxWidth={CONTAINER_WIDTH} position="relative" height={`calc(100vh - ${height}px)`}>
+    <Container maxWidth={CONTAINER_WIDTH} position="relative" height={`calc(100vh - ${height}px)`} onClick={e => console.log(e)}>
       <Table
         dataSource={data}
         containerProps={{

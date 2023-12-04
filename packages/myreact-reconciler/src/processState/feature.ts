@@ -13,6 +13,7 @@ export type UpdateQueueDev = UpdateQueue<{
   _debugAfterValue: any;
   _debugBaseValue: any;
   _debugRunTime: number;
+  _debugUpdateState: { needUpdate: boolean; isSync: boolean };
 }>;
 
 const { currentComponentFiber, currentRunningFiber } = __my_react_internal__;
@@ -59,7 +60,11 @@ export const processState = (_params: UpdateQueue) => {
       }
       if (renderCount > MAX_UPDATE_COUNT) {
         renderCount = 0;
-        throw new Error(`[@my-react/react] look like there are infinity update for current component ${currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)}`);
+        throw new Error(
+          `[@my-react/react] look like there are infinity update for current component ${
+            currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)
+          }`
+        );
       } else {
         const triggeredElementName = getElementName(ownerFiber);
         const currentElementName = getElementName(currentComponentFiber.current as MyReactFiberNode);
@@ -100,7 +105,11 @@ export const processState = (_params: UpdateQueue) => {
       }
       if (renderCount > MAX_UPDATE_COUNT) {
         renderCount = 0;
-        throw new Error(`[@my-react/react] look like there are infinity update for current component ${currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)}`);
+        throw new Error(
+          `[@my-react/react] look like there are infinity update for current component ${
+            currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)
+          }`
+        );
       } else {
         const triggeredElementName = getElementName(ownerFiber);
         const currentElementName = getElementName(currentComponentFiber.current as MyReactFiberNode);

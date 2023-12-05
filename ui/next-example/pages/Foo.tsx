@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function Foo() {
   const [l, setL] = useState(0);
@@ -20,11 +20,11 @@ export default function Foo() {
   // Math.random() > 0.5 ? useState() : useRef()
 
   useEffect(() => {
-    // const id = setInterval(() => {
-    //   setL((l) => l + 1);
-    // }, 200);
+    const id = setInterval(() => {
+      setL((l) => l + 1);
+    }, 200);
 
-    // return () => clearInterval(id);
+    return () => clearInterval(id);
   }, []);
 
   const [j] = useState(() => "oooo");
@@ -34,7 +34,7 @@ export default function Foo() {
       <h2 className="text-center mt-6 text-[20px] text-[green] font-semibold font-mono">
         This is <span>Foo</span> {l} Page
       </h2>
-      <div className="w-[50%] h-[400px] m-auto mt-6 overflow-auto">
+      <div className="w-[50%] h-[400px] m-auto mt-6 overflow-auto rounded-[10px] border p-[10px]">
         <label>
           Text input: <input name="myInput" value="00000" className="text-black" onChange={()=>{}} />
         </label>

@@ -46,7 +46,7 @@ export const enableEventTrack = createRef(false);
 /**
  * @internal
  */
-export const enableHydrateWarn = createRef(false);
+export const enableHydrateWarn = createRef(true);
 
 /**
  * @internal

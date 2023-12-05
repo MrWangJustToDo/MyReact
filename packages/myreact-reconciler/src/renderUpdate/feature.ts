@@ -22,6 +22,8 @@ export const updateSyncWithAll = (renderDispatch: CustomRenderDispatch, cb?: () 
 
   const commitList = renderDispatch.pendingCommitFiberList;
 
+  renderDispatch.resetUpdateFlowRuntimeFiber();
+
   renderDispatch.pendingCommitFiberList = null;
 
   commitList && renderDispatch.reconcileUpdate(commitList);
@@ -45,6 +47,8 @@ export const updateSyncWithTrigger = (renderDispatch: CustomRenderDispatch, cb?:
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   const commitList = renderDispatch.pendingCommitFiberList;
+
+  renderDispatch.resetUpdateFlowRuntimeFiber();
 
   renderDispatch.pendingCommitFiberList = null;
 
@@ -73,6 +77,8 @@ export const updateConcurrentWithAll = (renderDispatch: CustomRenderDispatch, cb
   } else {
     const commitList = renderDispatch.pendingCommitFiberList;
 
+    renderDispatch.resetUpdateFlowRuntimeFiber();
+
     renderDispatch.pendingCommitFiberList = null;
 
     commitList && renderDispatch.reconcileUpdate(commitList);
@@ -100,6 +106,8 @@ export const updateConcurrentWithTrigger = (renderDispatch: CustomRenderDispatch
     renderPlatform.yieldTask(() => updateConcurrentWithTrigger(renderDispatch, cb));
   } else {
     const commitList = renderDispatch.pendingCommitFiberList;
+
+    renderDispatch.resetUpdateFlowRuntimeFiber();
 
     renderDispatch.pendingCommitFiberList = null;
 

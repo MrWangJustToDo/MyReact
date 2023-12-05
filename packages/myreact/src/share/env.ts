@@ -38,7 +38,7 @@ export const currentHookNodeIndex = createRef<number>(0);
 /**
  * @internal
  */
-export const enableLoopFromRoot = createRef(false);
+export const enableLoopFromRoot = createRef(true);
 
 // ==== feature ==== //
 /**

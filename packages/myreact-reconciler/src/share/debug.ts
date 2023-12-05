@@ -285,7 +285,7 @@ export const getHookTree = (
   treeHookNode: ListTreeNode<MyReactHookNode>,
   errorType: { lastRender: MyReactHookNode["type"]; nextRender: MyReactHookNode["type"] }
 ) => {
-  const pre = "".toString().padEnd(4);
+  const pre = "".toString().padEnd(3);
   const message = "[@my-react/react] hook for current component has a different state on current render and previous render, this is not a valid usage.";
   const re = "\n" + pre + "Last render:".padEnd(28) + "Next render:".padEnd(10) + "\n" + pre + "-".repeat(44) + "\n";
   let stack = pre + HOOK_TYPE[errorType.lastRender].padEnd(28) + HOOK_TYPE[errorType.nextRender].padEnd(10) + "\n";

@@ -114,6 +114,25 @@
     //   );
     // };
 
+    const AntdNotification = () => {
+      const openNotification = () => {
+        antd.notification.open({
+          message: 'Notification Title',
+          description:
+            'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
+          onClick: () => {
+            console.log('Notification Clicked!');
+          },
+        });
+      };
+
+      return (
+        <Button type="primary" onClick={openNotification}>
+          Open the notification box
+        </Button>
+      )
+    }
+
     const _Select = () => {
       const [open, setOpen] = useState(false);
       const [v, setV] = useState('hex');
@@ -201,7 +220,7 @@
     // TODO 点击无法选择
     // 原因 点击事件被父元素的pointer-events: "none"给阻止了
     // React的事件调度
-    ReactDOM.render(<_Select />, root);
+    ReactDOM.render(<AntdNotification />, root);
   </script>
 
   <script type="text/babel">

@@ -129,11 +129,9 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
     } else {
       globalLoop.current = false;
 
-      renderDispatch.runtimeFiber.scheduledFiber = null;
+      renderDispatch.resetUpdateFlowRuntimeFiber();
 
       if (__DEV__) currentTriggerFiber.current = null;
-
-      renderDispatch.runtimeFiber.nextWorkingFiber = null;
 
       renderDispatch.pendingCommitFiberList = null;
 
@@ -238,9 +236,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
   } else {
     renderDispatch.pendingUpdateFiberArray.clear();
 
-    renderDispatch.runtimeFiber.scheduledFiber = null;
-
-    renderDispatch.runtimeFiber.nextWorkingFiber = null;
+    renderDispatch.resetUpdateFlowRuntimeFiber();
 
     renderDispatch.isAppCrashed = true;
 

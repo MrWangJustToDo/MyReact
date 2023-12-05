@@ -315,9 +315,9 @@ export const performReactRefresh = () => {
         // has a error for prev render
         const errorCatchFiber = container?.runtimeFiber.errorCatchFiber;
 
-        errorCatchFiber._devRevert(updateDone);
+        errorCatchFiber._devRevert?.(updateDone);
       } else {
-        container.rootFiber._devUpdate(hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__, updateDone);
+        container.rootFiber._devUpdate?.(hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__, updateDone);
       }
     });
   } else {

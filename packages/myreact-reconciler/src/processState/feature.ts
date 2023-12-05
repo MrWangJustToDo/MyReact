@@ -1,6 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
+import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, syncFlush } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -65,7 +66,7 @@ export const processState = (_params: UpdateQueue) => {
             currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)
           }`
         );
-      } else {
+      } else if (!isErrorBoundariesComponent(ownerFiber)) {
         const triggeredElementName = getElementName(ownerFiber);
         const currentElementName = getElementName(currentComponentFiber.current as MyReactFiberNode);
         onceWarnWithKeyAndFiber(
@@ -110,7 +111,7 @@ export const processState = (_params: UpdateQueue) => {
             currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)
           }`
         );
-      } else {
+      } else if (!isErrorBoundariesComponent(ownerFiber)) {
         const triggeredElementName = getElementName(ownerFiber);
         const currentElementName = getElementName(currentComponentFiber.current as MyReactFiberNode);
         onceWarnWithKeyAndFiber(

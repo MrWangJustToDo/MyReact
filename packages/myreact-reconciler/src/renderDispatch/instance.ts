@@ -213,4 +213,9 @@ export class CustomRenderDispatch implements RenderDispatch {
   shouldYield(): boolean {
     return false;
   }
+  resetUpdateFlowRuntimeFiber(): void {
+    this.runtimeFiber.scheduledFiber = null;
+
+    this.runtimeFiber.nextWorkingFiber = null;
+  }
 }

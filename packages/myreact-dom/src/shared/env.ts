@@ -51,4 +51,9 @@ export const enableHydrateWarn = createRef(true);
 /**
  * @internal
  */
+export const enableHighlightWarn = createRef(false);
+
+/**
+ * @internal
+ */
 export const isServer = typeof window === "undefined";

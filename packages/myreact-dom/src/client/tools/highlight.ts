@@ -47,6 +47,8 @@ export class HighLight {
 
   __pendingSetRef__: Set<MyReactFiberNode> = new Set();
 
+  __pendingWarn__: Set<MyReactFiberNode> = new Set();
+
   width = 0;
 
   height = 0;
@@ -76,7 +78,7 @@ export class HighLight {
     this.mask.height = this.height;
   });
 
-  highLight = (fiber: MyReactFiberNode, type: "update" | "append" | "setRef") => {
+  highLight = (fiber: MyReactFiberNode, type: "update" | "append" | "setRef" | "warn") => {
     if (fiber.nativeNode) {
       switch (type) {
         case "update":
@@ -88,6 +90,8 @@ export class HighLight {
         case "setRef":
           this.__pendingSetRef__.add(fiber);
           break;
+        case "warn":
+          this.__pendingWarn__.add(fiber);
       }
     }
 
@@ -104,7 +108,7 @@ export class HighLight {
 
     this.__pendingUpdate__.clear();
 
-    context.strokeStyle = "rgb(200,0,0)";
+    context.strokeStyle = "rgba(200,50,50,0.8)";
 
     allPendingUpdate.forEach((fiber) => {
       if (include(fiber.state, STATE_TYPE.__unmount__)) return;
@@ -175,6 +179,42 @@ export class HighLight {
     this.__pendingSetRef__.clear();
 
     allPendingSetRef.forEach((fiber) => {
+      if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+      const node = fiber.nativeNode as HTMLElement;
+      if (node.nodeType === Node.TEXT_NODE) {
+        this.range.selectNodeContents(node);
+      } else {
+        this.range.selectNode(node);
+      }
+      const rect = this.range.getBoundingClientRect();
+      if (
+        (rect.width || rect.height) &&
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+      ) {
+        // do the highlight paint
+        const left = rect.left - 0.5;
+        const top = rect.top - 0.5;
+        const width = rect.width + 1;
+        const height = rect.height + 1;
+        context.strokeRect(
+          left < 0 ? 0 : left,
+          top < 0 ? 0 : top,
+          width > window.innerWidth ? window.innerWidth : width,
+          height > window.innerHeight ? window.innerHeight : height
+        );
+      }
+    });
+
+    context.strokeStyle = "rgba(230,150,40,0.8)";
+
+    const allPendingWarn = new Set(this.__pendingWarn__);
+
+    this.__pendingWarn__.clear();
+
+    allPendingWarn.forEach((fiber) => {
       if (include(fiber.state, STATE_TYPE.__unmount__)) return;
       const node = fiber.nativeNode as HTMLElement;
       if (node.nodeType === Node.TEXT_NODE) {

@@ -10,10 +10,11 @@ import {
 import { include } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
-import { debounce } from "@my-react-dom-client/tools";
+import { HighLight, debounce } from "@my-react-dom-client/tools";
 import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-dom-server/api";
 
-import { enableDOMField, isServer } from "./env";
+import { enableDOMField, enableHighlightWarn, isServer } from "./env";
+import { getFiberWithNativeDom } from "./getFiberWithDom";
 
 import type { CustomRenderDispatch } from "@my-react/react-reconciler";
 import type { RenderContainer } from "@my-react-dom-client/mount";
@@ -35,6 +36,11 @@ export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: a
     }
     if (level === "error") {
       devErrorWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
+    }
+
+    if (enableHighlightWarn.current && !isServer) {
+      const _fiber = getFiberWithNativeDom(fiber, (f) => f.parent);
+      _fiber && HighLight.getHighLightInstance().highLight(_fiber, "warn");
     }
 
     enableOptimizeTreeLog.current = last;
@@ -59,6 +65,12 @@ export const logOnce = (fiber: MyReactFiberNode, level: "warn" | "error", key: s
     }
     if (level === "error") {
       onceErrorWithKeyAndFiber(fiber, key, `[@my-react/react-dom]`, ...rest);
+    }
+
+    if (enableHighlightWarn.current && !isServer) {
+      const _fiber = getFiberWithNativeDom(fiber, (f) => f.parent);
+
+      _fiber && HighLight.getHighLightInstance().highLight(_fiber, "warn");
     }
     return;
   }
@@ -139,11 +151,6 @@ export const draw = (node: PlainElement | ContainerElement | string | TextElemen
   if (node instanceof ContainerElement) {
     node.children.forEach((c) => draw(c, level));
   }
-
-  // if (node instanceof TextElement) {
-  //   const indentation = "  ".repeat(level);
-  //   console.log(indentation + node);
-  // }
 
   if (node instanceof CommentStartElement) {
     const indentation = " ".repeat(level);

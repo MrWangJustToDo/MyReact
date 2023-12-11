@@ -1,7 +1,11 @@
+import type { PlainElement } from "./plain";
+
 /**
  * @internal
  */
 export class CommentStartElement {
+  parentElement: PlainElement | null = null;
+
   toString() {
     return `<!-- [ -->`;
   }
@@ -11,6 +15,8 @@ export class CommentStartElement {
  * @internal
  */
 export class CommentEndElement {
+  parentElement: PlainElement | null = null;
+
   toString() {
     return `<!-- ] -->`;
   }

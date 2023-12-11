@@ -25,6 +25,10 @@ export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
 
     renderDispatch.isServerRender = true;
 
+    container.__fiber__ = fiber;
+
+    container.__container__ = renderDispatch;
+
     initialFiberNode(fiber, renderDispatch);
 
     startRender(fiber, renderDispatch);
@@ -46,6 +50,10 @@ export const latestNoopRender = async (element: LikeJSX): Promise<ContainerEleme
     const renderDispatch = new NoopLatestRenderDispatch(container, fiber);
 
     renderDispatch.isServerRender = true;
+
+    container.__fiber__ = fiber;
+
+    container.__container__ = renderDispatch;
 
     initialFiberNode(fiber, renderDispatch);
 

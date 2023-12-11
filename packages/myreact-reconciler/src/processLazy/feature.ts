@@ -1,7 +1,7 @@
 import { __my_react_internal__, type lazy } from "@my-react/react";
-import { STATE_TYPE, include } from "@my-react/react-shared";
+import { STATE_TYPE, include, isPromise } from "@my-react/react-shared";
 
-import { NODE_TYPE } from "../share";
+import { NODE_TYPE, devWarnWithFiber } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 
@@ -14,7 +14,13 @@ export const processLazy = async (_fiber: MyReactFiberNode) => {
     if (typedElementType._loaded) return;
 
     try {
-      const loaded = await typedElementType.loader();
+      const loadedPromise = typedElementType.loader();
+
+      if (__DEV__ && !isPromise(loadedPromise)) {
+        devWarnWithFiber(_fiber, `@my-react lazy() must return a promise`);
+      }
+
+      const loaded = await loadedPromise;
 
       const render = typeof loaded === "object" && (typeof loaded?.default === "function" || typeof loaded?.default === "object") ? loaded.default : loaded;
 

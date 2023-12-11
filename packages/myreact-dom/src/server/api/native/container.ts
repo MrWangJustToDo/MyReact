@@ -1,12 +1,19 @@
+
 import { CommentEndElement, CommentStartElement } from "./comment";
 import { PlainElement } from "./plain";
 import { TextElement } from "./text";
+
+import type { CustomRenderDispatch, MyReactFiberNode } from "@my-react/react-reconciler";
 
 // server container node
 /**
  * @internal
  */
 export class ContainerElement {
+  __fiber__: MyReactFiberNode;
+  
+  __container__: CustomRenderDispatch;
+
   children: Array<TextElement | PlainElement | CommentStartElement | CommentEndElement | string> = [];
 
   append(...dom: Array<TextElement | PlainElement | CommentStartElement | CommentEndElement>) {

@@ -1,12 +1,38 @@
 import { __my_react_internal__, createElement } from "@my-react/react";
-import { WrapperByScope } from "@my-react/react-reconciler";
-import { ListTree, STATE_TYPE } from "@my-react/react-shared";
+import { devWarnWithFiber, WrapperByScope } from "@my-react/react-reconciler";
+import { isPromise, ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import type { ClientDomDispatch } from "./instance";
 import type { lazy, MixinMyReactFunctionComponent } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { currentRenderPlatform } = __my_react_internal__;
+
+const loadLazy = async (fiber: MyReactFiberNode, typedElementType: ReturnType<typeof lazy>) => {
+  try {
+    typedElementType._loading = true;
+
+    const loadedPromise = typedElementType.loader();
+
+    if (__DEV__ && !isPromise(loadedPromise)) {
+      devWarnWithFiber(fiber, `@my-react lazy() must return a promise`);
+    }
+
+    const loaded = await loadedPromise;
+
+    const render = typeof loaded === "object" && (typeof loaded?.default === "function" || typeof loaded?.default === "object") ? loaded.default : loaded;
+
+    typedElementType._loaded = true;
+
+    typedElementType.render = render as ReturnType<typeof lazy>["render"];
+
+    fiber._update(STATE_TYPE.__triggerSync__);
+  } catch (e) {
+    currentRenderPlatform.current.dispatchError({ fiber, error: e });
+  } finally {
+    typedElementType._loading = false;
+  }
+};
 
 // TODO
 /**
@@ -26,21 +52,7 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cl
       return WrapperByScope(createElement(render as MixinMyReactFunctionComponent, _fiber.pendingProps));
     }
   } else if (typedElementType._loading === false) {
-    typedElementType._loading = true;
-
-    Promise.resolve()
-      .then(() => typedElementType.loader())
-      .then((re) => {
-        const render = typeof re === "object" && (typeof re?.default === "function" || typeof re?.default === "object") ? re.default : re;
-
-        typedElementType._loaded = true;
-
-        typedElementType.render = render as ReturnType<typeof lazy>["render"];
-
-        _fiber._update(STATE_TYPE.__triggerSync__);
-      })
-      .catch((e) => currentRenderPlatform.current.dispatchError({ fiber: _fiber, error: e }))
-      .finally(() => (typedElementType._loading = false));
+    loadLazy(_fiber, typedElementType);
   }
 
   return WrapperByScope(_dispatch.resolveSuspense(_fiber));
@@ -62,21 +74,7 @@ export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: Cl
 
       return null;
     } else if (typedElementType._loading === false) {
-      typedElementType._loading = true;
-
-      Promise.resolve()
-        .then(() => typedElementType.loader())
-        .then((re) => {
-          const render = typeof re === "object" && (typeof re?.default === "function" || typeof re?.default === "object") ? re.default : re;
-
-          typedElementType._loaded = true;
-
-          typedElementType.render = render as ReturnType<typeof lazy>["render"];
-
-          _fiber._update(STATE_TYPE.__triggerSync__);
-        })
-        .catch((e) => currentRenderPlatform.current.dispatchError({ fiber: _fiber, error: e }))
-        .finally(() => (typedElementType._loading = false));
+      loadLazy(_fiber, typedElementType);
     }
 
     return WrapperByScope(_dispatch.resolveSuspense(_fiber));

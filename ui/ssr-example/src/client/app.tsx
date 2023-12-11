@@ -11,11 +11,11 @@ import { App } from "./common/App";
 
 import type { createUniversalStore } from "../shared";
 
-const emotionCache = createEmotionCache();
-
 const Root = ({ store }: { store: ReturnType<typeof createUniversalStore> }) => {
   // this component will only run once when the page mount, so it's ok to use server's cookie
   const cookieStore = cookieStorageManagerSSR(document.cookie);
+
+const emotionCache = createEmotionCache();
 
   return (
     <StrictMode>

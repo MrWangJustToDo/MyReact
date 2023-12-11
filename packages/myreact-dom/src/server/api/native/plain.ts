@@ -8,9 +8,11 @@ import { TextElement } from "./text";
  */
 export class PlainElement {
   type: string;
+  isSVG: boolean = false;
   style: Record<string, string | null | undefined> = {};
   attrs: Record<string, string | boolean | null | undefined> = {};
   children: Array<TextElement | PlainElement | CommentStartElement | CommentEndElement | string> = [];
+  parentElement: PlainElement | null = null;
 
   constructor(type: string) {
     this.type = type;
@@ -53,6 +55,17 @@ export class PlainElement {
       typeof dom === "string"
     ) {
       this.children.push(dom);
+
+      if (dom instanceof PlainElement || dom instanceof TextElement || dom instanceof CommentStartElement || dom instanceof CommentEndElement) {
+        if (dom.parentElement) throw new Error("unexpected error: dom.parentElement is not null");
+
+        dom.parentElement = this;
+      }
+
+      if (dom instanceof PlainElement && this.isSVG) {
+        dom.isSVG = true;
+      }
+
       return dom;
     } else {
       throw new Error("element instance error");

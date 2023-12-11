@@ -1,6 +1,5 @@
-import { createElement, type MyReactElement, type MyReactElementNode, type MyReactElementType } from "@my-react/react";
-import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
-import { isPromise } from "@my-react/react-shared";
+import { __my_react_shared__, createElement, type MyReactElement, type MyReactElementNode, type MyReactElementType } from "@my-react/react";
+import { CustomRenderDispatch, NODE_TYPE, unmountFiber } from "@my-react/react-reconciler";
 
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
@@ -22,6 +21,8 @@ import {
 import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
+
+const { enableScopeTreeLog } = __my_react_shared__;
 
 const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
@@ -114,13 +115,13 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
 if (__DEV__) {
   // dev highlight
-  Object.defineProperty(ClientDomDispatch.prototype, 'patchToCommitUpdate', {
+  Object.defineProperty(ClientDomDispatch.prototype, "patchToCommitUpdate", {
     value: highlightUpdateFiber,
-  })
+  });
 
   // dev remount
-  Object.defineProperty(ClientDomDispatch.prototype, '_remountOnDev', {
-    value: function(this: ClientDomDispatch, cb?: () => void) {
+  Object.defineProperty(ClientDomDispatch.prototype, "_remountOnDev", {
+    value: function (this: ClientDomDispatch, cb?: () => void) {
       const rootNode = this.rootNode;
 
       const rootElementType = this.rootFiber.elementType;
@@ -132,8 +133,8 @@ if (__DEV__) {
       rootNode.__fiber__ = null;
 
       render(rootElement, rootNode, cb);
-    }
-  })
+    },
+  });
 
   // dev log tree
   Object.defineProperty(ClientDomDispatch.prototype, "_debugLogTree", {
@@ -144,21 +145,33 @@ if (__DEV__) {
 
       const rootElement = createElement(rootElementType, rootElementProps);
 
-      const get = () => {
+      const get = async () => {
         if (enableASyncHydrate.current) {
-          return latestNoopRender(rootElement);
+          const _re = enableScopeTreeLog.current;
+
+          enableScopeTreeLog.current = false;
+
+          const re = await latestNoopRender(rootElement);
+
+          enableScopeTreeLog.current = _re;
+
+          return re;
         } else {
-          return legacyNoopRender(rootElement);
+          const _re = enableScopeTreeLog.current;
+
+          enableScopeTreeLog.current = false;
+
+          const re = legacyNoopRender(rootElement);
+
+          enableScopeTreeLog.current = _re;
+
+          return re;
         }
       };
 
       const re = get();
 
-      if (isPromise(re)) {
-        re.then((res) => parse(res));
-      } else {
-        parse(re);
-      }
+      re.then((res) => (parse(res), res)).then((res) => unmountFiber(res.__fiber__));
 
       return re;
     },

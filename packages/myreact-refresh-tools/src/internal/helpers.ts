@@ -62,7 +62,13 @@ function registerExportsForReactRefresh(moduleExports: any, moduleID: string) {
     if (isSafeExport(key)) {
       continue;
     }
-    const exportValue = moduleExports[key];
+    let exportValue = undefined;
+    try {
+      exportValue = moduleExports[key];
+    } catch {
+      // This might fail due to circular dependencies
+      continue
+    }
     const typeID = moduleID + " %exports% " + key;
     RefreshRuntime.register(exportValue, typeID);
   }
@@ -80,7 +86,13 @@ function getRefreshBoundarySignature(moduleExports: any): Array<unknown> {
     if (isSafeExport(key)) {
       continue;
     }
-    const exportValue = moduleExports[key];
+    let exportValue = undefined;
+    try {
+      exportValue = moduleExports[key];
+    } catch {
+      // This might fail due to circular dependencies
+      continue
+    }
     signature.push(key);
     signature.push(RefreshRuntime.getFamilyByType(exportValue));
   }
@@ -102,7 +114,13 @@ function isReactRefreshBoundary(moduleExports: any): boolean {
     if (isSafeExport(key)) {
       continue;
     }
-    const exportValue = moduleExports[key];
+    let exportValue = undefined;
+    try {
+      exportValue = moduleExports[key];
+    } catch {
+      // This might fail due to circular dependencies
+      return false
+    }
     if (!RefreshRuntime.isLikelyComponentType(exportValue)) {
       areAllExportsComponents = false;
     }

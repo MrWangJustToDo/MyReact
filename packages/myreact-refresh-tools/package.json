@@ -1,6 +1,6 @@
 {
   "name": "@my-react/react-refresh-tools",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "An experimental package providing utilities for @my-react Refresh.",
   "files": [
     "dist",

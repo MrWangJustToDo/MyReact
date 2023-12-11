@@ -32,6 +32,7 @@ self.$RefreshInterceptModuleExecution$ = function (webpackModuleId) {
   self.$RefreshReg$ = function (type, id) {
     RefreshRuntime.register(type, webpackModuleId + " " + id);
   };
+  
   self.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
 
   // Modeled after `useEffect` cleanup pattern:

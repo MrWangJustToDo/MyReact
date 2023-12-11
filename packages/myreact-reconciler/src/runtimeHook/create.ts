@@ -139,6 +139,8 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     const typedHook = hookNode as MyReactHookNodeDev;
 
     typedHook._debugType = HOOK_TYPE[hookNode.type];
+
+    typedHook._debugIndex = currentHookIndex;
   }
 
   return hookNode;

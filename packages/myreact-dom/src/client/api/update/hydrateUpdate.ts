@@ -1,11 +1,22 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
-import { enableControlComponent, enableEventSystem, enableHydrateWarn, getHTMLAttrKey, getSVGAttrKey, isEvent, isProperty, isStyle, log } from "@my-react-dom-shared";
+import {
+  enableControlComponent,
+  enableEventSystem,
+  enableHydrateWarn,
+  getHTMLAttrKey,
+  getSVGAttrKey,
+  isEvent,
+  isProperty,
+  isStyle,
+  log,
+} from "@my-react-dom-shared";
 
 import { XLINK_NS, XML_NS, X_CHAR, addEventListener, controlElementTag, setStyle } from "../helper";
 
 import { mountControl } from "./control";
+import { isNoProps, isSameInnerHTML } from "./tool";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -77,7 +88,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
         dom.setAttribute(key, String(value));
       }
     } else {
-      if (key in dom && !isSVG) {
+      if (key in dom && !isSVG && !isNoProps(dom, key)) {
         if (dom[key].toString() !== String(value)) {
           if (enableHydrateWarn.current) {
             log(fiber, "warn", `hydrate warning, dom '${key}' props not match from server. server: ${dom[key]}, client: ${value}`);
@@ -140,12 +151,10 @@ const domInnerHTMLHydrate = (fiber: MyReactFiberNode) => {
 
     const typedProps = props["dangerouslySetInnerHTML"] as Record<string, unknown>;
 
-    const existInnerHTML = typedDOM.innerHTML;
-
     const incomingInnerHTML = typedProps.__html as string;
 
-    if (existInnerHTML !== incomingInnerHTML) {
-      // log(fiber, "warn", `hydrate error, 'innerHTML' not match from server.`);
+    if (!isSameInnerHTML(typedDOM, incomingInnerHTML)) {
+      log(fiber, "warn", `hydrate error, 'innerHTML' not match from server.`);
 
       typedDOM.innerHTML = typedProps.__html as string;
     }

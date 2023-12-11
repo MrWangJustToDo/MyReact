@@ -1,3 +1,4 @@
+import { isNoProps } from "@my-react-dom-client/api/update/tool";
 import { getHTMLAttrKey, getSVGAttrKey, log } from "@my-react-dom-shared";
 
 import { XLINK_NS, XML_NS, X_CHAR } from "./namespace";
@@ -48,14 +49,20 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
     return;
   }
 
-  try {
-    if (name in el && !isSVG) {
+  if (name in el && !isSVG && !isNoProps(el, name)) {
+    try {
       if (value === null || value === undefined || value === false) {
         el[name] = "";
       } else {
         el[name] = String(value);
       }
-    } else {
+    } catch (e) {
+      if (__DEV__) {
+        log(fiber, "error", "setProps", `${(e as Error).message}, key: ${name}, value: ${value}`);
+      }
+    }
+  } else {
+    try {
       const attrKey = (isSVG ? getSVGAttrKey(name) : getHTMLAttrKey(name)) || name;
       if (value === null || value === undefined) {
         el.removeAttribute(attrKey);
@@ -73,10 +80,10 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
           }
         }
       }
-    }
-  } catch (e) {
-    if (__DEV__) {
-      log(fiber, "error", "setAttribute", `${(e as Error).message}, key: ${name}, value: ${value}`);
+    } catch (e) {
+      if (__DEV__) {
+        log(fiber, "error", "setAttribute", `${(e as Error).message}, key: ${name}, value: ${value}`);
+      }
     }
   }
 };

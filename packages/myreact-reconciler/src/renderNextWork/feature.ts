@@ -9,7 +9,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { currentRunningFiber } = __my_react_internal__;
 
-export const performToNextFiberWithAll = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const performToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__) currentRunningFiber.current = fiber;
@@ -51,7 +51,7 @@ export const performToNextFiberWithAll = (fiber: MyReactFiberNode, renderDispatc
   return null;
 };
 
-export const performToNextFiberWithTrigger = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const performToNextFiberFromTrigger = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__) currentRunningFiber.current = fiber;

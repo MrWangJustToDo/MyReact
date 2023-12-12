@@ -1,31 +1,31 @@
-import { performToNextFiberWithAll, performToNextFiberWithTrigger } from "../renderNextWork";
+import { performToNextFiberFromRoot, performToNextFiberFromTrigger } from "../renderNextWork";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 
-export const updateLoopSyncWithAll = (renderDispatch: CustomRenderDispatch) => {
+export const updateLoopSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    const nextFiber = performToNextFiberWithAll(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
+    const nextFiber = performToNextFiberFromRoot(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextFiber;
   }
 };
 
-export const updateLoopSyncWithTrigger = (renderDispatch: CustomRenderDispatch) => {
+export const updateLoopSyncFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    const nextFiber = performToNextFiberWithTrigger(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
+    const nextFiber = performToNextFiberFromTrigger(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextFiber;
   }
 };
 
-export const updateLoopConcurrentWithAll = (renderDispatch: CustomRenderDispatch) => {
+export const updateLoopConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber && !renderDispatch.shouldYield()) {
-    const nextFiber = performToNextFiberWithAll(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
+    const nextFiber = performToNextFiberFromRoot(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextFiber;
   }
 };
 
-export const updateLoopConcurrentWithTrigger = (renderDispatch: CustomRenderDispatch) => {
+export const updateLoopConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber && !renderDispatch.shouldYield()) {
-    const nextFiber = performToNextFiberWithTrigger(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
+    const nextFiber = performToNextFiberFromTrigger(renderDispatch.runtimeFiber.nextWorkingFiber, renderDispatch);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextFiber;
   }
 };

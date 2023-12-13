@@ -18,7 +18,7 @@ const catchMiddlewareHandler: MiddlewareFunction = async (ctx, nextMiddleware) =
         await errorHandler({ ctx, req, res, e, code: 404 });
       }
     } else {
-      res.status(e instanceof RenderError ? e.code : 500).json({ data: (e as Error).toString() });
+      res.status(e instanceof RenderError ? e.code : 500).json({ data: (e as Error)?.toString() });
     }
   }
 };
@@ -71,7 +71,7 @@ export const wrapperMiddlewareRequest = function (config: MiddlewareConfig, comp
     try {
       await composed(ctx, ctx.requestHandler);
     } catch (e) {
-      res.status(500).json({ data: (e as Error).toString() });
+      res.status(500).json({ data: (e as Error)?.toString() });
     }
   };
 };

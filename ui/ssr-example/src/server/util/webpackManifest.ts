@@ -26,7 +26,7 @@ const _getAllStateFileContent = async <T = Record<string, string>, P = T>(path: 
 
 const getAllStateFileContent = __DEVELOPMENT__
   ? _getAllStateFileContent
-  : memoize(_getAllStateFileContent, (path, normalize) => `${path}/${(normalize || "empty").toString()}`);
+  : memoize(_getAllStateFileContent, (path, normalize) => `${path}/${(normalize || "empty")?.toString()}`);
 
 const baseStylesPath = (content: Record<string, string>, judge: (f: string) => boolean) =>
   Object.keys(content)

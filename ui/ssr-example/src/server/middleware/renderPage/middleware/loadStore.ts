@@ -22,7 +22,7 @@ export const loadStore: Middleware = (next) => async (args) => {
   }
 
   if (redirect) {
-    const query = redirect.location.query.toString();
+    const query = redirect.location.query?.toString() || '';
 
     const path = query.length ? redirect.location.pathName + "?" + query : redirect.location.pathName;
 

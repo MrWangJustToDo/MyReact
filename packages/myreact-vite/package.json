@@ -54,7 +54,7 @@
     }
   ],
   "peerDependencies": {
-    "@my-react/react-refresh": ">=0.2.5",
+    "@my-react/react-refresh": ">=0.2.8",
     "vite": "^4.2.0 || ^5.0.0"
   },
   "dependencies": {

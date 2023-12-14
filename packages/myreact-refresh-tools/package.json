@@ -56,7 +56,7 @@
     }
   ],
   "devDependencies": {
-    "@my-react/react-shared": "^0.2.5"
+    "@my-react/react-shared": "^0.2.8"
   },
   "peerDependenciesMeta": {
     "webpack": {
@@ -64,7 +64,7 @@
     }
   },
   "peerDependencies": {
-    "@my-react/react-refresh": ">=0.2.5",
+    "@my-react/react-refresh": ">=0.2.8",
     "webpack": "^4 || ^5"
   }
 }

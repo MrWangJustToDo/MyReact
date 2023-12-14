@@ -44,7 +44,7 @@ export const Example = () => {
         ]}
       />
       <Space h="lg" />
-      <Burger opened={opened} onClick={toggle} aria-label="Toggle navigation" />
+      <Burger opened={opened} onClick={toggle} aria-label="Toggle navigation" ml={2} />
       <Space h="md" />
       <Pagination total={20} />
     </>

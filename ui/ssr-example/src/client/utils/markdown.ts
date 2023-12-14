@@ -23,7 +23,7 @@ const mark = new Mark({
       const minWidth = String(transformArr.length).length - 0.2;
       const html = transformArr.reduce(
         (p: string, c: string, idx: number) =>
-          `${p}<span class='no-select d-inline-block text-center border-right pr-2 mr-2 border-dark' style='min-width: ${minWidth}em; line-height: 1.5'>${
+          `${p}<span class='no-select code-num d-inline-block text-center border-right pr-2 mr-2 border-dark' style='min-width: ${minWidth}em; line-height: 1.5'>${
             idx + 1
           }</span>${c}\n`,
         `<div class='w-100 position-absolute' style='left: 0; top: 0; font-size: 0px'>

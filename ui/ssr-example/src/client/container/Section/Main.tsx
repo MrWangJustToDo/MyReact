@@ -13,6 +13,10 @@ const tsxMd = `
 import { useState, useCallback } from '@my-react/react';
 import { render } from '@my-react/react-dom';
 
+/**
+ * hello world
+ */
+
 const useCount = () => {
   const [state, setState] = useState(0);
   const add = useCallback(() => setState(i => i + 1), []);

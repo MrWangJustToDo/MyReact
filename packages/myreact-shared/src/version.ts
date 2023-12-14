@@ -9,7 +9,7 @@ export const compareVersion = (version1: string, version2: string) => {
     }
     if (arr1.length) return true;
     if (arr2.length) return false;
-    return null;
+    return true;
   };
 
   return compare(version1.split(".").map(Number), version2.split(".").map(Number));

@@ -6,6 +6,7 @@ import type { ServerDomDispatch, LegacyServerStreamDispatch } from "@my-react-do
 
 /**
  * @internal
+ * TODO
  */
 export const initialElementMap = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch) => {
   let isSVG = _fiber.elementType === "svg";

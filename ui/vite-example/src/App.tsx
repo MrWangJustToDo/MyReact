@@ -26,7 +26,7 @@ function App() {
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>
-      <Card withBorder style={{ textAlign: "initial" }}>
+      <Card withBorder style={{ textAlign: "initial" }} padding={4}>
         <ScrollAreaAutosize mah={200}>
           <Example />
         </ScrollAreaAutosize>

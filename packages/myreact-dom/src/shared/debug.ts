@@ -11,16 +11,31 @@ import { include } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { HighLight, debounce } from "@my-react-dom-client/tools";
+import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount/render";
 import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-dom-server/api";
 
-import { enableDOMField, enableHighlightWarn, isServer } from "./env";
+import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, enableHighlight, enableHighlightWarn, isServer } from "./env";
 import { getFiberWithNativeDom } from "./getFiberWithDom";
 
+import type { LikeJSX} from "@my-react/react";
 import type { CustomRenderDispatch } from "@my-react/react-reconciler";
 import type { RenderContainer } from "@my-react-dom-client/mount";
 import type { CommentEndElement, TextElement } from "@my-react-dom-server/api";
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
+
+const __my_react_dom_shared__ = {
+  enableControlComponent,
+  enableDOMField,
+  enableEventSystem,
+  enableEventTrack,
+  enableHighlight,
+};
+
+const __my_react_dom_internal__ = {
+  legacyNoopRender: (ele: LikeJSX) => legacyNoopRender(ele),
+  latestNoopRender: (ele: LikeJSX) => latestNoopRender(ele),
+};
 
 /**
  * @internal
@@ -88,8 +103,10 @@ export const logOnce = (fiber: MyReactFiberNode, level: "warn" | "error", key: s
  * @internal
  */
 export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
-  Reflect.defineProperty(renderDispatch, "_dev_shared", { value: __my_react_shared__ });
-  Reflect.defineProperty(renderDispatch, "_dev_internal", { value: __my_react_internal__ });
+  Object.defineProperty(renderDispatch, "__my_react_shared__", { value: __my_react_shared__ });
+  Object.defineProperty(renderDispatch, "__my_react_internal__", { value: __my_react_internal__ });
+  Object.defineProperty(renderDispatch, "__my_react_dom_shared__", { value: __my_react_dom_shared__ });
+  Object.defineProperty(renderDispatch, "__my_react_dom_internal__", { value: __my_react_dom_internal__ });
 };
 
 /**

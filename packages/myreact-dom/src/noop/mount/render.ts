@@ -1,11 +1,11 @@
-import { isValidElement } from "@my-react/react";
-import { MyReactFiberNode, initialFiberNode } from "@my-react/react-reconciler";
+import { createElement, isValidElement } from "@my-react/react";
+import { MyReactFiberNode, NODE_TYPE, initialFiberNode } from "@my-react/react-reconciler";
+import { exclude } from "@my-react/react-shared";
 
 import { ContainerElement } from "@my-react-dom-server/api";
-import { checkRoot, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { NoopLegacyRenderDispatch, NoopLatestRenderDispatch } from "../renderDispatch/noopDispatch";
-// import { beforeNoopRender } from "../renderPlatform";
 
 import type { LikeJSX } from "@my-react/react";
 
@@ -13,13 +13,14 @@ import type { LikeJSX } from "@my-react/react";
 
 export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
   if (isValidElement(element)) {
-    // beforeNoopRender();
-
     const container = new ContainerElement();
 
     const fiber = new MyReactFiberNode(element);
 
-    __DEV__ && checkRoot(fiber);
+    if (exclude(fiber.type, NODE_TYPE.__function__) && exclude(fiber.type, NODE_TYPE.__class__)) {
+      const Root = () => element;
+      return legacyNoopRender(createElement(Root));
+    }
 
     const renderDispatch = new NoopLegacyRenderDispatch(container, fiber);
 
@@ -39,13 +40,14 @@ export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
 
 export const latestNoopRender = async (element: LikeJSX): Promise<ContainerElement | null> => {
   if (isValidElement(element)) {
-    // beforeNoopRender();
-
     const container = new ContainerElement();
 
     const fiber = new MyReactFiberNode(element);
 
-    __DEV__ && checkRoot(fiber);
+    if (exclude(fiber.type, NODE_TYPE.__function__) && exclude(fiber.type, NODE_TYPE.__class__)) {
+      const Root = () => element;
+      return latestNoopRender(createElement(Root));
+    }
 
     const renderDispatch = new NoopLatestRenderDispatch(container, fiber);
 

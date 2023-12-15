@@ -48,8 +48,6 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   if (enableLoopFromRoot.current) {
     const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
 
-    const hasSync = allLive.some((f) => include(f.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__));
-
     renderDispatch.pendingUpdateFiberArray.clear();
 
     if (allLive.length) {
@@ -59,7 +57,7 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
 
       renderDispatch.runtimeFiber.nextWorkingFiber = renderDispatch.rootFiber;
 
-      if (hasSync) {
+      if (!enableConcurrentMode.current || allLive.some((f) => include(f.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__))) {
         updateSyncFromRoot(renderDispatch, () => scheduleNext(renderDispatch));
       } else {
         updateConcurrentFromRoot(renderDispatch, () => scheduleNext(renderDispatch));

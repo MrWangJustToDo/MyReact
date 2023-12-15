@@ -7,41 +7,73 @@ import type { MyReactElement, MyReactElementNode, ArrayMyReactElementNode, Maybe
 // TODO there are still some error for `map`/`toArray` key props
 export const map = (
   arrayLike: MaybeArrayMyReactElementNode,
-  action: (child: MyReactElementNode, index: number, children: ArrayMyReactElementNode) => MyReactElementNode
+  action: (child: MyReactElementNode, index: number, children: ArrayMyReactElementNode) => MyReactElementNode,
+  context?: any,
 ) => {
-  if (arrayLike === null) return arrayLike;
+  if (arrayLike === null || arrayLike === undefined) return arrayLike;
 
-  return mapByJudge(
+  const res = [];
+
+  mapByJudge(
     arrayLike,
-    (v) => v !== undefined && v !== null,
-    (child, index, children) => {
-      const element = action(child, index, children);
-      if (isValidElement(element)) {
-        return cloneElement(element, { key: typeof element === "object" ? (typeof element?.key === "string" ? `${element.key}` : `.${index}`) : null });
-      } else {
-        return element;
+    () => true,
+    (child, index) => {
+      let r = child;
+      if (child === undefined || child === null || typeof child === "boolean") {
+        r = null;
       }
+      const element = action(r, index, context);
+      if (isValidElement(element)) {
+        res.push(cloneElement(element, { key: typeof element === "object" ? (typeof element?.key === "string" ? `${element.key}` : `.${index}`) : null }));
+      } else {
+        if (element !== undefined && element !== null) {
+          res.push(element);
+        }
+      }
+      return element;
     }
   );
+
+  return res;
 };
 
-export const toArray = (arrayLike: MaybeArrayMyReactElementNode) => {
-  if (arrayLike === null) return [];
+export const toArray = (arrayLike: MaybeArrayMyReactElementNode): ArrayMyReactElementNode => {
+  const res = [];
 
-  return mapByJudge(
+  mapByJudge(
     arrayLike,
-    (v) => v !== undefined && v !== null,
-    (child, index) => cloneElement(child, { key: typeof child === "object" ? (typeof child?.key === "string" ? `${child.key}` : `.${index}`) : null })
+    (v) => v !== undefined && v !== null && typeof v !== "boolean",
+    (child, index) => {
+      if (isValidElement(child)) {
+        res.push(cloneElement(child, { key: typeof child === "object" ? (typeof child?.key === "string" ? `${child.key}` : `.${index}`) : null }));
+      } else {
+        res.push(child);
+      }
+      return child;
+    }
   );
+
+  return res;
 };
 
 export const forEach = (
   arrayLike: MaybeArrayMyReactElementNode,
-  action: (child: MyReactElement, index: number, children: ArrayMyReactElementNode) => MyReactElement
+  action: (child: MyReactElementNode, index: number, children: ArrayMyReactElementNode) => MyReactElement,
+  context?: any,
 ) => {
-  if (arrayLike === null) return arrayLike;
+  if (arrayLike === null || arrayLike === undefined) return;
 
-  mapByJudge(arrayLike, (v) => v !== undefined && v !== null, action);
+  mapByJudge(
+    arrayLike,
+    () => true,
+    (child, index) => {
+      let r = child;
+      if (child === undefined || child === null && typeof child === "boolean") {
+        r = null;
+      }
+      return action(r, index, context);
+    }
+  );
 };
 
 export const count = (arrayLike: MaybeArrayMyReactElementNode): number => {

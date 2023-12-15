@@ -70,11 +70,11 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
  * @internal
  */
 export const checkRoot = (fiber: MyReactFiberNode) => {
-  if (fiber.type & NODE_TYPE.__class__) return;
+  if (include(fiber.type, NODE_TYPE.__class__)) return;
 
-  if (fiber.type & NODE_TYPE.__function__) return;
+  if (include(fiber.type, NODE_TYPE.__function__)) return;
 
-  if (fiber.type & NODE_TYPE.__portal__) return;
+  if (include(fiber.type, NODE_TYPE.__portal__)) return;
 
   return;
 

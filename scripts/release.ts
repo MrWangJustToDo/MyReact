@@ -16,7 +16,7 @@ const pkgNameAlias = {
 
 const getVersion = (pkgName: string) =>
   new Promise((a, b) => {
-    const ls = spawn(`pnpm view ${pkgName} version --json`, { stdio: "pipe" });
+    const ls = spawn(`pnpm view ${pkgName} version --json`, { shell: true, stdio: "pipe" });
     ls.stdout.on("data", (d) => {
       const res = Buffer.from(d).toString("utf-8");
       a(JSON.parse(res));
@@ -26,7 +26,7 @@ const getVersion = (pkgName: string) =>
 
 const publish = (pnkName: string, cwd: string) => {
   return new Promise((a, b) => {
-    const ls = spawn(`pnpm publish --access public`, { stdio: "inherit", cwd });
+    const ls = spawn(`pnpm publish --access public`, { shell: true, stdio: "inherit", cwd });
     ls.on("close", () => {
       a(true);
     });
@@ -54,7 +54,6 @@ const release = async (pkgName: keyof typeof pkgNameAlias) => {
       return;
     } else {
       console.log(`new version: ${version} of ${pkgName} will release, current is: ${cVersion}`);
-      // return;
     }
 
     await publish(pkgName, resolve(process.cwd(), path));

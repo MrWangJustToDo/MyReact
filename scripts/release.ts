@@ -10,11 +10,13 @@ const pkgNameAlias = {
   "@my-react/react-reconciler": "myreact-reconciler",
   "@my-react/react-refresh": "myreact-refresh",
   "@my-react/react-shared": "myreact-shared",
+  "@my-react/react-refresh-tools": "myreact-refresh-tools",
+  "@my-react/react-vite": "myreact-vite",
 };
 
 const getVersion = (pkgName: string) =>
   new Promise((a, b) => {
-    const ls = spawn(`pnpm view ${pkgName} version --json`, { shell: true, stdio: "pipe" });
+    const ls = spawn(`pnpm view ${pkgName} version --json`, { stdio: "pipe" });
     ls.stdout.on("data", (d) => {
       const res = Buffer.from(d).toString("utf-8");
       a(JSON.parse(res));
@@ -24,7 +26,7 @@ const getVersion = (pkgName: string) =>
 
 const publish = (pnkName: string, cwd: string) => {
   return new Promise((a, b) => {
-    const ls = spawn(`pnpm publish --access public`, { shell: true, stdio: "inherit", cwd });
+    const ls = spawn(`pnpm publish --access public`, { stdio: "inherit", cwd });
     ls.on("close", () => {
       a(true);
     });
@@ -50,6 +52,9 @@ const release = async (pkgName: keyof typeof pkgNameAlias) => {
     if (cVersion === version) {
       console.log(`no need release ${pkgName} @${version}`);
       return;
+    } else {
+      console.log(`new version: ${version} of ${pkgName} will release, current is: ${cVersion}`);
+      // return;
     }
 
     await publish(pkgName, resolve(process.cwd(), path));
@@ -67,3 +72,5 @@ release("@my-react/react-reactive");
 release("@my-react/react-reconciler");
 release("@my-react/react-refresh");
 release("@my-react/react-shared");
+release("@my-react/react-refresh-tools");
+release("@my-react/react-vite");

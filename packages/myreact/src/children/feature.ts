@@ -9,17 +9,25 @@ export const map = (
   arrayLike: MaybeArrayMyReactElementNode,
   action: (child: MyReactElementNode, index: number, children: ArrayMyReactElementNode) => MyReactElementNode
 ) => {
+  if (arrayLike === null) return arrayLike;
+
   return mapByJudge(
     arrayLike,
     (v) => v !== undefined && v !== null,
     (child, index, children) => {
       const element = action(child, index, children);
-      return cloneElement(element, { key: typeof element === "object" ? (typeof element?.key === "string" ? `${element.key}` : `.${index}`) : null });
+      if (isValidElement(element)) {
+        return cloneElement(element, { key: typeof element === "object" ? (typeof element?.key === "string" ? `${element.key}` : `.${index}`) : null });
+      } else {
+        return element;
+      }
     }
   );
 };
 
 export const toArray = (arrayLike: MaybeArrayMyReactElementNode) => {
+  if (arrayLike === null) return [];
+
   return mapByJudge(
     arrayLike,
     (v) => v !== undefined && v !== null,
@@ -31,6 +39,8 @@ export const forEach = (
   arrayLike: MaybeArrayMyReactElementNode,
   action: (child: MyReactElement, index: number, children: ArrayMyReactElementNode) => MyReactElement
 ) => {
+  if (arrayLike === null) return arrayLike;
+
   mapByJudge(arrayLike, (v) => v !== undefined && v !== null, action);
 };
 

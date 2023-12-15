@@ -66,6 +66,7 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env, ass
       onShellError(err) {
         error = true;
         if (!initial) {
+          initial = true;
           if (!env.isSTATIC) {
             // Something errored before we could complete the shell so we fallback to client render
             targetCSRRender({ req, res, store, lang, env, assets });
@@ -78,6 +79,7 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env, ass
       onError(err) {
         error = true;
         if (!initial) {
+          initial = true;
           if (!env.isSTATIC) {
             // not set header, so we can safe to fallback to client render
             targetCSRRender({ req, res, store, lang, env, assets });

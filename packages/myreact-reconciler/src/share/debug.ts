@@ -229,6 +229,33 @@ export const getElementName = (fiber: MyReactFiberNode) => {
   return `<unknown (${fiber.elementType?.toString()}) />`;
 };
 
+export const getPlainFiberName = (fiber: MyReactFiberNode) => {
+  if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+    const typedElementType = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
+    const name = typedElementType.displayName || typedElementType.name || "Anonymous";
+    return name;
+  }
+  if (include(fiber.type, NODE_TYPE.__comment__)) return `Comment`;
+  if (include(fiber.type, NODE_TYPE.__provider__)) {
+    const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Provider"];
+    const name = typedElementType.Context.displayName || "Context";
+    return `${name}.Provider`;
+  }
+  if (include(fiber.type, NODE_TYPE.__consumer__)) {
+    const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
+    const name = typedElementType.Context.displayName || "Context";
+    return `${name}.Consumer`;
+  }
+  if (include(fiber.type, NODE_TYPE.__fragment__)) return `Fragment`;
+  if (include(fiber.type, NODE_TYPE.__suspense__)) return `Suspense`;
+  if (include(fiber.type, NODE_TYPE.__profiler__)) return `Profiler`;
+  if (include(fiber.type, NODE_TYPE.__lazy__)) return `Lazy`;
+  if (include(fiber.type, NODE_TYPE.__scope__)) return `Scope`;
+  if (include(fiber.type, NODE_TYPE.__portal__)) return `Portal`;
+  if (include(fiber.type, NODE_TYPE.__strict__)) return `Strict`;
+  if (include(fiber.type, NODE_TYPE.__null__ | NODE_TYPE.__empty__)) return `Null`
+};
+
 const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)} ${getTrackDevLog(fiber)}`;
 
 const getFiberNodeMaxRenderTime = (_fiber: MyReactFiberNode) => {

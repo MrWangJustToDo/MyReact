@@ -3,12 +3,13 @@
   "description": "@my-react/react-reconciler",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "main": "index.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "index.d.ts",
   "files": [
     "dist",
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -19,6 +20,7 @@
   "exports": {
     "node": "./index.js",
     "require": "./index.js",
+    "types": "./index.d.ts",
     "default": "./index.js"
   },
   "buildOptions": {

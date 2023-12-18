@@ -3,14 +3,15 @@
   "description": "@my-react/react-reactive",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "main": "index.js",
-  "types": "./dist/types/index.d.ts",
+  "types": "index.d.ts",
   "unpkg": "./dist/umd/index.development.js",
   "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
-    "index.js"
+    "index.js",
+    "index.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
     "node": "./index.js",
+    "types": "./index.d.ts",
     "require": "./index.js",
     "default": "./index.js"
   },

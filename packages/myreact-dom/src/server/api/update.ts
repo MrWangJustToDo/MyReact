@@ -99,7 +99,7 @@ export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       .map((key) => `${key}="${attrs[key]?.toString()}"`)
       .reduce((p, c) => `${p} ${c}`, "");
     let serializedStyles = Object.keys(styles)
-      .map((key) => `${kebabCase(key)}: ${styles[key]?.toString()}`)
+      .map((key) => `${kebabCase(key)}: ${styles[key]?.toString()};`)
       .reduce((p, c) => p + c, "");
     serializedStyles = serializedStyles.length ? `style="${serializedStyles}"` : "";
     const arr = [serializedAttrs.slice(1), serializedStyles].filter((i) => i.length);

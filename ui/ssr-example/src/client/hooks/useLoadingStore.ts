@@ -7,5 +7,9 @@ export const useLoading = createState(
         state.loading = s;
       },
     }),
-  })
+  }),
+  {
+    withNamespace: "useLoading",
+    withDeepSelector: false,
+  }
 );

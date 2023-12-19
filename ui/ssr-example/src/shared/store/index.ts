@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { legacy_createStore as createStore, applyMiddleware, compose } from "redux";
 import createSagaMiddleware from "redux-saga";
-import thunkMiddleware from "redux-thunk";
+import { thunk as thunkMiddleware } from "redux-thunk";
 
 import { rootReducer } from "./reducer";
 import { rootSaga } from "./saga";
@@ -9,10 +9,10 @@ import { SagaManager } from "./saga/utils";
 
 import type { SagaStore } from "./type";
 import type { TypedUseSelectorHook } from "react-redux";
-import type { Middleware, PreloadedState } from "redux";
+import type { Middleware } from "redux";
 
 type CreateStoreProps = {
-  preloadedState?: PreloadedState<ReturnType<typeof rootReducer>>;
+  preloadedState?: ReturnType<typeof rootReducer>;
   middleware?: Middleware[];
 };
 

@@ -35,15 +35,15 @@
     ]
   },
   "dependencies": {
-    "cross-fetch": "3.1.6",
+    "cross-fetch": "4.0.0",
     "project-tool": "git+ssh://git@github.com:MrWangJustToDo/project-tool.git"
   },
   "peerDependencies": {
-    "@apollo/client": "^3.8.1",
+    "@apollo/client": "^3.8.8",
     "@graphql-codegen/add": "^5.0.0",
     "@graphql-codegen/cli": "^5.0.0",
-    "@graphql-codegen/import-types-preset": "^2.2.6",
-    "@graphql-codegen/near-operation-file-preset": "^2.5.0",
+    "@graphql-codegen/import-types-preset": "^3.0.0",
+    "@graphql-codegen/near-operation-file-preset": "^3.0.0",
     "@graphql-codegen/typed-document-node": "^5.0.1",
     "@graphql-codegen/typescript": "^4.0.1",
     "@graphql-codegen/typescript-operations": "^4.0.1",

@@ -26,7 +26,8 @@
           "dir": "./dist",
           "entryFileNames": "cjs/loader.js",
           "format": "cjs",
-          "multiple": true
+          "multiple": true,
+          "sourcemap": true
         }
       ]
     },
@@ -38,7 +39,8 @@
           "dir": "./dist",
           "entryFileNames": "cjs/runtime.js",
           "format": "cjs",
-          "multiple": true
+          "multiple": true,
+          "sourcemap": true
         }
       ]
     },
@@ -50,7 +52,8 @@
           "dir": "./dist",
           "entryFileNames": "cjs/webpackPlugin.js",
           "format": "cjs",
-          "multiple": true
+          "multiple": true,
+          "sourcemap": true
         }
       ]
     }

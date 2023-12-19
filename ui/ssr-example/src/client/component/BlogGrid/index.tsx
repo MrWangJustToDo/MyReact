@@ -16,16 +16,18 @@ import type { GetBlogListQuery } from "@site/graphql";
 
 const BLOG_GRID_COLS = { lg: 4, md: 3, sm: 2, xs: 1, xxs: 1 };
 
+const { updateLayout, mergeLayout } = useListLayoutStore.getActions();
+
 const _BlogGridWithGridLayout = ({ data }: { data: GetBlogListQuery["repository"]["issues"]["nodes"] }) => {
   const newLayout = useGetResponseListLayout(data);
 
-  const { updateLayout, data: layouts, mergeLayout } = useListLayoutStore();
+  const layouts = useListLayoutStore((s) => s.data);
 
   const { width } = useDomSize({ cssSelector: ".grid-card-list" });
 
   useEffect(() => {
     mergeLayout(newLayout);
-  }, [mergeLayout, newLayout]);
+  }, [newLayout]);
 
   const mergedLayout = useMemo(() => {
     const obj = {};

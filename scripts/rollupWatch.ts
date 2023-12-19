@@ -1,6 +1,6 @@
 import { rollupWatch } from "project-tool/rollup";
 
-const external = (id: string) => id.includes("@my-react/") || id.includes("node_modules");
+const external = (id: string) => id.includes("@my-react/") || (id.includes("node_modules") && !id.includes("tslib"));
 
 rollupWatch({ packageName: "myreact-reconciler", packageScope: "packages", external });
 

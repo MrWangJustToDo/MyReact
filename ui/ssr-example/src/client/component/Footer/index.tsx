@@ -3,12 +3,13 @@ import { memo } from "react";
 import { AiFillHeart } from "react-icons/ai";
 
 import { BLOG_SOURCE } from "@client/config/source";
-import { useIsMounted } from "@client/hooks";
+// import { useIsMounted } from "@client/hooks";
+import { Time } from "@client/store";
 
 // import { BLOG_SOURCE } from "@app/config/source";
 
 const _Footer = () => {
-  const isMounted = useIsMounted();
+  // const isMounted = useIsMounted();
 
   return (
     <Box textAlign="center">
@@ -22,7 +23,8 @@ const _Footer = () => {
         </Text>
       </Flex>
       <Text fontSize="sm" marginTop="2.5" marginBottom="9" color="lightTextColor">
-        {isMounted ? new Date().getFullYear() : ""}
+        <Time>{({ time, isMount }) => (isMount ? time : "")}</Time>
+        {/* {isMounted ? new Date().getFullYear() : ""} */}
       </Text>
     </Box>
   );

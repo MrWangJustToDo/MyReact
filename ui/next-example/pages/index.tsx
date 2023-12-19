@@ -39,10 +39,11 @@ export default function Home() {
       >
         <Link href="/Foo">Goto Foo Page</Link>
       </div>
-
-      <Suspense fallback={<div className="text-lg font-mono text-red-700">loading...</div>}>
-        <Bar />
-      </Suspense>
+      <div>
+        <Suspense fallback={<div className="text-lg font-mono text-red-700">loading...</div>}>
+          <Bar />
+        </Suspense>
+      </div>
 
       <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
         <a

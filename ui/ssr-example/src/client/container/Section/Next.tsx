@@ -7,7 +7,7 @@ const Iframe = chakra("iframe");
 
 const shellMd = `
 \`\`\`js
-// 1. create a Next.js 12 project
+// 1. create a Next.js project
 
 // 2. install @my-react
 pnpm add @my-react/react @my-react/react-dom
@@ -58,7 +58,7 @@ export const NextSection = () => {
             Quick start in <Tag fontSize="inherit">Next.js</Tag>
           </Heading>
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
-            Currently not support Next.js 13+, also not support React `RSC`.
+            Currently version of @my-react not support React `RSC`.
           </Text>
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
             This project is only a experimental project, not recommend use in the production environment.

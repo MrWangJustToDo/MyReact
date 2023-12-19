@@ -17,7 +17,7 @@ import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-d
 import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, enableHighlight, enableHighlightWarn, isServer } from "./env";
 import { getFiberWithNativeDom } from "./getFiberWithDom";
 
-import type { LikeJSX} from "@my-react/react";
+import type { LikeJSX } from "@my-react/react";
 import type { CustomRenderDispatch } from "@my-react/react-reconciler";
 import type { RenderContainer } from "@my-react-dom-client/mount";
 import type { CommentEndElement, TextElement } from "@my-react-dom-server/api";

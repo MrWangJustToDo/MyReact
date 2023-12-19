@@ -1,9 +1,12 @@
 import { rollupBuild } from "project-tool/rollup";
 
-const external = (id: string) => id.includes("@my-react/") || id.includes("node_modules");
+const external = (id: string) => id.includes("@my-react/") || (id.includes("node_modules") && !id.includes("tslib"));
 
 const externalReact = (id: string) =>
-  id.endsWith("@my-react/react") || id.endsWith("@my-react/react-dom") || id.includes("@my-react/react-refresh") || id.includes("node_modules");
+  id.endsWith("@my-react/react") ||
+  id.endsWith("@my-react/react-dom") ||
+  id.includes("@my-react/react-refresh") ||
+  (id.includes("node_modules") && !id.includes("tslib"));
 
 const start = async () => {
   await rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });

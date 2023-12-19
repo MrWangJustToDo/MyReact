@@ -6,12 +6,17 @@ import type { Layout, Layouts } from "react-grid-layout";
 export const BLOG_GRID_HEIGHT = 10;
 
 export const useListLayoutStore = createState(() => ({ data: {} as Layouts }), {
-  withActions: (s) => ({
+  withActions: (s: {
+    data: Layouts;
+  }): {
+    updateLayout: (newLayout: Layouts) => void;
+    mergeLayout: (newLayout: Layouts) => void;
+  } => ({
     updateLayout: (newLayout: Layouts) => {
       s.data = newLayout;
     },
     mergeLayout: (newLayout: Layouts) => {
-      const oldData = s.data
+      const oldData = s.data;
       const obj = {};
       Object.keys(newLayout).forEach((key) => {
         obj[key] = [];
@@ -27,8 +32,10 @@ export const useListLayoutStore = createState(() => ({ data: {} as Layouts }), {
         });
       });
       s.data = obj;
-    }
+    },
   }),
+  withNamespace: "useListLayoutStore",
+  withDeepSelector: false
 });
 
 const _generateFunction =

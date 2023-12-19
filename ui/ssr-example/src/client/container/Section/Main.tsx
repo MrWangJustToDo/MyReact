@@ -1,5 +1,5 @@
-import { Box, Button, Container, Flex, Heading, HStack, Tag, Text } from "@chakra-ui/react";
-import { version as reactVersion } from "@my-react/react";
+import { Box, Button, Checkbox, Container, Flex, Heading, HStack, Tag, Text } from "@chakra-ui/react";
+import { __my_react_shared__, version as reactVersion } from "@my-react/react";
 import { version as reactDOMVersion } from "@my-react/react-dom";
 import { useIntl } from "react-intl";
 import { useNavigate } from "react-router-dom";
@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { mark } from "@client/utils/markdown";
 import { noBase } from "@shared";
+
+const { enableMockReact } = __my_react_shared__;
 
 const tsxMd = `
 \`\`\`tsx
@@ -58,9 +60,12 @@ export const MainSection = () => {
           <Heading as="h1" fontSize={{ base: "2xl", md: "3xl", lg: "5xl" }} marginBottom="6" color="red.400">
             {formatMessage({ id: "@my-react" })}
           </Heading>
-          <Text fontSize={{ base: "xl", md: "3xl", lg: "4xl" }}>{formatMessage({ id: "description" })}</Text>
-          <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
+          <Text fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} as="div">
+            {formatMessage({ id: "description" })}
+          </Text>
+          <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%" as="div">
             This website is built with <Tag>@my-react</Tag> project. <br /> Version: @my-react/react [{reactVersion}]; @my-react/react-dom [{reactDOMVersion}]
+            (enableMockReact: <Checkbox isChecked={enableMockReact.current} readOnly />)
           </Text>
           <HStack marginTop="14" spacing="4" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "14px", xl: "16px" }}>
             <Button

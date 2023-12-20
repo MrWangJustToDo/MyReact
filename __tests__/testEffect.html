@@ -1,77 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-    <style>
-      .movearea {
-        transition: 0.3s background-color ease;
-      }
-    </style>
-  </head>
 
-  <body>
-    <div id="root"></div>
-    <script type="text/babel">
-      const { memo, useState, useCallback, useLayoutEffect, useEffect, useRef, useMemo, map, cloneElement, createContext } = React;
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <script src="../bundle/react.development.js"></script>
+  <script src="../bundle/react-dom.development.js"></script>
+  <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+  <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+  <style>
+    .movearea {
+      transition: 0.3s background-color ease;
+    }
+  </style>
+</head>
 
-      const Foo = ({ id }) => {
-        useLayoutEffect(() => {
-          console.log(id, "layout update");
-        });
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { memo, useState, useCallback, useLayoutEffect, useEffect, useRef, useMemo, map, cloneElement, createContext } = React;
 
-        useEffect(() => {
-          console.log(id, "update");
-        });
+    const Foo = ({ id }) => {
+      useLayoutEffect(() => {
+        console.log(id, "layout update");
+        return () => {
+          console.log(id, "before next layout effect");
+        }
+      });
 
-        return <div ref={() => console.log(id, "ref")}>123</div>;
-      };
+      useEffect(() => {
+        console.log(id, "update");
 
-      const useCounter = (init = 1) => {
-        const [count, setCount] = useState(init);
-        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
-        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+        return () => {
+          console.log(id, "before nextEffect")
+        }
+      });
 
-        return [count, i, j];
-      };
+      console.log(id, 'run');
 
-      const App = () => {
-        const [i, add] = useCounter();
+      return <div ref={() => console.log(id, "ref")}>123</div>;
+    };
 
-        useLayoutEffect(() => {
-          console.log("parent layout update");
-        });
+    const useCounter = (init = 1) => {
+      const [count, setCount] = useState(init);
+      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
 
-        useEffect(() => {
-          console.log("parent update");
-        });
+      return [count, i, j];
+    };
 
-        console.log('run app')
+    const App = () => {
+      const [i, add] = useCounter();
 
-        return (
-          <div ref={() => console.log("app", "div")}>
-            <Foo id="a" />
-            <Foo id="b" />
+      useLayoutEffect(() => {
+        console.log("parent layout update");
+
+        return () => {
+          console.log('parent before next layout effect')
+        }
+      });
+
+      useEffect(() => {
+        console.log("parent update");
+        return () => {
+          console.log('parent before next effect')
+        }
+      });
+
+      console.log('run app')
+
+      return (
+        <div ref={() => console.log("app", "div")}>
+          <Foo id="a" />
+          <Foo id="b" />
+          <>
+            <Foo id="c" />
             <>
-              <Foo id="c" />
-              <>
-                <Foo id="d" />
-              </>
+              <Foo id="d" />
             </>
-            <p ref={() => console.log("app", "p")}>{i}</p>
-            <button onClick={add}>add</button>
-          </div>
-        );
-      };
+          </>
+          <p ref={() => console.log("app", "p")}>{i}</p>
+          <button onClick={add}>add</button>
+        </div>
+      );
+    };
 
-      ReactDOM.render(<App />, document.querySelector("#root"));
-    </script>
-  </body>
+    ReactDOM.render(<App />, document.querySelector("#root"));
+  </script>
+</body>
+
 </html>

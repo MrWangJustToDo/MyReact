@@ -25,6 +25,7 @@
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.18",
     "@vanilla-extract/vite-plugin": "^3.9.3",
+    "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.55.0",
     "postcss": "^8.4.32",
     "postcss-preset-mantine": "^1.12.0",

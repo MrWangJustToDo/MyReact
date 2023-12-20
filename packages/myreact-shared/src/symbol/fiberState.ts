@@ -6,7 +6,9 @@ export enum STATE_TYPE {
   __skippedSync__ = 1 << 3,
   __inherit__ = 1 << 4,
   __triggerConcurrent__ = 1 << 5,
-  __triggerSync__ = 1 << 6,
-  __unmount__ = 1 << 7,
-  __hmr__ = 1 << 8,
+  __triggerConcurrentForce__ = 1 << 6,
+  __triggerSync__ = 1 << 7,
+  __triggerSyncForce__ = 1 << 8,
+  __unmount__ = 1 << 9,
+  __hmr__ = 1 << 10,
 }

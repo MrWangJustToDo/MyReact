@@ -37,7 +37,7 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
     if (_fiber.sibling) mountEffect(_fiber.sibling);
   };
 
-  const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
+  const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean): boolean => {
     const _result = safeCallWithFiber({
       fiber: _fiber,
       action: () => _dispatch.commitCreate(_fiber, _hydrate),

@@ -1,5 +1,6 @@
 import { __my_react_internal__ } from "@my-react/react";
 
+import { currentDevFiber } from "./env";
 import { afterSyncUpdate, beforeSyncUpdate } from "./sync";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -22,9 +23,7 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
   { action, fiber, fallback }: { action: (...args: T) => K; fiber: MyReactFiberNode; fallback?: () => K },
   ...args: T
 ): K => {
-  const last = currentRunningFiber.current;
-
-  currentRunningFiber.current = fiber;
+  currentDevFiber.current = fiber;
   try {
     return action.call(null, ...args);
   } catch (e) {
@@ -34,7 +33,7 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
 
     return fallback?.();
   } finally {
-    currentRunningFiber.current = last;
+    currentDevFiber.current = null;
   }
 };
 

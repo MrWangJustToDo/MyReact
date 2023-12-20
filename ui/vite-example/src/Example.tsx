@@ -15,14 +15,14 @@ export const Example = () => {
       <Space h="md" />
       <ColorInput variant="filled" radius="xs" label="Input label" description="Input description" placeholder="Input placeholder" />
       <Space h="md" />
-      <ColorPicker onChange={(e) => console.log(typeof e)} />
+      <ColorPicker onChange={(e) => console.warn(e)} />
       <Space h="md" />
       <Fieldset legend="Personal information" variant="filled">
         <TextInput label="Your name" placeholder="Your name" />
         <TextInput label="Email" placeholder="Email" mt="md" />
       </Fieldset>
       <Space h="md" />
-      <FileInput label="Input label" variant="filled" description="Input description" placeholder="Input placeholder" />
+      <FileInput label="Input label" variant="filled" description="Input description" />
       <Space h="md" />
       <JsonInput
         label="Your package.json"

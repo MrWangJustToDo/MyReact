@@ -68,11 +68,11 @@ type DefaultRenderDispatch = {
 
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void;
 
-  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void;
+  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void, option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void;
 
-  pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void;
+  pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void, option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void;
 
-  pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void): void;
+  pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void, option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void;
 
   patchToFiberInitial?: (_fiber: MyReactFiberNode) => void;
 

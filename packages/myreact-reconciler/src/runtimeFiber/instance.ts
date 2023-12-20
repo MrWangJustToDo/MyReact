@@ -17,12 +17,6 @@ const { enableConcurrentMode } = __my_react_shared__;
 
 export const emptyProps = {};
 
-export type PendingStateType = {
-  isForce: boolean;
-  callback: Array<() => void>;
-  pendingState: Record<string, unknown>;
-};
-
 export class MyReactFiberNode implements RenderFiber {
   ref: MyReactElement["ref"];
 
@@ -58,7 +52,7 @@ export class MyReactFiberNode implements RenderFiber {
 
   memoizedProps: MyReactElement["props"] = emptyProps;
 
-  pendingState: PendingStateType;
+  pendingState: Record<string, unknown>;
 
   memoizedState: Record<string, unknown>;
 
@@ -120,7 +114,17 @@ export class MyReactFiberNode implements RenderFiber {
         ? processClassComponentUpdateQueue(this, flag)
         : processFunctionComponentUpdateQueue(this, flag);
 
-      if (updateState?.needUpdate) this._update(updateState.isSync ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__triggerConcurrent__);
+      if (updateState?.needUpdate) {
+        if (updateState.isSync) {
+          renderPlatform.microTask(() =>
+            triggerUpdate(this, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback)
+          );
+        } else {
+          renderPlatform.microTask(() =>
+            triggerUpdate(this, updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__, updateState.callback)
+          );
+        }
+      }
     };
 
     if (initial) {

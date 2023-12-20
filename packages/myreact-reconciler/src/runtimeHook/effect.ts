@@ -66,7 +66,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
 
         const storeApi = hookNode.value;
 
-        hookNode.cancel = storeApi.subscribe(() => hookNode._ownerFiber?._update?.(STATE_TYPE.__triggerConcurrent__));
+        hookNode.cancel = storeApi.subscribe(() => hookNode._internalDispatch({ isForce: true }));
 
         hookNode.effect = false;
 

@@ -120,20 +120,20 @@ export class CustomRenderDispatch implements RenderDispatch {
 
     defaultGenerateUnmountMap(_fiber, _pendingUnmount, this.runtimeMap.unmountMap);
   }
-  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
+  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void, option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void {
     _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__effect__);
 
-    defaultGenerateEffectMap(_fiber, _effect, this.runtimeMap.effectMap);
+    defaultGenerateEffectMap(_fiber, _effect, this.runtimeMap.effectMap, option);
   }
-  pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
+  pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void, option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void {
     _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__layoutEffect__);
 
-    defaultGenerateEffectMap(_fiber, _layoutEffect, this.runtimeMap.layoutEffectMap);
+    defaultGenerateEffectMap(_fiber, _layoutEffect, this.runtimeMap.layoutEffectMap, option);
   }
-  pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void): void {
+  pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void, option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void {
     _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__insertionEffect__);
 
-    defaultGenerateEffectMap(_fiber, _insertionEffect, this.runtimeMap.insertionEffectMap);
+    defaultGenerateEffectMap(_fiber, _insertionEffect, this.runtimeMap.insertionEffectMap, option);
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     void 0;

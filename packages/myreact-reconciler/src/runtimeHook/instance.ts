@@ -47,7 +47,24 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
       type: UpdateQueueType.hook,
       trigger: this,
       payLoad: action,
+      isForce: false,
       isSync: enableSyncFlush.current,
+      isInitial: this._ownerFiber?.mode === 0,
+    };
+
+    const renderPlatform = currentRenderPlatform.current;
+
+    renderPlatform?.dispatchState(updater);
+  };
+
+  _internalDispatch = (params: { isForce?: boolean; callback?: () => void }) => {
+    const updater: HookUpdateQueue = {
+      type: UpdateQueueType.hook,
+      trigger: this,
+      payLoad: a => a,
+      isSync: enableSyncFlush.current,
+      isForce: params.isForce,
+      callback: params.callback,
       isInitial: this._ownerFiber?.mode === 0,
     };
 

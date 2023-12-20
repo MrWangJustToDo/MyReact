@@ -11,9 +11,7 @@ export const defaultGenerateUnmountMap = (fiber: MyReactFiberNode, unmount: MyRe
 
   const newList = generateFiberToList(unmount);
 
-  list.concat(newList);
-
-  map.set(fiber, list);
+  map.set(fiber, list.concat(newList));
 };
 
 export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: CustomRenderDispatch) => {

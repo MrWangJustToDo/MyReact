@@ -5,10 +5,25 @@ import { safeCallWithFiber } from "../share";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-export const defaultGenerateEffectMap = (fiber: MyReactFiberNode, effect: () => void, map: WeakMap<MyReactFiberNode, ListTree<() => void>>) => {
+export const defaultGenerateEffectMap = (
+  fiber: MyReactFiberNode,
+  effect: () => void,
+  map: WeakMap<MyReactFiberNode, ListTree<() => void>>,
+  option?: { stickyToHead?: boolean; stickyToFoot?: boolean }
+) => {
   const list = map.get(fiber) || new ListTree();
 
-  list.push(effect);
+  if (option) {
+    if (option.stickyToHead) {
+      list.pushToHead(effect);
+    } else if (option.stickyToFoot) {
+      list.pushToLast(effect);
+    } else {
+      list.push(effect);
+    }
+  } else {
+    list.push(effect);
+  }
 
   map.set(fiber, list);
 };

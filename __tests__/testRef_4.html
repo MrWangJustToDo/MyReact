@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../bundle/react.18.development.js"></script>
+  <script src="../bundle/react-dom.18.development.js"></script>
+  <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+  <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef, useEffect, } = React;
+
+    const B = ({ onChange }) => {
+      const [value, setValue] = useState('');
+
+      const handleChange = (e) => {
+        const v = e.target.value;
+        setValue(v);
+        console.log('run')
+        onChange?.(v);
+      }
+
+      console.log('ttt')
+
+      return <input value={value} onChange={handleChange} />
+    }
+
+    const App = () => {
+      const [a, setA] = useState('');
+
+      const [b, setB] = useState('')
+
+      const aRef = useRef();
+
+      const inputRef = useRef();
+
+      const handleInput = (v) => {
+        // requestAnimationFrame(() => {
+          setA(() => {
+            console.warn('inner', React?.__my_react_internal__?.currentRunningFiber?.current)
+            aRef.current = v;
+            return v
+          });
+
+          console.warn('outer', React?.__my_react_internal__?.currentRunningFiber?.current)
+
+          setB(aRef.current);
+        // })
+      }
+
+      return <><input ref={inputRef} value={b} onChange={e => handleInput(e.target.value)} />
+        <B onChange={handleInput} />
+      </>
+    }
+
+    ReactDOM.createRoot(root).render(<App />);
+  </script>
+</body>
+
+</html>

@@ -90,6 +90,7 @@ export class MyReactComponent<
       payLoad,
       callback,
       trigger: this,
+      isForce: false,
       isSync: enableSyncFlush.current,
       isInitial: this._ownerFiber?.mode === 0,
     };
@@ -102,8 +103,8 @@ export class MyReactComponent<
   forceUpdate = () => {
     const updater: ComponentUpdateQueue = {
       type: UpdateQueueType.component,
-      isForce: true,
       trigger: this,
+      isForce: true,
       isSync: enableSyncFlush.current,
       isInitial: this._ownerFiber?.mode === 0,
     };

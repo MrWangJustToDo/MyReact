@@ -14,7 +14,7 @@ export type UpdateQueueDev = UpdateQueue<{
   _debugAfterValue: any;
   _debugBaseValue: any;
   _debugRunTime: number;
-  _debugUpdateState: { needUpdate: boolean; isSync: boolean };
+  _debugUpdateState: { needUpdate: boolean; isSync: boolean; isForce: boolean; callbacks: (() => void)[] };
 }>;
 
 const { currentComponentFiber, currentRunningFiber } = __my_react_internal__;
@@ -49,8 +49,13 @@ export const processState = (_params: UpdateQueue) => {
     if (!renderDispatch.enableUpdate) return;
 
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
+      const currentRFiber = currentRunningFiber.current as MyReactFiberNode;
+
+      const currentCFiber = currentComponentFiber.current as MyReactFiberNode;
+
       const now = Date.now();
-      if (lastRenderComponentFiber === currentComponentFiber.current) {
+
+      if (lastRenderComponentFiber === currentCFiber) {
         if (lastRenderComponentTimeStep && now - lastRenderComponentTimeStep < 4) {
           renderCount++;
         } else {
@@ -59,8 +64,10 @@ export const processState = (_params: UpdateQueue) => {
       } else {
         renderCount = 0;
       }
+
       if (renderCount > MAX_UPDATE_COUNT) {
         renderCount = 0;
+
         throw new Error(
           `[@my-react/react] look like there are infinity update for current component ${
             currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)
@@ -68,14 +75,16 @@ export const processState = (_params: UpdateQueue) => {
         );
       } else if (!isErrorBoundariesComponent(ownerFiber)) {
         const triggeredElementName = getElementName(ownerFiber);
-        const currentElementName = getElementName(currentComponentFiber.current as MyReactFiberNode);
+        const currentElementName = getElementName(currentCFiber);
+
         onceWarnWithKeyAndFiber(
-          currentRunningFiber.current as MyReactFiberNode,
+          currentRFiber,
           `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
           `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
         );
       }
-      lastRenderComponentFiber = currentComponentFiber.current;
+
+      lastRenderComponentFiber = currentCFiber;
       lastRenderComponentTimeStep = now;
     }
 
@@ -94,8 +103,13 @@ export const processState = (_params: UpdateQueue) => {
     if (!renderDispatch.enableUpdate) return;
 
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
+      const currentRFiber = currentRunningFiber.current as MyReactFiberNode;
+
+      const currentCFiber = currentComponentFiber.current as MyReactFiberNode;
+
       const now = Date.now();
-      if (lastRenderComponentFiber === currentComponentFiber.current) {
+
+      if (lastRenderComponentFiber === currentCFiber) {
         if (lastRenderComponentTimeStep && now - lastRenderComponentTimeStep < 4) {
           renderCount++;
         } else {
@@ -104,6 +118,7 @@ export const processState = (_params: UpdateQueue) => {
       } else {
         renderCount = 0;
       }
+
       if (renderCount > MAX_UPDATE_COUNT) {
         renderCount = 0;
         throw new Error(
@@ -113,14 +128,14 @@ export const processState = (_params: UpdateQueue) => {
         );
       } else if (!isErrorBoundariesComponent(ownerFiber)) {
         const triggeredElementName = getElementName(ownerFiber);
-        const currentElementName = getElementName(currentComponentFiber.current as MyReactFiberNode);
+        const currentElementName = getElementName(currentCFiber);
         onceWarnWithKeyAndFiber(
-          currentRunningFiber.current as MyReactFiberNode,
+          currentRFiber,
           `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
           `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
         );
       }
-      lastRenderComponentFiber = currentComponentFiber.current;
+      lastRenderComponentFiber = currentCFiber;
       lastRenderComponentTimeStep = now;
     }
 

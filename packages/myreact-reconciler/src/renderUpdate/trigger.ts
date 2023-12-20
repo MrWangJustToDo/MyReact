@@ -3,7 +3,7 @@ import { STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { unmountFiber } from "../dispatchUnmount";
-import { currentTriggerFiber, devError, devWarn, fiberToDispatchMap } from "../share";
+import { NODE_TYPE, currentDevFiber, currentTriggerFiber, devError, devWarn, fiberToDispatchMap } from "../share";
 
 import { updateConcurrentFromRoot, updateConcurrentFromTrigger, updateSyncFromRoot, updateSyncFromTrigger } from "./feature";
 
@@ -12,7 +12,7 @@ import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
 
-const { globalLoop, currentRenderPlatform, currentRunningFiber } = __my_react_internal__;
+const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 
 const { enableConcurrentMode, enableLoopFromRoot } = __my_react_shared__;
 
@@ -57,7 +57,10 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
 
       renderDispatch.runtimeFiber.nextWorkingFiber = renderDispatch.rootFiber;
 
-      if (!enableConcurrentMode.current || allLive.some((f) => include(f.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__))) {
+      if (
+        !enableConcurrentMode.current ||
+        allLive.some((f) => include(f.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__))
+      ) {
         updateSyncFromRoot(renderDispatch, () => scheduleNext(renderDispatch));
       } else {
         updateConcurrentFromRoot(renderDispatch, () => scheduleNext(renderDispatch));
@@ -85,7 +88,7 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
     }
 
     if (nextWorkFiber) {
-      if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__)) {
+      if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 
         if (__DEV__) currentTriggerFiber.current = nextWorkFiber;
@@ -97,7 +100,7 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
         } else {
           updateSyncFromTrigger(renderDispatch, () => scheduleNext(renderDispatch));
         }
-      } else if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__)) {
+      } else if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__ | STATE_TYPE.__triggerConcurrentForce__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 
         if (__DEV__) currentTriggerFiber.current = nextWorkFiber;
@@ -119,7 +122,7 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
         }
       } else {
         // TODO
-        throw new Error(`[@my-react/react] unknown state, ${nextWorkFiber.state}, ${nextWorkFiber}`);
+        throw new Error(`[@my-react/react] unknown state, ${nextWorkFiber.state}`);
       }
     } else {
       if (__DEV__) currentTriggerFiber.current = null;
@@ -190,7 +193,13 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
 
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 
-  cb && renderDispatch.pendingEffect(fiber, cb);
+  if (cb) {
+    if (include(fiber.type, NODE_TYPE.__class__)) {
+      renderDispatch.pendingLayoutEffect(fiber, cb, { stickyToFoot: true });
+    } else {
+      renderDispatch.pendingEffect(fiber, cb, { stickyToFoot: true });
+    }
+  }
 
   if (globalLoop.current) return;
 
@@ -213,7 +222,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
     const payloadState = typedComponent.getDerivedStateFromError?.(error);
 
-    errorBoundariesFiber.memoizedState = Object.assign({}, errorBoundariesFiber.pendingState.pendingState);
+    errorBoundariesFiber.memoizedState = Object.assign({}, errorBoundariesFiber.pendingState);
 
     typedInstance.setState(payloadState, () => {
       typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
@@ -234,13 +243,11 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
       currentTriggerFiber.current = null;
 
-      const last = currentRunningFiber.current;
-
-      currentRunningFiber.current = fiber;
+      currentDevFiber.current = fiber;
 
       devError(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
 
-      currentRunningFiber.current = last;
+      currentDevFiber.current = null;
 
       unmountFiber(rootFiber);
 

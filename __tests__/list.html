@@ -90,7 +90,7 @@
       }
     }
 
-    class List extends Component {
+    class List extends PureComponent {
       constructor(props) {
         super(props);
         this.hover = false;
@@ -284,7 +284,7 @@
         }, 1000);
       }, []);
 
-      console.log(pending);
+      // console.log(pending, list);
 
       return <List list={list} />;
     };

@@ -12,7 +12,7 @@ const ApiSection = __REACT__ && !__STREAM__ ? _ApiSection : lazy(() => import("@
 const Page = () => {
   return (
     <Box fontFamily='fantasy'>
-      <ScrollControl initialSectionLength={1}>
+      <ScrollControl initialSectionLength={4}>
         <ScrollContent>
           <ScrollSection>
             <MainSection />

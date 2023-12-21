@@ -9,16 +9,17 @@ import type { ReactNode } from "react";
 
 export const _Section = ({ children }: { children: ReactNode }) => {
   const { ref } = useScrollSection();
-  const { scrollYProgress } = useScroll({ target: ref, axis: "y", offset: ["0 0.45", "1 0.6"] });
-  const opacity = useTransform(scrollYProgress, [1, 0.5, 0], [0, 1, 0]);
-  const y = useTransform(scrollYProgress, [1, 0.45, 0], [-150, 0, 150]);
+  const { scrollYProgress } = useScroll({ target: ref, axis: "y", offset: ['-0.5', '0.5'] });
+
+  const opacity = useTransform(scrollYProgress, [0, 0.3, 0.65, 1], [0.3, 1, 1, 0.5]);
+  const y = useTransform(scrollYProgress, [0, 0.3, 0.65, 1], [100, 0, 0, -100]);
 
   useEffect(() => {
     scrollYProgress.onChange(console.log);
     return () => scrollYProgress.clearListeners();
   }, [scrollYProgress]);
 
-  return <motion.div style={{ opacity, y }}>{children}</motion.div>;
+  return <motion.div style={{ opacity, y, }}>{children}</motion.div>;
 };
 
 export const Section = ({ children }: { children: ReactNode }) => {

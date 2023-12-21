@@ -1,4 +1,5 @@
 import { Text, Icon, Link, Flex, Box } from "@chakra-ui/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 import { AiFillHeart } from "react-icons/ai";
 
@@ -23,7 +24,43 @@ const _Footer = () => {
         </Text>
       </Flex>
       <Text fontSize="sm" marginTop="2.5" marginBottom="9" color="lightTextColor">
-        <Time>{({ time, isMount }) => (isMount ? time : "")}</Time>
+        <Time>
+          {({ time, isMount }) => {
+            if (!isMount) {
+              return "";
+            }
+            return (
+              <AnimatePresence exitBeforeEnter>
+                <motion.div
+                  key={time}
+                  initial="initial"
+                  animate="in"
+                  exit="out"
+                  variants={{
+                    initial: {
+                      opacity: 0.2,
+                      translateY: -14,
+                    },
+                    in: {
+                      opacity: 1,
+                      translateY: 0,
+                    },
+                    out: {
+                      opacity: 0.2,
+                      translateY: 14,
+                    },
+                  }}
+                  transition={{
+                    type: 'tween',
+                    duration: 0.12,
+                  }}
+                >
+                  {time}
+                </motion.div>
+              </AnimatePresence>
+            );
+          }}
+        </Time>
         {/* {isMounted ? new Date().getFullYear() : ""} */}
       </Text>
     </Box>

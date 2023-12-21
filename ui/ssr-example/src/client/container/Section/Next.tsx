@@ -1,5 +1,6 @@
 import { Box, Button, Container, Flex, HStack, Heading, Spacer, Tag, Text, Tooltip, chakra, useColorModeValue } from "@chakra-ui/react";
 
+import { Section } from "@client/component";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { mark } from "@client/utils/markdown";
 
@@ -47,7 +48,7 @@ export const NextSection = () => {
 
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh">
-      <Flex justifyContent="space-between" marginTop="4%" flexDirection={{ base: "column", md: "row" }}>
+      <Flex justifyContent="center" marginTop="4%" flexDirection={{ base: "column", md: "row" }}>
         <Box
           alignSelf="flex-start"
           marginLeft={{ base: "4%", md: "6%", lg: "8%" }}
@@ -97,24 +98,26 @@ export const NextSection = () => {
             </Tooltip>
           </HStack>
         </Box>
-        <Box
-          className="typo"
-          overflow={{ base: "hidden", lg: "auto" }}
-          border="1px solid"
-          borderColor="cardBorderColor"
-          marginRight={{ base: "4%", md: "16%" }}
-          marginTop={{ base: "10%", md: "0" }}
-          marginLeft={{ base: "4%", md: "1%" }}
-          marginBottom={{ base: "6%" }}
-          borderRadius="0.8em"
-          fontSize={{ base: "sm", lg: "medium" }}
-          sx={{
-            ["pre"]: {
-              margin: "0",
-            },
-          }}
-          dangerouslySetInnerHTML={{ __html: renderBody }}
-        />
+        <Section>
+          <Box
+            className="typo"
+            overflow={{ base: "hidden", lg: "auto" }}
+            border="1px solid"
+            borderColor="cardBorderColor"
+            marginRight={{ base: "4%", md: "16%" }}
+            marginTop={{ base: "10%", md: "0" }}
+            marginLeft={{ base: "4%", md: "1%" }}
+            marginBottom={{ base: "6%" }}
+            borderRadius="0.8em"
+            fontSize={{ base: "sm", lg: "medium" }}
+            sx={{
+              ["pre"]: {
+                margin: "0",
+              },
+            }}
+            dangerouslySetInnerHTML={{ __html: renderBody }}
+          />
+        </Section>
       </Flex>
       {Preview}
     </Container>

@@ -52,7 +52,10 @@ export const updateFiberNode = (
       const compare = typedElementType.compare || isNormalEquals;
 
       if (
-        exclude(fiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__) &&
+        exclude(
+          fiber.state,
+          STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__ | STATE_TYPE.__triggerSyncForce__ | STATE_TYPE.__triggerConcurrentForce__
+        ) &&
         compare(fiber.pendingProps, fiber.memoizedProps)
       ) {
         fiber.state = STATE_TYPE.__stable__;

@@ -18,7 +18,7 @@ export const processClassComponentUpdateQueue = (
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (exclude(fiber.type, NODE_TYPE.__class__))
-    throw new Error("[@my-react/react] current fiber is not a class component, look like a internal bug for @my-react");
+    throw new Error("[@my-react/react] current fiber is not a class component, look like a bug for @my-react");
 
   const renderPlatform = currentRenderPlatform.current;
 
@@ -155,7 +155,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (exclude(fiber.type, NODE_TYPE.__function__))
-    throw new Error("[@my-react/react] current fiber is not a function component, look like a internal bug for @my-react");
+    throw new Error("[@my-react/react] current fiber is not a function component, look like a bug for @my-react");
 
   const renderPlatform = currentRenderPlatform.current;
 

@@ -1,7 +1,7 @@
 import { isCommentStartElement, NODE_TYPE } from "@my-react/react-reconciler";
 import { include, PATCH_TYPE, remove } from "@my-react/react-shared";
 
-import { escapeHtml, isSingleTag, validDomNesting, validDomTag } from "@my-react-dom-shared";
+import { escapeHtml, isServer, isSingleTag, validDomNesting, validDomTag } from "@my-react-dom-shared";
 
 import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
 import { getSerializeProps } from "./update";
@@ -31,7 +31,7 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatc
         fiber.nativeNode = new CommentEndElement();
       }
     } else {
-      throw new Error("[@my-react/react-dom] createPortal() can not call on the server");
+      if (isServer) throw new Error("[@my-react/react-dom] createPortal() can not call on the server");
     }
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__create__);
@@ -94,7 +94,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
 
       fiber.patch = PATCH_TYPE.__initial__;
     } else {
-      throw new Error("[@my-react/react-dom] createPortal() can not call on the server");
+      if (isServer) throw new Error("[@my-react/react-dom] createPortal() can not call on the server");
     }
   }
 };

@@ -218,13 +218,13 @@
       return (
         <div>
           <Inner time={time} />
-          <ChildrenRender foo ggg={{ x: '1' }} />
+          <ChildrenRender foo ggg />
         </div>
       );
     };
 
     const container = document.getElementById("root");
-    ReactDOM.render(<TestMemo />, container);
+    ReactDOM.render(<TestContext />, container);
   </script>
 </body>
 

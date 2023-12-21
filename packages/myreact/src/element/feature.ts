@@ -92,14 +92,14 @@ export const forwardRef = <P extends Record<string, unknown> = any, T extends Cr
  */
 export const memo = <P extends Record<string, unknown> = any>(
   render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown },
-  compare = defaultCompare<P>
+  compare?: typeof defaultCompare<P>
 ) => {
   const objectType: {
     [TYPEKEY]: symbol;
     prototype?: any;
     displayName?: string;
     defaultProps?: Record<string, unknown>;
-    compare: typeof defaultCompare<P>;
+    compare?: typeof defaultCompare<P>;
     render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown };
   } = {
     [TYPEKEY]: Memo,

@@ -3,7 +3,7 @@ import { createStoreWithComponent, onMounted, onUnmounted, ref } from "reactivit
 
 export const Time = createStoreWithComponent({
   setup: () => {
-    const time = ref<string>('');
+    const time = ref<string>(dayjs().format("YYYY-MM-DD  HH:mm:ss"));
 
     const isMount = ref(false);
 

@@ -40,7 +40,7 @@ export const RenderMatch = () => {
                   scale: 1,
                   transformOrigin: "center top",
                   borderRadius: 0,
-                  boxShadow: "1px 1px 0px 0px rgba(0, 0, 0, 0.1), 1px -1px 0px 0px rgba(0, 0, 0, 0.1)",
+                  boxShadow: "0px 0px 0px 0px rgba(0, 0, 0, 0.1), 0px 0px 0px 0px rgba(0, 0, 0, 0.1)",
                 },
                 out: {
                   opacity: 0,

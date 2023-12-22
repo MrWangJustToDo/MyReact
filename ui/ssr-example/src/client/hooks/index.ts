@@ -1,4 +1,5 @@
 export * from "./useLang";
+export * from "./useFoot";
 export * from "./useSize";
 export * from "./useUpdate";
 export * from "./usePreLoad";

@@ -1,17 +1,19 @@
 import { Box, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-import { useDomSize, useIsMounted } from "@client/hooks";
+import { useDebouncedState, useDomSize, useFoot, useIsMounted } from "@client/hooks";
 
 import type { GetInitialStateType } from "@client/types/common";
 import type { Tldraw as TldrawProview } from "@tldraw/tldraw";
+
+const { enable, disable } = useFoot.getActions();
 
 export default function Tldraw({ isDarkMode }: { isDarkMode: boolean }) {
   const { height } = useDomSize({ cssSelector: ".site-header" });
 
   const isMounted = useIsMounted();
 
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useDebouncedState(true, 3000);
 
   const [Render, setRender] = useState<typeof TldrawProview>(() => () => null);
 
@@ -25,9 +27,15 @@ export default function Tldraw({ isDarkMode }: { isDarkMode: boolean }) {
       setRender(() => Tldraw);
 
       setLoading(false);
+
+      disable();
     };
 
     fetch();
+
+    return () => {
+      enable();
+    };
   }, []);
 
   const darkMode = isMounted ? _isDarkMode : isDarkMode;

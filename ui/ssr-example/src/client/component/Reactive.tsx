@@ -54,4 +54,4 @@ export const Reactive = __REACT__
 
         return Element;
       },
-    });
+    }) as () => JSX.Element;

@@ -3,7 +3,7 @@ import { Component, createElement, useState, useCallback, useMemo } from "@my-re
 import { proxyRefs, ReactiveEffect } from "../api";
 
 import type { UnwrapRef } from "../api";
-import type { MyReactElementNode, LikeJSX, MyReactElement } from "@my-react/react";
+import type { LikeReactNode } from "@my-react/react";
 
 type LifeCycle = {
   onBeforeMount: Array<() => void>;
@@ -30,13 +30,13 @@ export let globalInstance: LifeCycle | null = null;
 
 export function createReactive<P extends Record<string, unknown>, S extends Record<string, unknown>>(props?: {
   setup: () => S;
-  render?: (props: UnwrapRef<S> & P) => LikeJSX;
+  render?: (props: UnwrapRef<S> & P) => LikeReactNode;
 }) {
   const setup = typeof props === "function" ? props : props.setup;
 
   const render = typeof props === "function" ? null : props.render;
 
-  class ForBeforeUnmount extends Component<{ ["$$__instance__$$"]: LifeCycle; children: MyReactElementNode }> {
+  class ForBeforeUnmount extends Component<{ ["$$__instance__$$"]: LifeCycle; children: LikeReactNode }> {
     componentWillUnmount(): void {
       this.props.$$__instance__$$.onBeforeUnmount.forEach((f) => f());
     }
@@ -46,7 +46,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     }
   }
 
-  class ForBeforeMount extends Component<{ ["$$__instance__$$"]: LifeCycle; children: MyReactElementNode }> {
+  class ForBeforeMount extends Component<{ ["$$__instance__$$"]: LifeCycle; children: LikeReactNode }> {
     componentDidMount(): void {
       this.props.$$__instance__$$.onBeforeMount.forEach((f) => f());
     }
@@ -61,7 +61,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
       ["$$__trigger__$$"]: () => void;
       ["$$__instance__$$"]: LifeCycle;
       ["$$__reactiveState__$$"]: UnwrapRef<S>;
-      children?: (props: UnwrapRef<S> & P) => MyReactElementNode;
+      children?: (props: UnwrapRef<S> & P) => LikeReactNode;
     } & P
   > {
     componentDidMount(): void {
@@ -86,7 +86,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
 
     effect = new ReactiveEffect(() => {
       const { children, $$__trigger__$$, $$__reactiveState__$$, $$__instance__$$, ...last } = this.props;
-      const targetRender = (render || children) as (props: UnwrapRef<S> & P) => MyReactElementNode;
+      const targetRender = (render || children) as (props: UnwrapRef<S> & P) => LikeReactNode;
       const element = targetRender?.({ ...last, ...$$__reactiveState__$$ } as UnwrapRef<S> & P) || null;
       return element;
     }, this.props.$$__trigger__$$);
@@ -100,7 +100,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     {
       ["$$__trigger__$$"]: () => void;
       ["$$__reactiveState__$$"]: UnwrapRef<S>;
-      children?: (props: UnwrapRef<S> & P) => MyReactElementNode;
+      children?: (props: UnwrapRef<S> & P) => LikeReactNode;
     } & P
   > {
     componentWillUnmount(): void {
@@ -109,7 +109,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
 
     effect = new ReactiveEffect(() => {
       const { children, $$__trigger__$$, $$__reactiveState__$$, $$__instance__$$, ...last } = this.props;
-      const targetRender = (render || children) as (props: UnwrapRef<S> & P) => MyReactElementNode;
+      const targetRender = (render || children) as (props: UnwrapRef<S> & P) => LikeReactNode;
       const element = targetRender?.({ ...last, ...$$__reactiveState__$$ } as UnwrapRef<S> & P) || null;
       return element;
     }, this.props.$$__trigger__$$);
@@ -119,7 +119,7 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
     }
   }
 
-  const MyReactReactiveComponent = (props: P & { children?: (props: UnwrapRef<S> & P) => MyReactElement }) => {
+  const MyReactReactiveComponent = (props: P & { children?: (props: UnwrapRef<S> & P) => LikeReactNode }) => {
     const [instance] = useState(() => ({
       onBeforeMount: [],
       onBeforeUpdate: [],
@@ -169,9 +169,9 @@ export function createReactive<P extends Record<string, unknown>, S extends Reco
           ["$$__reactiveState__$$"]: state,
           ["$$__instance__$$"]: instance,
         }),
-      });
+      }) as LikeReactNode;
     } else {
-      return createElement(Render, { ...props, ["$$__trigger__$$"]: updateCallback, ["$$__reactiveState__$$"]: state });
+      return createElement(Render, { ...props, ["$$__trigger__$$"]: updateCallback, ["$$__reactiveState__$$"]: state }) as LikeReactNode;
     }
   };
 

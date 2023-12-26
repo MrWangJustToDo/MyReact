@@ -73,6 +73,13 @@ export type MyReactElementType<P extends Record<string, unknown> = any, S extend
   | MixinMyReactClassComponent<P, S, C>
   | MixinMyReactFunctionComponent<P>;
 
+type LikePortal = LikeJSX & { children: LikeReactNode };
+
+/**
+ * @public
+ */
+export type LikeReactNode = LikeJSX | string | number | boolean | null | undefined | LikePortal;
+
 /**
  * @public
  */

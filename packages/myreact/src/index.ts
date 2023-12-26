@@ -178,6 +178,7 @@ export type { UpdateQueue, ComponentUpdateQueue, HookUpdateQueue } from "./rende
 
 export type {
   LikeJSX,
+  LikeReactNode,
   Props,
   ContextObjectType,
   CreateElementProps,

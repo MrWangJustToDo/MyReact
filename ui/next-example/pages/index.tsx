@@ -2,9 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense, lazy } from "react";
 
+import type { GetServerSideProps } from "next";
+
+const delay = (time: number) => new Promise((r) => setTimeout(r, time));
+
 const Bar = lazy(() => import("../components/Bar").then(({ Bar }) => ({ default: Bar })));
 
-export default function Home() {
+export default function Home(props) {
+  console.log(props);
   return (
     <main className={`flex min-h-screen flex-col items-center justify-between p-24`}>
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
@@ -97,3 +102,10 @@ export default function Home() {
     </main>
   );
 }
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  await delay(2000);
+  return {
+    props: { a: 1, b: 2, c: 3, d: 4 },
+  };
+};

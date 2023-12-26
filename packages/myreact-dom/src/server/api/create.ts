@@ -66,16 +66,26 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
       // <!doctype html>
       if (fiber.elementType === "html" && !renderDispatch._hasSetDoctype) {
         renderDispatch._hasSetDoctype = true;
-        stream.push("<!doctype html>");
+        stream.push("<!DOCTYPE html>");
       }
 
       if (isSingleTag[fiber.elementType as string]) {
-        stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}/>`);
+        const serializeProps = getSerializeProps(fiber, isSVG);
+        if (serializeProps) {
+          stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}/>`);
+        } else {
+          stream.push(`<${fiber.elementType as string}/>`)
+        }
 
         // TODO
         fiber.patch = PATCH_TYPE.__initial__;
       } else {
-        stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}>`);
+        const serializeProps = getSerializeProps(fiber, isSVG);
+        if (serializeProps) {
+          stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}>`);
+        } else {
+          stream.push(`<${fiber.elementType as string}>`)
+        }
 
         if (fiber.pendingProps["dangerouslySetInnerHTML"]) {
           const typedProps = fiber.pendingProps["dangerouslySetInnerHTML"] as Record<string, unknown>;

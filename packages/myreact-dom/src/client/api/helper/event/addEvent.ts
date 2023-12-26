@@ -45,7 +45,7 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
 
   const pendingProps = fiber.pendingProps;
 
-  const callback = pendingProps[key] as (...args: any[]) => void;
+  const callback = pendingProps[key] as ((...args: any[]) => void) & { _attached?: number };
 
   let targetCallback = callback;
 
@@ -69,10 +69,24 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
     const eventName = `${nativeName}_${isCapture}`;
 
     if (eventState[eventName]) {
+      const prevCallback = eventState[eventName].cb;
+
+      targetCallback._attached = prevCallback?._attached || Date.now();
+
       eventState[eventName].cb = targetCallback;
     } else {
       const eventDispatcher: ((...args: any[]) => void) & { cb?: any } = (...args: any[]) => {
+        if (!eventDispatcher.cb || typeof eventDispatcher.cb !== "function") return;
+
         const e = args[0];
+
+        if (!isCapture) {
+          if (!e._dispatched) {
+            e._dispatched = Date.now();
+          } else if (e._dispatched <= eventDispatcher.cb._attached) {
+            return;
+          }
+        }
 
         wrapper(e);
 
@@ -93,6 +107,8 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
 
         afterEvent(nativeName);
       };
+
+      targetCallback._attached = Date.now();
 
       eventDispatcher.cb = targetCallback;
 

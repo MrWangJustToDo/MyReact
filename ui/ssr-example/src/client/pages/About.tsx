@@ -56,7 +56,7 @@ export default function About() {
   }, [navigate]);
 
   return (
-    <Container maxWidth={CONTAINER_WIDTH} position="relative" height={`calc(100vh - ${height}px)`} onClick={e => console.log(e)}>
+    <Container maxWidth={CONTAINER_WIDTH} position="relative" height={`calc(100vh - ${height}px)`}>
       <Table
         dataSource={data}
         containerProps={{

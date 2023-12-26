@@ -1,5 +1,4 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useEffect } from "react";
 
 import { useIsMounted } from "../hooks";
 
@@ -13,11 +12,6 @@ export const _Section = ({ children }: { children: ReactNode }) => {
 
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.65, 1], [0.3, 1, 1, 0.5]);
   const y = useTransform(scrollYProgress, [0, 0.3, 0.65, 1], [100, 0, 0, -100]);
-
-  useEffect(() => {
-    scrollYProgress.onChange(console.log);
-    return () => scrollYProgress.clearListeners();
-  }, [scrollYProgress]);
 
   return <motion.div style={{ opacity, y, }}>{children}</motion.div>;
 };

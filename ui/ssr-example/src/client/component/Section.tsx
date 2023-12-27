@@ -19,9 +19,7 @@ export const _Section = ({ children }: { children: ReactNode }) => {
 export const Section = ({ children }: { children: ReactNode }) => {
   const isMounted = useIsMounted();
 
-  if (isMounted) {
-    return <_Section key="1">{children}</_Section>;
-  } else {
-    return <_Section key="2">{children}</_Section>;
-  }
+  if (isMounted) return <_Section>{children}</_Section>;
+
+  return children;
 };

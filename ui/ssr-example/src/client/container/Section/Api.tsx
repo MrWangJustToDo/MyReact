@@ -72,7 +72,7 @@ const data = [
 
 export const ApiSection = () => {
   return (
-    <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh">
+    <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
       <Heading marginLeft={{ base: "4%", md: "6%", lg: "8%" }} as="h4" fontSize={{ base: "lg", lg: "2xl" }}>
         Packages
       </Heading>

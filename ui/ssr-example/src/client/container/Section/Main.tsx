@@ -4,6 +4,7 @@ import { version as reactDOMVersion } from "@my-react/react-dom";
 import { useIntl } from "react-intl";
 import { useNavigate } from "react-router-dom";
 
+import { Section } from "@client/component";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { mark } from "@client/utils/markdown";
 import { noBase } from "@shared";
@@ -49,14 +50,9 @@ export const MainSection = () => {
   const { formatMessage } = useIntl();
 
   return (
-    <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh">
-      <Flex justifyContent="space-between" marginTop="4%" flexDirection={{ base: "column", md: "row" }}>
-        <Box
-          alignSelf="flex-start"
-          marginLeft={{ base: "4%", md: "6%", lg: "8%" }}
-          marginRight={{ base: "1%", md: "0" }}
-          maxWidth={{ base: "100%", md: "40%" }}
-        >
+    <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
+      <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
+        <Box alignSelf="flex-start" marginRight={{ base: "1%", md: "2%", lg: "3%", "2xl": "4%" }} maxWidth={{ base: "100%", md: "42%" }}>
           <Heading as="h1" fontSize={{ base: "2xl", md: "3xl", lg: "5xl" }} marginBottom="6" color="red.400">
             {formatMessage({ id: "@my-react" })}
           </Heading>
@@ -105,24 +101,24 @@ export const MainSection = () => {
             </Button>
           </HStack>
         </Box>
-        <Box
-          className="typo"
-          overflow={{ base: "hidden", lg: "auto" }}
-          border="1px solid"
-          borderColor="cardBorderColor"
-          marginRight={{ base: "4%", md: "16%" }}
-          marginTop={{ base: "10%", md: "0" }}
-          marginLeft={{ base: "4%", md: "1%" }}
-          marginBottom={{ base: "6%" }}
-          borderRadius="0.8em"
-          fontSize={{ base: "sm", lg: "medium" }}
-          sx={{
-            ["pre"]: {
-              margin: "0",
-            },
-          }}
-          dangerouslySetInnerHTML={{ __html: renderBody }}
-        />
+        <Section>
+          <Box
+            className="typo"
+            overflow={{ base: "hidden", lg: "auto" }}
+            border="1px solid"
+            borderColor="cardBorderColor"
+            marginTop={{ base: "10%", md: "0" }}
+            marginBottom={{ base: "6%" }}
+            borderRadius="0.8em"
+            fontSize={{ base: "sm", lg: "medium" }}
+            sx={{
+              ["pre"]: {
+                margin: "0",
+              },
+            }}
+            dangerouslySetInnerHTML={{ __html: renderBody }}
+          />
+        </Section>
       </Flex>
     </Container>
   );

@@ -1,10 +1,12 @@
-import { Box, Button, Container, Flex, HStack, Heading, Spacer, Tag, Text, Tooltip, chakra, useColorModeValue } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, HStack, Heading, Spacer, Tag, Text, Tooltip, useColorModeValue } from "@chakra-ui/react";
 
 import { Section } from "@client/component";
+import { Card } from "@client/component/Card";
+import { NextPlayground } from "@client/component/NextPlayground";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { mark } from "@client/utils/markdown";
 
-const Iframe = chakra("iframe");
+// const Iframe = chakra("iframe");
 
 const shellMd = `
 \`\`\`js
@@ -28,33 +30,28 @@ pnpm run dev
 
 const renderBody = mark.render(shellMd);
 
-const Preview = (
-  <Iframe
-    title="@my-react online example"
-    allowFullScreen
-    marginX="auto"
-    width={{ base: "100%", md: "80%" }}
-    height="660"
-    outline="1px solid #252525"
-    borderRadius="4"
-    zIndex="100"
-    marginBottom="1em"
-    src="https://codesandbox.io/p/sandbox/zen-allen-mfwmmg?embed=1"
-  />
-);
+// const Preview = (
+//   <Iframe
+//     title="@my-react online example"
+//     allowFullScreen
+//     marginX="auto"
+//     width={{ base: "100%", md: "80%" }}
+//     height="660"
+//     outline="1px solid #252525"
+//     borderRadius="4"
+//     zIndex="100"
+//     marginBottom="1em"
+//     src="https://codesandbox.io/p/sandbox/zen-allen-mfwmmg?embed=1"
+//   />
+// );
 
 export const NextSection = () => {
   const bgColor = useColorModeValue("gray.300", "gray.600");
 
   return (
-    <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh">
-      <Flex justifyContent="center" marginTop="4%" flexDirection={{ base: "column", md: "row" }}>
-        <Box
-          alignSelf="flex-start"
-          marginLeft={{ base: "4%", md: "6%", lg: "8%" }}
-          marginRight={{ base: "1%", md: "0" }}
-          maxWidth={{ base: "100%", md: "40%" }}
-        >
+    <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
+      <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
+        <Box alignSelf="flex-start" marginRight={{ base: "1%", md: "2%", lg: "3%", "2xl": "4%" }} maxWidth={{ base: "100%", md: "42%" }}>
           <Heading as="h1" fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} marginTop="6">
             Quick start in <Tag fontSize="inherit">Next.js</Tag>
           </Heading>
@@ -104,9 +101,7 @@ export const NextSection = () => {
             overflow={{ base: "hidden", lg: "auto" }}
             border="1px solid"
             borderColor="cardBorderColor"
-            marginRight={{ base: "4%", md: "16%" }}
             marginTop={{ base: "10%", md: "0" }}
-            marginLeft={{ base: "4%", md: "1%" }}
             marginBottom={{ base: "6%" }}
             borderRadius="0.8em"
             fontSize={{ base: "sm", lg: "medium" }}
@@ -119,7 +114,9 @@ export const NextSection = () => {
           />
         </Section>
       </Flex>
-      {Preview}
+      <Card overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
+        <NextPlayground />
+      </Card>
     </Container>
   );
 };

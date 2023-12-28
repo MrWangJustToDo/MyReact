@@ -14,6 +14,7 @@ export const GlobalStyle = () => {
         padding: 3px 5px;
       }
       .hljs {
+        --hljs-color: #383a42;
         color: #383a42;
         background: #fafafa;
       }
@@ -87,6 +88,7 @@ export const GlobalStyle = () => {
         padding: 3px 5px;
       }
       .hljs {
+        --hljs-color: #e9e9f4;
         color: #e9e9f4;
         background: #282936;
       }

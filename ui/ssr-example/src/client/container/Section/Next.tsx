@@ -1,10 +1,13 @@
 import { Box, Button, Container, Flex, HStack, Heading, Icon, Spacer, Tag, Text, Tooltip, useColorModeValue } from "@chakra-ui/react";
+import { useEffect, useRef } from "react";
 import { HiChevronDoubleRight } from "react-icons/hi";
+import { useLocation } from "react-router";
 
 import { Section } from "@client/component";
 import { Card } from "@client/component/Card";
 import { NextPlayground } from "@client/component/NextPlayground";
 import { CONTAINER_WIDTH } from "@client/config/container";
+import { useIsMounted } from "@client/hooks";
 import { mark } from "@client/utils/markdown";
 
 // const Iframe = chakra("iframe");
@@ -48,6 +51,18 @@ const renderBody = mark.render(shellMd);
 
 export const NextSection = () => {
   const bgColor = useColorModeValue("gray.300", "gray.600");
+
+  const { hash } = useLocation();
+
+  const isMounted = useIsMounted();
+
+  const ref = useRef<HTMLDivElement>();
+
+  useEffect(() => {
+    if (isMounted && hash && hash === "#next-section") {
+      ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [hash, isMounted]);
 
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
@@ -115,8 +130,8 @@ export const NextSection = () => {
           />
         </Section>
       </Flex>
-      <Card overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
-        <Flex padding="1" fontFamily="monospace" alignItems="center">
+      <Card ref={ref} overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
+        <Flex padding="1" fontFamily="monospace" alignItems="center" as="a" href="#next-section">
           <Icon as={HiChevronDoubleRight}></Icon>
           <Text marginLeft={2}>NextJS + @my-react</Text>
         </Flex>

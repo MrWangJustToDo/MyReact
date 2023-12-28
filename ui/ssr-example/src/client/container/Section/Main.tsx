@@ -63,7 +63,7 @@ export const MainSection = () => {
             This website is built with <Tag>@my-react</Tag> project. <br /> Version: @my-react/react [{reactVersion}]; @my-react/react-dom [{reactDOMVersion}]
             (enableMockReact: <Checkbox isChecked={enableMockReact.current} readOnly />)
           </Text>
-          <HStack marginTop="14" spacing="4" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "14px", xl: "16px" }}>
+          <HStack marginTop="14" spacing="3" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "13px", xl: "14px" }}>
             <Button
               variant="solid"
               fontSize="inherit"

@@ -52,8 +52,8 @@ export const ScrollControlTool = ({
                   cursor="pointer"
                   borderRadius="full"
                   sx={{
-                    backgroundColor: currentSection === i ? "red" : "initial",
-                    border: currentSection === i ? "none" : "1px solid #e2e2e2",
+                    backgroundColor: currentSection === i ? "purple.600" : "initial",
+                    border: currentSection === i ? "none" : "1.5px solid #e2e2e2",
                   }}
                   onClick={() => clickHandler(i)}
                 />

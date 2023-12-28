@@ -418,6 +418,6 @@ blockquote {
 }
 
 .code-num {
-  color: initial;
+  color: var(--hljs-color);
   font-style: initial;
 }

@@ -1,4 +1,5 @@
-import { Box, Button, Container, Flex, Heading, Spacer, Tag, Text, Tooltip, useColorModeValue } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Heading, Icon, Spacer, Tag, Text, Tooltip, useColorModeValue } from "@chakra-ui/react";
+import { HiChevronDoubleRight } from "react-icons/hi";
 
 import { Section } from "@client/component";
 import { Card } from "@client/component/Card";
@@ -80,6 +81,10 @@ export const ViteSection = () => {
         </Section>
       </Flex>
       <Card overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
+        <Flex padding="1" fontFamily="monospace" alignItems="center">
+          <Icon as={HiChevronDoubleRight}></Icon>
+          <Text marginLeft={2}>Vite + @my-react</Text>
+        </Flex>
         <VitePlayground />
       </Card>
     </Container>

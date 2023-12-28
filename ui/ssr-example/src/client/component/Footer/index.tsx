@@ -35,11 +35,13 @@ const _Footer = () => {
     <Box textAlign="center">
       <Flex marginTop="6" justifyContent="center" alignItems="center">
         <Text fontSize={{ base: "medium", md: "xl" }} fontWeight="semibold" noOfLines={1} display="flex" alignItems="center">
-          <Link href={BLOG_SOURCE} target="_blank" color="blue.500" textDecoration="none" paddingLeft="0.2em">
-            github
+          <Link href={BLOG_SOURCE} target="_blank" color="blue.500">
+            Github
           </Link>
           <Icon as={AiFillHeart} color="red.600" mx="0.2em" />
-          <Text as="span">@my-react</Text>
+          <Link href="https://github.com/MrWangJustToDo/MyReact" target="_blank" color="blue.500">
+            @my-react
+          </Link>
         </Text>
       </Flex>
       <Text fontSize="sm" marginTop="2.5" marginBottom="9" color="lightTextColor">
@@ -50,11 +52,11 @@ const _Footer = () => {
             }
             const dayTime = dayjs(time);
             const year = dayTime.year();
-            const month = dayTime.month() + 1;
-            const date = dayTime.date();
-            const hour = dayTime.hour();
-            const minute = dayTime.minute();
-            const second = dayTime.second();
+            const month = dayTime.month() + 1 + "";
+            const date = dayTime.date() + "";
+            const hour = dayTime.hour() + "";
+            const minute = dayTime.minute() + "";
+            const second = dayTime.second() + "";
             return (
               <Flex
                 justifyContent="center"
@@ -92,7 +94,7 @@ const _Footer = () => {
                       duration: 0.12,
                     }}
                   >
-                    {month}
+                    {month.length > 1 ? month : `0${month}`}
                   </motion.div>
                 </AnimatePresence>
                 -
@@ -108,7 +110,7 @@ const _Footer = () => {
                       duration: 0.12,
                     }}
                   >
-                    {date}
+                    {date.length > 1 ? date : `0${date}`}
                   </motion.div>
                 </AnimatePresence>
                 <div> </div>
@@ -124,7 +126,7 @@ const _Footer = () => {
                       duration: 0.12,
                     }}
                   >
-                    {hour}
+                    {hour.length > 1 ? hour : `0${hour}`}
                   </motion.div>
                 </AnimatePresence>
                 :
@@ -140,7 +142,7 @@ const _Footer = () => {
                       duration: 0.12,
                     }}
                   >
-                    {minute}
+                    {minute.length > 1 ? minute : `0${minute}`}
                   </motion.div>
                 </AnimatePresence>
                 :
@@ -156,7 +158,7 @@ const _Footer = () => {
                       duration: 0.12,
                     }}
                   >
-                    {second}
+                    {second.length > 1 ? second : `0${second}`}
                   </motion.div>
                 </AnimatePresence>
               </Flex>

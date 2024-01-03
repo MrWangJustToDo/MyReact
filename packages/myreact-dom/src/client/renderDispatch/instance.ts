@@ -137,7 +137,7 @@ if (__DEV__) {
   });
 
   // dev log tree
-  Object.defineProperty(ClientDomDispatch.prototype, "_debugLogTree", {
+  Object.defineProperty(ClientDomDispatch.prototype, "_debugRenderTree", {
     get: function (this: ClientDomDispatch) {
       const rootElementType = this.rootFiber.elementType;
 

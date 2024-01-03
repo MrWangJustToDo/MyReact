@@ -238,6 +238,8 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
     renderDispatch.isAppCrashed = true;
 
+    globalLoop.current = false;
+
     if (__DEV__) {
       const rootFiber = renderDispatch.rootFiber;
 

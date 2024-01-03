@@ -336,7 +336,7 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
   element: MyReactElementNode,
   config?: CreateElementConfig,
   children?: Props["children"]
-) {
+): MyReactElementNode {
   if (element === null || element === undefined) throw new Error("[@my-react/react] cloneElement(...) need a valid element as params");
 
   if (typeof element !== "object") return element;

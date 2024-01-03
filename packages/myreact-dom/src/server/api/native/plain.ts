@@ -74,7 +74,7 @@ export class PlainElement {
 
   serializeStyle() {
     const styleKeys = Object.keys(this.style);
-    if (styleKeys.length) return `style="${styleKeys.map((key) => `${kebabCase(key)}: ${this.style[key]?.toString()};`).reduce((p, c) => p + c)}"`;
+    if (styleKeys.length) return `style="${styleKeys.map((key) => `${kebabCase(key)}:${this.style[key]?.toString()};`).reduce((p, c) => p + c)}"`;
     return "";
   }
 

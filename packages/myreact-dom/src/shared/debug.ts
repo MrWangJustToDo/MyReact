@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, cloneElement, isValidElement } from "@my-react/react";
 import {
   MyReactFiberNode,
   debugWithNode,
@@ -6,6 +6,7 @@ import {
   devWarnWithFiber,
   onceErrorWithKeyAndFiber,
   onceWarnWithKeyAndFiber,
+  unmountFiber,
 } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
@@ -14,15 +15,24 @@ import { HighLight, debounce } from "@my-react-dom-client/tools";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount/render";
 import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-dom-server/api";
 
-import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, enableHighlight, enableHighlightWarn, isServer } from "./env";
+import {
+  enableASyncHydrate,
+  enableControlComponent,
+  enableDOMField,
+  enableEventSystem,
+  enableEventTrack,
+  enableHighlight,
+  enableHighlightWarn,
+  isServer,
+} from "./env";
 import { getFiberWithNativeDom } from "./getFiberWithDom";
 
 import type { LikeJSX } from "@my-react/react";
-import type { CustomRenderDispatch } from "@my-react/react-reconciler";
+import type { CustomRenderDispatch, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 import type { RenderContainer } from "@my-react-dom-client/mount";
 import type { CommentEndElement, TextElement } from "@my-react-dom-server/api";
 
-const { enableOptimizeTreeLog } = __my_react_shared__;
+const { enableOptimizeTreeLog, enableScopeTreeLog } = __my_react_shared__;
 
 const __my_react_dom_shared__ = {
   enableControlComponent,
@@ -107,6 +117,47 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
   Object.defineProperty(renderDispatch, "__my_react_internal__", { value: __my_react_internal__ });
   Object.defineProperty(renderDispatch, "__my_react_dom_shared__", { value: __my_react_dom_shared__ });
   Object.defineProperty(renderDispatch, "__my_react_dom_internal__", { value: __my_react_dom_internal__ });
+  Object.defineProperty(MyReactFiberNode.prototype, "_debugRenderTree", {
+    get: function (this: MyReactFiberNodeDev) {
+      const element = cloneElement(this._debugElement);
+
+      if (!isValidElement(element)) return;
+
+      const get = async () => {
+        if (enableASyncHydrate.current) {
+          const _re = enableScopeTreeLog.current;
+
+          enableScopeTreeLog.current = false;
+
+          const re = await latestNoopRender(element);
+
+          enableScopeTreeLog.current = _re;
+
+          return re;
+        } else {
+          const _re = enableScopeTreeLog.current;
+
+          enableScopeTreeLog.current = false;
+
+          const re = legacyNoopRender(element);
+
+          enableScopeTreeLog.current = _re;
+
+          return re;
+        }
+      };
+
+      const re = get();
+
+      re.then((res) => (parse(res), res)).then((res) => {
+        unmountFiber(res.__fiber__);
+        res.__container__.isAppMounted = false;
+        res.__container__.isAppUnmounted = true;
+      });
+
+      return re;
+    },
+  });
 };
 
 /**

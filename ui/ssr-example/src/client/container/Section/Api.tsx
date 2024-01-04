@@ -1,4 +1,4 @@
-import { Code, Container, Heading, Spacer } from "@chakra-ui/react";
+import { Code, Container, Heading, Img, LinkBox, LinkOverlay, Spacer, Text } from "@chakra-ui/react";
 
 import { Table } from "@client/component";
 import { CONTAINER_WIDTH } from "@client/config/container";
@@ -97,7 +97,15 @@ export const ApiSection = () => {
         <Column<(typeof data)[0]>
           headCellRender={{
             cellProps: { fontSize: "1.1rem", borderLeftRadius: "2px" },
-            Render: "@my-react/react",
+            Render: () => (
+              <LinkBox display="flex" alignItems="center">
+                <Text as="span">@my-react/react</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://www.npmjs.com/package/@my-react/react" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/npm/v/%40my-react/react" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
           }}
           dataIndex="@my-react/react"
           bodyCellRender={{
@@ -110,7 +118,15 @@ export const ApiSection = () => {
           dataIndex="@my-react/react (hook)"
           headCellRender={{
             cellProps: { fontSize: "1.1rem" },
-            Render: "@my-react/react (hook)",
+            Render: () => (
+              <LinkBox display="flex" alignItems="center">
+                <Text as="span">@my-react/react (hook)</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://www.npmjs.com/package/@my-react/react" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/npm/v/%40my-react/react" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
           }}
           bodyCellRender={{
             Render: ({ cellData }) => {
@@ -121,7 +137,15 @@ export const ApiSection = () => {
         <Column<(typeof data)[0]>
           headCellRender={{
             cellProps: { fontSize: "1.1rem" },
-            Render: "@my-react/react-dom",
+            Render: () => (
+              <LinkBox display="flex" alignItems='center'>
+                <Text as="span">@my-react/react-dom</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-dom" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/npm/v/%40my-react/react-dom" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
           }}
           dataIndex="@my-react/react-dom"
           bodyCellRender={{
@@ -133,7 +157,15 @@ export const ApiSection = () => {
         <Column<(typeof data)[0]>
           headCellRender={{
             cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
-            Render: "@my-react/react-reactive",
+            Render: () => (
+              <LinkBox display="flex" alignItems='center'>
+                <Text as="span">@my-react/react-reactive</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-reactive" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/npm/v/%40my-react/react-reactive" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
           }}
           dataIndex="@my-react/react-reactive"
           bodyCellRender={{
@@ -145,7 +177,15 @@ export const ApiSection = () => {
         <Column<(typeof data)[0]>
           headCellRender={{
             cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
-            Render: "@my-react/react-refresh",
+            Render: () => (
+              <LinkBox display="flex" alignItems='center'>
+                <Text as="span">@my-react/react-refresh</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-refresh" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/npm/v/%40my-react/react-refresh" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
           }}
           dataIndex="@my-react/react-refresh"
           bodyCellRender={{
@@ -157,7 +197,15 @@ export const ApiSection = () => {
         <Column<(typeof data)[0]>
           headCellRender={{
             cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
-            Render: "@my-react/react-refresh-tools",
+            Render: () => (
+              <LinkBox display="flex" alignItems='center'>
+                <Text as="span">@my-react/react-refresh-tools</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-refresh-tools" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/npm/v/%40my-react/react-refresh-tools" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
           }}
           dataIndex="@my-react/react-refresh-tools"
           bodyCellRender={{
@@ -169,7 +217,15 @@ export const ApiSection = () => {
         <Column<(typeof data)[0]>
           headCellRender={{
             cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
-            Render: "@my-react/react-vite",
+            Render: () => (
+              <LinkBox display="flex" alignItems='center'>
+                <Text as="span">@my-react/react-vite</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-vite" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/npm/v/%40my-react/react-vite" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
           }}
           dataIndex="@my-react/react-vite"
           bodyCellRender={{

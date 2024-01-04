@@ -82,7 +82,7 @@ const logOnceDev = once(() => {
 
 export function useChildren<T>(
   children?: ReactElement<any, (p: any) => ReactElement | null> | ReactElement<any, (p: any) => ReactElement | null>[],
-  rowProps?: RowProps<T>,
+  rowProps?: RowProps<T>
 ) {
   const headCellRenderTemp: ColumnHeadCellRender[][] = [];
   const bodyCellRenderTemp: ColumnBodyCellRender<T>[] = [];
@@ -115,7 +115,8 @@ export function useChildren<T>(
 
       const headCellArrayRender: HeadCellProps<T>[] | HeadCellPropsWithDataIndex<T>[] = Array.isArray(headCellRender) ? headCellRender : [headCellRender];
 
-      const _childrenHeads = headCellArrayRender.map((headCellRender) => {
+      const _childrenHeads = headCellArrayRender.map((_headCellRender: HeadCellProps<T> | HeadCellPropsWithDataIndex<T>) => {
+        const { cellProps: _cellProps, ...headCellRender } = _headCellRender;
         const _childrenHead = ({ rowIndex, colIndex }: { rowIndex: number; colIndex: number }) => (
           <HeadCell<T>
             key={dataIndex ? String(dataIndex) : `${rowIndex}-${colIndex}`}
@@ -124,14 +125,16 @@ export function useChildren<T>(
             dataIndex={dataIndex}
             cellProps={{
               ...cellProps,
+              ..._cellProps,
               ...headCellProps,
-              ...headCellRender.cellProps,
             }}
             {...headCellRender}
           />
         );
         return _childrenHead;
       });
+
+      const { cellProps: _cellProps, ..._bodyCellRender } = bodyCellRender;
 
       const _childrenBody = ({ rowIndex, colIndex, rowData }: { rowIndex: number; colIndex: number; rowData: T }) => (
         <Cell<T>
@@ -142,10 +145,10 @@ export function useChildren<T>(
           dataIndex={dataIndex}
           cellProps={{
             ...cellProps,
+            ..._cellProps,
             ...bodyCellProps,
-            ...bodyCellRender.cellProps,
           }}
-          {...bodyCellRender}
+          {..._bodyCellRender}
         />
       );
 
@@ -170,7 +173,7 @@ export function useChildren<T>(
         <Body dataSource={dataSource} />
       </>
     ),
-    [Body, Head],
+    [Body, Head]
   );
 
   return Content;

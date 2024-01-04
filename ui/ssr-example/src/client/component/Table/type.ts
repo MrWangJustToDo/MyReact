@@ -41,7 +41,7 @@ export type PaginationBarButton = {
 
 // with dataIndex field, we use sorter by dataIndex
 export type HeadCellPropsWithDataIndex<T, K extends keyof T = keyof T> = {
-  Render: (({ dataIndex, rowIndex, colIndex }: { dataIndex: K; rowIndex: number; colIndex: number }) => React.ReactElement) | string | number | React.ReactNode;
+  Render?: (({ dataIndex, rowIndex, colIndex }: { dataIndex: K; rowIndex: number; colIndex: number }) => React.ReactElement) | string | number | React.ReactNode;
   CustomRender?: ({
     dataIndex,
     rowIndex,
@@ -85,7 +85,7 @@ export type HeadCellPropsWithDataIndex<T, K extends keyof T = keyof T> = {
 
 // without dataIndex field, we need provider sort
 export type HeadCellProps<T> = {
-  Render: (({ rowIndex, colIndex }: { rowIndex: number; colIndex: number }) => React.ReactElement) | string | number | React.ReactNode;
+  Render?: (({ rowIndex, colIndex }: { rowIndex: number; colIndex: number }) => React.ReactElement) | string | number | React.ReactNode;
   CustomRender?: ({
     rowIndex,
     colIndex,
@@ -129,7 +129,7 @@ type SkeletonBody<T> = {
 };
 
 export type BodyCellPropsWithDataIndex<T, K extends keyof T = keyof T> = {
-  Render:
+  Render?:
     | (({
         dataIndex,
         rowData,

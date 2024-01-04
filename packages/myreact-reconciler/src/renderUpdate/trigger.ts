@@ -232,6 +232,8 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
       cb?.();
     });
   } else {
+    if (renderDispatch.isAppCrashed) return;
+
     renderDispatch.pendingUpdateFiberArray.clear();
 
     renderDispatch.resetUpdateFlowRuntimeFiber();

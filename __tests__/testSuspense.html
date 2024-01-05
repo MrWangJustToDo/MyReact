@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../bundle/react.18.development.js"></script>
+  <script src="../bundle/react-dom.18.development.js"></script>
+  <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+  <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { Component, Suspense, lazy } = React;
+
+    const delay = (time) => {
+      new Promise((r) => {
+        setTimeout(r, time);
+      });
+    }
+
+    // class WrapperErrorCatch extends Component {
+    //   state = {
+    //     stack: "",
+    //     error: "",
+    //     hasError: false,
+    //   };
+
+    //   static getDerivedStateFromError() {
+    //     return { hasError: true };
+    //   }
+
+    //   componentDidCatch(error, info) {
+    //     console.log(error, info, "xxxxxxxxxxxx");
+    //     this.setState({
+    //       error: error?.message,
+    //       stack: info.componentStack,
+    //     });
+    //   }
+
+    //   render() {
+    //     console.log(this, "xxxxxxxxxxxx");
+    //     if (this.state.hasError)
+    //       return (
+    //         <pre>
+    //           <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
+    //           {this.state.stack}
+    //         </pre>
+    //       );
+    //     return this.props.children;
+    //   }
+    // }
+
+    const Bar = () => {
+      throw delay(2000);
+
+      return <div>bar</div>;
+    }
+
+    const Baz = ({ children }) => {
+      return <Bar />
+    }
+
+    const App = () => {
+      return (
+        // <WrapperErrorCatch>
+          <div>
+            <Suspense fallback={<>123</>}>
+              <Baz />
+            </Suspense>
+          </div>
+        // </WrapperErrorCatch>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+
+</html>

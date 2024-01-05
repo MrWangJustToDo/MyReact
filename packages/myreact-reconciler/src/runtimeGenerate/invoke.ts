@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { STATE_TYPE, exclude, include, isPromise } from "@my-react/react-shared";
+import { STATE_TYPE, include, isPromise } from "@my-react/react-shared";
 
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { currentRenderDispatch, currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithFiber, setRefreshTypeMap } from "../share";
@@ -22,9 +22,7 @@ export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyRe
 };
 
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
-  // for a comment element, will not have any children;
-  // empty node normally a invalid node
-  if (exclude(fiber.type, NODE_TYPE.__comment__ | NODE_TYPE.__text__) && "children" in fiber.pendingProps) {
+  if ("children" in fiber.pendingProps || "children" in fiber.memoizedProps) {
     const { children } = fiber.pendingProps;
 
     transformChildrenFiber(fiber, children);

@@ -58,7 +58,7 @@ export const devError = (...args) => {
 
   const renderFiber = currentDevFiber.current || currentRunningFiber.current;
 
-  if (!renderFiber || args.some((i) => i instanceof Error)) {
+  if (!renderFiber || args.some((i) => typeof i === "object")) {
     originalError.call(console, ...args);
 
     return;
@@ -76,7 +76,7 @@ export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
 
   const renderFiber = fiber;
 
-  if (args.some((i) => i instanceof Error)) {
+  if (args.some((i) => typeof i === "object")) {
     originalError.call(console, ...args, renderFiber);
   } else {
     if (enableFiberForLog.current) {

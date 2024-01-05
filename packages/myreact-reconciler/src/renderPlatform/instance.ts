@@ -34,5 +34,9 @@ export class CustomRenderPlatform implements RenderPlatform {
     void 0;
   }
 
+  dispatchPromise(_params: { fiber?: RenderFiber; promise?: Promise<unknown> }): void {
+    void 0;
+  }
+
   dispatchSet = new UniqueArray<CustomRenderDispatch>();
 }

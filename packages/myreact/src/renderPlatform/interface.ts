@@ -1,3 +1,4 @@
+import type { MyReactElementNode } from "../element";
 import type { RenderFiber } from "../renderFiber";
 import type { RenderHook, RenderHookParams } from "../renderHook";
 import type { UpdateQueue } from "../renderQueue";
@@ -21,7 +22,9 @@ export interface DefaultRenderPlatform {
 
   dispatchState(_params: UpdateQueue): void;
 
-  dispatchError(_params: { fiber?: RenderFiber; error?: Error }): void;
+  dispatchError(_params: { fiber?: RenderFiber; error?: Error }): MyReactElementNode;
+
+  dispatchPromise(_params: { fiber?: RenderFiber; promise?: Promise<unknown> }): MyReactElementNode;
 }
 
 /**

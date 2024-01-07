@@ -1,13 +1,13 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, include , MODE_TYPE } from "@my-react/react-shared";
 
-import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue } from "../dispatchQueue";
+import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate } from "../dispatchQueue";
 import { triggerRevert, triggerUpdate } from "../renderUpdate";
 import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
 import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
-import type { ListTree } from "@my-react/react-shared";
+import type { ListTree} from "@my-react/react-shared";
 
 type NativeNode = Record<string, any>;
 
@@ -28,7 +28,7 @@ export class MyReactFiberNode implements RenderFiber {
 
   type: NODE_TYPE = NODE_TYPE.__initial__;
 
-  mode: 0 | 1 = 0;
+  mode: MODE_TYPE = MODE_TYPE.__initial__;
 
   nativeNode: Record<string, any>;
 
@@ -112,7 +112,13 @@ export class MyReactFiberNode implements RenderFiber {
 
       const updateState = include(this.type, NODE_TYPE.__class__)
         ? processClassComponentUpdateQueue(this, flag)
-        : processFunctionComponentUpdateQueue(this, flag);
+        : include(this.type, NODE_TYPE.__function__)
+          ? processFunctionComponentUpdateQueue(this, flag)
+          : include(this.type, NODE_TYPE.__lazy__)
+            ? processLazyComponentUpdate(this)
+            : (() => {
+                throw new Error("unknown runtime error, this is a bug for @my-react");
+              })();
 
       if (updateState?.needUpdate) {
         if (updateState.isSync) {

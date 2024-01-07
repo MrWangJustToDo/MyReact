@@ -38,7 +38,7 @@ export class MyReactInternalInstance {
     }
   }
 
-  mode: Effect_TYPE = Effect_TYPE.__initial__;
+  effect: Effect_TYPE = Effect_TYPE.__initial__;
 
   context: null | unknown = null;
 
@@ -59,7 +59,7 @@ export class MyReactInternalInstance {
   }
 
   _unmount() {
-    this.mode = Effect_TYPE.__unmount__;
+    this.effect = Effect_TYPE.__unmount__;
 
     this._contextFiber?._removeDependence(this);
 

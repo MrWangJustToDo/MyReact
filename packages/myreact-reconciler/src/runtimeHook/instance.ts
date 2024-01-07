@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { UpdateQueueType } from "@my-react/react-shared";
+import { MODE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import type { UpdateQueueDev } from "../processState";
 import type { RenderHook, Action, HookUpdateQueue } from "@my-react/react";
@@ -16,7 +16,7 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
 
   reducer: RenderHook["reducer"];
 
-  effect = false;
+  hasEffect = false;
 
   cancel?: () => void;
 
@@ -38,7 +38,7 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
 
   _unmount() {
     super._unmount();
-    this.effect = false;
+    this.hasEffect = false;
     this.cancel && this.cancel();
   }
 
@@ -49,7 +49,7 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
       payLoad: action,
       isForce: false,
       isSync: enableSyncFlush.current,
-      isInitial: this._ownerFiber?.mode === 0,
+      isInitial: this._ownerFiber?.mode === MODE_TYPE.__initial__,
     };
 
     const renderPlatform = currentRenderPlatform.current;
@@ -65,7 +65,7 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
       isSync: enableSyncFlush.current,
       isForce: params.isForce,
       callback: params.callback,
-      isInitial: this._ownerFiber?.mode === 0,
+      isInitial: this._ownerFiber?.mode === MODE_TYPE.__initial__,
     };
 
     const renderPlatform = currentRenderPlatform.current;

@@ -100,9 +100,6 @@ export class CustomRenderDispatch implements RenderDispatch {
       _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__append__);
     }
   }
-  pendingContext(_fiber: MyReactFiberNode): void {
-    _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__context__);
-  }
   pendingPosition(_fiber: MyReactFiberNode): void {
     _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__position__);
   }

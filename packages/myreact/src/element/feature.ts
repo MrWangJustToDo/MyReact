@@ -1,8 +1,10 @@
 import { Consumer, Context, ForwardRef, isNormalEquals, Lazy, Memo, Provider, TYPEKEY } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
+import { lazyLoaded } from "../share";
 
 import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "./instance";
+import type { RenderFiber } from "../renderFiber";
 
 let contextId = 0;
 
@@ -121,6 +123,7 @@ export const lazy = (
     loader,
     _loading: false,
     _loaded: false,
+    _update: lazyLoaded,
     render: null,
   };
   return config as {
@@ -128,6 +131,7 @@ export const lazy = (
     loader: () => Promise<{ default: MixinMyReactFunctionComponent | MixinMyReactClassComponent } | MixinMyReactFunctionComponent | MixinMyReactClassComponent>;
     _loading: boolean;
     _loaded: boolean;
+    _update: (fiber: RenderFiber, loaded: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent) => void;
     render: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent;
   };
 };

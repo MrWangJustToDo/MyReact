@@ -81,7 +81,7 @@ export const enablePerformanceLog = createRef(true);
 /**
  * @internal
  */
-export const enableDoubleRender = createRef(true);
+export const enableDoubleRender = createRef(false);
 
 // support "unsafe_" lifecycle
 /**
@@ -105,7 +105,7 @@ export const enableDebugFiled = createRef(true);
 /**
  * @internal
  */
-export const enableMockReact = createReadonlyRef(true);
+export const enableMockReact = createReadonlyRef(false);
 
 /**
  * @internal

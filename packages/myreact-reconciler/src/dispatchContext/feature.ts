@@ -1,14 +1,12 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { PATCH_TYPE, STATE_TYPE, exclude, include, remove } from "@my-react/react-shared";
+import { __my_react_shared__ } from "@my-react/react";
+import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
+import type { UpdateQueueDev } from "../processState";
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { createContext } from "@my-react/react";
-
-const { currentRenderPlatform } = __my_react_internal__;
 
 const { enableDebugFiled } = __my_react_shared__;
 
@@ -44,9 +42,9 @@ export const defaultGenerateContextMap = (fiber: MyReactFiberNode, map: WeakMap<
 
 export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextObject?: ReturnType<typeof createContext> | null) => {
   if (fiber) {
-    return (fiber.pendingProps["value"] as Record<string, unknown>);
+    return fiber.pendingProps["value"] as Record<string, unknown>;
   } else {
-    return (ContextObject?.Provider["value"] as Record<string, unknown>);
+    return ContextObject?.Provider["value"] as Record<string, unknown>;
   }
 };
 
@@ -88,33 +86,114 @@ export const defaultGetContextFiber_New = (
   }
 };
 
-export const context = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  if (include(fiber.patch, PATCH_TYPE.__context__)) {
-    const set = new Set(fiber.dependence);
-
-    const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
-
-    renderPlatform.microTask(() => {
-      set.forEach((i) => {
-        if (i._ownerFiber && exclude(i._ownerFiber.state, STATE_TYPE.__unmount__)) {
-          i._ownerFiber.state = STATE_TYPE.__triggerSync__;
-        }
-      });
-      // TODO
-      renderDispatch.pendingUpdateFiberArray.clear();
-      // sync skip from root
-      renderDispatch.rootFiber._update(STATE_TYPE.__skippedSync__);
-    });
-
-    fiber.patch = remove(fiber.patch, PATCH_TYPE.__context__);
-  }
-};
-
-// used for root loop
-export const prepareUpdateAllDependence = (fiber: MyReactFiberNode) => {
-  fiber?.dependence?.forEach((i) => {
+export const prepareUpdateAllDependence = (fiber: MyReactFiberNode, beforeValue: Record<string, unknown>, afterValue: Record<string, unknown>) => {
+  const consumerList = new Set(fiber?.dependence || []);
+  consumerList.forEach((i) => {
     if (i._ownerFiber && exclude(i._ownerFiber.state, STATE_TYPE.__unmount__)) {
-      i._ownerFiber.state = STATE_TYPE.__triggerSync__;
+      const typedFiber = i._ownerFiber as MyReactFiberNodeDev;
+      if (__DEV__ && enableDebugFiled.current) {
+        typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+        const now = Date.now();
+        const updater: UpdateQueueDev = {
+          type: UpdateQueueType.context,
+          trigger: fiber,
+          payLoad: afterValue,
+          isSync: true,
+          isForce: true,
+          _debugBaseValue: beforeValue,
+          _debugBeforeValue: beforeValue,
+          _debugAfterValue: afterValue,
+          _debugCreateTime: now,
+          _debugRunTime: now,
+          _debugType: UpdateQueueType[UpdateQueueType.context],
+          _debugUpdateState: {
+            needUpdate: true,
+            isSync: true,
+            isForce: true,
+            callbacks: [],
+          },
+        };
+        typedFiber._debugUpdateQueue.push(updater);
+      }
+      typedFiber.state = STATE_TYPE.__triggerSyncForce__;
     }
   });
+};
+
+export const prepareUpdateAllDependenceFromRoot = (
+  renderDispatch: CustomRenderDispatch,
+  fiber: MyReactFiberNode,
+  beforeValue: Record<string, unknown>,
+  afterValue: Record<string, unknown>
+) => {
+  const consumerList = new Set(fiber?.dependence || []);
+  const now = Date.now();
+  const updater: UpdateQueueDev = {
+    type: UpdateQueueType.context,
+    trigger: fiber,
+    payLoad: afterValue,
+    isSync: true,
+    isForce: true,
+    _debugBaseValue: beforeValue,
+    _debugBeforeValue: beforeValue,
+    _debugAfterValue: afterValue,
+    _debugCreateTime: now,
+    _debugRunTime: now,
+    _debugType: UpdateQueueType[UpdateQueueType.context],
+    _debugUpdateState: {
+      needUpdate: true,
+      isSync: true,
+      isForce: true,
+      callbacks: [],
+    },
+  };
+  consumerList.forEach((i) => {
+    if (i._ownerFiber && exclude(i._ownerFiber.state, STATE_TYPE.__unmount__)) {
+      const typedFiber = i._ownerFiber as MyReactFiberNodeDev;
+      typedFiber.state = STATE_TYPE.__triggerSyncForce__;
+    }
+  });
+  const root = renderDispatch.rootFiber as MyReactFiberNodeDev;
+  if (__DEV__ && enableDebugFiled.current) {
+    root._debugUpdateQueue = root._debugUpdateQueue || new ListTree();
+    root._debugUpdateQueue.push(updater);
+  }
+  renderDispatch.pendingUpdateFiberArray.clear();
+  root._update(STATE_TYPE.__skippedSync__);
+};
+
+export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, beforeValue: Record<string, unknown>, afterValue: Record<string, unknown>) => {
+  const consumerList = new Set(fiber?.dependence || []);
+  const now = Date.now();
+  const updater: UpdateQueueDev = {
+    type: UpdateQueueType.context,
+    trigger: fiber,
+    payLoad: afterValue,
+    isSync: true,
+    isForce: true,
+    _debugBaseValue: beforeValue,
+    _debugBeforeValue: beforeValue,
+    _debugAfterValue: afterValue,
+    _debugCreateTime: now,
+    _debugRunTime: now,
+    _debugType: UpdateQueueType[UpdateQueueType.context],
+    _debugUpdateState: {
+      needUpdate: true,
+      isSync: true,
+      isForce: true,
+      callbacks: [],
+    },
+  };
+  consumerList.forEach((i) => {
+    if (i._ownerFiber && exclude(i._ownerFiber.state, STATE_TYPE.__unmount__)) {
+      const typedFiber = i._ownerFiber as MyReactFiberNodeDev;
+      typedFiber.state = STATE_TYPE.__triggerSyncForce__;
+    }
+  });
+  const typedFiber = fiber as MyReactFiberNodeDev;
+  if (__DEV__ && enableDebugFiled.current) {
+    typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+    typedFiber._debugUpdateQueue.push(updater);
+  }
+  typedFiber._update(STATE_TYPE.__skippedSync__);
 };

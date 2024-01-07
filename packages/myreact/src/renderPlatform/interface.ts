@@ -24,6 +24,7 @@ export interface DefaultRenderPlatform {
 
   dispatchError(_params: { fiber?: RenderFiber; error?: Error }): MyReactElementNode;
 
+  // TODO  maybe?
   dispatchPromise(_params: { fiber?: RenderFiber; promise?: Promise<unknown> }): MyReactElementNode;
 }
 

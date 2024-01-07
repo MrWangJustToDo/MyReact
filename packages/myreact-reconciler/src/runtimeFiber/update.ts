@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { exclude, include, isNormalEquals, merge, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
 
-import { prepareUpdateAllDependence } from "../dispatchContext";
+import { prepareUpdateAllDependence, prepareUpdateAllDependenceFromProvider } from "../dispatchContext";
 import { currentRenderDispatch, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
@@ -74,11 +74,10 @@ export const updateFiberNode = (
   if (fiber.state !== STATE_TYPE.__stable__) {
     if (include(fiber.type, NODE_TYPE.__provider__)) {
       if (!isNormalEquals(fiber.pendingProps.value as Record<string, unknown>, fiber.memoizedProps.value as Record<string, unknown>)) {
-        // if current is root loop mode, should not delay context update
         if (enableLoopFromRoot.current) {
-          prepareUpdateAllDependence(fiber);
+          prepareUpdateAllDependence(fiber, fiber.memoizedProps.value, fiber.pendingProps.value);
         } else {
-          renderDispatch.pendingContext(fiber);
+          renderDispatch.pendingLayoutEffect(fiber, () => prepareUpdateAllDependenceFromProvider(fiber, fiber.memoizedProps.value, fiber.pendingProps.value));
         }
       }
     }

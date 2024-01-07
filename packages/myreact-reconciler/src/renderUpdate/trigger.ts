@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
+import { MODE_TYPE, STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { unmountFiber } from "../dispatchUnmount";
@@ -189,7 +189,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
     fiber.state = merge(fiber.state, state);
   }
 
-  fiber.mode = 1;
+  fiber.mode = MODE_TYPE.__stable__;
 
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 

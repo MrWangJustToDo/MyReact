@@ -60,8 +60,6 @@ type DefaultRenderDispatch = {
 
   pendingAppend(_fiber: MyReactFiberNode): void;
 
-  pendingContext(_fiber: MyReactFiberNode): void;
-
   pendingPosition(_fiber: MyReactFiberNode): void;
 
   pendingRef(_fiber: MyReactFiberNode): void;

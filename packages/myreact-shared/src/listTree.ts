@@ -325,7 +325,7 @@ export class ListTree<T> {
 }
 
 if (__DEV__) {
-  Object.defineProperty(ListTree.prototype, "__array__", {
+  Object.defineProperty(ListTree.prototype, "_debugToArray", {
     get(this: ListTree<unknown>) {
       return this.toArray();
     },

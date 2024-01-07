@@ -65,7 +65,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
       currentHook.deps = deps;
 
-      currentHook.effect = true;
+      currentHook.hasEffect = true;
     }
     return currentHook;
   }
@@ -78,7 +78,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     if (isHMR || !Object.is(storeApi.subscribe, newStoreApi.subscribe)) {
       storeApi.subscribe = newStoreApi.subscribe;
 
-      currentHook.effect = true;
+      currentHook.hasEffect = true;
     }
 
     storeApi.getSnapshot = newStoreApi.getSnapshot;
@@ -147,7 +147,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     if (!Object.is(currentHook.value, currentHook.result)) {
       currentHook.cancel = renderPlatform.yieldTask(() => {
         currentHook.result = currentHook.value;
-        currentHook._ownerFiber?._update();
+        currentHook._internalDispatch({ isForce: true });
         currentHook.cancel = null;
       });
     }

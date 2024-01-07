@@ -26,6 +26,7 @@ function dispatchError(this: DomPlatform, _params: { fiber: MyReactFiberNode; er
       });
     });
   }
+  return void 0;
 }
 
 /**

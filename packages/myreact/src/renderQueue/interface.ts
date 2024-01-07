@@ -1,4 +1,6 @@
 import type { MyReactComponent } from "../component";
+import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "../element";
+import type { RenderFiber } from "../renderFiber";
 import type { Action, RenderHook } from "../renderHook";
 import type { UpdateQueueType } from "@my-react/react-shared";
 
@@ -31,4 +33,30 @@ export type HookUpdateQueue = {
 /**
  * @public
  */
-export type UpdateQueue<T = Record<string, any>> = (ComponentUpdateQueue | HookUpdateQueue) & T;
+export type LazyUpdateQueue = {
+  type: UpdateQueueType.lazy;
+  trigger: RenderFiber;
+  isForce?: boolean;
+  isSync?: boolean;
+  isInitial?: boolean;
+  payLoad?: MixinMyReactFunctionComponent | MixinMyReactClassComponent;
+  callback?: () => void;
+};
+
+/**
+ * @public
+ */
+export type ContextUpdateQueue = {
+  type: UpdateQueueType.context;
+  trigger: RenderFiber;
+  isForce?: boolean;
+  isSync?: boolean;
+  isInitial?: boolean;
+  payLoad?: Record<string, unknown>;
+  callback?: () => void;
+};
+
+/**
+ * @public
+ */
+export type UpdateQueue<T = Record<string, any>> = (ComponentUpdateQueue | HookUpdateQueue | LazyUpdateQueue | ContextUpdateQueue) & T;

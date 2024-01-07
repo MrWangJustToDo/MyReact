@@ -1,7 +1,6 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { STATE_TYPE, exclude } from "@my-react/react-shared";
 
-import { context } from "../dispatchContext";
 import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
 import { unmount } from "../dispatchUnmount";
 import { afterSyncUpdate, beforeSyncUpdate, safeCallWithFiber } from "../share";
@@ -63,7 +62,6 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   _list.listToFoot((_fiber) => {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
-      context(_fiber, _dispatch);
       layoutEffect(_fiber, _dispatch);
     }
   });

@@ -1,7 +1,6 @@
 import { __my_react_internal__, __my_react_shared__, startTransition } from "@my-react/react";
-import { HOOK_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { HOOK_TYPE } from "@my-react/react-shared";
 
-import { triggerUpdate } from "../renderUpdate";
 import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
 import { checkHookValid } from "./check";
@@ -49,7 +48,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     hookNode.type === HOOK_TYPE.useInsertionEffect ||
     hookNode.type === HOOK_TYPE.useImperativeHandle
   ) {
-    hookNode.effect = true;
+    hookNode.hasEffect = true;
   }
 
   if (hookNode.type === HOOK_TYPE.useRef || hookNode.type === HOOK_TYPE.useCallback || hookNode.type === HOOK_TYPE.useDeferredValue) {
@@ -88,11 +87,11 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
         renderDispatch.isAppMounted
           ? storeApi.getSnapshot.call(null)
           : storeApi.getServerSnapshot
-          ? storeApi.getServerSnapshot?.call(null)
-          : storeApi.getSnapshot.call(null),
+            ? storeApi.getServerSnapshot?.call(null)
+            : storeApi.getSnapshot.call(null),
     });
 
-    hookNode.effect = true;
+    hookNode.hasEffect = true;
   }
 
   if (hookNode.type === HOOK_TYPE.useSignal) {
@@ -106,14 +105,14 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
         const loadingCallback = (cb: () => void) => {
           startTransition(() => {
             hookNode.result[0] = true;
-            triggerUpdate(fiber, STATE_TYPE.__triggerConcurrent__, cb);
+            hookNode._internalDispatch({ isForce: true, callback: cb });
           });
         };
 
         const loadedCallback = () => {
           startTransition(() => {
             hookNode.result[0] = false;
-            triggerUpdate(fiber, STATE_TYPE.__triggerConcurrent__);
+            hookNode._internalDispatch({ isForce: true });
           });
         };
 

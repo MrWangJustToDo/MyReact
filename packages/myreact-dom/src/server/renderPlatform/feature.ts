@@ -39,6 +39,8 @@ const dispatchError = ({ fiber, error }: { fiber: MyReactFiberNode; error: Error
   } else {
     throw error;
   }
+
+  return void 0;
 };
 
 /**

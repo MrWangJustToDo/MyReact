@@ -84,11 +84,11 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
 
   const renderDispatch = currentRenderDispatch.current;
 
-  if (typedInstance.componentDidMount && exclude(typedInstance.mode, Effect_TYPE.__effect__)) {
-    typedInstance.mode = Effect_TYPE.__effect__;
+  if (typedInstance.componentDidMount && exclude(typedInstance.effect, Effect_TYPE.__effect__)) {
+    typedInstance.effect = Effect_TYPE.__effect__;
 
     renderDispatch.pendingLayoutEffect(fiber, () => {
-      typedInstance.mode = Effect_TYPE.__initial__;
+      typedInstance.effect = Effect_TYPE.__initial__;
 
       typedInstance.componentDidMount?.();
     });
@@ -176,11 +176,11 @@ const processComponentDidUpdateOnUpdate = (
 
   const renderDispatch = currentRenderDispatch.current;
 
-  if (typedInstance.componentDidUpdate && exclude(typedInstance.mode, Effect_TYPE.__effect__)) {
-    typedInstance.mode = Effect_TYPE.__effect__;
+  if (typedInstance.componentDidUpdate && exclude(typedInstance.effect, Effect_TYPE.__effect__)) {
+    typedInstance.effect = Effect_TYPE.__effect__;
 
     renderDispatch.pendingLayoutEffect(fiber, () => {
-      typedInstance.mode = Effect_TYPE.__initial__;
+      typedInstance.effect = Effect_TYPE.__initial__;
 
       typedInstance.componentDidUpdate?.(baseProps, baseState, snapshot);
     });

@@ -1,6 +1,6 @@
 import { __my_react_internal__, createElement } from "@my-react/react";
 import { devWarnWithFiber, WrapperByScope } from "@my-react/react-reconciler";
-import { isPromise, ListTree, STATE_TYPE } from "@my-react/react-shared";
+import { isPromise, ListTree } from "@my-react/react-shared";
 
 import type { ClientDomDispatch } from "./instance";
 import type { lazy, MixinMyReactFunctionComponent } from "@my-react/react";
@@ -26,7 +26,7 @@ const loadLazy = async (fiber: MyReactFiberNode, typedElementType: ReturnType<ty
 
     typedElementType.render = render as ReturnType<typeof lazy>["render"];
 
-    fiber._update(STATE_TYPE.__triggerSync__);
+    typedElementType._update(fiber, typedElementType.render);
   } catch (e) {
     currentRenderPlatform.current.dispatchError({ fiber, error: e });
   } finally {
@@ -43,7 +43,7 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cl
   if (typedElementType._loaded === true) {
     if (_dispatch.isHydrateRender) {
       Promise.resolve().then(() => {
-        _fiber._update(STATE_TYPE.__triggerSync__);
+        typedElementType._update(_fiber, typedElementType.render);
       });
       return WrapperByScope(_dispatch.resolveSuspense(_fiber));
     } else {

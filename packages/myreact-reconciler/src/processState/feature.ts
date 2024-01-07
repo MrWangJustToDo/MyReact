@@ -93,7 +93,7 @@ export const processState = (_params: UpdateQueue) => {
     ownerFiber.updateQueue.push(_params);
 
     ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
-  } else {
+  } else if (_params.type === UpdateQueueType.hook) {
     const ownerFiber = _params.trigger._ownerFiber as MyReactFiberNode;
 
     if (!ownerFiber || include(ownerFiber?.state, STATE_TYPE.__unmount__)) return;
@@ -138,6 +138,20 @@ export const processState = (_params: UpdateQueue) => {
       lastRenderComponentFiber = currentCFiber;
       lastRenderComponentTimeStep = now;
     }
+
+    ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
+
+    ownerFiber.updateQueue.push(_params);
+
+    ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
+  } else {
+    const ownerFiber = _params.trigger as MyReactFiberNode;
+
+    if (!ownerFiber || include(ownerFiber.state, STATE_TYPE.__unmount__)) return;
+
+    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
+
+    if (!renderDispatch.enableUpdate) return;
 
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
 

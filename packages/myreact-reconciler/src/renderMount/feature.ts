@@ -20,9 +20,9 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
 
   renderDispatch.pendingCommitFiberList = null;
 
-  renderDispatch.reconcileCommit(fiber, hydrate);
-
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
+
+  renderDispatch.reconcileCommit(fiber, hydrate);
 
   renderDispatch.isAppMounted = true;
 
@@ -59,9 +59,9 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
 
   renderDispatch.pendingCommitFiberList = null;
 
-  renderDispatch.reconcileCommit(fiber, hydrate);
-  
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
+
+  renderDispatch.reconcileCommit(fiber, hydrate);
 
   renderDispatch.isAppMounted = true;
 

@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { exclude, include, isNormalEquals, merge, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
 
-import { prepareUpdateAllDependence, prepareUpdateAllDependenceFromProvider } from "../dispatchContext";
+import { prepareUpdateAllDependence, prepareUpdateAllDependenceFromProvider, prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
 import { currentRenderDispatch, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
@@ -77,7 +77,10 @@ export const updateFiberNode = (
         if (enableLoopFromRoot.current) {
           prepareUpdateAllDependence(fiber, fiber.memoizedProps.value, fiber.pendingProps.value);
         } else {
-          renderDispatch.pendingLayoutEffect(fiber, () => prepareUpdateAllDependenceFromProvider(fiber, fiber.memoizedProps.value, fiber.pendingProps.value));
+          // renderDispatch.pendingLayoutEffect(fiber, () => prepareUpdateAllDependenceFromProvider(fiber, fiber.memoizedProps.value, fiber.pendingProps.value));
+          renderDispatch.pendingLayoutEffect(fiber, () =>
+            prepareUpdateAllDependenceFromRoot(renderDispatch, fiber, fiber.memoizedProps.value, fiber.pendingProps.value)
+          );
         }
       }
     }

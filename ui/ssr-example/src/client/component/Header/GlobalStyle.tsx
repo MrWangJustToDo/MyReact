@@ -175,8 +175,10 @@ export const GlobalStyle = () => {
       .hljs-meta-keyword {
         font-weight: 700;
       }
-    `,
+    `
   );
 
   return <Global styles={style} />;
 };
+
+GlobalStyle.displayName = "GlobalStyle";

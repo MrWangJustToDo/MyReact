@@ -66,7 +66,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
           if (enableHydrateWarn.current) {
             log(fiber, "warn", `hydrate warning, dom '${key}' not match from server. server: ${dom[key]}, client: ${value}`);
           }
-          dom[key] == (value as string);
+          dom[key] = (value as string);
         }
       }
     } else if (isSVG && key.charCodeAt(0) === X_CHAR) {

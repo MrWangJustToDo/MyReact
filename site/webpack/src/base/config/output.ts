@@ -18,6 +18,10 @@ export const outputConfig = ({
   OUTPUT_SCOPE,
 }: SafeGenerateActionProps): Configuration["output"] => {
   const _OUTPUT_SCOPE__ = OUTPUT_SCOPE && !OUTPUT_SCOPE.endsWith("/") ? `${OUTPUT_SCOPE}/` : OUTPUT_SCOPE;
+
+  const BASENAME = process.env.BASENAME || "";
+
+  const currentBaseName = !BASENAME || BASENAME === "/" ? "/" : `/${BASENAME}/`;
   return env === "client"
     ? {
         clean: true,
@@ -30,7 +34,7 @@ export const outputConfig = ({
         // 引入资源的url路径
         // publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `http://${PROD_HOST}:${PROD_PORT}/${_OUTPUT_SCOPE__}client/`,
         // githubPage 
-        publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `client/`,
+        publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `${currentBaseName}client/`,
       }
     : {
         clean: true,
@@ -42,7 +46,7 @@ export const outputConfig = ({
         // 引入资源的url路径
         // publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `http://${PROD_HOST}:${PROD_PORT}/${_OUTPUT_SCOPE__}client/`,
         // githubPage
-        publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `client/`,
+        publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `${currentBaseName}client/`,
         library: {
           type: "commonjs2",
         },

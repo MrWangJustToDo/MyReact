@@ -1,33 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../packages/myreact/dist/umd/index.development.js"></script>
-    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="text/babel">
-      const { useState } = React;
 
-      const Input = () => {
-        const [str, setStr] = useState("");
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+</head>
 
-        return (
-          <>
-            <input type="text" value={str} onChange={(e) => setStr(e.target.value)} />
-            <input value={str} />
-          </>
-        );
-      };
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
 
-      ReactDOM.render(<Input />, root);
-    </script>
-  </body>
+    const Input = () => {
+      const [str, setStr] = useState("");
+
+      return (
+        <>
+          <input type="text" value={str} onChange={(e) => setStr(e.target.value)} />
+          <input value={str} />
+          <input type='checkbox' defaultChecked='123' />
+          <label>
+            Pick a fruit:
+            <select name="selectedFruit" value='banana'>
+              <option value="apple">Apple</option>
+              <option value="banana">Banana</option>
+              <option value="orange">Orange</option>
+            </select>
+          </label>
+          <progress value={0} />
+          <progress value={0.5} />
+          <progress value={0.7} />
+          <progress value={75} max={100} />
+          <progress value={1} />
+          <progress value={null} />
+        </>
+      );
+    };
+
+    ReactDOM.render(<Input />, root);
+  </script>
+</body>
+
 </html>

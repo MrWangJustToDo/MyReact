@@ -13,7 +13,7 @@ import {
   log,
 } from "@my-react-dom-shared";
 
-import { XLINK_NS, XML_NS, X_CHAR, addEventListener, controlElementTag, setStyle } from "../helper";
+import { XLINK_NS, XML_NS, X_CHAR, addEventListener, controlElementTag, initSelect, setStyle } from "../helper";
 
 import { mountControl } from "./control";
 import { isNoProps, isSameInnerHTML } from "./tool";
@@ -199,6 +199,9 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
 
       if (enableEventSystem.current && enableControlComponent.current && controlElementTag[fiber.elementType as string]) {
         mountControl(fiber, renderDispatch);
+        if (fiber.elementType === "select") {
+          requestAnimationFrame(() => initSelect(fiber));
+        }
       }
 
       domInnerHTMLHydrate(fiber);

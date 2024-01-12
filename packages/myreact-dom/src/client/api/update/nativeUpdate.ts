@@ -3,7 +3,7 @@ import { include } from "@my-react/react-shared";
 
 import { enableControlComponent, enableEventSystem, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
 
-import { addEventListener, controlElementTag, removeEventListener, setAttribute, setStyle } from "../helper";
+import { addEventListener, controlElementTag, initSelect, removeEventListener, setAttribute, setStyle, updateSelect } from "../helper";
 
 import { mountControl, updateControl } from "./control";
 import { getAllKeys } from "./tool";
@@ -11,6 +11,8 @@ import { getAllKeys } from "./tool";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
+
+const isFalse = (v: any) => v === null || v === undefined;
 
 /**
  * @internal
@@ -36,7 +38,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
     allKeys.forEach((key) => {
       const oldValue = oldProps[key];
       const newValue = newProps[key];
-      if (!Object.is(oldValue, newValue)) {
+      if (!Object.is(oldValue, newValue) && !(isFalse(newValue) && isFalse(oldValue))) {
         if (isEvent(key)) {
           removeEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
           addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
@@ -57,8 +59,14 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
     if (enableEventSystem.current && enableControlComponent.current && controlElementTag[fiber.elementType as string]) {
       if (isMount) {
         mountControl(fiber, renderDispatch);
+        if (fiber.elementType === "select") {
+          requestAnimationFrame(() => initSelect(fiber));
+        }
       } else {
         updateControl(fiber, renderDispatch);
+        if (fiber.elementType === "select") {
+          requestAnimationFrame(() => updateSelect(fiber));
+        }
       }
     }
 

@@ -64,12 +64,16 @@ const release = async (pkgName: keyof typeof pkgNameAlias) => {
   }
 };
 
-release("@my-react/react");
-release("@my-react/react-dom");
-release("@my-react/react-jsx");
-release("@my-react/react-reactive");
-release("@my-react/react-reconciler");
-release("@my-react/react-refresh");
-release("@my-react/react-shared");
-release("@my-react/react-refresh-tools");
-release("@my-react/react-vite");
+const run = async () => {
+  await release("@my-react/react");
+  await release("@my-react/react-dom");
+  await release("@my-react/react-jsx");
+  await release("@my-react/react-reactive");
+  await release("@my-react/react-reconciler");
+  await release("@my-react/react-refresh");
+  await release("@my-react/react-shared");
+  await release("@my-react/react-refresh-tools");
+  await release("@my-react/react-vite");
+};
+
+run();

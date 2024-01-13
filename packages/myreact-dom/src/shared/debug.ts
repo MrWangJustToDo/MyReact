@@ -117,9 +117,11 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
   Object.defineProperty(renderDispatch, "__my_react_internal__", { value: __my_react_internal__ });
   Object.defineProperty(renderDispatch, "__my_react_dom_shared__", { value: __my_react_dom_shared__ });
   Object.defineProperty(renderDispatch, "__my_react_dom_internal__", { value: __my_react_dom_internal__ });
-  if (MyReactFiberNode?.prototype && !MyReactFiberNode.prototype["_debugRenderTree"]) {
+  if (MyReactFiberNode?.prototype && !Object.prototype.hasOwnProperty.call(MyReactFiberNode.prototype, "_debugRenderTree")) {
     Object.defineProperty(MyReactFiberNode.prototype, "_debugRenderTree", {
       get: function (this: MyReactFiberNodeDev) {
+        if (!isValidElement(this._debugElement)) return;
+
         const element = cloneElement(this._debugElement);
 
         if (!isValidElement(element)) return;

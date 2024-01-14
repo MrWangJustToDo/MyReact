@@ -3,7 +3,7 @@
   "description": "@my-react/react-terminal",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.2.9",
+  "version": "0.3.1",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
@@ -59,8 +59,8 @@
     "yoga-wasm-web": "^0.3.3"
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.2.9",
-    "@my-react/react-reconciler": "^0.2.9",
+    "@my-react/react-shared": "^0.3.0",
+    "@my-react/react-reconciler": "^0.3.0",
     "@types/lodash": "^4.14.202",
     "@types/signal-exit": "^3.0.1",
 		"@types/slice-ansi": "^5.0.0",
@@ -68,6 +68,6 @@
 		"@types/wrap-ansi": "^8.0.1"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.2.9"
+    "@my-react/react": ">=0.3.0"
   }
 }

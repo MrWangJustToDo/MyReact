@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "cross-fetch": "4.0.0",
-    "project-tool": "git+ssh://git@github.com:MrWangJustToDo/project-tool.git"
+    "project-tool": "https://github.com/MrWangJustToDo/project-tool.git"
   },
   "peerDependencies": {
     "@apollo/client": "^3.8.8",

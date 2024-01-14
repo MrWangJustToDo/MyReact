@@ -14,9 +14,9 @@ export const NextPlayground = () => {
           next: "12.1.6", // @todo: update to the latest version
           react: "18.2.0",
           "react-dom": "18.2.0",
-          "@my-react/react": "0.2.9",
-          "@my-react/react-dom": "0.2.9",
-          "@my-react/react-refresh": "0.2.9",
+          "@my-react/react": "0.3.0",
+          "@my-react/react-dom": "0.3.0",
+          "@my-react/react-refresh": "0.3.0",
           "@my-react/react-refresh-tools": "0.0.9",
           "@next/swc-wasm-nodejs": "12.1.6",
         },

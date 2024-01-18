@@ -322,6 +322,14 @@ export class ListTree<T> {
 
     return newList;
   }
+
+  clear() {
+    this.length = 0;
+    this.head = null;
+    this.foot = null;
+    this.stickyHead = null;
+    this.stickyFoot = null;
+  }
 }
 
 if (__DEV__) {

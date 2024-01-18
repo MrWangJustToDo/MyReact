@@ -78,6 +78,18 @@ type DefaultRenderDispatch = {
 
   patchToFiberUnmount?: (_fiber: MyReactFiberNode) => void;
 
+  beforeCommit?: () => void;
+
+  afterCommit?: () => void;
+
+  beforeUpdate?: () => void;
+
+  afterUpdate?: () => void;
+
+  beforeUnmount?: () => void;
+
+  afterUnmount?: () => void;
+
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean;
 
   commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void;

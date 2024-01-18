@@ -1,11 +1,10 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { MyReactFiberNode, triggerUnmount } from "@my-react/react-reconciler";
-
+import { MyReactFiberNode, unmountContainer } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { log } from "@my-react-dom-shared";
 
-import type { CustomRenderPlatform} from "@my-react/react-reconciler";
+import type { CustomRenderPlatform } from "@my-react/react-reconciler";
 import type { RenderContainer } from "@my-react-dom-client/mount";
 
 const { currentRenderPlatform } = __my_react_internal__;
@@ -22,12 +21,5 @@ export const unmountComponentAtNode = (container: RenderContainer) => {
     return;
   }
 
-  triggerUnmount(fiber, () => {
-    renderDispatch.pendingUpdateFiberArray.clear();
-    renderDispatch.runtimeFiber.scheduledFiber = null;
-    renderDispatch.runtimeFiber.nextWorkingFiber = null;
-    renderDispatch.isAppMounted = false;
-    renderDispatch.isAppUnmounted = true;
-    renderPlatform.dispatchSet?.uniDelete?.(renderDispatch);
-  });
+  unmountContainer(renderDispatch, () => renderPlatform.dispatchSet?.uniDelete?.(renderDispatch));
 };

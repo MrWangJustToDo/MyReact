@@ -66,6 +66,18 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   uniqueIdCount = 0;
 
+  beforeCommit?: () => void;
+
+  afterCommit?: () => void;
+
+  beforeUpdate?: () => void;
+
+  afterUpdate?: () => void;
+
+  beforeUnmount?: () => void;
+
+  afterUnmount?: () => void;
+
   constructor(
     readonly rootNode: any,
     readonly rootFiber: MyReactFiberNode
@@ -202,10 +214,15 @@ export class CustomRenderDispatch implements RenderDispatch {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
-    return defaultDispatchMount(_fiber, this, _hydrate);
+    this.beforeCommit?.();
+    const re = defaultDispatchMount(_fiber, this, _hydrate);
+    this.afterCommit?.();
+    return re;
   }
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
+    this.beforeUpdate?.();
     defaultDispatchUpdate(_list, this);
+    this.afterUpdate?.();
   }
   shouldYield(): boolean {
     return false;

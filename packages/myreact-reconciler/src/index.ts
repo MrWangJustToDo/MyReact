@@ -14,6 +14,7 @@ export * from "./processState";
 export * from "./share";
 export * from "./renderDispatch";
 export * from "./renderMount";
+export * from "./renderUnmount";
 export * from "./renderNextWork";
 export * from "./renderPlatform";
 export * from "./renderUpdate";

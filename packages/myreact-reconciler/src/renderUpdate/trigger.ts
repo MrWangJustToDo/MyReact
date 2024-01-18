@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { MODE_TYPE, STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
-import { unmountFiber } from "../dispatchUnmount";
+import { unmountFiber } from "../renderUnmount";
 import { NODE_TYPE, currentDevFiber, currentTriggerFiber, devError, devWarn, fiberToDispatchMap } from "../share";
 
 import { updateConcurrentFromRoot, updateConcurrentFromTrigger, updateSyncFromRoot, updateSyncFromTrigger } from "./feature";

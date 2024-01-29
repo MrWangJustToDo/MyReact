@@ -1,9 +1,10 @@
+import { Card, MantineProvider, ScrollAreaAutosize } from "@mantine/core";
 import { useState } from "react";
 import "./App.css";
 import "@mantine/core/styles.css";
-import { Card, MantineProvider, ScrollAreaAutosize } from "@mantine/core";
-import { theme } from "./theme";
+
 import { Example } from "./Example";
+import { theme } from "./theme";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -11,11 +12,11 @@ function App() {
   return (
     <MantineProvider theme={theme}>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
+        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
           Vite
         </a>
         <div style={{ width: "50%" }}></div>
-        <a href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
+        <a href="https://github.com/MrWangJustToDo/MyReact" target="_blank" rel="noreferrer">
           @my-react
         </a>
       </div>

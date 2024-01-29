@@ -1,5 +1,5 @@
 {
-  "blog": "@my-react Blog",
+  "blog": "@my-react Blog Example",
   "@my-react": "@my-react",
   "description": "A React like framework, can be used to replace all the react/react-dom api for test、learn、debug ...",
   "hmr": "Hot module replacement",

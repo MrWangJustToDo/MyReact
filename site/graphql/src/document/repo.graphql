@@ -1,0 +1,8 @@
+query getRepoAbout ($name: String!, $owner: String!) {
+  repository(name: $name, owner: $owner) {
+    description
+    url
+    homepageUrl
+    descriptionHTML
+  }
+}

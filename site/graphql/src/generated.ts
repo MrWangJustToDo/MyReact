@@ -5,7 +5,7 @@ import type * as SchemaTypes from "./schema";
 
 import type { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
 export type GetViewerQueryVariables = SchemaTypes.Exact<{
-  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]>;
+  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]["input"]>;
 }>;
 
 export type GetViewerQuery = {
@@ -24,13 +24,13 @@ export type GetViewerQuery = {
 };
 
 export type GetBlogListQueryVariables = SchemaTypes.Exact<{
-  name: SchemaTypes.Scalars["String"];
-  owner: SchemaTypes.Scalars["String"];
-  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]>;
-  last?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]>;
-  after?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]>;
-  before?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]>;
-  labels?: SchemaTypes.InputMaybe<Array<SchemaTypes.Scalars["String"]> | SchemaTypes.Scalars["String"]>;
+  name: SchemaTypes.Scalars["String"]["input"];
+  owner: SchemaTypes.Scalars["String"]["input"];
+  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]["input"]>;
+  last?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]["input"]>;
+  after?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]["input"]>;
+  before?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]["input"]>;
+  labels?: SchemaTypes.InputMaybe<Array<SchemaTypes.Scalars["String"]["input"]> | SchemaTypes.Scalars["String"]["input"]>;
   orderBy?: SchemaTypes.InputMaybe<SchemaTypes.IssueOrder>;
   states?: SchemaTypes.InputMaybe<Array<SchemaTypes.IssueState> | SchemaTypes.IssueState>;
   filterBy?: SchemaTypes.InputMaybe<SchemaTypes.IssueFilters>;
@@ -66,11 +66,11 @@ export type GetBlogListQuery = {
 };
 
 export type GetSingleBlogQueryVariables = SchemaTypes.Exact<{
-  name: SchemaTypes.Scalars["String"];
-  owner: SchemaTypes.Scalars["String"];
-  number: SchemaTypes.Scalars["Int"];
-  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]>;
-  after?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]>;
+  name: SchemaTypes.Scalars["String"]["input"];
+  owner: SchemaTypes.Scalars["String"]["input"];
+  number: SchemaTypes.Scalars["Int"]["input"];
+  first?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["Int"]["input"]>;
+  after?: SchemaTypes.InputMaybe<SchemaTypes.Scalars["String"]["input"]>;
 }>;
 
 export type GetSingleBlogQuery = {
@@ -113,9 +113,16 @@ export type GetSingleBlogQuery = {
   } | null;
 };
 
+export type GetRepoAboutQueryVariables = SchemaTypes.Exact<{
+  name: SchemaTypes.Scalars["String"]["input"];
+  owner: SchemaTypes.Scalars["String"]["input"];
+}>;
+
+export type GetRepoAboutQuery = { repository?: { description?: string | null; url: any; homepageUrl?: any | null; descriptionHTML: any } | null };
+
 export type GetStarCountQueryVariables = SchemaTypes.Exact<{
-  name: SchemaTypes.Scalars["String"];
-  owner: SchemaTypes.Scalars["String"];
+  name: SchemaTypes.Scalars["String"]["input"];
+  owner: SchemaTypes.Scalars["String"]["input"];
 }>;
 
 export type GetStarCountQuery = { repository?: { id: string; stargazerCount: number } | null };
@@ -497,6 +504,50 @@ export const GetSingleBlogDocument = {
     },
   ],
 } as unknown as DocumentNode<GetSingleBlogQuery, GetSingleBlogQueryVariables>;
+export const GetRepoAboutDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "getRepoAbout" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "name" } },
+          type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "owner" } },
+          type: { kind: "NonNullType", type: { kind: "NamedType", name: { kind: "Name", value: "String" } } },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "repository" },
+            arguments: [
+              { kind: "Argument", name: { kind: "Name", value: "name" }, value: { kind: "Variable", name: { kind: "Name", value: "name" } } },
+              { kind: "Argument", name: { kind: "Name", value: "owner" }, value: { kind: "Variable", name: { kind: "Name", value: "owner" } } },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "description" } },
+                { kind: "Field", name: { kind: "Name", value: "url" } },
+                { kind: "Field", name: { kind: "Name", value: "homepageUrl" } },
+                { kind: "Field", name: { kind: "Name", value: "descriptionHTML" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetRepoAboutQuery, GetRepoAboutQueryVariables>;
 export const GetStarCountDocument = {
   kind: "Document",
   definitions: [

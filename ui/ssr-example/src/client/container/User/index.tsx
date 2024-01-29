@@ -3,7 +3,6 @@ import {
   Avatar,
   AvatarBadge,
   Box,
-  Button,
   Divider,
   Flex,
   HStack,
@@ -14,6 +13,7 @@ import {
   SkeletonText,
   StackDivider,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { GetViewerDocument } from "@site/graphql";
 import { memo } from "react";
@@ -23,6 +23,7 @@ import { SiLeetcode } from "react-icons/si";
 import { Chart } from "@client/component/Chart";
 import { ErrorCom } from "@client/component/Error";
 import { Followers } from "@client/component/Follower";
+import { Blog, GitDiffView, RStore, SSR } from "@client/component/Recommend";
 import { useEffectOnce } from "@client/hooks";
 import { momentTo } from "@client/utils/time";
 
@@ -79,41 +80,12 @@ const _User = () => {
       {/* <Text fontWeight="semibold">{data.viewer.login}</Text> */}
       <Box fontSize="sm" marginY="2">
         <Text fontWeight="semibold">Recommend:</Text>
-        <HStack divider={<StackDivider />} spacing="2" marginTop="1">
-          <Button
-            as="a"
-            size="sm"
-            color="red.300"
-            target="_blank"
-            variant="outline"
-            href="https://github.com/MrWangJustToDo/MrWangJustToDo.io"
-            title="https://github.com/MrWangJustToDo/MrWangJustToDo.io"
-          >
-            Blog
-          </Button>
-          <Button
-            as="a"
-            size="sm"
-            color="red.300"
-            target="_blank"
-            variant="outline"
-            href="https://github.com/MrWangJustToDo/r-store"
-            title="https://github.com/MrWangJustToDo/r-store"
-          >
-            RStore
-          </Button>
-          <Button
-            as="a"
-            size="sm"
-            color="red.300"
-            target="_blank"
-            variant="outline"
-            href="https://github.com/MrWangJustToDo/react-ssr-setup"
-            title="https://github.com/MrWangJustToDo/react-ssr-setup"
-          >
-            SSR template
-          </Button>
-        </HStack>
+        <VStack divider={<StackDivider />} spacing="2" marginTop="1">
+          <RStore />
+          <Blog />
+          <SSR />
+          <GitDiffView />
+        </VStack>
       </Box>
       <Flex alignItems="center" marginTop="1">
         <Icon as={AiOutlineUser} />

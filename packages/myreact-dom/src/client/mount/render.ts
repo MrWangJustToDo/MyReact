@@ -1,5 +1,5 @@
 import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react";
-import { checkIsSameType, initialFiberNode, MyReactFiberNode, triggerUpdate } from "@my-react/react-reconciler";
+import { checkIsSameType, CustomRenderDispatch, initialFiberNode, MyReactFiberNode, triggerUpdate } from "@my-react/react-reconciler";
 import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -65,12 +65,12 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
 
   const container = _container as RenderContainer;
 
-  const containerFiber = container.__fiber__;
+  const renderContainer = container.__container__;
 
-  if (containerFiber instanceof MyReactFiberNode) {
-    const renderDispatch = container.__container__;
+  if (renderContainer instanceof CustomRenderDispatch) {
+    const containerFiber = renderContainer.rootFiber;
 
-    if (renderDispatch.isAppCrashed || include(containerFiber.state, STATE_TYPE.__unmount__)) {
+    if (renderContainer.isAppCrashed || include(containerFiber.state, STATE_TYPE.__unmount__)) {
       // is there are not a valid render tree, try do the pure rerender
       container.__fiber__ = null;
 

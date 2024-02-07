@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import { lazy } from "react";
 
 import { ScrollContent, ScrollControl, ScrollControlTool, ScrollSection, ScrollToTop } from "@client/component";
@@ -11,26 +10,25 @@ const ApiSection = __REACT__ && !__STREAM__ ? _ApiSection : lazy(() => import("@
 
 const Page = () => {
   return (
-    <Box fontFamily="sans-serif">
-      <ScrollControl initialSectionLength={4}>
-        <ScrollContent>
-          <ScrollSection>
-            <MainSection />
-          </ScrollSection>
+    <ScrollControl initialSectionLength={4}>
+      <ScrollContent>
+        <ScrollSection>
+          <MainSection />
+        </ScrollSection>
 
-          <ScrollSection>
-            <NextSection />
-          </ScrollSection>
+        <ScrollSection>
+          <NextSection />
+        </ScrollSection>
 
-          <ScrollSection>
-            <ViteSection />
-          </ScrollSection>
+        <ScrollSection>
+          <ViteSection />
+        </ScrollSection>
 
-          <ScrollSection>
-            <ApiSection />
-          </ScrollSection>
+        <ScrollSection>
+          <ApiSection />
+        </ScrollSection>
 
-          {/* <ScrollSection>
+        {/* <ScrollSection>
             <Box width="100vw" height="100vh" backgroundColor="aliceblue" position="relative">
               <Box position="absolute" left="30%" top="50%" transform="translateY(-50%)" border="1px" borderRadius="4px" padding="2">
                 <Section>
@@ -69,12 +67,11 @@ const Page = () => {
               </Box>
             </Box>
           </ScrollSection> */}
-        </ScrollContent>
+      </ScrollContent>
 
-        <ScrollControlTool />
-        <ScrollToTop />
-      </ScrollControl>
-    </Box>
+      <ScrollControlTool />
+      <ScrollToTop />
+    </ScrollControl>
   );
 };
 

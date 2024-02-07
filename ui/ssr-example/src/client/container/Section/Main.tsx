@@ -64,30 +64,15 @@ export const MainSection = () => {
             (enableMockReact: <Checkbox isChecked={enableMockReact.current} readOnly />)
           </Text>
           <HStack marginTop="14" spacing="3" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "13px", xl: "14px" }}>
-            <Button
-              variant="solid"
-              fontSize="inherit"
-              borderRadius="full"
-              colorScheme="messenger"
-              onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}
-            >
+            <Button variant="solid" fontSize="inherit" colorScheme="messenger" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
               View Example
             </Button>
-            <Button
-              variant="solid"
-              fontSize="inherit"
-              borderRadius="full"
-              colorScheme="whatsapp"
-              as="a"
-              href="https://github.com/MrWangJustToDo/MyReact"
-              target="_blank"
-            >
+            <Button variant="solid" fontSize="inherit" colorScheme="whatsapp" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
               View on GitHub
             </Button>
             <Button
               variant="solid"
               fontSize="inherit"
-              borderRadius="full"
               colorScheme="teal"
               display={{ base: "none", lg: "inline-flex" }}
               as="a"
@@ -96,7 +81,7 @@ export const MainSection = () => {
             >
               Online play
             </Button>
-            <Button variant="solid" fontSize="inherit" borderRadius="full" as="a" href="https://www.npmjs.com/search?q=%40my-react" target="_blank">
+            <Button variant="solid" fontSize="inherit" as="a" href="https://www.npmjs.com/search?q=%40my-react" target="_blank">
               View on NPM
             </Button>
           </HStack>

@@ -11,6 +11,24 @@
   height: 0;
 }
 
+.typo {
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Helvetica Neue,
+    Arial,
+    Noto Sans,
+    sans-serif,
+    Apple Color Emoji,
+    Segoe UI Emoji,
+    Segoe UI Symbol,
+    Noto Color Emoji;
+}
+
 /* 块/段落引用 */
 .typo blockquote {
   position: relative;
@@ -215,7 +233,7 @@ blockquote {
 .typo h4,
 .typo h5,
 .typo h6 {
-  font-weight: 400;
+  font-weight: 500;
   line-height: 1.35;
 }
 
@@ -244,24 +262,24 @@ blockquote {
 
 .typo h2,
 .typo-h2 {
-  font-size: 1.8em;
+  font-size: 1.6em;
 }
 
 .typo h3,
 .typo-h3 {
-  font-size: 1.6em;
+  font-size: 1.4em;
 }
 
 .typo h4,
 .typo-h4 {
-  font-size: 1.4em;
+  font-size: 1.2em;
 }
 
 .typo h5,
 .typo h6,
 .typo-h5,
 .typo-h6 {
-  font-size: 1.2em;
+  font-size: 1.1em;
 }
 
 /* 在文章中，应该还原 ul 和 ol 的样式 */

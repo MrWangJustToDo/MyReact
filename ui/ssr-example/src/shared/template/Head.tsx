@@ -19,6 +19,7 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     <base href={noBase ? "/" : `/${__BASENAME__}/`} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/google-sans"></link>
     {/* a type issue for react-helmet-async  */}
     <>
       {helmet?.base.toComponent()}

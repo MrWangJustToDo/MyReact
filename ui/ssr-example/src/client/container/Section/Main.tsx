@@ -56,12 +56,12 @@ export const MainSection = () => {
           <Heading as="h1" fontSize={{ base: "2xl", md: "3xl", lg: "5xl" }} marginBottom="6" color="red.400">
             {formatMessage({ id: "@my-react" })}
           </Heading>
-          <Text fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} as="div">
+          <Text fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} as="div" fontWeight="500">
             {formatMessage({ id: "description" })}
           </Text>
-          <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%" as="div">
-            This website is built with <Tag>@my-react</Tag> project. <br /> Version: @my-react/react [{reactVersion}]; @my-react/react-dom [{reactDOMVersion}]
-            (enableMockReact: <Checkbox isChecked={enableMockReact.current} readOnly />)
+          <Text color="lightTextColor" marginY="2" lineHeight="180%" as="div">
+            This website is built with <Tag verticalAlign="middle">@my-react</Tag> project. <br /> Version: @my-react/react [{reactVersion}];
+            @my-react/react-dom [{reactDOMVersion}] (enableMockReact: <Checkbox verticalAlign="middle" isChecked={enableMockReact.current} isReadOnly />)
           </Text>
           <HStack marginTop="14" spacing="3" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "13px", xl: "14px" }}>
             <Button variant="solid" fontSize="inherit" colorScheme="messenger" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>

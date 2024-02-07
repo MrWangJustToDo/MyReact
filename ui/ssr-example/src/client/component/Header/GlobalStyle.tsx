@@ -24,7 +24,7 @@ export const GlobalStyle = () => {
       Current colors taken from GitHub's CSS
     */
       .hljs {
-        --hljs-color: #24292e;
+        --hljs-color: #84898e;
         color: #24292e;
         background: #ffffff;
       }

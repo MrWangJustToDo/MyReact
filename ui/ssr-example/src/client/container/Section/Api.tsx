@@ -82,7 +82,7 @@ export const ApiSection = () => {
         containerProps={{
           padding: { base: "2", md: "4", lg: "6" },
           marginX: "auto",
-          maxWidth: { base: "90%", lg: "80%" },
+          maxWidth: { base: "95%", sm: "90%", lg: "80%" },
           border: "1px solid",
           borderRadius: "md",
           borderColor: "cardBorderColor",
@@ -138,7 +138,7 @@ export const ApiSection = () => {
           headCellRender={{
             cellProps: { fontSize: "1.1rem" },
             Render: () => (
-              <LinkBox display="flex" alignItems='center'>
+              <LinkBox display="flex" alignItems="center">
                 <Text as="span">@my-react/react-dom</Text>
                 <Spacer mx="1" />
                 <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-dom" width="60px" height="16px" isExternal>
@@ -158,7 +158,7 @@ export const ApiSection = () => {
           headCellRender={{
             cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
             Render: () => (
-              <LinkBox display="flex" alignItems='center'>
+              <LinkBox display="flex" alignItems="center">
                 <Text as="span">@my-react/react-reactive</Text>
                 <Spacer mx="1" />
                 <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-reactive" width="60px" height="16px" isExternal>
@@ -178,7 +178,7 @@ export const ApiSection = () => {
           headCellRender={{
             cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
             Render: () => (
-              <LinkBox display="flex" alignItems='center'>
+              <LinkBox display="flex" alignItems="center">
                 <Text as="span">@my-react/react-refresh</Text>
                 <Spacer mx="1" />
                 <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-refresh" width="60px" height="16px" isExternal>
@@ -198,7 +198,7 @@ export const ApiSection = () => {
           headCellRender={{
             cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
             Render: () => (
-              <LinkBox display="flex" alignItems='center'>
+              <LinkBox display="flex" alignItems="center">
                 <Text as="span">@my-react/react-refresh-tools</Text>
                 <Spacer mx="1" />
                 <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-refresh-tools" width="60px" height="16px" isExternal>
@@ -218,7 +218,7 @@ export const ApiSection = () => {
           headCellRender={{
             cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
             Render: () => (
-              <LinkBox display="flex" alignItems='center'>
+              <LinkBox display="flex" alignItems="center">
                 <Text as="span">@my-react/react-vite</Text>
                 <Spacer mx="1" />
                 <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-vite" width="60px" height="16px" isExternal>

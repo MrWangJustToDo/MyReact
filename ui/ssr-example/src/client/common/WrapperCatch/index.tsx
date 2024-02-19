@@ -23,7 +23,7 @@ export class WrapperErrorCatch extends Component<Record<string, unknown> & { chi
   render(): ReactNode {
     if (this.state.hasError)
       return (
-        <pre>
+        <pre style={{ fontFamily: "SFMono-Regular,Menlo,Monaco,Consolas,monospace" }}>
           <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
           {this.state.stack}
         </pre>

@@ -26,9 +26,9 @@ const INITIAL_RECT: DOMRectType = {
   y: 0,
 };
 
-export function useDomSize({ ref, cssSelector }: { ref: RefObject<HTMLElement> | null; cssSelector?: string }): DOMRectType;
-export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement>; cssSelector: string }): DOMRectType;
-export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement> | null; cssSelector?: string }) {
+export function useDomSize({ ref, cssSelector }: { ref: RefObject<HTMLElement> | null; cssSelector?: string, deps?: any[] }): DOMRectType;
+export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement>; cssSelector: string, deps?: any[] }): DOMRectType;
+export function useDomSize({ ref, cssSelector, deps }: { ref?: RefObject<HTMLElement> | null; cssSelector?: string, deps?: any[] }) {
   const [rect, setRect] = useDebouncedState<DOMRectType>(INITIAL_RECT, 100);
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement> 
         return () => window.removeEventListener("resize", handleResize);
       }
     }
-  }, [ref, cssSelector, setRect]);
+  }, [ref, cssSelector, setRect, ...deps]);
 
   return rect;
 }

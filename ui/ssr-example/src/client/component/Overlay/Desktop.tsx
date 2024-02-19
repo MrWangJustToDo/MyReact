@@ -9,7 +9,7 @@ export const Desktop = (props: OverlayProps) => {
 
   return (
     <Modal size={size} isOpen={showState} scrollBehavior="inside" onClose={closeHandler} onCloseComplete={closeComplete}>
-      <ModalOverlay />
+      <ModalOverlay backdropFilter="blur(4px)" />
       <ModalContent className={className}>
         {head && <ModalHeader>{head}</ModalHeader>}
         <ModalCloseButton />

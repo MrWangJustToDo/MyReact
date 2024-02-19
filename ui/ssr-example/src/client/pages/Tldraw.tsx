@@ -9,11 +9,11 @@ import type { Tldraw as TldrawProview } from "@tldraw/tldraw";
 const { enable, disable } = useFoot.getActions();
 
 export default function Tldraw({ isDarkMode }: { isDarkMode: boolean }) {
-  const { height } = useDomSize({ cssSelector: ".site-header" });
-
   const isMounted = useIsMounted();
 
   const [loading, setLoading] = useDebouncedState(true, 3000);
+
+  const { height } = useDomSize({ cssSelector: ".site-header", deps: [loading] });
 
   const [Render, setRender] = useState<typeof TldrawProview>(() => () => null);
 
@@ -36,7 +36,7 @@ export default function Tldraw({ isDarkMode }: { isDarkMode: boolean }) {
     return () => {
       enable();
     };
-  }, []);
+  }, [setLoading]);
 
   const darkMode = isMounted ? _isDarkMode : isDarkMode;
 

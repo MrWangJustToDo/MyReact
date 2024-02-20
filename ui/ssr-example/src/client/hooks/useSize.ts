@@ -52,7 +52,7 @@ export function useDomSize({ ref, cssSelector, deps }: { ref?: RefObject<HTMLEle
         return () => window.removeEventListener("resize", handleResize);
       }
     }
-  }, [ref, cssSelector, setRect, ...deps]);
+  }, [ref, cssSelector, setRect, ...(deps || [])]);
 
   return rect;
 }

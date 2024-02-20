@@ -45,7 +45,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
   if (value !== null && value !== undefined) {
     if (key === "className") {
       if (isSVG) {
-        const has = dom.hasAttribute('class');
+        const has = dom.hasAttribute("class");
         if (!has) {
           if (enableHydrateWarn.current) {
             log(fiber, "warn", `hydrate warning, dom '${key}' not match from server. no have this attr from server, client: ${value}`);
@@ -66,7 +66,7 @@ const domPropsHydrate = (fiber: MyReactFiberNode, isSVG: boolean, key: string, v
           if (enableHydrateWarn.current) {
             log(fiber, "warn", `hydrate warning, dom '${key}' not match from server. server: ${dom[key]}, client: ${value}`);
           }
-          dom[key] = (value as string);
+          dom[key] = value as string;
         }
       }
     } else if (isSVG && key.charCodeAt(0) === X_CHAR) {
@@ -193,7 +193,11 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
         } else if (isStyle(key)) {
           domStyleHydrate(fiber, key, (props[key] as Record<string, unknown>) || {});
         } else if (isProperty(key)) {
-          domPropsHydrate(fiber, isSVG, key, props[key]);
+          try {
+            domPropsHydrate(fiber, isSVG, key, props[key]);
+          } catch {
+            void 0;
+          }
         }
       });
 

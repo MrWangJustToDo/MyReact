@@ -321,7 +321,7 @@ export const performReactRefresh = () => {
       }
     });
   } else {
-    console.error(`[@my-react/react-refresh] refresh failed`);
+    console.log(`[@my-react/react-refresh] nothing need to update`);
   }
 };
 

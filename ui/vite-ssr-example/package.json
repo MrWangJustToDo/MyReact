@@ -17,18 +17,18 @@
     "express": "^4.18.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router": "^6.21.0",
-    "react-router-dom": "^6.21.0"
+    "react-router": "^6.22.1",
+    "react-router-dom": "^6.22.1"
   },
   "devDependencies": {
     "@my-react/react-refresh": "workspace:*",
     "@my-react/react-vite": "workspace:*",
-    "@types/node": "^20.11.0",
-    "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.18",
-    "eslint": "^8.55.0",
+    "@types/node": "^20.11.20",
+    "@types/react": "^18.2.58",
+    "@types/react-dom": "^18.2.19",
+    "eslint": "^8.57.0",
     "serve-static": "^1.15.0",
     "typescript": "^5.3.3",
-    "vite": "^5.0.10"
+    "vite": "^5.1.4"
   }
 }

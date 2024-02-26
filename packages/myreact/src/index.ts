@@ -68,7 +68,13 @@ const version = enableMockReact.current ? "18.2.0" : __VERSION__;
 /**
  * @beta
  */
-const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {};
+const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {
+  ReactCurrentActQueue: {},
+  ReactCurrentBatchConfig: {},
+  ReactCurrentDispatcher: { current: {} },
+  ReactCurrentOwner: { current: null },
+  ReactDebugCurrentFrame: {},
+};
 
 /**
  * @public
@@ -95,7 +101,7 @@ const __my_react_scheduler__ = {
   yieldTask,
   macroTask,
   microTask,
-}
+};
 
 /**
  * @public
@@ -103,7 +109,7 @@ const __my_react_scheduler__ = {
 const __my_react_internal__ = {
   MyReactInternalInstance,
   globalLoop,
-  
+
   initRenderPlatform,
   createReadonlyRef,
 

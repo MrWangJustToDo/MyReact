@@ -32,6 +32,7 @@
           "dir": "./dist",
           "entryFileNames": "cjs/RefreshBabelPlugin.js",
           "format": "cjs",
+          "type": true,
           "multiple": true,
           "sourcemap": true
         }
@@ -45,6 +46,7 @@
           "dir": "./dist",
           "entryFileNames": "cjs/RefreshRuntime.js",
           "format": "cjs",
+          "type": true,
           "multiple": true,
           "sourcemap": true
         }

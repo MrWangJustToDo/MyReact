@@ -5,12 +5,6 @@
     ],
     "static": true
   },
-  "./": {
-    "path": [
-      "page-.js"
-    ],
-    "static": true
-  },
   "./Tldraw": {
     "path": [
       "page-Tldraw.js"
@@ -26,6 +20,12 @@
   "./Blog": {
     "path": [
       "page-Blog.js"
+    ],
+    "static": true
+  },
+  "./": {
+    "path": [
+      "page-.js"
     ],
     "static": true
   }

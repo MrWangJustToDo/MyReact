@@ -111,7 +111,7 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
           fiber,
           "warn",
           "invalid dom props, expect a string or number but get a object.",
-          `invalid dom props, expect a string or number but get a object. key: ${key} value: ${props[key]}`
+          `invalid dom props, expect a string or number but get a object. key: ${key}, value: ${props[key]}`
         );
       }
       if (isStyle(key) && props[key] && typeof props[key] !== "object") {

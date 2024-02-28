@@ -34,7 +34,7 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
 
     Object.keys(props).forEach((key) => {
       if (isProperty(key) && props[key] && typeof props[key] === "object" && props[key] !== null) {
-        log(fiber, "warn", `invalid element props, expect a string or number but get a object. key: ${key} value: ${props[key]}`);
+        log(fiber, "warn", `invalid element props, expect a string or number but get a object. key: ${key}, value: ${props[key]}`);
       }
       if (isStyle(key) && props[key] && typeof props[key] !== "object") {
         throw new Error("style or the element props should be a object");

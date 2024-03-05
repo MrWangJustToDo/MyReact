@@ -4,6 +4,7 @@ import {
   debugWithNode,
   devErrorWithFiber,
   devWarnWithFiber,
+  getCurrentDispatchFromFiber,
   onceErrorWithKeyAndFiber,
   onceWarnWithKeyAndFiber,
   unmountFiber,
@@ -15,8 +16,8 @@ import { HighLight, debounce } from "@my-react-dom-client/tools";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount/render";
 import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-dom-server/api";
 
+
 import {
-  enableASyncHydrate,
   enableControlComponent,
   enableDOMField,
   enableEventSystem,
@@ -31,6 +32,7 @@ import type { LikeJSX } from "@my-react/react";
 import type { CustomRenderDispatch, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 import type { RenderContainer } from "@my-react-dom-client/mount";
 import type { CommentEndElement, TextElement } from "@my-react-dom-server/api";
+import type { LatestServerStreamDispatch, LegacyServerStreamDispatch, ServerDomDispatch } from "@my-react-dom-server/renderDispatch";
 
 const { enableOptimizeTreeLog, enableScopeTreeLog } = __my_react_shared__;
 
@@ -126,8 +128,10 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
 
         if (!isValidElement(element)) return;
 
+        const renderDispatch = getCurrentDispatchFromFiber(this) as ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch | LatestServerStreamDispatch;
+
         const get = async () => {
-          if (enableASyncHydrate.current) {
+          if (renderDispatch.enableASyncHydrate) {
             const _re = enableScopeTreeLog.current;
 
             enableScopeTreeLog.current = false;

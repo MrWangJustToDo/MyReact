@@ -38,6 +38,8 @@ export class ServerDomDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
+  enableASyncHydrate = false;
+
   renderTime: number | null;
 
   hydrateTime: number | null;

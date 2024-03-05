@@ -61,6 +61,8 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
+  enableASyncHydrate = false;
+
   renderTime: number | null;
 
   hydrateTime: number | null;
@@ -139,6 +141,8 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
   isClientRender: boolean;
 
   isServerRender: boolean;
+
+  enableASyncHydrate = true;
 
   renderTime: number | null;
 

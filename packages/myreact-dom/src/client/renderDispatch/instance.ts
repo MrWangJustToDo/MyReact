@@ -61,6 +61,8 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   performanceLogTimeLimit = asyncUpdateTimeLimit.current;
 
+  enableASyncHydrate = enableASyncHydrate.current;
+
   patchToCommitAppend?: (_fiber: MyReactFiberNode) => void;
 
   patchToCommitUpdate?: (_fiber: MyReactFiberNode) => void;
@@ -89,7 +91,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     clearNode(_fiber);
   }
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    if (enableASyncHydrate.current) {
+    if (this.enableASyncHydrate) {
       return resolveLazyElementLatest(_fiber, this);
     } else {
       return resolveLazyElementLegacy(_fiber, this);
@@ -146,7 +148,7 @@ if (__DEV__) {
       const rootElement = createElement(rootElementType, rootElementProps);
 
       const get = async () => {
-        if (enableASyncHydrate.current) {
+        if (this.enableASyncHydrate) {
           const _re = enableScopeTreeLog.current;
 
           enableScopeTreeLog.current = false;

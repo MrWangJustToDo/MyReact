@@ -4,6 +4,14 @@ import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunction
 import type { ClientDomDispatch } from "@my-react/react-dom";
 import type { CustomRenderDispatch, HMR, setRefreshHandler } from "@my-react/react-reconciler";
 
+const HMR_FIELD = "__@my-react/hmr__";
+
+const DISPATCH_FIELD = "__@my-react/dispatch__";
+
+const RUNTIME_FIELD = "__@my-react/react-refresh__";
+
+const DEV_TOOL_FIELD = "__@my-react/react-refresh-dev__";
+
 type Family = {
   current: MyReactComponentType;
 };
@@ -19,8 +27,9 @@ type Signature = {
 type MyReactComponentType = ReturnType<typeof forwardRef> | ReturnType<typeof memo> | MixinMyReactClassComponent | MixinMyReactFunctionComponent;
 
 type HMRGlobal = {
-  ["__@my-react/hmr__"]: HMR;
-  ["__@my-react/react-refresh__"]: {
+  [HMR_FIELD]: HMR;
+  [DISPATCH_FIELD]: CustomRenderDispatch[];
+  [RUNTIME_FIELD]: {
     register: typeof register;
     setSignature: typeof setSignature;
     getFamilyByID: typeof getFamilyByID;
@@ -30,9 +39,11 @@ type HMRGlobal = {
     collectCustomHooksForSignature: typeof collectCustomHooksForSignature;
     createSignatureFunctionForTransform: typeof createSignatureFunctionForTransform;
   };
-  ["__@my-react/react-refresh__id"]: typeof allFamiliesByID;
-  ["__@my-react/react-refresh__updated"]: typeof updatedFamiliesByType;
-  ["__@my-react/react-refresh__signature"]: typeof allSignaturesByType;
+  [DEV_TOOL_FIELD]: {
+    allFamiliesByID: typeof allFamiliesByID;
+    allSignaturesByType: typeof allSignaturesByType;
+    updatedFamiliesByType: typeof updatedFamiliesByType;
+  };
 };
 
 const typedSelf = globalThis as unknown as HMRGlobal;
@@ -251,7 +262,7 @@ export const createSignatureFunctionForTransform = () => {
 export const performReactRefresh = () => {
   if (!pendingUpdates.length) return;
 
-  if (typeof typedSelf?.["__@my-react/hmr__"]?.hmr !== "function") {
+  if (typeof typedSelf?.[HMR_FIELD]?.hmr !== "function") {
     console.log(`[@my-react/react-refresh] try to refresh current App failed, current environment not have a valid HMR runtime`);
     return;
   }
@@ -268,7 +279,7 @@ export const performReactRefresh = () => {
     const nextType = getRenderTypeFormType(_nextType);
 
     if (prevType && nextType) {
-      const fibers = typedSelf["__@my-react/hmr__"]?.getCurrentFibersFromType?.(prevType);
+      const fibers = typedSelf[HMR_FIELD]?.getCurrentFibersFromType?.(prevType);
 
       updatedFamiliesByType.set(prevType, family);
 
@@ -280,11 +291,11 @@ export const performReactRefresh = () => {
         const forceReset = !canPreserveStateBetween(prevType, nextType);
 
         fibers.forEach((f) => {
-          const container = typedSelf["__@my-react/hmr__"]?.getCurrentDispatchFromFiber?.(f);
+          const container = typedSelf[HMR_FIELD]?.getCurrentDispatchFromFiber?.(f);
 
           const hasRootUpdate = containers.get(container) || f === container.rootFiber;
 
-          typedSelf?.["__@my-react/hmr__"]?.hmr?.(f, nextType, forceReset);
+          typedSelf?.[HMR_FIELD]?.hmr?.(f, nextType, forceReset);
 
           containers.set(container, hasRootUpdate);
         });
@@ -319,6 +330,7 @@ export const performReactRefresh = () => {
       } else {
         container.rootFiber._devUpdate?.(hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__, updateDone);
       }
+      setRefreshRuntimeFieldForDev(container);
     });
   } else {
     console.log(`[@my-react/react-refresh] nothing need to update`);
@@ -369,15 +381,48 @@ export const isLikelyComponentType = (type: MyReactElementType) => {
   }
 };
 
+const setRefreshRuntimeFieldForDev = (container: CustomRenderDispatch) => {
+  if (Object.prototype.hasOwnProperty.call(container, "_refreshRuntime")) {
+    return;
+  }
+  Object.defineProperty(container, "_refreshRuntime", {
+    value: {
+      register,
+      setSignature,
+      getFamilyByID,
+      getFamilyByType,
+      performReactRefresh,
+      isLikelyComponentType,
+      collectCustomHooksForSignature,
+      createSignatureFunctionForTransform,
+    },
+  });
+  Object.defineProperty(container, "_refreshRuntimeDev", {
+    value: {
+      allFamiliesByID,
+      allSignaturesByType,
+      updatedFamiliesByType,
+    },
+  });
+};
+
 const tryToRegister = () => {
   if (__DEV__) {
     try {
-      if (typeof typedSelf?.["__@my-react/hmr__"]?.setRefreshHandler !== "function") {
+      if (typeof typedSelf?.[HMR_FIELD]?.setRefreshHandler !== "function") {
         console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;");
       } else {
         console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;");
 
-        typedSelf?.["__@my-react/hmr__"]?.setRefreshHandler?.(resolveFamily as Parameters<typeof setRefreshHandler>[0]);
+        typedSelf?.[HMR_FIELD]?.setRefreshHandler?.(resolveFamily as Parameters<typeof setRefreshHandler>[0]);
+      }
+    } catch {
+      void 0;
+    }
+
+    try {
+      if (Array.isArray(typedSelf?.[DISPATCH_FIELD])) {
+        typedSelf[DISPATCH_FIELD].forEach((dispatch) => setRefreshRuntimeFieldForDev(dispatch));
       }
     } catch {
       void 0;
@@ -390,7 +435,7 @@ export const injectIntoGlobalHook = (globalThis: Window) => globalThis.addEventL
 export const version = __VERSION__;
 
 if (__DEV__) {
-  typedSelf["__@my-react/react-refresh__"] = {
+  typedSelf[RUNTIME_FIELD] = {
     register,
     setSignature,
     getFamilyByID,
@@ -401,9 +446,9 @@ if (__DEV__) {
     createSignatureFunctionForTransform,
   };
 
-  typedSelf["__@my-react/react-refresh__id"] = allFamiliesByID;
-
-  typedSelf["__@my-react/react-refresh__updated"] = updatedFamiliesByType;
-
-  typedSelf["__@my-react/react-refresh__signature"] = allSignaturesByType;
+  typedSelf[DEV_TOOL_FIELD] = {
+    allFamiliesByID,
+    allSignaturesByType,
+    updatedFamiliesByType,
+  };
 }

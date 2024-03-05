@@ -5,7 +5,7 @@ import { include, once, STATE_TYPE } from "@my-react/react-shared";
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { unmountComponentAtNode } from "@my-react-dom-client/tools";
-import { checkRoot, prepareDevContainer, startRender } from "@my-react-dom-shared";
+import { autoSetDevTools, checkRoot, prepareDevContainer, startRender } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 import type { CustomRenderPlatform } from "@my-react/react-reconciler";
@@ -129,7 +129,11 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
 
   container.__container__ = renderDispatch;
 
+  renderDispatch.enableASyncHydrate = false;
+
   renderDispatch.isClientRender = true;
+
+  autoSetDevTools(renderDispatch, renderPlatform);
 
   initialFiberNode(fiber, renderDispatch);
 

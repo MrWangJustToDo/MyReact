@@ -78,6 +78,9 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
           if (el.nodeName === "INPUT" && attrKey === "autofocus") {
             requestAnimationFrame(() => el.focus());
           }
+          if (el.nodeName === "TEXTAREA" && attrKey === "autofocus") {
+            requestAnimationFrame(() => el.focus());
+          }
         }
       }
     } catch (e) {

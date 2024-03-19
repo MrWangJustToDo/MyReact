@@ -50,9 +50,18 @@
       return <div>A {children}</div>
     }
     const B = ({ children }) => {
+      const ref = useRef();
+
       useUnmount(() => console.log('b unmount'));
 
-      return <div>B {children}</div>
+      useUnmount(() => {
+        console.log('dom unmount?', document.body.contains(ref.current))
+        setTimeout(() => {
+          console.log('settimeout dom unmount?', document.body.contains(ref.current))
+        })
+      })
+
+      return <div ref={ref}>B {children}</div>
     }
     const C = ({ children }) => {
       useUnmount(() => console.log('c unmount'));

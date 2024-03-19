@@ -16,16 +16,7 @@ import { HighLight, debounce } from "@my-react-dom-client/tools";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount/render";
 import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-dom-server/api";
 
-
-import {
-  enableControlComponent,
-  enableDOMField,
-  enableEventSystem,
-  enableEventTrack,
-  enableHighlight,
-  enableHighlightWarn,
-  isServer,
-} from "./env";
+import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, enableHighlight, enableHighlightWarn, isServer } from "./env";
 import { getFiberWithNativeDom } from "./getFiberWithDom";
 
 import type { LikeJSX } from "@my-react/react";
@@ -128,7 +119,11 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
 
         if (!isValidElement(element)) return;
 
-        const renderDispatch = getCurrentDispatchFromFiber(this) as ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch | LatestServerStreamDispatch;
+        const renderDispatch = getCurrentDispatchFromFiber(this) as
+          | ClientDomDispatch
+          | ServerDomDispatch
+          | LegacyServerStreamDispatch
+          | LatestServerStreamDispatch;
 
         const get = async () => {
           if (renderDispatch.enableASyncHydrate) {
@@ -157,7 +152,7 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
         const re = get();
 
         re.then((res) => (parse(res), res)).then((res) => {
-          unmountFiber(res.__fiber__);
+          unmountFiber(res.__container__.rootFiber);
           res.__container__.isAppMounted = false;
           res.__container__.isAppUnmounted = true;
         });
@@ -172,11 +167,9 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
  * @internal
  */
 export const checkRehydrate = (container: Partial<RenderContainer>) => {
-  const rootFiber = container.__fiber__;
-
   const rootContainer = container.__container__;
 
-  if (rootFiber instanceof MyReactFiberNode || rootContainer instanceof ClientDomDispatch) {
+  if (rootContainer instanceof ClientDomDispatch) {
     throw new Error(`[@my-react/react-dom] hydrate error, current container have been hydrated`);
   }
 };

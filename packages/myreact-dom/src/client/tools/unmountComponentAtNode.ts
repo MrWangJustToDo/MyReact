@@ -10,9 +10,9 @@ import type { RenderContainer } from "@my-react-dom-client/mount";
 const { currentRenderPlatform } = __my_react_internal__;
 
 export const unmountComponentAtNode = (container: RenderContainer) => {
-  const fiber = container.__fiber__;
-
   const renderDispatch = container.__container__;
+
+  const fiber = renderDispatch.rootFiber;
 
   const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 

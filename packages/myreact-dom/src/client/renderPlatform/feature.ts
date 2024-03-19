@@ -54,9 +54,9 @@ export const prepareRenderPlatform = () => {
 
   renderPlatform = currentRenderPlatform.current as DomPlatform;
 
-  if (__DEV__ && renderPlatform.isServer) {
-    console.warn(`[@my-react/react-dom] current environment is server, please use 'renderToString' instead of 'render'`);
-  }
+  // if (__DEV__ && renderPlatform.isServer) {
+  //   console.warn(`[@my-react/react-dom] current environment is server, please use 'renderToString' instead of 'render'`);
+  // }
 
   renderPlatform.isServer = false;
 

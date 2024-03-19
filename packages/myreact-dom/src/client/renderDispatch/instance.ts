@@ -174,7 +174,7 @@ if (__DEV__) {
       const re = get();
 
       re.then((res) => (parse(res), res)).then((res) => {
-        unmountFiber(res.__fiber__);
+        unmountFiber(res.__container__.rootFiber);
         res.__container__.isAppMounted = false;
         res.__container__.isAppUnmounted = true;
       });

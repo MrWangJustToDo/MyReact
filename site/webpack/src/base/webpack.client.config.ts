@@ -16,7 +16,7 @@ export const ClientConfig = (props: SafeGenerateActionProps): Partial<Configurat
   const output = outputConfig(props);
   const plugins = pluginsConfig(props);
   return merge<Partial<Configuration>>(clientBase, {
-    devtool: isDEV ? "eval-cheap-module-source-map" : "hidden-source-map",
+    devtool: isDEV ? "inline-source-map" : "hidden-source-map",
     entry: {
       main: isDEV && isMIDDLEWARE ? [`${hotMiddleware}`, entry] : entry,
     },

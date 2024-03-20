@@ -382,10 +382,10 @@ export const isLikelyComponentType = (type: MyReactElementType) => {
 };
 
 const setRefreshRuntimeFieldForDev = (container: CustomRenderDispatch) => {
-  if (Object.prototype.hasOwnProperty.call(container, "_refreshRuntime")) {
+  if (Object.prototype.hasOwnProperty.call(container, "__refresh_runtime__")) {
     return;
   }
-  Object.defineProperty(container, "_refreshRuntime", {
+  Object.defineProperty(container, "__refresh_runtime__", {
     value: {
       register,
       setSignature,
@@ -397,7 +397,7 @@ const setRefreshRuntimeFieldForDev = (container: CustomRenderDispatch) => {
       createSignatureFunctionForTransform,
     },
   });
-  Object.defineProperty(container, "_refreshRuntimeDev", {
+  Object.defineProperty(container, "__refresh_runtime_dev__", {
     value: {
       allFamiliesByID,
       allSignaturesByType,

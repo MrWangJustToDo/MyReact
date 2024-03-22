@@ -121,6 +121,7 @@ export const NextSection = () => {
             marginBottom={{ base: "6%" }}
             borderRadius="0.8em"
             fontSize={{ base: "sm", lg: "medium" }}
+            boxShadow="lg"
             sx={{
               ["pre"]: {
                 margin: "0",

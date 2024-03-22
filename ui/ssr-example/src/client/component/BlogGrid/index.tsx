@@ -95,7 +95,6 @@ const _BlogGrid = ({ data, disableGridLayout = true }: { data: GetBlogListQuery[
       </SimpleGrid>
     );
   }
-  console.log(data);
   return <_BlogGridWithGridLayout data={data} />;
 };
 

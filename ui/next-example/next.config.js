@@ -6,3 +6,5 @@ const nextConfig = {
 };
 
 module.exports = withNext(nextConfig);
+
+// module.exports = nextConfig;

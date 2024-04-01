@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node index.js",
+    "dev": "node --loader esm-module-alias/loader --no-warnings index.js",
+    "dev:org": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -18,7 +19,6 @@
     "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.57.0",
-    "module-alias": "^2.2.3",
     "next": "^14.1.4",
     "postcss": "^8.4.35",
     "react": "^18.2.0",
@@ -29,5 +29,13 @@
   "_moduleAliases": {
     "react": "node_modules/@my-react/react",
     "react-dom": "node_modules/@my-react/react-dom"
+  },
+  "aliases": {
+    "react": "node_modules/@my-react/react/index.js",
+    "react-dom": "node_modules/@my-react/react-dom/index.js"
+  },
+  "devDependencies": {
+    "esm-module-alias": "^2.1.0",
+    "module-alias": "^2.2.3"
   }
 }

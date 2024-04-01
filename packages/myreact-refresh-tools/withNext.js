@@ -56,7 +56,7 @@ module.exports = function withNext(nextConfig = {}) {
 
       // Install webpack aliases:
       const aliases = config.resolve.alias || (config.resolve.alias = {});
-      aliases.react = "@my-react/react";
+      aliases["react$"] = "@my-react/react";
       aliases["react-dom$"] = "@my-react/react-dom";
 
       return config;

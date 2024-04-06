@@ -1,5 +1,7 @@
 import { createContext } from "@my-react/react";
+import { EventEmitter } from "node:events";
 import process from "node:process";
+
 
 export type StdinContextProps = {
   /**
@@ -19,6 +21,8 @@ export type StdinContextProps = {
   readonly isRawModeSupported: boolean;
 
   readonly internal_exitOnCtrlC: boolean;
+
+  readonly internal_eventEmitter: EventEmitter;
 };
 
 /**
@@ -26,6 +30,7 @@ export type StdinContextProps = {
  */
 export const StdinContext = createContext<StdinContextProps>({
   stdin: process.stdin,
+  internal_eventEmitter: new EventEmitter(),
   setRawMode: () => void 0,
   isRawModeSupported: false,
   internal_exitOnCtrlC: true,

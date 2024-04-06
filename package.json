@@ -44,6 +44,7 @@
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "@my-react/react-jsx": "workspace:*",
+    "@my-react/react-terminal": "workspace:*",
     "@my-react/react-reactive": "workspace:*",
     "@my-react/react-reconciler": "workspace:*",
     "@my-react/react-refresh": "workspace:*",

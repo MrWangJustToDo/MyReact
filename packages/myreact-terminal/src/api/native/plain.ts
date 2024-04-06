@@ -1,4 +1,4 @@
-import Yoga, { type Node as YogaNode } from "yoga-wasm-web/auto";
+import Yoga, { type Node as YogaNode } from "yoga-layout";
 
 import { measureTextElement } from "./measure-element";
 import { applyStyles, type Styles } from "./styles";
@@ -30,7 +30,7 @@ export class PlainElement {
 
   childNodes: DOMNode[];
 
-  internal_transform?: (s: string) => string;
+  internal_transform?: (s: string, index: number) => string;
 
   // Internal properties
 
@@ -64,12 +64,24 @@ export class PlainElement {
     }
   }
 
+  addEventListener() {
+    void 0;
+  }
+
+  removeEventListener() {
+    void 0;
+  }
+
   setStyle(style: Styles) {
     this.style = style;
   }
 
   setAttribute(key: string, value: string | boolean | number) {
     this.attributes[key] = value;
+  }
+
+  removeAttribute(key: string) {
+    delete this.attributes[key];
   }
 
   applyStyle() {

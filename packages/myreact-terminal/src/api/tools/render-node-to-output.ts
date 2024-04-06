@@ -1,12 +1,13 @@
 import indentString from "indent-string";
 import widestLine from "widest-line";
-import Yoga from "yoga-wasm-web/auto";
+import Yoga from "yoga-layout";
 
-import { squashTextNodes, type PlainElement, getMaxWidth, wrapText } from "../native";
+import { squashTextNodes, getMaxWidth, wrapText } from "../native";
 
 import { renderBorder } from "./render-border";
 
 import type { Output } from "./output";
+import type { ContainerElement, PlainElement } from "../native";
 
 // import { type DOMElement } from "./dom.js";
 // import getMaxWidth from "./get-max-width.js";
@@ -34,11 +35,11 @@ const applyPaddingToText = (node: PlainElement, text: string): string => {
   return text;
 };
 
-export type OutputTransformer = (s: string) => string;
+export type OutputTransformer = (s: string, index: number) => string;
 
 // After nodes are laid out, render each to output object, which later gets rendered to terminal
 export const renderNodeToOutput = (
-  node: PlainElement,
+  node: PlainElement | ContainerElement,
   output: Output,
   options: {
     offsetX?: number;
@@ -114,7 +115,7 @@ export const renderNodeToOutput = (
       }
     }
 
-    if (/* node.nodeName === "ink-root" || */ node.nodeName === "terminal-box") {
+    if (node.nodeName === "terminal-root" || node.nodeName === "terminal-box") {
       for (const childNode of node.childNodes) {
         renderNodeToOutput(childNode as PlainElement, output, {
           offsetX: x,

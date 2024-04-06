@@ -8,7 +8,7 @@ export type TransformProps = {
   /**
    * Function which transforms children output. It accepts children and must return transformed children too.
    */
-  readonly transform: (children: string) => string;
+  readonly transform: (children: string, index: number) => string;
 
   readonly children?: MyReactElementNode;
 };

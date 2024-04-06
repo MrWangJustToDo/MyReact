@@ -1,5 +1,6 @@
 import { createElement, PureComponent } from "@my-react/react";
 import cliCursor from "cli-cursor";
+import { EventEmitter } from "node:events";
 import process from "node:process";
 
 import { AppContext } from "./AppContext";
@@ -59,6 +60,8 @@ export class App extends PureComponent<Props, State> {
   // raw mode until all components don't need it anymore
   rawModeEnabledCount = 0;
 
+  internal_eventEmitter = new EventEmitter();
+
   // Determines if TTY is supported on the provided stdin
   isRawModeSupported(): boolean {
     return this.props.stdin.isTTY;
@@ -76,6 +79,7 @@ export class App extends PureComponent<Props, State> {
             setRawMode: this.handleSetRawMode,
             isRawModeSupported: this.isRawModeSupported(),
             internal_exitOnCtrlC: this.props.exitOnCtrlC,
+            internal_eventEmitter: this.internal_eventEmitter
           },
         },
         createElement(
@@ -155,9 +159,9 @@ export class App extends PureComponent<Props, State> {
     if (isEnabled) {
       // Ensure raw mode is enabled only once
       if (this.rawModeEnabledCount === 0) {
-        stdin.addListener("data", this.handleInput);
-        stdin.resume();
+        stdin.ref();
         stdin.setRawMode(true);
+        stdin.addListener("readable", this.handleReadable);
       }
 
       this.rawModeEnabledCount++;
@@ -167,10 +171,19 @@ export class App extends PureComponent<Props, State> {
     // Disable raw mode only when no components left that are using it
     if (--this.rawModeEnabledCount === 0) {
       stdin.setRawMode(false);
-      stdin.removeListener("data", this.handleInput);
-      stdin.pause();
+      stdin.removeListener("readable", this.handleReadable);
+      stdin.unref();
     }
   };
+
+  handleReadable = (): void => {
+		let chunk;
+		// eslint-disable-next-line @typescript-eslint/ban-types
+		while ((chunk = this.props.stdin.read() as string | null) !== null) {
+			this.handleInput(chunk);
+			this.internal_eventEmitter.emit('input', chunk);
+		}
+	};
 
   handleInput = (input: string): void => {
     // Exit on Ctrl+C

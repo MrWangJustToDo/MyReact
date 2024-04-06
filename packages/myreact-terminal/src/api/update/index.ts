@@ -61,6 +61,7 @@ export const update = (fiber: MyReactFiberNode) => {
             });
         }
       });
+
     if (
       newProps["dangerouslySetInnerHTML"] &&
       newProps["dangerouslySetInnerHTML"] !== oldProps["dangerouslySetInnerHTML"] &&
@@ -71,5 +72,7 @@ export const update = (fiber: MyReactFiberNode) => {
         appendChildNode(dom, new TextElement(typedProps.__html as string));
       }
     }
+    
+    dom.applyStyle();
   }
 };

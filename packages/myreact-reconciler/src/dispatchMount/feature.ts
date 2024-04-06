@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 
 import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
-import { safeCallWithFiber } from "../share";
+import { afterSyncUpdate, beforeSyncUpdate, safeCallWithFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -67,11 +67,15 @@ export const defaultDispatchMount = (_fiber: MyReactFiberNode, _dispatch: Custom
   };
 
   const mountLoop = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
+    beforeSyncUpdate();
     mountInsertionEffect(_fiber);
+    afterSyncUpdate();
 
     const re = mountCommit(_fiber, _hydrate);
 
+    beforeSyncUpdate();
     mountLayoutEffect(_fiber);
+    afterSyncUpdate();
 
     currentRenderPlatform.current.microTask(() => mountEffect(_fiber));
 

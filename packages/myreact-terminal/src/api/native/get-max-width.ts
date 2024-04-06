@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-named-as-default
-import Yoga, { type Node as YogaNode } from "yoga-wasm-web/auto";
+import Yoga, { type Node as YogaNode } from "yoga-layout";
 
 export const getMaxWidth = (yogaNode: YogaNode) => {
   return (

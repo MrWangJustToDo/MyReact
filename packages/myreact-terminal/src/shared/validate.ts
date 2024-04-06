@@ -58,5 +58,5 @@ export const checkRoot = (fiber: MyReactFiberNode) => {
 
   if (fiber.type & NODE_TYPE.__function__) return;
 
-  throw new Error(`[@my-react/react-terminal] the root element should be a dynamic node such as 'function' or 'class'`);
+  // throw new Error(`[@my-react/react-terminal] the root element should be a dynamic node such as 'function' or 'class'`);
 };

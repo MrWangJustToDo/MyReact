@@ -1,4 +1,4 @@
-import { type Node as YogaNode } from "yoga-wasm-web/auto";
+import { type Node as YogaNode } from "yoga-layout";
 
 import type { PlainElement } from "./plain";
 import type { TextElement } from "./text";

@@ -1,7 +1,7 @@
 import { Output } from "./output";
 import { renderNodeToOutput } from "./render-node-to-output";
 
-import type { PlainElement } from "../native";
+import type { ContainerElement, PlainElement } from "../native";
 
 type Result = {
   output: string;
@@ -9,7 +9,7 @@ type Result = {
   staticOutput: string;
 };
 
-export const renderer = (node: PlainElement): Result => {
+export const renderer = (node: PlainElement | ContainerElement): Result => {
   if (node.yogaNode) {
     const output = new Output({
       width: node.yogaNode.getComputedWidth(),

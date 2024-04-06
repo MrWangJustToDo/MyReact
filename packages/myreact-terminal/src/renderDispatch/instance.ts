@@ -1,6 +1,6 @@
 import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 
-import { append, create, position, update } from "../api";
+import { append, clear, create, position, update } from "../api";
 import { patchToFiberInitial, patchToFiberUnmount } from "../shared";
 
 import type { MyReactElementNode } from "@my-react/react";
@@ -18,6 +18,7 @@ const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
 };
 
+// TODO
 export class TerminalDispatch extends CustomRenderDispatch {
   runtimeDom = {
     elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode | null>(),
@@ -40,19 +41,13 @@ export class TerminalDispatch extends CustomRenderDispatch {
   commitPosition(_fiber: MyReactFiberNode): void {
     position(_fiber, this);
   }
-  // commitSetRef(_fiber: MyReactFiberNode): void {
-  //   setRef(_fiber);
-  // }
-  // commitUnsetRef(_fiber: MyReactFiberNode): void {
-  //   unsetRef(_fiber);
-  // }
-  // commitClearNode(_fiber: MyReactFiberNode): void {
-  //   clearNode(_fiber);
-  // }
-  resolveLazyElementSync(_fiber: MyReactFiberNode): MyReactElementNode {
-    throw new Error("terminal platform not support lazy component");
+  commitSetRef(_fiber: MyReactFiberNode): void {
+    throw new Error("terminal platform not support ref");
   }
-  resolveLazyElementAsync(_fiber: MyReactFiberNode): Promise<MyReactElementNode> {
+  commitClearNode(_fiber: MyReactFiberNode): void {
+    clear(_fiber, this);
+  }
+  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
     throw new Error("terminal platform not support lazy component");
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {

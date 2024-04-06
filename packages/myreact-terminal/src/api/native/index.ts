@@ -3,6 +3,7 @@ export * from "./text";
 export * from "./plain";
 export * from "./styles";
 export * from "./colorize";
+export * from "./container";
 export * from "./wrap-text";
 export * from "./measure-text";
 export * from "./get-max-width";

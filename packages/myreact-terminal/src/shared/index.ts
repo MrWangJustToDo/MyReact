@@ -4,5 +4,4 @@ export * from "./validate";
 export * from "./elementMap";
 export * from "./elementTag";
 export * from "./elementAttrs";
-export * from "./elementStyle";
 export * from "./getFiberWithDom";

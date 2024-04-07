@@ -57,9 +57,9 @@ export class PlainElement {
 
     this.parentNode = undefined;
 
-    this.yogaNode = nodeName === "terminal-virtual-text" ? undefined : Yoga.Node.create();
+    this.yogaNode = nodeName === PlainVirtualTextType ? undefined : Yoga.Node.create();
 
-    if (nodeName === "terminal-text") {
+    if (nodeName === PlainTextType) {
       this.yogaNode?.setMeasureFunc(measureTextElement.bind(null, this));
     }
   }

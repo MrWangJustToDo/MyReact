@@ -18,6 +18,7 @@
     "gen:gql": "graphql-codegen --config site/graphql/codegen.yaml",
     "dev": "ts-node ./scripts/rollupWatch.ts",
     "build": "ts-node ./scripts/rollupBuild.ts",
+    "test": "NODE_ENV=development node test.mjs",
     "release": "ts-node ./scripts/release.ts",
     "lint": "eslint --cache --ext ts,tsx .",
     "lint:fix": "pnpm run lint --fix",

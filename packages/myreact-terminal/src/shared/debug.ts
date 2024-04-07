@@ -15,10 +15,10 @@ export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: a
     enableOptimizeTreeLog.current = false;
 
     if (level === "warn") {
-      devWarnWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
+      devWarnWithFiber(fiber, `[@my-react/react-terminal]`, ...rest);
     }
     if (level === "error") {
-      devErrorWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
+      devErrorWithFiber(fiber, `[@my-react/react-terminal]`, ...rest);
     }
 
     enableOptimizeTreeLog.current = last;
@@ -27,6 +27,6 @@ export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: a
   }
 
   if (level === "error") {
-    console.error(`[@my-react/react-dom]`, ...rest);
+    console.error(`[@my-react/react-terminal]`, ...rest);
   }
 };

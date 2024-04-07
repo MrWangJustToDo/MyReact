@@ -7,11 +7,6 @@ import type { TerminalDispatch } from "../../renderDispatch";
 import type { DOMNode, PlainElement } from "../native";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-const cleanupYogaNode = (node?: YogaNode): void => {
-  node?.unsetMeasureFunc();
-  node?.freeRecursive();
-};
-
 export const clear = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
@@ -23,5 +18,9 @@ export const clear = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch)
     removeChildNode(parentFiberWithNode.nativeNode as PlainElement, fiber.nativeNode as DOMNode);
   }
 
-  cleanupYogaNode(fiber.nativeNode.yogaNode);
+  const yogaNode = fiber.nativeNode?.yogaNode as YogaNode;
+
+  yogaNode?.unsetMeasureFunc();
+
+  yogaNode?.freeRecursive();
 };

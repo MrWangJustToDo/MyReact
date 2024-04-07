@@ -33,7 +33,7 @@ export class Instance {
   // Ignore last render after unmounting a tree to prevent empty output before exit
   private isUnmounted: boolean;
   private lastOutput: string;
-  private readonly container: MyReactFiberContainer;
+  private container: MyReactFiberContainer;
   private readonly rootNode: ContainerElement;
   // This variable is used only in debug mode to store full static output
   // so that it's rerendered every time, not just new static parts, like in non-debug mode
@@ -179,6 +179,8 @@ export class Instance {
     });
 
     const fiber = new MyReactFiberNode(tree);
+
+    this.container = fiber as MyReactFiberContainer;
 
     const renderDispatch = new TerminalDispatch(this.rootNode, fiber);
 

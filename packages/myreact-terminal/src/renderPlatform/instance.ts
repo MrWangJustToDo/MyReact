@@ -9,6 +9,8 @@ const { yieldTask, macroTask, microTask } = __my_react_scheduler__;
 const { initRenderPlatform } = __my_react_internal__;
 
 export class TerminalPlatform extends CustomRenderPlatform {
+  isTerminal = true;
+
   microTask(_task: () => void): void {
     microTask(_task);
   }

@@ -20,7 +20,13 @@ export const clear = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch)
 
   const yogaNode = fiber.nativeNode?.yogaNode as YogaNode;
 
-  yogaNode?.unsetMeasureFunc();
+  try {
+    yogaNode?.unsetMeasureFunc();
 
-  yogaNode?.freeRecursive();
+    yogaNode?.freeRecursive();
+
+  } catch {
+    console.log(!!parentFiberWithNode.nativeNode, fiber.nativeNode.nodeName);
+  }
+
 };

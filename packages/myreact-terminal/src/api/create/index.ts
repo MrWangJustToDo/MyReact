@@ -2,7 +2,7 @@ import { NODE_TYPE, type MyReactFiberNode } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import { validDomNesting, validDomTag } from "../../shared";
-import { PlainBoxType, PlainElement, PlainTextType, PlainVirtualTextType, TextElement, TextType } from "../native";
+import { PlainBoxType, PlainElement, PlainTextType, PlainVirtualTextType, TextElement } from "../native";
 
 import type { TerminalDispatch } from "../../renderDispatch";
 
@@ -13,10 +13,8 @@ const getValidElementTag = (elementTag: string) => {
     case PlainBoxType:
       return PlainBoxType;
     case PlainVirtualTextType:
-      return PlainVirtualTextType;
-    case TextType:
     default:
-      return TextType;
+      return PlainVirtualTextType;
   }
 };
 
@@ -31,13 +29,7 @@ export const create = (fiber: MyReactFiberNode, dispatch: TerminalDispatch) => {
     } else if (include(fiber.type, NODE_TYPE.__plain__)) {
       const typedElementType = fiber.elementType as string;
 
-      const elementTag = getValidElementTag(typedElementType);
-
-      if (elementTag === TextType) {
-        fiber.nativeNode = new TextElement(elementTag);
-      } else {
-        fiber.nativeNode = new PlainElement(elementTag);
-      }
+      fiber.nativeNode = new PlainElement(getValidElementTag(typedElementType));
     } else {
       throw new Error(`unsupported element type, ${fiber.elementType?.toString()}`);
     }

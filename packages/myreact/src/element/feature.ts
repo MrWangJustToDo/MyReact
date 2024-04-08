@@ -75,18 +75,26 @@ export const createContext = <T = any>(value: T) => {
 export const forwardRef = <P extends Record<string, unknown> = any, T extends CreateElementConfig<P>["ref"] = any>(
   render: (props: P, ref?: T) => MyReactElement
 ) => {
-  const objectType: {
+  const objectType = {
+    [TYPEKEY]: ForwardRef,
+    render,
+  };
+
+  return objectType as {
     [TYPEKEY]: symbol;
     prototype?: any;
     displayName?: string;
     defaultProps?: Record<string, unknown>;
     render: (props: P, ref?: T) => MyReactElement;
-  } = {
-    [TYPEKEY]: ForwardRef,
-    render,
   };
+};
 
-  return objectType;
+export type ForwardRefType<P extends Record<string, unknown>, T extends CreateElementConfig<P>["ref"]> = {
+  [TYPEKEY]: symbol;
+  prototype?: any;
+  displayName?: string;
+  defaultProps?: Record<string, unknown>;
+  render: (props: P, ref?: T) => MyReactElement;
 };
 
 /**
@@ -96,27 +104,38 @@ export const memo = <P extends Record<string, unknown> = any>(
   render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown },
   compare?: typeof defaultCompare<P>
 ) => {
-  const objectType: {
+  const objectType = {
+    [TYPEKEY]: Memo,
+    render,
+    compare,
+  };
+
+  return objectType as {
     [TYPEKEY]: symbol;
     prototype?: any;
     displayName?: string;
     defaultProps?: Record<string, unknown>;
     compare?: typeof defaultCompare<P>;
     render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown };
-  } = {
-    [TYPEKEY]: Memo,
-    render,
-    compare,
   };
+};
 
-  return objectType;
+export type MemoType<P extends Record<string, unknown>> = {
+  [TYPEKEY]: symbol;
+  prototype?: any;
+  displayName?: string;
+  defaultProps?: Record<string, unknown>;
+  compare?: typeof defaultCompare<P>;
+  render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown };
 };
 
 /**
  * @public
  */
-export const lazy = (
-  loader: () => Promise<{ default: MixinMyReactFunctionComponent | MixinMyReactClassComponent } | MixinMyReactFunctionComponent | MixinMyReactClassComponent>
+export const lazy = <P extends Record<string, unknown> = any>(
+  loader: () => Promise<
+    { default: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> } | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>
+  >
 ) => {
   const config = {
     [TYPEKEY]: Lazy,
@@ -128,10 +147,19 @@ export const lazy = (
   };
   return config as {
     [TYPEKEY]: symbol;
-    loader: () => Promise<{ default: MixinMyReactFunctionComponent | MixinMyReactClassComponent } | MixinMyReactFunctionComponent | MixinMyReactClassComponent>;
+    loader: () => Promise<{ default: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> } | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>>;
     _loading: boolean;
     _loaded: boolean;
     _update: (fiber: RenderFiber, loaded: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent) => void;
-    render: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent;
+    render: null | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>;
   };
+};
+
+export type LazyType<P extends Record<string, unknown>> = {
+  [TYPEKEY]: symbol;
+  loader: () => Promise<{ default: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> } | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>>;
+  _loading: boolean;
+  _loaded: boolean;
+  _update: (fiber: RenderFiber, loaded: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent) => void;
+  render: null | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>;
 };

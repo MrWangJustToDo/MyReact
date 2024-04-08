@@ -16,6 +16,12 @@ export const validDomNesting = (fiber: MyReactFiberNode, parentFiberWithNode?: M
       log(fiber, "warn", `invalid element nesting: <${typedElementType}> cannot appear as a child of <terminal-text>`);
     }
   }
+  if (fiber.type & NODE_TYPE.__text__) {
+    if (parentFiberWithNode?.elementType === "terminal-box") {
+      log(fiber, "warn", `invalid element nesting: Text (${fiber.elementType.toString()}) cannot appear as a child of <terminal-box>`);
+      throw new Error("runtime error");
+    }
+  }
 };
 
 export const validDomTag = (fiber: MyReactFiberNode) => {

@@ -7,10 +7,19 @@ const App = () => {
   useEffect(() => {
     setInterval(() => {
       setA((i) => i + 1);
-    }, 2000);
+    }, 1000);
   }, []);
 
-  return createElement(Box, { borderStyle: "round", borderColor: "green" }, createElement(Text, {}, a));
+  return createElement(
+    Box,
+    { borderStyle: "round", borderColor: a % 2 === 0 ? "green" : "red" },
+    createElement(Text, { backgroundColor: "red", bold: true, dimColor: "green" }, a),
+    a % 2 === 0
+      ? createElement(Box, { borderStyle: "round", borderColor: "green" }, createElement(Text, {}, "test"))
+      : // : createElement(Text, { backgroundColor: "red" }, "test")
+        createElement(Box, { borderStyle: "round", borderColor: "red" }, createElement(Text, {}, "test red"))
+    // a
+  );
 };
 
 const run = () => {

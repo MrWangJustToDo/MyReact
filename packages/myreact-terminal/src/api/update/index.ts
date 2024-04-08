@@ -1,10 +1,10 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
-import { PATCH_TYPE, include } from "@my-react/react-shared";
+import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import { isGone, isNew, isProperty, isStyle, propsToAttrMap } from "../../shared";
-import { appendChildNode, setTextNodeValue, TextElement } from "../native";
+import { setTextNodeValue } from "../native";
 
-import type { PlainElement } from "../native";
+import type { PlainElement, TextElement } from "../native";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const update = (fiber: MyReactFiberNode) => {
@@ -47,32 +47,22 @@ export const update = (fiber: MyReactFiberNode) => {
 
             const typedOldProps = oldProps[key] as Record<string, unknown>;
 
-            const style = {};
+            const hasChange =
+              Object.keys(typedNewProps || {}).filter(isNew(typedOldProps || {}, typedNewProps || {})).length ||
+              Object.keys(typedOldProps || {}).filter(isNew(typedOldProps || {}, typedNewProps || {})).length;
 
-            Object.keys(typedNewProps || {})
-              .filter(isNew(typedOldProps || {}, typedNewProps))
-              .forEach((styleName) => {
-                if (typedNewProps[styleName] !== null && typedNewProps[styleName] !== undefined) {
-                  style[styleName] = typedNewProps[styleName];
-                }
-              });
-
-            dom.setStyle(style);
+            if (hasChange) {
+              dom.setStyle(typedNewProps);
+              dom.applyStyle();
+            }
+          } else if (key === "internal_transform") {
+            dom.internal_transform = newProps[key];
           }
         });
-
-      if (
-        newProps["dangerouslySetInnerHTML"] &&
-        newProps["dangerouslySetInnerHTML"] !== oldProps["dangerouslySetInnerHTML"] &&
-        newProps["dangerouslySetInnerHTML"].__html !== oldProps["dangerouslySetInnerHTML"]?.__html
-      ) {
-        const typedProps = newProps["dangerouslySetInnerHTML"] as Record<string, unknown>;
-        if (typedProps.__html) {
-          appendChildNode(dom, new TextElement(typedProps.__html as string));
-        }
-      }
-
-      dom.applyStyle();
     }
+
+    fiber.memoizedProps = fiber.pendingProps;
+
+    fiber.patch = remove(fiber.patch, PATCH_TYPE.__update__);
   }
 };

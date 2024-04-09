@@ -7,7 +7,8 @@
   },
   "./Tldraw": {
     "path": [
-      "page-Tldraw.js"
+      "page-Tldraw.js",
+      "vendor-core-js.js"
     ],
     "static": true
   },

@@ -37,7 +37,9 @@ export const update = (fiber: MyReactFiberNode) => {
       Object.keys(newProps)
         .filter(isNew(oldProps, newProps))
         .filter((key) => {
-          if (isProperty(key)) {
+          if (key === "internal_transform") {
+            dom.internal_transform = newProps[key];
+          } else if (isProperty(key)) {
             if (newProps[key] !== null && newProps[key] !== undefined) {
               const attrKey = propsToAttrMap[key] || key;
               dom.setAttribute(attrKey, newProps[key]);
@@ -55,8 +57,6 @@ export const update = (fiber: MyReactFiberNode) => {
               dom.setStyle(typedNewProps);
               dom.applyStyle();
             }
-          } else if (key === "internal_transform") {
-            dom.internal_transform = newProps[key];
           }
         });
     }

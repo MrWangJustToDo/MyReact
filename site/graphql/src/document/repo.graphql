@@ -4,5 +4,6 @@ query getRepoAbout ($name: String!, $owner: String!) {
     url
     homepageUrl
     descriptionHTML
+    stargazerCount
   }
 }

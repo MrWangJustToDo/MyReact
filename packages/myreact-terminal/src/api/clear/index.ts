@@ -1,10 +1,10 @@
 import { STATE_TYPE, include } from "@my-react/react-shared";
 import { type Node as YogaNode } from "yoga-layout";
 
-import { removeChildNode } from "../native";
+import { TextType, removeChildNode } from "../native";
 
 import type { TerminalDispatch } from "../../renderDispatch";
-import type { DOMNode, PlainElement } from "../native";
+import type { DOMNode, PlainElement, TextElement } from "../native";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const clear = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch) => {
@@ -18,15 +18,21 @@ export const clear = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch)
     removeChildNode(parentFiberWithNode.nativeNode as PlainElement, fiber.nativeNode as DOMNode);
   }
 
+  const typeNativeNode = fiber.nativeNode as PlainElement | TextElement;
+
+  if (typeNativeNode.nodeName !== TextType) {
+    typeNativeNode.childNodes.forEach((node) => {
+      removeChildNode(typeNativeNode, node);
+    });
+  }
+
   const yogaNode = fiber.nativeNode?.yogaNode as YogaNode;
 
   try {
     yogaNode?.unsetMeasureFunc();
 
     yogaNode?.freeRecursive();
-
-  } catch {
-    console.log(!!parentFiberWithNode.nativeNode, fiber.nativeNode.nodeName);
+  } catch (e) {
+    console.log(e);
   }
-
 };

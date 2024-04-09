@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
-import { Link, SkeletonText, Text } from "@chakra-ui/react";
+import { Badge, Icon, Link, SkeletonText, Text } from "@chakra-ui/react";
 import { GetRepoAboutDocument } from "@site/graphql";
+import { VscStarFull } from "react-icons/vsc";
 
 import { Card } from "../Card";
 
@@ -18,7 +19,11 @@ export const Blog = () => {
       boxShadow="sm"
     >
       <Link href={data?.repository?.url} target="_blank" fontWeight="500" textDecoration="underline">
-        <Text as="span">Blog</Text>:{" "}
+        <Text as="span">Blog</Text>:
+        <Badge colorScheme="orange" float="right" display="flex" alignItems="center">
+          <Icon as={VscStarFull} marginRight="1" />
+          {data?.repository?.stargazerCount}
+        </Badge>
         <SkeletonText isLoaded={!loading}>
           <Text as="span" color="slategrey">
             {data?.repository?.description}
@@ -43,7 +48,11 @@ export const RStore = () => {
       boxShadow="sm"
     >
       <Link href={data?.repository?.url} target="_blank" fontWeight="500" textDecoration="underline">
-        <Text as="span">RStore</Text>:{" "}
+        <Text as="span">RStore</Text>:
+        <Badge colorScheme="orange" float="right" display="flex" alignItems="center">
+          <Icon as={VscStarFull} marginRight="1" />
+          {data?.repository?.stargazerCount}
+        </Badge>
         <SkeletonText isLoaded={!loading}>
           <Text as="span" color="slategrey">
             {data?.repository?.description}
@@ -68,7 +77,11 @@ export const SSR = () => {
       boxShadow="sm"
     >
       <Link href={data?.repository?.url} target="_blank" fontWeight="500" textDecoration="underline">
-        <Text as="span">SSR template</Text>:{" "}
+        <Text as="span">SSR template</Text>:
+        <Badge colorScheme="orange" float="right" display="flex" alignItems="center">
+          <Icon as={VscStarFull} marginRight="1" />
+          {data?.repository?.stargazerCount}
+        </Badge>
         <SkeletonText isLoaded={!loading}>
           <Text as="span" color="slategrey">
             {data?.repository?.description}
@@ -93,7 +106,11 @@ export const GitDiffView = () => {
       boxShadow="sm"
     >
       <Link href={data?.repository?.url} target="_blank" fontWeight="500" textDecoration="underline">
-        <Text as="span">Git-diff-view</Text>:{" "}
+        <Text as="span">Git-diff-view</Text>:
+        <Badge colorScheme="orange" float="right" display="flex" alignItems="center">
+          <Icon as={VscStarFull} marginRight="1" />
+          {data?.repository?.stargazerCount}
+        </Badge>
         <SkeletonText isLoaded={!loading}>
           <Text as="span" color="slategrey">
             {data?.repository?.description}

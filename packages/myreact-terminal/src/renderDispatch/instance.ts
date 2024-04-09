@@ -3,6 +3,7 @@ import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 import { append, clear, create, position, update } from "../api";
 import { patchToFiberInitial, patchToFiberUnmount } from "../shared";
 
+import type { ContainerElement } from "../api/native";
 import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -59,7 +60,7 @@ export class TerminalDispatch extends CustomRenderDispatch {
   }
 
   afterCommit = () => {
-    const rootNode = this.rootNode;
+    const rootNode = this.rootNode as ContainerElement;
 
     if (typeof rootNode.onComputeLayout === "function") {
       rootNode.onComputeLayout();

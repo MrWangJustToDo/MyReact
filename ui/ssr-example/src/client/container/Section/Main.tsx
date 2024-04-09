@@ -53,7 +53,7 @@ export const MainSection = () => {
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
       <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
         <Box alignSelf="flex-start" marginRight={{ base: "1%", md: "2%", lg: "3%", "2xl": "4%" }} maxWidth={{ base: "100%", md: "42%" }}>
-          <Heading as="h1" fontSize={{ base: "2xl", md: "3xl", lg: "5xl" }} marginBottom="6" color="red.400">
+          <Heading as="h1" fontSize={{ base: "2xl", md: "3xl", lg: "5xl" }} marginBottom="6" color='purple.600'>
             {formatMessage({ id: "@my-react" })}
           </Heading>
           <Text fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} as="div" fontWeight="500">

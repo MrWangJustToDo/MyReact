@@ -45,7 +45,8 @@ export const getHighlightHtml = (str: string, lang: string) => {
       language = re.language;
     }
     const transformArr = code.split(/\n/).slice(0, -1);
-    const minWidth = String(transformArr.length).length - 0.2;
+    const _minWidth = String(transformArr.length).length - 0.2;
+    const minWidth = Math.max(1, _minWidth);
     const html = transformArr.reduce(
       (p: string, c: string, idx: number) =>
         `${p}<span class='no-select code-num d-inline-block text-center border-right pr-2 mr-2 border-dark' style='width: ${minWidth}em; line-height: 1.5'>${

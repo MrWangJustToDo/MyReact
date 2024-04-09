@@ -118,7 +118,9 @@ export type GetRepoAboutQueryVariables = SchemaTypes.Exact<{
   owner: SchemaTypes.Scalars["String"]["input"];
 }>;
 
-export type GetRepoAboutQuery = { repository?: { description?: string | null; url: any; homepageUrl?: any | null; descriptionHTML: any } | null };
+export type GetRepoAboutQuery = {
+  repository?: { description?: string | null; url: any; homepageUrl?: any | null; descriptionHTML: any; stargazerCount: number } | null;
+};
 
 export type GetStarCountQueryVariables = SchemaTypes.Exact<{
   name: SchemaTypes.Scalars["String"]["input"];
@@ -540,6 +542,7 @@ export const GetRepoAboutDocument = {
                 { kind: "Field", name: { kind: "Name", value: "url" } },
                 { kind: "Field", name: { kind: "Name", value: "homepageUrl" } },
                 { kind: "Field", name: { kind: "Name", value: "descriptionHTML" } },
+                { kind: "Field", name: { kind: "Name", value: "stargazerCount" } },
               ],
             },
           },

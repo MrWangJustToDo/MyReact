@@ -36,5 +36,9 @@ export const squashTextNodes = (node: PlainElement): string => {
     text += nodeText;
   }
 
+  if (typeof node.internal_transform === 'function') {
+    text = node.internal_transform(text, 0);
+  }
+
   return text;
 };

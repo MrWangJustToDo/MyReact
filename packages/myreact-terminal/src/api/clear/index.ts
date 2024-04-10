@@ -12,13 +12,17 @@ export const clear = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch)
 
   if (!fiber.nativeNode) return;
 
+  const typeNativeNode = fiber.nativeNode as PlainElement | TextElement;
+
+  const yogaNode = fiber.nativeNode?.yogaNode as YogaNode;
+
+  if (!typeNativeNode.parentNode) return;
+
   const parentFiberWithNode = renderDispatch.runtimeDom.elementMap.get(fiber);
 
   if (parentFiberWithNode.nativeNode) {
     removeChildNode(parentFiberWithNode.nativeNode as PlainElement, fiber.nativeNode as DOMNode);
   }
-
-  const typeNativeNode = fiber.nativeNode as PlainElement | TextElement;
 
   if (typeNativeNode.nodeName !== TextType) {
     typeNativeNode.childNodes.forEach((node) => {
@@ -26,13 +30,12 @@ export const clear = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch)
     });
   }
 
-  const yogaNode = fiber.nativeNode?.yogaNode as YogaNode;
-
   try {
     yogaNode?.unsetMeasureFunc();
 
     yogaNode?.freeRecursive();
   } catch (e) {
     console.log(e);
+    // throw e;
   }
 };

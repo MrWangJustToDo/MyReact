@@ -12,7 +12,9 @@ import type { CodeExcerpt } from "code-excerpt";
 // Error's source file is reported as file:///home/user/file.js
 // This function removes the file://[cwd] part
 const cleanupPath = (path: string | undefined): string | undefined => {
+  // console.log('path ----> ', path);
   return path?.replace(`file://${cwd()}/`, "");
+  // return path;
 };
 
 const stackUtils = new StackUtils({
@@ -45,17 +47,22 @@ export function ErrorOverview({ error }: ErrorOverviewProps) {
   return createElement(
     Box,
     { flexDirection: "column", padding: 1 },
-    createElement(Box, null, createElement(Text, { backgroundColor: "red", color: "white" }, "ERROR"), createElement(Text, null, error.message)),
+    createElement(
+      Box,
+      null,
+      createElement(Text, { backgroundColor: "red", color: "white", bold: true }, "ERROR"),
+      createElement(Text, null, " " + error.message)
+    ),
     origin && filePath && createElement(Box, { marginTop: 1 }, createElement(Text, { dimColor: true }, filePath, ":", origin.line, ":", origin.column)),
     origin &&
       excerpt &&
       createElement(
         Box,
         { marginTop: 1, flexDirection: "column" },
-        excerpt.map(({ line, value }) => {
+        excerpt.map(({ line, value }, index) => {
           return createElement(
             Box,
-            { key: line },
+            { key: line + "-" + index },
             createElement(
               Box,
               { width: lineWidth + 1 },
@@ -67,7 +74,7 @@ export function ErrorOverview({ error }: ErrorOverviewProps) {
               })
             ),
             createElement(Text, {
-              key: line,
+              // key: line,
               color: line === origin.line ? "white" : undefined,
               backgroundColor: line === origin.line ? "red" : undefined,
               children: " " + value,
@@ -82,22 +89,22 @@ export function ErrorOverview({ error }: ErrorOverviewProps) {
         error.stack
           .split("\n")
           .slice(1)
-          .map((line) => {
+          .map((line, index) => {
             const parsedLine = stackUtils.parseLine(line);
             if (!parsedLine) {
               return createElement(
                 Box,
-                { key: line },
+                { key: line + "-" + index },
                 createElement(Text, { dimColor: true }, "- "),
                 createElement(Text, { dimColor: true, bold: true }, line)
               );
             }
             return createElement(
               Box,
-              { key: line },
+              { key: line + "-" + index },
               createElement(Text, { dimColor: true }, "- "),
               createElement(Text, { dimColor: true, bold: true }, parsedLine.function),
-              createElement(Text, { dimColor: true, color: "gray" }, cleanupPath(parsedLine.file) ?? "", ":", parsedLine.line, ":", parsedLine.column)
+              createElement(Text, { dimColor: true, color: "gray" }, " " + cleanupPath(parsedLine.file) ?? "", ":", parsedLine.line, ":", parsedLine.column)
             );
           })
       )

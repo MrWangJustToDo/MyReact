@@ -4,6 +4,7 @@ import { measureTextElement } from "./measure-element";
 import { applyStyles, type Styles } from "./styles";
 
 import type { DOMNode } from "./dom";
+import type { MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
 export const PlainTextType = "terminal-text";
 
@@ -43,6 +44,8 @@ export class PlainElement {
   onRender?: () => void;
 
   onImmediateRender?: () => void;
+
+  __fiber__?: MyReactFiberNodeDev;
 
   constructor(nodeName: PlainElement["type"]) {
     this.type = nodeName;

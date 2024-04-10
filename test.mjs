@@ -5,18 +5,22 @@ const App = () => {
   const [a, setA] = useState(0);
 
   useEffect(() => {
-    setInterval(() => {
+    const i = setInterval(() => {
       setA((i) => i + 1);
     }, 1000);
+    return () => {
+      // console.log('unmount');
+      clearInterval(i);
+    }
   }, []);
 
   return createElement(
     Box,
     { borderStyle: "round", borderColor: a % 2 === 0 ? "green" : "red" },
-    createElement(Text, { backgroundColor: a % 2 === 0 ? "yellow" : "blue", strikethrough: true, underline: true, italic: true }, a)
-    // a % 2 === 0
-    // ? createElement(Box, { borderStyle: "round", borderColor: "green" }, createElement(Text, {}, "test"))
-    // : createElement(Text, { backgroundColor: "red" }, "test")
+    createElement(Text, { backgroundColor: a % 2 === 0 ? "yellow" : "blue", strikethrough: true, underline: true, italic: true }, a),
+    a % 2 === 0
+      ? createElement(Box, { borderStyle: "round", borderColor: "green" }, createElement(Text, { bold: true }, "test"))
+      : createElement(Text, { backgroundColor: "red" }, "test", 12)
     // :createElement(Box, { borderStyle: "round", borderColor: "red" }, createElement(Text, {}, "test red"))
     // a
   );

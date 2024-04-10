@@ -1,3 +1,4 @@
+import { safeCallWithFiber } from "@my-react/react-reconciler";
 import chalk from "chalk";
 import cliBoxes from "cli-boxes";
 
@@ -5,7 +6,7 @@ import { colorize, type DOMNode } from "../native";
 
 import type { Output } from "./output";
 
-export const renderBorder = (x: number, y: number, node: DOMNode, output: Output): void => {
+const _renderBorder = (x: number, y: number, node: DOMNode, output: Output): void => {
   if (node.style.borderStyle) {
     const width = node.yogaNode!.getComputedWidth();
     const height = node.yogaNode!.getComputedHeight();
@@ -93,4 +94,8 @@ export const renderBorder = (x: number, y: number, node: DOMNode, output: Output
       output.write(x, y + height - 1, bottomBorder, { transformers: [] });
     }
   }
+};
+
+export const renderBorder = (x: number, y: number, node: DOMNode, output: Output) => {
+  safeCallWithFiber({ fiber: node?.__fiber__, action: () => _renderBorder(x, y, node, output) });
 };

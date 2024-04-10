@@ -3,6 +3,7 @@ import Yoga, { type Node as YogaNode } from "yoga-layout";
 import { applyStyles, type Styles } from "./styles";
 
 import type { DOMNode } from "./dom";
+import type { MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
 const ContainerElementType = "terminal-root";
 
@@ -36,6 +37,8 @@ export class ContainerElement {
   onRender?: () => void;
 
   onImmediateRender?: () => void;
+
+  __fiber__?: MyReactFiberNodeDev;
 
   constructor(nodeName: typeof ContainerElementType) {
     this.type = nodeName;

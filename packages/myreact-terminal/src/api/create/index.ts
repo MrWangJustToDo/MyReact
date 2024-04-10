@@ -34,6 +34,10 @@ export const create = (fiber: MyReactFiberNode, dispatch: TerminalDispatch) => {
       throw new Error(`unsupported element type, ${fiber.elementType?.toString()}`);
     }
 
+    if (__DEV__) {
+      fiber.nativeNode.__fiber__ = fiber;
+    }
+
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__create__);
   }
 };

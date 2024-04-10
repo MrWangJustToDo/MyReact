@@ -98,7 +98,10 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     }
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
-    return clientDispatchMount(_fiber, this, _hydrate);
+    this.beforeCommit?.();
+    const res = clientDispatchMount(_fiber, this, _hydrate);
+    this.afterCommit?.();
+    return res;
   }
   shouldYield(): boolean {
     return shouldPauseAsyncUpdate();

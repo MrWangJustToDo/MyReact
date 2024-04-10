@@ -79,7 +79,7 @@ export class App extends PureComponent<Props, State> {
             setRawMode: this.handleSetRawMode,
             isRawModeSupported: this.isRawModeSupported(),
             internal_exitOnCtrlC: this.props.exitOnCtrlC,
-            internal_eventEmitter: this.internal_eventEmitter
+            internal_eventEmitter: this.internal_eventEmitter,
           },
         },
         createElement(
@@ -177,13 +177,13 @@ export class App extends PureComponent<Props, State> {
   };
 
   handleReadable = (): void => {
-		let chunk;
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		while ((chunk = this.props.stdin.read() as string | null) !== null) {
-			this.handleInput(chunk);
-			this.internal_eventEmitter.emit('input', chunk);
-		}
-	};
+    let chunk;
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    while ((chunk = this.props.stdin.read() as string | null) !== null) {
+      this.handleInput(chunk);
+      this.internal_eventEmitter.emit("input", chunk);
+    }
+  };
 
   handleInput = (input: string): void => {
     // Exit on Ctrl+C

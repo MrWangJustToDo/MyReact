@@ -15,7 +15,7 @@ export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: Cu
   // will happen when app crash
   list.listToFoot((f) => unmount(f, renderDispatch));
 
-  list.listToFoot((f) => unmountFiberNode(f, renderDispatch));
+  list.listToFoot((f) => safeCallWithFiber({ fiber: f, action: () => unmountFiberNode(f, renderDispatch) }));
 };
 
 // unmount current fiber
@@ -34,12 +34,16 @@ export const unmountContainer = (renderDispatch: CustomRenderDispatch, cb?: () =
   const rootFiber = renderDispatch.rootFiber;
 
   triggerUnmount(rootFiber, () => {
-    renderDispatch.pendingCommitFiberList.clear();
-    renderDispatch.pendingUpdateFiberArray.clear();
-    renderDispatch.pendingAsyncLoadFiberList.clear();
-    renderDispatch.resetUpdateFlowRuntimeFiber();
-    renderDispatch.isAppMounted = false;
-    renderDispatch.isAppUnmounted = true;
+    clearContainer(renderDispatch);
     cb?.();
   });
+};
+
+export const clearContainer = (renderDispatch: CustomRenderDispatch) => {
+  renderDispatch.pendingCommitFiberList?.clear();
+  renderDispatch.pendingUpdateFiberArray?.clear();
+  renderDispatch.pendingAsyncLoadFiberList?.clear();
+  renderDispatch.resetUpdateFlowRuntimeFiber();
+  renderDispatch.isAppMounted = false;
+  renderDispatch.isAppUnmounted = true;
 };

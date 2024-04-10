@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { memo } from "react";
 import { AiFillHeart } from "react-icons/ai";
 
-import { BLOG_SOURCE } from "@client/config/source";
+// import { BLOG_SOURCE } from "@client/config/source";
 import { useFoot } from "@client/hooks";
 import { Time } from "@client/store";
 
@@ -35,7 +35,7 @@ const _Footer = () => {
     <Box textAlign="center">
       <Flex marginTop="6" justifyContent="center" alignItems="center">
         <Text fontSize={{ base: "medium", md: "xl" }} fontWeight="semibold" noOfLines={1} display="flex" alignItems="center">
-          <Link href={BLOG_SOURCE} target="_blank" color="blue.500">
+          <Link href="https://github.com/MrWangJustToDo" target="_blank" color="blue.500">
             Github
           </Link>
           <Icon as={AiFillHeart} color="red.600" mx="0.2em" />

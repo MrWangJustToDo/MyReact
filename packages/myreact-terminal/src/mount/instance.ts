@@ -1,5 +1,5 @@
 import { createElement } from "@my-react/react";
-import { MyReactFiberNode, initialFiberNode, mount, triggerUnmount, type MyReactFiberContainer } from "@my-react/react-reconciler";
+import { MyReactFiberNode, clearContainer, initialFiberNode, mount, unmountFiber } from "@my-react/react-reconciler";
 import ansiEscapes from "ansi-escapes";
 import autoBind from "auto-bind";
 import isInCi from "is-in-ci";
@@ -15,6 +15,7 @@ import { App } from "../components";
 import { TerminalDispatch } from "../renderDispatch";
 
 import type { MyReactElementNode } from "@my-react/react";
+import type { CustomRenderDispatch, MyReactFiberContainer, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
 export type Options = {
   stdout: NodeJS.WriteStream;
@@ -35,6 +36,7 @@ export class Instance {
   private lastOutput: string;
   private container: MyReactFiberContainer;
   private readonly rootNode: ContainerElement;
+  private dispatch: CustomRenderDispatch;
   // This variable is used only in debug mode to store full static output
   // so that it's rerendered every time, not just new static parts, like in non-debug mode
   private fullStaticOutput: string;
@@ -184,7 +186,13 @@ export class Instance {
 
     const renderDispatch = new TerminalDispatch(this.rootNode, fiber);
 
+    this.dispatch = renderDispatch;
+
     initialFiberNode(fiber, renderDispatch);
+
+    if (__DEV__) {
+      this.rootNode.__fiber__ = fiber as MyReactFiberNodeDev;
+    }
 
     mount(fiber, renderDispatch, false);
   };
@@ -257,15 +265,17 @@ export class Instance {
 
     this.isUnmounted = true;
 
-    triggerUnmount(this.container, () => {
-      instances.delete(this.options.stdout);
+    unmountFiber(this.container);
 
-      if (error instanceof Error) {
-        this.rejectExitPromise(error);
-      } else {
-        this.resolveExitPromise();
-      }
-    });
+    clearContainer(this.dispatch);
+
+    instances.delete(this.options.stdout);
+
+    if (error instanceof Error) {
+      this.rejectExitPromise(error);
+    } else {
+      this.resolveExitPromise();
+    }
   };
 
   async waitUntilExit(): Promise<void> {

@@ -2,6 +2,7 @@ import { type Node as YogaNode } from "yoga-layout";
 
 import type { PlainElement } from "./plain";
 import type { Styles } from "./styles";
+import type { MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
 export const TextType = "#text";
 
@@ -21,6 +22,8 @@ export class TextElement {
   yogaNode?: YogaNode;
 
   internal_static?: boolean;
+
+  __fiber__?: MyReactFiberNodeDev;
 
   constructor(nodeValue: string) {
     this.type = TextType;

@@ -4,10 +4,11 @@ import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 import { isGone, isNew, isProperty, isStyle, propsToAttrMap } from "../../shared";
 import { setTextNodeValue } from "../native";
 
+import type { TerminalDispatch } from "../../renderDispatch";
 import type { PlainElement, TextElement } from "../native";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-export const update = (fiber: MyReactFiberNode) => {
+export const update = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch) => {
   if (include(fiber.patch, PATCH_TYPE.__update__)) {
     if (!fiber.nativeNode) throw new Error("update error, dom not exist");
 
@@ -39,6 +40,8 @@ export const update = (fiber: MyReactFiberNode) => {
         .filter((key) => {
           if (key === "internal_transform") {
             dom.internal_transform = newProps[key];
+          } else if (key === "internal_static") {
+            dom.internal_static = newProps[key];
           } else if (isProperty(key)) {
             if (newProps[key] !== null && newProps[key] !== undefined) {
               const attrKey = propsToAttrMap[key] || key;
@@ -59,6 +62,10 @@ export const update = (fiber: MyReactFiberNode) => {
             }
           }
         });
+    }
+
+    if (node.internal_static) {
+      renderDispatch.rootNode.isStaticDirty = true;
     }
 
     fiber.memoizedProps = fiber.pendingProps;

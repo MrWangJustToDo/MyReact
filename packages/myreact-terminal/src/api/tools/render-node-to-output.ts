@@ -1,3 +1,4 @@
+import { safeCallWithFiber } from "@my-react/react-reconciler";
 import indentString from "indent-string";
 import widestLine from "widest-line";
 import Yoga from "yoga-layout";
@@ -8,14 +9,6 @@ import { renderBorder } from "./render-border";
 
 import type { Output } from "./output";
 import type { ContainerElement, PlainElement } from "../native";
-
-// import { type DOMElement } from "./dom.js";
-// import getMaxWidth from "./get-max-width.js";
-// import renderBorder from "./render-border.js";
-// import squashTextNodes from "./squash-text-nodes.js";
-// import wrapText from "./wrap-text.js";
-
-// import type Output from "./output.js";
 
 // If parent container is `<Box>`, text nodes will be treated as separate nodes in
 // the tree and will have their own coordinates in the layout.
@@ -38,7 +31,7 @@ const applyPaddingToText = (node: PlainElement, text: string): string => {
 export type OutputTransformer = (s: string, index: number) => string;
 
 // After nodes are laid out, render each to output object, which later gets rendered to terminal
-export const renderNodeToOutput = (
+const _renderNodeToOutput = (
   node: PlainElement | ContainerElement,
   output: Output,
   options: {
@@ -130,4 +123,17 @@ export const renderNodeToOutput = (
       }
     }
   }
+};
+
+export const renderNodeToOutput = (
+  node: PlainElement | ContainerElement,
+  output: Output,
+  options: {
+    offsetX?: number;
+    offsetY?: number;
+    transformers?: OutputTransformer[];
+    skipStaticElements: boolean;
+  }
+) => {
+  safeCallWithFiber({ fiber: node.__fiber__, action: () => _renderNodeToOutput(node, output, options) });
 };

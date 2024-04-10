@@ -1,11 +1,10 @@
-import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, NODE_TYPE, getFiberTree, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { append, clear, create, position, update } from "../api";
 import { patchToFiberInitial, patchToFiberUnmount } from "../shared";
 
 import type { ContainerElement } from "../api/native";
 import type { MyReactElementNode } from "@my-react/react";
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
@@ -34,7 +33,7 @@ export class TerminalDispatch extends CustomRenderDispatch {
     return true;
   }
   commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
-    update(_fiber);
+    update(_fiber, this);
   }
   commitAppend(_fiber: MyReactFiberNode): void {
     append(_fiber, this);
@@ -85,3 +84,14 @@ export class TerminalDispatch extends CustomRenderDispatch {
 
   afterUpdate = this.afterCommit;
 }
+
+Object.defineProperty(MyReactFiberNode.prototype, "_debugLogTree", {
+  get: function (this: MyReactFiberNode) {
+    const str = getFiberTree(this);
+
+    console.log(str);
+
+    return true;
+  },
+  configurable: true,
+});

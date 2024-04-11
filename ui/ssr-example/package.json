@@ -25,7 +25,7 @@
     "@my-react/react-dom": "workspace:*",
     "@my-react/react-reactive": "workspace:*",
     "@site/graphql": "workspace: *",
-    "@tldraw/tldraw": "^2.0.2",
+    "@tldraw/tldraw": "^1.6.1",
     "cookie-parser": "^1.4.6",
     "dayjs": "^1.11.10",
     "dotenv": "^16.0.0",

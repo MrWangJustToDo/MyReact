@@ -8,7 +8,7 @@ const HMR_FIELD = "__@my-react/hmr__";
 
 const DISPATCH_FIELD = "__@my-react/dispatch__";
 
-const RUNTIME_FIELD = "__@my-react/react-refresh__";
+// const RUNTIME_FIELD = "__@my-react/react-refresh__";
 
 const DEV_TOOL_FIELD = "__@my-react/react-refresh-dev__";
 
@@ -29,16 +29,16 @@ type MyReactComponentType = ReturnType<typeof forwardRef> | ReturnType<typeof me
 type HMRGlobal = {
   [HMR_FIELD]: HMR;
   [DISPATCH_FIELD]: CustomRenderDispatch[];
-  [RUNTIME_FIELD]: {
-    register: typeof register;
-    setSignature: typeof setSignature;
-    getFamilyByID: typeof getFamilyByID;
-    getFamilyByType: typeof getFamilyByType;
-    performReactRefresh: typeof performReactRefresh;
-    isLikelyComponentType: typeof isLikelyComponentType;
-    collectCustomHooksForSignature: typeof collectCustomHooksForSignature;
-    createSignatureFunctionForTransform: typeof createSignatureFunctionForTransform;
-  };
+  // [RUNTIME_FIELD]: {
+  //   register: typeof register;
+  //   setSignature: typeof setSignature;
+  //   getFamilyByID: typeof getFamilyByID;
+  //   getFamilyByType: typeof getFamilyByType;
+  //   performReactRefresh: typeof performReactRefresh;
+  //   isLikelyComponentType: typeof isLikelyComponentType;
+  //   collectCustomHooksForSignature: typeof collectCustomHooksForSignature;
+  //   createSignatureFunctionForTransform: typeof createSignatureFunctionForTransform;
+  // };
   [DEV_TOOL_FIELD]: {
     allFamiliesByID: typeof allFamiliesByID;
     allSignaturesByType: typeof allSignaturesByType;
@@ -303,6 +303,14 @@ export const performReactRefresh = () => {
     }
   });
 
+  if (containers.size === 0) {
+    // try to refresh all the containers
+    const allContainers = typedSelf[DISPATCH_FIELD];
+    allContainers.forEach((container) => {
+      containers.set(container, true);
+    });
+  }
+
   if (containers.size > 0) {
     console.log(`[@my-react/react-refresh] updating ...`);
 
@@ -397,16 +405,10 @@ const setRefreshRuntimeFieldForDev = (container: CustomRenderDispatch) => {
       createSignatureFunctionForTransform,
     },
   });
-  Object.defineProperty(container, "__refresh_runtime_dev__", {
-    value: {
-      allFamiliesByID,
-      allSignaturesByType,
-      updatedFamiliesByType,
-    },
-  });
 };
 
 const tryToRegister = () => {
+  if (typeof window === "undefined") return;
   if (__DEV__) {
     try {
       if (typeof typedSelf?.[HMR_FIELD]?.setRefreshHandler !== "function") {
@@ -435,17 +437,6 @@ export const injectIntoGlobalHook = (globalThis: Window) => globalThis.addEventL
 export const version = __VERSION__;
 
 if (__DEV__) {
-  typedSelf[RUNTIME_FIELD] = {
-    register,
-    setSignature,
-    getFamilyByID,
-    getFamilyByType,
-    performReactRefresh,
-    isLikelyComponentType,
-    collectCustomHooksForSignature,
-    createSignatureFunctionForTransform,
-  };
-
   typedSelf[DEV_TOOL_FIELD] = {
     allFamiliesByID,
     allSignaturesByType,

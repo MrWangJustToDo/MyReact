@@ -728,9 +728,6 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
     devDependencies:
-      esm-module-alias:
-        specifier: ^2.1.0
-        version: 2.1.0
       module-alias:
         specifier: ^2.2.3
         version: 2.2.3
@@ -10675,10 +10672,6 @@ packages:
       text-table: 0.2.0
     transitivePeerDependencies:
       - supports-color
-
-  /esm-module-alias@2.1.0:
-    resolution: {integrity: sha512-/4OKQIPH6vmlADQEXVdvHuURqf8qqKempJyXn/tFGek59y+ZnBzJlfgSZ389j3HRDK8XGyaB3HN+YBXS6Xc6jA==}
-    dev: true
 
   /espree@9.6.1:
     resolution: {integrity: sha512-oruZaFkjorTpF32kDSI5/75ViwGeZginGGy2NoOSg3Q9bnwlnmDm4HLnkl0RE3n+njDXR037aY1+x58Z/zFdwQ==}

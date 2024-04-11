@@ -7,8 +7,7 @@ const delay = (time: number) => new Promise((r) => setTimeout(r, time));
 
 const Bar = lazy(() => import("../components/Bar").then(({ Bar }) => ({ default: Bar })));
 
-export default function Home(props: Record<string, number>) {
-  console.log(props);
+export default function Home() {
   return (
     <main className={`flex min-h-screen flex-col items-center justify-between p-24`}>
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">

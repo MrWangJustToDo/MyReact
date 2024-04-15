@@ -7,19 +7,28 @@ import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-re
 
 const SVG = "http://www.w3.org/2000/svg";
 
+const getOwnerDocumentFromRootContainer = (rootContainerElement: Element): Document =>
+  (rootContainerElement?.nodeType === Node.DOCUMENT_NODE ? (rootContainerElement as unknown as Document) : rootContainerElement?.ownerDocument) || document;
+
 /**
  * @internal
  */
-export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
+export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean, parentFiberWithNode: MyReactFiberNode) => {
+  const ownerDoc = getOwnerDocumentFromRootContainer(parentFiberWithNode.nativeNode as Element);
+
   if (include(fiber.type, NODE_TYPE.__text__)) {
-    fiber.nativeNode = document.createTextNode(fiber.elementType as string);
+    fiber.nativeNode = ownerDoc.createTextNode(fiber.elementType as string);
   } else if (include(fiber.type, NODE_TYPE.__plain__)) {
     const typedElementType = fiber.elementType as string;
 
     if (isSVG) {
-      fiber.nativeNode = document.createElementNS(SVG, typedElementType);
+      fiber.nativeNode = ownerDoc.createElementNS(SVG, typedElementType);
     } else {
-      fiber.nativeNode = document.createElement(typedElementType);
+      if (typeof fiber.pendingProps?.is === "string") {
+        fiber.nativeNode = ownerDoc.createElement(typedElementType, { is: fiber.pendingProps.is });
+      } else {
+        fiber.nativeNode = ownerDoc.createElement(typedElementType);
+      }
     }
   } else if (include(fiber.type, NODE_TYPE.__portal__)) {
     const fiberContainer = fiber as MyReactFiberContainer;
@@ -31,9 +40,9 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean) => {
     if (__DEV__) containerNode.setAttribute?.("portal", "@my-react");
   } else if (include(fiber.type, NODE_TYPE.__comment__)) {
     if (isCommentStartElement(fiber)) {
-      fiber.nativeNode = document.createComment(commentS);
+      fiber.nativeNode = ownerDoc.createComment(commentS);
     } else {
-      fiber.nativeNode = document.createComment(commentE);
+      fiber.nativeNode = ownerDoc.createComment(commentE);
     }
   }
 };

@@ -25,11 +25,11 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
     if (hydrate) {
       const result = hydrateCreate(fiber, parentFiberWithNode, renderDispatch._previousNativeNode);
 
-      if (!result) nativeCreate(fiber, isSVG);
+      if (!result) nativeCreate(fiber, isSVG, parentFiberWithNode);
 
       re = result;
     } else {
-      nativeCreate(fiber, isSVG);
+      nativeCreate(fiber, isSVG, parentFiberWithNode);
     }
 
     if (renderDispatch.isHydrateRender) {

@@ -35,3 +35,13 @@ export const isSVGTag = makeMap(
  * @internal
  */
 export const isSingleTag = makeMap("area,base,br,col,embed,hr,img,input,link,meta,param,source,track,wbr");
+
+/**
+ * @internal
+ */
+export const isNativeTag = (type: string) => {
+  if (!isHTMLTag[type] && !isSVGTag[type]) {
+    return false;
+  }
+  return true;
+} 

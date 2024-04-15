@@ -37,7 +37,10 @@ export const validDomTag = (fiber: MyReactFiberNode) => {
     const tagName = fiber.elementType as string;
 
     if (!isHTMLTag[tagName] && !isSVGTag[tagName]) {
-      logOnce(fiber, "error", "invalid dom tag", `invalid dom tag, current is "${tagName}"`);
+      // custom element
+      if (!customElements.get(tagName)) {
+        logOnce(fiber, "error", "invalid dom tag", `invalid dom tag, current is "${tagName}"`);
+      }
     }
   }
 };

@@ -1,8 +1,8 @@
 import { ForwardRef, Memo, STATE_TYPE, TYPEKEY } from "@my-react/react-shared";
 
 import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType } from "@my-react/react";
-import type { ClientDomDispatch } from "@my-react/react-dom";
-import type { CustomRenderDispatch, HMR, setRefreshHandler } from "@my-react/react-reconciler";
+import type { ClientDomDispatch, ClientDomDispatchDev } from "@my-react/react-dom";
+import type { CustomRenderDispatch, HMR, MyReactFiberNodeDev, setRefreshHandler } from "@my-react/react-reconciler";
 
 const HMR_FIELD = "__@my-react/hmr__";
 
@@ -329,14 +329,16 @@ export const performReactRefresh = () => {
     containers.forEach((hasRootUpdate, container: ClientDomDispatch) => {
       if (container.isAppCrashed || container.isAppUnmounted) {
         // have a uncaught runtime error for prev render
-        container._remountOnDev?.(updateDone);
+        (container as ClientDomDispatchDev).__hmr_remount__?.(updateDone);
       } else if (container.runtimeFiber.errorCatchFiber) {
         // has a error for prev render
         const errorCatchFiber = container?.runtimeFiber.errorCatchFiber;
 
-        errorCatchFiber._devRevert?.(updateDone);
+        (errorCatchFiber as MyReactFiberNodeDev).__hmr_revert__?.(updateDone);
       } else {
-        container.rootFiber._devUpdate?.(hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__, updateDone);
+        const rootFiber = container.rootFiber;
+
+        (rootFiber as MyReactFiberNodeDev).__hmr_update__?.(hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__, updateDone);
       }
       setRefreshRuntimeFieldForDev(container);
     });

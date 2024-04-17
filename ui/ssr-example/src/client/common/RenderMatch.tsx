@@ -56,6 +56,7 @@ export const RenderMatch = () => {
                 damping: 10,
                 stiffness: 50,
               }}
+              data-animate-route
             >
               <Suspense>{all}</Suspense>
             </motion.div>

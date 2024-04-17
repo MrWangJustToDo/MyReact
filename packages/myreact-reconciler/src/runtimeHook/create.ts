@@ -67,7 +67,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (hookNode.type === HOOK_TYPE.useContext) {
-    const ProviderFiber = renderDispatch.resolveContextFiber(hookNode._ownerFiber as MyReactFiberNode, hookNode.value);
+    const ProviderFiber = renderDispatch.resolveContextFiber(hookNode._owner as MyReactFiberNode, hookNode.value);
 
     const context = renderDispatch.resolveContextValue(ProviderFiber, hookNode.value);
 

@@ -181,7 +181,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
       const nextNode = node.next;
 
       if (updater.type === UpdateQueueType.hook && updater.isSync) {
-        if (__DEV__ && updater.trigger._ownerFiber !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+        if (__DEV__ && updater.trigger._owner !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
         allQueue.delete(node);
 
@@ -242,7 +242,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
       const nextNode = node.next;
 
       if (updater.type === UpdateQueueType.hook) {
-        if (__DEV__ && updater.trigger._ownerFiber !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+        if (__DEV__ && updater.trigger._owner !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
         allQueue.delete(node);
 

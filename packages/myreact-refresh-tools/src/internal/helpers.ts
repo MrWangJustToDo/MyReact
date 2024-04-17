@@ -67,7 +67,7 @@ function registerExportsForReactRefresh(moduleExports: any, moduleID: string) {
       exportValue = moduleExports[key];
     } catch {
       // This might fail due to circular dependencies
-      continue
+      continue;
     }
     const typeID = moduleID + " %exports% " + key;
     RefreshRuntime.register(exportValue, typeID);
@@ -91,7 +91,7 @@ function getRefreshBoundarySignature(moduleExports: any): Array<unknown> {
       exportValue = moduleExports[key];
     } catch {
       // This might fail due to circular dependencies
-      continue
+      continue;
     }
     signature.push(key);
     signature.push(RefreshRuntime.getFamilyByType(exportValue));
@@ -119,7 +119,7 @@ function isReactRefreshBoundary(moduleExports: any): boolean {
       exportValue = moduleExports[key];
     } catch {
       // This might fail due to circular dependencies
-      return false
+      return false;
     }
     if (!RefreshRuntime.isLikelyComponentType(exportValue)) {
       areAllExportsComponents = false;
@@ -128,9 +128,7 @@ function isReactRefreshBoundary(moduleExports: any): boolean {
   return hasExports && areAllExportsComponents;
 }
 
-function shouldInvalidateReactRefreshBoundary(prevExports: unknown, nextExports: unknown): boolean {
-  const prevSignature = getRefreshBoundarySignature(prevExports);
-  const nextSignature = getRefreshBoundarySignature(nextExports);
+function shouldInvalidateReactRefreshBoundary(prevSignature: unknown[], nextSignature: unknown[]): boolean {
   if (prevSignature.length !== nextSignature.length) {
     return true;
   }
@@ -142,7 +140,7 @@ function shouldInvalidateReactRefreshBoundary(prevExports: unknown, nextExports:
   return false;
 }
 
-let isUpdateScheduled = false;
+let isUpdateScheduled: boolean = false;
 // This function aggregates updates from multiple modules into a single React Refresh call.
 function scheduleUpdate() {
   if (isUpdateScheduled) {
@@ -171,7 +169,7 @@ function scheduleUpdate() {
     return;
   }
 
-  const statusHandler = (status: any) => {
+  const statusHandler = (status: ModuleHotStatus) => {
     if (canApplyUpdate(status)) {
       module.hot.removeStatusHandler(statusHandler);
       applyUpdate();

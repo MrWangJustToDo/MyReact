@@ -16,6 +16,7 @@ export const debounce = <T extends Function>(callback: T, time?: number): T => {
   }) as unknown as T;
 };
 
+// !TODO
 /**
  * @internal
  */
@@ -101,6 +102,40 @@ export class HighLight {
     }
   };
 
+  processHighlight = (fiber: MyReactFiberNode, context: CanvasRenderingContext2D) => {
+    if (include(fiber.state, STATE_TYPE.__unmount__) || !fiber.nativeNode) return;
+    try {
+      const node = fiber.nativeNode as HTMLElement;
+      if (node.nodeType === Node.TEXT_NODE) {
+        this.range.selectNodeContents(node);
+      } else {
+        this.range.selectNode(node);
+      }
+      const rect = this.range.getBoundingClientRect();
+      if (
+        (rect.width || rect.height) &&
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
+      ) {
+        // do the highlight paint
+        const left = rect.left - 0.5;
+        const top = rect.top - 0.5;
+        const width = rect.width + 1;
+        const height = rect.height + 1;
+        context.strokeRect(
+          left < 0 ? 0 : left,
+          top < 0 ? 0 : top,
+          width > window.innerWidth ? window.innerWidth : width,
+          height > window.innerHeight ? window.innerHeight : height
+        );
+      }
+    } catch {
+      void 0;
+    }
+  };
+
   flashPending = () => {
     const context = this.mask.getContext("2d");
 
@@ -110,115 +145,19 @@ export class HighLight {
 
     context.strokeStyle = "rgba(200,50,50,0.8)";
 
-    allPendingUpdate.forEach((fiber) => {
-      if (include(fiber.state, STATE_TYPE.__unmount__)) return;
-      try {
-        const node = fiber.nativeNode as HTMLElement;
-        if (node.nodeType === Node.TEXT_NODE) {
-          this.range.selectNodeContents(node);
-        } else {
-          this.range.selectNode(node);
-        }
-        const rect = this.range.getBoundingClientRect();
-        if (
-          (rect.width || rect.height) &&
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
-          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-        ) {
-          // do the highlight paint
-          const left = rect.left - 0.5;
-          const top = rect.top - 0.5;
-          const width = rect.width + 1;
-          const height = rect.height + 1;
-          context.strokeRect(
-            left < 0 ? 0 : left,
-            top < 0 ? 0 : top,
-            width > window.innerWidth ? window.innerWidth : width,
-            height > window.innerHeight ? window.innerHeight : height
-          );
-        }
-      } catch {
-        void 0;
-      }
-    });
+    allPendingUpdate.forEach((fiber) => this.processHighlight(fiber, context));
 
     const allPendingAppend = new Set(this.__pendingAppend__);
 
     this.__pendingAppend__.clear();
 
-    allPendingAppend.forEach((fiber) => {
-      if (include(fiber.state, STATE_TYPE.__unmount__)) return;
-      try {
-        const node = fiber.nativeNode as HTMLElement;
-        if (node.nodeType === Node.TEXT_NODE) {
-          this.range.selectNodeContents(node);
-        } else {
-          this.range.selectNode(node);
-        }
-        const rect = this.range.getBoundingClientRect();
-        if (
-          (rect.width || rect.height) &&
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
-          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-        ) {
-          // do the highlight paint
-          const left = rect.left - 0.5;
-          const top = rect.top - 0.5;
-          const width = rect.width + 1;
-          const height = rect.height + 1;
-          context.strokeRect(
-            left < 0 ? 0 : left,
-            top < 0 ? 0 : top,
-            width > window.innerWidth ? window.innerWidth : width,
-            height > window.innerHeight ? window.innerHeight : height
-          );
-        }
-      } catch {
-        void 0;
-      }
-    });
+    allPendingAppend.forEach((fiber) => this.processHighlight(fiber, context));
 
     const allPendingSetRef = new Set(this.__pendingSetRef__);
 
     this.__pendingSetRef__.clear();
 
-    allPendingSetRef.forEach((fiber) => {
-      if (include(fiber.state, STATE_TYPE.__unmount__)) return;
-      try {
-        const node = fiber.nativeNode as HTMLElement;
-        if (node.nodeType === Node.TEXT_NODE) {
-          this.range.selectNodeContents(node);
-        } else {
-          this.range.selectNode(node);
-        }
-        const rect = this.range.getBoundingClientRect();
-        if (
-          (rect.width || rect.height) &&
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
-          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-        ) {
-          // do the highlight paint
-          const left = rect.left - 0.5;
-          const top = rect.top - 0.5;
-          const width = rect.width + 1;
-          const height = rect.height + 1;
-          context.strokeRect(
-            left < 0 ? 0 : left,
-            top < 0 ? 0 : top,
-            width > window.innerWidth ? window.innerWidth : width,
-            height > window.innerHeight ? window.innerHeight : height
-          );
-        }
-      } catch {
-        void 0;
-      }
-    });
+    allPendingSetRef.forEach((fiber) => this.processHighlight(fiber, context));
 
     context.strokeStyle = "rgba(230,150,40,0.8)";
 
@@ -226,39 +165,7 @@ export class HighLight {
 
     this.__pendingWarn__.clear();
 
-    allPendingWarn.forEach((fiber) => {
-      if (include(fiber.state, STATE_TYPE.__unmount__)) return;
-      try {
-        const node = fiber.nativeNode as HTMLElement;
-        if (node.nodeType === Node.TEXT_NODE) {
-          this.range.selectNodeContents(node);
-        } else {
-          this.range.selectNode(node);
-        }
-        const rect = this.range.getBoundingClientRect();
-        if (
-          (rect.width || rect.height) &&
-          rect.top >= 0 &&
-          rect.left >= 0 &&
-          rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
-          rect.bottom <= (window.innerHeight || document.documentElement.clientHeight)
-        ) {
-          // do the highlight paint
-          const left = rect.left - 0.5;
-          const top = rect.top - 0.5;
-          const width = rect.width + 1;
-          const height = rect.height + 1;
-          context.strokeRect(
-            left < 0 ? 0 : left,
-            top < 0 ? 0 : top,
-            width > window.innerWidth ? window.innerWidth : width,
-            height > window.innerHeight ? window.innerHeight : height
-          );
-        }
-      } catch {
-        void 0;
-      }
-    });
+    allPendingWarn.forEach((fiber) => this.processHighlight(fiber, context));
 
     setTimeout(() => {
       context.clearRect(0, 0, this.width, this.height);

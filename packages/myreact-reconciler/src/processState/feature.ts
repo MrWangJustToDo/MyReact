@@ -39,7 +39,7 @@ export const processState = (_params: UpdateQueue) => {
   }
 
   if (_params.type === UpdateQueueType.component) {
-    const ownerFiber = _params.trigger._ownerFiber as MyReactFiberNode;
+    const ownerFiber = _params.trigger._owner as MyReactFiberNode;
 
     if (!ownerFiber || include(ownerFiber.state, STATE_TYPE.__unmount__)) return;
 
@@ -94,7 +94,7 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
   } else if (_params.type === UpdateQueueType.hook) {
-    const ownerFiber = _params.trigger._ownerFiber as MyReactFiberNode;
+    const ownerFiber = _params.trigger._owner as MyReactFiberNode;
 
     if (!ownerFiber || include(ownerFiber?.state, STATE_TYPE.__unmount__)) return;
 

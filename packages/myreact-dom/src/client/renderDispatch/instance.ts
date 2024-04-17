@@ -1,5 +1,5 @@
 import { __my_react_shared__, createElement, type MyReactElement, type MyReactElementNode, type MyReactElementType } from "@my-react/react";
-import { CustomRenderDispatch, NODE_TYPE, unmountFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, NODE_TYPE, initHMR, unmountFiber } from "@my-react/react-reconciler";
 
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
@@ -20,7 +20,7 @@ import {
 
 import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
 
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { HMR, MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
@@ -56,8 +56,6 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   renderTime: number | null;
 
   hydrateTime: number | null;
-
-  _remountOnDev: (cb?: () => void) => void;
 
   performanceLogTimeLimit = asyncUpdateTimeLimit.current;
 
@@ -118,31 +116,33 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
 }
 
+export interface ClientDomDispatchDev extends ClientDomDispatch {
+  __hmr_runtime__: HMR;
+  __hmr_remount__: (cb?: () => void) => void;
+}
+
+function hmrRemount (this: ClientDomDispatch, cb?: () => void) {
+  const rootNode = this.rootNode;
+
+  const rootElementType = this.rootFiber.elementType;
+
+  const rootElementProps = this.rootFiber.pendingProps;
+
+  const rootElement = createElement(rootElementType as MyReactElementType, rootElementProps) as MyReactElement;
+
+  rootNode.__fiber__ = null;
+
+  render(rootElement, rootNode, cb);
+}
+
 if (__DEV__) {
   // dev highlight
   Object.defineProperty(ClientDomDispatch.prototype, "patchToCommitUpdate", {
     value: highlightUpdateFiber,
   });
 
-  // dev remount
-  Object.defineProperty(ClientDomDispatch.prototype, "_remountOnDev", {
-    value: function (this: ClientDomDispatch, cb?: () => void) {
-      const rootNode = this.rootNode;
-
-      const rootElementType = this.rootFiber.elementType;
-
-      const rootElementProps = this.rootFiber.pendingProps;
-
-      const rootElement = createElement(rootElementType as MyReactElementType, rootElementProps) as MyReactElement;
-
-      rootNode.__fiber__ = null;
-
-      render(rootElement, rootNode, cb);
-    },
-  });
-
   // dev log tree
-  Object.defineProperty(ClientDomDispatch.prototype, "_debugRenderTree", {
+  Object.defineProperty(ClientDomDispatch.prototype, "_debugRender", {
     get: function (this: ClientDomDispatch) {
       const rootElementType = this.rootFiber.elementType;
 
@@ -185,4 +185,29 @@ if (__DEV__) {
       return re;
     },
   });
+
+  Object.defineProperty(ClientDomDispatch.prototype, "_debugVersion", {
+    get: function (this: ClientDomDispatch) {
+      return __VERSION__;
+    },
+  });
+
+  // hmr remount
+  Object.defineProperty(ClientDomDispatch.prototype, "__hmr_remount__", {
+    value: hmrRemount,
+  });
+
+  // hmr runtime
+  Object.defineProperty(ClientDomDispatch.prototype, "__hmr_runtime__", {
+    value: {},
+  });
+
+  // TODO remove
+  Object.defineProperty(ClientDomDispatch.prototype, '_remountOnDev', {
+    value: hmrRemount,
+  })
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  initHMR(ClientDomDispatch.prototype.__hmr_runtime__);
 }

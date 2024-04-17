@@ -56,10 +56,6 @@ export class MyReactFiberNode implements RenderFiber {
 
   memoizedState: Record<string, unknown>;
 
-  _devRevert: (cb?: () => void) => void;
-
-  _devUpdate: (state?: STATE_TYPE, cb?: () => void) => void;
-
   constructor(element: MyReactElementNode) {
     this.state = STATE_TYPE.__create__;
 
@@ -148,8 +144,22 @@ export class MyReactFiberNode implements RenderFiber {
   }
 }
 
+function hmrRevert(this: MyReactFiberNode, cb?: () => void) {
+  if (include(this.state, STATE_TYPE.__unmount__)) return;
+
+  triggerRevert(this, cb);
+}
+
+function hmrUpdate(this: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) {
+  if (include(this.state, STATE_TYPE.__unmount__)) return;
+
+  const renderPlatform = currentRenderPlatform.current;
+
+  renderPlatform.microTask(() => triggerUpdate(this, state, cb));
+}
+
 if (__DEV__) {
-  Object.defineProperty(MyReactFiberNode.prototype, "_debugLogTree", {
+  Object.defineProperty(MyReactFiberNode.prototype, "_debugLog", {
     get: function (this: MyReactFiberNode) {
       const { str, arr } = getFiberTreeWithFiber(this);
 
@@ -159,21 +169,25 @@ if (__DEV__) {
     },
     configurable: true,
   });
-  Object.defineProperty(MyReactFiberNode.prototype, "_devRevert", {
-    value: function (this: MyReactFiberNode, cb?: () => void) {
-      if (include(this.state, STATE_TYPE.__unmount__)) return;
 
-      triggerRevert(this, cb);
-    },
+  Object.defineProperty(MyReactFiberNode.prototype, "__hmr_revert__", {
+    value: hmrRevert,
+    configurable: true,
   });
+
+  Object.defineProperty(MyReactFiberNode.prototype, "__hmr_update__", {
+    value: hmrUpdate,
+    configurable: true,
+  });
+
+  // TODO remove
+  Object.defineProperty(MyReactFiberNode.prototype, "_devRevert", {
+    value: hmrRevert,
+  });
+
+  // TODO remove
   Object.defineProperty(MyReactFiberNode.prototype, "_devUpdate", {
-    value: function (this: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) {
-      if (include(this.state, STATE_TYPE.__unmount__)) return;
-
-      const renderPlatform = currentRenderPlatform.current;
-
-      renderPlatform.microTask(() => triggerUpdate(this, state, cb));
-    },
+    value: hmrUpdate,
   });
 }
 

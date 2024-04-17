@@ -91,6 +91,7 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
       unmountComponentAtNode(container);
     }
   }
+
   onceLog();
 
   if (__DEV__ && enableLegacyLifeCycle.current) {

@@ -17,7 +17,7 @@ import { render, hydrate, hydrateRoot, createRoot } from "./mount";
 import { initGlobalRenderPlatform } from "./renderPlatform";
 import { findDOMNode, createPortal, unmountComponentAtNode, initGlobalHMR } from "./tools";
 
-import type { ClientDomDispatch } from "./renderDispatch";
+import type { ClientDomDispatch, ClientDomDispatchDev } from "./renderDispatch";
 
 const { enableMockReact } = __my_react_shared__;
 
@@ -66,4 +66,4 @@ export {
   version,
 };
 
-export type { ClientDomDispatch };
+export type { ClientDomDispatch, ClientDomDispatchDev };

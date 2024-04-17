@@ -33,8 +33,8 @@ export const findDOMFromFiber = (fiber: MyReactFiberNode | null): DomElement | u
 };
 
 export const findDOMNode = (instance: MyReactInternalInstance | Element): DomElement | null => {
-  if (instance instanceof Component && instance._ownerFiber) {
-    return findDOMFromFiber(instance._ownerFiber as MyReactFiberNode) || null;
+  if (instance instanceof Component && instance._owner) {
+    return findDOMFromFiber(instance._owner as MyReactFiberNode) || null;
   } else if ((instance as Element).nodeType === Node.ELEMENT_NODE) {
     return instance as DomElement;
   } else {

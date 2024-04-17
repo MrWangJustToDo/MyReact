@@ -110,57 +110,56 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
   Object.defineProperty(renderDispatch, "__my_react_internal__", { value: __my_react_internal__ });
   Object.defineProperty(renderDispatch, "__my_react_dom_shared__", { value: __my_react_dom_shared__ });
   Object.defineProperty(renderDispatch, "__my_react_dom_internal__", { value: __my_react_dom_internal__ });
-  if (MyReactFiberNode?.prototype && !Object.prototype.hasOwnProperty.call(MyReactFiberNode.prototype, "_debugRenderTree")) {
-    Object.defineProperty(MyReactFiberNode.prototype, "_debugRenderTree", {
-      get: function (this: MyReactFiberNodeDev) {
-        if (!isValidElement(this._debugElement)) return;
+  Object.defineProperty(MyReactFiberNode.prototype, "_debugRender", {
+    get: function (this: MyReactFiberNodeDev) {
+      if (!isValidElement(this._debugElement)) return;
 
-        const element = cloneElement(this._debugElement);
+      const element = cloneElement(this._debugElement);
 
-        if (!isValidElement(element)) return;
+      if (!isValidElement(element)) return;
 
-        const renderDispatch = getCurrentDispatchFromFiber(this) as
-          | ClientDomDispatch
-          | ServerDomDispatch
-          | LegacyServerStreamDispatch
-          | LatestServerStreamDispatch;
+      const renderDispatch = getCurrentDispatchFromFiber(this) as
+        | ClientDomDispatch
+        | ServerDomDispatch
+        | LegacyServerStreamDispatch
+        | LatestServerStreamDispatch;
 
-        const get = async () => {
-          if (renderDispatch.enableASyncHydrate) {
-            const _re = enableScopeTreeLog.current;
+      const get = async () => {
+        if (renderDispatch.enableASyncHydrate) {
+          const _re = enableScopeTreeLog.current;
 
-            enableScopeTreeLog.current = false;
+          enableScopeTreeLog.current = false;
 
-            const re = await latestNoopRender(element);
+          const re = await latestNoopRender(element);
 
-            enableScopeTreeLog.current = _re;
+          enableScopeTreeLog.current = _re;
 
-            return re;
-          } else {
-            const _re = enableScopeTreeLog.current;
+          return re;
+        } else {
+          const _re = enableScopeTreeLog.current;
 
-            enableScopeTreeLog.current = false;
+          enableScopeTreeLog.current = false;
 
-            const re = legacyNoopRender(element);
+          const re = legacyNoopRender(element);
 
-            enableScopeTreeLog.current = _re;
+          enableScopeTreeLog.current = _re;
 
-            return re;
-          }
-        };
+          return re;
+        }
+      };
 
-        const re = get();
+      const re = get();
 
-        re.then((res) => (parse(res), res)).then((res) => {
-          unmountFiber(res.__container__.rootFiber);
-          res.__container__.isAppMounted = false;
-          res.__container__.isAppUnmounted = true;
-        });
+      re.then((res) => (parse(res), res)).then((res) => {
+        unmountFiber(res.__container__.rootFiber);
+        res.__container__.isAppMounted = false;
+        res.__container__.isAppUnmounted = true;
+      });
 
-        return re;
-      },
-    });
-  }
+      return re;
+    },
+    configurable: true,
+  });
 };
 
 /**

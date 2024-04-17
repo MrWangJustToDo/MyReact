@@ -111,10 +111,10 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (currentHook.type === HOOK_TYPE.useContext) {
-    if (!currentHook._contextFiber || include(currentHook._contextFiber.state, STATE_TYPE.__unmount__) || !Object.is(currentHook.value, value)) {
+    if (!currentHook._context || include(currentHook._context.state, STATE_TYPE.__unmount__) || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
 
-      const ProviderFiber = renderDispatch.resolveContextFiber(currentHook._ownerFiber as MyReactFiberNode, currentHook.value);
+      const ProviderFiber = renderDispatch.resolveContextFiber(currentHook._owner as MyReactFiberNode, currentHook.value);
 
       const context = renderDispatch.resolveContextValue(ProviderFiber, currentHook.value);
 
@@ -124,7 +124,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
       currentHook.context = context;
     } else {
-      const context = renderDispatch.resolveContextValue(currentHook._contextFiber as MyReactFiberNode, currentHook.value);
+      const context = renderDispatch.resolveContextValue(currentHook._context as MyReactFiberNode, currentHook.value);
 
       currentHook.result = context;
 

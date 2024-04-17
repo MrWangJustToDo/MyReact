@@ -106,7 +106,7 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   currentComponentFiber.current = fiber;
 
-  if (!fiber.instance._contextFiber || include(fiber.instance._contextFiber.state, STATE_TYPE.__unmount__)) {
+  if (!fiber.instance._context || include(fiber.instance._context.state, STATE_TYPE.__unmount__)) {
     const ProviderFiber = renderDispatch.resolveContextFiber(fiber, Context);
 
     const context = renderDispatch.resolveContextValue(ProviderFiber, Context);
@@ -115,7 +115,7 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
     fiber.instance._setContext(ProviderFiber);
   } else {
-    const context = renderDispatch.resolveContextValue(fiber.instance._contextFiber as MyReactFiberNode, Context);
+    const context = renderDispatch.resolveContextValue(fiber.instance._context as MyReactFiberNode, Context);
 
     fiber.instance.context = context;
   }

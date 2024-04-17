@@ -105,7 +105,7 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedComponent.contextType) {
-    if (!typedInstance._contextFiber || include(typedInstance._contextFiber.state, STATE_TYPE.__unmount__)) {
+    if (!typedInstance._context || include(typedInstance._context.state, STATE_TYPE.__unmount__)) {
       const ProviderFiber = renderDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
       const context = renderDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
@@ -114,9 +114,9 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
 
       return context;
     } else {
-      const context = renderDispatch.resolveContextValue(typedInstance._contextFiber as MyReactFiberNode, typedComponent.contextType);
+      const context = renderDispatch.resolveContextValue(typedInstance._context as MyReactFiberNode, typedComponent.contextType);
 
-      typedInstance?._setContext(typedInstance._contextFiber);
+      typedInstance?._setContext(typedInstance._context);
 
       return context;
     }

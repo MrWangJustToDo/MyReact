@@ -85,7 +85,7 @@ export class TerminalDispatch extends CustomRenderDispatch {
   afterUpdate = this.afterCommit;
 }
 
-Object.defineProperty(MyReactFiberNode.prototype, "_debugLogTree", {
+Object.defineProperty(MyReactFiberNode.prototype, "_debugLog", {
   get: function (this: MyReactFiberNode) {
     const str = getFiberTree(this);
 

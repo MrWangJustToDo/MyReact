@@ -1,6 +1,6 @@
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactElementNode, UpdateQueue } from "@my-react/react";
-import type { ListTree } from "@my-react/react-shared";
+import type { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 export interface MyReactFiberNodeDev extends MyReactFiberNode {
   _debugElement: MyReactElementNode;
@@ -41,5 +41,9 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugUpdateQueue: ListTree<UpdateQueue>;
 
-  _debugLogTree: boolean;
+  _debugLog: boolean;
+
+  __hmr_revert__: (cb?: () => void) => void;
+
+  __hmr_update__: (state?: STATE_TYPE, cb?: () => void) => void;
 }

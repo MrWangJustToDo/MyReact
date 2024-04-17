@@ -41,7 +41,6 @@ function webpack4(this: RefreshWebpackPlugin, compiler: WebpackCompiler) {
 
     const hookRequire: any = (compilation.mainTemplate.hooks as any).require;
 
-    // @ts-ignore webpack 5 types compat
     hookRequire.tap("RefreshWebpackPlugin", (source: string) => {
       // Webpack 4 evaluates module code on the following line:
       // ```
@@ -50,7 +49,6 @@ function webpack4(this: RefreshWebpackPlugin, compiler: WebpackCompiler) {
       // https://github.com/webpack/webpack/blob/4c644bf1f7cb067c748a52614500e0e2182b2700/lib/MainTemplate.js#L200
 
       const lines = source.split("\n");
-      // @ts-ignore webpack 5 types compat
       const evalIndex = lines.findIndex((l) => l.includes("modules[moduleId].call("));
       // Unable to find the module execution, that's OK:
       if (evalIndex === -1) {
@@ -114,13 +112,10 @@ function webpack5(this: RefreshWebpackPlugin, compiler: WebpackCompiler) {
     }
   }
 
-  // @ts-ignore webpack 5 types compat
   compiler.hooks.compilation.tap("RefreshWebpackPlugin", (compilation) => {
     injectRefreshFunctions(compilation, Template);
 
-    // @ts-ignore Exists in webpack 5
     compilation.hooks.additionalTreeRuntimeRequirements.tap("RefreshWebpackPlugin", (chunk: any) => {
-      // @ts-ignore Exists in webpack 5
       compilation.addRuntimeModule(chunk, new RefreshRuntimeModule());
     });
   });

@@ -49,7 +49,7 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
       payLoad: action,
       isForce: false,
       isSync: enableSyncFlush.current,
-      isInitial: this._ownerFiber?.mode === MODE_TYPE.__initial__,
+      isInitial: this._owner?.mode === MODE_TYPE.__initial__,
     };
 
     const renderPlatform = currentRenderPlatform.current;
@@ -65,7 +65,7 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
       isSync: enableSyncFlush.current,
       isForce: params.isForce,
       callback: params.callback,
-      isInitial: this._ownerFiber?.mode === MODE_TYPE.__initial__,
+      isInitial: this._owner?.mode === MODE_TYPE.__initial__,
     };
 
     const renderPlatform = currentRenderPlatform.current;

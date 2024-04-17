@@ -16,7 +16,7 @@ export class MyReactInternalInstance {
     if (enableGetterInstance.current) {
       let _ownerFiber: RenderFiber | null = null;
 
-      Object.defineProperty(this, "_ownerFiber", {
+      Object.defineProperty(this, "_owner", {
         get() {
           return _ownerFiber;
         },
@@ -27,7 +27,7 @@ export class MyReactInternalInstance {
 
       let _contextFiber: RenderFiber | null = null;
 
-      Object.defineProperty(this, "_contextFiber", {
+      Object.defineProperty(this, "_context", {
         get() {
           return _contextFiber;
         },
@@ -42,29 +42,29 @@ export class MyReactInternalInstance {
 
   context: null | unknown = null;
 
-  _contextFiber: RenderFiber | null = null;
+  _context: RenderFiber | null = null;
 
-  _ownerFiber: RenderFiber | null = null;
+  _owner: RenderFiber | null = null;
 
   _setContext(fiber: RenderFiber | null) {
-    this._contextFiber?._removeDependence(this);
+    this._context?._removeDependence(this);
 
-    this._contextFiber = fiber;
+    this._context = fiber;
 
-    this._contextFiber?._addDependence(this);
+    this._context?._addDependence(this);
   }
 
   _setOwner(fiber: RenderFiber) {
-    this._ownerFiber = fiber;
+    this._owner = fiber;
   }
 
   _unmount() {
     this.effect = Effect_TYPE.__unmount__;
 
-    this._contextFiber?._removeDependence(this);
+    this._context?._removeDependence(this);
 
-    this._ownerFiber = null;
+    this._owner = null;
 
-    this._contextFiber = null;
+    this._context = null;
   }
 }

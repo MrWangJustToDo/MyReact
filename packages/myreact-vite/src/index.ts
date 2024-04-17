@@ -54,16 +54,12 @@ type ReactBabelHook = (babelConfig: ReactBabelOptions, context: ReactBabelHookCo
 
 type ReactBabelHookContext = { ssr: boolean; id: string };
 
-declare module "vite" {
-  export interface Plugin {
-    api?: {
-      /**
-       * Manipulate the Babel options of `@vitejs/plugin-react`
-       */
-      reactBabel?: ReactBabelHook;
-    };
-  }
-}
+export type ViteReactPluginApi = {
+  /**
+   * Manipulate the Babel options of `@vitejs/plugin-react`
+   */
+  reactBabel?: ReactBabelHook;
+};
 
 const refreshContentRE = /\$Refresh(?:Reg|Sig)\$\(/;
 const defaultIncludeRE = /\.[tj]sx?$/;
@@ -104,6 +100,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
             jsx: "automatic",
             jsxImportSource: opts.jsxImportSource,
           },
+          optimizeDeps: { esbuildOptions: { jsx: "automatic" } },
         };
       }
     },
@@ -117,7 +114,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
         config.logger.warnOnce("[@vitejs/plugin-react] jsxPure was removed. You can configure esbuild.jsxSideEffects directly.");
       }
 
-      const hooks = config.plugins.map((plugin) => plugin.api?.reactBabel).filter(defined);
+      const hooks: ReactBabelHook[] = config.plugins.map((plugin) => plugin.api?.reactBabel).filter(defined);
 
       if (hooks.length > 0) {
         runPluginOverrides = (babelOptions, context) => {

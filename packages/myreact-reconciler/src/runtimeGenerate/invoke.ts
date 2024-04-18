@@ -5,9 +5,10 @@ import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { currentRenderDispatch, currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
+import { getInstanceContextFiber, initInstance, setContextForInstance, setOwnerForInstance } from "./instance";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext, forwardRef } from "@my-react/react";
+import type { MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext, forwardRef, MyReactFunctionComponent } from "@my-react/react";
 
 const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber } = __my_react_internal__;
 
@@ -98,31 +99,39 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
 
+  const isUpdate = !!fiber.instance;
+
   fiber.instance = fiber.instance || new typedElementType.Internal();
 
-  fiber.instance._setOwner(fiber);
+  !isUpdate && initInstance(fiber.instance);
+
+  setOwnerForInstance(fiber.instance, fiber);
 
   const Context = typedElementType.Context as ReturnType<typeof createContext>;
 
   currentComponentFiber.current = fiber;
 
-  if (!fiber.instance._context || include(fiber.instance._context.state, STATE_TYPE.__unmount__)) {
-    const ProviderFiber = renderDispatch.resolveContextFiber(fiber, Context);
+  const contextFiber = getInstanceContextFiber(fiber.instance);
 
-    const context = renderDispatch.resolveContextValue(ProviderFiber, Context);
+  let finalContext = null;
 
-    fiber.instance.context = context;
+  if (!contextFiber || include(contextFiber.state, STATE_TYPE.__unmount__)) {
+    const providerFiber = renderDispatch.resolveContextFiber(fiber, Context);
 
-    fiber.instance._setContext(ProviderFiber);
+    const context = renderDispatch.resolveContextValue(providerFiber, Context);
+
+    finalContext = context;
+
+    setContextForInstance(fiber.instance, providerFiber);
   } else {
-    const context = renderDispatch.resolveContextValue(fiber.instance._context as MyReactFiberNode, Context);
+    const context = renderDispatch.resolveContextValue(contextFiber, Context);
 
-    fiber.instance.context = context;
+    finalContext = context;
   }
 
-  const typedChildren = fiber.pendingProps.children as (p: any) => MyReactElementNode;
+  const typedChildren = fiber.pendingProps.children as MyReactFunctionComponent;
 
-  const children = typedChildren(fiber.instance.context);
+  const children = typedChildren(finalContext);
 
   currentComponentFiber.current = null;
 

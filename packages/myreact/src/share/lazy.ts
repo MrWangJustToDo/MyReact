@@ -1,4 +1,4 @@
-import { MODE_TYPE, UpdateQueueType } from "@my-react/react-shared";
+import { UpdateQueueType } from "@my-react/react-shared";
 
 import { currentRenderPlatform } from "./env";
 
@@ -13,7 +13,6 @@ export const lazyLoaded = (fiber: RenderFiber, loaded: null | MixinMyReactFuncti
     trigger: fiber,
     isForce: true,
     isSync: true,
-    isInitial: fiber.mode === MODE_TYPE.__initial__,
   };
 
   const renderPlatform = currentRenderPlatform.current;

@@ -215,13 +215,18 @@ export class CustomRenderDispatch implements RenderDispatch {
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     this.beforeCommit?.();
+
     const re = defaultDispatchMount(_fiber, this, _hydrate);
+
     this.afterCommit?.();
+    
     return re;
   }
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
     this.beforeUpdate?.();
+
     defaultDispatchUpdate(_list, this);
+
     this.afterUpdate?.();
   }
   shouldYield(): boolean {

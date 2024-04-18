@@ -2,6 +2,8 @@ import { createElement } from "@my-react/react";
 import { ListTree, STATE_TYPE, include, merge } from "@my-react/react-shared";
 
 import { deleteEffect } from "../dispatchEffect";
+import { classComponentUnmount } from "../runtimeComponent";
+import { hookListUnmount } from "../runtimeHook";
 import { fiberToDispatchMap, setRefreshTypeMap } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
@@ -19,13 +21,9 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
     setRefreshTypeMap(fiber);
 
     if (forceRefresh) {
-      const existingHookList = fiber.hookList;
+      hookListUnmount(fiber);
 
-      const existingInstance = fiber.instance;
-
-      existingHookList?.listToFoot((hook) => hook._unmount());
-
-      existingInstance?._unmount();
+      classComponentUnmount(fiber);
 
       fiber.instance = null;
 

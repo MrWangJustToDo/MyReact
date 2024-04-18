@@ -35,7 +35,7 @@ export interface DefaultRenderFiber {
 
   _prepare(initial?: boolean): void;
 
-  _unmount(): void;
+  _unmount(cb?: () => void): void;
 }
 
 /**

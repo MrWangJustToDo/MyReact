@@ -1,11 +1,12 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
+import { ListTree, MODE_TYPE, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
+import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, syncFlush } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { RenderFiber, UpdateQueue } from "@my-react/react";
+import type { MyReactInternalInstance, RenderFiber, UpdateQueue } from "@my-react/react";
 
 export type UpdateQueueDev = UpdateQueue<{
   _debugType: string;
@@ -38,8 +39,10 @@ export const processState = (_params: UpdateQueue) => {
     typedUpdateQueue._debugType = UpdateQueueType[_params.type];
   }
 
+  const isInitial = getInstanceOwnerFiber(_params.trigger as MyReactInternalInstance)?.mode === MODE_TYPE.__initial__
+
   if (_params.type === UpdateQueueType.component) {
-    const ownerFiber = _params.trigger._owner as MyReactFiberNode;
+    const ownerFiber = getInstanceOwnerFiber(_params.trigger);
 
     if (!ownerFiber || include(ownerFiber.state, STATE_TYPE.__unmount__)) return;
 
@@ -92,9 +95,9 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
+    ownerFiber._prepare(isInitial && renderDispatch?.isAppMounted);
   } else if (_params.type === UpdateQueueType.hook) {
-    const ownerFiber = _params.trigger._owner as MyReactFiberNode;
+    const ownerFiber = getInstanceOwnerFiber(_params.trigger);
 
     if (!ownerFiber || include(ownerFiber?.state, STATE_TYPE.__unmount__)) return;
 
@@ -143,7 +146,7 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
+    ownerFiber._prepare(isInitial && renderDispatch?.isAppMounted);
   } else {
     const ownerFiber = _params.trigger as MyReactFiberNode;
 
@@ -157,6 +160,6 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    ownerFiber._prepare(_params.isInitial && renderDispatch?.isAppMounted);
+    ownerFiber._prepare(isInitial && renderDispatch?.isAppMounted);
   }
 };

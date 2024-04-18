@@ -10,12 +10,18 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 import type { ListTree } from "@my-react/react-shared";
 
 export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: CustomRenderDispatch) => {
-  list.listToFoot((f) => safeCallWithFiber({ fiber: f, action: () => f._unmount() }));
-
   // will happen when app crash
   list.listToFoot((f) => unmount(f, renderDispatch));
 
-  list.listToFoot((f) => safeCallWithFiber({ fiber: f, action: () => unmountFiberNode(f, renderDispatch) }));
+  list.listToFoot((f) =>
+    safeCallWithFiber({
+      fiber: f,
+      action: () => {
+        f._unmount();
+        unmountFiberNode(f, renderDispatch);
+      },
+    })
+  );
 };
 
 // unmount current fiber

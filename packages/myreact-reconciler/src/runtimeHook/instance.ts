@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { MODE_TYPE, UpdateQueueType } from "@my-react/react-shared";
+import { UpdateQueueType } from "@my-react/react-shared";
 
 import type { UpdateQueueDev } from "../processState";
 import type { RenderHook, Action, HookUpdateQueue } from "@my-react/react";
@@ -36,41 +36,20 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
     return true;
   }
 
-  _unmount() {
-    super._unmount();
-    this.hasEffect = false;
-    this.cancel && this.cancel();
+  _update(params: Omit<HookUpdateQueue, "type" | "trigger">) {
+    const updater: HookUpdateQueue = {
+      type: UpdateQueueType.hook,
+      trigger: this,
+      ...params,
+    };
+
+    const renderPlatform = currentRenderPlatform.current;
+
+    renderPlatform?.dispatchState(updater);
   }
 
   _dispatch = (action: Action) => {
-    const updater: HookUpdateQueue = {
-      type: UpdateQueueType.hook,
-      trigger: this,
-      payLoad: action,
-      isForce: false,
-      isSync: enableSyncFlush.current,
-      isInitial: this._owner?.mode === MODE_TYPE.__initial__,
-    };
-
-    const renderPlatform = currentRenderPlatform.current;
-
-    renderPlatform?.dispatchState(updater);
-  };
-
-  _internalDispatch = (params: { isForce?: boolean; callback?: () => void }) => {
-    const updater: HookUpdateQueue = {
-      type: UpdateQueueType.hook,
-      trigger: this,
-      payLoad: a => a,
-      isSync: enableSyncFlush.current,
-      isForce: params.isForce,
-      callback: params.callback,
-      isInitial: this._owner?.mode === MODE_TYPE.__initial__,
-    };
-
-    const renderPlatform = currentRenderPlatform.current;
-
-    renderPlatform?.dispatchState(updater);
+    this._update({ payLoad: action, isForce: false, isSync: enableSyncFlush.current });
   };
 }
 

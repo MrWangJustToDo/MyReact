@@ -1,6 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE, STATE_TYPE, include, isArrayEquals } from "@my-react/react-shared";
 
+import { getInstanceContextFiber, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
 import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
 import type { MyReactHookNode } from "./instance";
@@ -32,7 +33,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     );
   }
 
-  currentHook._setOwner(fiber);
+  setOwnerForInstance(currentHook, fiber);
 
   currentHookTreeNode.current = currentHookTreeNode.current.next;
 
@@ -111,24 +112,22 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (currentHook.type === HOOK_TYPE.useContext) {
-    if (!currentHook._context || include(currentHook._context.state, STATE_TYPE.__unmount__) || !Object.is(currentHook.value, value)) {
+    const contextFiber = getInstanceContextFiber(currentHook);
+
+    if (!contextFiber || include(contextFiber.state, STATE_TYPE.__unmount__) || !Object.is(currentHook.value, value)) {
       currentHook.value = value;
 
-      const ProviderFiber = renderDispatch.resolveContextFiber(currentHook._owner as MyReactFiberNode, currentHook.value);
+      const providerFiber = renderDispatch.resolveContextFiber(fiber, currentHook.value);
 
-      const context = renderDispatch.resolveContextValue(ProviderFiber, currentHook.value);
+      const context = renderDispatch.resolveContextValue(providerFiber, currentHook.value);
 
-      currentHook._setContext(ProviderFiber);
+      setContextForInstance(currentHook, providerFiber);
 
       currentHook.result = context;
-
-      currentHook.context = context;
     } else {
-      const context = renderDispatch.resolveContextValue(currentHook._context as MyReactFiberNode, currentHook.value);
+      const context = renderDispatch.resolveContextValue(contextFiber, currentHook.value);
 
       currentHook.result = context;
-
-      currentHook.context = context;
     }
     return currentHook;
   }
@@ -143,11 +142,15 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
   if (currentHook.type === HOOK_TYPE.useDeferredValue) {
     currentHook.cancel?.();
+
     currentHook.value = value;
+
     if (!Object.is(currentHook.value, currentHook.result)) {
       currentHook.cancel = renderPlatform.yieldTask(() => {
         currentHook.result = currentHook.value;
-        currentHook._internalDispatch({ isForce: true });
+
+        currentHook._update({ isForce: true });
+
         currentHook.cancel = null;
       });
     }
@@ -156,6 +159,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   if (currentHook.type === HOOK_TYPE.useDebugValue) {
     if (!isArrayEquals(currentHook.value, value)) {
       currentHook.value = value;
+
       if (enableDebugLog.current) {
         console.warn(`[debug]`, ...currentHook.value);
       }

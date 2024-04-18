@@ -77,7 +77,9 @@ export const defaultDispatchMount = (_fiber: MyReactFiberNode, _dispatch: Custom
     mountLayoutEffect(_fiber);
     afterSyncUpdate();
 
-    currentRenderPlatform.current.microTask(() => mountEffect(_fiber));
+    const renderPlatform = currentRenderPlatform.current;
+
+    renderPlatform.microTask(() => mountEffect(_fiber));
 
     return re;
   };

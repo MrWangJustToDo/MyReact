@@ -1,6 +1,7 @@
 import { __my_react_internal__, __my_react_shared__, startTransition } from "@my-react/react";
 import { HOOK_TYPE } from "@my-react/react-shared";
 
+import { initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
 import { currentRenderDispatch, safeCallWithFiber } from "../share";
 
 import { checkHookValid } from "./check";
@@ -32,7 +33,9 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
   const hookNode = new MyReactHookNode(type, value, reducer || defaultReducer, deps);
 
-  hookNode._setOwner(fiber);
+  initInstance(hookNode);
+
+  setOwnerForInstance(hookNode, fiber);
 
   fiber.hookList.push(hookNode);
 
@@ -67,15 +70,13 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (hookNode.type === HOOK_TYPE.useContext) {
-    const ProviderFiber = renderDispatch.resolveContextFiber(hookNode._owner as MyReactFiberNode, hookNode.value);
+    const providerFiber = renderDispatch.resolveContextFiber(fiber, hookNode.value);
 
-    const context = renderDispatch.resolveContextValue(ProviderFiber, hookNode.value);
+    const context = renderDispatch.resolveContextValue(providerFiber, hookNode.value);
 
-    hookNode._setContext(ProviderFiber);
+    setContextForInstance(hookNode, providerFiber);
 
     hookNode.result = context;
-
-    hookNode.context = context;
   }
 
   if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
@@ -105,14 +106,14 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
         const loadingCallback = (cb: () => void) => {
           startTransition(() => {
             hookNode.result[0] = true;
-            hookNode._internalDispatch({ isForce: true, callback: cb });
+            hookNode._update({ isForce: true, callback: cb });
           });
         };
 
         const loadedCallback = () => {
           startTransition(() => {
             hookNode.result[0] = false;
-            hookNode._internalDispatch({ isForce: true });
+            hookNode._update({ isForce: true });
           });
         };
 

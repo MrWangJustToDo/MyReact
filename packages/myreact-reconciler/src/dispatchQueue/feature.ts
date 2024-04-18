@@ -2,6 +2,7 @@ import { __my_react_internal__, __my_react_shared__, type MyReactComponent } fro
 import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
 import { syncComponentStateToFiber } from "../runtimeComponent";
+import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { currentRenderDispatch, NODE_TYPE, safeCallWithFiber } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
@@ -97,6 +98,7 @@ export const processClassComponentUpdateQueue = (
       isForce,
       callback: callbacks.length ? () => callbacks.forEach((cb) => cb?.()) : void 0,
     };
+
   } else {
     while (node) {
       const updater = node.value;
@@ -181,7 +183,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
       const nextNode = node.next;
 
       if (updater.type === UpdateQueueType.hook && updater.isSync) {
-        if (__DEV__ && updater.trigger._owner !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+        if (__DEV__ && getInstanceOwnerFiber(updater.trigger) !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
         allQueue.delete(node);
 
@@ -235,6 +237,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
       isForce,
       callback: callbacks.length ? () => callbacks.forEach((cb) => cb?.()) : void 0,
     };
+
   } else {
     while (node) {
       const updater = node.value;
@@ -242,7 +245,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
       const nextNode = node.next;
 
       if (updater.type === UpdateQueueType.hook) {
-        if (__DEV__ && updater.trigger._owner !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+        if (__DEV__ && getInstanceOwnerFiber(updater.trigger) !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
         allQueue.delete(node);
 

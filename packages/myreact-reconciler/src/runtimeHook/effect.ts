@@ -1,5 +1,6 @@
 import { Effect_TYPE, HOOK_TYPE, STATE_TYPE, exclude } from "@my-react/react-shared";
 
+import { getInstanceEffectState, getInstanceOwnerFiber, setEffectForInstance } from "../runtimeGenerate";
 import { currentRenderDispatch } from "../share";
 
 import type { MyReactHookNode } from "./instance";
@@ -8,18 +9,22 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNode) => {
   const renderDispatch = currentRenderDispatch.current;
 
-  if (hookNode.hasEffect && (hookNode.effect as Effect_TYPE) === Effect_TYPE.__initial__) {
-    hookNode.effect = Effect_TYPE.__effect__;
+  const effect = getInstanceEffectState(hookNode);
+
+  if (hookNode.hasEffect && effect === Effect_TYPE.__initial__) {
+    setEffectForInstance(hookNode, Effect_TYPE.__effect__);
 
     if (hookNode.type === HOOK_TYPE.useEffect) {
       renderDispatch.pendingEffect(fiber, () => {
         hookNode.cancel && hookNode.cancel();
 
-        if (hookNode._owner && exclude(hookNode._owner.state, STATE_TYPE.__unmount__)) hookNode.cancel = hookNode.value();
+        const ownerFiber = getInstanceOwnerFiber(hookNode);
+
+        if (ownerFiber&& exclude(ownerFiber.state, STATE_TYPE.__unmount__)) hookNode.cancel = hookNode.value();
 
         hookNode.hasEffect = false;
 
-        hookNode.effect = Effect_TYPE.__initial__;
+        setEffectForInstance(hookNode, Effect_TYPE.__initial__);
       });
     }
 
@@ -31,7 +36,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
 
         hookNode.hasEffect = false;
 
-        hookNode.effect = Effect_TYPE.__initial__;
+        setEffectForInstance(hookNode, Effect_TYPE.__initial__);
       });
     }
 
@@ -43,7 +48,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
 
         hookNode.hasEffect = false;
 
-        hookNode.effect = Effect_TYPE.__initial__;
+        setEffectForInstance(hookNode, Effect_TYPE.__initial__);
       });
     }
 
@@ -55,8 +60,8 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
         if (hookNode.value && typeof hookNode.value === "function") hookNode.value(hookNode.reducer.call(null));
 
         hookNode.hasEffect = false;
-
-        hookNode.effect = Effect_TYPE.__initial__;
+        
+        setEffectForInstance(hookNode, Effect_TYPE.__initial__);
       });
     }
 
@@ -66,11 +71,11 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
 
         const storeApi = hookNode.value;
 
-        hookNode.cancel = storeApi.subscribe(() => hookNode._internalDispatch({ isForce: true }));
+        hookNode.cancel = storeApi.subscribe(() => hookNode._update({ isForce: true }));
 
         hookNode.hasEffect = false;
 
-        hookNode.effect = Effect_TYPE.__initial__;
+        setEffectForInstance(hookNode, Effect_TYPE.__initial__);
       });
     }
   }

@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, include } from "@my-react/react-shared";
 
-import { fiberToDispatchMap } from "../share";
+import { fiberToDispatchMap, safeCallWithFiber } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
@@ -12,11 +12,11 @@ const { enableDebugFiled } = __my_react_shared__;
 export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
-  renderDispatch.commitUnsetRef(fiber);
+  safeCallWithFiber({ fiber, action: () => renderDispatch.commitUnsetRef(fiber) });
 
-  renderDispatch.commitClearNode(fiber);
+  safeCallWithFiber({ fiber, action: () => renderDispatch.commitClearNode(fiber) });
 
-  renderDispatch.patchToFiberUnmount?.(fiber);
+  safeCallWithFiber({ fiber, action: () => renderDispatch.patchToFiberUnmount?.(fiber) });
 
   __DEV__ ? "" : fiberToDispatchMap.delete(fiber);
 

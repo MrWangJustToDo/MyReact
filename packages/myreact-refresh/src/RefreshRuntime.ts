@@ -8,8 +8,6 @@ const HMR_FIELD = "__@my-react/hmr__";
 
 const DISPATCH_FIELD = "__@my-react/dispatch__";
 
-// const RUNTIME_FIELD = "__@my-react/react-refresh__";
-
 const DEV_TOOL_FIELD = "__@my-react/react-refresh-dev__";
 
 type Family = {
@@ -29,16 +27,6 @@ type MyReactComponentType = ReturnType<typeof forwardRef> | ReturnType<typeof me
 type HMRGlobal = {
   [HMR_FIELD]: HMR;
   [DISPATCH_FIELD]: CustomRenderDispatch[];
-  // [RUNTIME_FIELD]: {
-  //   register: typeof register;
-  //   setSignature: typeof setSignature;
-  //   getFamilyByID: typeof getFamilyByID;
-  //   getFamilyByType: typeof getFamilyByType;
-  //   performReactRefresh: typeof performReactRefresh;
-  //   isLikelyComponentType: typeof isLikelyComponentType;
-  //   collectCustomHooksForSignature: typeof collectCustomHooksForSignature;
-  //   createSignatureFunctionForTransform: typeof createSignatureFunctionForTransform;
-  // };
   [DEV_TOOL_FIELD]: {
     allFamiliesByID: typeof allFamiliesByID;
     allSignaturesByType: typeof allSignaturesByType;

@@ -1,4 +1,4 @@
-import { MODE_TYPE, UpdateQueueType, isNormalEquals } from "@my-react/react-shared";
+import { UpdateQueueType, isNormalEquals } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
 import { currentRenderPlatform, enableSyncFlush } from "../share";
@@ -92,7 +92,6 @@ export class MyReactComponent<
       trigger: this,
       isForce: false,
       isSync: enableSyncFlush.current,
-      isInitial: this._owner?.mode === MODE_TYPE.__initial__,
     };
 
     const renderPlatform = currentRenderPlatform.current;
@@ -106,7 +105,6 @@ export class MyReactComponent<
       trigger: this,
       isForce: true,
       isSync: enableSyncFlush.current,
-      isInitial: this._owner?.mode === MODE_TYPE.__initial__,
     };
 
     const renderPlatform = currentRenderPlatform.current;
@@ -116,11 +114,6 @@ export class MyReactComponent<
 
   render(): MyReactElementNode {
     return null;
-  }
-
-  _unmount() {
-    super._unmount();
-    this.componentWillUnmount?.();
   }
 }
 

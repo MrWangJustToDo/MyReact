@@ -1,8 +1,8 @@
 import { Component } from "@my-react/react";
+import { getInstanceOwnerFiber, type MyReactFiberContainer, type MyReactFiberNode } from "@my-react/react-reconciler";
 import { STATE_TYPE, include } from "@my-react/react-shared";
 
 import type { MyReactInternalInstance } from "@my-react/react";
-import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 import type { DomElement } from "@my-react-dom-shared";
 
 /**
@@ -33,8 +33,9 @@ export const findDOMFromFiber = (fiber: MyReactFiberNode | null): DomElement | u
 };
 
 export const findDOMNode = (instance: MyReactInternalInstance | Element): DomElement | null => {
-  if (instance instanceof Component && instance._owner) {
-    return findDOMFromFiber(instance._owner as MyReactFiberNode) || null;
+  if (instance instanceof Component) {
+    const ownerFiber = getInstanceOwnerFiber(instance);
+    return findDOMFromFiber(ownerFiber) || null;
   } else if ((instance as Element).nodeType === Node.ELEMENT_NODE) {
     return instance as DomElement;
   } else {

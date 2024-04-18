@@ -3,6 +3,8 @@ import { PATCH_TYPE, STATE_TYPE, include, MODE_TYPE } from "@my-react/react-shar
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate } from "../dispatchQueue";
 import { triggerRevert, triggerUpdate } from "../renderUpdate";
+import { classComponentUnmount } from "../runtimeComponent";
+import { hookListUnmount } from "../runtimeHook";
 import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
@@ -89,16 +91,18 @@ export class MyReactFiberNode implements RenderFiber {
   _removeDependence(instance: MyReactInternalInstance): void {
     this.dependence.delete(instance);
   }
-  _unmount(): void {
+  _unmount(cb?: () => void): void {
     if (include(this.state, STATE_TYPE.__unmount__)) return;
 
-    this.hookList?.listToFoot((h) => h._unmount());
+    hookListUnmount(this);
 
-    this.instance && this.instance._unmount();
+    classComponentUnmount(this);
 
     this.patch = PATCH_TYPE.__initial__;
 
     this.state = STATE_TYPE.__initial__;
+
+    cb?.();
   }
   _prepare(initial?: boolean): void {
     const renderPlatform = currentRenderPlatform.current;

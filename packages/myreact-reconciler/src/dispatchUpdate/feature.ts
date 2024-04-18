@@ -65,7 +65,10 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   afterSyncUpdate();
 
-  currentRenderPlatform.current.microTask(() =>
+  const renderPlatform = currentRenderPlatform.current;
+
+  // TODO before next update flow, make sure all the effect is done
+  renderPlatform.microTask(() =>
     _list.listToFoot((_fiber) => {
       if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
         effect(_fiber, _dispatch);

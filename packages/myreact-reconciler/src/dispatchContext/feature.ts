@@ -1,6 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
+import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { NODE_TYPE } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
@@ -89,8 +90,9 @@ export const defaultGetContextFiber_New = (
 export const prepareUpdateAllDependence = (fiber: MyReactFiberNode, beforeValue: Record<string, unknown>, afterValue: Record<string, unknown>) => {
   const consumerList = new Set(fiber?.dependence || []);
   consumerList.forEach((i) => {
-    if (i._owner && exclude(i._owner.state, STATE_TYPE.__unmount__)) {
-      const typedFiber = i._owner as MyReactFiberNodeDev;
+    const owner = getInstanceOwnerFiber(i);
+    if (owner && exclude(owner.state, STATE_TYPE.__unmount__)) {
+      const typedFiber = owner as MyReactFiberNodeDev;
       if (__DEV__ && enableDebugFiled.current) {
         typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
         const now = Date.now();
@@ -148,8 +150,9 @@ export const prepareUpdateAllDependenceFromRoot = (
     },
   };
   consumerList.forEach((i) => {
-    if (i._owner && exclude(i._owner.state, STATE_TYPE.__unmount__)) {
-      const typedFiber = i._owner as MyReactFiberNodeDev;
+    const owner = getInstanceOwnerFiber(i);
+    if (owner && exclude(owner.state, STATE_TYPE.__unmount__)) {
+      const typedFiber = owner as MyReactFiberNodeDev;
       typedFiber.state = STATE_TYPE.__triggerSyncForce__;
     }
   });
@@ -185,8 +188,9 @@ export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, 
     },
   };
   consumerList.forEach((i) => {
-    if (i._owner && exclude(i._owner.state, STATE_TYPE.__unmount__)) {
-      const typedFiber = i._owner as MyReactFiberNodeDev;
+    const owner = getInstanceOwnerFiber(i);
+    if (owner && exclude(owner.state, STATE_TYPE.__unmount__)) {
+      const typedFiber = owner as MyReactFiberNodeDev;
       typedFiber.state = STATE_TYPE.__triggerSyncForce__;
     }
   });

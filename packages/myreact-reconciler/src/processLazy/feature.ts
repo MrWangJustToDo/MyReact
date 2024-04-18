@@ -30,7 +30,9 @@ export const processLazy = async (_fiber: MyReactFiberNode) => {
 
       typedElementType._loaded = true;
     } catch (e) {
-      currentRenderPlatform.current.dispatchError?.({ fiber: _fiber, error: e });
+      const renderPlatform = currentRenderPlatform.current;
+
+      renderPlatform.dispatchError?.({ fiber: _fiber, error: e });
     } finally {
       typedElementType._loading = false;
     }

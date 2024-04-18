@@ -3,6 +3,15 @@ import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { syncFlushComponentQueue } from "../dispatchQueue";
+import {
+  getInstanceContextFiber,
+  getInstanceEffectState,
+  initInstance,
+  setContextForInstance,
+  setEffectForInstance,
+  setOwnerForInstance,
+  unmountInstance,
+} from "../runtimeGenerate";
 import { afterSyncFlush, beforeSyncFlush, currentRenderDispatch, onceWarnWithKeyAndFiber, safeCallWithFiber } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -41,9 +50,9 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   const typedComponent = Component as MixinMyReactClassComponent;
 
-  const ProviderFiber = renderDispatch.resolveContextFiber(fiber, typedComponent.contextType);
+  const providerFiber = renderDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
-  const context = renderDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
+  const context = renderDispatch.resolveContextValue(providerFiber, typedComponent.contextType);
 
   const props = Object.assign({}, fiber.pendingProps);
 
@@ -59,16 +68,19 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   fiber.instance = instance;
 
-  instance._setOwner(fiber);
+  initInstance(instance);
 
-  instance._setContext(ProviderFiber);
+  setOwnerForInstance(instance, fiber);
+
+  setContextForInstance(instance, providerFiber);
 
   fiber.pendingState = instance.state;
 };
 
 const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
-  typedInstance._setOwner(fiber);
+
+  setOwnerForInstance(typedInstance, fiber);
 };
 
 const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
@@ -84,11 +96,13 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
 
   const renderDispatch = currentRenderDispatch.current;
 
-  if (typedInstance.componentDidMount && exclude(typedInstance.effect, Effect_TYPE.__effect__)) {
-    typedInstance.effect = Effect_TYPE.__effect__;
+  const effect = getInstanceEffectState(typedInstance);
+
+  if (typedInstance.componentDidMount && exclude(effect, Effect_TYPE.__effect__)) {
+    setEffectForInstance(typedInstance, Effect_TYPE.__effect__);
 
     renderDispatch.pendingLayoutEffect(fiber, () => {
-      typedInstance.effect = Effect_TYPE.__initial__;
+      setEffectForInstance(typedInstance, Effect_TYPE.__initial__);
 
       typedInstance.componentDidMount?.();
     });
@@ -105,18 +119,19 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedComponent.contextType) {
-    if (!typedInstance._context || include(typedInstance._context.state, STATE_TYPE.__unmount__)) {
-      const ProviderFiber = renderDispatch.resolveContextFiber(fiber, typedComponent.contextType);
+    const contextFiber = getInstanceContextFiber(typedInstance);
+    if (!contextFiber || include(contextFiber.state, STATE_TYPE.__unmount__)) {
+      const providerFiber = renderDispatch.resolveContextFiber(fiber, typedComponent.contextType);
 
-      const context = renderDispatch.resolveContextValue(ProviderFiber, typedComponent.contextType);
+      const context = renderDispatch.resolveContextValue(providerFiber, typedComponent.contextType);
 
-      typedInstance?._setContext(ProviderFiber);
+      setContextForInstance(typedInstance, providerFiber);
 
       return context;
     } else {
-      const context = renderDispatch.resolveContextValue(typedInstance._context as MyReactFiberNode, typedComponent.contextType);
+      const context = renderDispatch.resolveContextValue(contextFiber, typedComponent.contextType);
 
-      typedInstance?._setContext(typedInstance._context);
+      setContextForInstance(typedInstance, contextFiber);
 
       return context;
     }
@@ -176,11 +191,13 @@ const processComponentDidUpdateOnUpdate = (
 
   const renderDispatch = currentRenderDispatch.current;
 
-  if (typedInstance.componentDidUpdate && exclude(typedInstance.effect, Effect_TYPE.__effect__)) {
-    typedInstance.effect = Effect_TYPE.__effect__;
+  const effect = getInstanceEffectState(typedInstance);
+
+  if (typedInstance.componentDidUpdate && exclude(effect, Effect_TYPE.__effect__)) {
+    setEffectForInstance(typedInstance, Effect_TYPE.__effect__);
 
     renderDispatch.pendingLayoutEffect(fiber, () => {
-      typedInstance.effect = Effect_TYPE.__initial__;
+      setEffectForInstance(typedInstance, Effect_TYPE.__initial__);
 
       typedInstance.componentDidUpdate?.(baseProps, baseState, snapshot);
     });
@@ -397,4 +414,12 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   syncComponentStateToFiber(fiber);
 
   return res;
+};
+
+export const classComponentUnmount = (fiber: MyReactFiberNode) => {
+  const typedInstance = fiber.instance as MyReactComponent;
+
+  safeCallWithFiber({ fiber, action: () => typedInstance?.componentWillUnmount?.() });
+
+  unmountInstance(typedInstance);
 };

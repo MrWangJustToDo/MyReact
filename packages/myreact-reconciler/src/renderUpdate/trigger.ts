@@ -259,6 +259,8 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
       throw error;
     } else {
+      console.error(`[@my-react/react] a uncaught exception have been throw`, error);
+      
       throw error;
     }
   }

@@ -89,7 +89,7 @@ export class MyReactFiberNode implements RenderFiber {
     this.dependence.add(instance);
   }
   _removeDependence(instance: MyReactInternalInstance): void {
-    this.dependence.delete(instance);
+    this.dependence?.delete(instance);
   }
   _unmount(cb?: () => void): void {
     if (include(this.state, STATE_TYPE.__unmount__)) return;

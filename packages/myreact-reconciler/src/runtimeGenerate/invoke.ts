@@ -126,6 +126,8 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
   } else {
     const context = renderDispatch.resolveContextValue(contextFiber, Context);
 
+    setContextForInstance(fiber.instance, contextFiber);
+
     finalContext = context;
   }
 

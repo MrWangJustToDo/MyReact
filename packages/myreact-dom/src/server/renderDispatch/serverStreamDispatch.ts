@@ -106,9 +106,12 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
       if (_fiber.sibling) mountLoop(_fiber.sibling);
     };
 
+    this.beforeCommit?.();
+
     Promise.resolve()
       .then(() => mountLoop(_fiber))
-      .then(() => this.stream.push(null));
+      .then(() => this.stream.push(null))
+      .then(() => this.afterCommit?.());
 
     return true;
   }
@@ -204,6 +207,8 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
       if (_fiber.sibling) mountLoop(_fiber.sibling);
     };
 
+    this.beforeCommit?.();
+
     let generatedScript = (this.bootstrapModules || []).map(generateModuleBootstrap).join("");
 
     generatedScript += (this.bootstrapScripts || []).map(generateBootstrap).join("");
@@ -215,7 +220,8 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
       .then(() => mountLoop(_fiber))
       .then(() => this.stream.push(generatedScript))
       .then(() => this.stream.push(null))
-      .then(() => this.onAllReady?.());
+      .then(() => this.onAllReady?.())
+      .then(() => this.afterCommit?.());
 
     return true;
   }

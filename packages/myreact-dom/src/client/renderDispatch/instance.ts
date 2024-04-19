@@ -97,8 +97,11 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
   reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
     this.beforeCommit?.();
+
     const res = clientDispatchMount(_fiber, this, _hydrate);
+
     this.afterCommit?.();
+
     return res;
   }
   shouldYield(): boolean {
@@ -106,6 +109,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     initialElementMap(_fiber, this);
+
     patchDOMField(_fiber, this);
   }
   patchToFiberUpdate(_fiber: MyReactFiberNode) {
@@ -121,7 +125,7 @@ export interface ClientDomDispatchDev extends ClientDomDispatch {
   __hmr_remount__: (cb?: () => void) => void;
 }
 
-function hmrRemount (this: ClientDomDispatch, cb?: () => void) {
+function hmrRemount(this: ClientDomDispatch, cb?: () => void) {
   const rootNode = this.rootNode;
 
   const rootElementType = this.rootFiber.elementType;
@@ -203,9 +207,9 @@ if (__DEV__) {
   });
 
   // TODO remove
-  Object.defineProperty(ClientDomDispatch.prototype, '_remountOnDev', {
+  Object.defineProperty(ClientDomDispatch.prototype, "_remountOnDev", {
     value: hmrRemount,
-  })
+  });
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore

@@ -18,11 +18,15 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
 
   mountLoop(fiber, renderDispatch);
 
+  const commitList = renderDispatch.pendingCommitFiberList;
+
   renderDispatch.pendingCommitFiberList = null;
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   renderDispatch.reconcileCommit(fiber, hydrate);
+
+  commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
   renderDispatch.isAppMounted = true;
 
@@ -57,11 +61,15 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
     }
   }
 
+  const commitList = renderDispatch.pendingCommitFiberList;
+
   renderDispatch.pendingCommitFiberList = null;
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   renderDispatch.reconcileCommit(fiber, hydrate);
+
+  commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
   renderDispatch.isAppMounted = true;
 

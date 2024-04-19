@@ -26,7 +26,7 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch, cb?: ()
 
   renderDispatch.pendingCommitFiberList = null;
 
-  commitList && renderDispatch.reconcileUpdate(commitList);
+  commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
   renderPlatform.microTask(() => {
     globalLoop.current = false;
@@ -52,7 +52,7 @@ export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch, cb?:
 
   renderDispatch.pendingCommitFiberList = null;
 
-  commitList && renderDispatch.reconcileUpdate(commitList);
+  commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
   renderPlatform.microTask(() => {
     globalLoop.current = false;
@@ -81,7 +81,7 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch, c
 
     renderDispatch.pendingCommitFiberList = null;
 
-    commitList && renderDispatch.reconcileUpdate(commitList);
+    commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
     renderPlatform.microTask(() => {
       globalLoop.current = false;
@@ -111,7 +111,7 @@ export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch
 
     renderDispatch.pendingCommitFiberList = null;
 
-    commitList && renderDispatch.reconcileUpdate(commitList);
+    commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
     renderPlatform.microTask(() => {
       globalLoop.current = false;

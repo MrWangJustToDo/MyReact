@@ -9,6 +9,8 @@ const { MyReactInternalInstance, currentRenderPlatform } = __my_react_internal__
 
 const { enableSyncFlush } = __my_react_shared__;
 
+const defaultPayLoad = (a: any) => a;
+
 export class MyReactHookNode extends MyReactInternalInstance implements RenderHook {
   type: HOOK_TYPE;
 
@@ -36,10 +38,11 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
     return true;
   }
 
-  _update(params: Omit<HookUpdateQueue, "type" | "trigger">) {
+  _update(params: Omit<HookUpdateQueue, "type" | "trigger"> = {}) {
     const updater: HookUpdateQueue = {
       type: UpdateQueueType.hook,
       trigger: this,
+      payLoad: defaultPayLoad,
       ...params,
     };
 

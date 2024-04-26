@@ -20,7 +20,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
 
         const ownerFiber = getInstanceOwnerFiber(hookNode);
 
-        if (ownerFiber&& exclude(ownerFiber.state, STATE_TYPE.__unmount__)) hookNode.cancel = hookNode.value();
+        if (ownerFiber && exclude(ownerFiber.state, STATE_TYPE.__unmount__)) hookNode.cancel = hookNode.value();
 
         hookNode.hasEffect = false;
 
@@ -60,7 +60,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
         if (hookNode.value && typeof hookNode.value === "function") hookNode.value(hookNode.reducer.call(null));
 
         hookNode.hasEffect = false;
-        
+
         setEffectForInstance(hookNode, Effect_TYPE.__initial__);
       });
     }

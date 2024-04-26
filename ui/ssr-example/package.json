@@ -14,7 +14,7 @@
     "@apollo/client": "^3.9.5",
     "@chakra-ui/react": "^2.8.2",
     "@chakra-ui/styled-system": "^2.9.2",
-    "@codesandbox/sandpack-react": "^2.13.7",
+    "@codesandbox/sandpack-react": "^2.13.8",
     "@emotion/cache": "11.11.0",
     "@emotion/react": "11.11.0",
     "@emotion/server": "11.11.0",

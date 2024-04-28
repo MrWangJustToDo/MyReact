@@ -17,7 +17,7 @@ const { currentRenderPlatform, currentComponentFiber } = __my_react_internal__;
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
 export function isValidElement(element?: MyReactElementNode | any): element is MyReactElement {
-  return typeof element === "object" && !Array.isArray(element) && element?.[TYPEKEY] === Element;
+  return typeof element === "object" && !Array.isArray(element) && element !== null &&  element?.[TYPEKEY] === Element;
 }
 
 const keysMap = {};
@@ -94,7 +94,7 @@ export const checkValidElement = (element: MyReactElementNode) => {
         console.error(`[@my-react/react] invalid key type, key should be a string, but got a ${element.key}`);
       }
 
-      if (typeof rawType === "object") {
+      if (typeof rawType === "object" && rawType !== null) {
         const typedRawType = rawType as MyReactObjectComponent;
         // check <Context.Consumer />
         if (typedRawType[TYPEKEY] === Consumer) {

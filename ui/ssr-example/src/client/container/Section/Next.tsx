@@ -124,7 +124,7 @@ export const NextSection = () => {
             boxShadow="lg"
             sx={{
               ["pre"]: {
-                margin: "0",
+                margin: "0 !important",
               },
             }}
             dangerouslySetInnerHTML={{ __html: renderBody }}

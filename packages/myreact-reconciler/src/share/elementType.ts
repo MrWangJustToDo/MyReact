@@ -70,7 +70,7 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
 
   const key: MyReactElement["key"] | null = element.key;
 
-  if (typeof elementType === "object") {
+  if (typeof elementType === "object" && elementType !== null) {
     const typedElementType = elementType as MyReactObjectComponent;
     switch (typedElementType[TYPEKEY]) {
       case Provider:

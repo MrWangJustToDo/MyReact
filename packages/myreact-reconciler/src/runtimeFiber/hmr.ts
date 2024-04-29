@@ -1,5 +1,5 @@
 import { createElement } from "@my-react/react";
-import { ListTree, STATE_TYPE, include, merge } from "@my-react/react-shared";
+import { STATE_TYPE, include, merge } from "@my-react/react-shared";
 
 import { deleteEffect } from "../dispatchEffect";
 import { classComponentUnmount } from "../runtimeComponent";
@@ -27,9 +27,9 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
 
       fiber.instance = null;
 
-      fiber.hookList = new ListTree();
+      fiber.hookList = null;
 
-      fiber.updateQueue = new ListTree();
+      fiber.updateQueue = null;
 
       const renderDispatch = fiberToDispatchMap.get(fiber);
 

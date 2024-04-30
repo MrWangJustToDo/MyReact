@@ -19,8 +19,8 @@ export const isNormalEquals = (
     let res = true;
 
     if (hasSkipKeyFunction) {
-      for (const key in src) {
-        if (isSkipKey(key)) {
+      for (const key of srcKeys) {
+        if (isSkipKey(key) && key in target) {
           continue;
         } else {
           res = res && Object.is(src[key], target[key]);
@@ -29,7 +29,7 @@ export const isNormalEquals = (
         if (!res) return res;
       }
     } else {
-      for (const key in src) {
+      for (const key of srcKeys) {
         res = res && Object.is(src[key], target[key]);
 
         if (!res) return res;

@@ -74,7 +74,9 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
       }
     }
 
-    if (
+    if (oldProps["dangerouslySetInnerHTML"] && !newProps["dangerouslySetInnerHTML"]) {
+      dom.innerHTML = "";
+    } else if (
       newProps["dangerouslySetInnerHTML"] &&
       newProps["dangerouslySetInnerHTML"] !== oldProps["dangerouslySetInnerHTML"] &&
       newProps["dangerouslySetInnerHTML"].__html !== oldProps["dangerouslySetInnerHTML"]?.__html

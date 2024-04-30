@@ -8,7 +8,14 @@ import { transformChildrenFiber } from "./generate";
 import { getInstanceContextFiber, initInstance, setContextForInstance, setOwnerForInstance } from "./instance";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MyReactElementNode, MixinMyReactFunctionComponent, MaybeArrayMyReactElementNode, createContext, forwardRef, MyReactFunctionComponent } from "@my-react/react";
+import type {
+  MyReactElementNode,
+  MixinMyReactFunctionComponent,
+  MaybeArrayMyReactElementNode,
+  createContext,
+  forwardRef,
+  MyReactFunctionComponent,
+} from "@my-react/react";
 
 const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber } = __my_react_internal__;
 
@@ -23,7 +30,12 @@ export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyRe
 };
 
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
-  if ("children" in fiber.pendingProps || "children" in fiber.memoizedProps) {
+  if (
+    "children" in fiber.pendingProps ||
+    "children" in fiber.memoizedProps ||
+    "dangerouslySetInnerHTML" in fiber.pendingProps ||
+    "dangerouslySetInnerHTML" in fiber.memoizedProps
+  ) {
     const { children } = fiber.pendingProps;
 
     transformChildrenFiber(fiber, children);

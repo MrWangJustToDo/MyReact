@@ -28,7 +28,10 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithFiber({
         fiber: _fiber,
-        action: () => _dispatch.commitCreate(_fiber),
+        action: () => {
+          _dispatch.commitCreate(_fiber);
+          _dispatch.commitUpdate(_fiber);
+        },
       });
     }
   });
@@ -48,7 +51,6 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
         fiber: _fiber,
         action: () => {
           _dispatch.commitAppend(_fiber);
-          _dispatch.commitUpdate(_fiber);
           _dispatch.commitSetRef(_fiber);
         },
       });

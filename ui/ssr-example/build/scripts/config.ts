@@ -2,8 +2,13 @@ import LoadablePlugin from "@loadable/webpack-plugin";
 import RefreshWebpackPlugin from "@my-react/react-refresh-tools/RefreshWebpackPlugin";
 import ReactRefreshPlugin from "@pmmmwh/react-refresh-webpack-plugin";
 import { MANIFEST, definedWebpackConfig, WebpackNodeExternals } from "@site/webpack";
+import dayjs from "dayjs";
 import { resolve } from "path";
 import { DefinePlugin, HotModuleReplacementPlugin } from "webpack";
+
+require("dayjs/locale/zh-cn");
+
+dayjs.locale("zh-cn");
 
 export const getConfig = () => {
   const multiConfig = definedWebpackConfig({
@@ -26,7 +31,7 @@ export const getConfig = () => {
           __BASENAME__: JSON.stringify(process.env.BASENAME || ""),
           __BUNDLE_SCOPE__: JSON.stringify(BUNDLE_SCOPE),
           __OUTPUT_SCOPE__: JSON.stringify(OUTPUT_SCOPE),
-          __BUILD_TIME__: JSON.stringify(new Date().toLocaleString()),
+          __BUILD_TIME__: JSON.stringify(dayjs().toString()),
         }),
         isDEV && (isReact ? new ReactRefreshPlugin() : new RefreshWebpackPlugin()),
         isDEV && isMIDDLEWARE && new HotModuleReplacementPlugin(),
@@ -71,7 +76,7 @@ export const getConfig = () => {
           __BASENAME__: JSON.stringify(process.env.BASENAME || ""),
           __BUNDLE_SCOPE__: JSON.stringify(BUNDLE_SCOPE),
           __OUTPUT_SCOPE__: JSON.stringify(OUTPUT_SCOPE),
-          __BUILD_TIME__: JSON.stringify(new Date().toLocaleString()),
+          __BUILD_TIME__: JSON.stringify(dayjs().toString()),
         }),
         isDEV && !isMIDDLEWARE && new HotModuleReplacementPlugin(),
       ].filter(Boolean);

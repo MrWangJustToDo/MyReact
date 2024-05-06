@@ -212,6 +212,24 @@ export default function (babel, opts: Record<string, any> = {}) {
       case "React.useImperativeHandle":
       case "useDebugValue":
       case "React.useDebugValue":
+      case "useId":
+      case "React.useId":
+      case "useDeferredValue":
+      case "React.useDeferredValue":
+      case "useTransition":
+      case "React.useTransition":
+      case "useInsertionEffect":
+      case "React.useInsertionEffect":
+      case "useSyncExternalStore":
+      case "React.useSyncExternalStore":
+      case "useFormStatus":
+      case "React.useFormStatus":
+      case "useFormState":
+      case "React.useFormState":
+      case "useActionState":
+      case "React.useActionState":
+      case "useOptimistic":
+      case "React.useOptimistic":
         return true;
       default:
         return false;

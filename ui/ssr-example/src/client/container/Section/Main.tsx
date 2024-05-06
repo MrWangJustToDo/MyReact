@@ -14,7 +14,7 @@ const { enableMockReact } = __my_react_shared__;
 const tsxMd = `
 \`\`\`tsx
 import { useState, useCallback } from '@my-react/react';
-import { render } from '@my-react/react-dom';
+import { createRoot } from '@my-react/react-dom';
 
 /**
  * hello world
@@ -38,7 +38,7 @@ const App = () => {
   </div>
 }
 
-render(<App />, document.querySelector('#root'));
+createRoot(document.querySelector('#root')).render(<App />);
 \`\`\`
 `;
 

@@ -13,9 +13,9 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     <meta name="author" content="MrWangJustToDo" />
     <meta
       name="description"
-      content="@my-react is a React like package, it can be used to build a modern website just like this, feel free to use and fire a issue if you have! link: https://github.com/MrWangJustToDo/MyReact"
+      content="@my-react is a React like framework, it can be used to build a modern website just like this, feel free to use and fire a issue if you have! link: https://github.com/MrWangJustToDo/MyReact"
     />
-    <meta name="keywords" content="react, react-dom, ssr, csr, ssg" />
+    <meta name="keywords" content="react, react-dom, ssr, csr, ssg, @my-react, react like, react framework" />
     <base href={noBase ? "/" : `/${__BASENAME__}/`} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />

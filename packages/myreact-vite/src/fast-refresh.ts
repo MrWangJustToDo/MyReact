@@ -1,6 +1,14 @@
+import RefreshRuntime from '@my-react/react-refresh';
+import { compareVersion } from "@my-react/react-shared";
 import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
+
+if (!RefreshRuntime.version || !compareVersion(RefreshRuntime.version, "0.3.1")) {
+  console.error(
+    `[@my-react/react-refresh-tools] current RefreshRuntime version not match for the package required, please reinstall "@my-react/react-refresh" to fix this issue`
+  );
+}
 
 export const runtimePublicPath = "/@react-refresh";
 

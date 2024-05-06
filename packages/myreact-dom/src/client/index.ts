@@ -15,7 +15,7 @@ import {
 
 import { render, hydrate, hydrateRoot, createRoot } from "./mount";
 import { initGlobalRenderPlatform } from "./renderPlatform";
-import { findDOMNode, createPortal, unmountComponentAtNode, initGlobalHMR } from "./tools";
+import { findDOMNode, createPortal, unmountComponentAtNode, /* initGlobalHMR */ } from "./tools";
 
 import type { ClientDomDispatch, ClientDomDispatchDev } from "./renderDispatch";
 
@@ -29,7 +29,7 @@ const unstable_batchedUpdates = safeCall;
 
 initGlobalRenderPlatform();
 
-initGlobalHMR();
+// initGlobalHMR();
 
 checkReconcilerVersion();
 

@@ -313,6 +313,9 @@ importers:
         specifier: ^4.2.0 || ^5.0.0 || ^5.1.0
         version: 5.1.4(@types/node@20.11.20)
     devDependencies:
+      '@my-react/react-shared':
+        specifier: ^0.3.1
+        version: link:../myreact-shared
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5

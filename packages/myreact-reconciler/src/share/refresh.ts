@@ -7,7 +7,7 @@ import { MyWeakMap } from "./map";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType } from "@my-react/react";
 
-export type RefreshHandler = (type: MyReactElementType) => { current: MyReactElementType; latest: MyReactElementType };
+export type RefreshHandler = (type: MyReactElementType) => { current: MyReactElementType };
 
 let refreshHandler: RefreshHandler | null = null;
 

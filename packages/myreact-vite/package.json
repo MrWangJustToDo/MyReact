@@ -68,6 +68,7 @@
     "@babel/plugin-transform-react-jsx-source": "^7.22.5"
   },
   "devDependencies": {
+    "@my-react/react-shared": "^0.3.1",
     "@types/babel__core": "^7.20.5"
   }
 }

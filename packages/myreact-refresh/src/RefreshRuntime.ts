@@ -2,13 +2,13 @@ import { ForwardRef, Memo, STATE_TYPE, TYPEKEY } from "@my-react/react-shared";
 
 import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType } from "@my-react/react";
 import type { ClientDomDispatch, ClientDomDispatchDev } from "@my-react/react-dom";
-import type { CustomRenderDispatch, HMR, MyReactFiberNodeDev, setRefreshHandler } from "@my-react/react-reconciler";
-
-const HMR_FIELD = "__@my-react/hmr__";
+import type { CustomRenderDispatch, HMR, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
 const DISPATCH_FIELD = "__@my-react/dispatch__";
 
 const DEV_TOOL_FIELD = "__@my-react/react-refresh-dev__";
+
+let hmrRuntime: HMR;
 
 type Family = {
   current: MyReactComponentType;
@@ -25,7 +25,6 @@ type Signature = {
 type MyReactComponentType = ReturnType<typeof forwardRef> | ReturnType<typeof memo> | MixinMyReactClassComponent | MixinMyReactFunctionComponent;
 
 type HMRGlobal = {
-  [HMR_FIELD]: HMR;
   [DISPATCH_FIELD]: CustomRenderDispatch[];
   [DEV_TOOL_FIELD]: {
     allFamiliesByID: typeof allFamiliesByID;
@@ -250,7 +249,7 @@ export const createSignatureFunctionForTransform = () => {
 export const performReactRefresh = () => {
   if (!pendingUpdates.length) return;
 
-  if (typeof typedSelf?.[HMR_FIELD]?.hmr !== "function") {
+  if (typeof hmrRuntime?.hmr !== "function") {
     console.log(`[@my-react/react-refresh] try to refresh current App failed, current environment not have a valid HMR runtime`);
     return;
   }
@@ -267,7 +266,7 @@ export const performReactRefresh = () => {
     const nextType = getRenderTypeFormType(_nextType);
 
     if (prevType && nextType) {
-      const fibers = typedSelf[HMR_FIELD]?.getCurrentFibersFromType?.(prevType);
+      const fibers = hmrRuntime?.getCurrentFibersFromType?.(prevType);
 
       updatedFamiliesByType.set(prevType, family);
 
@@ -279,11 +278,11 @@ export const performReactRefresh = () => {
         const forceReset = !canPreserveStateBetween(prevType, nextType);
 
         fibers.forEach((f) => {
-          const container = typedSelf[HMR_FIELD]?.getCurrentDispatchFromFiber?.(f);
+          const container = hmrRuntime?.getCurrentDispatchFromFiber?.(f);
 
           const hasRootUpdate = containers.get(container) || f === container.rootFiber;
 
-          typedSelf?.[HMR_FIELD]?.hmr?.(f, nextType, forceReset);
+          hmrRuntime?.hmr?.(f, nextType, forceReset);
 
           containers.set(container, hasRootUpdate);
         });
@@ -398,23 +397,21 @@ const setRefreshRuntimeFieldForDev = (container: CustomRenderDispatch) => {
 };
 
 const tryToRegister = () => {
-  if (typeof window === "undefined") return;
   if (__DEV__) {
     try {
-      if (typeof typedSelf?.[HMR_FIELD]?.setRefreshHandler !== "function") {
-        console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;");
-      } else {
-        console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;");
-
-        typedSelf?.[HMR_FIELD]?.setRefreshHandler?.(resolveFamily as Parameters<typeof setRefreshHandler>[0]);
-      }
-    } catch {
-      void 0;
-    }
-
-    try {
       if (Array.isArray(typedSelf?.[DISPATCH_FIELD])) {
-        typedSelf[DISPATCH_FIELD].forEach((dispatch) => setRefreshRuntimeFieldForDev(dispatch));
+        const _hmrRuntime = typedSelf?.[DISPATCH_FIELD].find((item) => item?.["__hmr_runtime__"])?.["__hmr_runtime__"];
+        if (_hmrRuntime) {
+          hmrRuntime = _hmrRuntime;
+
+          hmrRuntime.setRefreshHandler(resolveFamily);
+
+          typedSelf[DISPATCH_FIELD].forEach((dispatch) => setRefreshRuntimeFieldForDev(dispatch));
+
+          console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;");
+        } else {
+          console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;");
+        }
       }
     } catch {
       void 0;

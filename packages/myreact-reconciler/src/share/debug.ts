@@ -124,11 +124,13 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
       preString = `${preString}(${fileName}:${lineNumber}) `;
     }
     if (owner) {
-      const ownerElement = owner as MyReactFiberNode;
-      const ownerElementType = ownerElement.elementType;
-      if (include(ownerElement.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
-        const typedOwnerElementType = ownerElementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
-        const name = typedOwnerElementType.name || typedOwnerElementType.displayName;
+      const ownerFiber = owner as MyReactFiberNodeDev;
+      const ownerFiberElementType = ownerFiber.elementType;
+      if (include(ownerFiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+        const ownerElement = ownerFiber._debugElement as MyReactElement;
+        const typedOwnerElementType = ownerFiberElementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
+        let name = typedOwnerElementType.displayName || typedOwnerElementType.name;
+        name = typeof ownerElement.type === "object" ? ownerElement.type.displayName : name;
         preString = name ? `${preString}(render dy ${name})` : preString;
       }
     }
@@ -166,7 +168,7 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     if (__DEV__) {
       const element = typedFiber._debugElement as MyReactElement;
       const type = element.type as MixinMyReactObjectComponent;
-      name = name || type.displayName;
+      name = type.displayName || name;
     }
     if (fiber.type & NODE_TYPE.__forwardRef__) {
       res += "-forwardRef";
@@ -180,7 +182,7 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     if (__DEV__) {
       const element = typedFiber._debugElement as MyReactElement;
       const type = element.type as MixinMyReactObjectComponent;
-      name = name || type.displayName;
+      name = type.displayName || name;
     }
     return `<${name ? name : "anonymous"} - (lazy) />`;
   }
@@ -213,7 +215,7 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     if (__DEV__) {
       const element = typedFiber._debugElement as MyReactElement;
       const type = element.type as MixinMyReactObjectComponent;
-      name = name || type.displayName;
+      name = type.displayName || name;
     }
     return `<${name ? name : "anonymous"} - (forwardRef) />`;
   }

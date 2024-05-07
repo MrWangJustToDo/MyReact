@@ -226,7 +226,7 @@ recoverItem.use(async (req, res, next) => {
   let shortName = req.body.shortName;
   let srcResolveDir = path.resolve(req.rootFolder, req.body.srcRelativePath);
   let targetResolveDir = path.resolve(req.rootFolder, req.recoverFolder);
-  console.log("在文件夹", req.body.srcRelativePath, "中,将: ", shortName, "移动到回收站中");
+  console.log("在文件夹", srcResolveDir, "中,将: ", shortName, "移动到回收站中");
   try {
     await moveItemByPath(shortName, srcResolveDir, targetResolveDir);
     res.json({ code: 0, state: "success" });

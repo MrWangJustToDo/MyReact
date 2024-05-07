@@ -14,8 +14,8 @@
 .bg-content-bg {
   background-image: url("./loginBackground.jpg");
   background-attachment: fixed;
-  background-size: cover;
-  /* background-size: 110%; */
+  /* background-size: cover; */
+  background-size: 110%;
   background-repeat: no-repeat;
   background-position: 50%;
   transition-property: background;

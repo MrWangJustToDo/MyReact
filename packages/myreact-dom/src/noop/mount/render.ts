@@ -12,7 +12,7 @@ import type { LikeJSX } from "@my-react/react";
 // !only used for test
 
 export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
-  if (isValidElement(element)) {
+  if (__DEV__ && isValidElement(element)) {
     const container = new ContainerElement();
 
     const fiber = new MyReactFiberNode(element);
@@ -39,7 +39,7 @@ export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
 };
 
 export const latestNoopRender = async (element: LikeJSX): Promise<ContainerElement | null> => {
-  if (isValidElement(element)) {
+  if (__DEV__ && isValidElement(element)) {
     const container = new ContainerElement();
 
     const fiber = new MyReactFiberNode(element);

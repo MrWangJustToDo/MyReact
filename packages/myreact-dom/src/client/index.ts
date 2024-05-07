@@ -29,6 +29,7 @@ const unstable_batchedUpdates = safeCall;
 
 initGlobalRenderPlatform();
 
+// not need for new refresh runtime package
 // initGlobalHMR();
 
 checkReconcilerVersion();

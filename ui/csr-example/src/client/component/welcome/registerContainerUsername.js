@@ -9,7 +9,7 @@ import { ref, createReactive } from "@my-react/react-reactive";
 //   );
 // }
 
-// this reactive component only work for myreact
+// this reactive component only work for @my-react
 const RegisterContainerUsername = createReactive({
   setup: () => {
     const valueRef = ref("");
@@ -22,7 +22,7 @@ const RegisterContainerUsername = createReactive({
   render: ({ valueRef, changeRef }) => (
     <label className="block relative">
       <i className="fas fa-user register-input-icon absolute"></i>
-      <input type="text" placeholder="请输入用户名" name="username" data-foo={valueRef} autoFocus value={'valueRef'} onChange={changeRef} />
+      <input type="text" placeholder="请输入用户名" name="username" data-val={valueRef} autoFocus value={valueRef} onChange={changeRef} />
     </label>
   ),
 });

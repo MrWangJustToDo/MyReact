@@ -38,7 +38,8 @@ const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
 
 export class ClientDomDispatch extends CustomRenderDispatch {
   runtimeDom = {
-    elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
+    svgMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
+    elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
   };
 
   enableUpdate = true;
@@ -66,12 +67,17 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   patchToCommitUpdate?: (_fiber: MyReactFiberNode) => void;
 
   patchToCommitSetRef?: (_fiber: MyReactFiberNode) => void;
-
-  commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
+  _commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(_fiber, this, !!_hydrate);
   }
-  commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
+  commitCreate(_fiber: MyReactFiberNode): void {
+    this._commitCreate(_fiber);
+  }
+  _commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
     update(_fiber, this, !!_hydrate);
+  }
+  commitUpdate(_fiber: MyReactFiberNode): void {
+    this._commitUpdate(_fiber);
   }
   commitAppend(_fiber: MyReactFiberNode): void {
     append(_fiber, this);
@@ -95,14 +101,12 @@ export class ClientDomDispatch extends CustomRenderDispatch {
       return resolveLazyElementLegacy(_fiber, this);
     }
   }
-  reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
+  reconcileCommit(_fiber: MyReactFiberNode) {
     this.beforeCommit?.();
 
-    const res = clientDispatchMount(_fiber, this, _hydrate);
+    clientDispatchMount(_fiber, this, this.isHydrateRender);
 
     this.afterCommit?.();
-
-    return res;
   }
   shouldYield(): boolean {
     return shouldPauseAsyncUpdate();

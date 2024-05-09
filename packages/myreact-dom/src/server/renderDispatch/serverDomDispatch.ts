@@ -25,7 +25,8 @@ const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
  */
 export class ServerDomDispatch extends CustomRenderDispatch {
   runtimeDom = {
-    elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
+    svgMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
+    elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode | null>(),
   };
 
   enableUpdate = false;
@@ -75,13 +76,15 @@ export class ServerDomDispatch extends CustomRenderDispatch {
   }
 
   commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
-    const { isSVG } = this.runtimeDom.elementMap.get(_fiber) || {};
+    const parentFiberWithSVG = this.runtimeDom.svgMap.get(_fiber);
+
+    const isSVG = !!parentFiberWithSVG;
 
     update(_fiber, isSVG);
   }
 
   commitAppend(_fiber: MyReactFiberNode): void {
-    const { parentFiberWithNode } = this.runtimeDom.elementMap.get(_fiber) || {};
+    const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
     append(_fiber, parentFiberWithNode);
   }

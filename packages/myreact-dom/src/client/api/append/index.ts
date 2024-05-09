@@ -1,6 +1,6 @@
-import { PATCH_TYPE, STATE_TYPE, include, remove } from "@my-react/react-shared";
+import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
-import { getFiberWithNativeDom, isSingleTag } from "@my-react-dom-shared";
+import { getValidParentFiberWithNode, isSingleTag } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -11,17 +11,7 @@ import type { DomElement, DomNode } from "@my-react-dom-shared";
  */
 export const append = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
   if (include(fiber.patch, PATCH_TYPE.__append__)) {
-    let { parentFiberWithNode } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
-
-    if (!parentFiberWithNode || include(parentFiberWithNode.state, STATE_TYPE.__unmount__)) {
-      parentFiberWithNode = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
-
-      const elementObj = renderDispatch.runtimeDom.elementMap.get(fiber);
-
-      elementObj.parentFiberWithNode = parentFiberWithNode;
-
-      renderDispatch.runtimeDom.elementMap.set(fiber, elementObj);
-    }
+    const parentFiberWithNode = getValidParentFiberWithNode(fiber, renderDispatch);
 
     const maybeContainer = parentFiberWithNode as MyReactFiberContainer;
 

@@ -1,7 +1,7 @@
 import { PATCH_TYPE, ListTree, include, remove } from "@my-react/react-shared";
 
 import { unmountList } from "../renderUnmount";
-import { generateFiberToList, safeCallWithFiber } from "../share";
+import { generateFiberToUnmountList, safeCallWithFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -9,7 +9,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 export const defaultGenerateUnmountMap = (fiber: MyReactFiberNode, unmount: MyReactFiberNode, map: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>) => {
   const list = map.get(fiber) || new ListTree();
 
-  const newList = generateFiberToList(unmount);
+  const newList = generateFiberToUnmountList(unmount);
 
   map.set(fiber, list.concat(newList));
 };

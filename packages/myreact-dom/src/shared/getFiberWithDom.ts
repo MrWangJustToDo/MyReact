@@ -6,14 +6,15 @@ import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-re
  * @internal
  */
 export const getFiberWithNativeDom = (fiber: MyReactFiberNode | null, transform: (f: MyReactFiberNode) => MyReactFiberNode | null): MyReactFiberNode | null => {
-  if (fiber) {
+  while (fiber) {
     const maybeContainer = fiber as MyReactFiberContainer;
 
     if (fiber.nativeNode && exclude(fiber.state, STATE_TYPE.__unmount__)) return fiber;
 
     if (maybeContainer.containerNode && exclude(maybeContainer.state, STATE_TYPE.__unmount__)) return fiber;
 
-    return getFiberWithNativeDom(transform(fiber), transform);
+    fiber = transform(fiber);
   }
+
   return null;
 };

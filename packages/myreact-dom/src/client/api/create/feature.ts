@@ -1,7 +1,15 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
-import { validDomTag, type DomComment, type DomElement, type DomNode, validDomNesting } from "@my-react-dom-shared";
+import {
+  validDomTag,
+  type DomComment,
+  type DomElement,
+  type DomNode,
+  validDomNesting,
+  getValidParentFiberWithNode,
+  getValidParentFiberWithSVG,
+} from "@my-react-dom-shared";
 
 import { hydrateCreate } from "./hydrateCreate";
 import { nativeCreate } from "./nativeCreate";
@@ -14,7 +22,11 @@ import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
  */
 export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, hydrate: boolean): boolean => {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
-    const { isSVG, parentFiberWithNode } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
+    const parentFiberWithNode = getValidParentFiberWithNode(fiber, renderDispatch);
+
+    const parentFiberWithSVG = getValidParentFiberWithSVG(fiber, renderDispatch);
+
+    const isSVG = !!parentFiberWithSVG;
 
     let re = false;
 

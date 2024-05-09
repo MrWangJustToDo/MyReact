@@ -1,6 +1,6 @@
-import { include, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
+import { include, PATCH_TYPE, remove } from "@my-react/react-shared";
 
-import { getFiberWithNativeDom } from "../../shared";
+import { getValidParentFiberWithNode } from "../../shared";
 import { appendChildNode, type PlainElement, type TextElement } from "../native";
 
 import type { TerminalDispatch } from "../../renderDispatch";
@@ -8,13 +8,7 @@ import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-re
 
 export const append = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch) => {
   if (include(fiber.patch, PATCH_TYPE.__append__)) {
-    let parentFiberWithNode = renderDispatch.runtimeDom.elementMap.get(fiber);
-
-    if (!parentFiberWithNode || include(parentFiberWithNode.state, STATE_TYPE.__unmount__)) {
-      parentFiberWithNode = getFiberWithNativeDom(fiber.parent, (f) => f.parent) as MyReactFiberNode;
-
-      renderDispatch.runtimeDom.elementMap.set(fiber, parentFiberWithNode);
-    }
+    const parentFiberWithNode = getValidParentFiberWithNode(fiber, renderDispatch);
 
     const mayFiberContainer = parentFiberWithNode as MyReactFiberContainer;
 

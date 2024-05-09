@@ -1,5 +1,13 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { afterSyncUpdate, beforeSyncUpdate, effect, insertionEffect, layoutEffect, safeCallWithFiber } from "@my-react/react-reconciler";
+import {
+  afterSyncUpdate,
+  beforeSyncUpdate,
+  effect,
+  generateFiberToMountList,
+  insertionEffect,
+  layoutEffect,
+  safeCallWithFiber,
+} from "@my-react/react-reconciler";
 
 import { fallback } from "@my-react-dom-client/api";
 
@@ -13,39 +21,39 @@ const { currentRenderPlatform } = __my_react_internal__;
  * @internal
  */
 export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch, _hydrate?: boolean) => {
-  const mountInsertionEffect = (_fiber: MyReactFiberNode) => {
-    if (_fiber.child) mountInsertionEffect(_fiber.child);
+  // const mountInsertionEffect = (_fiber: MyReactFiberNode) => {
+  //   if (_fiber.child) mountInsertionEffect(_fiber.child);
 
-    insertionEffect(_fiber, _dispatch);
+  //   insertionEffect(_fiber, _dispatch);
 
-    if (_fiber.sibling) mountInsertionEffect(_fiber.sibling);
-  };
+  //   if (_fiber.sibling) mountInsertionEffect(_fiber.sibling);
+  // };
 
-  const mountLayoutEffect = (_fiber: MyReactFiberNode) => {
-    if (_fiber.child) mountLayoutEffect(_fiber.child);
+  // const mountLayoutEffect = (_fiber: MyReactFiberNode) => {
+  //   if (_fiber.child) mountLayoutEffect(_fiber.child);
 
-    layoutEffect(_fiber, _dispatch);
+  //   layoutEffect(_fiber, _dispatch);
 
-    if (_fiber.sibling) mountLayoutEffect(_fiber.sibling);
-  };
+  //   if (_fiber.sibling) mountLayoutEffect(_fiber.sibling);
+  // };
 
-  const mountEffect = (_fiber: MyReactFiberNode) => {
-    if (_fiber.child) mountEffect(_fiber.child);
+  // const mountEffect = (_fiber: MyReactFiberNode) => {
+  //   if (_fiber.child) mountEffect(_fiber.child);
 
-    effect(_fiber, _dispatch);
+  //   effect(_fiber, _dispatch);
 
-    if (_fiber.sibling) mountEffect(_fiber.sibling);
-  };
+  //   if (_fiber.sibling) mountEffect(_fiber.sibling);
+  // };
 
   const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean): boolean => {
     const _result = safeCallWithFiber({
       fiber: _fiber,
-      action: () => _dispatch.commitCreate(_fiber, _hydrate),
+      action: () => _dispatch._commitCreate(_fiber, _hydrate),
     });
 
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => _dispatch.commitUpdate(_fiber, _result),
+      action: () => _dispatch._commitUpdate(_fiber, _result),
     });
 
     safeCallWithFiber({
@@ -82,21 +90,23 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
   };
 
   const mountLoop = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
+    const _list = generateFiberToMountList(_fiber);
+
     beforeSyncUpdate();
-    mountInsertionEffect(_fiber);
+    _list.listToFoot((fiber) => insertionEffect(fiber, _dispatch));
     afterSyncUpdate();
 
-    const re = mountCommit(_fiber, _hydrate);
+    mountCommit(_fiber, _hydrate);
 
     delete _dispatch._previousNativeNode;
 
     beforeSyncUpdate();
-    mountLayoutEffect(_fiber);
+    _list.listToFoot((fiber) => layoutEffect(fiber, _dispatch));
     afterSyncUpdate();
 
-    currentRenderPlatform.current.microTask(() => mountEffect(_fiber));
+    const renderPlatform = currentRenderPlatform.current;
 
-    return re;
+    renderPlatform.microTask(() => _list.listToFoot((fiber) => effect(fiber, _dispatch)));
   };
 
   return mountLoop(_fiber, _hydrate);

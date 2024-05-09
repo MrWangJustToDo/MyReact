@@ -7,6 +7,7 @@ import {
   enableHydrateWarn,
   getHTMLAttrKey,
   getSVGAttrKey,
+  getValidParentFiberWithSVG,
   isEvent,
   isProperty,
   isStyle,
@@ -182,7 +183,9 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
   const node = fiber.nativeNode as DomElement | DomNode;
 
   if (node) {
-    const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
+    const parentFiberWithSVG = getValidParentFiberWithSVG(fiber, renderDispatch);
+
+    const isSVG = !!parentFiberWithSVG;
 
     if (include(fiber.type, NODE_TYPE.__plain__)) {
       const props = fiber.pendingProps;

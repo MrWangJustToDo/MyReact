@@ -16,7 +16,7 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatc
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     if (__DEV__) validDomTag(fiber);
 
-    if (__DEV__) validDomNesting(fiber, renderDispatch.runtimeDom.elementMap.get(fiber).parentFiberWithNode);
+    if (__DEV__) validDomNesting(fiber, renderDispatch.runtimeDom.elementMap.get(fiber));
 
     if (include(fiber.type, NODE_TYPE.__text__)) {
       fiber.nativeNode = new TextElement(fiber.elementType as string);
@@ -45,7 +45,9 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const stream = renderDispatch.stream;
 
-    const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
+    const parentFiberWithSVG = renderDispatch.runtimeDom.svgMap.get(fiber);
+
+    const isSVG = !!parentFiberWithSVG;
 
     if (include(fiber.type, NODE_TYPE.__text__)) {
       if (renderDispatch._lastIsStringNode) {
@@ -74,7 +76,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
         if (serializeProps) {
           stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}/>`);
         } else {
-          stream.push(`<${fiber.elementType as string}/>`)
+          stream.push(`<${fiber.elementType as string}/>`);
         }
 
         // TODO
@@ -84,7 +86,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
         if (serializeProps) {
           stream.push(`<${fiber.elementType as string} ${getSerializeProps(fiber, isSVG)}>`);
         } else {
-          stream.push(`<${fiber.elementType as string}>`)
+          stream.push(`<${fiber.elementType as string}>`);
         }
 
         if (fiber.pendingProps["dangerouslySetInnerHTML"]) {

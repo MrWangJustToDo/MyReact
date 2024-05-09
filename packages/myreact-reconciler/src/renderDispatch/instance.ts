@@ -153,10 +153,10 @@ export class CustomRenderDispatch implements RenderDispatch {
   patchToFiberUnmount(_fiber: MyReactFiberNode) {
     void 0;
   }
-  commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
-    return false;
+  commitCreate(_fiber: MyReactFiberNode): void {
+    void 0;
   }
-  commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
+  commitUpdate(_fiber: MyReactFiberNode): void {
     void 0;
   }
   commitAppend(_fiber: MyReactFiberNode): void {
@@ -213,14 +213,12 @@ export class CustomRenderDispatch implements RenderDispatch {
   resolveContextValue(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return defaultGetContextValue(_fiber, _contextObject);
   }
-  reconcileCommit(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
+  reconcileCommit(_fiber: MyReactFiberNode): void {
     this.beforeCommit?.();
 
-    const re = defaultDispatchMount(_fiber, this, _hydrate);
+    defaultDispatchMount(_fiber, this);
 
     this.afterCommit?.();
-    
-    return re;
   }
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
     this.beforeUpdate?.();

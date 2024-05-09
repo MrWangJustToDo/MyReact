@@ -42,7 +42,8 @@ const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
  */
 export class LegacyServerStreamDispatch extends CustomRenderDispatch {
   runtimeDom = {
-    elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
+    svgMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
+    elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode | null>(),
   };
 
   enableUpdate = false;
@@ -95,7 +96,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
     return resolveLazyElementLegacy(_fiber, this);
   }
 
-  reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
+  reconcileCommit(_fiber: MyReactFiberNode): void {
     const mountLoop = (_fiber: MyReactFiberNode) => {
       safeCallWithFiber({ fiber: _fiber, action: () => createStartTagWithStream(_fiber, this) });
 
@@ -112,8 +113,6 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
       .then(() => mountLoop(_fiber))
       .then(() => this.stream.push(null))
       .then(() => this.afterCommit?.());
-
-    return true;
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
@@ -126,7 +125,8 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
  */
 export class LatestServerStreamDispatch extends CustomRenderDispatch {
   runtimeDom = {
-    elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
+    svgMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
+    elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode | null>(),
   };
 
   enableUpdate = false;
@@ -196,7 +196,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
     return resolveLazyElementLatest(_fiber, this);
   }
 
-  reconcileCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
+  reconcileCommit(_fiber: MyReactFiberNode): void {
     const mountLoop = (_fiber: MyReactFiberNode) => {
       safeCallWithFiber({ fiber: _fiber, action: () => createStartTagWithStream(_fiber, this) });
 
@@ -222,8 +222,6 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
       .then(() => this.stream.push(null))
       .then(() => this.onAllReady?.())
       .then(() => this.afterCommit?.());
-
-    return true;
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {

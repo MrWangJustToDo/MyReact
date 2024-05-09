@@ -5,7 +5,7 @@ import { resolveLazyElementLatest, resolveLazyElementLegacy } from "@my-react-do
 import { initialElementMap } from "@my-react-dom-shared";
 
 import type { MyReactElementNode } from "@my-react/react";
-import type { MyReactFiberNode} from "@my-react/react-reconciler";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
@@ -21,7 +21,8 @@ const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
 
 export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
   runtimeDom = {
-    elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
+    svgMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
+    elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode | null>(),
   };
 
   enableUpdate = false;
@@ -71,13 +72,15 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
   }
 
   commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
-    const { isSVG } = this.runtimeDom.elementMap.get(_fiber) || {};
+    const parentFiberWithSVG = this.runtimeDom.svgMap.get(_fiber);
+
+    const isSVG = !!parentFiberWithSVG;
 
     update(_fiber, isSVG);
   }
 
   commitAppend(_fiber: MyReactFiberNode): void {
-    const { parentFiberWithNode } = this.runtimeDom.elementMap.get(_fiber) || {};
+    const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
     append(_fiber, parentFiberWithNode);
   }
@@ -93,7 +96,8 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
 
 export class NoopLatestRenderDispatch extends CustomRenderDispatch {
   runtimeDom = {
-    elementMap: new WeakMap<MyReactFiberNode, { isSVG: boolean; parentFiberWithNode: MyReactFiberNode | null }>(),
+    svgMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
+    elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode | null>(),
   };
 
   enableUpdate = false;
@@ -143,13 +147,15 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
   }
 
   commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
-    const { isSVG } = this.runtimeDom.elementMap.get(_fiber) || {};
+    const parentFiberWithSVG = this.runtimeDom.svgMap.get(_fiber);
+
+    const isSVG = !!parentFiberWithSVG;
 
     update(_fiber, isSVG);
   }
 
   commitAppend(_fiber: MyReactFiberNode): void {
-    const { parentFiberWithNode } = this.runtimeDom.elementMap.get(_fiber) || {};
+    const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
     append(_fiber, parentFiberWithNode);
   }

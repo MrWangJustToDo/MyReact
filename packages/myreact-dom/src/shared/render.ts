@@ -15,7 +15,7 @@ export const startRender = (
 ) => {
   const startTime = Date.now();
 
-  mount(fiber, renderDispatch, hydrate);
+  mount(fiber, renderDispatch);
 
   const endTime = Date.now();
 
@@ -36,7 +36,7 @@ export const startRenderAsync = async (
 ) => {
   const startTime = Date.now();
 
-  await mountAsync(fiber, renderDispatch, hydrate);
+  await mountAsync(fiber, renderDispatch);
 
   const endTime = Date.now();
 

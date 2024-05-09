@@ -83,7 +83,96 @@
       </div>
     }
 
-    ReactDOM.render(<App />, document.querySelector('#root'))
+    const A1 = ({ children }) => {
+      useUnmount(() => console.log('a1 unmount'));
+
+      return <>{children}</>
+    }
+
+    const B1 = ({ children }) => {
+      useUnmount(() => console.log('b1 unmount'));
+
+      return <>{children}</>
+    }
+
+    const B2 = ({ children }) => {
+      useUnmount(() => console.log('b2 unmount'));
+
+      return <>{children}</>
+    }
+
+    const C1 = ({ children }) => {
+      useUnmount(() => console.log('c1 unmount'));
+
+      return <>{children}</>
+    }
+
+    const C2 = ({ children }) => {
+      useUnmount(() => console.log('c2 unmount'));
+
+      return <>{children}</>
+    }
+
+    const C3 = ({ children }) => {
+      useUnmount(() => console.log('c3 unmount'));
+
+      return <>{children}</>
+    }
+
+    const D1 = ({ children }) => {
+      useUnmount(() => console.log('d1 unmount'));
+
+      return <>{children}</>
+    }
+
+    const D2 = ({ children }) => {
+      useUnmount(() => console.log('d2 unmount'));
+
+      return <>{children}</>
+    }
+
+    const D3 = ({ children }) => {
+      useUnmount(() => console.log('d3 unmount'));
+
+      return <>{children}</>
+    }
+
+    const D4 = ({ children }) => {
+      useUnmount(() => console.log('d4 unmount'));
+
+      return <>{children}</>
+    }
+
+    const ele = <A1>
+      <B1>
+        <D1 />
+      </B1>
+      <B2>
+        <C1 />
+        <C2>
+          <D2 />
+        </C2>
+        <C3>
+          <D3>
+            <D4 />
+          </D3>
+        </C3>
+      </B2>
+    </A1>
+
+    const App1 = () => {
+      const [c, add] = useCounter();
+
+      return <div>
+        <div>
+          {c % 2 !== 0 ? ele : <div>123</div>}
+        </div>
+        <p>{c}</p>
+        <button onClick={add}>add</button>
+      </div>
+    }
+
+    ReactDOM.render(<App1 />, document.querySelector('#root'))
   </script>
 </body>
 

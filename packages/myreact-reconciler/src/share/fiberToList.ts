@@ -2,7 +2,7 @@ import { ListTree } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
+const getNextForUnmountList = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
   if (fiber.child) return fiber.child;
 
   let nextFiber = fiber;
@@ -16,7 +16,27 @@ const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
   return null;
 };
 
-export const generateFiberToList = (fiber: MyReactFiberNode) => {
+const getNextForMountList = (fiber: MyReactFiberNode) => {
+  if (fiber.child) {
+    while (fiber.child) {
+      fiber = fiber.child;
+    }
+    return fiber;
+  } else if (fiber.sibling) {
+    return fiber.sibling;
+  } else {
+    return null;
+  }
+};
+
+const getNextPlainFiberNode = (fiber: MyReactFiberNode) => {
+  while (fiber && !fiber.sibling) {
+    fiber = fiber.parent;
+  }
+  return fiber?.sibling;
+};
+
+export const generateFiberToUnmountList = (fiber: MyReactFiberNode) => {
   const listTree = new ListTree<MyReactFiberNode>();
 
   let temp = fiber;
@@ -26,8 +46,35 @@ export const generateFiberToList = (fiber: MyReactFiberNode) => {
   }
 
   while (temp) {
-    temp = getNext(temp, fiber);
+    temp = getNextForUnmountList(temp, fiber);
     if (temp) listTree.push(temp);
+  }
+
+  return listTree;
+};
+
+export const generateFiberToMountList = (fiber: MyReactFiberNode) => {
+  const listTree = new ListTree<MyReactFiberNode>();
+
+  let current = fiber;
+
+  let next = fiber;
+
+  while (((next = getNextForMountList(current)), next)) {
+    if (next) {
+      listTree.push(next);
+      current = next;
+      continue;
+    } else {
+      current = current.parent;
+      if (current) {
+        listTree.push(current);
+        current = getNextPlainFiberNode(current);
+        if (!current) break;
+      } else {
+        break;
+      }
+    }
   }
 
   return listTree;

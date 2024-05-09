@@ -90,9 +90,9 @@ type DefaultRenderDispatch = {
 
   afterUnmount?: () => void;
 
-  commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean;
+  commitCreate(_fiber: MyReactFiberNode): void;
 
-  commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void;
+  commitUpdate(_fiber: MyReactFiberNode): void;
 
   commitAppend(_fiber: MyReactFiberNode): void;
 
@@ -128,7 +128,7 @@ type DefaultRenderDispatch = {
 
   resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null;
 
-  reconcileCommit(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean;
+  reconcileCommit(_fiber: MyReactFiberNode): void;
 
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void;
 

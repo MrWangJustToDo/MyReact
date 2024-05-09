@@ -11,7 +11,7 @@ const { globalLoop } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, hydrate?: boolean) => {
+export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
@@ -24,7 +24,7 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
-  renderDispatch.reconcileCommit(fiber, hydrate);
+  renderDispatch.reconcileCommit(fiber);
 
   commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
@@ -33,7 +33,7 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
   globalLoop.current = false;
 };
 
-export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, hydrate?: boolean) => {
+export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
@@ -67,7 +67,7 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
-  renderDispatch.reconcileCommit(fiber, hydrate);
+  renderDispatch.reconcileCommit(fiber);
 
   commitList?.length && renderDispatch.reconcileUpdate(commitList);
 

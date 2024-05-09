@@ -22,7 +22,9 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
 
   const node = fiber.nativeNode as DomElement | DomNode;
 
-  const { isSVG } = renderDispatch.runtimeDom.elementMap.get(fiber) || {};
+  const parentFiberWithSVG = renderDispatch.runtimeDom.svgMap.get(fiber);
+
+  const isSVG = !!parentFiberWithSVG;
 
   if (include(fiber.type, NODE_TYPE.__text__)) {
     node.textContent = fiber.elementType as string;

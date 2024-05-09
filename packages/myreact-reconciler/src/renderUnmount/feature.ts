@@ -3,7 +3,7 @@ import { STATE_TYPE, include } from "@my-react/react-shared";
 import { unmount } from "../dispatchUnmount";
 import { triggerUnmount } from "../renderUpdate";
 import { unmountFiberNode } from "../runtimeFiber";
-import { fiberToDispatchMap, generateFiberToList, safeCallWithFiber } from "../share";
+import { fiberToDispatchMap, generateFiberToUnmountList, safeCallWithFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -30,7 +30,7 @@ export const unmountFiber = (fiber: MyReactFiberNode) => {
 
   const renderDispatch = fiberToDispatchMap.get(fiber);
 
-  const list = generateFiberToList(fiber);
+  const list = generateFiberToUnmountList(fiber);
 
   unmountList(list, renderDispatch);
 };

@@ -194,7 +194,7 @@ export class Instance {
       this.rootNode.__fiber__ = fiber as MyReactFiberNodeDev;
     }
 
-    mount(fiber, renderDispatch, false);
+    mount(fiber, renderDispatch);
   };
 
   writeToStdout(data: string): void {

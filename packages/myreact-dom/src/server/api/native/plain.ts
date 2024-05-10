@@ -3,12 +3,14 @@ import { isSingleTag, kebabCase } from "@my-react-dom-shared";
 import { CommentEndElement, CommentStartElement } from "./comment";
 import { TextElement } from "./text";
 
+import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
+
 /**
  * @internal
  */
 export class PlainElement {
   type: string;
-  isSVG: boolean = false;
   style: Record<string, string | null | undefined> = {};
   attrs: Record<string, string | boolean | null | undefined> = {};
   children: Array<TextElement | PlainElement | CommentStartElement | CommentEndElement | string> = [];
@@ -60,10 +62,6 @@ export class PlainElement {
         if (dom.parentElement) throw new Error("unexpected error: dom.parentElement is not null");
 
         dom.parentElement = this;
-      }
-
-      if (dom instanceof PlainElement && this.isSVG) {
-        dom.isSVG = true;
       }
 
       return dom;
@@ -123,4 +121,12 @@ export class PlainElement {
       }
     }
   }
+}
+
+/**
+ * @internal
+ */
+export interface PlainElementDev extends PlainElement {
+  _debugFiber: MyReactFiberNode;
+  _debugElement: MyReactElementNode;
 }

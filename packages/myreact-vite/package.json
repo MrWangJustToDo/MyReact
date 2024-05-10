@@ -9,16 +9,15 @@
   "license": "MIT",
   "main": "index.js",
   "module": "./dist/esm/index.mjs",
-  "types": "./dist/types/index.d.ts",
+  "types": "index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
+      "types": "./index.d.ts",
       "import": "./dist/esm/index.mjs",
       "node": "./index.js",
       "require": "./index.js"
     },
     "./refreshUtils": {
-      "types": "./dist/types/refreshUtils.d.ts",
       "require": "./refreshUtils.js"
     },
     "./package.json": "./package.json"
@@ -60,7 +59,7 @@
   ],
   "peerDependencies": {
     "@my-react/react-refresh": ">=0.3.1",
-    "vite": "^4.2.0 || ^5.0.0 || ^5.1.0"
+    "vite": "^4.2.0 || ^5.0.0 || ^5.1.0 || ^5.2.0"
   },
   "dependencies": {
     "@babel/core": "^7.22.5",

@@ -5,8 +5,9 @@ import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, isUnitlessNumber, k
 
 import { TextElement } from "./native";
 
-import type { PlainElement } from "./native/plain";
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { CommentElementDev, TextElementDev } from "./native";
+import type { PlainElement, PlainElementDev } from "./native/plain";
+import type { MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
 /**
  * @internal
@@ -49,8 +50,18 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
       if (props["dangerouslySetInnerHTML"]) {
         const typedProps = props["dangerouslySetInnerHTML"] as Record<string, unknown>;
         if (typedProps.__html) {
-          dom.append(new TextElement(typedProps.__html as string, true));
+          dom.append(new TextElement(typedProps.__html?.toString()));
         }
+      }
+    }
+
+    if (__DEV__) {
+      const typedFiber = fiber as MyReactFiberNodeDev;
+
+      const typedNativeNode = fiber.nativeNode as PlainElementDev | TextElementDev | CommentElementDev;
+
+      if (typedNativeNode) {
+        typedNativeNode._debugElement = typedFiber._debugElement;
       }
     }
 

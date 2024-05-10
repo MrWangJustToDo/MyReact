@@ -6,7 +6,8 @@ import { escapeHtml, isServer, isSingleTag, validDomNesting, validDomTag } from 
 import { CommentEndElement, CommentStartElement, PlainElement, TextElement } from "./native";
 import { getSerializeProps } from "./update";
 
-import type { MyReactFiberNode } from "@my-react/react-reconciler";
+import type { CommentElementDev, PlainElementDev, TextElementDev } from "./native";
+import type { MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 import type { ServerDomDispatch, LegacyServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 /**
@@ -19,16 +20,46 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatc
     if (__DEV__) validDomNesting(fiber, renderDispatch.runtimeDom.elementMap.get(fiber));
 
     if (include(fiber.type, NODE_TYPE.__text__)) {
-      fiber.nativeNode = new TextElement(fiber.elementType as string);
+      fiber.nativeNode = new TextElement(escapeHtml(fiber.elementType.toString()));
+
+      if (__DEV__) {
+        const typedFiber = fiber as MyReactFiberNodeDev;
+
+        const typedNativeNode = fiber.nativeNode as TextElementDev;
+
+        typedNativeNode._debugFiber = fiber;
+
+        typedNativeNode._debugElement = typedFiber._debugElement;
+      }
     } else if (include(fiber.type, NODE_TYPE.__plain__)) {
       const typedElementType = fiber.elementType as string;
 
       fiber.nativeNode = new PlainElement(typedElementType);
+
+      if (__DEV__) {
+        const typedFiber = fiber as MyReactFiberNodeDev;
+
+        const typedNativeNode = fiber.nativeNode as PlainElementDev;
+
+        typedNativeNode._debugFiber = fiber;
+
+        typedNativeNode._debugElement = typedFiber._debugElement;
+      }
     } else if (include(fiber.type, NODE_TYPE.__comment__)) {
       if (isCommentStartElement(fiber)) {
         fiber.nativeNode = new CommentStartElement();
       } else {
         fiber.nativeNode = new CommentEndElement();
+      }
+
+      if (__DEV__) {
+        const typedFiber = fiber as MyReactFiberNodeDev;
+
+        const typedNativeNode = fiber.nativeNode as CommentElementDev;
+
+        typedNativeNode._debugFiber = fiber;
+
+        typedNativeNode._debugElement = typedFiber._debugElement;
       }
     } else {
       if (isServer) throw new Error("[@my-react/react-dom] createPortal() can not call on the server");

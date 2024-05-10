@@ -6,6 +6,8 @@ import type { CustomRenderDispatch, HMR, MyReactFiberNodeDev } from "@my-react/r
 
 const DISPATCH_FIELD = "__@my-react/dispatch__";
 
+const DEV_REFRESH_FIELD = "__@my-react/react-refresh__";
+
 const DEV_TOOL_FIELD = "__@my-react/react-refresh-dev__";
 
 let hmrRuntime: HMR;
@@ -26,6 +28,7 @@ type MyReactComponentType = ReturnType<typeof forwardRef> | ReturnType<typeof me
 
 type HMRGlobal = {
   [DISPATCH_FIELD]: CustomRenderDispatch[];
+  [DEV_REFRESH_FIELD]: (dispatchArray: CustomRenderDispatch[]) => void;
   [DEV_TOOL_FIELD]: {
     allFamiliesByID: typeof allFamiliesByID;
     allSignaturesByType: typeof allSignaturesByType;
@@ -396,30 +399,42 @@ const setRefreshRuntimeFieldForDev = (container: CustomRenderDispatch) => {
   });
 };
 
+let hasInjected = false;
+
+const setupRefresh = (dispatchArray: CustomRenderDispatch[]) => {
+  if (hasInjected) return;
+  const _hmrRuntime = dispatchArray.find((item) => item?.["__hmr_runtime__"])?.["__hmr_runtime__"];
+  if (_hmrRuntime) {
+    hmrRuntime = _hmrRuntime;
+
+    hmrRuntime.setRefreshHandler(resolveFamily);
+
+    dispatchArray.forEach((dispatch) => setRefreshRuntimeFieldForDev(dispatch));
+
+    console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;");
+
+    hasInjected = true;
+
+    delete typedSelf[DEV_REFRESH_FIELD];
+  } else {
+    console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;");
+  }
+};
+
 const tryToRegister = () => {
   if (__DEV__) {
     try {
+      typedSelf[DEV_REFRESH_FIELD] = setupRefresh;
       if (Array.isArray(typedSelf?.[DISPATCH_FIELD])) {
-        const _hmrRuntime = typedSelf?.[DISPATCH_FIELD].find((item) => item?.["__hmr_runtime__"])?.["__hmr_runtime__"];
-        if (_hmrRuntime) {
-          hmrRuntime = _hmrRuntime;
-
-          hmrRuntime.setRefreshHandler(resolveFamily);
-
-          typedSelf[DISPATCH_FIELD].forEach((dispatch) => setRefreshRuntimeFieldForDev(dispatch));
-
-          console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;");
-        } else {
-          console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;");
-        }
+        setupRefresh(typedSelf[DISPATCH_FIELD]);
       }
     } catch {
-      void 0;
+      console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;");
     }
   }
 };
 
-export const injectIntoGlobalHook = (globalThis: Window) => globalThis.addEventListener("load", tryToRegister);
+export const injectIntoGlobalHook = (_context: Window) => setTimeout(tryToRegister, 0);
 
 export const version = __VERSION__;
 

@@ -444,4 +444,6 @@ if (__DEV__) {
     allSignaturesByType,
     updatedFamiliesByType,
   };
+} else {
+  console.warn('[@my-react/react-refresh] current environment is not in development mode!')
 }

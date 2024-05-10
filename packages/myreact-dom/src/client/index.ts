@@ -15,7 +15,7 @@ import {
 
 import { render, hydrate, hydrateRoot, createRoot } from "./mount";
 import { initGlobalRenderPlatform } from "./renderPlatform";
-import { findDOMNode, createPortal, unmountComponentAtNode, /* initGlobalHMR */ } from "./tools";
+import { findDOMNode, createPortal, unmountComponentAtNode /* initGlobalHMR */ } from "./tools";
 
 import type { ClientDomDispatch, ClientDomDispatchDev } from "./renderDispatch";
 
@@ -26,6 +26,8 @@ const version = enableMockReact.current ? "18.2.0" : __VERSION__;
 const flushSync = safeCallWithSync;
 
 const unstable_batchedUpdates = safeCall;
+
+const noop = () => {};
 
 initGlobalRenderPlatform();
 
@@ -47,8 +49,8 @@ const __my_react_dom_shared__ = {
 };
 
 const __my_react_dom_internal__ = {
-  legacyNoopRender,
-  latestNoopRender,
+  legacyNoopRender: __DEV__ ? legacyNoopRender : noop,
+  latestNoopRender: __DEV__ ? latestNoopRender : noop,
 };
 
 export {

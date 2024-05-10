@@ -98,9 +98,9 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
         return {
           esbuild: {
             jsx: "automatic",
-            jsxImportSource: opts.jsxImportSource,
+            jsxImportSource: opts.jsxImportSource ?? "@my-react/react",
           },
-          optimizeDeps: { esbuildOptions: { jsx: "automatic" } },
+          optimizeDeps: { esbuildOptions: { jsx: "automatic" }, include: ["@my-react/react/jsx-runtime", "@my-react/react/jsx-dev-runtime"] },
         };
       }
     },

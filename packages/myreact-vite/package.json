@@ -9,10 +9,10 @@
   "license": "MIT",
   "main": "index.js",
   "module": "./dist/esm/index.mjs",
-  "types": "index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./index.d.ts",
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/esm/index.mjs",
       "node": "./index.js",
       "require": "./index.js"

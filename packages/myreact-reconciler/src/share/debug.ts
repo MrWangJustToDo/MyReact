@@ -19,6 +19,12 @@ const { currentRenderPlatform, currentRunningFiber } = __my_react_internal__;
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
+const typeColor = {
+  normal: "rgba(10, 190, 235, 0.8)",
+  plain: "rgba(100, 230, 40, 0.8)",
+  unmount: "rgba(230, 40, 40, 0.8)",
+};
+
 const warnMap = {};
 
 const errorMap = {};
@@ -300,7 +306,10 @@ export const getFiberTreeWithFiber = (fiber: MyReactFiberNode) => {
   while (temp) {
     res ? (res += `\n${preString}${getFiberNodeNameWithFiber(temp)}`) : (res = `${preString}${getFiberNodeNameWithFiber(temp)}`);
     const isMount = (temp as MyReactFiberNodeDev)._debugIsMount;
-    arr.push(`color: white;background-color: ${isMount ? "rgba(10, 190, 235, 0.8)" : "red"}; border-radius: 2px; padding: 1px 5px; margin: 1px 0px`);
+    const isPlain = temp.type & NODE_TYPE.__plain__;
+    arr.push(
+      `color: white;background-color: ${isMount ? (isPlain ? typeColor.plain : typeColor.normal) : typeColor.unmount}; border-radius: 2px; padding: 1px 5px; margin: 1px 0px`
+    );
     arr.push("");
     arr.push(temp);
     temp = temp.parent;

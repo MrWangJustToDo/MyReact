@@ -7,9 +7,9 @@
     "dev": "node server.mjs",
     "build": "npm run build:client && npm run build:server",
     "build:client": "vite build --outDir dist/client",
-    "build:server": "vite build --ssr src/entry-server.jsx --outDir dist/server",
-    "serve": "NODE_ENV=production node server",
-    "debug": "node --inspect-brk server"
+    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "serve": "NODE_ENV=production node server.mjs",
+    "debug": "node --inspect-brk server.mjs"
   },
   "dependencies": {
     "@my-react/react": "workspace:*",

@@ -333,7 +333,7 @@ export const performReactRefresh = () => {
       setRefreshRuntimeFieldForDev(container);
     });
   } else {
-    console.log(`[@my-react/react-refresh] nothing need to update`);
+    console.log(`[@my-react/react-refresh] nothing need to update, you may need a full reload to get the effect`);
   }
 };
 

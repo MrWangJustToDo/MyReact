@@ -16,7 +16,7 @@ pnpm add @my-react/react @my-react/react-dom
 
 ## start in Next.js
 ```bash
-# quick start in next.js (<= 12 version)
+# quick start in next.js
 pnpm add -D @my-react/react-refresh @my-react/react-refresh-tools
 
 # next.config.js

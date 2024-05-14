@@ -5,7 +5,7 @@ import { include, once, STATE_TYPE } from "@my-react/react-shared";
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { unmountComponentAtNode } from "@my-react-dom-client/tools";
-import { autoSetDevTools, checkRoot, prepareDevContainer, startRender } from "@my-react-dom-shared";
+import { autoSetDevTools, checkRoot, delGlobalDispatch, prepareDevContainer, startRender } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 import type { CustomRenderPlatform } from "@my-react/react-reconciler";
@@ -75,6 +75,8 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
       container.__fiber__ = null;
 
       container.__container__ = null;
+
+      delGlobalDispatch(renderContainer);
 
       render(element, container);
 

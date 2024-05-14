@@ -30,13 +30,7 @@ export const injectDevField = () => {
   }
 };
 
-export const autoSetDevTools = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform) => {
-  const runtime = globalThis[DEV_TOOL_RUNTIME_FIELD];
-
-  if (runtime) {
-    setDevTools(runtime, dispatch, platform);
-  }
-
+export const addGlobalDispatch = (dispatch: CustomRenderDispatch) => {
   if (typeof globalThis !== "undefined") {
     if (Array.isArray(globalThis[DISPATCH_FIELD])) {
       globalThis[DISPATCH_FIELD] = globalThis[DISPATCH_FIELD].filter((i) => i !== dispatch);
@@ -45,12 +39,31 @@ export const autoSetDevTools = (dispatch: CustomRenderDispatch, platform: Custom
     } else {
       globalThis[DISPATCH_FIELD] = [dispatch];
     }
-    if (globalThis[DEV_REFRESH_FIELD]) {
-      try {
-        globalThis[DEV_REFRESH_FIELD]?.(globalThis[DISPATCH_FIELD]);
-      } catch {
-        void 0;
-      }
+  }
+};
+
+export const delGlobalDispatch = (dispatch: CustomRenderDispatch) => {
+  if (typeof globalThis !== "undefined") {
+    if (Array.isArray(globalThis[DISPATCH_FIELD])) {
+      globalThis[DISPATCH_FIELD] = globalThis[DISPATCH_FIELD].filter((i) => i !== dispatch);
+    }
+  }
+};
+
+export const autoSetDevTools = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform) => {
+  const runtime = globalThis[DEV_TOOL_RUNTIME_FIELD];
+
+  if (runtime) {
+    setDevTools(runtime, dispatch, platform);
+  }
+
+  addGlobalDispatch(dispatch);
+
+  if (typeof globalThis !== "undefined" && globalThis[DEV_REFRESH_FIELD]) {
+    try {
+      globalThis[DEV_REFRESH_FIELD]?.(globalThis[DISPATCH_FIELD]);
+    } catch {
+      void 0;
     }
   }
 };

@@ -45,6 +45,10 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
     return;
   }
 
+  function scheduleNextUpdate() {
+    scheduleNext(renderDispatch);
+  }
+
   if (enableLoopFromRoot.current) {
     const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
 
@@ -61,14 +65,14 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
         !enableConcurrentMode.current ||
         allLive.some((f) => include(f.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__))
       ) {
-        updateSyncFromRoot(renderDispatch, () => scheduleNext(renderDispatch));
+        updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
       } else {
-        updateConcurrentFromRoot(renderDispatch, () => scheduleNext(renderDispatch));
+        updateConcurrentFromRoot(renderDispatch, scheduleNextUpdate);
       }
     } else {
       if (__DEV__) currentTriggerFiber.current = null;
 
-      scheduleNext(renderDispatch);
+      scheduleNextUpdate();
     }
   } else {
     const allPending = renderDispatch.pendingUpdateFiberArray.getAll();
@@ -96,9 +100,9 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
         renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
 
         if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__)) {
-          updateSyncFromRoot(renderDispatch, () => scheduleNext(renderDispatch));
+          updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
         } else {
-          updateSyncFromTrigger(renderDispatch, () => scheduleNext(renderDispatch));
+          updateSyncFromTrigger(renderDispatch, scheduleNextUpdate);
         }
       } else if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__ | STATE_TYPE.__triggerConcurrentForce__)) {
         renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
@@ -109,15 +113,15 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
 
         if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__)) {
           if (enableConcurrentMode.current) {
-            updateConcurrentFromRoot(renderDispatch, () => scheduleNext(renderDispatch));
+            updateConcurrentFromRoot(renderDispatch, scheduleNextUpdate);
           } else {
-            updateSyncFromRoot(renderDispatch, () => scheduleNext(renderDispatch));
+            updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
           }
         } else {
           if (enableConcurrentMode.current) {
-            updateConcurrentFromTrigger(renderDispatch, () => scheduleNext(renderDispatch));
+            updateConcurrentFromTrigger(renderDispatch, scheduleNextUpdate);
           } else {
-            updateSyncFromTrigger(renderDispatch, () => scheduleNext(renderDispatch));
+            updateSyncFromTrigger(renderDispatch, scheduleNextUpdate);
           }
         }
       } else {
@@ -127,7 +131,7 @@ const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
     } else {
       if (__DEV__) currentTriggerFiber.current = null;
 
-      scheduleNext(renderDispatch);
+      scheduleNextUpdate();
     }
   }
 };
@@ -260,7 +264,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
       throw error;
     } else {
       console.error(`[@my-react/react] a uncaught exception have been throw`, error);
-      
+
       throw error;
     }
   }

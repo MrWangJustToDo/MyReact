@@ -15,7 +15,7 @@ export const hydrateCreate = (fiber: MyReactFiberNode, parentFiberWithDom: MyRea
 
     const parentDom = (parentFiberWithDom?.nativeNode || maybeContainer?.containerNode) as DomElement;
 
-    if (!parentDom) throw new Error('[@my-react/react-dom] hydrate error, parent dom not found');
+    if (!parentDom) throw new Error("[@my-react/react-dom] hydrate error, parent dom not found");
 
     const result = getHydrateDom(fiber, parentDom, previousDom);
 

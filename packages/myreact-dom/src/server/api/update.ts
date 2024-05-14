@@ -1,7 +1,7 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
-import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, isUnitlessNumber, kebabCase, propsToAttrMap, validDomProps } from "@my-react-dom-shared";
+import { getHTMLAttrKey, getSVGAttrKey, isProperty, isStyle, isUnitlessNumber, kebabCase, propsToAttrMap } from "@my-react-dom-shared";
 
 import { TextElement } from "./native";
 
@@ -14,8 +14,6 @@ import type { MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reco
  */
 export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
   if (include(fiber.patch, PATCH_TYPE.__update__)) {
-    if (__DEV__) validDomProps(fiber);
-
     if (include(fiber.type, NODE_TYPE.__plain__)) {
       const dom = fiber.nativeNode as PlainElement;
       const props = fiber.pendingProps || {};

@@ -21,30 +21,6 @@ const { currentRenderPlatform } = __my_react_internal__;
  * @internal
  */
 export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch, _hydrate?: boolean) => {
-  // const mountInsertionEffect = (_fiber: MyReactFiberNode) => {
-  //   if (_fiber.child) mountInsertionEffect(_fiber.child);
-
-  //   insertionEffect(_fiber, _dispatch);
-
-  //   if (_fiber.sibling) mountInsertionEffect(_fiber.sibling);
-  // };
-
-  // const mountLayoutEffect = (_fiber: MyReactFiberNode) => {
-  //   if (_fiber.child) mountLayoutEffect(_fiber.child);
-
-  //   layoutEffect(_fiber, _dispatch);
-
-  //   if (_fiber.sibling) mountLayoutEffect(_fiber.sibling);
-  // };
-
-  // const mountEffect = (_fiber: MyReactFiberNode) => {
-  //   if (_fiber.child) mountEffect(_fiber.child);
-
-  //   effect(_fiber, _dispatch);
-
-  //   if (_fiber.sibling) mountEffect(_fiber.sibling);
-  // };
-
   const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean): boolean => {
     const _result = safeCallWithFiber({
       fiber: _fiber,

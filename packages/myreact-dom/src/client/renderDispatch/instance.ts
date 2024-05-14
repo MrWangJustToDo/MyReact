@@ -4,7 +4,7 @@ import { CustomRenderDispatch, NODE_TYPE, initHMR, unmountFiber } from "@my-reac
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
-import { highlightUpdateFiber } from "@my-react-dom-client/tools";
+import { highlightAppendFiber, highlightRefFiber, highlightUpdateFiber } from "@my-react-dom-client/tools";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount";
 import {
   asyncUpdateTimeLimit,
@@ -20,7 +20,7 @@ import {
 
 import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
 
-import type { HMR, MyReactFiberNode } from "@my-react/react-reconciler";
+import type { HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
@@ -149,6 +149,14 @@ if (__DEV__) {
     value: highlightUpdateFiber,
   });
 
+  Object.defineProperty(ClientDomDispatch.prototype, "patchToCommitAppend", {
+    value: highlightAppendFiber,
+  });
+
+  Object.defineProperty(ClientDomDispatch.prototype, "patchToCommitSetRef", {
+    value: highlightRefFiber,
+  });
+
   // dev log tree
   Object.defineProperty(ClientDomDispatch.prototype, "_debugRender", {
     get: function (this: ClientDomDispatch) {
@@ -218,4 +226,23 @@ if (__DEV__) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   initHMR(ClientDomDispatch.prototype.__hmr_runtime__);
+}
+
+// SEE https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/client/validateDOMNesting.js
+export interface MyReactFiberNodeClientDev extends MyReactFiberNodeDev {
+  _debugTreeScope: {
+    current?: MyReactFiberNodeClientDev;
+
+    formTag?: MyReactFiberNodeClientDev;
+    aTagInScope?: MyReactFiberNodeClientDev;
+    nobrTagInScope?: MyReactFiberNodeClientDev;
+    buttonTagInScope?: MyReactFiberNodeClientDev;
+    pTagInButtonScope?: MyReactFiberNodeClientDev;
+
+    dlItemTagAutoClosing?: MyReactFiberNodeClientDev;
+    listItemTagAutoClosing?: MyReactFiberNodeClientDev;
+    
+    // <head> or <body>
+    containerTagInScope?: MyReactFiberNodeClientDev;
+  }
 }

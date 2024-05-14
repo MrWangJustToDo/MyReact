@@ -32,7 +32,7 @@ export const setContextForInstance = (instance: MyReactInternalInstance, fiber: 
   // unmount instance
   if (!field) return;
 
-  field._context?._removeDependence(instance);
+  field._context?._delDependence(instance);
 
   field._context = fiber;
 
@@ -62,7 +62,7 @@ export const unmountInstance = (instance: MyReactInternalInstance) => {
 
   if (!field) return;
 
-  field._context?._removeDependence(instance);
+  field._context?._delDependence(instance);
 
   field.effect = Effect_TYPE.__unmount__;
 

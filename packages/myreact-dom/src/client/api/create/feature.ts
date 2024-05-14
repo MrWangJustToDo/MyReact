@@ -6,16 +6,18 @@ import {
   type DomComment,
   type DomElement,
   type DomNode,
-  validDomNesting,
   getValidParentFiberWithNode,
   getValidParentFiberWithSVG,
+  updatedAncestorInfoDev,
+  validateTextNesting,
+  validateDOMNesting,
 } from "@my-react-dom-shared";
 
 import { hydrateCreate } from "./hydrateCreate";
 import { nativeCreate } from "./nativeCreate";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
+import type { ClientDomDispatch, MyReactFiberNodeClientDev } from "@my-react-dom-client/renderDispatch";
 
 /**
  * @internal
@@ -32,7 +34,24 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
 
     if (__DEV__) validDomTag(fiber);
 
-    if (__DEV__) validDomNesting(fiber, parentFiberWithNode);
+    if (__DEV__) {
+      const typedFiber = fiber as MyReactFiberNodeClientDev;
+
+      const typedParentFiber = parentFiberWithNode as MyReactFiberNodeClientDev;
+
+      typedFiber._debugTreeScope = updatedAncestorInfoDev(
+        fiber.type & NODE_TYPE.__text__ ? "#text" : fiber.elementType.toString(),
+        typedFiber,
+        typedParentFiber?._debugTreeScope
+      );
+
+      if (include(fiber.type, NODE_TYPE.__text__) && typedParentFiber) {
+        validateTextNesting(typedFiber, fiber.elementType.toString(), typedParentFiber.elementType.toString());
+      }
+      if (include(fiber.type, NODE_TYPE.__plain__) && typedParentFiber) {
+        validateDOMNesting(typedFiber, fiber.elementType.toString(), typedParentFiber._debugTreeScope);
+      }
+    }
 
     if (hydrate) {
       const result = hydrateCreate(fiber, parentFiberWithNode, renderDispatch._previousNativeNode);

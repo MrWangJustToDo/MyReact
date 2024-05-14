@@ -1,9 +1,16 @@
-import { STATE_TYPE, include } from "@my-react/react-shared";
+import { STATE_TYPE, include, once } from "@my-react/react-shared";
 
 import { enableHighlight } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
+
+const color = {
+  update: "rgba(200,50,50,0.8)",
+  append: "rgba(50,200,50,0.8)",
+  setRef: "rgba(50,50,200,0.8)",
+  warn: "rgba(230,150,40,0.8)",
+};
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export const debounce = <T extends Function>(callback: T, time?: number): T => {
@@ -143,7 +150,7 @@ export class HighLight {
 
     this.__pendingUpdate__.clear();
 
-    context.strokeStyle = "rgba(200,50,50,0.8)";
+    context.strokeStyle = color.update;
 
     allPendingUpdate.forEach((fiber) => this.processHighlight(fiber, context));
 
@@ -151,19 +158,23 @@ export class HighLight {
 
     this.__pendingAppend__.clear();
 
+    context.strokeStyle = color.append;
+
     allPendingAppend.forEach((fiber) => this.processHighlight(fiber, context));
 
     const allPendingSetRef = new Set(this.__pendingSetRef__);
 
     this.__pendingSetRef__.clear();
 
-    allPendingSetRef.forEach((fiber) => this.processHighlight(fiber, context));
+    context.strokeStyle = color.setRef;
 
-    context.strokeStyle = "rgba(230,150,40,0.8)";
+    allPendingSetRef.forEach((fiber) => this.processHighlight(fiber, context));
 
     const allPendingWarn = new Set(this.__pendingWarn__);
 
     this.__pendingWarn__.clear();
+
+    context.strokeStyle = color.warn;
 
     allPendingWarn.forEach((fiber) => this.processHighlight(fiber, context));
 
@@ -178,8 +189,35 @@ export class HighLight {
   };
 }
 
+const onceLogForHighlight = once(() => {
+  console.log(
+    `[@my-react/react-dom] highlight update has enabled, %c update %c, %c append %c, %c setRef %c`,
+    `color: white;background-color: ${color.update}; border-radius: 2px; padding: 2px 5px`,
+    "",
+    `color: white;background-color: ${color.append}; border-radius: 2px; padding: 2px 5px`,
+    "",
+    `color: white;background-color: ${color.setRef}; border-radius: 2px; padding: 2px 5px`,
+    ""
+  );
+});
+
 export const highlightUpdateFiber = function (this: ClientDomDispatch, fiber: MyReactFiberNode) {
   if (this.isAppMounted && !this.isHydrateRender && !this.isServerRender && (enableHighlight.current || window.__highlight__)) {
+    onceLogForHighlight();
     HighLight.getHighLightInstance().highLight(fiber, "update");
+  }
+};
+
+export const highlightAppendFiber = function (this: ClientDomDispatch, fiber: MyReactFiberNode) {
+  if (this.isAppMounted && !this.isHydrateRender && !this.isServerRender && (enableHighlight.current || window.__highlight__)) {
+    onceLogForHighlight();
+    HighLight.getHighLightInstance().highLight(fiber, "append");
+  }
+};
+
+export const highlightRefFiber = function (this: ClientDomDispatch, fiber: MyReactFiberNode) {
+  if (this.isAppMounted && !this.isHydrateRender && !this.isServerRender && (enableHighlight.current || window.__highlight__)) {
+    onceLogForHighlight();
+    HighLight.getHighLightInstance().highLight(fiber, "setRef");
   }
 };

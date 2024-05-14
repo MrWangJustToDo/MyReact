@@ -29,7 +29,7 @@ export interface DefaultRenderFiber {
 
   _addDependence(instance: MyReactInternalInstance): void;
 
-  _removeDependence(instance: MyReactInternalInstance): void;
+  _delDependence(instance: MyReactInternalInstance): void;
 
   _update(state?: STATE_TYPE): void;
 

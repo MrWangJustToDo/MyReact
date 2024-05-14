@@ -16,4 +16,7 @@ export * from "./escapeHtml";
 export * from "./shouldPause";
 export * from "./elementStyle";
 export * from "./elementAttrs";
+export * from "./validateTag";
+export * from "./validateProps";
+export * from "./validateDomNesting";
 export * from "./getFiberWithDom";

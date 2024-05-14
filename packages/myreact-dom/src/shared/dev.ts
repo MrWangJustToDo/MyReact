@@ -7,6 +7,7 @@ export type DevToolRuntime = (dispatch: CustomRenderDispatch, platform: CustomRe
 export const setDevTools = (devToolRuntime: DevToolRuntime, dispatch: CustomRenderDispatch, platform: CustomRenderPlatform) => {
   try {
     devToolRuntime(dispatch, platform, initHMR);
+    delete globalThis[DEV_INJECT_FIELD];
   } catch (e) {
     if (__DEV__) {
       console.error("devToolRuntime failed:", e);
@@ -19,7 +20,15 @@ export const DEV_TOOL_RUNTIME_FIELD = "__MY_REACT_DEVTOOL_RUNTIME__";
 
 export const DISPATCH_FIELD = "__@my-react/dispatch__";
 
+const DEV_INJECT_FIELD = "__@my-react/react-inject__";
+
 const DEV_REFRESH_FIELD = "__@my-react/react-refresh__";
+
+export const injectDevField = () => {
+  if (__DEV__ && typeof globalThis !== "undefined") {
+    globalThis[DEV_INJECT_FIELD] = setDevTools;
+  }
+};
 
 export const autoSetDevTools = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform) => {
   const runtime = globalThis[DEV_TOOL_RUNTIME_FIELD];

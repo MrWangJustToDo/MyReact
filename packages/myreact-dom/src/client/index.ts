@@ -11,6 +11,7 @@ import {
   enableEventSystem,
   enableEventTrack,
   enableHighlight,
+  injectDevField,
 } from "../shared";
 
 import { render, hydrate, hydrateRoot, createRoot } from "./mount";
@@ -33,6 +34,8 @@ initGlobalRenderPlatform();
 
 // not need for new refresh runtime package
 // initGlobalHMR();
+
+injectDevField();
 
 checkReconcilerVersion();
 

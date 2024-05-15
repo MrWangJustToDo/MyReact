@@ -43,6 +43,8 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
       type: UpdateQueueType.hook,
       trigger: this,
       payLoad: defaultPayLoad,
+      isSync: false,
+      isForce: false,
       ...params,
     };
 

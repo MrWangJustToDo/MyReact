@@ -39,100 +39,114 @@ const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
   }
 };
 
+const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
+  const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
+
+  function scheduleNextUpdate() {
+    scheduleNext(renderDispatch);
+  }
+
+  renderDispatch.pendingUpdateFiberArray.clear();
+
+  if (allLive.length) {
+    renderDispatch.runtimeFiber.scheduledFiber = renderDispatch.rootFiber;
+
+    renderDispatch.runtimeFiber.nextWorkingFiber = renderDispatch.rootFiber;
+
+    if (__DEV__) currentTriggerFiber.current = renderDispatch.rootFiber;
+
+    if (
+      !enableConcurrentMode.current ||
+      allLive.some((f) => include(f.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__))
+    ) {
+      updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
+    } else {
+      updateConcurrentFromRoot(renderDispatch, scheduleNextUpdate);
+    }
+  } else {
+    if (__DEV__) currentTriggerFiber.current = null;
+
+    scheduleNextUpdate();
+  }
+};
+
+const scheduleUpdateFromTrigger = (renderDispatch: CustomRenderDispatch) => {
+  function scheduleNextUpdate() {
+    scheduleNext(renderDispatch);
+  }
+
+  const allPending = renderDispatch.pendingUpdateFiberArray.getAll();
+
+  let nextWorkFiber: MyReactFiberNode | null = null;
+
+  for (let i = 0; i < allPending.length; i++) {
+    const item = allPending[i];
+
+    if (include(item.state, STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) {
+      renderDispatch.pendingUpdateFiberArray.uniDelete(item);
+      continue;
+    } else {
+      nextWorkFiber = item;
+      break;
+    }
+  }
+
+  if (nextWorkFiber) {
+    if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__)) {
+      renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
+
+      if (__DEV__) currentTriggerFiber.current = nextWorkFiber;
+
+      renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
+
+      // normally a context update
+      if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__)) {
+        updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
+      } else {
+        // TODO maybe could use `updateSyncFromRoot`?
+        updateSyncFromTrigger(renderDispatch, scheduleNextUpdate);
+      }
+    } else if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__ | STATE_TYPE.__triggerConcurrentForce__)) {
+      renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
+
+      if (__DEV__) currentTriggerFiber.current = nextWorkFiber;
+
+      renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
+
+      if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__)) {
+        if (enableConcurrentMode.current) {
+          updateConcurrentFromRoot(renderDispatch, scheduleNextUpdate);
+        } else {
+          updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
+        }
+      } else {
+        if (enableConcurrentMode.current) {
+          updateConcurrentFromTrigger(renderDispatch, scheduleNextUpdate);
+        } else {
+          updateSyncFromTrigger(renderDispatch, scheduleNextUpdate);
+        }
+      }
+    } else {
+      // TODO
+      throw new Error(`[@my-react/react] unknown state, ${nextWorkFiber.state}, this like a bug for @my-react`);
+    }
+  } else {
+    if (__DEV__) currentTriggerFiber.current = null;
+
+    scheduleNextUpdate();
+  }
+};
+
 const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   if (renderDispatch.isAppUnmounted) {
     scheduleNext(renderDispatch);
     return;
   }
 
-  function scheduleNextUpdate() {
-    scheduleNext(renderDispatch);
-  }
-
   if (enableLoopFromRoot.current) {
-    const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
-
-    renderDispatch.pendingUpdateFiberArray.clear();
-
-    if (allLive.length) {
-      renderDispatch.runtimeFiber.scheduledFiber = renderDispatch.rootFiber;
-
-      if (__DEV__) currentTriggerFiber.current = renderDispatch.rootFiber;
-
-      renderDispatch.runtimeFiber.nextWorkingFiber = renderDispatch.rootFiber;
-
-      if (
-        !enableConcurrentMode.current ||
-        allLive.some((f) => include(f.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__))
-      ) {
-        updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
-      } else {
-        updateConcurrentFromRoot(renderDispatch, scheduleNextUpdate);
-      }
-    } else {
-      if (__DEV__) currentTriggerFiber.current = null;
-
-      scheduleNextUpdate();
-    }
+    scheduleUpdateFromRoot(renderDispatch);
   } else {
-    const allPending = renderDispatch.pendingUpdateFiberArray.getAll();
-
-    let nextWorkFiber: MyReactFiberNode | null = null;
-
-    for (let i = 0; i < allPending.length; i++) {
-      const item = allPending[i];
-
-      if (include(item.state, STATE_TYPE.__stable__ | STATE_TYPE.__unmount__)) {
-        renderDispatch.pendingUpdateFiberArray.uniDelete(item);
-        continue;
-      } else {
-        nextWorkFiber = item;
-        break;
-      }
-    }
-
-    if (nextWorkFiber) {
-      if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__)) {
-        renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
-
-        if (__DEV__) currentTriggerFiber.current = nextWorkFiber;
-
-        renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
-
-        if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__)) {
-          updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
-        } else {
-          updateSyncFromTrigger(renderDispatch, scheduleNextUpdate);
-        }
-      } else if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__ | STATE_TYPE.__triggerConcurrentForce__)) {
-        renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
-
-        if (__DEV__) currentTriggerFiber.current = nextWorkFiber;
-
-        renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber;
-
-        if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__)) {
-          if (enableConcurrentMode.current) {
-            updateConcurrentFromRoot(renderDispatch, scheduleNextUpdate);
-          } else {
-            updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
-          }
-        } else {
-          if (enableConcurrentMode.current) {
-            updateConcurrentFromTrigger(renderDispatch, scheduleNextUpdate);
-          } else {
-            updateSyncFromTrigger(renderDispatch, scheduleNextUpdate);
-          }
-        }
-      } else {
-        // TODO
-        throw new Error(`[@my-react/react] unknown state, ${nextWorkFiber.state}`);
-      }
-    } else {
-      if (__DEV__) currentTriggerFiber.current = null;
-
-      scheduleNextUpdate();
-    }
+    scheduleUpdateFromTrigger(renderDispatch);
   }
 };
 

@@ -58,41 +58,12 @@ export const onceLogLegacyLifeCycleMode = once(() => {
   console.log("[@my-react/react] legacy 'UNSAFE' lifeCycle have been enabled!");
 });
 
-export const render = (element: LikeJSX, _container: Partial<RenderContainer>, cb?: () => void) => {
-  if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'render' can only render a '@my-react' element`);
-
+/**
+ * @internal
+ */
+export const internalRender = (element: LikeJSX, container: RenderContainer, cb?: () => void) => {
+  // TODO! remove
   prepareRenderPlatform();
-
-  const container = _container as RenderContainer;
-
-  const renderContainer = container.__container__;
-
-  if (renderContainer instanceof CustomRenderDispatch) {
-    const containerFiber = renderContainer.rootFiber;
-
-    if (renderContainer.isAppCrashed || include(containerFiber.state, STATE_TYPE.__unmount__)) {
-      // is there are not a valid render tree, try do the pure rerender
-      container.__fiber__ = null;
-
-      container.__container__ = null;
-
-      delGlobalDispatch(renderContainer);
-
-      render(element, container);
-
-      return;
-    }
-
-    if (checkIsSameType(containerFiber, element)) {
-      containerFiber._installElement(element);
-
-      triggerUpdate(containerFiber, STATE_TYPE.__triggerSync__, cb);
-
-      return;
-    } else {
-      unmountComponentAtNode(container);
-    }
-  }
 
   onceLog();
 
@@ -143,4 +114,45 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
   startRender(fiber, renderDispatch);
 
   delete renderDispatch.isClientRender;
+
+  return renderDispatch;
+};
+
+export const render = (element: LikeJSX, _container: Partial<RenderContainer>, cb?: () => void) => {
+  if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'render' can only render a '@my-react' element`);
+
+  prepareRenderPlatform();
+
+  const container = _container as RenderContainer;
+
+  const renderContainer = container.__container__;
+
+  if (renderContainer instanceof CustomRenderDispatch) {
+    const containerFiber = renderContainer.rootFiber;
+
+    if (renderContainer.isAppCrashed || include(containerFiber.state, STATE_TYPE.__unmount__)) {
+      // is there are not a valid render tree, try do the pure rerender
+      container.__fiber__ = null;
+
+      container.__container__ = null;
+
+      delGlobalDispatch(renderContainer);
+
+      render(element, container);
+
+      return;
+    }
+
+    if (checkIsSameType(containerFiber, element)) {
+      containerFiber._installElement(element);
+
+      triggerUpdate(containerFiber, STATE_TYPE.__triggerSync__, cb);
+
+      return;
+    } else {
+      unmountComponentAtNode(container);
+    }
+  }
+
+  internalRender(element, container, cb);
 };

@@ -44,7 +44,7 @@ const _Footer = () => {
           </Link>
         </Text>
       </Flex>
-      <Text fontSize="sm" marginTop="2.5" marginBottom="9" color="lightTextColor" as="div">
+      <Text fontSize="sm" marginTop="2.5" marginBottom="9" color="lightTextColor">
         <Time>
           {({ time, isMount }) => {
             if (!isMount) {

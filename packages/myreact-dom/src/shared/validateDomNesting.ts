@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { __my_react_shared__ } from "@my-react/react";
+import { getFiberTree } from "@my-react/react-reconciler";
 
 import { logOnce } from "./debug";
 import { makeMap } from "./tools";
@@ -388,6 +389,8 @@ export function updatedAncestorInfoDev(tag: string, fiber: MyReactFiberNodeClien
   }
 }
 
+const hasWarnMap: Record<string, boolean> = {};
+
 export function validateDOMNesting(fiber: MyReactFiberNodeClientDev, childTag: string, ancestorInfo: AncestorInfoDev): boolean {
   if (__DEV__) {
     ancestorInfo = ancestorInfo || emptyAncestorInfoDev;
@@ -409,6 +412,16 @@ export function validateDOMNesting(fiber: MyReactFiberNodeClientDev, childTag: s
     const last = enableOptimizeTreeLog.current;
 
     enableOptimizeTreeLog.current = false;
+
+    const tree = getFiberTree(invalidParentOrAncestor);
+
+    if (hasWarnMap[tree]) {
+      enableOptimizeTreeLog.current = last;
+
+      return false;
+    }
+
+    hasWarnMap[tree] = true;
 
     const ancestorTag = invalidParentOrAncestor.elementType.toString();
 
@@ -449,6 +462,16 @@ export function validateTextNesting(fiber: MyReactFiberNodeClientDev, childText:
     const last = enableOptimizeTreeLog.current;
 
     enableOptimizeTreeLog.current = false;
+
+    const tree = getFiberTree(fiber);
+
+    if (hasWarnMap[tree]) {
+      enableOptimizeTreeLog.current = last;
+
+      return false;
+    }
+
+    hasWarnMap[tree] = true;
 
     if (/\S/.test(childText)) {
       logOnce(fiber, "error", "validateTextNesting", `In HTML, text nodes cannot be a child of <${parentTag}>.\nThis will cause a hydration error.`);

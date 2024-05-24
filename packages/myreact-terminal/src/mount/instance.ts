@@ -195,6 +195,8 @@ export class Instance {
     }
 
     mount(fiber, renderDispatch);
+
+    renderDispatch.isAppMounted = true;
   };
 
   writeToStdout(data: string): void {

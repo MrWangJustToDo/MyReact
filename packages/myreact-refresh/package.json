@@ -58,7 +58,6 @@
     "@my-react/react-reconciler": "^0.3.1"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.1",
-    "@my-react/react-dom": ">=0.3.1"
+    "@my-react/react": ">=0.3.1"
   }
 }

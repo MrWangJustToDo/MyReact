@@ -28,7 +28,7 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
 
   commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
-  renderDispatch.isAppMounted = true;
+  // renderDispatch.isAppMounted = true;
 
   globalLoop.current = false;
 };
@@ -71,7 +71,7 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
 
   commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
-  renderDispatch.isAppMounted = true;
+  // renderDispatch.isAppMounted = true;
 
   globalLoop.current = false;
 };

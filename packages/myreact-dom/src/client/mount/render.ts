@@ -115,6 +115,8 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
 
   delete renderDispatch.isClientRender;
 
+  renderDispatch.isAppMounted = true;
+
   return renderDispatch;
 };
 

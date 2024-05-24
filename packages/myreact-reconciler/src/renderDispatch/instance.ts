@@ -13,6 +13,7 @@ import { MyWeakMap, NODE_TYPE, onceWarnWithKeyAndFiber } from "../share";
 
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
 import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
+import type { HMR} from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
 
 export class CustomRenderDispatch implements RenderDispatch {
@@ -235,4 +236,9 @@ export class CustomRenderDispatch implements RenderDispatch {
 
     this.runtimeFiber.nextWorkingFiber = null;
   }
+}
+
+export interface CustomRenderDispatchDev extends CustomRenderDispatch {
+  __hmr_runtime__: HMR;
+  __hmr_remount__: (cb?: () => void) => void;
 }

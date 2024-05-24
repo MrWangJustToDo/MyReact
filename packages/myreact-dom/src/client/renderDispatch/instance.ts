@@ -21,6 +21,7 @@ import {
 import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
 
 import type { HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
+import type { PlainElementDev } from "@my-react-dom-server/api";
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
@@ -127,6 +128,8 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 export interface ClientDomDispatchDev extends ClientDomDispatch {
   __hmr_runtime__: HMR;
   __hmr_remount__: (cb?: () => void) => void;
+  _debugVersion: string;
+  _debugRender: Promise<PlainElementDev>;
 }
 
 function hmrRemount(this: ClientDomDispatch, cb?: () => void) {

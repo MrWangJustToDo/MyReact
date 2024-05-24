@@ -1,8 +1,7 @@
 import { ForwardRef, Memo, STATE_TYPE, TYPEKEY } from "@my-react/react-shared";
 
 import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType } from "@my-react/react";
-import type { ClientDomDispatch, ClientDomDispatchDev } from "@my-react/react-dom";
-import type { CustomRenderDispatch, HMR, MyReactFiberNodeDev } from "@my-react/react-reconciler";
+import type { CustomRenderDispatch, CustomRenderDispatchDev, HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
 const DISPATCH_FIELD = "__@my-react/dispatch__";
 
@@ -10,7 +9,7 @@ const DEV_REFRESH_FIELD = "__@my-react/react-refresh__";
 
 const DEV_TOOL_FIELD = "__@my-react/react-refresh-dev__";
 
-let hmrRuntime: HMR;
+let hmrRuntime: HMR[];
 
 type Family = {
   current: MyReactComponentType;
@@ -252,7 +251,7 @@ export const createSignatureFunctionForTransform = () => {
 export const performReactRefresh = () => {
   if (!pendingUpdates.length) return;
 
-  if (typeof hmrRuntime?.hmr !== "function") {
+  if (hmrRuntime.length === 0) {
     console.log(`[@my-react/react-refresh] try to refresh current App failed, current environment not have a valid HMR runtime`);
     return;
   }
@@ -269,7 +268,15 @@ export const performReactRefresh = () => {
     const nextType = getRenderTypeFormType(_nextType);
 
     if (prevType && nextType) {
-      const fibers = hmrRuntime?.getCurrentFibersFromType?.(prevType);
+      let fibers: Set<MyReactFiberNode> | null = null;
+
+      hmrRuntime.forEach((i) => {
+        try {
+          fibers = fibers || i.getCurrentFibersFromType(prevType);
+        } catch {
+          void 0;
+        }
+      });
 
       updatedFamiliesByType.set(prevType, family);
 
@@ -281,11 +288,21 @@ export const performReactRefresh = () => {
         const forceReset = !canPreserveStateBetween(prevType, nextType);
 
         fibers.forEach((f) => {
-          const container = hmrRuntime?.getCurrentDispatchFromFiber?.(f);
+          let container: CustomRenderDispatchDev | null = null;
+
+          hmrRuntime.forEach((i) => {
+            try {
+              container = container || (i.getCurrentDispatchFromFiber(f) as CustomRenderDispatchDev);
+            } catch {
+              void 0;
+            }
+          });
+
+          if (!container) return;
 
           const hasRootUpdate = containers.get(container) || f === container.rootFiber;
 
-          hmrRuntime?.hmr?.(f, nextType, forceReset);
+          container.__hmr_runtime__?.hmr?.(f, nextType, forceReset);
 
           containers.set(container, hasRootUpdate);
         });
@@ -316,10 +333,10 @@ export const performReactRefresh = () => {
       }
     };
 
-    containers.forEach((hasRootUpdate, container: ClientDomDispatch) => {
+    containers.forEach((hasRootUpdate, container: CustomRenderDispatchDev) => {
       if (container.isAppCrashed || container.isAppUnmounted) {
         // have a uncaught runtime error for prev render
-        (container as ClientDomDispatchDev).__hmr_remount__?.(updateDone);
+        container.__hmr_remount__?.(updateDone);
       } else if (container.runtimeFiber.errorCatchFiber) {
         // has a error for prev render
         const errorCatchFiber = container?.runtimeFiber.errorCatchFiber;
@@ -403,11 +420,28 @@ let hasInjected = false;
 
 const setupRefresh = (dispatchArray: CustomRenderDispatch[]) => {
   if (hasInjected) return;
-  const _hmrRuntime = dispatchArray.find((item) => item?.["__hmr_runtime__"])?.["__hmr_runtime__"];
-  if (_hmrRuntime) {
-    hmrRuntime = _hmrRuntime;
 
-    hmrRuntime.setRefreshHandler(resolveFamily);
+  const typedDispatchArray = dispatchArray as CustomRenderDispatchDev[];
+
+  const allHMRRuntime = typedDispatchArray.map((item) => item?.["__hmr_runtime__"]);
+
+  allHMRRuntime.forEach((c, i) => {
+    const n = allHMRRuntime[i + 1];
+    if (n && c?.hmr !== n?.hmr) {
+      console.warn(
+        `[@my-react/react-refresh] find multiple HMR runtime in current environment, look like you are using multiple version of @my-react for current page, it may cause some problem!`
+      );
+    }
+  });
+
+  if (allHMRRuntime.length > 0) {
+    hmrRuntime = allHMRRuntime;
+
+    const setRefreshHandler = new Set(hmrRuntime.map((i) => i.setRefreshHandler));
+
+    setRefreshHandler.forEach((item) => {
+      item(resolveFamily);
+    });
 
     dispatchArray.forEach((dispatch) => setRefreshRuntimeFieldForDev(dispatch));
 
@@ -445,5 +479,5 @@ if (__DEV__) {
     updatedFamiliesByType,
   };
 } else {
-  console.warn('[@my-react/react-refresh] current environment is not in development mode!')
+  console.warn("[@my-react/react-refresh] current environment is not in development mode!");
 }

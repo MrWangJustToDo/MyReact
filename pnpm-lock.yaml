@@ -181,9 +181,6 @@ importers:
       '@my-react/react':
         specifier: '>=0.3.1'
         version: link:../myreact
-      '@my-react/react-dom':
-        specifier: '>=0.3.1'
-        version: link:../myreact-dom
     devDependencies:
       '@my-react/react-reconciler':
         specifier: ^0.3.1

@@ -102,7 +102,7 @@ type DefaultRenderDispatch = {
 
   commitUnsetRef(_fiber: MyReactFiberNode): void;
 
-  commitClearNode(_fiber: MyReactFiberNode): void;
+  commitClear(_fiber: MyReactFiberNode): void;
 
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode;
 

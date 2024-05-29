@@ -19,6 +19,8 @@ export const startRender = (
 
   const endTime = Date.now();
 
+  renderDispatch.isAppMounted = true;
+
   if (hydrate) {
     renderDispatch.hydrateTime = endTime - startTime;
   } else {
@@ -39,6 +41,8 @@ export const startRenderAsync = async (
   await mountAsync(fiber, renderDispatch);
 
   const endTime = Date.now();
+
+  renderDispatch.isAppMounted = true;
 
   if (hydrate) {
     renderDispatch.hydrateTime = endTime - startTime;

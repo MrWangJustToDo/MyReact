@@ -46,8 +46,6 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
 
   startRender(fiber, renderDispatch, true);
 
-  renderDispatch.isAppMounted = true;
-
   delete renderDispatch.isHydrateRender;
 };
 
@@ -81,8 +79,6 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
   initialFiberNode(fiber, renderDispatch);
 
   await startRenderAsync(fiber, renderDispatch, true);
-
-  renderDispatch.isAppMounted = true;
 
   delete renderDispatch.isHydrateRender;
 };

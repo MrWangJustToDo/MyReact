@@ -3,7 +3,7 @@ import { MODE_TYPE, STATE_TYPE, exclude, include, merge } from "@my-react/react-
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { unmountFiber } from "../renderUnmount";
-import { NODE_TYPE, currentDevFiber, currentTriggerFiber, devError, devWarn, fiberToDispatchMap } from "../share";
+import { NODE_TYPE, currentDevFiber, currentTriggerFiber, devError, devWarnWithFiber, fiberToDispatchMap } from "../share";
 
 import { updateConcurrentFromRoot, updateConcurrentFromTrigger, updateSyncFromRoot, updateSyncFromTrigger } from "./feature";
 
@@ -185,8 +185,9 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
 
   if (renderDispatch.isAppUnmounted) return;
 
+  // TODO
   if (!renderDispatch.isAppMounted) {
-    if (__DEV__) devWarn("[@my-react/react] pending, can not update component,", fiber);
+    if (__DEV__) devWarnWithFiber(fiber, "[@my-react/react] pending, waiting for app mounted");
 
     renderPlatform.macroTask(() => triggerUpdate(fiber, state, cb));
 

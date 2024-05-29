@@ -44,7 +44,7 @@ export class TerminalDispatch extends CustomRenderDispatch {
   commitSetRef(_fiber: MyReactFiberNode): void {
     // throw new Error("terminal platform not support ref");
   }
-  commitClearNode(_fiber: MyReactFiberNode): void {
+  commitClear(_fiber: MyReactFiberNode): void {
     clear(_fiber, this);
   }
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {

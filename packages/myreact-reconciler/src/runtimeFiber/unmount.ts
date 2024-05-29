@@ -14,7 +14,7 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   safeCallWithFiber({ fiber, action: () => renderDispatch.commitUnsetRef(fiber) });
 
-  safeCallWithFiber({ fiber, action: () => renderDispatch.commitClearNode(fiber) });
+  safeCallWithFiber({ fiber, action: () => renderDispatch.commitClear(fiber) });
 
   safeCallWithFiber({ fiber, action: () => renderDispatch.patchToFiberUnmount?.(fiber) });
 

@@ -76,8 +76,6 @@ export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: 
   mountLoop(_fiber);
 };
 
-export const defaultDispatchMount = defaultDispatchMountLegacy;
-
 export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
   const _list = generateFiberToMountList(_fiber);
 
@@ -117,3 +115,5 @@ export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: 
 
   renderPlatform.microTask(() => _list.listToFoot((_fiber) => effect(_fiber, _dispatch)));
 };
+
+export const defaultDispatchMount = defaultDispatchMountLatest;

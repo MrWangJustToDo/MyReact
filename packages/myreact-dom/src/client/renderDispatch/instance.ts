@@ -68,17 +68,17 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   patchToCommitUpdate?: (_fiber: MyReactFiberNode) => void;
 
   patchToCommitSetRef?: (_fiber: MyReactFiberNode) => void;
-  _commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
+  clientCommitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(_fiber, this, !!_hydrate);
   }
   commitCreate(_fiber: MyReactFiberNode): void {
-    this._commitCreate(_fiber);
+    this.clientCommitCreate(_fiber);
   }
-  _commitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
+  clientCommitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
     update(_fiber, this, !!_hydrate);
   }
   commitUpdate(_fiber: MyReactFiberNode): void {
-    this._commitUpdate(_fiber);
+    this.clientCommitUpdate(_fiber);
   }
   commitAppend(_fiber: MyReactFiberNode): void {
     append(_fiber, this);
@@ -92,7 +92,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   commitUnsetRef(_fiber: MyReactFiberNode): void {
     unsetRef(_fiber);
   }
-  commitClearNode(_fiber: MyReactFiberNode): void {
+  commitClear(_fiber: MyReactFiberNode): void {
     clearNode(_fiber);
   }
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {

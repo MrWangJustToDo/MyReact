@@ -24,12 +24,12 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
   const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean): boolean => {
     const _result = safeCallWithFiber({
       fiber: _fiber,
-      action: () => _dispatch._commitCreate(_fiber, _hydrate),
+      action: () => _dispatch.clientCommitCreate(_fiber, _hydrate),
     });
 
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => _dispatch._commitUpdate(_fiber, _result),
+      action: () => _dispatch.clientCommitUpdate(_fiber, _result),
     });
 
     safeCallWithFiber({

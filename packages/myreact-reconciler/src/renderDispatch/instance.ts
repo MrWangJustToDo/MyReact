@@ -172,7 +172,7 @@ export class CustomRenderDispatch implements RenderDispatch {
   commitUnsetRef(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  commitClearNode(_fiber: MyReactFiberNode): void {
+  commitClear(_fiber: MyReactFiberNode): void {
     void 0;
   }
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {

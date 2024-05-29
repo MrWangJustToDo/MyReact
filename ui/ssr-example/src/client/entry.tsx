@@ -1,5 +1,5 @@
+/* eslint-disable react/no-deprecated */
 /* eslint-disable @typescript-eslint/no-var-requires */
-// eslint-disable-next-line react/no-deprecated
 import { hydrate } from "react-dom";
 import { hydrateRoot, createRoot } from "react-dom/client";
 

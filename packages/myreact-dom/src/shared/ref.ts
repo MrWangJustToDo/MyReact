@@ -37,7 +37,7 @@ export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispat
       logOnce(_fiber, "error", "can not set ref for current element", "can not set ref for current element");
     }
 
-    safeCall(() => renderDispatch.patchToCommitSetRef(_fiber));
+    safeCall(() => renderDispatch.patchToCommitSetRef?.(_fiber));
 
     safeCall(() => renderDispatch._commitDOMSetRefListeners.forEach((listener) => listener(_fiber)));
 

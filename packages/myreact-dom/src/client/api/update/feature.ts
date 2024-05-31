@@ -43,7 +43,7 @@ export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       }
     }
 
-    safeCall(() => renderDispatch.patchToCommitUpdate(fiber));
+    safeCall(() => renderDispatch.patchToCommitUpdate?.(fiber));
 
     safeCall(() => renderDispatch._commitDOMUpdateListeners.forEach((listener) => listener(fiber)));
 

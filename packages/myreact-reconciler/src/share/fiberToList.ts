@@ -16,24 +16,20 @@ const getNextForUnmountList = (fiber: MyReactFiberNode, root: MyReactFiberNode) 
   return null;
 };
 
-const getNextForMountList = (fiber: MyReactFiberNode) => {
-  if (fiber.child) {
-    while (fiber.child) {
-      fiber = fiber.child;
-    }
-    return fiber;
-  } else if (fiber.sibling) {
-    return fiber.sibling;
-  } else {
-    return null;
+const getChild = (fiber: MyReactFiberNode) => {
+  if (!fiber) return null;
+  while (fiber.child) {
+    fiber = fiber.child;
   }
+  return fiber;
 };
 
-const getNextPlainFiberNode = (fiber: MyReactFiberNode) => {
-  while (fiber && !fiber.sibling) {
-    fiber = fiber.parent;
-  }
+const getSibling = (fiber: MyReactFiberNode) => {
   return fiber?.sibling;
+};
+
+const getParent = (fiber: MyReactFiberNode) => {
+  return fiber?.parent;
 };
 
 export const generateFiberToUnmountList = (fiber: MyReactFiberNode) => {
@@ -56,24 +52,45 @@ export const generateFiberToUnmountList = (fiber: MyReactFiberNode) => {
 export const generateFiberToMountList = (fiber: MyReactFiberNode) => {
   const listTree = new ListTree<MyReactFiberNode>();
 
+  let mode: "child" | "sibling" = "child";
+
   let current = fiber;
 
-  let next = fiber;
-
-  while (((next = getNextForMountList(current)), next)) {
-    if (next) {
-      listTree.push(next);
-      current = next;
-      continue;
-    } else {
-      current = current.parent;
-      if (current) {
-        listTree.push(current);
-        current = getNextPlainFiberNode(current);
-        if (!current) break;
-      } else {
-        break;
+  while (current) {
+    if (mode === "child") {
+      let temp = getChild(current);
+      if (temp) {
+        // have a child
+        if (temp !== current) {
+          listTree.push(temp);
+        } else {
+          // try to get the sibling
+          temp = getSibling(current);
+          if (temp) {
+            listTree.push(temp);
+          } else {
+            // no sibling, go back to parent
+            temp = getParent(current);
+            if (temp) {
+              listTree.push(temp);
+              mode = "sibling";
+            }
+          }
+        }
       }
+      current = temp;
+    } else {
+      let temp = getSibling(current);
+      if (temp) {
+        listTree.push(temp);
+        mode = 'child';
+      } else {
+        temp = getParent(current);
+        if (temp) {
+          listTree.push(temp);
+        }
+      }
+      current = temp;
     }
   }
 

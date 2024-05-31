@@ -18,6 +18,8 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   safeCallWithFiber({ fiber, action: () => renderDispatch.patchToFiberUnmount?.(fiber) });
 
+  safeCallWithFiber({ fiber, action: () => renderDispatch._fiberUnmountListener.forEach((listener) => listener(fiber)) });
+
   __DEV__ ? "" : fiberToDispatchMap.delete(fiber);
 
   renderDispatch.runtimeMap.suspenseMap.delete(fiber);

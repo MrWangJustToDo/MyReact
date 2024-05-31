@@ -1,6 +1,6 @@
 import { PATCH_TYPE, ListTree, include, remove } from "@my-react/react-shared";
 
-import { unmountList } from "../renderUnmount";
+import { clearContainer, unmountFiber, unmountList } from "../renderUnmount";
 import { generateFiberToUnmountList, safeCallWithFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -14,7 +14,17 @@ export const defaultGenerateUnmountMap = (fiber: MyReactFiberNode, unmount: MyRe
   map.set(fiber, list.concat(newList));
 };
 
-export const unmount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const defaultDispatchUnmount = (renderDispatch: CustomRenderDispatch) => {
+  if (renderDispatch.isAppUnmounted) return;
+
+  const rootFiber = renderDispatch.rootFiber;
+
+  unmountFiber(rootFiber);
+
+  clearContainer(renderDispatch);
+};
+
+export const unmountPending = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (include(fiber.patch, PATCH_TYPE.__unmount__)) {
     const unmountMap = renderDispatch.runtimeMap.unmountMap;
 

@@ -1,4 +1,4 @@
-import { emptyProps, NODE_TYPE, type MyReactFiberNode } from "@my-react/react-reconciler";
+import { emptyProps, NODE_TYPE, safeCall, type MyReactFiberNode } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import { validDomProps } from "@my-react-dom-shared";
@@ -43,7 +43,9 @@ export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       }
     }
 
-    renderDispatch.patchToCommitUpdate?.(fiber)
+    safeCall(() => renderDispatch.patchToCommitUpdate(fiber));
+
+    safeCall(() => renderDispatch._commitDOMUpdateListeners.forEach((listener) => listener(fiber)));
 
     fiber.memoizedProps = fiber.pendingProps;
 

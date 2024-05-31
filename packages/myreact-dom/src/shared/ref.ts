@@ -1,4 +1,4 @@
-import { NODE_TYPE, safeCallWithFiber } from "@my-react/react-reconciler";
+import { NODE_TYPE, safeCall, safeCallWithFiber } from "@my-react/react-reconciler";
 import { PATCH_TYPE, STATE_TYPE, include, remove } from "@my-react/react-shared";
 
 import { logOnce } from "./debug";
@@ -37,7 +37,9 @@ export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispat
       logOnce(_fiber, "error", "can not set ref for current element", "can not set ref for current element");
     }
 
-    renderDispatch.patchToCommitSetRef?.(_fiber);
+    safeCall(() => renderDispatch.patchToCommitSetRef(_fiber));
+
+    safeCall(() => renderDispatch._commitDOMSetRefListeners.forEach((listener) => listener(_fiber)));
 
     _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__ref__);
   }

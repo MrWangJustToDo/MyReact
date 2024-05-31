@@ -72,23 +72,86 @@ type DefaultRenderDispatch = {
 
   pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void, option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void;
 
+  /**
+   * @deprecated
+   */
   patchToFiberInitial?: (_fiber: MyReactFiberNode) => void;
 
+  /**
+   * @deprecated
+   */
   patchToFiberUpdate?: (_fiber: MyReactFiberNode) => void;
 
+  /**
+   * @deprecated
+   */
   patchToFiberUnmount?: (_fiber: MyReactFiberNode) => void;
 
+  onFiberInitial?: (cb: (_fiber: MyReactFiberNode) => void) => () => void;
+
+  onceFiberInitial?: (cb: (_fiber: MyReactFiberNode) => void) => void;
+
+  onFiberUpdate?: (cb: (_fiber: MyReactFiberNode) => void) => () => void;
+
+  onceFiberUpdate?: (cb: (_fiber: MyReactFiberNode) => void) => void;
+
+  onFiberUnmount?: (cb: (_fiber: MyReactFiberNode) => void) => () => void;
+
+  onceFiberUnmount?: (cb: (_fiber: MyReactFiberNode) => void) => void;
+
+  /**
+   * @deprecated
+   */
   beforeCommit?: () => void;
 
+  onBeforeCommit?: (cb: () => void) => () => void;
+
+  onceBeforeCommit?: (cb: () => void) => void;
+
+  /**
+   * @deprecated
+   */
   afterCommit?: () => void;
 
+  onAfterCommit?: (cb: () => void) => () => void;
+
+  onceAfterCommit?: (cb: () => void) => void;
+
+  /**
+   * @deprecated
+   */
   beforeUpdate?: () => void;
 
+  onBeforeUpdate?: (cb: () => void) => () => void;
+
+  onceBeforeUpdate?: (cb: () => void) => void;
+
+  /**
+   * @deprecated
+   */
   afterUpdate?: () => void;
 
+  onAfterUpdate?: (cb: () => void) => () => void;
+
+  onceAfterUpdate?: (cb: () => void) => void;
+
+  /**
+   * @deprecated
+   */
   beforeUnmount?: () => void;
 
+  onBeforeUnmount?: (cb: () => void) => () => void;
+
+  onceBeforeUnmount?: (cb: () => void) => void;
+
+  /**
+   * @deprecated
+   */
   afterUnmount?: () => void;
+
+  onAfterUnmount?: (cb: () => void) => () => void;
+
+  onceAfterUnmount?: (cb: () => void) => void;
 
   commitCreate(_fiber: MyReactFiberNode): void;
 
@@ -131,6 +194,8 @@ type DefaultRenderDispatch = {
   reconcileCommit(_fiber: MyReactFiberNode): void;
 
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void;
+
+  reconcileUnmount(): void;
 
   shouldYield(): boolean;
 };

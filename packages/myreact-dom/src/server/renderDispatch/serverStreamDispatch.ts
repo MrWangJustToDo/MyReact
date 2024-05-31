@@ -1,4 +1,4 @@
-import { CustomRenderDispatch, NODE_TYPE, safeCallWithFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, NODE_TYPE, safeCall, safeCallWithFiber } from "@my-react/react-reconciler";
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
@@ -107,12 +107,18 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
       if (_fiber.sibling) mountLoop(_fiber.sibling);
     };
 
-    this.beforeCommit?.();
+    safeCall(() => this.beforeCommit?.());
+
+    safeCall(() => this._beforeCommitListener.forEach((l) => l()));
 
     Promise.resolve()
       .then(() => mountLoop(_fiber))
       .then(() => this.stream.push(null))
-      .then(() => this.afterCommit?.());
+      .then(() => {
+        safeCall(() => this._afterCommitListener.forEach((l) => l()));
+
+        safeCall(() => this.afterCommit?.());
+      });
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
@@ -207,7 +213,9 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
       if (_fiber.sibling) mountLoop(_fiber.sibling);
     };
 
-    this.beforeCommit?.();
+    safeCall(() => this.beforeCommit?.());
+
+    safeCall(() => this._beforeCommitListener.forEach((l) => l()));
 
     let generatedScript = (this.bootstrapModules || []).map(generateModuleBootstrap).join("");
 
@@ -221,7 +229,11 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
       .then(() => this.stream.push(generatedScript))
       .then(() => this.stream.push(null))
       .then(() => this.onAllReady?.())
-      .then(() => this.afterCommit?.());
+      .then(() => {
+        safeCall(() => this._afterCommitListener.forEach((l) => l()));
+
+        safeCall(() => this.afterCommit?.());
+      });
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {

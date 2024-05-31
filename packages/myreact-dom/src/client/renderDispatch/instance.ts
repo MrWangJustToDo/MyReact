@@ -1,5 +1,5 @@
 import { __my_react_shared__, createElement, type MyReactElement, type MyReactElementNode, type MyReactElementType } from "@my-react/react";
-import { CustomRenderDispatch, NODE_TYPE, initHMR, unmountFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, NODE_TYPE, initHMR, safeCall, unmountFiber } from "@my-react/react-reconciler";
 
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
@@ -43,6 +43,8 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
   };
 
+  version = __VERSION__;
+
   enableUpdate = true;
 
   runtimeRef = runtimeRef;
@@ -63,11 +65,75 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   enableASyncHydrate = enableASyncHydrate.current;
 
+  _commitDOMAppendListeners: Set<(f: MyReactFiberNode) => void> = new Set();
+
+  _commitDOMUpdateListeners: Set<(f: MyReactFiberNode) => void> = new Set();
+
+  _commitDOMSetRefListeners: Set<(f: MyReactFiberNode) => void> = new Set();
+
+  onDOMAppend(cb: (f: MyReactFiberNode) => void) {
+    this._commitDOMAppendListeners.add(cb);
+
+    return () => this._commitDOMAppendListeners.delete(cb);
+  }
+
+  onceDOMAppend(cb: (f: MyReactFiberNode) => void) {
+    const listener = (f: MyReactFiberNode) => {
+      cb(f);
+
+      this._commitDOMAppendListeners.delete(listener);
+    };
+
+    this._commitDOMAppendListeners.add(listener);
+  }
+
+  onDOMUpdate(cb: (f: MyReactFiberNode) => void) {
+    this._commitDOMUpdateListeners.add(cb);
+
+    return () => this._commitDOMUpdateListeners.delete(cb);
+  }
+
+  onceDOMUpdate(cb: (f: MyReactFiberNode) => void) {
+    const listener = (f: MyReactFiberNode) => {
+      cb(f);
+
+      this._commitDOMUpdateListeners.delete(listener);
+    };
+
+    this._commitDOMUpdateListeners.add(listener);
+  }
+
+  onDOMSetRef(cb: (f: MyReactFiberNode) => void) {
+    this._commitDOMSetRefListeners.add(cb);
+
+    return () => this._commitDOMSetRefListeners.delete(cb);
+  }
+
+  onceDOMSetRef(cb: (f: MyReactFiberNode) => void) {
+    const listener = (f: MyReactFiberNode) => {
+      cb(f);
+
+      this._commitDOMSetRefListeners.delete(listener);
+    };
+
+    this._commitDOMSetRefListeners.add(listener);
+  }
+
+  /**
+   * @deprecated
+   */
   patchToCommitAppend?: (_fiber: MyReactFiberNode) => void;
 
+  /**
+   * @deprecated
+   */
   patchToCommitUpdate?: (_fiber: MyReactFiberNode) => void;
 
+  /**
+   * @deprecated
+   */
   patchToCommitSetRef?: (_fiber: MyReactFiberNode) => void;
+
   clientCommitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(_fiber, this, !!_hydrate);
   }
@@ -103,11 +169,19 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     }
   }
   reconcileCommit(_fiber: MyReactFiberNode) {
-    this.beforeCommit?.();
+    safeCall(() => this.beforeCommit?.());
+
+    safeCall(() => {
+      this._beforeCommitListener.forEach((cb) => cb());
+    });
 
     clientDispatchMount(_fiber, this, this.isHydrateRender);
 
-    this.afterCommit?.();
+    safeCall(() => {
+      this._afterCommitListener.forEach((cb) => cb());
+    });
+
+    safeCall(() => this.afterCommit?.());
   }
   shouldYield(): boolean {
     return shouldPauseAsyncUpdate();
@@ -244,8 +318,8 @@ export interface MyReactFiberNodeClientDev extends MyReactFiberNodeDev {
 
     dlItemTagAutoClosing?: MyReactFiberNodeClientDev;
     listItemTagAutoClosing?: MyReactFiberNodeClientDev;
-    
+
     // <head> or <body>
     containerTagInScope?: MyReactFiberNodeClientDev;
-  }
+  };
 }

@@ -153,8 +153,7 @@ const shouldIncludeLog = (fiber: MyReactFiberNode) => {
   return false;
 };
 
-// TODO
-export const getElementName = (fiber: MyReactFiberNode) => {
+export const getPlainFiberName = (fiber: MyReactFiberNode) => {
   const typedFiber = fiber as MyReactFiberNodeDev;
   if (fiber.type & NODE_TYPE.__memo__) {
     const targetRender = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
@@ -179,7 +178,7 @@ export const getElementName = (fiber: MyReactFiberNode) => {
     if (fiber.type & NODE_TYPE.__forwardRef__) {
       res += "-forwardRef";
     }
-    return `<${name ? name : "anonymous"} - (${res}) />`;
+    return `${name ? name : "anonymous"} - (${res})`;
   }
   if (fiber.type & NODE_TYPE.__lazy__) {
     const typedElementType = fiber.elementType as ReturnType<typeof lazy>;
@@ -190,31 +189,31 @@ export const getElementName = (fiber: MyReactFiberNode) => {
       const type = element.type as MixinMyReactObjectComponent;
       name = type.displayName || name;
     }
-    return `<${name ? name : "anonymous"} - (lazy) />`;
+    return `${name ? name : "anonymous"} - (lazy)`;
   }
-  if (fiber.type & NODE_TYPE.__portal__) return `<Portal />`;
-  if (fiber.type & NODE_TYPE.__null__) return `<Null />`;
-  if (fiber.type & NODE_TYPE.__empty__) return `<Empty />`;
-  if (fiber.type & NODE_TYPE.__scope__) return `<Scope />`;
-  if (fiber.type & NODE_TYPE.__strict__) return `<Strict />`;
-  if (fiber.type & NODE_TYPE.__profiler__) return `<Profiler />`;
-  if (fiber.type & NODE_TYPE.__suspense__) return `<Suspense />`;
+  if (fiber.type & NODE_TYPE.__portal__) return `Portal`;
+  if (fiber.type & NODE_TYPE.__null__) return `Null`;
+  if (fiber.type & NODE_TYPE.__empty__) return `Empty`;
+  if (fiber.type & NODE_TYPE.__scope__) return `Scope`;
+  if (fiber.type & NODE_TYPE.__strict__) return `Strict`;
+  if (fiber.type & NODE_TYPE.__profiler__) return `Profiler`;
+  if (fiber.type & NODE_TYPE.__suspense__) return `Suspense`;
   if (fiber.type & NODE_TYPE.__fragment__) {
-    if (fiber.pendingProps["wrap"]) return `<Fragment - (auto-wrap) />`;
-    return `<Fragment />`;
+    if (fiber.pendingProps["wrap"]) return `Fragment - (auto-wrap)`;
+    return `Fragment`;
   }
-  if (fiber.type & NODE_TYPE.__keepLive__) return `<KeepAlive />`;
+  if (fiber.type & NODE_TYPE.__keepLive__) return `KeepAlive`;
   if (fiber.type & NODE_TYPE.__provider__) {
     const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Provider"];
     const name = typedElementType.Context.displayName;
-    return `<${name ? name : "anonymous" + "-" + typedElementType.Context.contextId} - (provider) />`;
+    return `${name ? name : "anonymous" + "-" + typedElementType.Context.contextId} - (provider)`;
   }
   if (fiber.type & NODE_TYPE.__consumer__) {
     const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
     const name = typedElementType.Context.displayName;
-    return `<${name ? name : "anonymous" + "-" + typedElementType.Context.contextId} - (consumer) />`;
+    return `${name ? name : "anonymous" + "-" + typedElementType.Context.contextId} - (consumer)`;
   }
-  if (fiber.type & NODE_TYPE.__comment__) return `<Comment />`;
+  if (fiber.type & NODE_TYPE.__comment__) return `Comment`;
   if (fiber.type & NODE_TYPE.__forwardRef__) {
     const targetRender = fiber.elementType as MixinMyReactFunctionComponent;
     let name = targetRender?.displayName || targetRender?.name || "";
@@ -223,43 +222,22 @@ export const getElementName = (fiber: MyReactFiberNode) => {
       const type = element.type as MixinMyReactObjectComponent;
       name = type.displayName || name;
     }
-    return `<${name ? name : "anonymous"} - (forwardRef) />`;
+    return `${name ? name : "anonymous"} - (forwardRef)`;
   }
   if (typeof fiber.elementType === "function") {
     const typedElementType = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
     const name = typedElementType.displayName || typedElementType.name || "anonymous";
-    return `<${name} />`;
+    return `${name}`;
   }
-  if (fiber.type & NODE_TYPE.__text__) return `<text (${fiber.elementType?.toString()}) />`;
-  if (typeof fiber.elementType === "string") return `<${fiber.elementType} />`;
-  return `<unknown (${fiber.elementType?.toString()}) />`;
+  if (fiber.type & NODE_TYPE.__text__) return `text (${fiber.elementType?.toString()})`;
+  if (typeof fiber.elementType === "string") return `${fiber.elementType}`;
+  return `unknown (${fiber.elementType?.toString()})`;
 };
 
-export const getPlainFiberName = (fiber: MyReactFiberNode) => {
-  if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
-    const typedElementType = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
-    const name = typedElementType.displayName || typedElementType.name || "Anonymous";
-    return name;
-  }
-  if (include(fiber.type, NODE_TYPE.__comment__)) return `Comment`;
-  if (include(fiber.type, NODE_TYPE.__provider__)) {
-    const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Provider"];
-    const name = typedElementType.Context.displayName || "Context";
-    return `${name}.Provider`;
-  }
-  if (include(fiber.type, NODE_TYPE.__consumer__)) {
-    const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
-    const name = typedElementType.Context.displayName || "Context";
-    return `${name}.Consumer`;
-  }
-  if (include(fiber.type, NODE_TYPE.__fragment__)) return `Fragment`;
-  if (include(fiber.type, NODE_TYPE.__suspense__)) return `Suspense`;
-  if (include(fiber.type, NODE_TYPE.__profiler__)) return `Profiler`;
-  if (include(fiber.type, NODE_TYPE.__lazy__)) return `Lazy`;
-  if (include(fiber.type, NODE_TYPE.__scope__)) return `Scope`;
-  if (include(fiber.type, NODE_TYPE.__portal__)) return `Portal`;
-  if (include(fiber.type, NODE_TYPE.__strict__)) return `Strict`;
-  if (include(fiber.type, NODE_TYPE.__null__ | NODE_TYPE.__empty__)) return `Null`;
+// TODO
+export const getElementName = (fiber: MyReactFiberNode) => {
+  const plainName = getPlainFiberName(fiber);
+  return `<${plainName} />`;
 };
 
 const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)} ${getTrackDevLog(fiber)}`;

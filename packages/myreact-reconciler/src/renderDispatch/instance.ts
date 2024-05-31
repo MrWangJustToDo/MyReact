@@ -7,13 +7,13 @@ import { defaultDispatchMount } from "../dispatchMount";
 import { defaultGenerateScopeMap } from "../dispatchScope";
 import { defaultGenerateStrict, defaultGenerateStrictMap } from "../dispatchStrict";
 import { defaultGenerateSuspenseMap, defaultResolveSuspense } from "../dispatchSuspense";
-import { defaultGenerateUnmountMap } from "../dispatchUnmount";
+import { defaultDispatchUnmount, defaultGenerateUnmountMap } from "../dispatchUnmount";
 import { defaultDispatchUpdate } from "../dispatchUpdate";
-import { MyWeakMap, NODE_TYPE, onceWarnWithKeyAndFiber } from "../share";
+import { MyWeakMap, NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
 
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
 import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
-import type { HMR} from "../share";
+import type { HMR } from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
 
 export class CustomRenderDispatch implements RenderDispatch {
@@ -67,16 +67,52 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   uniqueIdCount = 0;
 
+  _fiberInitialListener: Set<(fiber: MyReactFiberNode) => void> = new Set();
+
+  _fiberUpdateListener: Set<(fiber: MyReactFiberNode) => void> = new Set();
+
+  _fiberUnmountListener: Set<(fiber: MyReactFiberNode) => void> = new Set();
+
+  _beforeCommitListener: Set<() => void> = new Set();
+
+  _afterCommitListener: Set<() => void> = new Set();
+
+  _beforeUpdateListener: Set<() => void> = new Set();
+
+  _afterUpdateListener: Set<() => void> = new Set();
+
+  _beforeUnmountListener: Set<() => void> = new Set();
+
+  _afterUnmountListener: Set<() => void> = new Set();
+
+  /**
+   * @deprecated
+   */
   beforeCommit?: () => void;
 
+  /**
+   * @deprecated
+   */
   afterCommit?: () => void;
 
+  /**
+   * @deprecated
+   */
   beforeUpdate?: () => void;
 
+  /**
+   * @deprecated
+   */
   afterUpdate?: () => void;
 
+  /**
+   * @deprecated
+   */
   beforeUnmount?: () => void;
 
+  /**
+   * @deprecated
+   */
   afterUnmount?: () => void;
 
   constructor(
@@ -86,6 +122,168 @@ export class CustomRenderDispatch implements RenderDispatch {
     const typedFiber = rootFiber as MyReactFiberContainer;
 
     typedFiber.containerNode = rootNode;
+  }
+
+  onFiberInitial(cb: (_fiber: MyReactFiberNode) => void) {
+    this._fiberInitialListener.add(cb);
+
+    return () => {
+      this._fiberInitialListener.delete(cb);
+    };
+  }
+
+  onceFiberInitial(cb: (_fiber: MyReactFiberNode) => void) {
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      this._fiberInitialListener.delete(onceCb);
+    };
+
+    this._fiberInitialListener.add(onceCb);
+  }
+
+  onFiberUpdate(cb: (_fiber: MyReactFiberNode) => void) {
+    this._fiberUpdateListener.add(cb);
+
+    return () => {
+      this._fiberUpdateListener.delete(cb);
+    };
+  }
+
+  onceFiberUpdate(cb: (_fiber: MyReactFiberNode) => void) {
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      this._fiberUpdateListener.delete(onceCb);
+    };
+
+    this._fiberUpdateListener.add(onceCb);
+  }
+
+  onFiberUnmount(cb: (_fiber: MyReactFiberNode) => void) {
+    this._fiberUnmountListener.add(cb);
+
+    return () => {
+      this._fiberUnmountListener.delete(cb);
+    };
+  }
+
+  onceFiberUnmount(cb: (_fiber: MyReactFiberNode) => void) {
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      this._fiberUnmountListener.delete(onceCb);
+    };
+
+    this._fiberUnmountListener.add(onceCb);
+  }
+
+  onBeforeCommit(cb: () => void) {
+    this._beforeCommitListener.add(cb);
+
+    return () => {
+      this._beforeCommitListener.delete(cb);
+    };
+  }
+
+  onceBeforeCommit(cb: () => void) {
+    const onceCb = () => {
+      cb();
+
+      this._beforeCommitListener.delete(onceCb);
+    };
+
+    this._beforeCommitListener.add(onceCb);
+  }
+
+  onAfterCommit(cb: () => void) {
+    this._afterCommitListener.add(cb);
+
+    return () => {
+      this._afterCommitListener.delete(cb);
+    };
+  }
+
+  onceAfterCommit(cb: () => void) {
+    const onceCb = () => {
+      cb();
+
+      this._afterCommitListener.delete(onceCb);
+    };
+
+    this._afterCommitListener.add(onceCb);
+  }
+
+  onBeforeUpdate(cb: () => void) {
+    this._beforeUpdateListener.add(cb);
+
+    return () => {
+      this._beforeUpdateListener.delete(cb);
+    };
+  }
+
+  onceBeforeUpdate(cb: () => void) {
+    const onceCb = () => {
+      cb();
+
+      this._beforeUpdateListener.delete(onceCb);
+    };
+
+    this._beforeUpdateListener.add(onceCb);
+  }
+
+  onAfterUpdate(cb: () => void) {
+    this._afterUpdateListener.add(cb);
+
+    return () => {
+      this._afterUpdateListener.delete(cb);
+    };
+  }
+
+  onceAfterUpdate(cb: () => void) {
+    const onceCb = () => {
+      cb();
+
+      this._afterUpdateListener.delete(onceCb);
+    };
+
+    this._afterUpdateListener.add(onceCb);
+  }
+
+  onBeforeUnmount(cb: () => void) {
+    this._beforeUnmountListener.add(cb);
+
+    return () => {
+      this._beforeUnmountListener.delete(cb);
+    };
+  }
+
+  onceBeforeUnmount(cb: () => void) {
+    const onceCb = () => {
+      cb();
+
+      this._beforeUnmountListener.delete(onceCb);
+    };
+
+    this._beforeUnmountListener.add(onceCb);
+  }
+
+  onAfterUnmount(cb: () => void) {
+    this._afterUnmountListener.add(cb);
+
+    return () => {
+      this._afterUnmountListener.delete(cb);
+    };
+  }
+
+  onceAfterUnmount(cb: () => void) {
+    const onceCb = () => {
+      cb();
+
+      this._afterUnmountListener.delete(onceCb);
+    };
+
+    this._afterUnmountListener.add(onceCb);
   }
 
   generateCommitList(_fiber: MyReactFiberNode) {
@@ -145,12 +343,21 @@ export class CustomRenderDispatch implements RenderDispatch {
 
     defaultGenerateEffectMap(_fiber, _insertionEffect, this.runtimeMap.insertionEffectMap, option);
   }
+  /**
+   * @deprecated
+   */
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     void 0;
   }
+  /**
+   * @deprecated
+   */
   patchToFiberUpdate(_fiber: MyReactFiberNode) {
     void 0;
   }
+  /**
+   * @deprecated
+   */
   patchToFiberUnmount(_fiber: MyReactFiberNode) {
     void 0;
   }
@@ -215,18 +422,49 @@ export class CustomRenderDispatch implements RenderDispatch {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   reconcileCommit(_fiber: MyReactFiberNode): void {
-    this.beforeCommit?.();
+    safeCall(() => this.beforeCommit?.());
+
+    safeCall(() => {
+      this._beforeCommitListener.forEach((cb) => cb());
+    });
 
     defaultDispatchMount(_fiber, this);
 
-    this.afterCommit?.();
+    safeCall(() => {
+      this._afterCommitListener.forEach((cb) => cb());
+    });
+
+    safeCall(() => this.afterCommit?.());
   }
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
-    this.beforeUpdate?.();
+    safeCall(() => this.beforeUpdate?.());
+
+    safeCall(() => {
+      this._beforeUpdateListener.forEach((cb) => cb());
+    });
 
     defaultDispatchUpdate(_list, this);
 
-    this.afterUpdate?.();
+    safeCall(() => {
+      this._afterUpdateListener.forEach((cb) => cb());
+    });
+
+    safeCall(() => this.afterUpdate?.());
+  }
+  reconcileUnmount(): void {
+    safeCall(() => this.beforeUnmount?.());
+
+    safeCall(() => {
+      this._beforeUnmountListener.forEach((cb) => cb());
+    });
+
+    defaultDispatchUnmount(this);
+
+    safeCall(() => {
+      this._afterUnmountListener.forEach((cb) => cb());
+    });
+
+    safeCall(() => this.afterUnmount?.());
   }
   shouldYield(): boolean {
     return false;

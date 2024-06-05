@@ -97,55 +97,10 @@ pnpm dev:ssr / dev:csr / dev:next / dev:vite
 | startTransition |                        |                          | useSyncExternalStore (new) |
 |                 |                        |                          | useTransition (new)        |
 
-## Vue like reactive api
 
-```tsx
-import { reactive, createReactive, onMounted, onUnmounted } from "@my-react/react-reactive";
+## DevTool
 
-const useReactiveApi_Position = () => {
-  const position = reactive({ x: 0, y: 0 });
-  let id = null;
-  const action = (e) => ((position.x = e.clientX), (position.y = e.clientY));
-  onMounted(() => {
-    window.addEventListener("mousemove", action);
-  });
-
-  onUnmounted(() => {
-    window.removeEventListener("mousemove", action);
-  });
-
-  return position;
-};
-
-const Reactive1 = createReactive({
-  setup(props, context) {
-    const position = useReactiveApi_Position();
-    const data = reactive({ a: 1 });
-    const click = () => data.a++;
-
-    return { data, click, position };
-  },
-  // or add a render function
-  // render: (state, props, context) => xxx
-});
-
-const App = () => {
-  return (
-    <Reactive1 title="hello">
-      {({ data, click, position, title }) => (
-        <>
-          <p>{data.a}</p>
-          <button onClick={click}>click</button>
-          <p>
-            {position.x} {position.y}
-          </p>
-          {title}
-        </>
-      )}
-    </Reactive1>
-  );
-};
-```
+- [MyReact DevTool (wip)](https://github.com/MrWangJustToDo/myreact-devtools)
 
 ## License
 

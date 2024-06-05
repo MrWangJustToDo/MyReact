@@ -208,8 +208,14 @@ export const getPlainFiberName = (fiber: MyReactFiberNode) => {
   if (typeof fiber.elementType === "string") return `${fiber.elementType}`;
   if (typeof fiber.elementType === "function") {
     const typedElementType = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
-    const name = typedElementType.displayName || typedElementType.name || "anonymous";
+    let name = typedElementType.displayName || typedElementType.name || "anonymous";
+    if (__DEV__) {
+      const element = typedFiber._debugElement as MyReactElement;
+      const type = element?.type as MixinMyReactObjectComponent;
+      name = type?.displayName || name;
+    }
     return `${name}`;
+
   }
   return `unknown`;
 };

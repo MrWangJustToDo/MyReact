@@ -51,6 +51,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     hookNode.type === HOOK_TYPE.useInsertionEffect ||
     hookNode.type === HOOK_TYPE.useImperativeHandle
   ) {
+    hookNode.result = hookNode.value;
     hookNode.hasEffect = true;
   }
 

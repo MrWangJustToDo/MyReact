@@ -62,6 +62,8 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     if (isHMR || !deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
+      currentHook.result = value;
+
       currentHook.reducer = reducer || currentHook.reducer;
 
       currentHook.deps = deps;
@@ -159,6 +161,8 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   if (currentHook.type === HOOK_TYPE.useDebugValue) {
     if (!isArrayEquals(currentHook.value, value)) {
       currentHook.value = value;
+
+      currentHook.result = value;
 
       if (enableDebugLog.current) {
         console.warn(`[debug]`, ...currentHook.value);

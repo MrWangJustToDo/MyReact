@@ -64,6 +64,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (hookNode.type === HOOK_TYPE.useDebugValue) {
+    hookNode.result = hookNode.value;
     if (enableDebugLog.current) {
       console.warn(`[debug]`, ...hookNode.value);
     }

@@ -76,7 +76,7 @@ const onceMap: Record<string, boolean> = {};
 /**
  * @internal
  */
-export const logOnce = (fiber: MyReactFiberNode, level: "warn" | "error", key: string, ...rest: any) => {
+export const logOnce = (fiber: MyReactFiberNode, level: "warn" | "error", key: string, ...rest: string[]) => {
   if (__DEV__) {
     if (level === "warn") {
       onceWarnWithKeyAndFiber(fiber, key, `[@my-react/react-dom]`, ...rest);

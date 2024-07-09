@@ -27,7 +27,6 @@
     "@vanilla-extract/vite-plugin": "^4.0.9",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.57.0",
-    "million": "^3.0.6",
     "postcss": "^8.4.38",
     "postcss-preset-mantine": "^1.15.0",
     "postcss-simple-vars": "^7.0.1",

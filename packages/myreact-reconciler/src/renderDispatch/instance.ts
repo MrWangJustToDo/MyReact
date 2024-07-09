@@ -59,7 +59,7 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
 
-  pendingCOmmitFiberPatch: PATCH_TYPE = PATCH_TYPE.__initial__;
+  pendingCommitFiberPatch: PATCH_TYPE = PATCH_TYPE.__initial__;
 
   pendingAsyncLoadFiberList: ListTree<MyReactFiberNode> | null = null;
 
@@ -291,7 +291,7 @@ export class CustomRenderDispatch implements RenderDispatch {
   generateCommitList(_fiber: MyReactFiberNode) {
     if (!_fiber) return;
 
-    this.pendingCOmmitFiberPatch = merge(this.pendingCOmmitFiberPatch, _fiber.patch);
+    this.pendingCommitFiberPatch = merge(this.pendingCommitFiberPatch, _fiber.patch);
 
     if (_fiber.patch !== PATCH_TYPE.__initial__) {
       this.pendingCommitFiberList = this.pendingCommitFiberList || new ListTree();
@@ -478,7 +478,7 @@ export class CustomRenderDispatch implements RenderDispatch {
 
     this.runtimeFiber.nextWorkingFiber = null;
 
-    this.pendingCOmmitFiberPatch = PATCH_TYPE.__initial__;
+    this.pendingCommitFiberPatch = PATCH_TYPE.__initial__;
   }
 }
 

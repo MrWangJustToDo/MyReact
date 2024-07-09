@@ -64,6 +64,19 @@ export class MyReactFiberNode implements RenderFiber {
     this._installElement(element);
   }
 
+  // 兼容react fiber
+  // get type() {
+  //   return this.elementType;
+  // }
+
+  get return() {
+    return this.parent;
+  }
+
+  get stateNode() {
+    return this.nativeNode
+  }
+
   _installElement(element: MyReactElementNode) {
     const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
 

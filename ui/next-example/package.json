@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node index.js",
+    "dev": "node --loader esm-module-alias/loader --no-warnings index.js",
     "dev:org": "next dev",
     "build": "next build",
     "start": "next start",
@@ -30,7 +30,12 @@
     "react": "node_modules/@my-react/react",
     "react-dom": "node_modules/@my-react/react-dom"
   },
+  "aliases": {
+    "react": "node_modules/@my-react/react/index.js",
+    "react-dom": "node_modules/@my-react/react-dom/index.js"
+  },
   "devDependencies": {
+    "esm-module-alias": "^2.2.0",
     "module-alias": "^2.2.3"
   }
 }

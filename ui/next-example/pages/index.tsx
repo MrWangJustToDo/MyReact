@@ -39,6 +39,7 @@ export default function Home() {
       <div>
         <Suspense fallback={<div className="text-lg font-mono text-red-700">loading...</div>}>
           <Bar />
+          <div>123</div>
         </Suspense>
       </div>
 

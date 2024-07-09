@@ -43,6 +43,11 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
   if (hookNode.type === HOOK_TYPE.useMemo || hookNode.type === HOOK_TYPE.useState || hookNode.type === HOOK_TYPE.useReducer) {
     hookNode.result = hookNode.value.call(null);
+    // 兼容极端情况的hack code
+    const a = function () {
+      void 0;
+    };
+    a.bind(null, fiber);
   }
 
   if (

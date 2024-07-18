@@ -8,6 +8,7 @@ import { hookListUnmount } from "../runtimeHook";
 import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
@@ -63,11 +64,6 @@ export class MyReactFiberNode implements RenderFiber {
 
     this._installElement(element);
   }
-
-  // 兼容react fiber
-  // get type() {
-  //   return this.elementType;
-  // }
 
   get return() {
     return this.parent;
@@ -210,4 +206,5 @@ if (__DEV__) {
 
 export interface MyReactFiberContainer extends MyReactFiberNode {
   containerNode: NativeNode;
+  renderDispatch: CustomRenderDispatch;
 }

@@ -3,7 +3,7 @@ import { ListTree, MODE_TYPE, STATE_TYPE, UpdateQueueType, include } from "@my-r
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
-import { getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, syncFlush } from "../share";
+import { getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, safeCallWithFiber, syncFlush } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactInternalInstance, RenderFiber, UpdateQueue } from "@my-react/react";
@@ -39,7 +39,13 @@ export const processState = (_params: UpdateQueue) => {
     typedUpdateQueue._debugType = UpdateQueueType[_params.type];
   }
 
-  const isInitial = getInstanceOwnerFiber(_params.trigger as MyReactInternalInstance)?.mode === MODE_TYPE.__initial__
+  const ownerFiber = getInstanceOwnerFiber(_params.trigger as MyReactInternalInstance);
+
+  const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
+
+  safeCallWithFiber({ fiber: ownerFiber, action: () => renderDispatch?._fiberTriggerListener?.forEach((cb) => cb(ownerFiber, _params)) });
+
+  const isInitial = getInstanceOwnerFiber(_params.trigger as MyReactInternalInstance)?.mode === MODE_TYPE.__initial__;
 
   if (_params.type === UpdateQueueType.component) {
     const ownerFiber = getInstanceOwnerFiber(_params.trigger);

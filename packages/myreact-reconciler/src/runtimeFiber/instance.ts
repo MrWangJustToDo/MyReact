@@ -73,6 +73,10 @@ export class MyReactFiberNode implements RenderFiber {
     return this.nativeNode
   }
 
+  get isMyReactFiberNode() {
+    return true;
+  }
+
   _installElement(element: MyReactElementNode) {
     const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
 

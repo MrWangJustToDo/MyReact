@@ -14,7 +14,7 @@ import { MyWeakMap, NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../shar
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
 import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
 import type { HMR } from "../share";
-import type { createContext, MyReactElementNode } from "@my-react/react";
+import type { createContext, MyReactElementNode, UpdateQueue } from "@my-react/react";
 
 export class CustomRenderDispatch implements RenderDispatch {
   runtimeRef: Record<refKey, NODE_TYPE>;
@@ -74,6 +74,8 @@ export class CustomRenderDispatch implements RenderDispatch {
   _fiberUpdateListener: Set<(fiber: MyReactFiberNode) => void> = new Set();
 
   _fiberUnmountListener: Set<(fiber: MyReactFiberNode) => void> = new Set();
+
+  _fiberTriggerListener: Set<(fiber: MyReactFiberNode, updater: UpdateQueue) => void> = new Set();
 
   _beforeCommitListener: Set<() => void> = new Set();
 
@@ -180,6 +182,24 @@ export class CustomRenderDispatch implements RenderDispatch {
     };
 
     this._fiberUnmountListener.add(onceCb);
+  }
+
+  onFiberTrigger(cb: (_fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
+    this._fiberTriggerListener.add(cb);
+
+    return () => {
+      this._fiberTriggerListener.delete(cb);
+    };
+  }
+
+  onceFiberTrigger(cb: (_fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
+    const onceCb = (_fiber: MyReactFiberNode, _updater: UpdateQueue) => {
+      cb(_fiber, _updater);
+
+      this._fiberTriggerListener.delete(onceCb);
+    };
+
+    this._fiberTriggerListener.add(onceCb);
   }
 
   onBeforeCommit(cb: () => void) {

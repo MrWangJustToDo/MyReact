@@ -73,10 +73,20 @@ export const unmountInstance = (instance: MyReactInternalInstance) => {
   instanceMap.delete(instance);
 };
 
-export const getInstanceOwnerFiber = (instance: MyReactInternalInstance) => {
-  const field = instanceMap.get(instance);
+export const getInstanceOwnerFiber = (instance: MyReactInternalInstance | MyReactFiberNode) => {
+  const typedInstance = instance as MyReactInternalInstance;
+  if (typedInstance.isMyReactInstance) {
+    const field = instanceMap.get(typedInstance);
 
-  return field?._owner;
+    return field?._owner;
+  } else {
+    const typedFiber = instance as MyReactFiberNode;
+    if (typedFiber.isMyReactFiberNode) {
+      return typedFiber;
+    } else {
+      throw new Error('instance is not a MyReactInternalInstance or MyReactFiberNode');
+    }
+  }
 };
 
 export const getInstanceContextFiber = (instance: MyReactInternalInstance) => {

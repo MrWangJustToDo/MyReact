@@ -1,5 +1,6 @@
-import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__, __my_react_internal__, createElement } from "@my-react/react";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
+import { Fragment, Portal } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
@@ -88,6 +89,14 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
  */
 export const internalHydrate = (element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) => {
   if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'hydrate' can only render a '@my-react' element`);
+
+  if (element.type === Portal) {
+    const RootElement = createElement(Fragment, null, element);
+
+    internalHydrate(RootElement, container, cb);
+    
+    return;
+  }
 
   prepareRenderPlatform();
 

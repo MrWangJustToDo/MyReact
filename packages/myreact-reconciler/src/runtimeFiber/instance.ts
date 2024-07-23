@@ -65,18 +65,6 @@ export class MyReactFiberNode implements RenderFiber {
     this._installElement(element);
   }
 
-  get return() {
-    return this.parent;
-  }
-
-  get stateNode() {
-    return this.nativeNode
-  }
-
-  get isMyReactFiberNode() {
-    return true;
-  }
-
   _installElement(element: MyReactElementNode) {
     const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
 
@@ -174,6 +162,25 @@ function hmrUpdate(this: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) 
 
   renderPlatform.microTask(() => triggerUpdate(this, state, cb));
 }
+
+Object.defineProperty(MyReactFiberNode.prototype, "isMyReactFiberNode", {
+  value: true,
+  configurable: true,
+});
+
+Object.defineProperty(MyReactFiberNode.prototype, "return", {
+  get: function (this: MyReactFiberNode) {
+    return this.parent;
+  },
+  configurable: true,
+});
+
+Object.defineProperty(MyReactFiberNode.prototype, "stateNode", {
+  get: function (this: MyReactFiberNode | MyReactFiberContainer) {
+    return this.nativeNode || (this as MyReactFiberContainer).containerNode;
+  },
+  configurable: true,
+});
 
 if (__DEV__) {
   Object.defineProperty(MyReactFiberNode.prototype, "_debugLog", {

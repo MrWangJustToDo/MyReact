@@ -14,7 +14,9 @@ const getOwnerDocumentFromRootContainer = (rootContainerElement: Element): Docum
  * @internal
  */
 export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean, parentFiberWithNode: MyReactFiberNode) => {
-  const ownerDoc = getOwnerDocumentFromRootContainer(parentFiberWithNode.nativeNode as Element);
+  const maybeContainer = parentFiberWithNode as MyReactFiberContainer;
+
+  const ownerDoc = getOwnerDocumentFromRootContainer((parentFiberWithNode.nativeNode || maybeContainer.containerNode) as Element);
 
   if (include(fiber.type, NODE_TYPE.__text__)) {
     fiber.nativeNode = ownerDoc.createTextNode(fiber.elementType as string);

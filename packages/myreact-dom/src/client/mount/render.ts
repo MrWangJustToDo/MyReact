@@ -1,6 +1,6 @@
-import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__, __my_react_internal__, createElement } from "@my-react/react";
 import { checkIsSameType, CustomRenderDispatch, initialFiberNode, MyReactFiberNode, triggerUpdate } from "@my-react/react-reconciler";
-import { include, once, STATE_TYPE } from "@my-react/react-shared";
+import { Fragment, include, once, Portal, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
@@ -120,6 +120,14 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
 
 export const render = (element: LikeJSX, _container: Partial<RenderContainer>, cb?: () => void) => {
   if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'render' can only render a '@my-react' element`);
+
+  if (element.type === Portal) {
+    const RootElement = createElement(Fragment, null, element);
+
+    render(RootElement, _container, cb);
+    
+    return;
+  }
 
   prepareRenderPlatform();
 

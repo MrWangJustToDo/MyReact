@@ -7,17 +7,15 @@ import { getInsertBeforeDomFromSiblingAndParent } from "./getInsertBeforeDom";
 import { insertBefore } from "./insertBefore";
 
 import type { TerminalDispatch } from "../../renderDispatch";
-import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const position = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch) => {
   if (include(fiber.patch, PATCH_TYPE.__position__)) {
+    const rootFiber = renderDispatch.rootFiber;
+
     const parentFiberWithNode = getValidParentFiberWithNode(fiber, renderDispatch);
 
-    const maybeContainer = parentFiberWithNode as MyReactFiberContainer;
-
-    if (!parentFiberWithNode?.nativeNode && !maybeContainer?.containerNode) throw new Error(`position error, current render node not have a container node`);
-
-    const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithNode);
+    const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithNode || rootFiber);
 
     if (beforeFiberWithDom) {
       insertBefore(fiber, beforeFiberWithDom, parentFiberWithNode);

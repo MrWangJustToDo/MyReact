@@ -86,7 +86,7 @@ export class ServerDomDispatch extends CustomRenderDispatch {
   commitAppend(_fiber: MyReactFiberNode): void {
     const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
-    append(_fiber, parentFiberWithNode);
+    append(_fiber, parentFiberWithNode, this);
   }
 
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {

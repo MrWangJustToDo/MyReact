@@ -17,15 +17,19 @@ export const append = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
 
     if (!fiber?.nativeNode) throw new Error(`[@my-react/react-dom] append error, current render node not have a native node`);
 
-    if (!parentFiberWithNode?.nativeNode && !maybeContainer?.containerNode) {
-      throw new Error(`[@my-react/react-dom] append error, current render node not have a container native node`);
-    }
-
-    const parentDom = (parentFiberWithNode.nativeNode || maybeContainer.containerNode) as DomElement;
+    const parentDom = (parentFiberWithNode?.nativeNode || maybeContainer?.containerNode || renderDispatch.rootNode) as DomElement;
 
     const currentDom = fiber.nativeNode as DomNode;
 
-    if (!isSingleTag[parentFiberWithNode.elementType as string]) {
+    if (parentFiberWithNode) {
+      if (!isSingleTag[parentFiberWithNode.elementType as string]) {
+        parentDom.appendChild(currentDom);
+      } else {
+        if (__DEV__) {
+          console.error(`[@my-react/react-dom] append error, the parent node is a single tag node, can't append child node`);
+        }
+      }
+    } else {
       parentDom.appendChild(currentDom);
     }
 

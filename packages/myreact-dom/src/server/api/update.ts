@@ -40,7 +40,7 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
                 dom[key][styleName] = `${typedProps[styleName]}px`;
                 return;
               }
-              dom[key][styleName] = typedProps[styleName];
+              dom[key][styleName] = typedProps[styleName] as string;
             }
           });
         }

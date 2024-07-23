@@ -82,7 +82,7 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
   commitAppend(_fiber: MyReactFiberNode): void {
     const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
-    append(_fiber, parentFiberWithNode);
+    append(_fiber, parentFiberWithNode, this);
   }
 
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
@@ -157,7 +157,7 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
   commitAppend(_fiber: MyReactFiberNode): void {
     const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
-    append(_fiber, parentFiberWithNode);
+    append(_fiber, parentFiberWithNode, this);
   }
 
   resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {

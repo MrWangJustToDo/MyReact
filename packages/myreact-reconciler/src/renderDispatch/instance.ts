@@ -126,8 +126,6 @@ export class CustomRenderDispatch implements RenderDispatch {
     const typedFiber = rootFiber as MyReactFiberContainer;
 
     typedFiber.renderDispatch = this;
-
-    typedFiber.containerNode = rootNode;
   }
 
   onFiberInitial(cb: (_fiber: MyReactFiberNode) => void) {

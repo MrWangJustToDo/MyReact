@@ -14,11 +14,7 @@ export const append = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch
 
     if (!fiber.nativeNode) throw new Error(`append error, current render node not have a native node`);
 
-    if (!parentFiberWithNode.nativeNode && !mayFiberContainer.containerNode) {
-      throw new Error(`append error, current render node not have a container node`);
-    }
-
-    const parentDom = (parentFiberWithNode.nativeNode || mayFiberContainer.containerNode) as PlainElement;
+    const parentDom = (parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode || renderDispatch.rootNode) as PlainElement;
 
     const currentDom = fiber.nativeNode as PlainElement | TextElement;
 

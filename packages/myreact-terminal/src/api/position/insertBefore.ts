@@ -4,9 +4,9 @@ import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 import { appendChildNode, insertBeforeNode } from "../native";
 
 import type { DOMNode, PlainElement } from "../native";
-import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
+import type { MyReactFiberNode, MyReactFiberContainer, CustomRenderDispatch } from "@my-react/react-reconciler";
 
-export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
+export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReactFiberNode, parentItemWithDom: MyReactFiberNode | CustomRenderDispatch) => {
   if (!fiber) throw new Error("position error, look like a bug for @my-react");
 
   fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
@@ -16,9 +16,13 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReac
   if (include(fiber.type, NODE_TYPE.__portal__)) return;
 
   if (include(fiber.type, NODE_TYPE.__plain__ | NODE_TYPE.__text__ | NODE_TYPE.__comment__)) {
-    const maybeContainer = parentFiberWithDom as MyReactFiberContainer;
+    const maybeContainer = parentItemWithDom as MyReactFiberContainer;
 
-    const parentDOM = (parentFiberWithDom.nativeNode || maybeContainer.containerNode) as PlainElement;
+    const maybeDispatch = parentItemWithDom as CustomRenderDispatch;
+
+    const maybeFiber = parentItemWithDom as MyReactFiberNode;
+
+    const parentDOM = (maybeFiber?.nativeNode || maybeContainer?.containerNode || maybeDispatch.rootNode) as PlainElement;
 
     // the before dom will not have containerNode
     const beforeDOM = beforeFiberWithDom.nativeNode as DOMNode;
@@ -42,7 +46,7 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReac
   let child = fiber.child;
 
   while (child) {
-    insertBefore(child, beforeFiberWithDom, parentFiberWithDom);
+    insertBefore(child, beforeFiberWithDom, parentItemWithDom);
 
     child = child.sibling;
   }

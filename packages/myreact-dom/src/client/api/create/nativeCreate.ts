@@ -3,7 +3,8 @@ import { include } from "@my-react/react-shared";
 
 import { commentS, commentE } from "@my-react-dom-shared";
 
-import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
+import type { MyReactFiberNode, MyReactFiberContainer, CustomRenderDispatch } from "@my-react/react-reconciler";
+import type { DomElement } from "@my-react-dom-shared";
 
 const SVG = "http://www.w3.org/2000/svg";
 
@@ -13,10 +14,16 @@ const getOwnerDocumentFromRootContainer = (rootContainerElement: Element): Docum
 /**
  * @internal
  */
-export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean, parentFiberWithNode: MyReactFiberNode) => {
-  const maybeContainer = parentFiberWithNode as MyReactFiberContainer;
+export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean, parentItemWithDom: MyReactFiberNode | CustomRenderDispatch) => {
+  const maybeContainer = parentItemWithDom as MyReactFiberContainer;
 
-  const ownerDoc = getOwnerDocumentFromRootContainer((parentFiberWithNode.nativeNode || maybeContainer.containerNode) as Element);
+  const maybeDispatch = parentItemWithDom as CustomRenderDispatch;
+
+  const maybeFiber = parentItemWithDom as MyReactFiberNode;
+
+  const parentDom = (maybeFiber?.nativeNode || maybeContainer?.containerNode || maybeDispatch.rootNode) as DomElement;
+
+  const ownerDoc = getOwnerDocumentFromRootContainer(parentDom);
 
   if (include(fiber.type, NODE_TYPE.__text__)) {
     fiber.nativeNode = ownerDoc.createTextNode(fiber.elementType as string);

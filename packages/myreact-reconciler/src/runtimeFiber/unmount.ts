@@ -1,11 +1,11 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, include } from "@my-react/react-shared";
 
+import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { fiberToDispatchMap, safeCallWithFiber } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
-import type { CustomRenderDispatch } from "../renderDispatch";
 
 const { enableDebugFiled } = __my_react_shared__;
 
@@ -18,7 +18,7 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   safeCallWithFiber({ fiber, action: () => renderDispatch.patchToFiberUnmount?.(fiber) });
 
-  safeCallWithFiber({ fiber, action: () => renderDispatch._fiberUnmountListener.forEach((listener) => listener(fiber)) });
+  safeCallWithFiber({ fiber, action: () => listenerMap.get(renderDispatch)?.fiberUnmount?.forEach((listener) => listener(fiber)) });
 
   __DEV__ ? "" : fiberToDispatchMap.delete(fiber);
 

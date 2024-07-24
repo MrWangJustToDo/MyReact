@@ -23,8 +23,8 @@ const buildPackages = async () => {
 
 const start = async () => {
   await buildPackages();
-  await rollupBuild({ packageName: "graphql", packageScope: "site", external });
-  await rollupBuild({ packageName: "webpack", packageScope: "site", external });
+  // await rollupBuild({ packageName: "graphql", packageScope: "site", external });
+  // await rollupBuild({ packageName: "webpack", packageScope: "site", external });
   process.exit(0);
 };
 

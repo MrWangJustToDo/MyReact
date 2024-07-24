@@ -1,5 +1,6 @@
 import { PATCH_TYPE, exclude } from "@my-react/react-shared";
 
+import { listenerMap } from "../renderDispatch";
 import { currentRenderDispatch, fiberToDispatchMap, safeCallWithFiber } from "../share";
 
 import { MyReactFiberNode } from "./instance";
@@ -40,7 +41,7 @@ export const createFiberNode = (
 
   safeCallWithFiber({ fiber: newFiberNode, action: () => renderDispatch.patchToFiberInitial?.(newFiberNode) });
 
-  safeCallWithFiber({ fiber: newFiberNode, action: () => renderDispatch._fiberInitialListener.forEach((listener) => listener(newFiberNode)) });
+  safeCallWithFiber({ fiber: newFiberNode, action: () => listenerMap.get(renderDispatch)?.fiberInitial?.forEach((listener) => listener(newFiberNode)) });
 
   if (exclude(newFiberNode.patch, PATCH_TYPE.__update__)) {
     newFiberNode.memoizedProps = newFiberNode.pendingProps;

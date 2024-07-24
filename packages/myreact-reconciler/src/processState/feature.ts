@@ -2,6 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, MODE_TYPE, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
+import { listenerMap } from "../renderDispatch";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, safeCallWithFiber, syncFlush } from "../share";
 
@@ -43,7 +44,7 @@ export const processState = (_params: UpdateQueue) => {
 
   const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
-  safeCallWithFiber({ fiber: ownerFiber, action: () => renderDispatch?._fiberTriggerListener?.forEach((cb) => cb(ownerFiber, _params)) });
+  safeCallWithFiber({ fiber: ownerFiber, action: () => listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(ownerFiber, _params)) });
 
   const isInitial = getInstanceOwnerFiber(_params.trigger as MyReactInternalInstance)?.mode === MODE_TYPE.__initial__;
 

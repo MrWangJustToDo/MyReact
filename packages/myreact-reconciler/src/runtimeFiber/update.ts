@@ -1,7 +1,8 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { exclude, include, isNormalEquals, merge, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
 
-import { prepareUpdateAllDependence, prepareUpdateAllDependenceFromProvider, prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
+import { prepareUpdateAllDependence, /* prepareUpdateAllDependenceFromProvider, */ prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
+import { listenerMap } from "../renderDispatch";
 import { currentRenderDispatch, NODE_TYPE, safeCallWithFiber } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
@@ -97,7 +98,7 @@ export const updateFiberNode = (
 
     safeCallWithFiber({ fiber, action: () => renderDispatch.patchToFiberUpdate?.(fiber) });
 
-    safeCallWithFiber({ fiber, action: () => renderDispatch._fiberUpdateListener.forEach((listener) => listener(fiber)) });
+    safeCallWithFiber({ fiber, action: () => listenerMap.get(renderDispatch)?.fiberUpdate?.forEach((listener) => listener(fiber)) });
   }
 
   if (nextRef && prevRef !== nextRef) {

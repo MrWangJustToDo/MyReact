@@ -1,6 +1,7 @@
 import { emptyProps, NODE_TYPE, safeCall, type MyReactFiberNode } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
+import { domListenersMap, type ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { validDomProps } from "@my-react-dom-shared";
 
 import { controlElementTag, isControlledElement, isReadonlyElement } from "../helper";
@@ -8,7 +9,6 @@ import { controlElementTag, isControlledElement, isReadonlyElement } from "../he
 import { hydrateUpdate } from "./hydrateUpdate";
 import { nativeUpdate } from "./nativeUpdate";
 
-import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 /**
  * @internal
@@ -45,7 +45,7 @@ export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
 
     safeCall(() => renderDispatch.patchToCommitUpdate?.(fiber));
 
-    safeCall(() => renderDispatch._commitDOMUpdateListeners.forEach((listener) => listener(fiber)));
+    safeCall(() => domListenersMap.get(renderDispatch)?.domUpdate?.forEach((listener) => listener(fiber)));
 
     fiber.memoizedProps = fiber.pendingProps;
 

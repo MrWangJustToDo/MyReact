@@ -1,5 +1,5 @@
 import { __my_react_shared__, createElement, type MyReactElement, type MyReactElementNode, type MyReactElementType } from "@my-react/react";
-import { CustomRenderDispatch, NODE_TYPE, initHMR, safeCall, unmountFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, NODE_TYPE, initHMR, listenerMap, safeCall, unmountFiber } from "@my-react/react-reconciler";
 
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
@@ -37,6 +37,14 @@ const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
 };
 
+type Listeners = {
+  domAppend: Set<(f: MyReactFiberNode) => void>;
+  domUpdate: Set<(f: MyReactFiberNode) => void>;
+  domSetRef: Set<(f: MyReactFiberNode) => void>;
+};
+
+export const domListenersMap = new Map<ClientDomDispatch, Listeners>();
+
 export class ClientDomDispatch extends CustomRenderDispatch {
   runtimeDom = {
     svgMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
@@ -65,58 +73,73 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   enableASyncHydrate = enableASyncHydrate.current;
 
-  _commitDOMAppendListeners: Set<(f: MyReactFiberNode) => void> = new Set();
+  constructor(
+    readonly rootNode: any,
+    readonly rootFiber: MyReactFiberNode
+  ) {
+    super(rootNode, rootFiber);
 
-  _commitDOMUpdateListeners: Set<(f: MyReactFiberNode) => void> = new Set();
-
-  _commitDOMSetRefListeners: Set<(f: MyReactFiberNode) => void> = new Set();
+    domListenersMap.set(this, { domAppend: new Set(), domUpdate: new Set(), domSetRef: new Set() });
+  }
 
   onDOMAppend(cb: (f: MyReactFiberNode) => void) {
-    this._commitDOMAppendListeners.add(cb);
+    const set = domListenersMap.get(this).domAppend;
 
-    return () => this._commitDOMAppendListeners.delete(cb);
+    set.add(cb);
+
+    return () => set.delete(cb);
   }
 
   onceDOMAppend(cb: (f: MyReactFiberNode) => void) {
+    const set = domListenersMap.get(this).domAppend;
+
     const listener = (f: MyReactFiberNode) => {
       cb(f);
 
-      this._commitDOMAppendListeners.delete(listener);
+      set.delete(listener);
     };
 
-    this._commitDOMAppendListeners.add(listener);
+    set.add(listener);
   }
 
   onDOMUpdate(cb: (f: MyReactFiberNode) => void) {
-    this._commitDOMUpdateListeners.add(cb);
+    const set = domListenersMap.get(this).domUpdate;
 
-    return () => this._commitDOMUpdateListeners.delete(cb);
+    set.add(cb);
+
+    return () => set.delete(cb);
   }
 
   onceDOMUpdate(cb: (f: MyReactFiberNode) => void) {
+    const set = domListenersMap.get(this).domUpdate;
+
     const listener = (f: MyReactFiberNode) => {
       cb(f);
 
-      this._commitDOMUpdateListeners.delete(listener);
+      set.delete(listener);
     };
 
-    this._commitDOMUpdateListeners.add(listener);
+    set.add(listener);
   }
 
   onDOMSetRef(cb: (f: MyReactFiberNode) => void) {
-    this._commitDOMSetRefListeners.add(cb);
+    const set = domListenersMap.get(this).domSetRef;
 
-    return () => this._commitDOMSetRefListeners.delete(cb);
+    set.add(cb);
+
+    return () => set.delete(cb);
   }
 
   onceDOMSetRef(cb: (f: MyReactFiberNode) => void) {
+    const set = domListenersMap.get(this).domSetRef;
+
     const listener = (f: MyReactFiberNode) => {
       cb(f);
 
-      this._commitDOMSetRefListeners.delete(listener);
+      set.delete(listener);
     };
 
-    this._commitDOMSetRefListeners.add(listener);
+    set.add(listener);
   }
 
   /**
@@ -172,13 +195,13 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     safeCall(() => this.beforeCommit?.());
 
     safeCall(() => {
-      this._beforeCommitListener.forEach((cb) => cb());
+      listenerMap.get(this)?.beforeCommit?.forEach((cb) => cb());
     });
 
     clientDispatchMount(_fiber, this, this.isHydrateRender);
 
     safeCall(() => {
-      this._afterCommitListener.forEach((cb) => cb());
+      listenerMap.get(this)?.afterCommit?.forEach((cb) => cb());
     });
 
     safeCall(() => this.afterCommit?.());

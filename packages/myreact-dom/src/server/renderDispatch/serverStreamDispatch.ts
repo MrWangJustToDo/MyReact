@@ -1,4 +1,4 @@
-import { CustomRenderDispatch, NODE_TYPE, safeCall, safeCallWithFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, listenerMap, NODE_TYPE, safeCall, safeCallWithFiber } from "@my-react/react-reconciler";
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
@@ -109,13 +109,13 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
 
     safeCall(() => this.beforeCommit?.());
 
-    safeCall(() => this._beforeCommitListener.forEach((l) => l()));
+    safeCall(() => listenerMap.get(this)?.beforeCommit?.forEach((l) => l()));
 
     Promise.resolve()
       .then(() => mountLoop(_fiber))
       .then(() => this.stream.push(null))
       .then(() => {
-        safeCall(() => this._afterCommitListener.forEach((l) => l()));
+        safeCall(() => listenerMap.get(this)?.afterCommit?.forEach((l) => l()));
 
         safeCall(() => this.afterCommit?.());
       });
@@ -215,7 +215,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
 
     safeCall(() => this.beforeCommit?.());
 
-    safeCall(() => this._beforeCommitListener.forEach((l) => l()));
+    safeCall(() => listenerMap.get(this)?.beforeCommit?.forEach((l) => l()));
 
     let generatedScript = (this.bootstrapModules || []).map(generateModuleBootstrap).join("");
 
@@ -230,7 +230,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
       .then(() => this.stream.push(null))
       .then(() => this.onAllReady?.())
       .then(() => {
-        safeCall(() => this._afterCommitListener.forEach((l) => l()));
+        safeCall(() => listenerMap.get(this)?.afterCommit?.forEach((l) => l()));
 
         safeCall(() => this.afterCommit?.());
       });

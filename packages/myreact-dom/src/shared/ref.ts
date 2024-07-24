@@ -1,10 +1,11 @@
 import { NODE_TYPE, safeCall, safeCallWithFiber } from "@my-react/react-reconciler";
 import { PATCH_TYPE, STATE_TYPE, include, remove } from "@my-react/react-shared";
 
+import { domListenersMap, type ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
+
 import { logOnce } from "./debug";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 /**
  * @internal
@@ -39,7 +40,7 @@ export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispat
 
     safeCall(() => renderDispatch.patchToCommitSetRef?.(_fiber));
 
-    safeCall(() => renderDispatch._commitDOMSetRefListeners.forEach((listener) => listener(_fiber)));
+    safeCall(() => domListenersMap.get(renderDispatch)?.domSetRef?.forEach((listener) => listener(_fiber)));
 
     _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__ref__);
   }

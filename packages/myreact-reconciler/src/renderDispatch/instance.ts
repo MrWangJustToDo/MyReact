@@ -236,6 +236,26 @@ export class CustomRenderDispatch implements RenderDispatch {
     set.add(onceCb);
   }
 
+  onFiberHMR(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).fiberHMR;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceFiberHMR(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).fiberHMR;
+
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
   onBeforeCommit(cb: () => void) {
     const set = listenerMap.get(this).beforeCommit;
 

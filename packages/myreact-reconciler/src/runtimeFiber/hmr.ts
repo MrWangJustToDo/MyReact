@@ -2,9 +2,10 @@ import { createElement } from "@my-react/react";
 import { STATE_TYPE, include, merge } from "@my-react/react-shared";
 
 import { deleteEffect } from "../dispatchEffect";
+import { listenerMap } from "../renderDispatch";
 import { classComponentUnmount } from "../runtimeComponent";
 import { hookListUnmount } from "../runtimeHook";
-import { fiberToDispatchMap, setRefreshTypeMap } from "../share";
+import { fiberToDispatchMap, getCurrentDispatchFromFiber, setRefreshTypeMap } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
@@ -44,6 +45,10 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
     } else {
       fiber.state = merge(STATE_TYPE.__triggerSync__, STATE_TYPE.__hmr__);
     }
+
+    const renderDispatch = getCurrentDispatchFromFiber(fiber);
+
+    listenerMap.get(renderDispatch)?.fiberHMR?.forEach((cb) => cb(fiber));
 
     return fiber;
   } else {

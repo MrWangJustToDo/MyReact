@@ -2,17 +2,17 @@ import { __my_react_internal__, __my_react_shared__, startTransition } from "@my
 import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
-import { currentRenderDispatch, safeCallWithFiber } from "../share";
+import { currentRenderDispatch, getStack, safeCallWithFiber } from "../share";
 
-import { checkHookValid } from "./check";
+import { checkHookValid, isValidHookName } from "./check";
 import { MyReactHookNode } from "./instance";
 import { MyReactSignal } from "./signal";
 
 import type { MyReactHookNodeDev } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { Action, Reducer, RenderHookParams } from "@my-react/react";
+import type { Action, MyReactFunctionComponent, Reducer, RenderHookParams } from "@my-react/react";
 
-const { enableDebugLog, enableDebugFiled } = __my_react_shared__;
+const { enableDebugLog, enableDebugFiled, enableHookStack } = __my_react_shared__;
 
 const { currentHookTreeNode, currentHookNodeIndex } = __my_react_internal__;
 
@@ -136,6 +136,8 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     ];
   }
 
+  const typedHook = hookNode as MyReactHookNodeDev;
+
   if (__DEV__ && enableDebugFiled.current) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
@@ -143,11 +145,33 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
     typedFiber._debugHookTypes.push(HOOK_TYPE[hookNode.type]);
 
-    const typedHook = hookNode as MyReactHookNodeDev;
-
     typedHook._debugType = HOOK_TYPE[hookNode.type];
 
     typedHook._debugIndex = currentHookIndex;
+  }
+
+  if (__DEV__ && enableHookStack.current) {
+    const stack = getStack();
+
+    const res: NodeJS.CallSite[] = [];
+
+    while (stack.length > 0 && !isValidHookName(stack[0].getFunctionName())) {
+      stack.shift();
+    }
+
+    while (stack.length > 0 && (stack[0].getFunctionName() || "") !== (fiber.elementType as MyReactFunctionComponent)?.name) {
+      res.push(stack.shift());
+    }
+
+    typedHook._debugStack = res
+      .map((i) => {
+        const line = i.getEnclosingLineNumber();
+        const column = i.getEnclosingColumnNumber();
+        const fileName = i.getFileName();
+        const functionName = i.getFunctionName() || 'Anonymous';
+        return { id: `${fileName}:${line}:${column}`, name: functionName };
+      })
+      .reverse();
   }
 
   return hookNode;

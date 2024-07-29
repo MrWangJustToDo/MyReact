@@ -54,6 +54,11 @@ export const enableSyncFlush = createRef(false);
 /**
  * @internal
  */
+export const enableHookStack = createRef(true);
+
+/**
+ * @internal
+ */
 export const enableHMRForDev = createReadonlyRef(true);
 
 /**

@@ -239,9 +239,9 @@ export class CustomRenderDispatch implements RenderDispatch {
   onFiberHMR(cb: (_fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).fiberHMR;
 
-    set.add(cb);
+    set?.add?.(cb);
 
-    return () => set.delete(cb);
+    return () => set?.delete?.(cb);
   }
 
   onceFiberHMR(cb: (_fiber: MyReactFiberNode) => void) {
@@ -250,10 +250,10 @@ export class CustomRenderDispatch implements RenderDispatch {
     const onceCb = (_fiber: MyReactFiberNode) => {
       cb(_fiber);
 
-      set.delete(onceCb);
+      set?.delete?.(onceCb);
     };
 
-    set.add(onceCb);
+    set?.add?.(onceCb);
   }
 
   onBeforeCommit(cb: () => void) {

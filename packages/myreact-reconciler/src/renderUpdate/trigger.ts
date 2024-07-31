@@ -293,7 +293,7 @@ export const triggerUnmount = (fiber: MyReactFiberNode, cb?: () => void) => {
   }
 
   triggerUpdate(fiber, STATE_TYPE.__skippedSync__, () => {
-    unmountFiber(fiber);
+    renderDispatch.reconcileUnmount();
 
     cb?.();
 

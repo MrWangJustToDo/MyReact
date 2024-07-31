@@ -39,10 +39,7 @@ export const unmountFiber = (fiber: MyReactFiberNode) => {
 export const unmountContainer = (renderDispatch: CustomRenderDispatch, cb?: () => void) => {
   const rootFiber = renderDispatch.rootFiber;
 
-  triggerUnmount(rootFiber, () => {
-    clearContainer(renderDispatch);
-    cb?.();
-  });
+  triggerUnmount(rootFiber, cb);
 };
 
 export const clearContainer = (renderDispatch: CustomRenderDispatch) => {

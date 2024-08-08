@@ -1,9 +1,8 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
+import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { updateLoopConcurrentFromRoot, updateLoopConcurrentFromTrigger, updateLoopSyncFromRoot, updateLoopSyncFromTrigger } from "../runtimeUpdate";
-import { resetLogScope, setLogScope } from "../share";
-
-import type { CustomRenderDispatch } from "../renderDispatch";
+import { resetLogScope, safeCall, setLogScope } from "../share";
 
 const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 
@@ -22,11 +21,17 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch, cb?: ()
 
   const commitList = renderDispatch.pendingCommitFiberList;
 
+  const changedList = renderDispatch.pendingChangedFiberList;
+
   renderDispatch.resetUpdateFlowRuntimeFiber();
 
   renderDispatch.pendingCommitFiberList = null;
 
+  renderDispatch.pendingChangedFiberList = null;
+
   commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+  changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
 
   renderPlatform.microTask(() => {
     globalLoop.current = false;
@@ -48,11 +53,17 @@ export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch, cb?:
 
   const commitList = renderDispatch.pendingCommitFiberList;
 
+  const changedList = renderDispatch.pendingChangedFiberList;
+
   renderDispatch.resetUpdateFlowRuntimeFiber();
 
   renderDispatch.pendingCommitFiberList = null;
 
+  renderDispatch.pendingChangedFiberList = null;
+
   commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+  changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
 
   renderPlatform.microTask(() => {
     globalLoop.current = false;
@@ -77,11 +88,17 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch, c
   } else {
     const commitList = renderDispatch.pendingCommitFiberList;
 
+    const changedList = renderDispatch.pendingChangedFiberList;
+
     renderDispatch.resetUpdateFlowRuntimeFiber();
 
     renderDispatch.pendingCommitFiberList = null;
 
+    renderDispatch.pendingChangedFiberList = null;
+
     commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+    changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
 
     renderPlatform.microTask(() => {
       globalLoop.current = false;
@@ -107,11 +124,17 @@ export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch
   } else {
     const commitList = renderDispatch.pendingCommitFiberList;
 
+    const changedList = renderDispatch.pendingChangedFiberList;
+
     renderDispatch.resetUpdateFlowRuntimeFiber();
 
     renderDispatch.pendingCommitFiberList = null;
 
+    renderDispatch.pendingChangedFiberList = null;
+
     commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+    changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
 
     renderPlatform.microTask(() => {
       globalLoop.current = false;

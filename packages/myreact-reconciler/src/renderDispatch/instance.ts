@@ -22,7 +22,10 @@ type Listeners = {
   fiberUpdate: Set<(fiber: MyReactFiberNode) => void>;
   fiberUnmount: Set<(fiber: MyReactFiberNode) => void>;
   fiberHMR?: Set<(fiber: MyReactFiberNode) => void>;
+  fiberHasChange: Set<(list: ListTree<MyReactFiberNode>) => void>;
   fiberTrigger: Set<(fiber: MyReactFiberNode, updater: UpdateQueue) => void>;
+  performanceWarn?: Set<(fiber: MyReactFiberNode) => void>;
+
   beforeCommit: Set<() => void>;
   afterCommit: Set<() => void>;
   beforeUpdate: Set<() => void>;
@@ -36,9 +39,11 @@ const getInitialValue = (): Listeners => {
     ? {
         fiberInitial: new Set(),
         fiberUpdate: new Set(),
+        fiberHasChange: new Set(),
         fiberUnmount: new Set(),
         fiberHMR: new Set(),
         fiberTrigger: new Set(),
+        performanceWarn: new Set(),
         beforeCommit: new Set(),
         afterCommit: new Set(),
         beforeUpdate: new Set(),
@@ -49,8 +54,10 @@ const getInitialValue = (): Listeners => {
     : {
         fiberInitial: new Set(),
         fiberUpdate: new Set(),
+        fiberHasChange: new Set(),
         fiberUnmount: new Set(),
         fiberTrigger: new Set(),
+        performanceWarn: new Set(),
         beforeCommit: new Set(),
         afterCommit: new Set(),
         beforeUpdate: new Set(),
@@ -106,6 +113,8 @@ export class CustomRenderDispatch implements RenderDispatch {
   pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
 
   pendingCommitFiberPatch: PATCH_TYPE = PATCH_TYPE.__initial__;
+
+  pendingChangedFiberList: ListTree<MyReactFiberNode> | null = null;
 
   pendingAsyncLoadFiberList: ListTree<MyReactFiberNode> | null = null;
 
@@ -184,6 +193,26 @@ export class CustomRenderDispatch implements RenderDispatch {
     return () => set.delete(cb);
   }
 
+  onFiberChange(cb: (_list: ListTree<MyReactFiberNode>) => void) {
+    const set = listenerMap.get(this).fiberHasChange;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceFiberChange(cb: (_list: ListTree<MyReactFiberNode>) => void) {
+    const set = listenerMap.get(this).fiberHasChange;
+
+    const onceCb = (_list: ListTree<MyReactFiberNode>) => {
+      cb(_list);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
   onceFiberUpdate(cb: (_fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).fiberUpdate;
 
@@ -254,6 +283,26 @@ export class CustomRenderDispatch implements RenderDispatch {
     };
 
     set?.add?.(onceCb);
+  }
+
+  onPerformanceWarn(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).performanceWarn;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  oncePerformanceWarn(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).performanceWarn;
+
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
   }
 
   onBeforeCommit(cb: () => void) {
@@ -386,6 +435,20 @@ export class CustomRenderDispatch implements RenderDispatch {
 
       this.pendingCommitFiberList.push(_fiber);
     }
+  }
+
+  generateChangedList(_fiber: MyReactFiberNode, withCheck?: boolean) {
+    if (!_fiber) return;
+
+    if (!this.isAppMounted) return;
+
+    this.pendingChangedFiberList = this.pendingChangedFiberList || new ListTree();
+
+    if (withCheck && this.pendingChangedFiberList.hasValue(_fiber)) {
+      return;
+    }
+
+    this.pendingChangedFiberList.push(_fiber);
   }
 
   pendingCreate(_fiber: MyReactFiberNode): void {

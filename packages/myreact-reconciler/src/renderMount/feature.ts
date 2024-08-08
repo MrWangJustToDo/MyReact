@@ -1,10 +1,10 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { processLazy } from "../processLazy";
+import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { mountLoop } from "../runtimeMount";
-import { resetLogScope, setLogScope } from "../share";
+import { resetLogScope, safeCall, setLogScope } from "../share";
 
-import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { globalLoop } = __my_react_internal__;
@@ -24,11 +24,17 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
 
   const commitList = renderDispatch.pendingCommitFiberList;
 
-  renderDispatch.pendingCommitFiberList = null;
+  const changedList = renderDispatch.pendingChangedFiberList;
 
   renderDispatch.resetUpdateFlowRuntimeFiber();
 
+  renderDispatch.pendingCommitFiberList = null;
+
+  renderDispatch.pendingChangedFiberList = null;
+
   commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+  changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
 
   globalLoop.current = false;
 };
@@ -67,11 +73,17 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
 
   const commitList = renderDispatch.pendingCommitFiberList;
 
-  renderDispatch.pendingCommitFiberList = null;
+  const changedList = renderDispatch.pendingChangedFiberList;
 
   renderDispatch.resetUpdateFlowRuntimeFiber();
 
+  renderDispatch.pendingCommitFiberList = null;
+
+  renderDispatch.pendingChangedFiberList = null;
+
   commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+  changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
 
   globalLoop.current = false;
 };

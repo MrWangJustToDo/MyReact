@@ -1,6 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, include, isPromise } from "@my-react/react-shared";
 
+import { listenerMap } from "../renderDispatch";
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { currentRenderDispatch, currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithFiber, setRefreshTypeMap } from "../share";
 
@@ -175,8 +176,14 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
 
   const renderTime = end - start;
 
-  if (enablePerformanceLog.current && renderTime > renderDispatch.performanceLogTimeLimit) {
+  const hasPerformanceWarn = renderTime > renderDispatch.performanceLogTimeLimit;
+
+  if (enablePerformanceLog.current && hasPerformanceWarn) {
     onceWarnWithKeyAndFiber(fiber, "performance", `[@my-react/react] render current component take a lot of time, there have a performance warning`);
+  }
+
+  if (hasPerformanceWarn) {
+    safeCallWithFiber({ fiber: fiber, action: () => listenerMap.get(renderDispatch)?.performanceWarn?.forEach((cb) => cb(fiber)) });
   }
 
   const typedFiber = fiber as MyReactFiberNodeDev;

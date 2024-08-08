@@ -67,7 +67,11 @@ const createFragmentWithUpdate = (newChild: ArrayMyReactElementChildren, parentF
 const deleteIfNeed = (parentFiber: MyReactFiberNode, existingChildren: Map<string | number, ListTree<MyReactFiberNode>>) => {
   const renderDispatch = currentRenderDispatch.current;
 
-  if (existingChildren.size) existingChildren.forEach((list) => list.listToFoot((f) => renderDispatch.pendingUnmount(parentFiber, f)));
+  if (existingChildren.size) {
+    existingChildren.forEach((list) => list.listToFoot((f) => renderDispatch.pendingUnmount(parentFiber, f)));
+    
+    renderDispatch.generateChangedList(parentFiber, true);
+  }
 };
 
 const getNewFiberWithUpdate = (
@@ -95,6 +99,8 @@ const getNewFiberWithUpdate = (
 
       return updateFiberNode({ fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newElement);
     } else {
+      renderDispatch.generateChangedList(parentFiber);
+
       renderDispatch.pendingUnmount(parentFiber, draftFiber);
 
       return createFragmentWithUpdate(newChild, parentFiber);
@@ -118,6 +124,8 @@ const getNewFiberWithUpdate = (
   } else {
     draftFiber && renderDispatch.pendingUnmount(parentFiber, draftFiber);
 
+    renderDispatch.generateChangedList(parentFiber);
+
     return createFiberNode({ parent: parentFiber, type: "position" }, newChild);
   }
 };
@@ -132,6 +140,8 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
 
 export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode): void => {
   const isUpdate = exclude(parentFiber.state, STATE_TYPE.__create__);
+
+  const renderDispatch = currentRenderDispatch.current;
 
   if (isUpdate) {
     const { existingChildrenMap, existingChildrenArray } = getExistingChildren(parentFiber);
@@ -173,6 +183,8 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
     deleteIfNeed(parentFiber, existingChildrenMap);
   } else {
+    renderDispatch.generateChangedList(parentFiber);
+
     const { existingChildrenMap } = getExistingChildren(parentFiber);
 
     deleteIfNeed(parentFiber, existingChildrenMap);

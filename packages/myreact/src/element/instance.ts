@@ -63,6 +63,8 @@ export type MixinMyReactFunctionComponent<P extends Record<string, unknown> = an
   defaultProps?: Record<string, unknown>;
 };
 
+export type MyReactComponentType = ReturnType<typeof forwardRef> | ReturnType<typeof memo> | MixinMyReactClassComponent | MixinMyReactFunctionComponent;
+
 /**
  * @public
  */

@@ -141,9 +141,11 @@ const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFi
 export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode): void => {
   const isUpdate = exclude(parentFiber.state, STATE_TYPE.__create__);
 
+  const isHMR = include(parentFiber.state, STATE_TYPE.__hmr__);
+
   const renderDispatch = currentRenderDispatch.current;
 
-  if (isUpdate) {
+  if (isUpdate || isHMR) {
     const { existingChildrenMap, existingChildrenArray } = getExistingChildren(parentFiber);
 
     parentFiber.child = null;

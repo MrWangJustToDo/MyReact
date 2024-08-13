@@ -5,17 +5,19 @@ import { deleteEffect } from "../dispatchEffect";
 import { listenerMap } from "../renderDispatch";
 import { classComponentUnmount } from "../runtimeComponent";
 import { hookListUnmount } from "../runtimeHook";
-import { fiberToDispatchMap, getCurrentDispatchFromFiber, setRefreshTypeMap } from "../share";
+import { getCurrentDispatchFromFiber, setRefreshTypeMap } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
-import type { MixinMyReactFunctionComponent, MixinMyReactClassComponent } from "@my-react/react";
+import type { MyReactComponentType } from "@my-react/react";
 
-export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionComponent | MixinMyReactClassComponent, forceRefresh?: boolean) => {
+export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, forceRefresh?: boolean) => {
   if (__DEV__) {
     if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
-    const element = createElement(nextType as MixinMyReactFunctionComponent, fiber.pendingProps);
+    const renderDispatch = getCurrentDispatchFromFiber(fiber);
+
+    const element = createElement(nextType, fiber.pendingProps);
 
     fiber._installElement(element);
 
@@ -32,8 +34,6 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
 
       fiber.updateQueue = null;
 
-      const renderDispatch = fiberToDispatchMap.get(fiber);
-
       const typedFiber = fiber as MyReactFiberNodeDev;
 
       typedFiber._debugHookTypes = [];
@@ -41,12 +41,12 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MixinMyReactFunctionCompo
       // TODO
       deleteEffect(fiber, renderDispatch);
 
+      renderDispatch.commitUnsetRef(fiber);
+
       fiber.state = merge(STATE_TYPE.__create__, STATE_TYPE.__hmr__);
     } else {
       fiber.state = merge(STATE_TYPE.__triggerSync__, STATE_TYPE.__hmr__);
     }
-
-    const renderDispatch = getCurrentDispatchFromFiber(fiber);
 
     listenerMap.get(renderDispatch)?.fiberHMR?.forEach((cb) => cb(fiber));
 

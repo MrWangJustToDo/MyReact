@@ -1,6 +1,7 @@
+/* eslint-disable max-lines */
 import { ForwardRef, Memo, STATE_TYPE, TYPEKEY } from "@my-react/react-shared";
 
-import type { forwardRef, memo, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType } from "@my-react/react";
+import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactComponentType, MyReactElementType } from "@my-react/react";
 import type { CustomRenderDispatch, CustomRenderDispatchDev, HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
 const DISPATCH_FIELD = "__@my-react/dispatch__";
@@ -22,8 +23,6 @@ type Signature = {
 
   fullKey?: string;
 };
-
-type MyReactComponentType = ReturnType<typeof forwardRef> | ReturnType<typeof memo> | MixinMyReactClassComponent | MixinMyReactFunctionComponent;
 
 type HMRGlobal = {
   [DISPATCH_FIELD]: CustomRenderDispatch[];
@@ -106,6 +105,26 @@ const haveEqualSignatures = (prevType: MyReactComponentType, nextType: MyReactCo
   return true;
 };
 
+// check memo | forwardRef | function
+const hasEqualType = (prevType: MyReactComponentType, nextType: MyReactComponentType) => {
+  if (prevType === nextType) {
+    return true;
+  }
+
+  if (typeof prevType !== typeof nextType) {
+    return false;
+  } else {
+    if (typeof prevType === "object" && typeof nextType === "object") {
+      return (
+        getProperty(prevType, TYPEKEY) === getProperty(nextType, TYPEKEY) &&
+        hasEqualType(prevType.render as MyReactComponentType, nextType.render as MyReactComponentType)
+      );
+    }
+  }
+
+  return true;
+};
+
 const getRenderTypeFormType = (type: MyReactComponentType): MixinMyReactClassComponent | MixinMyReactFunctionComponent | null => {
   if (!type) {
     console.error(`[@my-react/react-refresh] can not get the real type for current render, it is a bug for @my-react/react-refresh`);
@@ -141,7 +160,7 @@ const canPreserveStateBetween = (prevType: MyReactComponentType, nextType: MyRea
   if (isMyReactClass(prevType) || isMyReactClass(nextType)) {
     return false;
   }
-  if (haveEqualSignatures(prevType, nextType)) {
+  if (hasEqualType(prevType, nextType) && haveEqualSignatures(prevType, nextType)) {
     return true;
   }
   return false;
@@ -263,7 +282,9 @@ export const performReactRefresh = () => {
   const containers: Map<CustomRenderDispatch, boolean> = new Map();
 
   allPending.forEach(([family, _nextType]) => {
-    const prevType = getRenderTypeFormType(family.current);
+    const _prevType = family.current;
+
+    const prevType = getRenderTypeFormType(_prevType);
 
     const nextType = getRenderTypeFormType(_nextType);
 
@@ -282,10 +303,10 @@ export const performReactRefresh = () => {
 
       updatedFamiliesByType.set(_nextType, family);
 
-      family.current = nextType;
+      family.current = _nextType;
 
       if (fibers?.size) {
-        const forceReset = !canPreserveStateBetween(prevType, nextType);
+        const forceReset = !canPreserveStateBetween(_prevType, _nextType);
 
         fibers.forEach((f) => {
           let container: CustomRenderDispatchDev | null = null;
@@ -302,7 +323,7 @@ export const performReactRefresh = () => {
 
           const hasRootUpdate = containers.get(container) || f === container.rootFiber;
 
-          container.__hmr_runtime__?.hmr?.(f, nextType, forceReset);
+          container.__hmr_runtime__?.hmr?.(f, _nextType, forceReset);
 
           containers.set(container, hasRootUpdate);
         });

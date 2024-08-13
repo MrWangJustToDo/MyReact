@@ -197,6 +197,7 @@ export type {
   MyReactElement,
   MyReactElementType,
   MyReactElementNode,
+  MyReactComponentType,
   ArrayMyReactElementNode,
   ArrayMyReactElementChildren,
   MaybeArrayMyReactElementNode,

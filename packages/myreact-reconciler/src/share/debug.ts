@@ -1,8 +1,12 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
 
+import { listenerMap } from "../renderDispatch";
+
 import { currentDevFiber, enableFiberForLog } from "./env";
 import { NODE_TYPE } from "./fiberType";
+import { getCurrentDispatchFromFiber } from "./refresh";
+import { safeCallWithFiber } from "./safeCall";
 
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
@@ -29,6 +33,18 @@ const warnMap = {};
 
 const errorMap = {};
 
+const fiberWarn = (fiber: MyReactFiberNode, ...args) => {
+  const renderDispatch = getCurrentDispatchFromFiber(fiber);
+
+  safeCallWithFiber({ fiber, action: () => listenerMap.get(renderDispatch)?.fiberWarn?.forEach((listener) => listener(fiber, ...args)) });
+};
+
+const fiberError = (fiber: MyReactFiberNode, ...args) => {
+  const renderDispatch = getCurrentDispatchFromFiber(fiber);
+
+  safeCallWithFiber({ fiber, action: () => listenerMap.get(renderDispatch)?.fiberError?.forEach((listener) => listener(fiber, ...args)) });
+}
+
 // TODO! improve log
 
 export const originalWarn = console.warn;
@@ -39,6 +55,8 @@ export const devWarn = (...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
   const renderFiber = currentDevFiber.current || currentRunningFiber.current;
+
+  renderFiber && fiberWarn(renderFiber as MyReactFiberNode, ...args);
 
   if (!renderFiber || args.some((i) => typeof i === "object" || i === null || i === undefined)) {
     originalWarn.call(console, ...args);
@@ -56,6 +74,8 @@ export const devWarn = (...args) => {
 export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
+  fiberWarn(fiber, ...args);
+
   if (args.some((i) => typeof i === "object" || i === null || i === undefined)) {
     originalError.call(console, ...args, fiber);
   } else {
@@ -71,6 +91,8 @@ export const devError = (...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
   const renderFiber = currentDevFiber.current || currentRunningFiber.current;
+
+  renderFiber && fiberError(renderFiber as MyReactFiberNode, ...args);
 
   if (!renderFiber || args.some((i) => typeof i === "object" || i === null || i === undefined)) {
     originalError.call(console, ...args);
@@ -89,6 +111,8 @@ export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
   const renderFiber = fiber;
+
+  fiberError(fiber, ...args);
 
   if (args.some((i) => typeof i === "object" || i === null || i === undefined)) {
     originalError.call(console, ...args, renderFiber);
@@ -236,16 +260,7 @@ export const getElementName = (fiber: MyReactFiberNode) => {
 
 const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)} ${getTrackDevLog(fiber)}`;
 
-const getFiberNodeMaxRenderTime = (_fiber: MyReactFiberNode) => {
-  // const typedFiber = fiber as MyReactFiberNodeDev;
-  // if (typedFiber._debugRenderState) {
-  //   const { maxTimeForRender, timeForRender } = typedFiber._debugRenderState;
-  //   return ` - ${timeForRender}|${maxTimeForRender}ms`;
-  // }
-  return "";
-};
-
-const getFiberNodeNameWithFiber = (fiber: MyReactFiberNode) => `%c${getElementName(fiber)}${getFiberNodeMaxRenderTime(fiber)}%c (%o)`;
+const getFiberNodeNameWithFiber = (fiber: MyReactFiberNode) => `%c${getElementName(fiber)}%c (%o)`;
 
 export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   if (fiber) {

@@ -168,7 +168,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
         const line = i.getEnclosingLineNumber();
         const column = i.getEnclosingColumnNumber();
         const fileName = i.getFileName();
-        const functionName = i.getFunctionName() || 'Anonymous';
+        const functionName = i.getFunctionName() || "Anonymous";
         return { id: `${fileName}:${line}:${column}`, name: functionName };
       })
       .reverse();

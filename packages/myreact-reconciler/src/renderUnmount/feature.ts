@@ -13,15 +13,12 @@ export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: Cu
   // will happen when app crash
   list.listToFoot((f) => unmountPending(f, renderDispatch));
 
-  list.listToFoot((f) =>
+  list.listToFoot((f) => {
     safeCallWithFiber({
       fiber: f,
-      action: () => {
-        f._unmount();
-        unmountFiberNode(f, renderDispatch);
-      },
-    })
-  );
+      action: () => f._unmount(() => unmountFiberNode(f, renderDispatch)),
+    });
+  });
 };
 
 // unmount current fiber

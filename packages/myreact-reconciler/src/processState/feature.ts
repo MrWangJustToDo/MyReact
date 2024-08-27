@@ -7,6 +7,7 @@ import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, safeCallWithFiber, syncFlush } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactHookNode } from "../runtimeHook";
 import type { MyReactInternalInstance, RenderFiber, UpdateQueue } from "@my-react/react";
 
 export type UpdateQueueDev = UpdateQueue<{
@@ -44,7 +45,9 @@ export const processState = (_params: UpdateQueue) => {
 
   const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
-  safeCallWithFiber({ fiber: ownerFiber, action: () => listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(ownerFiber, _params)) });
+  if (renderDispatch?.enableUpdate) {
+    safeCallWithFiber({ fiber: ownerFiber, action: () => listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(ownerFiber, _params)) });
+  }
 
   const isInitial = getInstanceOwnerFiber(_params.trigger as MyReactInternalInstance)?.mode === MODE_TYPE.__initial__;
 
@@ -52,8 +55,6 @@ export const processState = (_params: UpdateQueue) => {
     const ownerFiber = getInstanceOwnerFiber(_params.trigger);
 
     if (!ownerFiber || include(ownerFiber.state, STATE_TYPE.__unmount__)) return;
-
-    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
     // if current dispatch is a server || noop
     if (!renderDispatch.enableUpdate) return;
@@ -108,8 +109,6 @@ export const processState = (_params: UpdateQueue) => {
 
     if (!ownerFiber || include(ownerFiber?.state, STATE_TYPE.__unmount__)) return;
 
-    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
-
     if (!renderDispatch.enableUpdate) return;
 
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
@@ -149,6 +148,10 @@ export const processState = (_params: UpdateQueue) => {
       lastRenderComponentTimeStep = now;
     }
 
+    const trigger = _params.trigger as MyReactHookNode;
+
+    safeCallWithFiber({ fiber: ownerFiber, action: () => listenerMap.get(renderDispatch)?.hookTrigger?.forEach((cb) => cb(trigger, _params)) });
+
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
 
     ownerFiber.updateQueue.push(_params);
@@ -158,8 +161,6 @@ export const processState = (_params: UpdateQueue) => {
     const ownerFiber = _params.trigger as MyReactFiberNode;
 
     if (!ownerFiber || include(ownerFiber.state, STATE_TYPE.__unmount__)) return;
-
-    const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
     if (!renderDispatch.enableUpdate) return;
 

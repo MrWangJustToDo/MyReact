@@ -14,17 +14,25 @@ import { MyWeakMap, NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../shar
 
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
 import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactHookNode } from "../runtimeHook";
 import type { HMR } from "../share";
 import type { createContext, MyReactElementNode, UpdateQueue } from "@my-react/react";
 
 type Listeners = {
   fiberInitial: Set<(fiber: MyReactFiberNode) => void>;
   fiberUpdate: Set<(fiber: MyReactFiberNode) => void>;
+  fiberTrigger: Set<(fiber: MyReactFiberNode, updater: UpdateQueue) => void>;
   fiberUnmount: Set<(fiber: MyReactFiberNode) => void>;
   fiberHMR?: Set<(fiber: MyReactFiberNode) => void>;
+  fiberWarn?: Set<(fiber: MyReactFiberNode, ...args: any) => void>;
+  fiberError?: Set<(fiber: MyReactFiberNode, ...args: any) => void>;
   fiberHasChange: Set<(list: ListTree<MyReactFiberNode>) => void>;
-  fiberTrigger: Set<(fiber: MyReactFiberNode, updater: UpdateQueue) => void>;
   performanceWarn?: Set<(fiber: MyReactFiberNode) => void>;
+
+  hookInitial: Set<(hook: MyReactHookNode) => void>;
+  hookUpdate: Set<(hook: MyReactHookNode) => void>;
+  hookTrigger: Set<(hook: MyReactHookNode, updater: UpdateQueue) => void>;
+  hookUnmount: Set<(hook: MyReactHookNode) => void>;
 
   beforeCommit: Set<() => void>;
   afterCommit: Set<() => void>;
@@ -42,8 +50,14 @@ const getInitialValue = (): Listeners => {
         fiberHasChange: new Set(),
         fiberUnmount: new Set(),
         fiberHMR: new Set(),
+        fiberWarn: new Set(),
+        fiberError: new Set(),
         fiberTrigger: new Set(),
         performanceWarn: new Set(),
+        hookInitial: new Set(),
+        hookUpdate: new Set(),
+        hookTrigger: new Set(),
+        hookUnmount: new Set(),
         beforeCommit: new Set(),
         afterCommit: new Set(),
         beforeUpdate: new Set(),
@@ -57,7 +71,10 @@ const getInitialValue = (): Listeners => {
         fiberHasChange: new Set(),
         fiberUnmount: new Set(),
         fiberTrigger: new Set(),
-        performanceWarn: new Set(),
+        hookInitial: new Set(),
+        hookUpdate: new Set(),
+        hookTrigger: new Set(),
+        hookUnmount: new Set(),
         beforeCommit: new Set(),
         afterCommit: new Set(),
         beforeUpdate: new Set(),
@@ -285,12 +302,52 @@ export class CustomRenderDispatch implements RenderDispatch {
     set?.add?.(onceCb);
   }
 
+  onFiberWarn(cb: (_fiber: MyReactFiberNode, ...args: any) => void) {
+    const set = listenerMap.get(this).fiberWarn;
+
+    set?.add?.(cb);
+
+    return () => set?.delete?.(cb);
+  }
+
+  onceFiberWarn(cb: (_fiber: MyReactFiberNode, ...args: any) => void) {
+    const set = listenerMap.get(this).fiberWarn;
+
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      set?.delete?.(onceCb);
+    };
+
+    set?.add?.(onceCb);
+  }
+
+  onFiberError(cb: (_fiber: MyReactFiberNode, ...args: any) => void) {
+    const set = listenerMap.get(this).fiberError;
+
+    set?.add?.(cb);
+
+    return () => set?.delete?.(cb);
+  }
+
+  onceFiberError(cb: (_fiber: MyReactFiberNode, ...args: any) => void) {
+    const set = listenerMap.get(this).fiberError;
+
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      set?.delete?.(onceCb);
+    };
+
+    set?.add?.(onceCb);
+  }
+
   onPerformanceWarn(cb: (_fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).performanceWarn;
 
-    set.add(cb);
+    set?.add?.(cb);
 
-    return () => set.delete(cb);
+    return () => set?.delete?.(cb);
   }
 
   oncePerformanceWarn(cb: (_fiber: MyReactFiberNode) => void) {
@@ -298,6 +355,86 @@ export class CustomRenderDispatch implements RenderDispatch {
 
     const onceCb = (_fiber: MyReactFiberNode) => {
       cb(_fiber);
+
+      set?.delete?.(onceCb);
+    };
+
+    set?.add?.(onceCb);
+  }
+
+  onHookInitial(cb: (_hook: MyReactHookNode) => void) {
+    const set = listenerMap.get(this).hookInitial;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceHookInitial(cb: (_hook: MyReactHookNode) => void) {
+    const set = listenerMap.get(this).hookInitial;
+
+    const onceCb = (_hook: MyReactHookNode) => {
+      cb(_hook);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
+  onHookUpdate(cb: (_hook: MyReactHookNode) => void) {
+    const set = listenerMap.get(this).hookUpdate;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceHookUpdate(cb: (_hook: MyReactHookNode) => void) {
+    const set = listenerMap.get(this).hookUpdate;
+
+    const onceCb = (_hook: MyReactHookNode) => {
+      cb(_hook);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
+  onHookUnmount(cb: (_hook: MyReactHookNode) => void) {
+    const set = listenerMap.get(this).hookUnmount;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceHookUnmount(cb: (_hook: MyReactHookNode) => void) {
+    const set = listenerMap.get(this).hookUnmount;
+
+    const onceCb = (_hook: MyReactHookNode) => {
+      cb(_hook);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
+  onHookTrigger(cb: (_hook: MyReactHookNode, _updater: UpdateQueue) => void) {
+    const set = listenerMap.get(this).hookTrigger;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceHookTrigger(cb: (_hook: MyReactHookNode, _updater: UpdateQueue) => void) {
+    const set = listenerMap.get(this).hookTrigger;
+
+    const onceCb = (_hook: MyReactHookNode, _updater: UpdateQueue) => {
+      cb(_hook, _updater);
 
       set.delete(onceCb);
     };

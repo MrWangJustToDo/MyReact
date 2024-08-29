@@ -20,7 +20,7 @@ export const clear = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch)
 
   const parentFiberWithNode = renderDispatch.runtimeDom.elementMap.get(fiber);
 
-  if (parentFiberWithNode.nativeNode) {
+  if (parentFiberWithNode?.nativeNode) {
     removeChildNode(parentFiberWithNode.nativeNode as PlainElement, fiber.nativeNode as DOMNode);
   }
 

@@ -10,7 +10,6 @@ import {
   enableDOMField,
   enableEventSystem,
   enableEventTrack,
-  enableHighlight,
   injectDevField,
 } from "../shared";
 
@@ -48,7 +47,6 @@ const __my_react_dom_shared__ = {
   enableDOMField,
   enableEventSystem,
   enableEventTrack,
-  enableHighlight,
 };
 
 const __my_react_dom_internal__ = {

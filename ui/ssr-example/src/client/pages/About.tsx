@@ -39,7 +39,7 @@ const data: Array<{ "@my-react/react": keyof typeof __my_react_shared__; "@my-re
   { "@my-react/react": "enableDebugFiled", "@my-react/react-dom": "enableDOMField" },
   { "@my-react/react": "enableDebugLog", "@my-react/react-dom": "enableEventSystem" },
   { "@my-react/react": "enableLoopFromRoot", "@my-react/react-dom": "enableEventTrack" },
-  { "@my-react/react": "enableOptimizeTreeLog", "@my-react/react-dom": "enableHighlight" },
+  { "@my-react/react": "enableOptimizeTreeLog", "@my-react/react-dom": "" },
   { "@my-react/react": "enableScopeTreeLog", "@my-react/react-dom": "" },
   { "@my-react/react": "enablePerformanceLog", "@my-react/react-dom": "" },
 ];

@@ -26,11 +26,6 @@ export const enableEventSystem = createReadonlyRef(true);
 /**
  * @internal
  */
-export const enableHighlight = createRef(false);
-
-/**
- * @internal
- */
 export const enableASyncHydrate = createRef(false);
 
 /**
@@ -47,11 +42,6 @@ export const enableEventTrack = createRef(false);
  * @internal
  */
 export const enableHydrateWarn = createRef(true);
-
-/**
- * @internal
- */
-export const enableHighlightWarn = createRef(false);
 
 /**
  * @internal

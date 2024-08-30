@@ -76,3 +76,17 @@ export const generateGetRawAttrKey = (map: string) => {
     return false;
   };
 };
+
+/**
+ * @internal
+ */
+// eslint-disable-next-line @typescript-eslint/ban-types
+export const debounce = <T extends Function>(callback: T, time?: number): T => {
+  let id = null;
+  return ((...args) => {
+    clearTimeout(id);
+    id = setTimeout(() => {
+      callback.call(null, ...args);
+    }, time || 40);
+  }) as unknown as T;
+};

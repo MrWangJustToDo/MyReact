@@ -12,12 +12,11 @@ import {
 import { include } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
-import { HighLight, debounce } from "@my-react-dom-client/tools";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount/render";
 import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-dom-server/api";
 
-import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, enableHighlight, enableHighlightWarn, isServer } from "./env";
-import { getFiberWithNativeDom } from "./getFiberWithDom";
+import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, isServer } from "./env";
+import { debounce } from "./tools";
 
 import type { LikeJSX } from "@my-react/react";
 import type { CustomRenderDispatch, MyReactFiberNodeDev } from "@my-react/react-reconciler";
@@ -32,7 +31,6 @@ const __my_react_dom_shared__ = {
   enableDOMField,
   enableEventSystem,
   enableEventTrack,
-  enableHighlight,
 };
 
 const __my_react_dom_internal__ = {
@@ -54,11 +52,6 @@ export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: a
     }
     if (level === "error") {
       devErrorWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
-    }
-
-    if (enableHighlightWarn.current && !isServer) {
-      const _fiber = getFiberWithNativeDom(fiber, (f) => f.parent);
-      _fiber && HighLight.getHighLightInstance().highLight(_fiber, "warn");
     }
 
     enableOptimizeTreeLog.current = last;
@@ -85,11 +78,6 @@ export const logOnce = (fiber: MyReactFiberNode, level: "warn" | "error", key: s
       onceErrorWithKeyAndFiber(fiber, key, `[@my-react/react-dom]`, ...rest);
     }
 
-    if (enableHighlightWarn.current && !isServer) {
-      const _fiber = getFiberWithNativeDom(fiber, (f) => f.parent);
-
-      _fiber && HighLight.getHighLightInstance().highLight(_fiber, "warn");
-    }
     return;
   }
 

@@ -4,7 +4,6 @@ import { CustomRenderDispatch, NODE_TYPE, initHMR, listenerMap, safeCall, unmoun
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
-import { highlightAppendFiber, highlightRefFiber, highlightUpdateFiber } from "@my-react-dom-client/tools";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount";
 import {
   asyncUpdateTimeLimit,
@@ -244,19 +243,6 @@ function hmrRemount(this: ClientDomDispatch, cb?: () => void) {
 }
 
 if (__DEV__) {
-  // dev highlight
-  Object.defineProperty(ClientDomDispatch.prototype, "patchToCommitUpdate", {
-    value: highlightUpdateFiber,
-  });
-
-  Object.defineProperty(ClientDomDispatch.prototype, "patchToCommitAppend", {
-    value: highlightAppendFiber,
-  });
-
-  Object.defineProperty(ClientDomDispatch.prototype, "patchToCommitSetRef", {
-    value: highlightRefFiber,
-  });
-
   // dev log tree
   Object.defineProperty(ClientDomDispatch.prototype, "_debugRender", {
     get: function (this: ClientDomDispatch) {

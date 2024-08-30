@@ -151,27 +151,31 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (__DEV__ && enableHookStack.current) {
-    const stack = getStack();
+    try {
+      const stack = getStack();
 
-    const res: NodeJS.CallSite[] = [];
+      const res: NodeJS.CallSite[] = [];
 
-    while (stack.length > 0 && !isValidHookName(stack[0].getFunctionName())) {
-      stack.shift();
+      while (stack.length > 0 && !isValidHookName(stack[0].getFunctionName())) {
+        stack.shift();
+      }
+
+      while (stack.length > 0 && (stack[0].getFunctionName() || "") !== (fiber.elementType as MyReactFunctionComponent)?.name) {
+        res.push(stack.shift());
+      }
+
+      typedHook._debugStack = res
+        .map((i) => {
+          const line = i.getEnclosingLineNumber();
+          const column = i.getEnclosingColumnNumber();
+          const fileName = i.getFileName();
+          const functionName = i.getFunctionName() || "Anonymous";
+          return { id: `${fileName}:${line}:${column}`, name: functionName };
+        })
+        .reverse();
+    } catch (e) {
+      void 0;
     }
-
-    while (stack.length > 0 && (stack[0].getFunctionName() || "") !== (fiber.elementType as MyReactFunctionComponent)?.name) {
-      res.push(stack.shift());
-    }
-
-    typedHook._debugStack = res
-      .map((i) => {
-        const line = i.getEnclosingLineNumber();
-        const column = i.getEnclosingColumnNumber();
-        const fileName = i.getFileName();
-        const functionName = i.getFunctionName() || "Anonymous";
-        return { id: `${fileName}:${line}:${column}`, name: functionName };
-      })
-      .reverse();
   }
 
   return hookNode;

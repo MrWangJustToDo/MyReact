@@ -55,9 +55,9 @@
     "react like"
   ],
   "dependencies": {
-    "@my-react/react-jsx": "^0.3.1"
+    "@my-react/react-jsx": "^0.3.2"
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.1"
+    "@my-react/react-shared": "^0.3.2"
   }
 }

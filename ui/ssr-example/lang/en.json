@@ -4,5 +4,6 @@
   "description": "A React like framework, can be used to replace all of the react/react-dom api for test、learn、debug ...",
   "hmr": "Hot module replacement",
   "config": "Internal config",
-  "tldraw": "Painting ✍️"
+  "tldraw": "Tldraw ✍️",
+  "excalidraw": "Excalidraw ✍️"
 }

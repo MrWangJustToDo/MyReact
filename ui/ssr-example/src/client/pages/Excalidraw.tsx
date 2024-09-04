@@ -5,27 +5,29 @@ import { useDebouncedState, useFoot, useIsMounted } from "@client/hooks";
 import { useHead } from "@client/hooks/useHead";
 
 import type { GetInitialStateType } from "@client/types/common";
-import type { Tldraw as TldrawProview } from "@tldraw/tldraw";
+import type { Excalidraw as ExcalidrawPreview } from "@excalidraw/excalidraw";
 
 const { enable, disable } = useFoot.getActions();
 
 const { enable: _enable, disable: _disable } = useHead.getActions();
 
-export default function Tldraw({ isDarkMode }: { isDarkMode: boolean }) {
+export default function Excalidraw({ isDarkMode }: { isDarkMode: boolean }) {
   const isMounted = useIsMounted();
 
   const [loading, setLoading] = useDebouncedState(true, 3000);
 
-  const [Render, setRender] = useState<typeof TldrawProview>(() => () => null);
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  const [Render, setRender] = useState<typeof ExcalidrawPreview>(() => () => null);
 
   const _isDarkMode = useColorModeValue(false, true);
 
   useEffect(() => {
     const fetch = async () => {
       // also have some error
-      const { Tldraw } = await import("@tldraw/tldraw");
+      const { Excalidraw } = await import("@excalidraw/excalidraw");
 
-      setRender(() => Tldraw);
+      setRender(() => Excalidraw);
 
       setLoading(false);
 
@@ -52,7 +54,7 @@ export default function Tldraw({ isDarkMode }: { isDarkMode: boolean }) {
           Loading ...
         </Box>
       ) : (
-        <Render darkMode={darkMode} showMenu showTools showUI showZoom />
+        <Render theme={darkMode ? "dark" : "light"} />
       )}
     </Box>
   );

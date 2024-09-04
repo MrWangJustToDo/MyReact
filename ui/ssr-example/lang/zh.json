@@ -3,6 +3,7 @@
   "@my-react": "@my-react",
   "description": "一个React like 项目，可以替换 react/react-dom 的所有api用于学习、测试、debug...",
   "hmr": "热模块重载",
-  "config": "Internal config",
-  "tldraw": "画图✍️"
+  "config": "内部配置",
+  "tldraw": "Tldraw ✍️",
+  "excalidraw": "Excalidraw ✍️"
 }

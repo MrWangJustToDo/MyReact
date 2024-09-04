@@ -10,6 +10,7 @@ import { useIntl } from "react-intl";
 import { useLocation, useNavigate } from "react-router";
 
 import { CONTAINER_WIDTH } from "@client/config/container";
+import { useHead } from "@client/hooks/useHead";
 import { noBase } from "@shared";
 
 import { ColorMode } from "../ColorMode";
@@ -21,6 +22,7 @@ const map = {
   "/blog": "blog",
   "/about": "config",
   "/tldraw": "tldraw",
+  "/excalidraw": "excalidraw",
 };
 
 const _Header = () => {
@@ -35,6 +37,8 @@ const _Header = () => {
   const { formatMessage } = useIntl();
 
   const { scrollY } = useScroll();
+
+  const enableHeader = useHead((s) => s.state);
 
   useEffect(() => {
     const onChange = debounce(() => {
@@ -67,83 +71,106 @@ const _Header = () => {
 
   return (
     <>
-      <Container maxWidth={CONTAINER_WIDTH} paddingX={{ base: "3", lg: "6" }} className="site-header">
-        <GlobalStyle />
-        <Flex id="desktop-header" paddingY="2" justifyContent="space-between" alignItems="center" display={{ base: "none", md: "flex" }}>
-          <Text as="h1" fontSize={{ base: "xl", md: "2xl" }} fontWeight={{ base: "semibold", md: "bold" }} noOfLines={1}>
-            {formatMessage({ id })}
-          </Text>
-          <HStack gap={{ base: "4px", lg: "8px" }}>
-            <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/" : `/${__BASENAME__}/`)}>
-              Home
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
-              Example
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Tldraw" : `/${__BASENAME__}/Tldraw`)}>
-              Tldraw
-            </Button>
-            {!__REACT__ && __DEVELOPMENT__ && (
-              <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/About" : `/${__BASENAME__}/About`)}>
-                About
-              </Button>
-            )}
-            <ColorMode />
-            <Button variant="outline" size="sm" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
-              <Icon as={SiGithub} />
-              {loading ? null : (
-                <Tag variant="subtle" colorScheme="orange" marginLeft="3">
-                  <TagLeftIcon as={FaStar} color="orange.300" />
-                  <TagLabel>{data?.repository?.stargazerCount}</TagLabel>
-                </Tag>
-              )}
-            </Button>
-          </HStack>
-        </Flex>
-        <Box id="mobile-header" display={{ base: "block", md: "none" }} height={12} overflow="hidden">
-          <Flex
-            justifyContent="space-between"
-            alignItems="center"
-            height={direction === "up" ? "full" : "0%"}
-            width="full"
-            transition="height 0.3s"
-            overflow="hidden"
-          >
-            <Text as="h1" fontSize={{ base: "xl", md: "2xl" }} fontWeight={{ base: "semibold", md: "bold" }} noOfLines={1}>
-              {formatMessage({ id })}
-            </Text>
-            <HStack gap={{ base: "4px", lg: "8px" }}>
-              <ColorMode />
-              <Button variant="outline" size="sm" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
-                <Icon as={SiGithub} />
-                {loading ? null : (
-                  <Tag variant="subtle" colorScheme="orange" marginLeft="3">
-                    <TagLeftIcon as={FaStar} color="orange.300" />
-                    <TagLabel>{data?.repository?.stargazerCount}</TagLabel>
-                  </Tag>
+      <GlobalStyle />
+      {enableHeader ? (
+        <Box id="page-header" position="sticky" top="0" backgroundColor="bannerBackgroundColor" zIndex="banner">
+          <Container maxWidth={CONTAINER_WIDTH} paddingX={{ base: "3", lg: "6" }} className="site-header">
+            <Flex id="desktop-header" paddingY="2" justifyContent="space-between" alignItems="center" display={{ base: "none", md: "flex" }}>
+              <Text as="h1" fontSize={{ base: "xl", md: "2xl" }} fontWeight={{ base: "semibold", md: "bold" }} noOfLines={1}>
+                {formatMessage({ id })}
+              </Text>
+              <HStack gap={{ base: "4px", lg: "8px" }}>
+                <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/" : `/${__BASENAME__}/`)}>
+                  Home
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
+                  Example
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Excalidraw" : `/${__BASENAME__}/Excalidraw`)}>
+                  Excalidraw
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Tldraw" : `/${__BASENAME__}/Tldraw`)}>
+                  Tldraw
+                </Button>
+                {!__REACT__ && __DEVELOPMENT__ && (
+                  <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/About" : `/${__BASENAME__}/About`)}>
+                    About
+                  </Button>
                 )}
-              </Button>
-            </HStack>
-          </Flex>
-          <Flex justifyContent="space-between" alignItems="center" height="full" width="full">
-            <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/" : `/${__BASENAME__}/`)}>
-              Home
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
-              Example
-            </Button>
-            <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Tldraw" : `/${__BASENAME__}/Tldraw`)}>
-              Tldraw
-            </Button>
-            {!__REACT__ && __DEVELOPMENT__ && (
-              <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/About" : `/${__BASENAME__}/About`)}>
-                About
-              </Button>
-            )}
-          </Flex>
+                <ColorMode />
+                <Button variant="outline" size="sm" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
+                  <Icon as={SiGithub} />
+                  {loading ? null : (
+                    <Tag variant="subtle" colorScheme="orange" marginLeft="3">
+                      <TagLeftIcon as={FaStar} color="orange.300" />
+                      <TagLabel>{data?.repository?.stargazerCount}</TagLabel>
+                    </Tag>
+                  )}
+                </Button>
+              </HStack>
+            </Flex>
+            <Box id="mobile-header" display={{ base: "block", md: "none" }} height={12} overflow="hidden">
+              <Flex
+                justifyContent="space-between"
+                alignItems="center"
+                height={direction === "up" ? "full" : "0%"}
+                width="full"
+                transition="height 0.3s"
+                overflow="hidden"
+              >
+                <Text as="h1" fontSize={{ base: "xl", md: "2xl" }} fontWeight={{ base: "semibold", md: "bold" }} noOfLines={1}>
+                  {formatMessage({ id })}
+                </Text>
+                <HStack gap={{ base: "4px", lg: "8px" }}>
+                  <ColorMode />
+                  <Button variant="outline" size="sm" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
+                    <Icon as={SiGithub} />
+                    {loading ? null : (
+                      <Tag variant="subtle" colorScheme="orange" marginLeft="3">
+                        <TagLeftIcon as={FaStar} color="orange.300" />
+                        <TagLabel>{data?.repository?.stargazerCount}</TagLabel>
+                      </Tag>
+                    )}
+                  </Button>
+                </HStack>
+              </Flex>
+              <Flex justifyContent="space-between" alignItems="center" height="full" width="full">
+                <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/" : `/${__BASENAME__}/`)}>
+                  Home
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
+                  Example
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Excalidraw" : `/${__BASENAME__}/Excalidraw`)}>
+                  Excalidraw
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Tldraw" : `/${__BASENAME__}/Tldraw`)}>
+                  Tldraw
+                </Button>
+                {!__REACT__ && __DEVELOPMENT__ && (
+                  <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/About" : `/${__BASENAME__}/About`)}>
+                    About
+                  </Button>
+                )}
+              </Flex>
+            </Box>
+          </Container>
+          <motion.div className="mx-[-2em]" style={{ opacity, borderBottom: "1px solid rgba(100, 100, 100, .2)" }}></motion.div>
         </Box>
-      </Container>
-      <motion.div style={{ opacity, borderBottom: "1px solid rgba(100, 100, 100, .2)" }}></motion.div>
+      ) : (
+        <Button
+          position="fixed"
+          zIndex="banner"
+          top="50%"
+          translateY="-50%"
+          right="2"
+          variant="outline"
+          size="sm"
+          onClick={() => navigate(noBase ? "/" : `/${__BASENAME__}/`)}
+        >
+          Home
+        </Button>
+      )}
     </>
   );
 };

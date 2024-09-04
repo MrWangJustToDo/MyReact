@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import { Component } from "react";
 import { Helmet } from "react-helmet-async";
 import { Outlet } from "react-router";
@@ -35,15 +34,12 @@ export default class Layout extends Component<{ title: string }, { isMounted: bo
   render(): ReactNode {
     console.warn("render", this);
     const { title } = this.props;
-    const { isMounted } = this.state;
     return (
       <>
         <Helmet title={(title?.slice(1)?.toLowerCase() || "@my-react") + " | @my-react"} />
         <LockBody />
         <ModuleManager>
-          <Box id="page-header" position="sticky" top="0" backgroundColor={isMounted ? "bannerBackgroundColor" : undefined} zIndex="banner">
-            <Header />
-          </Box>
+          <Header />
           <div id="page-content">
             <Outlet />
           </div>

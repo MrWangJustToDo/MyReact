@@ -19,6 +19,7 @@
     "@emotion/react": "11.11.0",
     "@emotion/server": "11.11.0",
     "@emotion/styled": "11.11.0",
+    "@excalidraw/excalidraw": "^0.17.6",
     "@loadable/component": "^5.16.4",
     "@loadable/server": "^5.16.5",
     "@my-react/react": "workspace:*",

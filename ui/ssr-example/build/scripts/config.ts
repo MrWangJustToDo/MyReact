@@ -32,7 +32,10 @@ export const getConfig = () => {
           __BUNDLE_SCOPE__: JSON.stringify(BUNDLE_SCOPE),
           __OUTPUT_SCOPE__: JSON.stringify(OUTPUT_SCOPE),
           __BUILD_TIME__: JSON.stringify(dayjs().toString()),
+          "process.env.IS_PREACT": JSON.stringify("false"),
         }),
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         isDEV && (isReact ? new ReactRefreshPlugin() : new RefreshWebpackPlugin()),
         isDEV && isMIDDLEWARE && new HotModuleReplacementPlugin(),
       ].filter(Boolean);
@@ -77,6 +80,7 @@ export const getConfig = () => {
           __BUNDLE_SCOPE__: JSON.stringify(BUNDLE_SCOPE),
           __OUTPUT_SCOPE__: JSON.stringify(OUTPUT_SCOPE),
           __BUILD_TIME__: JSON.stringify(dayjs().toString()),
+          "process.env.IS_PREACT": JSON.stringify("false"),
         }),
         isDEV && !isMIDDLEWARE && new HotModuleReplacementPlugin(),
       ].filter(Boolean);

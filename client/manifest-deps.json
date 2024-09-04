@@ -1,4 +1,10 @@
 {
+  "./Excalidraw": {
+    "path": [
+      "page-Excalidraw.js"
+    ],
+    "static": true
+  },
   "./About": {
     "path": [
       "page-About.js"

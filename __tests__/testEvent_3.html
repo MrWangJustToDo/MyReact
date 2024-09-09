@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  <script src="../bundle/react.development.js"></script>
+  <script src="../bundle/react-dom.development.js"></script>
+  <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+  <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
   <!-- <script src="../packages/myreact-dom/dist/umd/server.development.js"></script> -->
 </head>
 
@@ -21,7 +21,7 @@
     const I = ({ option, setOption }) => {
       const cb2 = (e) => {
         console.log('option', e._dispatched, ', option', cb2._attached);
-        console.log("Set option", option);
+        console.warn("Set option", option);
         setOption(option);
       }
       return <div
@@ -35,7 +35,7 @@
       const [option, setOption] = useState(undefined);
       const cb1 = (e) => {
         console.log('parent', e._dispatched, ', parent', cb1._attached);
-        console.log("Clear option");
+        console.warn("Clear option");
         setOption(undefined);
       }
 
@@ -49,7 +49,7 @@
         );
       } else {
         return (
-          <div style={{ border: "1px solid #ccc", margin: "10px", cursor: "pointer" }}>
+          <div style={{ border: "1px solid #ccc", margin: "10px", cursor: "pointer" }} onClick={cb1}>
             {options.map((option) => {
               return (
                 <I option={option} setOption={setOption} />

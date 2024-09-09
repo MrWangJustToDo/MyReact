@@ -1,7 +1,7 @@
 import { STATE_TYPE, include } from "@my-react/react-shared";
 import { type Node as YogaNode } from "yoga-layout";
 
-import { TextType, removeChildNode } from "../native";
+import { PlainTextType, TextType, removeChildNode } from "../native";
 
 import type { TerminalDispatch } from "../../renderDispatch";
 import type { DOMNode, PlainElement, TextElement } from "../native";
@@ -31,7 +31,9 @@ export const clear = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch)
   }
 
   try {
-    yogaNode?.unsetMeasureFunc();
+    if (typeNativeNode.nodeName === PlainTextType) {
+      yogaNode?.unsetMeasureFunc();
+    }
 
     yogaNode?.freeRecursive();
   } catch (e) {

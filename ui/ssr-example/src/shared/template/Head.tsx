@@ -19,7 +19,12 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     <base href={noBase ? "/" : `/${__BASENAME__}/`} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/google-sans"></link>
+    {/* <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/google-sans"></link> */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+    {/* @ts-ignore */}
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet"></link>
     {/* a type issue for react-helmet-async  */}
     <>
       {helmet?.base.toComponent()}

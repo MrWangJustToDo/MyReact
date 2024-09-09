@@ -111,8 +111,3 @@ export const enableDebugFiled = createRef(true);
  * @internal
  */
 export const enableMockReact = createReadonlyRef(true);
-
-/**
- * @internal
- */
-export const enableGetterInstance = createReadonlyRef(true);

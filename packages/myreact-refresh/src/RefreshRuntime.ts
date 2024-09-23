@@ -427,6 +427,7 @@ const setRefreshRuntimeFieldForDev = (container: CustomRenderDispatch) => {
   }
   Object.defineProperty(container, "__refresh_runtime__", {
     value: {
+      version,
       register,
       setSignature,
       getFamilyByID,

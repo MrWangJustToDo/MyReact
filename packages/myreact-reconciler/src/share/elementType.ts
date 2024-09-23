@@ -22,7 +22,7 @@ import { devWarn } from "./debug";
 import { NODE_TYPE } from "./fiberType";
 import { getCurrentTypeFromRefresh } from "./refresh";
 
-import type { MyReactElementNode, MyReactObjectComponent, forwardRef, memo, MyReactElement, MyReactElementType } from "@my-react/react";
+import type { MyReactElementNode, MyReactObjectComponent, forwardRef, memo, MyReactElement, MyReactElementType, MixinMyReactObjectComponent } from "@my-react/react";
 
 const { enableHMRForDev } = __my_react_shared__;
 
@@ -35,6 +35,17 @@ type ReturnTypeFromElement = {
 };
 
 const emptyProps = {};
+
+const getElementTypeFromType = (type: MixinMyReactObjectComponent): MyReactElementType => {
+  while (typeof type === "object" && type !== null) {
+    if (type[TYPEKEY] === Memo || type[TYPEKEY] === ForwardRef) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      type = (type as ReturnType<typeof memo> | ReturnType<typeof forwardRef>).render;
+    }
+  }
+  return type;
+};
 
 // TODO
 export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeFromElement => {
@@ -158,6 +169,8 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
 
   if (__DEV__ && enableHMRForDev.current && include(nodeType, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
     elementType = getCurrentTypeFromRefresh(elementType);
+
+    elementType = getElementTypeFromType(elementType);
   }
 
   return { key, ref, nodeType, elementType, pendingProps };

@@ -299,9 +299,11 @@ export const performReactRefresh = () => {
         }
       });
 
+      // use target render type as key
+      // SEE packages/myreact-reconciler/src/share/elementType.ts -> getTypeFromElement
       updatedFamiliesByType.set(prevType, family);
 
-      updatedFamiliesByType.set(_nextType, family);
+      updatedFamiliesByType.set(nextType, family);
 
       family.current = _nextType;
 

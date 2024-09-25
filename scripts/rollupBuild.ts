@@ -9,22 +9,22 @@ const externalReact = (id: string) =>
   (id.includes("node_modules") && !id.includes("tslib"));
 
 const buildPackages = async () => {
-  // await rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
+  await rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-jsx", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-reconciler", packageScope: "packages", external: externalReact });
-  // await rollupBuild({ packageName: "myreact-terminal", packageScope: "packages", external: externalReact });
+  await rollupBuild({ packageName: "myreact-terminal", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external: externalReact });
-  // await rollupBuild({ packageName: "myreact-reactivity", packageScope: "packages", external: externalReact });
-  // await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external: externalReact });
-  // await rollupBuild({ packageName: "myreact-vite", packageScope: "packages", external: externalReact });
-  // await rollupBuild({ packageName: "myreact-refresh-tools", packageScope: "packages", external: externalReact });
+  await rollupBuild({ packageName: "myreact-reactivity", packageScope: "packages", external: externalReact });
+  await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external: externalReact });
+  await rollupBuild({ packageName: "myreact-vite", packageScope: "packages", external: externalReact });
+  await rollupBuild({ packageName: "myreact-refresh-tools", packageScope: "packages", external: externalReact });
 };
 
 const start = async () => {
   await buildPackages();
-  // await rollupBuild({ packageName: "graphql", packageScope: "site", external });
-  // await rollupBuild({ packageName: "webpack", packageScope: "site", external });
+  await rollupBuild({ packageName: "graphql", packageScope: "site", external });
+  await rollupBuild({ packageName: "webpack", packageScope: "site", external });
   process.exit(0);
 };
 

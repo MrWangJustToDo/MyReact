@@ -25,12 +25,16 @@ export const onceLogNewEntry = once((entry) => {
 
 export const createRoot = (container: Partial<RenderContainer>, _option?: Options) => {
   if (__DEV__ && !container) {
-    throw new Error('[@my-react/react-dom] the `createRoot` function must be called with a container element.')
+    throw new Error("[@my-react/react-dom] the `createRoot` function must be called with a container element.");
   }
 
-  const render = (element: LikeJSX) => originalRender(element, container);
+  const render = function createRootRender(element: LikeJSX) {
+    originalRender(element, container);
+  };
 
-  const unmount = () => unmountComponentAtNode(container as RenderContainer);
+  const unmount = function createRootUnmount() {
+    unmountComponentAtNode(container as RenderContainer);
+  };
 
   __DEV__ && onceLogNewEntry("createRoot");
 

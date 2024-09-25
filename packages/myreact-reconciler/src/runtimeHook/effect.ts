@@ -15,7 +15,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
     setEffectForInstance(hookNode, Effect_TYPE.__effect__);
 
     if (hookNode.type === HOOK_TYPE.useEffect) {
-      renderDispatch.pendingEffect(fiber, () => {
+      renderDispatch.pendingEffect(fiber, function invokeEffectOnHook() {
         hookNode.cancel && hookNode.cancel();
 
         const ownerFiber = getInstanceOwnerFiber(hookNode);
@@ -29,7 +29,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
     }
 
     if (hookNode.type === HOOK_TYPE.useLayoutEffect) {
-      renderDispatch.pendingLayoutEffect(fiber, () => {
+      renderDispatch.pendingLayoutEffect(fiber, function invokeLayoutEffectOnHook() {
         hookNode.cancel && hookNode.cancel();
 
         hookNode.cancel = hookNode.value();
@@ -41,7 +41,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
     }
 
     if (hookNode.type === HOOK_TYPE.useInsertionEffect) {
-      renderDispatch.pendingInsertionEffect(fiber, () => {
+      renderDispatch.pendingInsertionEffect(fiber, function invokeInsertionEffectOnHook() {
         hookNode.cancel && hookNode.cancel();
 
         hookNode.cancel = hookNode.value();
@@ -53,7 +53,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
     }
 
     if (hookNode.type === HOOK_TYPE.useImperativeHandle) {
-      renderDispatch.pendingLayoutEffect(fiber, () => {
+      renderDispatch.pendingLayoutEffect(fiber, function invokeLayoutEffectOnHook() {
         // ref obj
         if (hookNode.value && typeof hookNode.value === "object") hookNode.value.current = hookNode.reducer.call(null);
         // ref function
@@ -66,12 +66,14 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
     }
 
     if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
-      renderDispatch.pendingLayoutEffect(fiber, () => {
+      renderDispatch.pendingLayoutEffect(fiber, function invokeLayoutEffectOnHook() {
         hookNode.cancel && hookNode.cancel();
 
         const storeApi = hookNode.value;
 
-        hookNode.cancel = storeApi.subscribe(() => hookNode._update({ isForce: true }));
+        hookNode.cancel = storeApi.subscribe(function triggerHookUpdate() {
+          hookNode._update({ isForce: true });
+        });
 
         hookNode.hasEffect = false;
 

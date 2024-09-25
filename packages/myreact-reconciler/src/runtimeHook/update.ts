@@ -86,7 +86,12 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
     storeApi.getSnapshot = newStoreApi.getSnapshot;
 
-    currentHook.result = safeCallWithFiber({ fiber, action: () => storeApi.getSnapshot.call(null) });
+    currentHook.result = safeCallWithFiber({
+      fiber,
+      action: function safeCallGetSnapshot() {
+        return storeApi.getSnapshot.call(null);
+      },
+    });
 
     return currentHook;
   }
@@ -106,7 +111,12 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     if (isHMR || !deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
-      currentHook.result = safeCallWithFiber({ fiber, action: () => (value as () => unknown).call(null) });
+      currentHook.result = safeCallWithFiber({
+        fiber,
+        action: function safeCallMemoOnHook() {
+          return (value as () => unknown).call(null);
+        },
+      });
 
       currentHook.deps = deps;
     }
@@ -148,7 +158,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     currentHook.value = value;
 
     if (!Object.is(currentHook.value, currentHook.result)) {
-      currentHook.cancel = renderPlatform.yieldTask(() => {
+      currentHook.cancel = renderPlatform.yieldTask(function triggerHookUpdate() {
         currentHook.result = currentHook.value;
 
         currentHook._update({ isForce: true });

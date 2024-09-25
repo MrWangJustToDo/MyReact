@@ -31,7 +31,7 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
 
   if (validElement.length) {
-    validElement.forEach((c) => {
+    validElement.forEach(function checkSingleElementValidKey(c) {
       if (!c._store["validKey"]) {
         if (typeof c.key === "string") {
           if (obj[c.key]) {
@@ -209,7 +209,7 @@ export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => 
 
   enableOptimizeTreeLog.current = false;
 
-  children.forEach((child) => {
+  children.forEach(function checkArrayChildKey(child) {
     if (Array.isArray(child)) {
       checkValidKey(child);
     } else {

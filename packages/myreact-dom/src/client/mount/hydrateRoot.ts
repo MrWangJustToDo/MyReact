@@ -10,9 +10,13 @@ import type { RenderContainer } from "./render";
 import type { LikeJSX } from "@my-react/react";
 
 export const hydrateRoot = (container: Partial<RenderContainer>, element: LikeJSX, _option?: Options) => {
-  const render = (element: LikeJSX) => originalRender(element, container);
+  const render = function hydrateRootRender(element: LikeJSX) {
+    originalRender(element, container);
+  };
 
-  const unmount = () => unmountComponentAtNode(container as RenderContainer);
+  const unmount = function hydrateRootUnmount() {
+    unmountComponentAtNode(container as RenderContainer);
+  };
 
   __DEV__ && onceLogNewEntry("hydrateRoot");
 

@@ -36,14 +36,24 @@ const errorMap = {};
 const fiberWarn = (fiber: MyReactFiberNode, ...args) => {
   const renderDispatch = getCurrentDispatchFromFiber(fiber);
 
-  safeCallWithFiber({ fiber, action: () => listenerMap.get(renderDispatch)?.fiberWarn?.forEach((listener) => listener(fiber, ...args)) });
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallFiberWarnListener() {
+      listenerMap.get(renderDispatch)?.fiberWarn?.forEach((listener) => listener(fiber, ...args));
+    },
+  });
 };
 
 const fiberError = (fiber: MyReactFiberNode, ...args) => {
   const renderDispatch = getCurrentDispatchFromFiber(fiber);
 
-  safeCallWithFiber({ fiber, action: () => listenerMap.get(renderDispatch)?.fiberError?.forEach((listener) => listener(fiber, ...args)) });
-}
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallFiberErrorListener() {
+      listenerMap.get(renderDispatch)?.fiberError?.forEach((listener) => listener(fiber, ...args));
+    },
+  });
+};
 
 // TODO! improve log
 

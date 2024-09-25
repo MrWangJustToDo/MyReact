@@ -4,11 +4,13 @@ import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { updateLoopConcurrentFromRoot, updateLoopConcurrentFromTrigger, updateLoopSyncFromRoot, updateLoopSyncFromTrigger } from "../runtimeUpdate";
 import { resetLogScope, safeCall, setLogScope } from "../share";
 
+import { scheduleNext } from "./trigger";
+
 const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch, cb?: () => void) => {
+export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
   const renderPlatform = currentRenderPlatform.current;
@@ -19,28 +21,33 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch, cb?: ()
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
-  const commitList = renderDispatch.pendingCommitFiberList;
+  (function finishUpdateSyncFromRoot() {
+    const commitList = renderDispatch.pendingCommitFiberList;
 
-  const changedList = renderDispatch.pendingChangedFiberList;
+    const changedList = renderDispatch.pendingChangedFiberList;
 
-  renderDispatch.resetUpdateFlowRuntimeFiber();
+    renderDispatch.resetUpdateFlowRuntimeFiber();
 
-  renderDispatch.pendingCommitFiberList = null;
+    renderDispatch.pendingCommitFiberList = null;
 
-  renderDispatch.pendingChangedFiberList = null;
+    renderDispatch.pendingChangedFiberList = null;
 
-  commitList?.length && renderDispatch.reconcileUpdate(commitList);
+    commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
-  changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
+    changedList?.length &&
+      safeCall(function safeCallFiberHasChangeListener() {
+        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+      });
+  })();
 
-  renderPlatform.microTask(() => {
+  renderPlatform.microTask(function afterUpdateSyncFromRoot() {
     globalLoop.current = false;
 
-    cb?.();
+    scheduleNext(renderDispatch);
   });
 };
 
-export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch, cb?: () => void) => {
+export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
   const renderPlatform = currentRenderPlatform.current;
@@ -51,28 +58,33 @@ export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch, cb?:
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
-  const commitList = renderDispatch.pendingCommitFiberList;
+  (function finishUpdateSyncFromTrigger() {
+    const commitList = renderDispatch.pendingCommitFiberList;
 
-  const changedList = renderDispatch.pendingChangedFiberList;
+    const changedList = renderDispatch.pendingChangedFiberList;
 
-  renderDispatch.resetUpdateFlowRuntimeFiber();
+    renderDispatch.resetUpdateFlowRuntimeFiber();
 
-  renderDispatch.pendingCommitFiberList = null;
+    renderDispatch.pendingCommitFiberList = null;
 
-  renderDispatch.pendingChangedFiberList = null;
+    renderDispatch.pendingChangedFiberList = null;
 
-  commitList?.length && renderDispatch.reconcileUpdate(commitList);
+    commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
-  changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
+    changedList?.length &&
+      safeCall(function safeCallFiberHasChangeListener() {
+        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+      });
+  })();
 
-  renderPlatform.microTask(() => {
+  renderPlatform.microTask(function afterUpdateSyncFromTrigger() {
     globalLoop.current = false;
 
-    cb?.();
+    scheduleNext(renderDispatch);
   });
 };
 
-export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch, cb?: () => void) => {
+export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
   const renderPlatform = currentRenderPlatform.current;
@@ -84,31 +96,39 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch, c
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   if (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    renderPlatform.yieldTask(() => updateConcurrentFromRoot(renderDispatch, cb));
+    renderPlatform.yieldTask(function resumeUpdateConcurrentFromRoot() {
+      updateConcurrentFromRoot(renderDispatch);
+    });
   } else {
-    const commitList = renderDispatch.pendingCommitFiberList;
+    (function finishUpdateConcurrentFromRoot() {
+      const commitList = renderDispatch.pendingCommitFiberList;
 
-    const changedList = renderDispatch.pendingChangedFiberList;
+      const changedList = renderDispatch.pendingChangedFiberList;
 
-    renderDispatch.resetUpdateFlowRuntimeFiber();
+      renderDispatch.resetUpdateFlowRuntimeFiber();
 
-    renderDispatch.pendingCommitFiberList = null;
+      renderDispatch.pendingCommitFiberList = null;
 
-    renderDispatch.pendingChangedFiberList = null;
+      renderDispatch.pendingChangedFiberList = null;
 
-    commitList?.length && renderDispatch.reconcileUpdate(commitList);
+      commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
-    changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
+      changedList?.length &&
+        safeCall(function safeCallFiberHasChangeListener() {
+          listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+        });
+    })();
 
-    renderPlatform.microTask(() => {
+    renderPlatform.microTask(function afterUpdateConcurrentFromRoot() {
+      // TODO! flash all effect
       globalLoop.current = false;
 
-      cb?.();
+      scheduleNext(renderDispatch);
     });
   }
 };
 
-export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch, cb?: () => void) => {
+export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
   const renderPlatform = currentRenderPlatform.current;
@@ -120,26 +140,34 @@ export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   if (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    renderPlatform.yieldTask(() => updateConcurrentFromTrigger(renderDispatch, cb));
+    renderPlatform.yieldTask(function resumeUpdateConcurrentFromTrigger() {
+      updateConcurrentFromTrigger(renderDispatch);
+    });
   } else {
-    const commitList = renderDispatch.pendingCommitFiberList;
+    (function finishUpdateConcurrentFromTrigger() {
+      const commitList = renderDispatch.pendingCommitFiberList;
 
-    const changedList = renderDispatch.pendingChangedFiberList;
+      const changedList = renderDispatch.pendingChangedFiberList;
 
-    renderDispatch.resetUpdateFlowRuntimeFiber();
+      renderDispatch.resetUpdateFlowRuntimeFiber();
 
-    renderDispatch.pendingCommitFiberList = null;
+      renderDispatch.pendingCommitFiberList = null;
 
-    renderDispatch.pendingChangedFiberList = null;
+      renderDispatch.pendingChangedFiberList = null;
 
-    commitList?.length && renderDispatch.reconcileUpdate(commitList);
+      commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
-    changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
+      changedList?.length &&
+        safeCall(function safeCallFiberHasChangeListener() {
+          listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+        });
+    })();
 
-    renderPlatform.microTask(() => {
+    renderPlatform.microTask(function afterUpdateConcurrentFromTrigger() {
+      // TODO! flash all effect
       globalLoop.current = false;
 
-      cb?.();
+      scheduleNext(renderDispatch);
     });
   }
 };

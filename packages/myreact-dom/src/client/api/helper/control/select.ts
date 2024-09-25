@@ -26,19 +26,19 @@ const generateEmptyChangeFun = (fiber: MyReactFiberNode) => {
  * @internal
  */
 export const generateSelectOnChangeFun = (fiber: MyReactFiberNode) => {
-  const onChange = (...args) => {
+  const onChange = function onChange(...args) {
     const originalOnChange = fiber.pendingProps.onChange;
 
     const targetOnChange =
       typeof originalOnChange !== "function"
         ? generateEmptyChangeFun(fiber)
-        : (...args) => {
+        : function targetOnChange(...args) {
             originalOnChange?.call?.(null, ...args);
           };
 
     targetOnChange?.call?.(null, ...args);
 
-    requestAnimationFrame(() => {
+    requestAnimationFrame(function afterEventDispatch() {
       const dom = fiber.nativeNode;
 
       const props = fiber.pendingProps;

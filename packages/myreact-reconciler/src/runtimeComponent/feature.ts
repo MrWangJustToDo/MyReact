@@ -14,6 +14,7 @@ import {
 } from "../runtimeGenerate";
 import { afterSyncFlush, beforeSyncFlush, currentRenderDispatch, onceWarnWithKeyAndFiber, safeCallWithFiber } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
@@ -31,7 +32,12 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const pendingState = fiber.pendingState;
 
   if (typedComponent.getDerivedStateFromProps) {
-    const payloadState = safeCallWithFiber({ fiber, action: () => typedComponent.getDerivedStateFromProps?.(pendingProps, pendingState) });
+    const payloadState = safeCallWithFiber({
+      fiber,
+      action: function safeCallGetDerivedStateFromProps() {
+        return typedComponent.getDerivedStateFromProps?.(pendingProps, pendingState);
+      },
+    });
 
     if (payloadState) {
       const newState = Object.assign({}, pendingState, payloadState);
@@ -58,7 +64,12 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
   if (__DEV__) Object.freeze(props);
 
-  const instance = safeCallWithFiber({ fiber, action: () => new typedComponent(props, context) });
+  const instance = safeCallWithFiber({
+    fiber,
+    action: function safeCallCreateComponentInstance() {
+      return new typedComponent(props, context);
+    },
+  });
 
   if (__DEV__) Object.freeze(instance.state);
 
@@ -86,7 +97,12 @@ const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
 const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const children = safeCallWithFiber({ fiber, action: () => typedInstance.render() });
+  const children = safeCallWithFiber({
+    fiber,
+    action: function safeCallRender() {
+      return typedInstance.render();
+    },
+  });
 
   return children;
 };
@@ -101,7 +117,7 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   if (typedInstance.componentDidMount && exclude(effect, Effect_TYPE.__effect__)) {
     setEffectForInstance(typedInstance, Effect_TYPE.__effect__);
 
-    renderDispatch.pendingLayoutEffect(fiber, () => {
+    renderDispatch.pendingLayoutEffect(fiber, function invokeComponentDidMountOnInstance() {
       setEffectForInstance(typedInstance, Effect_TYPE.__initial__);
 
       typedInstance.componentDidMount?.();
@@ -159,7 +175,12 @@ const processComponentShouldUpdateOnUpdate = (
   // if (include(fiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) return true;
 
   if (typedInstance.shouldComponentUpdate) {
-    return safeCallWithFiber({ fiber, action: () => typedInstance.shouldComponentUpdate?.(nextProps, nextState, nextContext) });
+    return safeCallWithFiber({
+      fiber,
+      action: function safeCallShouldComponentUpdateOnInstance() {
+        return typedInstance.shouldComponentUpdate?.(nextProps, nextState, nextContext);
+      },
+    });
   }
 
   return true;
@@ -169,7 +190,12 @@ const processComponentGetSnapshotOnUpdate = (fiber: MyReactFiberNode, { baseStat
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedInstance.getSnapshotBeforeUpdate) {
-    return safeCallWithFiber({ fiber, action: () => typedInstance.getSnapshotBeforeUpdate?.(baseProps, baseState) });
+    return safeCallWithFiber({
+      fiber,
+      action: function safeCallGetSnapshotBeforeUpdateOnInstance() {
+        return typedInstance.getSnapshotBeforeUpdate?.(baseProps, baseState);
+      },
+    });
   }
 
   return null;
@@ -196,7 +222,7 @@ const processComponentDidUpdateOnUpdate = (
   if (typedInstance.componentDidUpdate && exclude(effect, Effect_TYPE.__effect__)) {
     setEffectForInstance(typedInstance, Effect_TYPE.__effect__);
 
-    renderDispatch.pendingLayoutEffect(fiber, () => {
+    renderDispatch.pendingLayoutEffect(fiber, function invokeComponentDidUpdateOnInstance() {
       setEffectForInstance(typedInstance, Effect_TYPE.__initial__);
 
       typedInstance.componentDidUpdate?.(baseProps, baseState, snapshot);
@@ -214,7 +240,12 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
 
   if (typedInstance.UNSAFE_componentWillMount) {
     hasLegacyLifeFunction = true;
-    safeCallWithFiber({ fiber, action: () => typedInstance.UNSAFE_componentWillMount?.() });
+    safeCallWithFiber({
+      fiber,
+      action: function safeCallUNSAFE_componentWillMountOnInstance() {
+        typedInstance.UNSAFE_componentWillMount?.();
+      },
+    });
     if (__DEV__) {
       onceWarnWithKeyAndFiber(
         fiber,
@@ -226,7 +257,12 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
 
   if (typedInstance.componentWillMount) {
     hasLegacyLifeFunction = true;
-    safeCallWithFiber({ fiber, action: () => typedInstance.componentWillMount?.() });
+    safeCallWithFiber({
+      fiber,
+      action: function safeCallComponentWillMountOnInstance() {
+        typedInstance.componentWillMount?.();
+      },
+    });
     if (__DEV__) {
       onceWarnWithKeyAndFiber(fiber, "componentWillMount", `[@my-react/react] current component have legacy lifeCycle function 'componentWillMount'`);
     }
@@ -250,7 +286,12 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
 
       const nextProps = Object.assign({}, fiber.pendingProps);
 
-      safeCallWithFiber({ fiber, action: () => typedInstance.UNSAFE_componentWillReceiveProps?.(nextProps) });
+      safeCallWithFiber({
+        fiber,
+        action: function safeCallUNSAFE_componentWillReceivePropsOnInstance() {
+          typedInstance.UNSAFE_componentWillReceiveProps?.(nextProps);
+        },
+      });
 
       if (__DEV__) {
         onceWarnWithKeyAndFiber(
@@ -266,7 +307,12 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
 
       const nextProps = Object.assign({}, fiber.pendingProps);
 
-      safeCallWithFiber({ fiber, action: () => typedInstance.componentWillReceiveProps?.(nextProps) });
+      safeCallWithFiber({
+        fiber,
+        action: function safeCallComponentWillReceivePropsOnInstance() {
+          typedInstance.componentWillReceiveProps?.(nextProps);
+        },
+      });
 
       if (__DEV__) {
         onceWarnWithKeyAndFiber(
@@ -288,7 +334,12 @@ const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextSt
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedInstance.UNSAFE_componentWillUpdate) {
-    safeCallWithFiber({ fiber, action: () => typedInstance.UNSAFE_componentWillUpdate?.(nextProps, nextState) });
+    safeCallWithFiber({
+      fiber,
+      action: function safeCallUNSAFE_componentWillUpdateOnInstance() {
+        typedInstance.UNSAFE_componentWillUpdate?.(nextProps, nextState);
+      },
+    });
 
     if (__DEV__) {
       onceWarnWithKeyAndFiber(
@@ -300,7 +351,12 @@ const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextSt
   }
 
   if (typedInstance.componentWillUpdate) {
-    safeCallWithFiber({ fiber, action: () => typedInstance.componentWillUpdate?.(nextProps, nextState) });
+    safeCallWithFiber({
+      fiber,
+      action: function safeCallComponentWillUpdateOnInstance() {
+        typedInstance.componentWillUpdate?.(nextProps, nextState);
+      },
+    });
     if (__DEV__) {
       onceWarnWithKeyAndFiber(fiber, "componentWillUpdate", `[@my-react/react] current component have legacy lifeCycle function 'componentWillUpdate'`);
     }
@@ -416,10 +472,15 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   return res;
 };
 
-export const classComponentUnmount = (fiber: MyReactFiberNode) => {
+export const classComponentUnmount = (fiber: MyReactFiberNode, _renderDispatch: CustomRenderDispatch) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  safeCallWithFiber({ fiber, action: () => typedInstance?.componentWillUnmount?.() });
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallComponentWillUnmountOnInstance() {
+      typedInstance?.componentWillUnmount?.();
+    },
+  });
 
   unmountInstance(typedInstance);
 };

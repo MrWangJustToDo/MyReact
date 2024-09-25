@@ -9,7 +9,6 @@ import { controlElementTag, isControlledElement, isReadonlyElement } from "../he
 import { hydrateUpdate } from "./hydrateUpdate";
 import { nativeUpdate } from "./nativeUpdate";
 
-
 /**
  * @internal
  */
@@ -43,9 +42,13 @@ export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       }
     }
 
-    safeCall(() => renderDispatch.patchToCommitUpdate?.(fiber));
+    safeCall(function safeCallPatchToCommitUpdate() {
+      renderDispatch.patchToCommitUpdate?.(fiber);
+    });
 
-    safeCall(() => domListenersMap.get(renderDispatch)?.domUpdate?.forEach((listener) => listener(fiber)));
+    safeCall(function safeCallDomUpdateListener() {
+      domListenersMap.get(renderDispatch)?.domUpdate?.forEach((listener) => listener(fiber));
+    });
 
     fiber.memoizedProps = fiber.pendingProps;
 

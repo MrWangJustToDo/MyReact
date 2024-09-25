@@ -33,9 +33,13 @@ export const append = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       parentDom.appendChild(currentDom);
     }
 
-    safeCall(() => renderDispatch.patchToCommitAppend?.(fiber));
+    safeCall(function safeCallPatchToCommitAppend() {
+      renderDispatch.patchToCommitAppend?.(fiber);
+    });
 
-    safeCall(() => domListenersMap.get(renderDispatch)?.domAppend?.forEach((listener) => listener(fiber)));
+    safeCall(function safeCallDomAppendListener() {
+      domListenersMap.get(renderDispatch)?.domAppend?.forEach((listener) => listener(fiber));
+    });
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
   }

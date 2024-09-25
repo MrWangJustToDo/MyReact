@@ -15,7 +15,7 @@
 
 <body>
   <div id="root"></div>
-  <script type="text/babel">
+  <!-- <script type="text/babel">
     const { useState } = React;
 
     const Input = () => {
@@ -46,6 +46,88 @@
     };
 
     ReactDOM.render(<Input />, root);
+  </script> -->
+
+  <script type="text/babel">
+    const { useState, useEffect, Component, useRef } = React;
+
+    function noop() { }
+    function sleep() {
+      for (let i = 0; i < 9999; i++) {
+        for (let j = 0; j < 9999; j++) {
+          noop();
+        }
+      }
+    }
+
+    function App() {
+      const [value, setValue] = useState("");
+
+      return <ControlledInput value={value} onChange={setValue} />;
+    }
+
+    function ControlledInput({ value, onChange }) {
+      const inputRef = useRef();
+
+      console.log("ControlledInput -- render", value);
+      // this patten is weird, but it worked like this in EUI SearchBar component with react@17 and even works with react@18
+      // and doesn't work with react@18 in legacy mode
+      useEffect(() => {
+        if (inputRef.current) {
+          console.log(
+            "ControlledInput -- useEffect",
+            inputRef.current.value,
+            value
+          );
+
+          // can override newer value in input with older value from render, thus missing letters as the result
+          inputRef.current.value = value;
+
+          // more code here, but not needed for reporduction
+        }
+      }, [value]);
+
+      return (
+        <Input
+          value={value}
+          onChange={onChange}
+          inputRef={(ref) => {
+            inputRef.current = ref;
+          }}
+        />
+      );
+    }
+
+    class Input extends Component {
+      state = {
+        value: this.props.value || "",
+      };
+
+      setRef = (inputElement) => {
+        if (this.props.inputRef) {
+          this.props.inputRef(inputElement);
+
+          // more code here but not needed for reproduction
+        }
+      };
+
+      onKeyUp = (event) => {
+        const newValue = event.target.value;
+        sleep(); // this seem to help to reproduce the problem easier in a small example
+        if (this.props.onChange) {
+          console.log("Input -- onKeyUp before onChange", event.key, newValue);
+          this.props.onChange(newValue);
+          console.log("Input -- onKeyUp after onChange", event.key, newValue);
+        }
+        // console.log(React.__my_react_shared__.enableSyncFlush.current)
+      };
+
+      render() {
+        return <textarea ref={this.setRef} onKeyUp={this.onKeyUp}></textarea>;
+      }
+    }
+
+    ReactDOM.render(<App />, root);
   </script>
 </body>
 

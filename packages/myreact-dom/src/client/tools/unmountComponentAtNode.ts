@@ -23,5 +23,7 @@ export const unmountComponentAtNode = (container: RenderContainer) => {
 
   delGlobalDispatch(renderDispatch);
 
-  unmountContainer(renderDispatch, () => renderPlatform.dispatchSet?.uniDelete?.(renderDispatch));
+  unmountContainer(renderDispatch, function afterUnmountContainer() {
+    renderPlatform.dispatchSet?.uniDelete?.(renderDispatch);
+  });
 };

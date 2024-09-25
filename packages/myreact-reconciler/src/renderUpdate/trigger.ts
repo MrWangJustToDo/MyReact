@@ -16,7 +16,7 @@ const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 
 const { enableConcurrentMode, enableLoopFromRoot } = __my_react_shared__;
 
-const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
+export const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
   if (!renderDispatch.isAppUnmounted && !renderDispatch.isAppCrashed && renderDispatch.enableUpdate && renderDispatch.pendingUpdateFiberArray.length) {
     scheduleUpdate(renderDispatch);
     return;
@@ -42,10 +42,6 @@ const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
 const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
   const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
 
-  function scheduleNextUpdate() {
-    scheduleNext(renderDispatch);
-  }
-
   renderDispatch.pendingUpdateFiberArray.clear();
 
   if (allLive.length) {
@@ -59,22 +55,18 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
       !enableConcurrentMode.current ||
       allLive.some((f) => include(f.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__))
     ) {
-      updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
+      updateSyncFromRoot(renderDispatch);
     } else {
-      updateConcurrentFromRoot(renderDispatch, scheduleNextUpdate);
+      updateConcurrentFromRoot(renderDispatch);
     }
   } else {
     if (__DEV__) currentTriggerFiber.current = null;
 
-    scheduleNextUpdate();
+    scheduleNext(renderDispatch);
   }
 };
 
 const scheduleUpdateFromTrigger = (renderDispatch: CustomRenderDispatch) => {
-  function scheduleNextUpdate() {
-    scheduleNext(renderDispatch);
-  }
-
   const allPending = renderDispatch.pendingUpdateFiberArray.getAll();
 
   let nextWorkFiber: MyReactFiberNode | null = null;
@@ -101,10 +93,10 @@ const scheduleUpdateFromTrigger = (renderDispatch: CustomRenderDispatch) => {
 
       // normally a context update
       if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__)) {
-        updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
+        updateSyncFromRoot(renderDispatch);
       } else {
         // TODO maybe could use `updateSyncFromRoot`?
-        updateSyncFromTrigger(renderDispatch, scheduleNextUpdate);
+        updateSyncFromTrigger(renderDispatch);
       }
     } else if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__ | STATE_TYPE.__triggerConcurrent__ | STATE_TYPE.__triggerConcurrentForce__)) {
       renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
@@ -115,15 +107,15 @@ const scheduleUpdateFromTrigger = (renderDispatch: CustomRenderDispatch) => {
 
       if (include(nextWorkFiber.state, STATE_TYPE.__skippedConcurrent__)) {
         if (enableConcurrentMode.current) {
-          updateConcurrentFromRoot(renderDispatch, scheduleNextUpdate);
+          updateConcurrentFromRoot(renderDispatch);
         } else {
-          updateSyncFromRoot(renderDispatch, scheduleNextUpdate);
+          updateSyncFromRoot(renderDispatch);
         }
       } else {
         if (enableConcurrentMode.current) {
-          updateConcurrentFromTrigger(renderDispatch, scheduleNextUpdate);
+          updateConcurrentFromTrigger(renderDispatch);
         } else {
-          updateSyncFromTrigger(renderDispatch, scheduleNextUpdate);
+          updateSyncFromTrigger(renderDispatch);
         }
       }
     } else {
@@ -133,7 +125,7 @@ const scheduleUpdateFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   } else {
     if (__DEV__) currentTriggerFiber.current = null;
 
-    scheduleNextUpdate();
+    scheduleNext(renderDispatch);
   }
 };
 
@@ -162,7 +154,7 @@ export const triggerRevert = (fiber: MyReactFiberNode, cb?: () => void) => {
 
     const instance = fiber.instance as MyReactComponent;
 
-    instance?.setState(fiber.memoizedState, () => {
+    instance?.setState(fiber.memoizedState, function finishTriggerRevertOnFiber() {
       renderDispatch.runtimeFiber.errorCatchFiber = null;
 
       fiber.memoizedState = null;
@@ -189,7 +181,9 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
   if (!renderDispatch.isAppMounted) {
     if (__DEV__) devWarnWithFiber(fiber, "[@my-react/react] pending, waiting for app mounted");
 
-    renderPlatform.macroTask(() => triggerUpdate(fiber, state, cb));
+    renderPlatform.macroTask(function scheduleUpdateBeforeMount() {
+      triggerUpdate(fiber, state, cb);
+    });
 
     return;
   }
@@ -243,7 +237,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
     errorBoundariesFiber.memoizedState = Object.assign({}, errorBoundariesFiber.pendingState);
 
-    typedInstance.setState(payloadState, () => {
+    typedInstance.setState(payloadState, function finishTriggerErrorOnFiber() {
       typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
 
       renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
@@ -292,7 +286,7 @@ export const triggerUnmount = (fiber: MyReactFiberNode, cb?: () => void) => {
     throw new Error(`[@my-react/react] can not unmount a node when current app has been unmounted`);
   }
 
-  triggerUpdate(fiber, STATE_TYPE.__skippedSync__, () => {
+  triggerUpdate(fiber, STATE_TYPE.__skippedSync__, function finishTriggerUnmountOnFiber() {
     renderDispatch.reconcileUnmount();
 
     cb?.();

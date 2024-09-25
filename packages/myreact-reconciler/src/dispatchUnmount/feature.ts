@@ -32,7 +32,13 @@ export const unmountPending = (fiber: MyReactFiberNode, renderDispatch: CustomRe
 
     unmountMap.delete(fiber);
 
-    if (allUnmount && allUnmount.length) safeCallWithFiber({ fiber, action: () => unmountList(allUnmount, renderDispatch) });
+    if (allUnmount && allUnmount.length)
+      safeCallWithFiber({
+        fiber,
+        action: function safeCallUnmountList() {
+          unmountList(allUnmount, renderDispatch);
+        },
+      });
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__unmount__);
   }

@@ -1,9 +1,9 @@
 export const yieldTask =
   typeof scheduler !== "undefined" && typeof scheduler.postTask === "function" && typeof AbortController === "function"
-    ? (task: () => void) => {
+    ? function schedulerYieldTask(task: () => void) {
         const { signal, abort } = new AbortController();
         scheduler.postTask(task, { priority: "background", signal });
-        return () => {
+        return function cancelYieldTask() {
           try {
             abort("");
           } catch {
@@ -12,27 +12,36 @@ export const yieldTask =
         };
       }
     : typeof requestIdleCallback === "function"
-    ? (task: () => void) => {
-        const id = requestIdleCallback(task);
-        return () => cancelIdleCallback(id);
-      }
-    : (task: () => void) => {
-        const id = setTimeout(task);
-        return () => clearTimeout(id);
-      };
+      ? function schedulerYieldTask(task: () => void) {
+          const id = requestIdleCallback(task);
+          return function cancelYieldTask() {
+            cancelIdleCallback(id);
+          };
+        }
+      : function schedulerYieldTask(task: () => void) {
+          const id = setTimeout(task);
+          return function cancelYieldTask() {
+            clearTimeout(id);
+          };
+        };
 
-export const microTask = typeof queueMicrotask === "undefined" ? (task: () => void) => Promise.resolve().then(task) : queueMicrotask;
+export const microTask =
+  typeof queueMicrotask === "undefined"
+    ? function schedulerMicroTask(task: () => void) {
+        return Promise.resolve().then(task);
+      }
+    : queueMicrotask;
 
 const set = new Set<() => void>();
 
 let pending = false;
 
-const flashTask = () => {
+function flashMacroTask() {
   if (pending) return;
 
   pending = true;
 
-  setTimeout(() => {
+  setTimeout(function invokeMacroTask() {
     const allTask = new Set(set);
 
     set.clear();
@@ -41,10 +50,10 @@ const flashTask = () => {
 
     pending = false;
   });
-};
+}
 
 export const macroTask = (task: () => void) => {
   set.add(task);
 
-  flashTask();
+  flashMacroTask();
 };

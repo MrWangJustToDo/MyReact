@@ -9,18 +9,18 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 const { currentRenderPlatform } = __my_react_internal__;
 
 export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
-  const mountInsertionEffect = (_fiber: MyReactFiberNode) => {
-    if (_fiber.child) mountInsertionEffect(_fiber.child);
+  const mountInsertionEffectList = (_fiber: MyReactFiberNode) => {
+    if (_fiber.child) mountInsertionEffectList(_fiber.child);
 
     insertionEffect(_fiber, _dispatch);
 
-    if (_fiber.sibling) mountInsertionEffect(_fiber.sibling);
+    if (_fiber.sibling) mountInsertionEffectList(_fiber.sibling);
   };
 
   const mountCommit = (_fiber: MyReactFiberNode) => {
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => {
+      action: function safeCallCreateAndUpdate() {
         _dispatch.commitCreate(_fiber);
         _dispatch.commitUpdate(_fiber);
       },
@@ -30,7 +30,7 @@ export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: 
 
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => {
+      action: function safeCallAppendAndSetRef() {
         _dispatch.commitAppend(_fiber);
         _dispatch.commitSetRef(_fiber);
       },
@@ -41,36 +41,38 @@ export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: 
     }
   };
 
-  const mountLayoutEffect = (_fiber: MyReactFiberNode) => {
-    if (_fiber.child) mountLayoutEffect(_fiber.child);
+  const mountLayoutEffectList = (_fiber: MyReactFiberNode) => {
+    if (_fiber.child) mountLayoutEffectList(_fiber.child);
 
     layoutEffect(_fiber, _dispatch);
 
-    if (_fiber.sibling) mountLayoutEffect(_fiber.sibling);
+    if (_fiber.sibling) mountLayoutEffectList(_fiber.sibling);
   };
 
-  const mountEffect = (_fiber: MyReactFiberNode) => {
-    if (_fiber.child) mountEffect(_fiber.child);
+  const mountEffectList = (_fiber: MyReactFiberNode) => {
+    if (_fiber.child) mountEffectList(_fiber.child);
 
     effect(_fiber, _dispatch);
 
-    if (_fiber.sibling) mountEffect(_fiber.sibling);
+    if (_fiber.sibling) mountEffectList(_fiber.sibling);
   };
 
   const mountLoop = (_fiber: MyReactFiberNode) => {
     beforeSyncUpdate();
-    mountInsertionEffect(_fiber);
+    mountInsertionEffectList(_fiber);
     afterSyncUpdate();
 
     mountCommit(_fiber);
 
     beforeSyncUpdate();
-    mountLayoutEffect(_fiber);
+    mountLayoutEffectList(_fiber);
     afterSyncUpdate();
 
     const renderPlatform = currentRenderPlatform.current;
 
-    renderPlatform.microTask(() => mountEffect(_fiber));
+    renderPlatform.microTask(function invokeEffectList() {
+      mountEffectList(_fiber);
+    });
   };
 
   mountLoop(_fiber);
@@ -81,39 +83,47 @@ export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: 
 
   beforeSyncUpdate();
 
-  _list.listToFoot((_fiber) => insertionEffect(_fiber, _dispatch));
+  _list.listToFoot(function invokeInsertionEffectList(_fiber) {
+    insertionEffect(_fiber, _dispatch);
+  });
 
   afterSyncUpdate();
 
-  _list.listToFoot((_fiber) => {
+  _list.listToFoot(function invokeCreateAndUpdateList(_fiber) {
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => {
+      action: function safeCallCreateAndUpdate() {
         _dispatch.commitCreate(_fiber);
         _dispatch.commitUpdate(_fiber);
       },
     });
   });
 
-  _list.listToFoot((_fiber) =>
+  _list.listToFoot(function invokeAppendAndSetRefList(_fiber) {
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => {
+      action: function safeCallAppendAndSetRef() {
         _dispatch.commitAppend(_fiber);
         _dispatch.commitSetRef(_fiber);
       },
-    })
-  );
+    });
+  });
 
   beforeSyncUpdate();
 
-  _list.listToFoot((_fiber) => layoutEffect(_fiber, _dispatch));
+  _list.listToFoot(function invokeLayoutEffectList(_fiber) {
+    layoutEffect(_fiber, _dispatch);
+  });
 
   afterSyncUpdate();
 
   const renderPlatform = currentRenderPlatform.current;
 
-  renderPlatform.microTask(() => _list.listToFoot((_fiber) => effect(_fiber, _dispatch)));
+  renderPlatform.microTask(function invokeEffectListTask() {
+    _list.listToFoot(function invokeEffectList(_fiber) {
+      effect(_fiber, _dispatch);
+    });
+  });
 };
 
 export const defaultDispatchMount = defaultDispatchMountLatest;

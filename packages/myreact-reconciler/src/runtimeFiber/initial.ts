@@ -17,9 +17,13 @@ export const initialFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   renderDispatch.pendingRef(fiber);
 
-  safeCall(() => renderDispatch.patchToFiberInitial?.(fiber));
+  safeCall(function safeCallPatchToFiberInitial() {
+    renderDispatch.patchToFiberInitial?.(fiber);
+  });
 
-  safeCall(() => listenerMap.get(renderDispatch)?.fiberInitial?.forEach((listener) => listener(fiber)));
+  safeCall(function safeCallFiberInitialListener() {
+    listenerMap.get(renderDispatch)?.fiberInitial?.forEach((listener) => listener(fiber));
+  });
 
   if (exclude(fiber.patch, PATCH_TYPE.__update__)) {
     fiber.memoizedProps = fiber.pendingProps;

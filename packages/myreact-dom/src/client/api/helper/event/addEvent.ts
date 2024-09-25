@@ -6,7 +6,7 @@ import { clearEvent, enableControlComponent, enableEventSystem, enableEventTrack
 import { controlElementTag, generateOnChangeFun } from "../control";
 
 import { getNativeEventName } from "./getEventName";
-import { wrapper } from "./wrapper";
+import { wrapperFrameworkEvent } from "./wrapper";
 
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -20,9 +20,11 @@ const syncUpdateEvent = {
   input: true,
   change: true,
   keydown: true,
+  keyup: true,
   scroll: true,
   dblclick: true,
   mousedown: true,
+  mouseup: true,
 };
 
 const beforeEvent = (event: string) => {
@@ -88,7 +90,7 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
           }
         }
 
-        wrapper(e);
+        wrapperFrameworkEvent(e);
 
         beforeEvent(nativeName);
 
@@ -97,7 +99,9 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
         }
 
         safeCallWithFiber({
-          action: () => eventDispatcher.cb?.call?.(null, ...args),
+          action: function safeCallEventCallback() {
+            eventDispatcher.cb?.call?.(null, ...args);
+          },
           fiber,
         });
 

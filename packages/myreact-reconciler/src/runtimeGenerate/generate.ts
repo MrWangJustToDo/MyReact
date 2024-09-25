@@ -68,8 +68,12 @@ const deleteIfNeed = (parentFiber: MyReactFiberNode, existingChildren: Map<strin
   const renderDispatch = currentRenderDispatch.current;
 
   if (existingChildren.size) {
-    existingChildren.forEach((list) => list.listToFoot((f) => renderDispatch.pendingUnmount(parentFiber, f)));
-    
+    existingChildren.forEach((list) =>
+      list.listToFoot(function invokePendingUnmountList(f) {
+        renderDispatch.pendingUnmount(parentFiber, f);
+      })
+    );
+
     renderDispatch.generateChangedList(parentFiber, true);
   }
 };

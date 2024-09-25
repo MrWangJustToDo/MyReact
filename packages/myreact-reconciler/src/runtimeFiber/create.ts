@@ -39,9 +39,19 @@ export const createFiberNode = (
 
   renderDispatch.pendingRef(newFiberNode);
 
-  safeCallWithFiber({ fiber: newFiberNode, action: () => renderDispatch.patchToFiberInitial?.(newFiberNode) });
+  safeCallWithFiber({
+    fiber: newFiberNode,
+    action: function safeCallPatchToFiberInitial() {
+      renderDispatch.patchToFiberInitial?.(newFiberNode);
+    },
+  });
 
-  safeCallWithFiber({ fiber: newFiberNode, action: () => listenerMap.get(renderDispatch)?.fiberInitial?.forEach((listener) => listener(newFiberNode)) });
+  safeCallWithFiber({
+    fiber: newFiberNode,
+    action: function safeCallFiberInitialListener() {
+      listenerMap.get(renderDispatch)?.fiberInitial?.forEach((listener) => listener(newFiberNode));
+    },
+  });
 
   if (exclude(newFiberNode.patch, PATCH_TYPE.__update__)) {
     newFiberNode.memoizedProps = newFiberNode.pendingProps;

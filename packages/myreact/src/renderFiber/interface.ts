@@ -32,10 +32,6 @@ export interface DefaultRenderFiber {
   _delDependence(instance: MyReactInternalInstance): void;
 
   _update(state?: STATE_TYPE): void;
-
-  _prepare(initial?: boolean): void;
-
-  _unmount(cb?: () => void): void;
 }
 
 /**

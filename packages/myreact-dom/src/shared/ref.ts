@@ -18,7 +18,12 @@ export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispat
         if (typeof ref === "object" && ref !== null) {
           ref.current = _fiber.nativeNode;
         } else if (typeof ref === "function") {
-          safeCallWithFiber({ fiber: _fiber, action: () => ref(_fiber.nativeNode) });
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: function safeCallSetRef() {
+              ref(_fiber.nativeNode);
+            },
+          });
         }
       } else {
         throw new Error("[@my-react/react-dom] plain element do not have a native node");
@@ -29,7 +34,12 @@ export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispat
         if (typeof ref === "object" && ref !== null) {
           ref.current = _fiber.instance;
         } else if (typeof ref === "function") {
-          safeCallWithFiber({ fiber: _fiber, action: () => ref(_fiber.instance) });
+          safeCallWithFiber({
+            fiber: _fiber,
+            action: function safeCallSetRef() {
+              ref(_fiber.instance);
+            },
+          });
         }
       } else {
         throw new Error("[@my-react/react-dom] class component do not have a instance");
@@ -38,9 +48,13 @@ export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispat
       logOnce(_fiber, "error", "can not set ref for current element", "can not set ref for current element");
     }
 
-    safeCall(() => renderDispatch.patchToCommitSetRef?.(_fiber));
+    safeCall(function safeCallPatchToCommitSetRef() {
+      renderDispatch.patchToCommitSetRef?.(_fiber);
+    });
 
-    safeCall(() => domListenersMap.get(renderDispatch)?.domSetRef?.forEach((listener) => listener(_fiber)));
+    safeCall(function safeCallDomSetRefListener() {
+      domListenersMap.get(renderDispatch)?.domSetRef?.forEach((listener) => listener(_fiber));
+    });
 
     _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__ref__);
   }
@@ -57,7 +71,12 @@ export const unsetRef = (_fiber: MyReactFiberNode) => {
     if (typeof ref === "object" && ref !== null) {
       ref.current = null;
     } else if (typeof ref === "function") {
-      safeCallWithFiber({ fiber: _fiber, action: () => ref(null) });
+      safeCallWithFiber({
+        fiber: _fiber,
+        action: function safeCallClearRef() {
+          ref(null);
+        },
+      });
     }
   }
 };

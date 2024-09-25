@@ -91,12 +91,13 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
     hookNode.result = safeCallWithFiber({
       fiber,
-      action: () =>
-        renderDispatch.isAppMounted
+      action: function safeCallGetSnapshot() {
+        return renderDispatch.isAppMounted
           ? storeApi.getSnapshot.call(null)
           : storeApi.getServerSnapshot
             ? storeApi.getServerSnapshot?.call(null)
-            : storeApi.getSnapshot.call(null),
+            : storeApi.getSnapshot.call(null);
+      },
     });
 
     hookNode.hasEffect = true;
@@ -109,7 +110,8 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   if (hookNode.type === HOOK_TYPE.useTransition) {
     hookNode.result = [
       false,
-      (cb: () => void) => {
+      // TODO
+      function startTransitionByHook(cb: () => void) {
         const loadingCallback = (cb: () => void) => {
           startTransition(() => {
             hookNode.result[0] = true;

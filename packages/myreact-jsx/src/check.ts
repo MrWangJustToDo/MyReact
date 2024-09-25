@@ -17,7 +17,7 @@ const { currentRenderPlatform, currentComponentFiber } = __my_react_internal__;
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
 export function isValidElement(element?: MyReactElementNode | any): element is MyReactElement {
-  return typeof element === "object" && !Array.isArray(element) && element !== null &&  element?.[TYPEKEY] === Element;
+  return typeof element === "object" && !Array.isArray(element) && element !== null && element?.[TYPEKEY] === Element;
 }
 
 const keysMap = {};
@@ -32,7 +32,7 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
   const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
 
   if (validElement.length) {
-    validElement.forEach((c) => {
+    validElement.forEach(function checkSingleElementValidKey(c) {
       if (!c._store["validKey"]) {
         if (typeof c.key === "string") {
           if (obj[c.key]) {
@@ -72,6 +72,13 @@ export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) =
   }
 
   enableOptimizeTreeLog.current = last;
+};
+
+/**
+ * @internal
+ */
+export const checkArrayChildrenKey = (children: MyReactElementNode[]) => {
+  children.forEach(checkSingleChildrenKey);
 };
 
 /**

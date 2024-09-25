@@ -20,21 +20,26 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
-  renderDispatch.reconcileCommit(fiber);
+  (function finishMount() {
+    renderDispatch.reconcileCommit(fiber);
 
-  const commitList = renderDispatch.pendingCommitFiberList;
+    const commitList = renderDispatch.pendingCommitFiberList;
 
-  const changedList = renderDispatch.pendingChangedFiberList;
+    const changedList = renderDispatch.pendingChangedFiberList;
 
-  renderDispatch.resetUpdateFlowRuntimeFiber();
+    renderDispatch.resetUpdateFlowRuntimeFiber();
 
-  renderDispatch.pendingCommitFiberList = null;
+    renderDispatch.pendingCommitFiberList = null;
 
-  renderDispatch.pendingChangedFiberList = null;
+    renderDispatch.pendingChangedFiberList = null;
 
-  commitList?.length && renderDispatch.reconcileUpdate(commitList);
+    commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
-  changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
+    changedList?.length &&
+      safeCall(function safeCallFiberHasChangeListener() {
+        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+      });
+  })();
 
   globalLoop.current = false;
 };
@@ -69,21 +74,26 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
-  renderDispatch.reconcileCommit(fiber);
+  (function finishMount() {
+    renderDispatch.reconcileCommit(fiber);
 
-  const commitList = renderDispatch.pendingCommitFiberList;
+    const commitList = renderDispatch.pendingCommitFiberList;
 
-  const changedList = renderDispatch.pendingChangedFiberList;
+    const changedList = renderDispatch.pendingChangedFiberList;
 
-  renderDispatch.resetUpdateFlowRuntimeFiber();
+    renderDispatch.resetUpdateFlowRuntimeFiber();
 
-  renderDispatch.pendingCommitFiberList = null;
+    renderDispatch.pendingCommitFiberList = null;
 
-  renderDispatch.pendingChangedFiberList = null;
+    renderDispatch.pendingChangedFiberList = null;
 
-  commitList?.length && renderDispatch.reconcileUpdate(commitList);
+    commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
-  changedList?.length && safeCall(() => listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList)));
+    changedList?.length &&
+      safeCall(function safeCallFiberHasChangeListener() {
+        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+      });
+  })();
 
   globalLoop.current = false;
 };

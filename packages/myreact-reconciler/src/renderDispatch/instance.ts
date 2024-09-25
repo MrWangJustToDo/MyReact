@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-this-alias */
 /* eslint-disable max-lines */
 import { PATCH_TYPE, ListTree, UniqueArray, include, merge, exclude } from "@my-react/react-shared";
 
@@ -137,7 +138,7 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
 
-  performanceLogTimeLimit = 2000;
+  performanceLogTimeLimit: number;
 
   uniqueIdCount = 0;
 
@@ -714,49 +715,67 @@ export class CustomRenderDispatch implements RenderDispatch {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   reconcileCommit(_fiber: MyReactFiberNode): void {
-    safeCall(() => this.beforeCommit?.());
+    const instance = this;
 
-    safeCall(() => {
-      listenerMap.get(this).beforeCommit.forEach((cb) => cb());
+    safeCall(function safeCallBeforeCommit() {
+      instance.beforeCommit?.();
+    });
+
+    safeCall(function safeCallBeforeCommitListener() {
+      listenerMap.get(instance).beforeCommit.forEach((cb) => cb());
     });
 
     defaultDispatchMount(_fiber, this);
 
-    safeCall(() => {
-      listenerMap.get(this).afterCommit.forEach((cb) => cb());
+    safeCall(function safeCallAfterCommitListener() {
+      listenerMap.get(instance).afterCommit.forEach((cb) => cb());
     });
 
-    safeCall(() => this.afterCommit?.());
+    safeCall(function safeCallAfterCommit() {
+      instance.afterCommit?.();
+    });
   }
   reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
-    safeCall(() => this.beforeUpdate?.());
+    const instance = this;
 
-    safeCall(() => {
-      listenerMap.get(this).beforeUpdate.forEach((cb) => cb());
+    safeCall(function safeCallBeforeUpdate() {
+      instance.beforeUpdate?.();
+    });
+
+    safeCall(function safeCallBeforeUpdateListener() {
+      listenerMap.get(instance).beforeUpdate.forEach((cb) => cb());
     });
 
     defaultDispatchUpdate(_list, this);
 
-    safeCall(() => {
-      listenerMap.get(this).afterUpdate.forEach((cb) => cb());
+    safeCall(function safeCallAfterUpdateListener() {
+      listenerMap.get(instance).afterUpdate.forEach((cb) => cb());
     });
 
-    safeCall(() => this.afterUpdate?.());
+    safeCall(function safeCallAfterUpdate() {
+      instance.afterUpdate?.();
+    });
   }
   reconcileUnmount(): void {
-    safeCall(() => this.beforeUnmount?.());
+    const instance = this;
+    
+    safeCall(function safeCallBeforeUnmount() {
+      instance.beforeUnmount?.();
+    });
 
-    safeCall(() => {
-      listenerMap.get(this).beforeUnmount.forEach((cb) => cb());
+    safeCall(function safeCallBeforeUnmountListener() {
+      listenerMap.get(instance).beforeUnmount.forEach((cb) => cb());
     });
 
     defaultDispatchUnmount(this);
 
-    safeCall(() => {
-      listenerMap.get(this).afterUnmount.forEach((cb) => cb());
+    safeCall(function safeCallAfterUnmountListener() {
+      listenerMap.get(instance).afterUnmount.forEach((cb) => cb());
     });
 
-    safeCall(() => this.afterUnmount?.());
+    safeCall(function safeCallAfterUnmount() {
+      instance.afterUnmount?.();
+    });
   }
   shouldYield(): boolean {
     return false;

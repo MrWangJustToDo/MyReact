@@ -79,9 +79,9 @@ export const updateFiberNode = (
           prepareUpdateAllDependence(fiber, fiber.memoizedProps.value, fiber.pendingProps.value);
         } else {
           // renderDispatch.pendingLayoutEffect(fiber, () => prepareUpdateAllDependenceFromProvider(fiber, fiber.memoizedProps.value, fiber.pendingProps.value));
-          renderDispatch.pendingLayoutEffect(fiber, () =>
-            prepareUpdateAllDependenceFromRoot(renderDispatch, fiber, fiber.memoizedProps.value, fiber.pendingProps.value)
-          );
+          renderDispatch.pendingLayoutEffect(fiber, function invokePrepareUpdateAllDependenceFromRoot() {
+            prepareUpdateAllDependenceFromRoot(renderDispatch, fiber, fiber.memoizedProps.value, fiber.pendingProps.value);
+          });
         }
       }
     }
@@ -96,9 +96,19 @@ export const updateFiberNode = (
       renderDispatch.pendingUpdate(fiber);
     }
 
-    safeCallWithFiber({ fiber, action: () => renderDispatch.patchToFiberUpdate?.(fiber) });
+    safeCallWithFiber({
+      fiber,
+      action: function safeCallPatchToFiberUpdate() {
+        renderDispatch.patchToFiberUpdate?.(fiber);
+      },
+    });
 
-    safeCallWithFiber({ fiber, action: () => listenerMap.get(renderDispatch)?.fiberUpdate?.forEach((listener) => listener(fiber)) });
+    safeCallWithFiber({
+      fiber,
+      action: function safeCallFiberUpdateListener() {
+        listenerMap.get(renderDispatch)?.fiberUpdate?.forEach((listener) => listener(fiber));
+      },
+    });
   }
 
   if (nextRef && prevRef !== nextRef) {

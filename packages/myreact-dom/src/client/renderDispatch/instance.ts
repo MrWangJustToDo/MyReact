@@ -68,8 +68,6 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   hydrateTime: number | null;
 
-  performanceLogTimeLimit = asyncUpdateTimeLimit.current;
-
   enableASyncHydrate = enableASyncHydrate.current;
 
   constructor(
@@ -79,6 +77,10 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     super(rootNode, rootFiber);
 
     domListenersMap.set(this, { domAppend: new Set(), domUpdate: new Set(), domSetRef: new Set() });
+
+    if (__DEV__) {
+      this.performanceLogTimeLimit = asyncUpdateTimeLimit.current;
+    }
   }
 
   onDOMAppend(cb: (f: MyReactFiberNode) => void) {
@@ -191,19 +193,26 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     }
   }
   reconcileCommit(_fiber: MyReactFiberNode) {
-    safeCall(() => this.beforeCommit?.());
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const instance = this;
 
-    safeCall(() => {
-      listenerMap.get(this)?.beforeCommit?.forEach((cb) => cb());
+    safeCall(function safeCallBeforeCommit() {
+      instance.beforeCommit?.();
+    });
+
+    safeCall(function safeCallBeforeCommitListener() {
+      listenerMap.get(instance)?.beforeCommit?.forEach((cb) => cb());
     });
 
     clientDispatchMount(_fiber, this, this.isHydrateRender);
 
-    safeCall(() => {
-      listenerMap.get(this)?.afterCommit?.forEach((cb) => cb());
+    safeCall(function safeCallAfterCommitListener() {
+      listenerMap.get(instance)?.afterCommit?.forEach((cb) => cb());
     });
 
-    safeCall(() => this.afterCommit?.());
+    safeCall(function safeCallAfterCommit() {
+      instance.afterCommit?.();
+    });
   }
   shouldYield(): boolean {
     return shouldPauseAsyncUpdate();

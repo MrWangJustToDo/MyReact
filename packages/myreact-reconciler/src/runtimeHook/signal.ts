@@ -1,6 +1,8 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude } from "@my-react/react-shared";
 
+import { triggerUpdateOnFiber } from "../runtimeFiber";
+
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { RenderFiber } from "@my-react/react";
 
@@ -40,7 +42,7 @@ export class MyReactSignal<T = any> {
       } else {
         allDeps.forEach((f) => exclude(f.state, STATE_TYPE.__unmount__) && (f.state = STATE_TYPE.__triggerConcurrent__));
 
-        this._renderDispatch.rootFiber._update(STATE_TYPE.__skippedSync__);
+        triggerUpdateOnFiber(this._renderDispatch.rootFiber, STATE_TYPE.__skippedSync__);
       }
     }
   };

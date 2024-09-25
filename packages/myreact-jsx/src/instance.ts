@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { TYPEKEY, Element } from "@my-react/react-shared";
 
-import { checkSingleChildrenKey, checkValidElement } from "./check";
+import { checkArrayChildrenKey, checkSingleChildrenKey, checkValidElement } from "./check";
 
 import type {
   CreateElementProps,
@@ -113,7 +113,7 @@ export const jsxDEV = (
 
     if (isStaticChildren) {
       if (Array.isArray(children)) {
-        children.forEach((c) => checkSingleChildrenKey(c));
+        checkArrayChildrenKey(children);
 
         Object.freeze(children);
       } else {

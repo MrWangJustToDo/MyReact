@@ -3,8 +3,6 @@ import { PATCH_TYPE, STATE_TYPE, include, MODE_TYPE } from "@my-react/react-shar
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate } from "../dispatchQueue";
 import { triggerRevert, triggerUpdate } from "../renderUpdate";
-import { classComponentUnmount } from "../runtimeComponent";
-import { hookListUnmount } from "../runtimeHook";
 import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
@@ -92,62 +90,58 @@ export class MyReactFiberNode implements RenderFiber {
   _delDependence(instance: MyReactInternalInstance): void {
     this.dependence?.delete(instance);
   }
-  _unmount(cb?: () => void): void {
-    if (include(this.state, STATE_TYPE.__unmount__)) return;
-
-    hookListUnmount(this);
-
-    classComponentUnmount(this);
-
-    this.patch = PATCH_TYPE.__initial__;
-
-    this.state = STATE_TYPE.__initial__;
-
-    cb?.();
-  }
-  _prepare(initial?: boolean): void {
-    const renderPlatform = currentRenderPlatform.current;
-
-    const processQueue = () => {
-      const flag = enableConcurrentMode.current;
-
-      const updateState = include(this.type, NODE_TYPE.__class__)
-        ? processClassComponentUpdateQueue(this, flag)
-        : include(this.type, NODE_TYPE.__function__)
-          ? processFunctionComponentUpdateQueue(this, flag)
-          : include(this.type, NODE_TYPE.__lazy__)
-            ? processLazyComponentUpdate(this)
-            : (() => {
-                throw new Error("unknown runtime error, this is a bug for @my-react");
-              })();
-
-      if (updateState?.needUpdate) {
-        if (updateState.isSync) {
-          renderPlatform.microTask(() =>
-            triggerUpdate(this, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback)
-          );
-        } else {
-          renderPlatform.microTask(() =>
-            triggerUpdate(this, updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__, updateState.callback)
-          );
-        }
-      }
-    };
-
-    if (initial) {
-      processQueue();
-    } else {
-      renderPlatform.microTask(processQueue);
-    }
-  }
   _update(state?: STATE_TYPE) {
-    if (include(this.state, STATE_TYPE.__unmount__)) return;
-
-    const renderPlatform = currentRenderPlatform.current;
-
-    renderPlatform.microTask(() => triggerUpdate(this, state));
+    triggerUpdateOnFiber(this, state);
   }
 }
+
+export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, initial?: boolean) => {
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+  
+  const renderPlatform = currentRenderPlatform.current;
+
+  const processQueue = () => {
+    const flag = enableConcurrentMode.current;
+
+    const updateState = include(fiber.type, NODE_TYPE.__class__)
+      ? processClassComponentUpdateQueue(fiber, flag)
+      : include(fiber.type, NODE_TYPE.__function__)
+        ? processFunctionComponentUpdateQueue(fiber, flag)
+        : include(fiber.type, NODE_TYPE.__lazy__)
+          ? processLazyComponentUpdate(fiber)
+          : (() => {
+              throw new Error("unknown runtime error, this is a bug for @my-react");
+            })();
+
+    if (updateState?.needUpdate) {
+      if (updateState.isSync) {
+        renderPlatform.microTask(function triggerSyncUpdateOnFiber() {
+          triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);
+        });
+      } else {
+        renderPlatform.microTask(function triggerConcurrentUpdateOnFiber() {
+          triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__, updateState.callback);
+        });
+      }
+    }
+  };
+
+  if (initial) {
+    processQueue();
+  } else {
+    renderPlatform.microTask(processQueue);
+  }
+};
+
+export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE) => {
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+
+  const renderPlatform = currentRenderPlatform.current;
+
+  renderPlatform.microTask(function triggerUpdateOnFiber() {
+    triggerUpdate(fiber, state);
+  });
+};
 
 function hmrRevert(this: MyReactFiberNode, cb?: () => void) {
   if (include(this.state, STATE_TYPE.__unmount__)) return;
@@ -160,7 +154,12 @@ function hmrUpdate(this: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) 
 
   const renderPlatform = currentRenderPlatform.current;
 
-  renderPlatform.microTask(() => triggerUpdate(this, state, cb));
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const fiber = this;
+
+  renderPlatform.microTask(function triggerHMRUpdateOnFiber() {
+    triggerUpdate(fiber, state, cb);
+  });
 }
 
 Object.defineProperty(MyReactFiberNode.prototype, "isMyReactFiberNode", {

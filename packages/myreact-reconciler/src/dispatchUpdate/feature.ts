@@ -15,7 +15,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
   // TODO maybe need call `insertionEffect` in another function
   beforeSyncUpdate();
 
-  _list.listToFoot((_fiber) => {
+  _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       unmountPending(_fiber, _dispatch);
       insertionEffect(_fiber, _dispatch);
@@ -24,11 +24,11 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   afterSyncUpdate();
 
-  _list.listToFoot((_fiber) => {
+  _list.listToFoot(function invokeCreateAdnUpdateList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithFiber({
         fiber: _fiber,
-        action: () => {
+        action: function safeCallCreateAndUpdate() {
           _dispatch.commitCreate(_fiber);
           _dispatch.commitUpdate(_fiber);
         },
@@ -36,20 +36,22 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
     }
   });
 
-  _list.listToHead((_fiber) => {
+  _list.listToHead(function invokePositionList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithFiber({
         fiber: _fiber,
-        action: () => _dispatch.commitPosition(_fiber),
+        action: function safeCallPosition() {
+          _dispatch.commitPosition(_fiber);
+        },
       });
     }
   });
 
-  _list.listToFoot((_fiber) => {
+  _list.listToFoot(function invokeAppendAndSetRefList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithFiber({
         fiber: _fiber,
-        action: () => {
+        action: function safeCallAppendAdnSetRef() {
           _dispatch.commitAppend(_fiber);
           _dispatch.commitSetRef(_fiber);
         },
@@ -59,7 +61,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   beforeSyncUpdate();
 
-  _list.listToFoot((_fiber) => {
+  _list.listToFoot(function invokeLayoutEffectList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       layoutEffect(_fiber, _dispatch);
     }
@@ -70,11 +72,11 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
   const renderPlatform = currentRenderPlatform.current;
 
   // TODO before next update flow, make sure all the effect has done
-  renderPlatform.microTask(() =>
-    _list.listToFoot((_fiber) => {
+  renderPlatform.microTask(function invokeEffectListTask() {
+    _list.listToFoot(function invokeEffectList(_fiber) {
       if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
         effect(_fiber, _dispatch);
       }
-    })
-  );
+    });
+  });
 };

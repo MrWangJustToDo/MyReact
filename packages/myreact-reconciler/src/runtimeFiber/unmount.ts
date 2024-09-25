@@ -1,7 +1,9 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { STATE_TYPE, include } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { classComponentUnmount } from "../runtimeComponent";
+import { hookListUnmount } from "../runtimeHook";
 import { fiberToDispatchMap, safeCallWithFiber } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
@@ -12,13 +14,37 @@ const { enableDebugFiled } = __my_react_shared__;
 export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
-  safeCallWithFiber({ fiber, action: () => renderDispatch.commitUnsetRef(fiber) });
+  hookListUnmount(fiber, renderDispatch);
 
-  safeCallWithFiber({ fiber, action: () => renderDispatch.commitClear(fiber) });
+  classComponentUnmount(fiber, renderDispatch);
 
-  safeCallWithFiber({ fiber, action: () => renderDispatch.patchToFiberUnmount?.(fiber) });
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallCommitUnsetRef() {
+      renderDispatch.commitUnsetRef(fiber);
+    },
+  });
 
-  safeCallWithFiber({ fiber, action: () => listenerMap.get(renderDispatch)?.fiberUnmount?.forEach((listener) => listener(fiber)) });
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallCommitClear() {
+      renderDispatch.commitClear(fiber);
+    },
+  });
+
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallPatchToFiberUnmount() {
+      renderDispatch.patchToFiberUnmount?.(fiber);
+    },
+  });
+
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallFiberUnmountListener() {
+      listenerMap.get(renderDispatch)?.fiberUnmount?.forEach((listener) => listener(fiber));
+    },
+  });
 
   __DEV__ ? "" : fiberToDispatchMap.delete(fiber);
 
@@ -59,6 +85,8 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
     fiber.updateQueue = null;
   }
+
+  fiber.patch = PATCH_TYPE.__initial__;
 
   fiber.state = STATE_TYPE.__unmount__;
 

@@ -69,9 +69,19 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
   if (include(fiber.type, NODE_TYPE.__forwardRef__)) {
     const typedElementTypeWithRef = typedElementType as ReturnType<typeof forwardRef>["render"];
 
-    children = safeCallWithFiber({ fiber, action: () => typedElementTypeWithRef(fiber.pendingProps, fiber.ref) });
+    children = safeCallWithFiber({
+      fiber,
+      action: function safeCallForwardRefFunctionalComponent() {
+        return typedElementTypeWithRef(fiber.pendingProps, fiber.ref);
+      },
+    });
   } else {
-    children = safeCallWithFiber({ fiber, action: () => typedElementType(fiber.pendingProps) });
+    children = safeCallWithFiber({
+      fiber,
+      action: function safeCallFunctionalComponent() {
+        return typedElementType(fiber.pendingProps);
+      },
+    });
   }
 
   currentComponentFiber.current = null;
@@ -183,7 +193,12 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   }
 
   if (hasPerformanceWarn) {
-    safeCallWithFiber({ fiber: fiber, action: () => listenerMap.get(renderDispatch)?.performanceWarn?.forEach((cb) => cb(fiber)) });
+    safeCallWithFiber({
+      fiber: fiber,
+      action: function safeCallPerformanceWarnListener() {
+        listenerMap.get(renderDispatch)?.performanceWarn?.forEach((cb) => cb(fiber));
+      },
+    });
   }
 
   const typedFiber = fiber as MyReactFiberNodeDev;

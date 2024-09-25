@@ -24,17 +24,23 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
   const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean): boolean => {
     const _result = safeCallWithFiber({
       fiber: _fiber,
-      action: () => _dispatch.clientCommitCreate(_fiber, _hydrate),
+      action: function safeCallCreate() {
+        return _dispatch.clientCommitCreate(_fiber, _hydrate);
+      },
     });
 
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => _dispatch.clientCommitUpdate(_fiber, _result),
+      action: function safeCallUpdate() {
+        _dispatch.clientCommitUpdate(_fiber, _result);
+      },
     });
 
     safeCallWithFiber({
       fiber: _fiber,
-      action: () => _dispatch.commitAppend(_fiber),
+      action: function safeCallAppend() {
+        _dispatch.commitAppend(_fiber);
+      },
     });
 
     let _final = _hydrate;
@@ -45,7 +51,12 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
 
     if (_fiber.child) _final = mountCommit(_fiber.child, _result);
 
-    safeCallWithFiber({ fiber: _fiber, action: () => _dispatch.commitSetRef(_fiber) });
+    safeCallWithFiber({
+      fiber: _fiber,
+      action: function safeCallSetRef() {
+        _dispatch.commitSetRef(_fiber);
+      },
+    });
 
     if (_fiber.nativeNode) {
       // current child have loop done, so it is safe to fallback here
@@ -69,7 +80,9 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
     const _list = generateFiberToMountList(_fiber);
 
     beforeSyncUpdate();
-    _list.listToFoot((fiber) => insertionEffect(fiber, _dispatch));
+    _list.listToFoot(function invokeInsertionEffectList(fiber) {
+      insertionEffect(fiber, _dispatch);
+    });
     afterSyncUpdate();
 
     mountCommit(_fiber, _hydrate);
@@ -77,12 +90,18 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
     delete _dispatch._previousNativeNode;
 
     beforeSyncUpdate();
-    _list.listToFoot((fiber) => layoutEffect(fiber, _dispatch));
+    _list.listToFoot(function invokeLayoutEffectList(fiber) {
+      layoutEffect(fiber, _dispatch);
+    });
     afterSyncUpdate();
 
     const renderPlatform = currentRenderPlatform.current;
 
-    renderPlatform.microTask(() => _list.listToFoot((fiber) => effect(fiber, _dispatch)));
+    renderPlatform.microTask(function invokeEffectListTask() {
+      _list.listToFoot(function invokeEffectList(fiber) {
+        effect(fiber, _dispatch);
+      });
+    });
   };
 
   return mountLoop(_fiber, _hydrate);

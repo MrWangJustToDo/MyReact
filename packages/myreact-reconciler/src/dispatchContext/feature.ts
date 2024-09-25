@@ -1,12 +1,12 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
+import { triggerUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { NODE_TYPE } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { createContext } from "@my-react/react";
 
 const { enableDebugFiled } = __my_react_shared__;
@@ -89,7 +89,7 @@ export const defaultGetContextFiber_New = (
 
 export const prepareUpdateAllDependence = (fiber: MyReactFiberNode, beforeValue: Record<string, unknown>, afterValue: Record<string, unknown>) => {
   const consumerList = new Set(fiber?.dependence || []);
-  consumerList.forEach((i) => {
+  consumerList.forEach(function prepareUpdateSingleConsumer(i) {
     const owner = getInstanceOwnerFiber(i);
     if (owner && exclude(owner.state, STATE_TYPE.__unmount__)) {
       const typedFiber = owner as MyReactFiberNodeDev;
@@ -129,7 +129,9 @@ export const prepareUpdateAllDependenceFromRoot = (
   afterValue: Record<string, unknown>
 ) => {
   const consumerList = new Set(fiber?.dependence || []);
+
   const now = Date.now();
+
   const updater: UpdateQueueDev = {
     type: UpdateQueueType.context,
     trigger: fiber,
@@ -149,25 +151,32 @@ export const prepareUpdateAllDependenceFromRoot = (
       callbacks: [],
     },
   };
-  consumerList.forEach((i) => {
+
+  consumerList.forEach(function prepareUpdateSingleConsumer(i) {
     const owner = getInstanceOwnerFiber(i);
     if (owner && exclude(owner.state, STATE_TYPE.__unmount__)) {
       const typedFiber = owner as MyReactFiberNodeDev;
       typedFiber.state = STATE_TYPE.__triggerSyncForce__;
     }
   });
+
   const root = renderDispatch.rootFiber as MyReactFiberNodeDev;
+
   if (__DEV__ && enableDebugFiled.current) {
     root._debugUpdateQueue = root._debugUpdateQueue || new ListTree();
     root._debugUpdateQueue.push(updater);
   }
+
   renderDispatch.pendingUpdateFiberArray.clear();
-  root._update(STATE_TYPE.__skippedSync__);
+
+  triggerUpdateOnFiber(root, STATE_TYPE.__skippedSync__);
 };
 
 export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, beforeValue: Record<string, unknown>, afterValue: Record<string, unknown>) => {
   const consumerList = new Set(fiber?.dependence || []);
+
   const now = Date.now();
+
   const updater: UpdateQueueDev = {
     type: UpdateQueueType.context,
     trigger: fiber,
@@ -187,17 +196,21 @@ export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, 
       callbacks: [],
     },
   };
-  consumerList.forEach((i) => {
+
+  consumerList.forEach(function prepareUpdateSingleConsumer(i) {
     const owner = getInstanceOwnerFiber(i);
     if (owner && exclude(owner.state, STATE_TYPE.__unmount__)) {
       const typedFiber = owner as MyReactFiberNodeDev;
       typedFiber.state = STATE_TYPE.__triggerSyncForce__;
     }
   });
+
   const typedFiber = fiber as MyReactFiberNodeDev;
+
   if (__DEV__ && enableDebugFiled.current) {
     typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
     typedFiber._debugUpdateQueue.push(updater);
   }
-  typedFiber._update(STATE_TYPE.__skippedSync__);
+
+  triggerUpdateOnFiber(typedFiber, STATE_TYPE.__skippedSync__);
 };

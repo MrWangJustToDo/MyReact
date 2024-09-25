@@ -24,7 +24,12 @@ export const useState = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) 
 
   return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useState,
-    value: typeof initial === "function" ? initial : () => initial,
+    value:
+      typeof initial === "function"
+        ? initial
+        : function initState() {
+            return initial;
+          },
     reducer: defaultReducer,
     deps: defaultDeps,
   }) as [T, (t?: T | ((t: T) => T)) => void];
@@ -157,7 +162,14 @@ export const useReducer = (reducer: Reducer, initialArgs: any, init?: (...args: 
 
   return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useReducer,
-    value: typeof init === "function" ? () => init(initialArgs) : () => initialArgs,
+    value:
+      typeof init === "function"
+        ? function initReducer() {
+            return init(initialArgs);
+          }
+        : function initReducer() {
+            return initialArgs;
+          },
     reducer,
     deps: defaultDeps,
   });
@@ -214,7 +226,12 @@ export const useSignal = <T = any>(initial: T | (() => T)) => {
 
   return renderPlatform.dispatchHook({
     type: HOOK_TYPE.useSignal,
-    value: typeof initial === "function" ? initial : () => initial,
+    value:
+      typeof initial === "function"
+        ? initial
+        : function initSignal() {
+            return initial;
+          },
     reducer: defaultReducer,
     deps: defaultDeps,
   });

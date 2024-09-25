@@ -37,7 +37,14 @@ export const effect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDisp
     effectMap.delete(fiber);
 
     if (allEffect && allEffect.length) {
-      allEffect.listToFoot((effect) => safeCallWithFiber({ fiber, action: () => effect.call(null) }));
+      allEffect.listToFoot(function invokeEffect(effect) {
+        safeCallWithFiber({
+          fiber,
+          action: function safeCallEffect() {
+            effect.call(null);
+          },
+        });
+      });
     }
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__effect__);
@@ -53,7 +60,14 @@ export const layoutEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRend
     layoutEffectMap.delete(fiber);
 
     if (allLayoutEffect && allLayoutEffect.length) {
-      allLayoutEffect.listToFoot((effect) => safeCallWithFiber({ fiber, action: () => effect.call(null) }));
+      allLayoutEffect.listToFoot(function invokeLayoutEffect(effect) {
+        safeCallWithFiber({
+          fiber,
+          action: function safeCallLayoutEffect() {
+            effect.call(null);
+          },
+        });
+      });
     }
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__layoutEffect__);
@@ -69,7 +83,14 @@ export const insertionEffect = (fiber: MyReactFiberNode, renderDispatch: CustomR
     insertionEffectMap.delete(fiber);
 
     if (allInsertionEffect && allInsertionEffect.length) {
-      allInsertionEffect.listToFoot((effect) => safeCallWithFiber({ fiber, action: () => effect.call(null) }));
+      allInsertionEffect.listToFoot(function invokeInsertionEffect(effect) {
+        safeCallWithFiber({
+          fiber,
+          action: function safeCallInsertionEffect() {
+            effect.call(null);
+          },
+        });
+      });
     }
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__insertionEffect__);

@@ -11,12 +11,16 @@ import type { ListTree } from "@my-react/react-shared";
 
 export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: CustomRenderDispatch) => {
   // will happen when app crash
-  list.listToFoot((f) => unmountPending(f, renderDispatch));
+  list.listToFoot(function invokeUnmountPendingList(f) {
+    unmountPending(f, renderDispatch);
+  });
 
-  list.listToFoot((f) => {
+  list.listToFoot(function invokeFiberUnmountList(f) {
     safeCallWithFiber({
       fiber: f,
-      action: () => f._unmount(() => unmountFiberNode(f, renderDispatch)),
+      action: function safeCallFiberUnmount() {
+        unmountFiberNode(f, renderDispatch);
+      },
     });
   });
 };

@@ -40,7 +40,7 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
       });
   })();
 
-  renderPlatform.microTask(function afterUpdateSyncFromRoot() {
+  renderPlatform.microTask(function callScheduleNext() {
     globalLoop.current = false;
 
     scheduleNext(renderDispatch);
@@ -77,7 +77,7 @@ export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch) => {
       });
   })();
 
-  renderPlatform.microTask(function afterUpdateSyncFromTrigger() {
+  renderPlatform.microTask(function callScheduleNext() {
     globalLoop.current = false;
 
     scheduleNext(renderDispatch);
@@ -119,7 +119,7 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
         });
     })();
 
-    renderPlatform.microTask(function afterUpdateConcurrentFromRoot() {
+    renderPlatform.microTask(function callScheduleNext() {
       // TODO! flash all effect
       globalLoop.current = false;
 
@@ -163,7 +163,7 @@ export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch
         });
     })();
 
-    renderPlatform.microTask(function afterUpdateConcurrentFromTrigger() {
+    renderPlatform.microTask(function callScheduleNext() {
       // TODO! flash all effect
       globalLoop.current = false;
 

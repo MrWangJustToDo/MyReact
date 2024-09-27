@@ -190,7 +190,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
     if (include(fiber.type, NODE_TYPE.__plain__)) {
       const props = fiber.pendingProps;
 
-      Object.keys(props).forEach((key) => {
+      Object.keys(props).forEach(function hydrateUpdateProps(key) {
         if (isEvent(key)) {
           domEventHydrate(fiber, renderDispatch, key);
         } else if (isStyle(key)) {

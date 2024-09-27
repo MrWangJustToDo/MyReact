@@ -37,7 +37,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
 
     const allKeys = getAllKeys(oldProps, newProps);
 
-    allKeys.forEach((key) => {
+    allKeys.forEach(function nativeUpdateProps(key) {
       const oldValue = oldProps[key];
       const newValue = newProps[key];
       if (!Object.is(oldValue, newValue) && !(isFalse(newValue) && isFalse(oldValue))) {

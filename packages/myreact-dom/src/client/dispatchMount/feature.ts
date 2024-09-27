@@ -76,7 +76,7 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
     }
   };
 
-  const mountLoop = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
+  const startMountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
     const _list = generateFiberToMountList(_fiber);
 
     beforeSyncUpdate();
@@ -104,5 +104,5 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
     });
   };
 
-  return mountLoop(_fiber, _hydrate);
+  return startMountCommit(_fiber, _hydrate);
 };

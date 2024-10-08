@@ -1,9 +1,9 @@
 import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { unmountPending } from "../dispatchUnmount";
-import { triggerUnmount } from "../renderUpdate";
+// import { triggerUnmount } from "../renderUpdate";
 import { unmountFiberNode } from "../runtimeFiber";
-import { fiberToDispatchMap, generateFiberToUnmountList, safeCallWithFiber } from "../share";
+import { currentTriggerFiber, fiberToDispatchMap, generateFiberToUnmountList, safeCallWithFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -38,9 +38,11 @@ export const unmountFiber = (fiber: MyReactFiberNode) => {
 
 // unmount current container with safe
 export const unmountContainer = (renderDispatch: CustomRenderDispatch, cb?: () => void) => {
-  const rootFiber = renderDispatch.rootFiber;
+  renderDispatch.reconcileUnmount();
 
-  triggerUnmount(rootFiber, cb);
+  cb?.();
+
+  if (__DEV__) currentTriggerFiber.current = null;
 };
 
 export const clearContainer = (renderDispatch: CustomRenderDispatch) => {

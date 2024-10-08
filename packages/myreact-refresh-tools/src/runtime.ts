@@ -24,6 +24,12 @@ RefreshRuntime.injectIntoGlobalHook(self);
 // Register global helpers
 self.$RefreshHelpers$ = RefreshHelpers;
 
+if (typeof self.$RefreshReg$ !== 'function') {
+  console.error(
+    `[@my-react/react-refresh-tools] expected global "$RefreshReg$" to be a function, please check your webpack configuration`
+  );
+}
+
 // Register a helper for module execution interception
 self.$RefreshInterceptModuleExecution$ = function (webpackModuleId) {
   const prevRefreshReg = self.$RefreshReg$;

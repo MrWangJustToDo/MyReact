@@ -194,7 +194,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
 
   if (hasPerformanceWarn) {
     safeCallWithFiber({
-      fiber: fiber,
+      fiber,
       action: function safeCallPerformanceWarnListener() {
         listenerMap.get(renderDispatch)?.performanceWarn?.forEach((cb) => cb(fiber));
       },
@@ -230,6 +230,13 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
       };
     }
   }
+
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallFiberRunListener() {
+      listenerMap.get(renderDispatch)?.fiberRun?.forEach((cb) => cb(fiber));
+    },
+  });
 
   return res;
 };

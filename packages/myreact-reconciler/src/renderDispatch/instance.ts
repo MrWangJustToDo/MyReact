@@ -25,6 +25,7 @@ type Listeners = {
   fiberTrigger: Set<(fiber: MyReactFiberNode, updater: UpdateQueue) => void>;
   fiberUnmount: Set<(fiber: MyReactFiberNode) => void>;
   fiberHMR?: Set<(fiber: MyReactFiberNode) => void>;
+  fiberRun?: Set<(fiber: MyReactFiberNode) => void>;
   fiberWarn?: Set<(fiber: MyReactFiberNode, ...args: any) => void>;
   fiberError?: Set<(fiber: MyReactFiberNode, ...args: any) => void>;
   fiberHasChange: Set<(list: ListTree<MyReactFiberNode>) => void>;
@@ -51,6 +52,7 @@ const getInitialValue = (): Listeners => {
         fiberHasChange: new Set(),
         fiberUnmount: new Set(),
         fiberHMR: new Set(),
+        fiberRun: new Set(),
         fiberWarn: new Set(),
         fiberError: new Set(),
         fiberTrigger: new Set(),
@@ -293,6 +295,26 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   onceFiberHMR(cb: (_fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).fiberHMR;
+
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      set?.delete?.(onceCb);
+    };
+
+    set?.add?.(onceCb);
+  }
+
+  onFirstRun(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).fiberRun;
+
+    set?.add?.(cb);
+
+    return () => set?.delete?.(cb);
+  }
+
+  onceFirstRun(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).fiberRun;
 
     const onceCb = (_fiber: MyReactFiberNode) => {
       cb(_fiber);

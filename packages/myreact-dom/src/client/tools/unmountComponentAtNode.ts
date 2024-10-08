@@ -12,12 +12,12 @@ const { currentRenderPlatform } = __my_react_internal__;
 export const unmountComponentAtNode = (container: RenderContainer) => {
   const renderDispatch = container.__container__;
 
-  const fiber = renderDispatch.rootFiber;
+  const fiber = renderDispatch?.rootFiber;
 
   const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 
   if (!fiber || !renderDispatch || !(fiber instanceof MyReactFiberNode) || !(renderDispatch instanceof ClientDomDispatch)) {
-    log(fiber, "error", `can not unmount app for current container`);
+    fiber ? log(fiber, "error", `can not unmount app for current container`) : console.error(`can not unmount app for current container`);
     return;
   }
 
@@ -25,5 +25,7 @@ export const unmountComponentAtNode = (container: RenderContainer) => {
 
   unmountContainer(renderDispatch, function afterUnmountContainer() {
     renderPlatform.dispatchSet?.uniDelete?.(renderDispatch);
+
+    delete container.__container__;
   });
 };

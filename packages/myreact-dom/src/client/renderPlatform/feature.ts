@@ -20,9 +20,11 @@ function dispatchError(this: DomPlatform, _params: { fiber: MyReactFiberNode; er
   if (!this.isServer) {
     if (__DEV__) devErrorWithFiber(_params.fiber, _params.error);
     if (_params.fiber) {
+      // eslint-disable-next-line @typescript-eslint/no-this-alias
+      const instance = this;
       triggerError(_params.fiber, _params.error, function triggerErrorOnFiberCallback() {
         // 更新结束后触发error事件
-        this.yieldTask(function dispatchErrorEvent() {
+        instance.yieldTask(function dispatchErrorEvent() {
           window.dispatchEvent(new ErrorEvent("error", { error: _params.error, message: _params.error?.message }));
         });
       });

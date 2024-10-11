@@ -8,7 +8,7 @@ import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, safeCallWithFiber, syncFlush } from "../share";
 
 import type { MyReactHookNode } from "../runtimeHook";
-import type { MyReactInternalInstance, RenderFiber, UpdateQueue } from "@my-react/react";
+import type { MyReactComponent, MyReactInternalInstance, RenderFiber, UpdateQueue } from "@my-react/react";
 
 export type UpdateQueueDev = UpdateQueue<{
   _debugType: string;
@@ -48,8 +48,8 @@ export const processState = (_params: UpdateQueue) => {
   if (renderDispatch?.enableUpdate) {
     safeCallWithFiber({
       fiber: ownerFiber,
-      action: function safeCallFiberTriggerListener() {
-        listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(ownerFiber, _params));
+      action: function safeCallFiberStateListener() {
+        listenerMap.get(renderDispatch)?.fiberState?.forEach((cb) => cb(ownerFiber, _params));
       },
     });
   }
@@ -104,11 +104,20 @@ export const processState = (_params: UpdateQueue) => {
       lastRenderComponentTimeStep = now;
     }
 
+    const trigger = _params.trigger as MyReactComponent;
+
+    safeCallWithFiber({
+      fiber: ownerFiber,
+      action: function safeCallInstanceStateListener() {
+        listenerMap.get(renderDispatch)?.instanceState?.forEach((cb) => cb(trigger, ownerFiber, _params));
+      },
+    });
+
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, isInitial && renderDispatch?.isAppMounted);
+    prepareUpdateOnFiber(ownerFiber, renderDispatch, isInitial && renderDispatch?.isAppMounted);
     // ownerFiber._prepare(isInitial && renderDispatch?.isAppMounted);
   } else if (_params.type === UpdateQueueType.hook) {
     const ownerFiber = getInstanceOwnerFiber(_params.trigger);
@@ -158,8 +167,8 @@ export const processState = (_params: UpdateQueue) => {
 
     safeCallWithFiber({
       fiber: ownerFiber,
-      action: function safeCallHookTriggerListener() {
-        listenerMap.get(renderDispatch)?.hookTrigger?.forEach((cb) => cb(trigger, _params));
+      action: function safeCallHookStateListener() {
+        listenerMap.get(renderDispatch)?.hookState?.forEach((cb) => cb(trigger, ownerFiber, _params));
       },
     });
 
@@ -167,7 +176,7 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, isInitial && renderDispatch?.isAppMounted);
+    prepareUpdateOnFiber(ownerFiber, renderDispatch, isInitial && renderDispatch?.isAppMounted);
     // ownerFiber._prepare(isInitial && renderDispatch?.isAppMounted);
   } else {
     const ownerFiber = _params.trigger as MyReactFiberNode;
@@ -180,7 +189,7 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, isInitial && renderDispatch?.isAppMounted);
+    prepareUpdateOnFiber(ownerFiber, renderDispatch, isInitial && renderDispatch?.isAppMounted);
     // ownerFiber._prepare(isInitial && renderDispatch?.isAppMounted);
   }
 };

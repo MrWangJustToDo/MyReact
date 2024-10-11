@@ -3,6 +3,7 @@ import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { syncFlushComponentQueue } from "../dispatchQueue";
+import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import {
   getInstanceContextFiber,
   getInstanceEffectState,
@@ -14,7 +15,6 @@ import {
 } from "../runtimeGenerate";
 import { afterSyncFlush, beforeSyncFlush, currentRenderDispatch, onceWarnWithKeyAndFiber, safeCallWithFiber } from "../share";
 
-import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
@@ -71,6 +71,13 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
     },
   });
 
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallInstanceInitialListener() {
+      listenerMap.get(renderDispatch)?.instanceInitial?.forEach((cb) => cb(instance, fiber));
+    },
+  });
+
   if (__DEV__) Object.freeze(instance.state);
 
   instance.props = props;
@@ -90,6 +97,13 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 
 const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
+
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallInstanceUpdateListener() {
+      listenerMap.get(currentRenderDispatch.current)?.instanceUpdate?.forEach((cb) => cb(typedInstance, fiber));
+    },
+  });
 
   setOwnerForInstance(typedInstance, fiber);
 };
@@ -474,6 +488,13 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
 
 export const classComponentUnmount = (fiber: MyReactFiberNode, _renderDispatch: CustomRenderDispatch) => {
   const typedInstance = fiber.instance as MyReactComponent;
+
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallInstanceUnmountListener() {
+      listenerMap.get(_renderDispatch)?.instanceUnmount?.forEach((cb) => cb(typedInstance, fiber));
+    },
+  });
 
   safeCallWithFiber({
     fiber,

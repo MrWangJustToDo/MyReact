@@ -14,15 +14,17 @@ import { defaultDispatchUpdate } from "../dispatchUpdate";
 import { MyWeakMap, NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
 
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
+import type { UpdateState } from "../dispatchQueue";
 import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { HMR } from "../share";
-import type { createContext, MyReactElementNode, UpdateQueue } from "@my-react/react";
+import type { createContext, MyReactComponent, MyReactElementNode, UpdateQueue } from "@my-react/react";
 
 type Listeners = {
   fiberInitial: Set<(fiber: MyReactFiberNode) => void>;
   fiberUpdate: Set<(fiber: MyReactFiberNode) => void>;
-  fiberTrigger: Set<(fiber: MyReactFiberNode, updater: UpdateQueue) => void>;
+  fiberState: Set<(fiber: MyReactFiberNode, updater: UpdateQueue) => void>;
+  fiberTrigger: Set<(fiber: MyReactFiberNode, state: UpdateState) => void>;
   fiberUnmount: Set<(fiber: MyReactFiberNode) => void>;
   fiberHMR?: Set<(fiber: MyReactFiberNode) => void>;
   fiberRun?: Set<(fiber: MyReactFiberNode) => void>;
@@ -31,10 +33,15 @@ type Listeners = {
   fiberHasChange: Set<(list: ListTree<MyReactFiberNode>) => void>;
   performanceWarn?: Set<(fiber: MyReactFiberNode) => void>;
 
-  hookInitial: Set<(hook: MyReactHookNode) => void>;
-  hookUpdate: Set<(hook: MyReactHookNode) => void>;
-  hookTrigger: Set<(hook: MyReactHookNode, updater: UpdateQueue) => void>;
-  hookUnmount: Set<(hook: MyReactHookNode) => void>;
+  instanceInitial: Set<(instance: MyReactComponent, fiber: MyReactFiberNode) => void>;
+  instanceUpdate: Set<(instance: MyReactComponent, fiber: MyReactFiberNode) => void>;
+  instanceState: Set<(instance: MyReactComponent, fiber: MyReactFiberNode, updater: UpdateQueue) => void>;
+  instanceUnmount: Set<(instance: MyReactComponent, fiber: MyReactFiberNode) => void>;
+
+  hookInitial: Set<(hook: MyReactHookNode, fiber: MyReactFiberNode) => void>;
+  hookUpdate: Set<(hook: MyReactHookNode, fiber: MyReactFiberNode) => void>;
+  hookState: Set<(hook: MyReactHookNode, fiber: MyReactFiberNode, updater: UpdateQueue) => void>;
+  hookUnmount: Set<(hook: MyReactHookNode, fiber: MyReactFiberNode) => void>;
 
   beforeCommit: Set<() => void>;
   afterCommit: Set<() => void>;
@@ -55,11 +62,16 @@ const getInitialValue = (): Listeners => {
         fiberRun: new Set(),
         fiberWarn: new Set(),
         fiberError: new Set(),
+        fiberState: new Set(),
         fiberTrigger: new Set(),
         performanceWarn: new Set(),
+        instanceInitial: new Set(),
+        instanceUpdate: new Set(),
+        instanceState: new Set(),
+        instanceUnmount: new Set(),
         hookInitial: new Set(),
         hookUpdate: new Set(),
-        hookTrigger: new Set(),
+        hookState: new Set(),
         hookUnmount: new Set(),
         beforeCommit: new Set(),
         afterCommit: new Set(),
@@ -73,10 +85,15 @@ const getInitialValue = (): Listeners => {
         fiberUpdate: new Set(),
         fiberHasChange: new Set(),
         fiberUnmount: new Set(),
+        fiberState: new Set(),
         fiberTrigger: new Set(),
+        instanceInitial: new Set(),
+        instanceUpdate: new Set(),
+        instanceState: new Set(),
+        instanceUnmount: new Set(),
         hookInitial: new Set(),
         hookUpdate: new Set(),
-        hookTrigger: new Set(),
+        hookState: new Set(),
         hookUnmount: new Set(),
         beforeCommit: new Set(),
         afterCommit: new Set(),
@@ -265,7 +282,27 @@ export class CustomRenderDispatch implements RenderDispatch {
     set.add(onceCb);
   }
 
-  onFiberTrigger(cb: (_fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
+  onFiberState(cb: (_fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
+    const set = listenerMap.get(this).fiberState;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceFiberState(cb: (_fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
+    const set = listenerMap.get(this).fiberState;
+
+    const onceCb = (_fiber: MyReactFiberNode, _updater: UpdateQueue) => {
+      cb(_fiber, _updater);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
+  onFiberTrigger(cb: (_fiber: MyReactFiberNode, _state: UpdateState) => void) {
     const set = listenerMap.get(this).fiberTrigger;
 
     set.add(cb);
@@ -273,11 +310,11 @@ export class CustomRenderDispatch implements RenderDispatch {
     return () => set.delete(cb);
   }
 
-  onceFiberTrigger(cb: (_fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
+  onceFiberTrigger(cb: (_fiber: MyReactFiberNode, _state: UpdateState) => void) {
     const set = listenerMap.get(this).fiberTrigger;
 
-    const onceCb = (_fiber: MyReactFiberNode, _updater: UpdateQueue) => {
-      cb(_fiber, _updater);
+    const onceCb = (_fiber: MyReactFiberNode, _state: UpdateState) => {
+      cb(_fiber, _state);
 
       set.delete(onceCb);
     };
@@ -385,6 +422,86 @@ export class CustomRenderDispatch implements RenderDispatch {
     set?.add?.(onceCb);
   }
 
+  onInstanceInitial(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).instanceInitial;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceInstanceInitial(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).instanceInitial;
+
+    const onceCb = (_instance: MyReactComponent, _fiber: MyReactFiberNode) => {
+      cb(_instance, _fiber);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
+  onInstanceUpdate(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).instanceUpdate;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceInstanceUpdate(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).instanceUpdate;
+
+    const onceCb = (_instance: MyReactComponent, _fiber: MyReactFiberNode) => {
+      cb(_instance, _fiber);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
+  onInstanceState(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
+    const set = listenerMap.get(this).instanceState;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceInstanceState(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
+    const set = listenerMap.get(this).instanceState;
+
+    const onceCb = (_instance: MyReactComponent, _fiber: MyReactFiberNode, _updater: UpdateQueue) => {
+      cb(_instance, _fiber, _updater);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
+  onInstanceUnmount(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).instanceUnmount;
+
+    set.add(cb);
+
+    return () => set.delete(cb);
+  }
+
+  onceInstanceUnmount(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).instanceUnmount;
+
+    const onceCb = (_instance: MyReactComponent, _fiber: MyReactFiberNode) => {
+      cb(_instance, _fiber);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
   onHookInitial(cb: (_hook: MyReactHookNode) => void) {
     const set = listenerMap.get(this).hookInitial;
 
@@ -445,19 +562,19 @@ export class CustomRenderDispatch implements RenderDispatch {
     set.add(onceCb);
   }
 
-  onHookTrigger(cb: (_hook: MyReactHookNode, _updater: UpdateQueue) => void) {
-    const set = listenerMap.get(this).hookTrigger;
+  onHookState(cb: (_hook: MyReactHookNode, _fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
+    const set = listenerMap.get(this).hookState;
 
     set.add(cb);
 
     return () => set.delete(cb);
   }
 
-  onceHookTrigger(cb: (_hook: MyReactHookNode, _updater: UpdateQueue) => void) {
-    const set = listenerMap.get(this).hookTrigger;
+  onceHookTrigger(cb: (_hook: MyReactHookNode, _fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
+    const set = listenerMap.get(this).hookState;
 
-    const onceCb = (_hook: MyReactHookNode, _updater: UpdateQueue) => {
-      cb(_hook, _updater);
+    const onceCb = (_hook: MyReactHookNode, _fiber: MyReactFiberNode, _updater: UpdateQueue) => {
+      cb(_hook, _fiber, _updater);
 
       set.delete(onceCb);
     };
@@ -780,7 +897,7 @@ export class CustomRenderDispatch implements RenderDispatch {
   }
   reconcileUnmount(): void {
     const instance = this;
-    
+
     safeCall(function safeCallBeforeUnmount() {
       instance.beforeUnmount?.();
     });

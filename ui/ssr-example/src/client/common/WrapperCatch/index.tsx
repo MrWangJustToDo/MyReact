@@ -9,16 +9,16 @@ export class WrapperErrorCatch extends Component<Record<string, unknown> & { chi
     hasError: false,
   };
 
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
+  // static getDerivedStateFromError() {
+  //   return { hasError: true };
+  // }
 
-  componentDidCatch(error: Error, info: ErrorInfo) {
-    this.setState({
-      error: error.message,
-      stack: info.componentStack,
-    });
-  }
+  // componentDidCatch(error: Error, info: ErrorInfo) {
+  //   this.setState({
+  //     error: error.message,
+  //     stack: info.componentStack,
+  //   });
+  // }
 
   render(): ReactNode {
     if (this.state.hasError)

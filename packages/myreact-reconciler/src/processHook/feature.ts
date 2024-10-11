@@ -52,7 +52,7 @@ export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams
     safeCallWithFiber({
       fiber,
       action: function safeCallHookInitialListener() {
-        listenerMap.get(renderDispatch)?.hookInitial?.forEach((cb) => cb(currentHook));
+        listenerMap.get(renderDispatch)?.hookInitial?.forEach((cb) => cb(currentHook, fiber));
       },
     });
   } else {
@@ -62,7 +62,7 @@ export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams
     safeCallWithFiber({
       fiber,
       action: function safeCallHookUpdateListener() {
-        listenerMap.get(renderDispatch)?.hookUpdate?.forEach((cb) => cb(currentHook));
+        listenerMap.get(renderDispatch)?.hookUpdate?.forEach((cb) => cb(currentHook, fiber));
       },
     });
   }

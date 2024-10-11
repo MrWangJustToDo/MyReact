@@ -29,14 +29,12 @@ export const defaultGenerateContextMap = (fiber: MyReactFiberNode, map: WeakMap<
       parentMap = Object.assign({}, parentMap, { [contextId]: parent });
     }
 
-    if (parentMap !== emptyObj) {
-      map.set(fiber, parentMap);
+    map.set(fiber, parentMap);
 
-      if (__DEV__ && enableDebugFiled.current) {
-        const typedFiber = fiber as MyReactFiberNodeDev;
+    if (__DEV__ && enableDebugFiled.current) {
+      const typedFiber = fiber as MyReactFiberNodeDev;
 
-        typedFiber._debugContextMap = parentMap;
-      }
+      typedFiber._debugContextMap = parentMap;
     }
   }
 };

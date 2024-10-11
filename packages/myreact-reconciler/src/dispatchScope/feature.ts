@@ -1,5 +1,5 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { include } from "@my-react/react-shared";
+import { include, STATE_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
@@ -17,7 +17,15 @@ export const defaultGenerateScopeMap = (fiber: MyReactFiberNode, map: WeakMap<My
     } else {
       const parentScopeFiber = map.get(parent);
 
-      parentScopeFiber && map.set(fiber, parentScopeFiber);
+      if (parentScopeFiber) {
+        if (parentScopeFiber.state * STATE_TYPE.__unmount__) {
+          map.delete(parent);
+
+          map.delete(fiber);
+        } else {
+          map.set(fiber, parentScopeFiber);
+        }
+      }
     }
   }
 
@@ -26,6 +34,10 @@ export const defaultGenerateScopeMap = (fiber: MyReactFiberNode, map: WeakMap<My
 
     const scopeFiber = map.get(fiber);
 
-    scopeFiber && (typedFiber._debugScope = scopeFiber);
+    if (scopeFiber) {
+      typedFiber._debugScope = scopeFiber;
+    } else {
+      typedFiber._debugScope = null;
+    }
   }
 };

@@ -1,5 +1,5 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { include } from "@my-react/react-shared";
+import { include, STATE_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
@@ -35,7 +35,15 @@ export const defaultGenerateErrorBoundariesMap = (fiber: MyReactFiberNode, map: 
     } else {
       const parentErrorBoundaries = map.get(parent);
 
-      parentErrorBoundaries && map.set(fiber, parentErrorBoundaries);
+      if (parentErrorBoundaries) {
+        if (parentErrorBoundaries.state & STATE_TYPE.__unmount__) {
+          map.delete(parent);
+
+          map.delete(fiber);
+        } else {
+          map.set(fiber, parentErrorBoundaries);
+        }
+      }
     }
   }
 
@@ -44,7 +52,11 @@ export const defaultGenerateErrorBoundariesMap = (fiber: MyReactFiberNode, map: 
 
     const errorBoundaries = map.get(fiber);
 
-    errorBoundaries && (typedFiber._debugErrorBoundaries = errorBoundaries);
+    if (errorBoundaries) {
+      typedFiber._debugErrorBoundaries = errorBoundaries;
+    } else {
+      typedFiber._debugErrorBoundaries = null;
+    }
   }
 };
 

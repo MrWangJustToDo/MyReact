@@ -14,18 +14,18 @@ export const defaultGenerateStrictMap = (fiber: MyReactFiberNode, map: WeakMap<M
     if (include(parent.type, NODE_TYPE.__strict__)) {
       map.set(fiber, true);
     } else {
-      const parentIsStrict = map.get(parent);
+      const parentIsStrict = map.get(parent) || false;
 
-      parentIsStrict && map.set(fiber, parentIsStrict);
+      map.set(fiber, parentIsStrict);
     }
   }
 
   if (__DEV__ && enableDebugFiled.current) {
     const typedFiber = fiber as MyReactFiberNodeDev;
 
-    const isStrict = map.get(fiber);
+    const isStrict = !!map.get(fiber);
 
-    isStrict && (typedFiber._debugStrict = true);
+    typedFiber._debugStrict = isStrict;
   }
 };
 
@@ -49,11 +49,11 @@ export const defaultGenerateStrict = (fiber: MyReactFiberNode): boolean => {
     if (__DEV__ && enableDebugFiled.current) {
       const typedFiber = fiber as MyReactFiberNodeDev;
 
-      isStrict && (typedFiber._debugStrict = true);
+      typedFiber._debugStrict = isStrict;
     }
 
     return isStrict;
   }
-  
+
   return false;
 };

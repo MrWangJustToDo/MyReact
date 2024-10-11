@@ -2,11 +2,11 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE, include, MODE_TYPE } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate } from "../dispatchQueue";
+import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { triggerRevert, triggerUpdate } from "../renderUpdate";
-import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE } from "../share";
+import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE, safeCallWithFiber } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
-import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
@@ -95,18 +95,18 @@ export class MyReactFiberNode implements RenderFiber {
   }
 }
 
-export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, initial?: boolean) => {
+export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, initial?: boolean) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
-  
+
   const renderPlatform = currentRenderPlatform.current;
 
   const processQueue = () => {
     const flag = enableConcurrentMode.current;
 
     const updateState = include(fiber.type, NODE_TYPE.__class__)
-      ? processClassComponentUpdateQueue(fiber, flag)
+      ? processClassComponentUpdateQueue(fiber, renderDispatch, flag)
       : include(fiber.type, NODE_TYPE.__function__)
-        ? processFunctionComponentUpdateQueue(fiber, flag)
+        ? processFunctionComponentUpdateQueue(fiber, renderDispatch, flag)
         : include(fiber.type, NODE_TYPE.__lazy__)
           ? processLazyComponentUpdate(fiber)
           : (() => {
@@ -114,6 +114,14 @@ export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, initial?: boolean)
             })();
 
     if (updateState?.needUpdate) {
+      
+      safeCallWithFiber({
+        fiber,
+        action: function safeCallFiberTriggerListener() {
+          listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, updateState));
+        },
+      });
+
       if (updateState.isSync) {
         renderPlatform.microTask(function triggerSyncUpdateOnFiber() {
           triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);

@@ -4,18 +4,23 @@ import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-rea
 import { syncComponentStateToFiber } from "../runtimeComponent";
 import { prepareUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
-import { currentRenderDispatch, NODE_TYPE, safeCallWithFiber } from "../share";
+import { currentRenderDispatch, getCurrentDispatchFromFiber, NODE_TYPE, safeCallWithFiber } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactHookNodeDev } from "../runtimeHook";
 
 const { enableDebugFiled } = __my_react_shared__;
 const { currentRenderPlatform } = __my_react_internal__;
 
-export const processClassComponentUpdateQueue = (
-  fiber: MyReactFiberNode,
-  enableTaskPriority?: boolean
-): { needUpdate: boolean; isForce: boolean; isSync: boolean; callback?: () => void } => {
+export type UpdateState = {
+  needUpdate: boolean;
+  isSync: boolean;
+  isForce: boolean;
+  callback?: () => void;
+};
+
+export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, enableTaskPriority?: boolean): UpdateState => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (exclude(fiber.type, NODE_TYPE.__class__)) throw new Error("[@my-react/react] current fiber is not a class component, look like a bug for @my-react");
@@ -96,7 +101,7 @@ export const processClassComponentUpdateQueue = (
 
     if (allQueue.length) {
       renderPlatform.microTask(function prepareUpdateOnFiberTask() {
-        prepareUpdateOnFiber(fiber);
+        prepareUpdateOnFiber(fiber, renderDispatch);
       });
     }
 
@@ -171,7 +176,11 @@ export const processClassComponentUpdateQueue = (
   }
 };
 
-export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, enableTaskPriority?: boolean) => {
+export const processFunctionComponentUpdateQueue = (
+  fiber: MyReactFiberNode,
+  renderDispatch: CustomRenderDispatch,
+  enableTaskPriority?: boolean
+): UpdateState => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (exclude(fiber.type, NODE_TYPE.__function__))
@@ -255,7 +264,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
 
     if (allQueue.length) {
       renderPlatform.microTask(function prepareUpdateOnFiberTask() {
-        prepareUpdateOnFiber(fiber);
+        prepareUpdateOnFiber(fiber, renderDispatch);
       });
     }
 
@@ -340,7 +349,7 @@ export const processFunctionComponentUpdateQueue = (fiber: MyReactFiberNode, ena
   }
 };
 
-export const processLazyComponentUpdate = (fiber: MyReactFiberNode) => {
+export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (exclude(fiber.type, NODE_TYPE.__lazy__)) throw new Error("[@my-react/react] current fiber is not a lazy component, look like a bug for @my-react");
@@ -430,7 +439,9 @@ export const syncFiberStateToComponent = (fiber: MyReactFiberNode, callback?: ()
  * @deprecated
  */
 export const syncFlushComponentQueue = (fiber: MyReactFiberNode) => {
-  const { needUpdate, callback } = processClassComponentUpdateQueue(fiber);
+  const renderDispatch = getCurrentDispatchFromFiber(fiber);
+
+  const { needUpdate, callback } = processClassComponentUpdateQueue(fiber, renderDispatch);
 
   needUpdate && syncFiberStateToComponent(fiber, callback);
 

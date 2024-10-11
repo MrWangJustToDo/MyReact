@@ -1,5 +1,5 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { include } from "@my-react/react-shared";
+import { include, STATE_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
@@ -17,7 +17,15 @@ export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: WeakMap
     } else {
       const parentFiber = map.get(parent);
 
-      parentFiber && map.set(fiber, parentFiber);
+      if (parentFiber) {
+        if (parentFiber.state & STATE_TYPE.__unmount__) {
+          map.delete(parent);
+
+          map.delete(fiber);
+        } else {
+          map.set(fiber, parentFiber);
+        }
+      }
     }
   }
 
@@ -26,7 +34,11 @@ export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: WeakMap
 
     const parentFiber = map.get(fiber);
 
-    parentFiber && (typedFiber._debugSuspense = parentFiber);
+    if (parentFiber) {
+      typedFiber._debugSuspense = parentFiber;
+    } else {
+      typedFiber._debugSuspense = null;
+    }
   }
 };
 

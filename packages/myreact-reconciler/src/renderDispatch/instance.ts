@@ -342,7 +342,7 @@ export class CustomRenderDispatch implements RenderDispatch {
     set?.add?.(onceCb);
   }
 
-  onFirstRun(cb: (_fiber: MyReactFiberNode) => void) {
+  onFiberRun(cb: (_fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).fiberRun;
 
     set?.add?.(cb);
@@ -350,7 +350,7 @@ export class CustomRenderDispatch implements RenderDispatch {
     return () => set?.delete?.(cb);
   }
 
-  onceFirstRun(cb: (_fiber: MyReactFiberNode) => void) {
+  onceFiberRun(cb: (_fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).fiberRun;
 
     const onceCb = (_fiber: MyReactFiberNode) => {

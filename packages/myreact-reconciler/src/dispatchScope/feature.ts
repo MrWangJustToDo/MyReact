@@ -41,3 +41,16 @@ export const defaultGenerateScopeMap = (fiber: MyReactFiberNode, map: WeakMap<My
     }
   }
 };
+
+export const defaultResolveScope = (fiber: MyReactFiberNode) => {
+  let parent = fiber.parent;
+
+  while (parent) {
+    if (include(parent.type, NODE_TYPE.__scope__)) {
+      return parent;
+    }
+    parent = parent.parent;
+  }
+
+  return null;
+};

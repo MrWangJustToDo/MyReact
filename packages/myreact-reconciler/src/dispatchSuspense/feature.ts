@@ -44,6 +44,7 @@ export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: WeakMap
 
 export const defaultResolveSuspense = (fiber: MyReactFiberNode): MyReactElementNode => {
   let parent = fiber.parent;
+  
   while (parent) {
     if (include(parent.type, NODE_TYPE.__suspense__)) {
       return parent.pendingProps?.["fallback"];

@@ -52,20 +52,6 @@ export const defaultGetContextFiber = (
   renderDispatch: CustomRenderDispatch,
   ContextObject?: ReturnType<typeof createContext> | null
 ) => {
-  if (ContextObject) {
-    const contextMap = renderDispatch.runtimeMap.contextMap.get(fiber);
-
-    return contextMap?.[ContextObject.contextId] || null;
-  } else {
-    return null;
-  }
-};
-
-export const defaultGetContextFiber_New = (
-  fiber: MyReactFiberNode,
-  renderDispatch: CustomRenderDispatch,
-  ContextObject?: ReturnType<typeof createContext> | null
-) => {
   if (fiber?.parent && ContextObject) {
     let parent = fiber.parent;
     while (parent) {

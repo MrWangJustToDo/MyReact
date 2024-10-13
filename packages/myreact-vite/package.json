@@ -1,6 +1,6 @@
 {
   "name": "@my-react/react-vite",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "make @my-react work for vite",
   "files": [
     "dist",
@@ -58,8 +58,8 @@
     }
   ],
   "peerDependencies": {
-    "@my-react/react-refresh": ">=0.3.1",
-    "vite": "^4.2.0 || ^5.0.0 || ^5.1.0 || ^5.2.0 || ^5.3.0 || ^5.4.0"
+    "@my-react/react-refresh": ">=0.3.3",
+    "vite": "^4.2.0 || ^5"
   },
   "dependencies": {
     "@babel/core": "^7.22.5",
@@ -67,7 +67,7 @@
     "@babel/plugin-transform-react-jsx-source": "^7.22.5"
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.2",
+    "@my-react/react-shared": "^0.3.3",
     "@types/babel__core": "^7.20.5"
   }
 }

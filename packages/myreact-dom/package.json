@@ -92,10 +92,10 @@
     "react-dom client"
   ],
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.2",
-    "@my-react/react-reconciler": "^0.3.2"
+    "@my-react/react-shared": "^0.3.3",
+    "@my-react/react-reconciler": "^0.3.3"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.1"
+    "@my-react/react": ">=0.3.3"
   }
 }

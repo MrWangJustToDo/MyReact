@@ -126,80 +126,80 @@ importers:
   packages/myreact:
     dependencies:
       '@my-react/react-jsx':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-jsx
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-shared
 
   packages/myreact-dom:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.1'
+        specifier: '>=0.3.3'
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-shared
 
   packages/myreact-jsx:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.1'
+        specifier: '>=0.3.3'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-shared
 
   packages/myreact-reactivity:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.1'
+        specifier: '>=0.3.3'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-shared
 
   packages/myreact-reconciler:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.1'
+        specifier: '>=0.3.3'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-shared
 
   packages/myreact-refresh:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.1'
+        specifier: '>=0.3.3'
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-shared
 
   packages/myreact-refresh-tools:
     dependencies:
       '@my-react/react-refresh':
-        specifier: '>=0.3.1'
+        specifier: '>=0.3.3'
         version: link:../myreact-refresh
       webpack:
         specifier: ^4 || ^5
         version: 5.91.0(@swc/core@1.7.14)
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-shared
 
   packages/myreact-shared: {}
@@ -210,7 +210,7 @@ importers:
         specifier: ^0.1.3
         version: 0.1.3
       '@my-react/react':
-        specifier: '>=0.3.1'
+        specifier: '>=0.3.3'
         version: link:../myreact
       ansi-escapes:
         specifier: ^6.2.0
@@ -271,10 +271,10 @@ importers:
         version: 3.1.0
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-shared
       '@types/lodash':
         specifier: ^4.17.7
@@ -304,14 +304,14 @@ importers:
         specifier: ^7.22.5
         version: 7.22.5(@babel/core@7.22.5)
       '@my-react/react-refresh':
-        specifier: '>=0.3.1'
+        specifier: '>=0.3.3'
         version: link:../myreact-refresh
       vite:
-        specifier: ^4.2.0 || ^5.0.0 || ^5.1.0 || ^5.2.0 || ^5.3.0 || ^5.4.0
+        specifier: ^4.2.0 || ^5
         version: 5.4.2(@types/node@22.5.0)
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.2
+        specifier: ^0.3.3
         version: link:../myreact-shared
       '@types/babel__core':
         specifier: ^7.20.5
@@ -861,8 +861,8 @@ importers:
         specifier: ^6.26.1
         version: 6.26.1(react-dom@18.2.0)(react@18.2.0)
       reactivity-store:
-        specifier: ^0.3.5
-        version: 0.3.5(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^0.3.6
+        version: 0.3.6(react-dom@18.2.0)(react@18.2.0)
       redux:
         specifier: ^5.0.1
         version: 5.0.1
@@ -15499,8 +15499,8 @@ packages:
     dependencies:
       loose-envify: 1.4.0
 
-  /reactivity-store@0.3.5(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-LYcmC0Qukuosg9x+nrYEKUMFRuqbLVSn0Bd4dY5XXKx2Q/HQBHVXU+GchtrkJS39iIdusN+7QMAzBPWZGJOU0g==}
+  /reactivity-store@0.3.6(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-tZGkyrDZxzuOqSLIuHuOq10U7hV7BAEy5J5bJi6y+d/qMMf+FxTm/E6092i8DylxXtmy7wxSUo6ksWxB7Hg/jw==}
     peerDependencies:
       react: ^17.0.2 || ^18.2.0
       react-dom: ^17.0.2 || ^18.2.0

@@ -13,12 +13,12 @@ export const VitePlayground = () => {
         dependencies: {
           react: "^18.2.0",
           "react-dom": "^18.2.0",
-          "@my-react/react": "0.3.0",
-          "@my-react/react-dom": "0.3.0",
+          "@my-react/react": "0.3.3",
+          "@my-react/react-dom": "0.3.3",
         },
         devDependencies: {
-          "@my-react/react-refresh": "0.3.0",
-          "@my-react/react-vite": "0.0.3",
+          "@my-react/react-refresh": "0.3.3",
+          "@my-react/react-vite": "0.0.6",
           "@vitejs/plugin-react": "3.1.0",
           vite: "4.1.4",
           "esbuild-wasm": "0.17.12",

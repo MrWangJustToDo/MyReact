@@ -126,11 +126,11 @@ importers:
   packages/myreact:
     dependencies:
       '@my-react/react-jsx':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-jsx
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-shared
 
   packages/myreact-dom:
@@ -140,10 +140,10 @@ importers:
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-shared
 
   packages/myreact-jsx:
@@ -153,7 +153,7 @@ importers:
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-shared
 
   packages/myreact-reactivity:
@@ -163,7 +163,7 @@ importers:
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-shared
 
   packages/myreact-reconciler:
@@ -173,7 +173,7 @@ importers:
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-shared
 
   packages/myreact-refresh:
@@ -183,10 +183,10 @@ importers:
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-shared
 
   packages/myreact-refresh-tools:
@@ -271,10 +271,10 @@ importers:
         version: 3.1.0
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.3
+        specifier: ^0.3.4
         version: link:../myreact-shared
       '@types/lodash':
         specifier: ^4.17.7

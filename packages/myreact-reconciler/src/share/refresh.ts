@@ -39,10 +39,12 @@ export const setRefreshTypeMap = (fiber: MyReactFiberNode) => {
 };
 
 export const getCurrentTypeFromRefresh = (type: MyReactElementType) => {
-  const family = refreshHandler?.(type);
-
-  return family?.current || type;
+  return refreshHandler?.(type)?.current || type;
 };
+
+export const getCurrentTypeFromRefreshOnly = (type: MyReactElementType) => {
+  return refreshHandler?.(type)?.current;
+}
 
 export const getCurrentFibersFromType = (type: MixinMyReactClassComponent | MixinMyReactFunctionComponent) => {
   return typeToFibersMap.get(type);

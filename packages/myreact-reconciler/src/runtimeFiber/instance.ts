@@ -64,7 +64,7 @@ export class MyReactFiberNode implements RenderFiber {
   }
 
   _installElement(element: MyReactElementNode) {
-    const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
+    const { key, ref, nodeType, elementType, pendingProps, _debugElement } = getTypeFromElementNode(element);
 
     this.ref = ref;
 
@@ -79,7 +79,7 @@ export class MyReactFiberNode implements RenderFiber {
     if (__DEV__) {
       const typeThis = this as unknown as MyReactFiberNodeDev;
 
-      typeThis._debugElement = element;
+      typeThis._debugElement = _debugElement;
     }
   }
   _addDependence(instance: MyReactInternalInstance): void {
@@ -114,7 +114,6 @@ export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: Cu
             })();
 
     if (updateState?.needUpdate) {
-      
       safeCallWithFiber({
         fiber,
         action: function safeCallFiberTriggerListener() {

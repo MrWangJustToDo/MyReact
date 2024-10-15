@@ -17,9 +17,13 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
 
     const renderDispatch = getCurrentDispatchFromFiber(fiber);
 
-    const element = createElement(nextType, fiber.pendingProps);
-
-    fiber._installElement(element);
+    safeCallWithFiber({
+      fiber,
+      action: function safeCallHMR() {
+        const element = createElement(nextType, { ...fiber.pendingProps, key: fiber.key ?? undefined, ref: fiber.ref ?? undefined });
+        fiber._installElement(element);
+      },
+    });
 
     setRefreshTypeMap(fiber);
 

@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__, createElement } from "@my-react/react";
 import {
   Consumer,
   ForwardRef,
@@ -15,14 +15,13 @@ import {
   TYPEKEY,
   Profiler,
   merge,
-  include,
 } from "@my-react/react-shared";
 
 import { devWarn } from "./debug";
 import { NODE_TYPE } from "./fiberType";
-import { getCurrentTypeFromRefresh } from "./refresh";
+import { getCurrentTypeFromRefreshOnly } from "./refresh";
 
-import type { MyReactElementNode, MyReactObjectComponent, forwardRef, memo, MyReactElement, MyReactElementType, MixinMyReactObjectComponent } from "@my-react/react";
+import type { MyReactElementNode, MyReactObjectComponent, forwardRef, memo, MyReactElement, MyReactElementType, MyReactComponentType } from "@my-react/react";
 
 const { enableHMRForDev } = __my_react_shared__;
 
@@ -32,18 +31,20 @@ type ReturnTypeFromElement = {
   ref: MyReactElement["ref"] | null;
   pendingProps: MyReactElement["props"];
   elementType: MyReactElementType | null;
+  _debugElement: MyReactElementNode;
 };
 
 const emptyProps = {};
 
-const getElementTypeFromType = (type: MixinMyReactObjectComponent): MyReactElementType => {
-  while (typeof type === "object" && type !== null) {
-    if (type[TYPEKEY] === Memo || type[TYPEKEY] === ForwardRef) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      type = (type as ReturnType<typeof memo> | ReturnType<typeof forwardRef>).render;
+const getElementTypeFromType = (type: MyReactComponentType): MyReactComponentType => {
+  if (typeof type === "object") {
+    switch (type[TYPEKEY]) {
+      case ForwardRef:
+      case Memo:
+        return getElementTypeFromType(type.render as MyReactComponentType);
     }
   }
+
   return type;
 };
 
@@ -63,11 +64,11 @@ export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeF
       nodeType = merge(nodeType, NODE_TYPE.__null__);
     } else {
       // text element
-      return { key: null, ref: null, nodeType: NODE_TYPE.__text__, elementType: String(element), pendingProps: emptyProps };
+      return { key: null, ref: null, nodeType: NODE_TYPE.__text__, elementType: String(element), pendingProps: emptyProps, _debugElement: element };
     }
   }
 
-  return { key: null, ref: null, nodeType, elementType: null, pendingProps: emptyProps };
+  return { key: null, ref: null, nodeType, elementType: null, pendingProps: emptyProps, _debugElement: element };
 };
 
 export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromElement => {
@@ -75,11 +76,23 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
 
   let elementType = element.type;
 
+  let debugElement = element;
+
   const pendingProps = element.props;
 
-  const ref: MyReactElement["ref"] | null = element.ref;
+  const ref: MyReactElement["ref"] | null = element.ref ?? undefined;
 
-  const key: MyReactElement["key"] | null = element.key;
+  const key: MyReactElement["key"] | null = element.key ?? undefined;
+
+  if (__DEV__ && enableHMRForDev.current) {
+    const _elementType = getElementTypeFromType(elementType);
+
+    if (_elementType !== elementType || typeof elementType === "function") {
+      elementType = getCurrentTypeFromRefreshOnly(_elementType,) || elementType;
+      // final element from hmr runtime
+      debugElement = createElement(elementType, { ...pendingProps, key, ref });
+    }
+  }
 
   if (typeof elementType === "object" && elementType !== null) {
     const typedElementType = elementType as MyReactObjectComponent;
@@ -167,11 +180,5 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
     nodeType = merge(nodeType, NODE_TYPE.__empty__);
   }
 
-  if (__DEV__ && enableHMRForDev.current && include(nodeType, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
-    elementType = getCurrentTypeFromRefresh(elementType);
-
-    elementType = getElementTypeFromType(elementType);
-  }
-
-  return { key, ref, nodeType, elementType, pendingProps };
+  return { key, ref, nodeType, elementType, pendingProps, _debugElement: debugElement };
 };

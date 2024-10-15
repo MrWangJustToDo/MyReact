@@ -36,7 +36,7 @@ export const updateFiberNode = (
 
   parent.child = parent.child || fiber;
 
-  fiber._installElement(nextElement);
+  nextElement =  fiber._installElement(nextElement);
 
   const nextElementType = fiber.elementType;
 

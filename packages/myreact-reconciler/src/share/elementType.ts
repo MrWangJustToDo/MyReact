@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_shared__, createElement } from "@my-react/react";
+import { isValidElement, __my_react_shared__ } from "@my-react/react";
 import {
   Consumer,
   ForwardRef,
@@ -19,7 +19,7 @@ import {
 
 import { devWarn } from "./debug";
 import { NODE_TYPE } from "./fiberType";
-import { getCurrentTypeFromRefreshOnly } from "./refresh";
+import { getElementFromRefreshIfExist } from "./refresh";
 
 import type { MyReactElementNode, MyReactObjectComponent, forwardRef, memo, MyReactElement, MyReactElementType, MyReactComponentType } from "@my-react/react";
 
@@ -31,12 +31,12 @@ type ReturnTypeFromElement = {
   ref: MyReactElement["ref"] | null;
   pendingProps: MyReactElement["props"];
   elementType: MyReactElementType | null;
-  _debugElement: MyReactElementNode;
+  finalElement: MyReactElementNode;
 };
 
 const emptyProps = {};
 
-const getElementTypeFromType = (type: MyReactComponentType): MyReactComponentType => {
+export const getElementTypeFromType = (type: MyReactComponentType): MyReactComponentType => {
   if (typeof type === "object") {
     switch (type[TYPEKEY]) {
       case ForwardRef:
@@ -48,7 +48,6 @@ const getElementTypeFromType = (type: MyReactComponentType): MyReactComponentTyp
   return type;
 };
 
-// TODO
 export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeFromElement => {
   let nodeType = NODE_TYPE.__initial__;
 
@@ -64,11 +63,11 @@ export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeF
       nodeType = merge(nodeType, NODE_TYPE.__null__);
     } else {
       // text element
-      return { key: null, ref: null, nodeType: NODE_TYPE.__text__, elementType: String(element), pendingProps: emptyProps, _debugElement: element };
+      return { key: null, ref: null, nodeType: NODE_TYPE.__text__, elementType: String(element), pendingProps: emptyProps, finalElement: element };
     }
   }
 
-  return { key: null, ref: null, nodeType, elementType: null, pendingProps: emptyProps, _debugElement: element };
+  return { key: null, ref: null, nodeType, elementType: null, pendingProps: emptyProps, finalElement: element };
 };
 
 export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromElement => {
@@ -76,7 +75,7 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
 
   let elementType = element.type;
 
-  let debugElement = element;
+  let finalElement = element;
 
   const pendingProps = element.props;
 
@@ -85,13 +84,7 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
   const key: MyReactElement["key"] | null = element.key ?? undefined;
 
   if (__DEV__ && enableHMRForDev.current) {
-    const _elementType = getElementTypeFromType(elementType);
-
-    if (_elementType !== elementType || typeof elementType === "function") {
-      elementType = getCurrentTypeFromRefreshOnly(_elementType,) || elementType;
-      // final element from hmr runtime
-      debugElement = createElement(elementType, { ...pendingProps, key, ref });
-    }
+    finalElement = getElementFromRefreshIfExist(element);
   }
 
   if (typeof elementType === "object" && elementType !== null) {
@@ -180,5 +173,5 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
     nodeType = merge(nodeType, NODE_TYPE.__empty__);
   }
 
-  return { key, ref, nodeType, elementType, pendingProps, _debugElement: debugElement };
+  return { key, ref, nodeType, elementType, pendingProps, finalElement };
 };

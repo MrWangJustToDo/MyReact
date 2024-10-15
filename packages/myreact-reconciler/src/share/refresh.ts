@@ -1,11 +1,18 @@
+import {
+  createElement,
+  type MixinMyReactClassComponent,
+  type MixinMyReactFunctionComponent,
+  type MyReactElement,
+  type MyReactElementType,
+} from "@my-react/react";
 import { include } from "@my-react/react-shared";
 
+import { getElementTypeFromType } from "./elementType";
 import { currentRefreshHandler, fiberToDispatchMap } from "./env";
 import { NODE_TYPE } from "./fiberType";
 import { MyWeakMap } from "./map";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElementType } from "@my-react/react";
 
 export type RefreshHandler = (type: MyReactElementType) => { current: MyReactElementType };
 
@@ -44,7 +51,7 @@ export const getCurrentTypeFromRefresh = (type: MyReactElementType) => {
 
 export const getCurrentTypeFromRefreshOnly = (type: MyReactElementType) => {
   return refreshHandler?.(type)?.current;
-}
+};
 
 export const getCurrentFibersFromType = (type: MixinMyReactClassComponent | MixinMyReactFunctionComponent) => {
   return typeToFibersMap.get(type);
@@ -58,4 +65,20 @@ export const getCurrentDispatchFromType = (type: MixinMyReactClassComponent | Mi
 
 export const getCurrentDispatchFromFiber = (fiber: MyReactFiberNode) => {
   return fiberToDispatchMap.get(fiber);
+};
+
+export const getElementFromRefreshIfExist = (element: MyReactElement) => {
+  const elementType = getElementTypeFromType(element.type);
+
+  // current element is React component
+  if (typeof elementType === "function") {
+    const typeFromRefresh = getCurrentTypeFromRefreshOnly(elementType);
+
+    // have a new version elementType from hmr runtime
+    if (typeFromRefresh) {
+      return createElement(typeFromRefresh, { ...element.props, key: element.key ?? undefined, ref: element.ref ?? undefined });
+    }
+  }
+
+  return element;
 };

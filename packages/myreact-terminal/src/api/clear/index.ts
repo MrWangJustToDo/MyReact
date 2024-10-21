@@ -30,14 +30,9 @@ export const clear = (fiber: MyReactFiberNode, renderDispatch: TerminalDispatch)
     });
   }
 
-  try {
-    if (typeNativeNode.nodeName === PlainTextType) {
-      yogaNode?.unsetMeasureFunc();
-    }
-
-    yogaNode?.freeRecursive();
-  } catch (e) {
-    console.log(e);
-    // throw e;
+  if (typeNativeNode.nodeName === PlainTextType) {
+    yogaNode?.unsetMeasureFunc();
   }
+
+  yogaNode?.freeRecursive();
 };

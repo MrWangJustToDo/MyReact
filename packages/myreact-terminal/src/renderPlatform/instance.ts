@@ -1,10 +1,8 @@
-import { __my_react_internal__, __my_react_scheduler__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 import { CustomRenderPlatform, processHookNode, processState, triggerError } from "@my-react/react-reconciler";
 
 import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
-
-const { yieldTask, macroTask, microTask } = __my_react_scheduler__;
 
 const { initRenderPlatform } = __my_react_internal__;
 
@@ -12,13 +10,14 @@ export class TerminalPlatform extends CustomRenderPlatform {
   isTerminal = true;
 
   microTask(_task: () => void): void {
-    microTask(_task);
+    _task();
   }
   macroTask(_task: () => void): void {
-    macroTask(_task);
+    _task();
   }
   yieldTask(_task: () => void): () => void {
-    return yieldTask(_task);
+    _task();
+    return () => void 0;
   }
   dispatchHook(_params: RenderHookParams): unknown {
     return processHookNode(_params);

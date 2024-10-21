@@ -1,6 +1,6 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-import { currentDevFiber } from "./env";
+import { currentScopeFiber } from "./env";
 import { afterSyncUpdate, beforeSyncUpdate } from "./sync";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -8,6 +8,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 const { currentRunningFiber, currentRenderPlatform } = __my_react_internal__;
 
 export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
+  currentScopeFiber.current = currentRunningFiber.current as MyReactFiberNode;
   try {
     return action.call(null, ...args);
   } catch (e) {
@@ -16,6 +17,8 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
     const renderPlatform = currentRenderPlatform.current;
 
     renderPlatform.dispatchError({ fiber, error: e });
+  } finally {
+    currentScopeFiber.current = null;
   }
 };
 
@@ -23,7 +26,7 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
   { action, fiber, fallback }: { action: (...args: T) => K; fiber: MyReactFiberNode; fallback?: () => K },
   ...args: T
 ): K => {
-  currentDevFiber.current = fiber;
+  currentScopeFiber.current = fiber;
   try {
     return action.call(null, ...args);
   } catch (e) {
@@ -33,11 +36,12 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
 
     return fallback?.();
   } finally {
-    currentDevFiber.current = null;
+    currentScopeFiber.current = null;
   }
 };
 
 export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
+  currentScopeFiber.current = currentRunningFiber.current as MyReactFiberNode;
   try {
     beforeSyncUpdate();
 
@@ -50,5 +54,7 @@ export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...a
     renderPlatform.dispatchError({ fiber, error: e });
   } finally {
     afterSyncUpdate();
+
+    currentScopeFiber.current = null;
   }
 };

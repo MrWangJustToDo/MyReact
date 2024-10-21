@@ -3,7 +3,7 @@ import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
 
 import { listenerMap } from "../renderDispatch";
 
-import { currentDevFiber, enableFiberForLog } from "./env";
+import { currentScopeFiber, enableFiberForLog } from "./env";
 import { NODE_TYPE } from "./fiberType";
 import { getCurrentDispatchFromFiber } from "./refresh";
 import { safeCallWithFiber } from "./safeCall";
@@ -64,7 +64,7 @@ export const originalError = console.error;
 export const devWarn = (...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
-  const renderFiber = currentDevFiber.current || currentRunningFiber.current;
+  const renderFiber = currentScopeFiber.current || currentRunningFiber.current;
 
   renderFiber && fiberWarn(renderFiber as MyReactFiberNode, ...args);
 
@@ -100,7 +100,7 @@ export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
 export const devError = (...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
-  const renderFiber = currentDevFiber.current || currentRunningFiber.current;
+  const renderFiber = currentScopeFiber.current || currentRunningFiber.current;
 
   renderFiber && fiberError(renderFiber as MyReactFiberNode, ...args);
 
@@ -334,7 +334,7 @@ export const getHookTree = (
 export const onceWarnWithKey = (key: string, ...args: string[]) => {
   const renderPlatform = currentRenderPlatform.current;
 
-  const renderFiber = currentDevFiber.current || currentRunningFiber.current;
+  const renderFiber = currentScopeFiber.current || currentRunningFiber.current;
 
   if (!renderFiber) {
     if (warnMap?.[key]) return;
@@ -362,7 +362,7 @@ export const onceWarnWithKey = (key: string, ...args: string[]) => {
 export const onceErrorWithKey = (key: string, ...args: string[]) => {
   const renderPlatform = currentRenderPlatform.current;
 
-  const renderFiber = currentDevFiber.current || currentRunningFiber.current;
+  const renderFiber = currentScopeFiber.current || currentRunningFiber.current;
 
   if (!renderFiber) {
     if (errorMap?.[key]) return;

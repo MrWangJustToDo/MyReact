@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { PATCH_TYPE, STATE_TYPE, include, MODE_TYPE } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate } from "../dispatchQueue";
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
@@ -7,6 +7,7 @@ import { triggerRevert, triggerUpdate } from "../renderUpdate";
 import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE, safeCallWithFiber } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
+import type { UpdateState } from "../dispatchQueue";
 import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
@@ -28,8 +29,6 @@ export class MyReactFiberNode implements RenderFiber {
   patch: PATCH_TYPE = PATCH_TYPE.__initial__;
 
   type: NODE_TYPE = NODE_TYPE.__initial__;
-
-  mode: MODE_TYPE = MODE_TYPE.__initial__;
 
   nativeNode: Record<string, any>;
 
@@ -97,7 +96,7 @@ export class MyReactFiberNode implements RenderFiber {
   }
 }
 
-export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, initial?: boolean) => {
+export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, isImmediate?: boolean) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const renderPlatform = currentRenderPlatform.current;
@@ -105,15 +104,17 @@ export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: Cu
   const processQueue = () => {
     const flag = enableConcurrentMode.current;
 
-    const updateState = include(fiber.type, NODE_TYPE.__class__)
-      ? processClassComponentUpdateQueue(fiber, renderDispatch, flag)
-      : include(fiber.type, NODE_TYPE.__function__)
-        ? processFunctionComponentUpdateQueue(fiber, renderDispatch, flag)
-        : include(fiber.type, NODE_TYPE.__lazy__)
-          ? processLazyComponentUpdate(fiber)
-          : (() => {
-              throw new Error("unknown runtime error, this is a bug for @my-react");
-            })();
+    let updateState: UpdateState | null = null;
+
+    if (include(fiber.type, NODE_TYPE.__class__)) {
+      updateState = processClassComponentUpdateQueue(fiber, renderDispatch, flag);
+    } else if (include(fiber.type, NODE_TYPE.__function__)) {
+      updateState = processFunctionComponentUpdateQueue(fiber, renderDispatch, flag);
+    } else if (include(fiber.type, NODE_TYPE.__lazy__)) {
+      updateState = processLazyComponentUpdate(fiber);
+    } else {
+      throw new Error("unknown runtime error, this is a bug for @my-react");
+    }
 
     if (updateState?.needUpdate) {
       safeCallWithFiber({
@@ -135,10 +136,22 @@ export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: Cu
     }
   };
 
-  if (initial) {
-    processQueue();
+  if (isImmediate) {
+    if (__DEV__) {
+      (function processQueueImmediately() {
+        processQueue();
+      })();
+    } else {
+      processQueue();
+    }
   } else {
-    renderPlatform.microTask(processQueue);
+    if (__DEV__) {
+      renderPlatform.microTask(function processQueueAsync() {
+        processQueue();
+      });
+    } else {
+      renderPlatform.microTask(processQueue);
+    }
   }
 };
 

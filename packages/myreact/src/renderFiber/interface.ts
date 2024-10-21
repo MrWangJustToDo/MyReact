@@ -1,7 +1,7 @@
 import type { MyReactInternalInstance } from "../internal";
 import type { RenderHook } from "../renderHook";
 import type { UpdateQueue } from "../renderQueue";
-import type { ListTree, MODE_TYPE, PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import type { ListTree, PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 /**
  * @public
@@ -10,8 +10,6 @@ export interface DefaultRenderFiber {
   state: STATE_TYPE;
 
   patch: PATCH_TYPE;
-
-  mode: MODE_TYPE;
 
   hookList: ListTree<RenderHook> | null;
 

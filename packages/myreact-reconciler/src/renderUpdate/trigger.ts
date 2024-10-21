@@ -1,9 +1,9 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { MODE_TYPE, STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
+import { STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { unmountFiber } from "../renderUnmount";
-import { NODE_TYPE, currentDevFiber, currentTriggerFiber, devError, devWarnWithFiber, fiberToDispatchMap } from "../share";
+import { NODE_TYPE, currentScopeFiber, currentTriggerFiber, devError, devWarnWithFiber, fiberToDispatchMap } from "../share";
 
 import { updateConcurrentFromRoot, updateConcurrentFromTrigger, updateSyncFromRoot, updateSyncFromTrigger } from "./feature";
 
@@ -202,8 +202,6 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
     fiber.state = merge(fiber.state, state);
   }
 
-  fiber.mode = MODE_TYPE.__stable__;
-
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 
   if (cb) {
@@ -260,11 +258,11 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
       currentTriggerFiber.current = null;
 
-      currentDevFiber.current = fiber;
+      currentScopeFiber.current = fiber;
 
       devError(`[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
 
-      currentDevFiber.current = null;
+      currentScopeFiber.current = null;
 
       unmountFiber(rootFiber);
 

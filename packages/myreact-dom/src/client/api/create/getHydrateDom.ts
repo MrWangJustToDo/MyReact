@@ -81,7 +81,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     }
     return dom;
   }
-  throw new Error("[@my-react/react-dom] hydrate error, look like a bug");
+  log(fiber, 'error', `hydrate error, unknown node type: ${fiber.type}`);
 };
 
 /**
@@ -96,6 +96,8 @@ export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element, previ
     fiber.nativeNode = resultDom;
   } else {
     fallback(dom);
+
+    throw new Error(`[@my-react/react-dom] Hydration failed because the initial UI does not match what was rendered on the server.`);
   }
 
   return resultDom;

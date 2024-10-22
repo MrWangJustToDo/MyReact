@@ -24,7 +24,7 @@ const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __
  */
 export const onceLog = once(() => {
   console.log(
-    `you are using %c@my-react%c to render this site, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`,
+    `current site using %c@my-react%c to render, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`,
     "color: white;background-color: rgba(10, 190, 235, 0.8); border-radius: 2px; padding: 2px 5px",
     ""
   );

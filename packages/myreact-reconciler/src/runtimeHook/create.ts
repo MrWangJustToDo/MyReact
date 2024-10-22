@@ -4,13 +4,13 @@ import { HOOK_TYPE } from "@my-react/react-shared";
 import { initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
 import { currentRenderDispatch, getStack, safeCallWithFiber } from "../share";
 
-import { checkHookValid, isValidHookName } from "./check";
+import { checkHookValid, isValidHookName, isValidInternalHookName } from "./check";
 import { MyReactHookNode } from "./instance";
 import { MyReactSignal } from "./signal";
 
 import type { MyReactHookNodeDev } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { Action, MyReactFunctionComponent, Reducer, RenderHookParams } from "@my-react/react";
+import type { Action, Reducer, RenderHookParams } from "@my-react/react";
 
 const { enableDebugLog, enableDebugFiled, enableHookStack } = __my_react_shared__;
 
@@ -158,11 +158,11 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
       const res: NodeJS.CallSite[] = [];
 
-      while (stack.length > 0 && !isValidHookName(stack[0].getFunctionName())) {
+      while (stack.length > 0 && !isValidInternalHookName(stack[0].getFunctionName())) {
         stack.shift();
       }
 
-      while (stack.length > 0 && (stack[0].getFunctionName() || "") !== (fiber.elementType as MyReactFunctionComponent)?.name) {
+      while (stack.length > 0 && isValidHookName(stack[0].getFunctionName())) {
         res.push(stack.shift());
       }
 
@@ -170,9 +170,10 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
         .map((i) => {
           const line = i.getEnclosingLineNumber();
           const column = i.getEnclosingColumnNumber();
-          const fileName = i.getFileName();
+          const fileName = i.getFileName() || 'Unknown';
           const functionName = i.getFunctionName() || "Anonymous";
-          return { id: `${fileName}:${line}:${column}`, name: functionName };
+          const scriptName = i.getScriptNameOrSourceURL() || 'Unknown';
+          return { id: `${scriptName}:${fileName}:${line}:${column}`, name: functionName };
         })
         .reverse();
     } catch (e) {

@@ -53,15 +53,17 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       }
     }
 
-    if (hydrate) {
-      const previousDom = renderDispatch._previousNativeNode;
-
-      const result = hydrateCreate(fiber, parentFiberWithNode || renderDispatch, previousDom);
-
-      if (!result) nativeCreate(fiber, isSVG, parentFiberWithNode || renderDispatch);
-
-      re = result;
-    } else {
+    try {
+      if (hydrate) {
+        const previousDom = renderDispatch._previousNativeNode;
+  
+        const result = hydrateCreate(fiber, parentFiberWithNode || renderDispatch, previousDom);
+  
+        re = result;
+      } else {
+        nativeCreate(fiber, isSVG, parentFiberWithNode || renderDispatch);
+      }
+    } catch {
       nativeCreate(fiber, isSVG, parentFiberWithNode || renderDispatch);
     }
 

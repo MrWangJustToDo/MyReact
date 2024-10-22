@@ -27,7 +27,7 @@ export const checkHookValid = (hookNode: MyReactHookNode) => {
   }
 };
 
-export const isValidHookName = (name: string) => {
+export const isValidInternalHookName = (name: string) => {
   switch (name) {
     case HOOK_TYPE[HOOK_TYPE.useId]:
     case HOOK_TYPE[HOOK_TYPE.useRef]:
@@ -50,3 +50,7 @@ export const isValidHookName = (name: string) => {
       return false;
   }
 };
+
+export const isValidHookName = (name: string) => {
+  return name.startsWith("use");
+}

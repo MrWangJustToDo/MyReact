@@ -1,4 +1,4 @@
-import { NODE_TYPE } from "@my-react/react-reconciler";
+import { getFiberTree, NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import {
@@ -56,14 +56,20 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
     try {
       if (hydrate) {
         const previousDom = renderDispatch._previousNativeNode;
-  
+
         const result = hydrateCreate(fiber, parentFiberWithNode || renderDispatch, previousDom);
-  
+
         re = result;
       } else {
         nativeCreate(fiber, isSVG, parentFiberWithNode || renderDispatch);
       }
-    } catch {
+    } catch (e) {
+      if (__DEV__) {
+        renderDispatch._runtimeError = renderDispatch._runtimeError || [];
+
+        renderDispatch._runtimeError.push({ source: fiber, value: e, stack: getFiberTree(fiber) });
+      }
+
       nativeCreate(fiber, isSVG, parentFiberWithNode || renderDispatch);
     }
 

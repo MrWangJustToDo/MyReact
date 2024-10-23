@@ -15,6 +15,21 @@ const { currentRenderPlatform } = __my_react_internal__;
 
 const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __my_react_shared__;
 
+const throwHydrateError = (renderDispatch: ClientDomDispatch) => {
+  if (renderDispatch?._runtimeError) {
+    while (renderDispatch._runtimeError.length > 0) {
+      const error = renderDispatch._runtimeError.shift();
+      window.dispatchEvent(
+        new ErrorEvent("error", {
+          error: Error(error?.value?.message + error.stack),
+          message: error?.value?.message,
+        })
+      );
+    }
+    delete renderDispatch._runtimeError;
+  }
+};
+
 const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: () => void) => {
   const fiber = new MyReactFiberNode(element);
 
@@ -45,6 +60,8 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
   initialFiberNode(fiber, renderDispatch);
 
   startRender(fiber, renderDispatch, true);
+
+  throwHydrateError(renderDispatch);
 
   delete renderDispatch.isHydrateRender;
 };
@@ -79,6 +96,8 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
   initialFiberNode(fiber, renderDispatch);
 
   await startRenderAsync(fiber, renderDispatch, true);
+
+  throwHydrateError(renderDispatch);
 
   delete renderDispatch.isHydrateRender;
 };

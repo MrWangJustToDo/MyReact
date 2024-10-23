@@ -295,6 +295,17 @@ export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
   return "";
 };
 
+export const getStackTree = (fiber: MyReactFiberNode) => {
+  const preString = "".padEnd(4) + "at".padEnd(3);
+  let res = "";
+  let temp = fiber;
+  while (temp) {
+    res ? (res += `\n${preString}${getElementName(temp)}`) : (res = `${preString}${getElementName(temp)}`);
+    temp = temp.parent;
+  }
+  return `\n${res}`;
+}
+
 export const getFiberTreeWithFiber = (fiber: MyReactFiberNode) => {
   const preString = "at".padEnd(3);
   let res = "";

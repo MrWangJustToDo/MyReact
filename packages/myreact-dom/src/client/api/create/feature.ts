@@ -1,4 +1,4 @@
-import { getFiberTree, NODE_TYPE } from "@my-react/react-reconciler";
+import { NODE_TYPE, getStackTree } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import {
@@ -67,7 +67,11 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       if (__DEV__) {
         renderDispatch._runtimeError = renderDispatch._runtimeError || [];
 
-        renderDispatch._runtimeError.push({ source: fiber, value: e, stack: getFiberTree(fiber) });
+        const stack = getStackTree(fiber);
+
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        renderDispatch._runtimeError.push({ source: fiber, value: Error(e?.message + stack, { cause: e }), stack });
       }
 
       nativeCreate(fiber, isSVG, parentFiberWithNode || renderDispatch);

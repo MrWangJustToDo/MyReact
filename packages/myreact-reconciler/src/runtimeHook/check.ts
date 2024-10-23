@@ -51,6 +51,6 @@ export const isValidInternalHookName = (name: string) => {
   }
 };
 
-export const isValidHookName = (name: string) => {
-  return name.startsWith("use");
+export const isValidHookName = (name?: string) => {
+  return name?.startsWith("use");
 }

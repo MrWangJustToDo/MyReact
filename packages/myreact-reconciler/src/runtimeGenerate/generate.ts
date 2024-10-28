@@ -101,6 +101,8 @@ const getNewFiberWithUpdate = (
     if (include(draftFiber?.type, NODE_TYPE.__fragment__)) {
       const newElement = createElement(Fragment, dynamicFragmentProps, newChild);
 
+      draftFiber !== prevFiberChild && renderDispatch.generateChangedList(parentFiber);
+
       return updateFiberNode({ fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newElement);
     } else {
       renderDispatch.generateChangedList(parentFiber);
@@ -124,6 +126,8 @@ const getNewFiberWithUpdate = (
   const isSameType = getIsSameTypeNode(newChild, draftFiber);
 
   if (isSameType) {
+    draftFiber !== prevFiberChild && renderDispatch.generateChangedList(parentFiber);
+
     return updateFiberNode({ fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newChild);
   } else {
     draftFiber && renderDispatch.pendingUnmount(parentFiber, draftFiber);

@@ -54,7 +54,7 @@
   "devDependencies": {
     "@my-react/react-reconciler": "^0.3.4",
     "@my-react/react-shared": "^0.3.4",
-    "@types/lodash": "^4.17.7",
+    "@types/lodash": "^4.17.13",
     "@types/signal-exit": "^3.0.4",
     "@types/slice-ansi": "^5.0.2",
     "@types/stack-utils": "^2.0.3",

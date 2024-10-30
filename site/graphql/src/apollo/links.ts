@@ -2,7 +2,6 @@ import { HttpLink } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { fetch } from "cross-fetch";
-import { generateFetchWithTimeout } from "project-tool/request";
 
 const BLOG_API = "https://api.github.com/graphql";
 
@@ -17,6 +16,30 @@ const tokenString = token
   .map((i) => i >> 1)
   .map((s) => String.fromCharCode(s))
   .join("");
+
+const generateFetchWithTimeout = (timeout: number) => {
+  return (input: RequestInfo, init: RequestInit) => {
+    return new Promise<Response>((resolve, reject) => {
+      const controller = new AbortController();
+      const { signal } = controller;
+
+      const timeoutId = setTimeout(() => {
+        controller.abort();
+        reject(new Error("Request timed out"));
+      }, timeout);
+
+      fetch(input, { ...init, signal })
+        .then((response) => {
+          clearTimeout(timeoutId);
+          resolve(response);
+        })
+        .catch((error) => {
+          clearTimeout(timeoutId);
+          reject(error);
+        });
+    });
+  };
+};
 
 export const httpLink = new HttpLink({
   uri: BLOG_API,

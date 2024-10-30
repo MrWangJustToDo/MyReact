@@ -31,6 +31,8 @@ const renderBody = mark.render(shellMd);
 export const DevToolSection = () => {
   const bgColor = useColorModeValue("gray.300", "gray.600");
 
+  const img = useColorModeValue("1.png", "2.png");
+
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
       <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
@@ -82,7 +84,7 @@ export const DevToolSection = () => {
       </Flex>
       <Flex justifyContent="center" width="100%">
         <Card overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }} width={{ md: "70%" }}>
-          <Image src="./devtool.png" alt="devtool" />
+          <Image src={`./${img}`} alt="devtool" />
         </Card>
       </Flex>
     </Container>

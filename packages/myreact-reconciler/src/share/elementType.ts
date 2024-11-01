@@ -77,14 +77,22 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
 
   let finalElement = element;
 
-  const pendingProps = element.props;
+  let pendingProps = element.props;
 
-  const ref: MyReactElement["ref"] | null = element.ref ?? undefined;
+  let ref: MyReactElement["ref"] | null = element.ref ?? undefined;
 
-  const key: MyReactElement["key"] | null = element.key ?? undefined;
+  let key: MyReactElement["key"] | null = element.key ?? undefined;
 
   if (__DEV__ && enableHMRForDev.current) {
     finalElement = getElementFromRefreshIfExist(element);
+
+    elementType = finalElement.type;
+
+    pendingProps = finalElement.props;
+
+    ref = finalElement.ref ?? undefined;
+
+    key = finalElement.key ?? undefined;
   }
 
   if (typeof elementType === "object" && elementType !== null) {

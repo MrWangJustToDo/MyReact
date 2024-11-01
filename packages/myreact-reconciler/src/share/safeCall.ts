@@ -40,6 +40,15 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
   }
 };
 
+export const callWithFiber = <T extends any[] = any[], K = any>({ action, fiber }: { action: (...args: T) => K; fiber: MyReactFiberNode }, ...args: T): K => {
+  currentScopeFiber.current = fiber;
+  try {
+    return action.call(null, ...args);
+  } finally {
+    currentScopeFiber.current = null;
+  }
+};
+
 export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
   currentScopeFiber.current = currentRunningFiber.current as MyReactFiberNode;
   try {

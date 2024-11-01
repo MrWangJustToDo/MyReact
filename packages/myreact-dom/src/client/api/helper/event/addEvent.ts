@@ -1,5 +1,5 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { afterSyncUpdate, beforeSyncUpdate, safeCallWithFiber } from "@my-react/react-reconciler";
+import { afterSyncUpdate, beforeSyncUpdate, callWithFiber } from "@my-react/react-reconciler";
 
 import { clearEvent, enableControlComponent, enableEventSystem, enableEventTrack, log, triggerEvent } from "@my-react-dom-shared";
 
@@ -98,7 +98,7 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
           triggerEvent(eventName, fiber);
         }
 
-        safeCallWithFiber({
+        callWithFiber({
           action: function safeCallEventCallback() {
             eventDispatcher.cb?.call?.(null, ...args);
           },

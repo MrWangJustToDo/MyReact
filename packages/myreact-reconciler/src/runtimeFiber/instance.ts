@@ -124,13 +124,6 @@ export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: Cu
         },
       });
 
-      safeCallWithFiber({
-        fiber,
-        action: function safeCallFiberUpdateListener() {
-          listenerMap.get(renderDispatch)?.fiberUpdate?.forEach((cb) => cb(fiber));
-        },
-      });
-
       if (updateState.isSync) {
         renderPlatform.microTask(function triggerSyncUpdateOnFiber() {
           triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);

@@ -5,6 +5,7 @@ import { prepareUpdateAllDependence, /* prepareUpdateAllDependenceFromProvider, 
 import { listenerMap } from "../renderDispatch";
 import { currentRenderDispatch, NODE_TYPE, safeCallWithFiber } from "../share";
 
+import type { CustomRenderDispatch} from "../renderDispatch";
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactElement, MyReactElementNode, memo } from "@my-react/react";
 
@@ -95,20 +96,6 @@ export const updateFiberNode = (
     if (include(fiber.type, NODE_TYPE.__text__)) {
       renderDispatch.pendingUpdate(fiber);
     }
-
-    safeCallWithFiber({
-      fiber,
-      action: function safeCallPatchToFiberUpdate() {
-        renderDispatch.patchToFiberUpdate?.(fiber);
-      },
-    });
-
-    safeCallWithFiber({
-      fiber,
-      action: function safeCallFiberUpdateListener() {
-        listenerMap.get(renderDispatch)?.fiberUpdate?.forEach((listener) => listener(fiber));
-      },
-    });
   }
 
   if (nextRef && prevRef !== nextRef) {
@@ -125,3 +112,19 @@ export const updateFiberNode = (
 
   return fiber;
 };
+
+export const triggerFiberUpdateListener = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallPatchToFiberUpdate() {
+      renderDispatch.patchToFiberUpdate?.(fiber);
+    },
+  });
+
+  safeCallWithFiber({
+    fiber,
+    action: function safeCallFiberUpdateListener() {
+      listenerMap.get(renderDispatch)?.fiberUpdate?.forEach((listener) => listener(fiber));
+    },
+  });
+}

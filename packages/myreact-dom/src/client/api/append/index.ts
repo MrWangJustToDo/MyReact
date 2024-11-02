@@ -1,4 +1,4 @@
-import { type MyReactFiberNode, type MyReactFiberContainer, safeCall } from "@my-react/react-reconciler";
+import { type MyReactFiberNode, type MyReactFiberContainer, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import { domListenersMap, type ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -33,12 +33,18 @@ export const append = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       parentDom.appendChild(currentDom);
     }
 
-    safeCall(function safeCallPatchToCommitAppend() {
-      renderDispatch.patchToCommitAppend?.(fiber);
+    safeCallWithCurrentFiber({
+      fiber,
+      action: function safeCallPatchToCommitAppend() {
+        renderDispatch.patchToCommitAppend?.(fiber);
+      },
     });
 
-    safeCall(function safeCallDomAppendListener() {
-      domListenersMap.get(renderDispatch)?.domAppend?.forEach((listener) => listener(fiber));
+    safeCallWithCurrentFiber({
+      fiber,
+      action: function safeCallDomAppendListener() {
+        domListenersMap.get(renderDispatch)?.domAppend?.forEach((listener) => listener(fiber));
+      },
     });
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);

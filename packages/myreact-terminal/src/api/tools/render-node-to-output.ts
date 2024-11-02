@@ -1,4 +1,4 @@
-import { safeCallWithFiber } from "@my-react/react-reconciler";
+import { safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 import indentString from "indent-string";
 import widestLine from "widest-line";
 import Yoga from "yoga-layout";
@@ -135,5 +135,5 @@ export const renderNodeToOutput = (
     skipStaticElements: boolean;
   }
 ) => {
-  safeCallWithFiber({ fiber: node.__fiber__, action: () => _renderNodeToOutput(node, output, options) });
+  safeCallWithCurrentFiber({ fiber: node.__fiber__, action: () => _renderNodeToOutput(node, output, options) });
 };

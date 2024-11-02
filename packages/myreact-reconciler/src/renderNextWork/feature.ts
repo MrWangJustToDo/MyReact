@@ -2,7 +2,7 @@ import { __my_react_internal__ } from "@my-react/react";
 import { STATE_TYPE, include } from "@my-react/react-shared";
 
 import { runtimeNextWork, runtimeNextWorkDev } from "../runtimeGenerate";
-import { currentRenderDispatch, devError } from "../share";
+import { currentRenderDispatch, devErrorWithFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -12,10 +12,8 @@ const { currentRunningFiber } = __my_react_internal__;
 export const performToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
-  currentRunningFiber.current = fiber;
-
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
-    devError(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
+    devErrorWithFiber(fiber, `[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
   }
 
   if (
@@ -31,16 +29,18 @@ export const performToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispat
   ) {
     currentRenderDispatch.current = renderDispatch;
 
+    currentRunningFiber.current = fiber;
+
     if (__DEV__) {
       runtimeNextWorkDev(fiber);
     } else {
       runtimeNextWork(fiber);
     }
 
+    currentRunningFiber.current = null;
+
     currentRenderDispatch.current = null;
   }
-
-  currentRunningFiber.current = null;
 
   fiber.state = STATE_TYPE.__stable__;
 
@@ -64,10 +64,8 @@ export const performToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispat
 export const performToNextFiberFromTrigger = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
-  currentRunningFiber.current = fiber;
-
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
-    devError(`[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
+    devErrorWithFiber(fiber, `[@my-react/react] current fiber state not valid, look like a bug for @my-react`);
   }
 
   if (
@@ -83,22 +81,22 @@ export const performToNextFiberFromTrigger = (fiber: MyReactFiberNode, renderDis
   ) {
     currentRenderDispatch.current = renderDispatch;
 
+    currentRunningFiber.current = fiber;
+
     if (__DEV__) {
       runtimeNextWorkDev(fiber);
     } else {
       runtimeNextWork(fiber);
     }
 
+    currentRunningFiber.current = null;
+
     currentRenderDispatch.current = null;
 
     fiber.state = STATE_TYPE.__stable__;
 
-    currentRunningFiber.current = null;
-
     if (fiber.child) return fiber.child;
   }
-
-  currentRunningFiber.current = null;
 
   let nextFiber: MyReactFiberNode | null = fiber;
 

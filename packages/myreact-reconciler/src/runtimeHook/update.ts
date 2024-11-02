@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE, STATE_TYPE, include, isArrayEquals } from "@my-react/react-shared";
 
 import { getInstanceContextFiber, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
-import { currentRenderDispatch, safeCallWithFiber } from "../share";
+import { currentRenderDispatch, safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -86,7 +86,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
     storeApi.getSnapshot = newStoreApi.getSnapshot;
 
-    currentHook.result = safeCallWithFiber({
+    currentHook.result = safeCallWithCurrentFiber({
       fiber,
       action: function safeCallGetSnapshot() {
         return storeApi.getSnapshot.call(null);
@@ -111,7 +111,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     if (isHMR || !deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
-      currentHook.result = safeCallWithFiber({
+      currentHook.result = safeCallWithCurrentFiber({
         fiber,
         action: function safeCallMemoOnHook() {
           return (value as () => unknown).call(null);

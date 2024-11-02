@@ -3,7 +3,7 @@ import { HOOK_TYPE, ListTree, STATE_TYPE, include } from "@my-react/react-shared
 
 import { listenerMap } from "../renderDispatch";
 import { createHookNode, effectHookNode, updateHookNode } from "../runtimeHook";
-import { currentRenderDispatch, safeCallWithFiber } from "../share";
+import { currentRenderDispatch, safeCall } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
@@ -49,21 +49,15 @@ export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams
   if (include(fiber.state, STATE_TYPE.__create__)) {
     currentHook = createHookNode({ type, reducer, value, deps }, fiber);
 
-    safeCallWithFiber({
-      fiber,
-      action: function safeCallHookInitialListener() {
-        listenerMap.get(renderDispatch)?.hookInitial?.forEach((cb) => cb(currentHook, fiber));
-      },
+    safeCall(function safeCallHookInitialListener() {
+      listenerMap.get(renderDispatch)?.hookInitial?.forEach((cb) => cb(currentHook, fiber));
     });
   } else {
     // update
     currentHook = updateHookNode({ type, reducer, value, deps }, fiber, __DEV__ && Boolean(include(fiber.state, STATE_TYPE.__hmr__)));
 
-    safeCallWithFiber({
-      fiber,
-      action: function safeCallHookUpdateListener() {
-        listenerMap.get(renderDispatch)?.hookUpdate?.forEach((cb) => cb(currentHook, fiber));
-      },
+    safeCall(function safeCallHookUpdateListener() {
+      listenerMap.get(renderDispatch)?.hookUpdate?.forEach((cb) => cb(currentHook, fiber));
     });
   }
 

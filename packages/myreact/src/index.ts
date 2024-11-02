@@ -49,6 +49,7 @@ import {
   macroTask,
   microTask,
   enableHookStack,
+  currentScopeFiber,
 } from "./share";
 
 /**
@@ -115,6 +116,7 @@ const __my_react_internal__ = {
   initRenderPlatform,
   createReadonlyRef,
 
+  currentScopeFiber,
   currentRunningFiber,
   currentHookTreeNode,
   currentHookNodeIndex,

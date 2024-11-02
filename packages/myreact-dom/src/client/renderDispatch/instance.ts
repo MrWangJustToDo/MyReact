@@ -1,5 +1,5 @@
 import { __my_react_shared__, createElement, type MyReactElement, type MyReactElementNode, type MyReactElementType } from "@my-react/react";
-import { CustomRenderDispatch, NODE_TYPE, initHMR, listenerMap, safeCall, unmountFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, NODE_TYPE, initHMR, listenerMap, safeCallWithCurrentFiber, unmountFiber } from "@my-react/react-reconciler";
 
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
@@ -198,22 +198,34 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const instance = this;
 
-    safeCall(function safeCallBeforeCommit() {
-      instance.beforeCommit?.();
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallBeforeCommit() {
+        instance.beforeCommit?.();
+      },
     });
 
-    safeCall(function safeCallBeforeCommitListener() {
-      listenerMap.get(instance)?.beforeCommit?.forEach((cb) => cb());
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallBeforeCommitListener() {
+        listenerMap.get(instance)?.beforeCommit?.forEach((cb) => cb());
+      },
     });
 
     clientDispatchMount(_fiber, this, this.isHydrateRender);
 
-    safeCall(function safeCallAfterCommitListener() {
-      listenerMap.get(instance)?.afterCommit?.forEach((cb) => cb());
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallAfterCommitListener() {
+        listenerMap.get(instance)?.afterCommit?.forEach((cb) => cb());
+      },
     });
 
-    safeCall(function safeCallAfterCommit() {
-      instance.afterCommit?.();
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallAfterCommit() {
+        instance.afterCommit?.();
+      },
     });
   }
   shouldYield(): boolean {

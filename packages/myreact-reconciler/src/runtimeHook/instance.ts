@@ -55,7 +55,7 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
 
   _dispatch = (action: Action) => {
     this._update({ payLoad: action, isForce: false, isSync: enableSyncFlush.current });
-  };
+  }
 }
 
 export interface MyReactHookNodeDev extends MyReactHookNode {

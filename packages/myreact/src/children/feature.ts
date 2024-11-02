@@ -8,7 +8,7 @@ import type { MyReactElement, MyReactElementNode, ArrayMyReactElementNode, Maybe
 export const map = (
   arrayLike: MaybeArrayMyReactElementNode,
   action: (child: MyReactElementNode, index: number, children: ArrayMyReactElementNode) => MyReactElementNode,
-  context?: any,
+  context?: any
 ) => {
   if (arrayLike === null || arrayLike === undefined) return arrayLike;
 
@@ -59,7 +59,7 @@ export const toArray = (arrayLike: MaybeArrayMyReactElementNode): ArrayMyReactEl
 export const forEach = (
   arrayLike: MaybeArrayMyReactElementNode,
   action: (child: MyReactElementNode, index: number, children: ArrayMyReactElementNode) => MyReactElement,
-  context?: any,
+  context?: any
 ) => {
   if (arrayLike === null || arrayLike === undefined) return;
 
@@ -68,10 +68,10 @@ export const forEach = (
     () => true,
     (child, index) => {
       let r = child;
-      if (child === undefined || child === null && typeof child === "boolean") {
+      if (child === undefined || (child === null && typeof child === "boolean")) {
         r = null;
       }
-      return action(r, index, context);
+      return action(isValidElement(r) ? cloneElement(r) : r, index, context);
     }
   );
 };

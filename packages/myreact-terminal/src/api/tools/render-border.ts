@@ -1,4 +1,4 @@
-import { safeCallWithFiber } from "@my-react/react-reconciler";
+import { safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 import chalk from "chalk";
 import cliBoxes from "cli-boxes";
 
@@ -97,5 +97,5 @@ const _renderBorder = (x: number, y: number, node: DOMNode, output: Output): voi
 };
 
 export const renderBorder = (x: number, y: number, node: DOMNode, output: Output) => {
-  safeCallWithFiber({ fiber: node?.__fiber__, action: () => _renderBorder(x, y, node, output) });
+  safeCallWithCurrentFiber({ fiber: node?.__fiber__, action: () => _renderBorder(x, y, node, output) });
 };

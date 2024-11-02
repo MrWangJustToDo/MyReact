@@ -5,7 +5,7 @@ import { deleteEffect } from "../dispatchEffect";
 import { listenerMap } from "../renderDispatch";
 import { classComponentUnmount } from "../runtimeComponent";
 import { hookListUnmount } from "../runtimeHook";
-import { getCurrentDispatchFromFiber, safeCallWithFiber, setRefreshTypeMap } from "../share";
+import { getCurrentDispatchFromFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
@@ -17,7 +17,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
 
     const renderDispatch = getCurrentDispatchFromFiber(fiber);
 
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber,
       action: function safeCallHMR() {
         const element = createElement(nextType, { ...fiber.pendingProps, key: fiber.key ?? undefined, ref: fiber.ref ?? undefined });
@@ -52,7 +52,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
       fiber.state = merge(STATE_TYPE.__triggerSync__, STATE_TYPE.__hmr__);
     }
 
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber,
       action: function safeCallFiberHMRListener() {
         listenerMap.get(renderDispatch)?.fiberHMR?.forEach((cb) => cb(fiber));

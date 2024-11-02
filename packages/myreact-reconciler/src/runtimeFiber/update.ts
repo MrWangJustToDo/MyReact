@@ -3,7 +3,7 @@ import { exclude, include, isNormalEquals, merge, PATCH_TYPE, remove, STATE_TYPE
 
 import { prepareUpdateAllDependence, /* prepareUpdateAllDependenceFromProvider, */ prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
 import { listenerMap } from "../renderDispatch";
-import { currentRenderDispatch, NODE_TYPE, safeCallWithFiber } from "../share";
+import { currentRenderDispatch, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { CustomRenderDispatch} from "../renderDispatch";
 import type { MyReactFiberNode } from "./instance";
@@ -114,14 +114,14 @@ export const updateFiberNode = (
 };
 
 export const triggerFiberUpdateListener = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber,
     action: function safeCallPatchToFiberUpdate() {
       renderDispatch.patchToFiberUpdate?.(fiber);
     },
   });
 
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberUpdateListener() {
       listenerMap.get(renderDispatch)?.fiberUpdate?.forEach((listener) => listener(fiber));

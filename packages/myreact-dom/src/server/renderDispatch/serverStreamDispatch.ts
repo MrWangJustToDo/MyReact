@@ -1,4 +1,4 @@
-import { CustomRenderDispatch, listenerMap, NODE_TYPE, safeCall, safeCallWithFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, listenerMap, NODE_TYPE, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
@@ -101,7 +101,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
     const instance = this;
 
     const mountLoop = (_fiber: MyReactFiberNode) => {
-      safeCallWithFiber({
+      safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallCreateStartTagWithStream() {
           createStartTagWithStream(_fiber, instance);
@@ -110,7 +110,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
 
       if (_fiber.child) mountLoop(_fiber.child);
 
-      safeCallWithFiber({
+      safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallCreateCloseTagWithStream() {
           createCloseTagWithStream(_fiber, instance);
@@ -120,24 +120,36 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
       if (_fiber.sibling) mountLoop(_fiber.sibling);
     };
 
-    safeCall(function safeCallBeforeCommit() {
-      instance.beforeCommit?.();
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallBeforeCommit() {
+        instance.beforeCommit?.();
+      },
     });
 
-    safeCall(function safeCallBeforeCommitListener() {
-      listenerMap.get(instance)?.beforeCommit?.forEach((l) => l());
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallBeforeCommitListener() {
+        listenerMap.get(instance)?.beforeCommit?.forEach((l) => l());
+      },
     });
 
     Promise.resolve()
       .then(() => mountLoop(_fiber))
       .then(() => this.stream.push(null))
       .then(() => {
-        safeCall(function safeCallAfterCommitListener() {
-          listenerMap.get(instance)?.afterCommit?.forEach((l) => l());
+        safeCallWithCurrentFiber({
+          fiber: _fiber,
+          action: function safeCallAfterCommitListener() {
+            listenerMap.get(instance)?.afterCommit?.forEach((l) => l());
+          },
         });
 
-        safeCall(function safeCallAfterCommit() {
-          instance.afterCommit?.();
+        safeCallWithCurrentFiber({
+          fiber: _fiber,
+          action: function safeCallAfterCommit() {
+            instance.afterCommit?.();
+          },
         });
       });
   }
@@ -228,7 +240,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
     const instance = this;
 
     const mountLoop = (_fiber: MyReactFiberNode) => {
-      safeCallWithFiber({
+      safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallCreateStartTagWithStream() {
           createStartTagWithStream(_fiber, instance);
@@ -237,7 +249,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
 
       if (_fiber.child) mountLoop(_fiber.child);
 
-      safeCallWithFiber({
+      safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallCreateCloseTagWithStream() {
           createCloseTagWithStream(_fiber, instance);
@@ -247,12 +259,18 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
       if (_fiber.sibling) mountLoop(_fiber.sibling);
     };
 
-    safeCall(function safeCallBeforeCommit() {
-      instance.beforeCommit?.();
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallBeforeCommit() {
+        instance.beforeCommit?.();
+      },
     });
 
-    safeCall(function safeCallBeforeCommitListener() {
-      listenerMap.get(instance)?.beforeCommit?.forEach((l) => l());
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallBeforeCommitListener() {
+        listenerMap.get(instance)?.beforeCommit?.forEach((l) => l());
+      },
     });
 
     let generatedScript = (this.bootstrapModules || []).map(generateModuleBootstrap).join("");
@@ -268,12 +286,18 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
       .then(() => this.stream.push(null))
       .then(() => this.onAllReady?.())
       .then(() => {
-        safeCall(function safeCallAfterCommitListener() {
-          listenerMap.get(instance)?.afterCommit?.forEach((l) => l());
+        safeCallWithCurrentFiber({
+          fiber: _fiber,
+          action: function safeCallAfterCommitListener() {
+            listenerMap.get(instance)?.afterCommit?.forEach((l) => l());
+          },
         });
 
-        safeCall(function safeCallAfterCommit() {
-          instance.afterCommit?.();
+        safeCallWithCurrentFiber({
+          fiber: _fiber,
+          action: function safeCallAfterCommit() {
+            instance.afterCommit?.();
+          },
         });
       });
   }

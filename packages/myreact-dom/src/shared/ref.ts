@@ -1,4 +1,4 @@
-import { NODE_TYPE, safeCall, safeCallWithFiber } from "@my-react/react-reconciler";
+import { NODE_TYPE, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 import { PATCH_TYPE, STATE_TYPE, include, remove } from "@my-react/react-shared";
 
 import { domListenersMap, type ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -18,7 +18,7 @@ export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispat
         if (typeof ref === "object" && ref !== null) {
           ref.current = _fiber.nativeNode;
         } else if (typeof ref === "function") {
-          safeCallWithFiber({
+          safeCallWithCurrentFiber({
             fiber: _fiber,
             action: function safeCallSetRef() {
               ref(_fiber.nativeNode);
@@ -34,7 +34,7 @@ export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispat
         if (typeof ref === "object" && ref !== null) {
           ref.current = _fiber.instance;
         } else if (typeof ref === "function") {
-          safeCallWithFiber({
+          safeCallWithCurrentFiber({
             fiber: _fiber,
             action: function safeCallSetRef() {
               ref(_fiber.instance);
@@ -48,12 +48,18 @@ export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispat
       logOnce(_fiber, "error", "can not set ref for current element", "can not set ref for current element");
     }
 
-    safeCall(function safeCallPatchToCommitSetRef() {
-      renderDispatch.patchToCommitSetRef?.(_fiber);
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallPatchToCommitSetRef() {
+        renderDispatch.patchToCommitSetRef?.(_fiber);
+      },
     });
 
-    safeCall(function safeCallDomSetRefListener() {
-      domListenersMap.get(renderDispatch)?.domSetRef?.forEach((listener) => listener(_fiber));
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallDomSetRefListener() {
+        domListenersMap.get(renderDispatch)?.domSetRef?.forEach((listener) => listener(_fiber));
+      },
     });
 
     _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__ref__);
@@ -71,7 +77,7 @@ export const unsetRef = (_fiber: MyReactFiberNode) => {
     if (typeof ref === "object" && ref !== null) {
       ref.current = null;
     } else if (typeof ref === "function") {
-      safeCallWithFiber({
+      safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallClearRef() {
           ref(null);

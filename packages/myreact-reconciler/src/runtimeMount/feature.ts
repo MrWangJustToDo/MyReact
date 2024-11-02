@@ -1,11 +1,9 @@
-import { performToNextFiberFromRoot } from "../renderNextWork";
+import { updateLoopSyncFromRoot } from "../runtimeUpdate";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 export const mountLoop = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  let pendingFiber = fiber;
-  while (pendingFiber) {
-    pendingFiber = performToNextFiberFromRoot(pendingFiber, renderDispatch);
-  }
+  renderDispatch.runtimeFiber.nextWorkingFiber = fiber;
+  updateLoopSyncFromRoot(renderDispatch);
 };

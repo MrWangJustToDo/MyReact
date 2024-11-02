@@ -1,7 +1,7 @@
 import { PATCH_TYPE, exclude } from "@my-react/react-shared";
 
 import { listenerMap } from "../renderDispatch";
-import { currentRenderDispatch, fiberToDispatchMap, safeCallWithFiber } from "../share";
+import { currentRenderDispatch, fiberToDispatchMap, safeCallWithCurrentFiber } from "../share";
 
 import { MyReactFiberNode } from "./instance";
 
@@ -39,14 +39,14 @@ export const createFiberNode = (
 
   renderDispatch.pendingRef(newFiberNode);
 
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber: newFiberNode,
     action: function safeCallPatchToFiberInitial() {
       renderDispatch.patchToFiberInitial?.(newFiberNode);
     },
   });
 
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber: newFiberNode,
     action: function safeCallFiberInitialListener() {
       listenerMap.get(renderDispatch)?.fiberInitial?.forEach((listener) => listener(newFiberNode));

@@ -104,7 +104,7 @@ export function ErrorOverview({ error }: ErrorOverviewProps) {
               { key: line + "-" + index },
               createElement(Text, { dimColor: true }, "- "),
               createElement(Text, { dimColor: true, bold: true }, parsedLine.function),
-              createElement(Text, { dimColor: true, color: "gray" }, " " + cleanupPath(parsedLine.file) ?? "", ":", parsedLine.line, ":", parsedLine.column)
+              createElement(Text, { dimColor: true, color: "gray" }, " " + (cleanupPath(parsedLine.file) ?? ""), ":", parsedLine.line, ":", parsedLine.column)
             );
           })
       )

@@ -3,10 +3,10 @@ import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
 
 import { listenerMap } from "../renderDispatch";
 
-import { currentScopeFiber, enableFiberForLog } from "./env";
+import { currentCallingFiber, enableFiberForLog } from "./env";
 import { NODE_TYPE } from "./fiberType";
 import { getCurrentDispatchFromFiber } from "./refresh";
-import { safeCallWithFiber } from "./safeCall";
+import { safeCallWithCurrentFiber } from "./safeCall";
 
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
@@ -19,7 +19,7 @@ import type {
   lazy,
 } from "@my-react/react";
 
-const { currentRenderPlatform, currentRunningFiber } = __my_react_internal__;
+const { currentRenderPlatform, currentRunningFiber, currentScopeFiber } = __my_react_internal__;
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
@@ -36,7 +36,7 @@ const errorMap = {};
 const fiberWarn = (fiber: MyReactFiberNode, ...args) => {
   const renderDispatch = getCurrentDispatchFromFiber(fiber);
 
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberWarnListener() {
       listenerMap.get(renderDispatch)?.fiberWarn?.forEach((listener) => listener(fiber, ...args));
@@ -47,7 +47,7 @@ const fiberWarn = (fiber: MyReactFiberNode, ...args) => {
 const fiberError = (fiber: MyReactFiberNode, ...args) => {
   const renderDispatch = getCurrentDispatchFromFiber(fiber);
 
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberErrorListener() {
       listenerMap.get(renderDispatch)?.fiberError?.forEach((listener) => listener(fiber, ...args));
@@ -64,7 +64,7 @@ export const originalError = console.error;
 export const devWarn = (...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
-  const renderFiber = currentScopeFiber.current || currentRunningFiber.current;
+  const renderFiber = currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
 
   renderFiber && fiberWarn(renderFiber as MyReactFiberNode, ...args);
 
@@ -100,7 +100,7 @@ export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
 export const devError = (...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
-  const renderFiber = currentScopeFiber.current || currentRunningFiber.current;
+  const renderFiber = currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
 
   renderFiber && fiberError(renderFiber as MyReactFiberNode, ...args);
 
@@ -304,7 +304,7 @@ export const getStackTree = (fiber: MyReactFiberNode) => {
     temp = temp.parent;
   }
   return `\n${res}`;
-}
+};
 
 export const getFiberTreeWithFiber = (fiber: MyReactFiberNode) => {
   const preString = "at".padEnd(3);
@@ -345,7 +345,7 @@ export const getHookTree = (
 export const onceWarnWithKey = (key: string, ...args: string[]) => {
   const renderPlatform = currentRenderPlatform.current;
 
-  const renderFiber = currentScopeFiber.current || currentRunningFiber.current;
+  const renderFiber = currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
 
   if (!renderFiber) {
     if (warnMap?.[key]) return;
@@ -373,7 +373,7 @@ export const onceWarnWithKey = (key: string, ...args: string[]) => {
 export const onceErrorWithKey = (key: string, ...args: string[]) => {
   const renderPlatform = currentRenderPlatform.current;
 
-  const renderFiber = currentScopeFiber.current || currentRunningFiber.current;
+  const renderFiber = currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
 
   if (!renderFiber) {
     if (errorMap?.[key]) return;

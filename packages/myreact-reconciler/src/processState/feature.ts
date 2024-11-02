@@ -5,7 +5,7 @@ import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { listenerMap } from "../renderDispatch";
 import { prepareUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
-import { currentScopeFiber, getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, safeCallWithFiber, syncFlush } from "../share";
+import { getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, syncFlush } from "../share";
 
 import type { MyReactHookNode } from "../runtimeHook";
 import type { MyReactComponent, MyReactInternalInstance, RenderFiber, UpdateQueue } from "@my-react/react";
@@ -20,7 +20,7 @@ export type UpdateQueueDev = UpdateQueue<{
   _debugUpdateState: { needUpdate: boolean; isSync: boolean; isForce: boolean; callbacks: (() => void)[] };
 }>;
 
-const { currentComponentFiber, currentRunningFiber } = __my_react_internal__;
+const { currentComponentFiber, currentRunningFiber, currentScopeFiber } = __my_react_internal__;
 
 const { enableDebugFiled } = __my_react_shared__;
 
@@ -46,7 +46,7 @@ export const processState = (_params: UpdateQueue) => {
   const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
   if (renderDispatch?.enableUpdate) {
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: ownerFiber,
       action: function safeCallFiberStateListener() {
         listenerMap.get(renderDispatch)?.fiberState?.forEach((cb) => cb(ownerFiber, _params));
@@ -54,7 +54,7 @@ export const processState = (_params: UpdateQueue) => {
     });
   }
 
-  _params.isImmediate = !currentScopeFiber.current;
+  _params.isImmediate = !currentScopeFiber.current || !!currentRunningFiber.current;
 
   const isImmediate = _params.isImmediate;
 
@@ -108,7 +108,7 @@ export const processState = (_params: UpdateQueue) => {
 
     const trigger = _params.trigger as MyReactComponent;
 
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: ownerFiber,
       action: function safeCallInstanceStateListener() {
         listenerMap.get(renderDispatch)?.instanceState?.forEach((cb) => cb(trigger, ownerFiber, _params));
@@ -167,7 +167,7 @@ export const processState = (_params: UpdateQueue) => {
 
     const trigger = _params.trigger as MyReactHookNode;
 
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: ownerFiber,
       action: function safeCallHookStateListener() {
         listenerMap.get(renderDispatch)?.hookState?.forEach((cb) => cb(trigger, ownerFiber, _params));

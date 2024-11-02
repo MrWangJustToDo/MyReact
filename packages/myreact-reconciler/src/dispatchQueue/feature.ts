@@ -4,7 +4,7 @@ import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-rea
 import { syncComponentStateToFiber } from "../runtimeComponent";
 import { prepareUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
-import { currentRenderDispatch, getCurrentDispatchFromFiber, NODE_TYPE, safeCallWithFiber } from "../share";
+import { currentRenderDispatch, getCurrentDispatchFromFiber, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -64,7 +64,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         const { payLoad } = updater;
 
-        fiber.pendingState = safeCallWithFiber({
+        fiber.pendingState = safeCallWithCurrentFiber({
           fiber,
           fallback: function safeFallbackForState() {
             return pendingState;
@@ -128,7 +128,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         const { payLoad } = updater;
 
-        fiber.pendingState = safeCallWithFiber({
+        fiber.pendingState = safeCallWithCurrentFiber({
           fiber,
           fallback: function safeFallbackForState() {
             return pendingState;
@@ -222,7 +222,7 @@ export const processFunctionComponentUpdateQueue = (
 
         const lastResult = typedTrigger.result;
 
-        typedTrigger.result = safeCallWithFiber({
+        typedTrigger.result = safeCallWithCurrentFiber({
           fiber,
           fallback: function safeFallbackForState() {
             return lastResult;
@@ -296,7 +296,7 @@ export const processFunctionComponentUpdateQueue = (
 
         const lastResult = typedTrigger.result;
 
-        typedTrigger.result = safeCallWithFiber({
+        typedTrigger.result = safeCallWithCurrentFiber({
           fiber,
           fallback: function safeFallbackForState() {
             return lastResult;

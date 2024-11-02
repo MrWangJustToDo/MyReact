@@ -1,7 +1,7 @@
 import { PATCH_TYPE, ListTree, include, remove } from "@my-react/react-shared";
 
 import { clearContainer, unmountFiber, unmountList } from "../renderUnmount";
-import { generateFiberToUnmountList, safeCallWithFiber } from "../share";
+import { generateFiberToUnmountList, safeCallWithCurrentFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -33,7 +33,7 @@ export const unmountPending = (fiber: MyReactFiberNode, renderDispatch: CustomRe
     unmountMap.delete(fiber);
 
     if (allUnmount && allUnmount.length)
-      safeCallWithFiber({
+      safeCallWithCurrentFiber({
         fiber,
         action: function safeCallUnmountList() {
           unmountList(allUnmount, renderDispatch);

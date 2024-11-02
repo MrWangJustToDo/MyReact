@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__, startTransition } from "@my
 import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
-import { currentRenderDispatch, getStack, safeCallWithFiber } from "../share";
+import { currentRenderDispatch, getStack, safeCallWithCurrentFiber } from "../share";
 
 import { checkHookValid, isValidHookName, isValidInternalHookName } from "./check";
 import { MyReactHookNode } from "./instance";
@@ -89,7 +89,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
     const storeApi = hookNode.value;
 
-    hookNode.result = safeCallWithFiber({
+    hookNode.result = safeCallWithCurrentFiber({
       fiber,
       action: function safeCallGetSnapshot() {
         return renderDispatch.isAppMounted
@@ -128,7 +128,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
         const taskCallback = () => {
           startTransition(() => {
-            safeCallWithFiber({ fiber, action: cb });
+            safeCallWithCurrentFiber({ fiber, action: cb });
             loadedCallback();
           });
         };

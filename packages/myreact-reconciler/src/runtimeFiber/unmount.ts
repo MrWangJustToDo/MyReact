@@ -4,7 +4,7 @@ import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { classComponentUnmount } from "../runtimeComponent";
 import { hookListUnmount } from "../runtimeHook";
-import { fiberToDispatchMap, safeCallWithFiber } from "../share";
+import { fiberToDispatchMap, safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
@@ -18,28 +18,28 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   classComponentUnmount(fiber, renderDispatch);
 
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber,
     action: function safeCallCommitUnsetRef() {
       renderDispatch.commitUnsetRef(fiber);
     },
   });
 
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber,
     action: function safeCallCommitClear() {
       renderDispatch.commitClear(fiber);
     },
   });
 
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber,
     action: function safeCallPatchToFiberUnmount() {
       renderDispatch.patchToFiberUnmount?.(fiber);
     },
   });
 
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberUnmountListener() {
       listenerMap.get(renderDispatch)?.fiberUnmount?.forEach((listener) => listener(fiber));

@@ -99,7 +99,7 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
         }
 
         callWithFiber({
-          action: function safeCallEventCallback() {
+          action: function callEventCallback() {
             eventDispatcher.cb?.call?.(null, ...args);
           },
           fiber,

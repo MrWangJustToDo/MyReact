@@ -4,7 +4,7 @@ import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate } from "../dispatchQueue";
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { triggerRevert, triggerUpdate } from "../renderUpdate";
-import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE, safeCallWithFiber } from "../share";
+import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
 import type { UpdateState } from "../dispatchQueue";
@@ -96,62 +96,56 @@ export class MyReactFiberNode implements RenderFiber {
   }
 }
 
+const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  const flag = enableConcurrentMode.current;
+
+  // const currentIsRunning = currentRunningFiber.current;
+
+  let updateState: UpdateState | null = null;
+
+  if (include(fiber.type, NODE_TYPE.__class__)) {
+    updateState = processClassComponentUpdateQueue(fiber, renderDispatch, flag);
+  } else if (include(fiber.type, NODE_TYPE.__function__)) {
+    updateState = processFunctionComponentUpdateQueue(fiber, renderDispatch, flag);
+  } else if (include(fiber.type, NODE_TYPE.__lazy__)) {
+    updateState = processLazyComponentUpdate(fiber);
+  } else {
+    throw new Error("unknown runtime error, this is a bug for @my-react");
+  }
+
+  if (updateState?.needUpdate) {
+    safeCallWithCurrentFiber({
+      fiber,
+      action: function safeCallFiberTriggerListener() {
+        listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, updateState));
+      },
+    });
+
+    if (updateState.isSync) {
+      renderPlatform.microTask(function triggerSyncUpdateOnFiber() {
+        triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);
+      });
+    } else {
+      renderPlatform.microTask(function processQueueAsync() {
+        triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__, updateState.callback);
+      });
+    }
+  }
+};
+
 export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, isImmediate?: boolean) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const renderPlatform = currentRenderPlatform.current;
 
-  const processQueue = () => {
-    const flag = enableConcurrentMode.current;
-
-    let updateState: UpdateState | null = null;
-
-    if (include(fiber.type, NODE_TYPE.__class__)) {
-      updateState = processClassComponentUpdateQueue(fiber, renderDispatch, flag);
-    } else if (include(fiber.type, NODE_TYPE.__function__)) {
-      updateState = processFunctionComponentUpdateQueue(fiber, renderDispatch, flag);
-    } else if (include(fiber.type, NODE_TYPE.__lazy__)) {
-      updateState = processLazyComponentUpdate(fiber);
-    } else {
-      throw new Error("unknown runtime error, this is a bug for @my-react");
-    }
-
-    if (updateState?.needUpdate) {
-      safeCallWithFiber({
-        fiber,
-        action: function safeCallFiberTriggerListener() {
-          listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, updateState));
-        },
-      });
-
-      if (updateState.isSync) {
-        renderPlatform.microTask(function triggerSyncUpdateOnFiber() {
-          triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);
-        });
-      } else {
-        renderPlatform.microTask(function triggerConcurrentUpdateOnFiber() {
-          triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__, updateState.callback);
-        });
-      }
-    }
-  };
-
   if (isImmediate) {
-    if (__DEV__) {
-      (function processQueueImmediately() {
-        processQueue();
-      })();
-    } else {
-      processQueue();
-    }
+    processUpdateOnFiber(fiber, renderDispatch);
   } else {
-    if (__DEV__) {
-      renderPlatform.microTask(function processQueueAsync() {
-        processQueue();
-      });
-    } else {
-      renderPlatform.microTask(processQueue);
-    }
+    renderPlatform.microTask(function processQueueAsync() {
+      processUpdateOnFiber(fiber, renderDispatch);
+    });
   }
 };
 

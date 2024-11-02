@@ -3,7 +3,7 @@ import { STATE_TYPE, exclude } from "@my-react/react-shared";
 
 import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
 import { unmountPending } from "../dispatchUnmount";
-import { afterSyncUpdate, beforeSyncUpdate, safeCallWithFiber } from "../share";
+import { afterSyncUpdate, beforeSyncUpdate, safeCallWithCurrentFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -26,7 +26,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   _list.listToFoot(function invokeCreateAdnUpdateList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
-      safeCallWithFiber({
+      safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallCreateAndUpdate() {
           _dispatch.commitCreate(_fiber);
@@ -38,7 +38,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   _list.listToHead(function invokePositionList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
-      safeCallWithFiber({
+      safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallPosition() {
           _dispatch.commitPosition(_fiber);
@@ -49,7 +49,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   _list.listToFoot(function invokeAppendAndSetRefList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
-      safeCallWithFiber({
+      safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallAppendAdnSetRef() {
           _dispatch.commitAppend(_fiber);

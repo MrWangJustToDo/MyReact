@@ -1,32 +1,29 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-import { currentScopeFiber } from "./env";
+import { currentCallingFiber } from "./env";
 import { afterSyncUpdate, beforeSyncUpdate } from "./sync";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-const { currentRunningFiber, currentRenderPlatform } = __my_react_internal__;
+const { currentRunningFiber, currentRenderPlatform, currentScopeFiber } = __my_react_internal__;
 
 export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
-  currentScopeFiber.current = currentRunningFiber.current as MyReactFiberNode;
   try {
     return action.call(null, ...args);
   } catch (e) {
-    const fiber = currentRunningFiber.current;
+    const fiber = currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
 
     const renderPlatform = currentRenderPlatform.current;
 
     renderPlatform.dispatchError({ fiber, error: e });
-  } finally {
-    currentScopeFiber.current = null;
   }
 };
 
-export const safeCallWithFiber = <T extends any[] = any[], K = any>(
+export const safeCallWithCurrentFiber = <T extends any[] = any[], K = any>(
   { action, fiber, fallback }: { action: (...args: T) => K; fiber: MyReactFiberNode; fallback?: () => K },
   ...args: T
 ): K => {
-  currentScopeFiber.current = fiber;
+  currentCallingFiber.current = fiber;
   try {
     return action.call(null, ...args);
   } catch (e) {
@@ -36,7 +33,7 @@ export const safeCallWithFiber = <T extends any[] = any[], K = any>(
 
     return fallback?.();
   } finally {
-    currentScopeFiber.current = null;
+    currentCallingFiber.current = null;
   }
 };
 
@@ -50,20 +47,17 @@ export const callWithFiber = <T extends any[] = any[], K = any>({ action, fiber 
 };
 
 export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
-  currentScopeFiber.current = currentRunningFiber.current as MyReactFiberNode;
   try {
     beforeSyncUpdate();
 
     return action.call(null, ...args);
   } catch (e) {
-    const fiber = currentRunningFiber.current;
+    const fiber = currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
 
     const renderPlatform = currentRenderPlatform.current;
 
     renderPlatform.dispatchError({ fiber, error: e });
   } finally {
     afterSyncUpdate();
-
-    currentScopeFiber.current = null;
   }
 };

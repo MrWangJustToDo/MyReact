@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 
 import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
-import { afterSyncUpdate, beforeSyncUpdate, generateFiberToMountList, safeCallWithFiber } from "../share";
+import { afterSyncUpdate, beforeSyncUpdate, generateFiberToMountList, safeCallWithCurrentFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -18,7 +18,7 @@ export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: 
   };
 
   const mountCommit = (_fiber: MyReactFiberNode) => {
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallCreateAndUpdate() {
         _dispatch.commitCreate(_fiber);
@@ -28,7 +28,7 @@ export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: 
 
     if (_fiber.child) mountCommit(_fiber.child);
 
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallAppendAndSetRef() {
         _dispatch.commitAppend(_fiber);
@@ -90,7 +90,7 @@ export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: 
   afterSyncUpdate();
 
   _list.listToFoot(function invokeCreateAndUpdateList(_fiber) {
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallCreateAndUpdate() {
         _dispatch.commitCreate(_fiber);
@@ -100,7 +100,7 @@ export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: 
   });
 
   _list.listToFoot(function invokeAppendAndSetRefList(_fiber) {
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallAppendAndSetRef() {
         _dispatch.commitAppend(_fiber);

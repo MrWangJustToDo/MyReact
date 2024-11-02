@@ -23,6 +23,11 @@ export const currentComponentFiber = createRef<RenderFiber | null>(null);
 /**
  * @internal
  */
+export const currentScopeFiber = createRef<RenderFiber | null>(null);
+
+/**
+ * @internal
+ */
 export const currentRenderPlatform = createRef<RenderPlatform | null>(null);
 
 /**

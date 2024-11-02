@@ -14,7 +14,7 @@ export const currentRefreshHandler = createRef<RefreshHandler | null>(null);
 // need improve
 export const currentTriggerFiber = createRef<MyReactFiberNode | null>(null);
 
-export const currentScopeFiber = createRef<MyReactFiberNode | null>(null);
+export const currentCallingFiber = createRef<MyReactFiberNode | null>(null);
 
 export const fiberToDispatchMap = new MyWeakMap() as WeakMap<MyReactFiberNode, CustomRenderDispatch>;
 

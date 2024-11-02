@@ -3,7 +3,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { processLazy } from "../processLazy";
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { mountLoop } from "../runtimeMount";
-import { resetLogScope, safeCall, setLogScope } from "../share";
+import { resetLogScope, safeCallWithCurrentFiber, setLogScope } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 
@@ -36,8 +36,11 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
     commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
     changedList?.length &&
-      safeCall(function safeCallFiberHasChangeListener() {
-        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+      safeCallWithCurrentFiber({
+        fiber,
+        action: function safeCallFiberHasChangeListener() {
+          listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+        },
       });
   })();
 
@@ -90,8 +93,11 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
     commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
     changedList?.length &&
-      safeCall(function safeCallFiberHasChangeListener() {
-        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+      safeCallWithCurrentFiber({
+        fiber,
+        action: function safeCallFiberHasChangeListener() {
+          listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+        },
       });
   })();
 

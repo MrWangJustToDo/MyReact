@@ -3,7 +3,7 @@ import { STATE_TYPE, include, isPromise } from "@my-react/react-shared";
 
 import { listenerMap } from "../renderDispatch";
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
-import { currentRenderDispatch, currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithFiber, setRefreshTypeMap } from "../share";
+import { currentRenderDispatch, currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
 import { getInstanceContextFiber, initInstance, setContextForInstance, setOwnerForInstance } from "./instance";
@@ -69,14 +69,14 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
   if (include(fiber.type, NODE_TYPE.__forwardRef__)) {
     const typedElementTypeWithRef = typedElementType as ReturnType<typeof forwardRef>["render"];
 
-    children = safeCallWithFiber({
+    children = safeCallWithCurrentFiber({
       fiber,
       action: function safeCallForwardRefFunctionalComponent() {
         return typedElementTypeWithRef(fiber.pendingProps, fiber.ref);
       },
     });
   } else {
-    children = safeCallWithFiber({
+    children = safeCallWithCurrentFiber({
       fiber,
       action: function safeCallFunctionalComponent() {
         return typedElementType(fiber.pendingProps);
@@ -193,7 +193,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   }
 
   if (hasPerformanceWarn) {
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber,
       action: function safeCallPerformanceWarnListener() {
         listenerMap.get(renderDispatch)?.performanceWarn?.forEach((cb) => cb(fiber));
@@ -231,7 +231,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
     }
   }
 
-  safeCallWithFiber({
+  safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberRunListener() {
       listenerMap.get(renderDispatch)?.fiberRun?.forEach((cb) => cb(fiber));

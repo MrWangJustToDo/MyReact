@@ -6,7 +6,7 @@ import {
   generateFiberToMountList,
   insertionEffect,
   layoutEffect,
-  safeCallWithFiber,
+  safeCallWithCurrentFiber,
 } from "@my-react/react-reconciler";
 
 import { fallback } from "@my-react-dom-client/api";
@@ -22,21 +22,21 @@ const { currentRenderPlatform } = __my_react_internal__;
  */
 export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch, _hydrate?: boolean) => {
   const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean): boolean => {
-    const _result = safeCallWithFiber({
+    const _result = safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallCreate() {
         return _dispatch.clientCommitCreate(_fiber, _hydrate);
       },
     });
 
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallUpdate() {
         _dispatch.clientCommitUpdate(_fiber, _result);
       },
     });
 
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallAppend() {
         _dispatch.commitAppend(_fiber);
@@ -51,7 +51,7 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
 
     if (_fiber.child) _final = mountCommit(_fiber.child, _result);
 
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallSetRef() {
         _dispatch.commitSetRef(_fiber);

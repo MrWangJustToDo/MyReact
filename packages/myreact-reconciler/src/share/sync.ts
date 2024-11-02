@@ -21,14 +21,14 @@ export const afterSyncFlush = () => {
   syncFlush = false;
 };
 
-const prev = [enableSyncFlush.current];
+const stack = [enableSyncFlush.current];
 
 export const beforeSyncUpdate = () => {
-  prev.push(enableSyncFlush.current);
+  stack.push(enableSyncFlush.current);
 
   enableSyncFlush.current = true;
 };
 
 export const afterSyncUpdate = () => {
-  enableSyncFlush.current = prev.pop();
+  enableSyncFlush.current = stack.pop();
 };

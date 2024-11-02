@@ -3,7 +3,7 @@ import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 import { unmountPending } from "../dispatchUnmount";
 // import { triggerUnmount } from "../renderUpdate";
 import { unmountFiberNode } from "../runtimeFiber";
-import { currentTriggerFiber, fiberToDispatchMap, generateFiberToUnmountList, safeCallWithFiber } from "../share";
+import { currentTriggerFiber, fiberToDispatchMap, generateFiberToUnmountList, safeCallWithCurrentFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -16,7 +16,7 @@ export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: Cu
   });
 
   list.listToFoot(function invokeFiberUnmountList(f) {
-    safeCallWithFiber({
+    safeCallWithCurrentFiber({
       fiber: f,
       action: function safeCallFiberUnmount() {
         unmountFiberNode(f, renderDispatch);

@@ -1,6 +1,6 @@
 import { ListTree, PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
-import { safeCallWithFiber } from "../share";
+import { safeCallWithCurrentFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -38,7 +38,7 @@ export const effect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDisp
 
     if (allEffect && allEffect.length) {
       allEffect.listToFoot(function invokeEffect(effect) {
-        safeCallWithFiber({
+        safeCallWithCurrentFiber({
           fiber,
           action: function safeCallEffect() {
             effect.call(null);
@@ -61,7 +61,7 @@ export const layoutEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRend
 
     if (allLayoutEffect && allLayoutEffect.length) {
       allLayoutEffect.listToFoot(function invokeLayoutEffect(effect) {
-        safeCallWithFiber({
+        safeCallWithCurrentFiber({
           fiber,
           action: function safeCallLayoutEffect() {
             effect.call(null);
@@ -84,7 +84,7 @@ export const insertionEffect = (fiber: MyReactFiberNode, renderDispatch: CustomR
 
     if (allInsertionEffect && allInsertionEffect.length) {
       allInsertionEffect.listToFoot(function invokeInsertionEffect(effect) {
-        safeCallWithFiber({
+        safeCallWithCurrentFiber({
           fiber,
           action: function safeCallInsertionEffect() {
             effect.call(null);

@@ -1,13 +1,11 @@
 import { Box, Container, Flex, Heading, Tag, Text, Spacer, HStack, Tooltip, Button, useColorModeValue, Card, Image } from "@chakra-ui/react";
+import { SandpackProvider, SandpackLayout, SandpackCodeEditor } from "@codesandbox/sandpack-react";
 
 import { Section } from "@client/component";
 import { CONTAINER_WIDTH } from "@client/config/container";
-import { mark } from "@client/utils/markdown";
 
-const shellMd = `
-\`\`\`js
-// 1. clone the @my-react devtool repo
-git clone https://github.com/MrWangJustToDo/myreact-devtools.git
+const code = `// 1. clone the @my-react devtool repo
+git clone \`https://github.com/MrWangJustToDo/myreact-devtools.git\`
 
 // 2. init project
 pnpm install
@@ -21,15 +19,12 @@ pnpm run build:extension
 pnpm run build:web
 
 // 5. connect a @my-react app
-// copy the connect command in the webUI into the @my-react app console
-
-\`\`\`
-`;
-
-const renderBody = mark.render(shellMd);
+// copy the connect command in the webUI into the @my-react app console`;
 
 export const DevToolSection = () => {
   const bgColor = useColorModeValue("gray.300", "gray.600");
+
+  const colorScheme = useColorModeValue("light", "dark");
 
   const img = useColorModeValue("1.png", "2.png");
 
@@ -78,13 +73,26 @@ export const DevToolSection = () => {
                 margin: "0 !important",
               },
             }}
-            dangerouslySetInnerHTML={{ __html: renderBody }}
-          />
+          >
+            <SandpackProvider
+              files={{
+                [`main.md`]: {
+                  code,
+                  active: true,
+                },
+              }}
+              theme={colorScheme}
+            >
+              <SandpackLayout style={{ border: "none" }}>
+                <SandpackCodeEditor showReadOnly={false} readOnly style={{ height: "360px" }} />
+              </SandpackLayout>
+            </SandpackProvider>
+          </Box>
         </Section>
       </Flex>
       <Flex justifyContent="center" width="100%">
         <Card overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }} width={{ md: "70%" }}>
-          <Image src={`./${img}`} alt="devtool" />
+          <Image src={`./${img}`} alt="devtool" position="relative" top="-2px" />
         </Card>
       </Flex>
     </Container>

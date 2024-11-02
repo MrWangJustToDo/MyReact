@@ -1,4 +1,5 @@
 import { Box, Button, Container, Flex, HStack, Heading, Icon, Spacer, Tag, Text, Tooltip, useColorModeValue } from "@chakra-ui/react";
+import { SandpackCodeEditor, SandpackLayout, SandpackProvider } from "@codesandbox/sandpack-react";
 import { useEffect, useRef } from "react";
 import { HiChevronDoubleRight } from "react-icons/hi";
 import { useLocation } from "react-router";
@@ -8,13 +9,8 @@ import { Card } from "@client/component/Card";
 import { NextPlayground } from "@client/component/NextPlayground";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { useIsMounted } from "@client/hooks";
-import { mark } from "@client/utils/markdown";
 
-// const Iframe = chakra("iframe");
-
-const shellMd = `
-\`\`\`js
-// 1. create a Next.js project
+const code = `// 1. create a Next.js project
 
 // 2. install @my-react
 pnpm add @my-react/react @my-react/react-dom
@@ -27,12 +23,7 @@ const withNext = require('@my-react/react-refresh-tools/withNext');
 module.exports = withNext(nextConfig);
 
 // 4. start
-pnpm run dev
-
-\`\`\`
-`;
-
-const renderBody = mark.render(shellMd);
+pnpm run dev`;
 
 // const Preview = (
 //   <Iframe
@@ -51,6 +42,8 @@ const renderBody = mark.render(shellMd);
 
 export const NextSection = () => {
   const bgColor = useColorModeValue("gray.300", "gray.600");
+
+  const colorScheme = useColorModeValue("light", "dark");
 
   const { hash } = useLocation();
 
@@ -127,8 +120,21 @@ export const NextSection = () => {
                 margin: "0 !important",
               },
             }}
-            dangerouslySetInnerHTML={{ __html: renderBody }}
-          />
+          >
+            <SandpackProvider
+              files={{
+                [`main.bash`]: {
+                  code,
+                  active: true,
+                },
+              }}
+              theme={colorScheme}
+            >
+              <SandpackLayout style={{ border: "none" }}>
+                <SandpackCodeEditor showReadOnly={false} readOnly style={{ height: "320px" }} />
+              </SandpackLayout>
+            </SandpackProvider>
+          </Box>
         </Section>
       </Flex>
       <Card ref={ref} overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>

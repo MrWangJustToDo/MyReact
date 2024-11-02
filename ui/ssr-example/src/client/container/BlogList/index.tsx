@@ -1,21 +1,8 @@
 import { NetworkStatus, useQuery } from "@apollo/client";
-import {
-  Flex,
-  Box,
-  SimpleGrid,
-  SkeletonCircle,
-  SkeletonText,
-  Portal,
-  useCallbackRef,
-  Center,
-  Spinner,
-  Button,
-  ButtonGroup,
-  useBreakpointValue,
-} from "@chakra-ui/react";
+import { Flex, Box, SimpleGrid, SkeletonCircle, SkeletonText, Portal, useCallbackRef, Center, Spinner, Button, ButtonGroup } from "@chakra-ui/react";
 import { GetBlogListDocument, IssueOrderField, IssueState, OrderDirection } from "@site/graphql";
 import { throttle } from "lodash-es";
-import { memo, useMemo, useRef, useState } from "react";
+import { memo, useMemo, useRef } from "react";
 
 import { BlogGrid } from "@client/component/BlogGrid";
 import { ErrorCom } from "@client/component/Error";
@@ -48,10 +35,6 @@ export const BASIC_VARIABLE = {
 
 const _BlogListWithInfinityScroll = () => {
   const ref = useRef<HTMLDivElement>();
-
-  const [disableGridLayout, setDisableGridLayout] = useState(false);
-
-  const isMobileWidth = useBreakpointValue({ base: true, md: false });
 
   const { data, loading, error, fetchMore, refetch, networkStatus } = useQuery(GetBlogListDocument, {
     variables: {
@@ -96,14 +79,6 @@ const _BlogListWithInfinityScroll = () => {
             <Button colorScheme="facebook" textTransform="capitalize" onClick={() => refetch()}>
               refresh
             </Button>
-            <Button
-              colorScheme="facebook"
-              textTransform="capitalize"
-              display={{ base: "none", lg: "block" }}
-              onClick={() => setDisableGridLayout((last) => !last)}
-            >
-              {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
-            </Button>
           </ButtonGroup>
         </Portal>
       </>
@@ -112,7 +87,7 @@ const _BlogListWithInfinityScroll = () => {
   return (
     <Flex flexDirection="column" height="100%">
       <Box ref={ref} overflow="auto" paddingRight="4" onScroll={onThrottleScroll} className="tour_blogList">
-        <BlogGrid data={data.repository.issues.nodes} disableGridLayout={disableGridLayout || isMobileWidth} />
+        <BlogGrid data={data.repository.issues.nodes} />
         {loading && data.repository.issues.nodes.length && (
           <Center height="100px">
             <Spinner />
@@ -123,14 +98,6 @@ const _BlogListWithInfinityScroll = () => {
         <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
           <Button colorScheme="facebook" textTransform="capitalize" onClick={() => refetch()}>
             refresh
-          </Button>
-          <Button
-            colorScheme="facebook"
-            textTransform="capitalize"
-            display={{ base: "none", lg: "block" }}
-            onClick={() => setDisableGridLayout((last) => !last)}
-          >
-            {!disableGridLayout ? "disable gridLayout" : "enable gridLayout"}
           </Button>
         </ButtonGroup>
       </Portal>

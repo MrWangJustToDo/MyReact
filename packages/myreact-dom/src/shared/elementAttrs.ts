@@ -1,4 +1,3 @@
-
 // from vue source
 
 import { generateGetRawAttrKey } from "./tools";
@@ -76,3 +75,13 @@ export const propsToAttrMap: Record<string, string | undefined> = {
   className: "class",
   htmlFor: "for",
 };
+
+/**
+ * @internal
+ */
+export const isBoolAttrKey = generateGetRawAttrKey(
+  `itemscope,allowfullscreen,formnovalidate,ismap,nomodule,novalidate,readonly` +
+    `,async,autofocus,autoplay,controls,default,defer,disabled,hidden,` +
+    `inert,loop,open,required,reversed,scoped,seamless,` +
+    `checked,muted,multiple,selected`
+);

@@ -1,7 +1,7 @@
 import { Box, useColorModeValue } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-import { useDebouncedState, useFoot, useIsMounted } from "@client/hooks";
+import { useFoot, useIsMounted } from "@client/hooks";
 import { useHead } from "@client/hooks/useHead";
 
 import type { GetInitialStateType } from "@client/types/common";
@@ -11,25 +11,18 @@ const { enable, disable } = useFoot.getActions();
 
 const { enable: _enable, disable: _disable } = useHead.getActions();
 
-export default function Excalidraw({ isDarkMode }: { isDarkMode: boolean }) {
+export default function Excalidraw({ isDarkMode, Component }: { isDarkMode: boolean, Component }) {
   const isMounted = useIsMounted();
 
-  const [loading, setLoading] = useDebouncedState(true, 3000);
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const [Render, setRender] = useState<typeof ExcalidrawPreview>(() => () => null);
+  const [Render, setRender] = useState<typeof ExcalidrawPreview>(() => Component);
 
   const _isDarkMode = useColorModeValue(false, true);
 
   useEffect(() => {
     const fetch = async () => {
-      // also have some error
       const { Excalidraw } = await import("@excalidraw/excalidraw");
 
       setRender(() => Excalidraw);
-
-      setLoading(false);
 
       disable();
 
@@ -43,13 +36,13 @@ export default function Excalidraw({ isDarkMode }: { isDarkMode: boolean }) {
 
       _enable();
     };
-  }, [setLoading]);
+  }, []);
 
   const darkMode = isMounted ? _isDarkMode : isDarkMode;
 
   return (
     <Box height="100vh" width="100vw">
-      {loading ? (
+      {!Render ? (
         <Box width="100%" height="100%" display="flex" alignItems="center" justifyContent="center">
           Loading ...
         </Box>
@@ -60,11 +53,14 @@ export default function Excalidraw({ isDarkMode }: { isDarkMode: boolean }) {
   );
 }
 
-export const getInitialState: GetInitialStateType = () => {
+export const getInitialState: GetInitialStateType = async () => {
   if (__CLIENT__) {
     const colorMode = localStorage.getItem("chakra-ui-color-mode");
 
-    return { props: { isDarkMode: colorMode === "dark" ? true : false } };
+    //preload excalidraw
+    const { Excalidraw } = await import("@excalidraw/excalidraw");
+
+    return { props: { isDarkMode: colorMode === "dark" ? true : false, Component: Excalidraw } };
   }
 };
 

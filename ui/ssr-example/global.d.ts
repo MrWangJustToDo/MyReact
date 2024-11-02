@@ -1,3 +1,5 @@
+import { ClientDomDispatch } from "@my-react/react-dom";
+
 declare global {
   const __CLIENT__: boolean;
   const __SERVER__: boolean;
@@ -32,6 +34,10 @@ declare global {
       PUBLIC_API_HOST: string;
       FRAMEWORK: "react" | "myreact";
     };
+
+    __MY_REACT_DEVTOOL_RUNTIME__?: ((dispatch: ClientDomDispatch) => void) & { init: () => void };
+
+    ['__@my-react/dispatch__']: ClientDomDispatch[];
   }
 
   namespace NodeJS {

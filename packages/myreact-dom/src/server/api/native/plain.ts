@@ -1,4 +1,4 @@
-import { isSingleTag, kebabCase } from "@my-react-dom-shared";
+import { escapeHtml, isBoolAttrKey, isSingleTag, kebabCase } from "@my-react-dom-shared";
 
 import { CommentEndElement, CommentStartElement } from "./comment";
 import { TextElement } from "./text";
@@ -72,7 +72,7 @@ export class PlainElement {
 
   serializeStyle() {
     const styleKeys = Object.keys(this.style);
-    if (styleKeys.length) return `style="${styleKeys.map((key) => `${kebabCase(key)}:${this.style[key]?.toString()};`).reduce((p, c) => p + c)}"`;
+    if (styleKeys.length) return `style="${escapeHtml(styleKeys.map((key) => `${kebabCase(key)}:${this.style[key]?.toString()};`).reduce((p, c) => p + c))}"`;
     return "";
   }
 
@@ -80,7 +80,16 @@ export class PlainElement {
     const attrsKeys = Object.keys(this.attrs);
     if (attrsKeys.length) {
       // TODO
-      return attrsKeys.map((key) => `${key}="${this.attrs[key]?.toString()}"`).reduce((p, c) => `${p} ${c}`);
+      return attrsKeys
+        .map((key) => {
+          const value = this.attrs[key];
+          if (isBoolAttrKey(key)) {
+            return !!value || value === "" ? key : "";
+          } else {
+            return `${key}="${escapeHtml(this.attrs[key]?.toString())}"`;
+          }
+        })
+        .reduce((p, c) => `${p} ${c}`);
     } else {
       return "";
     }

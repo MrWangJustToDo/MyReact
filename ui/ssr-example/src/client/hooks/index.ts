@@ -13,4 +13,3 @@ export * from "./useLoadingStore";
 export * from "./useLockBodyScroll";
 export * from "./useDebouncedState";
 export * from "./useGetInitialProps";
-export * from "./useGetResponseListLayout";

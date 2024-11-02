@@ -2,6 +2,7 @@ import { Component } from "react";
 import { Helmet } from "react-helmet-async";
 import { Outlet } from "react-router";
 
+import { DevTool } from "@client/component/DevTool";
 import { Footer } from "@client/component/Footer";
 import { Header } from "@client/component/Header";
 import { LockBody } from "@client/component/LockBody";
@@ -38,6 +39,7 @@ export default class Layout extends Component<{ title: string }, { isMounted: bo
       <>
         <Helmet title={(title?.slice(1)?.toLowerCase() || "@my-react") + " | @my-react"} />
         <LockBody />
+        <DevTool />
         <ModuleManager>
           <Header />
           <div id="page-content">

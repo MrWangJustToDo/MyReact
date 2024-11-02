@@ -80,6 +80,7 @@ const Page = () => {
         </GridCard>
         <GridCard key="b" className="grid-card-list" enableBlur={drag}>
           <BlogGridWithInfinityScroll />
+          {/* <DevTool /> */}
         </GridCard>
       </StyledResponsiveReactGridLayout>
     </Container>

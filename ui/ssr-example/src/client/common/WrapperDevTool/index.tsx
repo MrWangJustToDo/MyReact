@@ -11,7 +11,15 @@ export const WrapperDevTool = ({ children }: { children: ReactNode }) => {
     <>
       {children}
       {isOpen && (
-        <ResizeAbleGridCard className="@my-react-devtool" width="70%" height="80%" position="fixed" zIndex="1000000" top="0" left="0">
+        <ResizeAbleGridCard
+          className="@my-react-devtool"
+          width="70%"
+          height="80%"
+          zIndex="1000000"
+          top="0"
+          left="0"
+          style={{ position: "fixed" }}
+        >
           <IframeDevTool />
         </ResizeAbleGridCard>
       )}

@@ -9,3 +9,5 @@ export const Card = forwardRef<BoxProps, "div">(({ children, ...boxProps }, ref)
     </Box>
   );
 });
+
+Card.displayName = "Card";

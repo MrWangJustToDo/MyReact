@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { useDebouncedState } from "./useDebouncedState";
 
@@ -26,9 +26,9 @@ const INITIAL_RECT: DOMRectType = {
   y: 0,
 };
 
-export function useDomSize({ ref, cssSelector }: { ref: RefObject<HTMLElement> | null; cssSelector?: string, deps?: any[] }): DOMRectType;
-export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement>; cssSelector: string, deps?: any[] }): DOMRectType;
-export function useDomSize({ ref, cssSelector, deps }: { ref?: RefObject<HTMLElement> | null; cssSelector?: string, deps?: any[] }) {
+export function useDomSize({ ref, cssSelector }: { ref: RefObject<HTMLElement> | null; cssSelector?: string; deps?: any[] }): DOMRectType;
+export function useDomSize({ ref, cssSelector }: { ref?: RefObject<HTMLElement>; cssSelector: string; deps?: any[] }): DOMRectType;
+export function useDomSize({ ref, cssSelector, deps }: { ref?: RefObject<HTMLElement> | null; cssSelector?: string; deps?: any[] }) {
   const [rect, setRect] = useDebouncedState<DOMRectType>(INITIAL_RECT, 100);
 
   useEffect(() => {
@@ -56,3 +56,17 @@ export function useDomSize({ ref, cssSelector, deps }: { ref?: RefObject<HTMLEle
 
   return rect;
 }
+
+export const useStaticDomSize = ({ ref }: { ref: RefObject<HTMLElement> }) => {
+  const [size, setSize] = useState(() => INITIAL_RECT);
+
+  useEffect(() => {
+    const domElement = ref.current;
+
+    if (domElement) {
+      setSize(domElement.getBoundingClientRect());
+    }
+  }, [ref]);
+
+  return { size, setSize };
+};

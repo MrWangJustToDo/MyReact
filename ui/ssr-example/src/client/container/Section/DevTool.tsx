@@ -91,7 +91,7 @@ export const DevToolSection = () => {
         </Section>
       </Flex>
       <Flex justifyContent="center" width="100%">
-        <Card overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }} width={{ md: "70%" }}>
+        <Card overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }} width={{ md: "90%" }}>
           <Image src={`./${img}`} alt="devtool" position="relative" top="-2px" />
         </Card>
       </Flex>

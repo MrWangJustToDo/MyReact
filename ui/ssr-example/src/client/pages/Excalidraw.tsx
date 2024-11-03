@@ -11,10 +11,10 @@ const { enable, disable } = useFoot.getActions();
 
 const { enable: _enable, disable: _disable } = useHead.getActions();
 
-export default function Excalidraw({ isDarkMode, Component }: { isDarkMode: boolean, Component }) {
+export default function Excalidraw({ isDarkMode }: { isDarkMode: boolean }) {
   const isMounted = useIsMounted();
 
-  const [Render, setRender] = useState<typeof ExcalidrawPreview>(() => Component);
+  const [Render, setRender] = useState<typeof ExcalidrawPreview>(() => null);
 
   const _isDarkMode = useColorModeValue(false, true);
 
@@ -29,12 +29,17 @@ export default function Excalidraw({ isDarkMode, Component }: { isDarkMode: bool
       _disable();
     };
 
-    fetch();
+    const id = setTimeout(() => {
+      fetch();
+    }, 2000)
+
 
     return () => {
       enable();
 
       _enable();
+
+      clearTimeout(id);
     };
   }, []);
 
@@ -58,9 +63,9 @@ export const getInitialState: GetInitialStateType = async () => {
     const colorMode = localStorage.getItem("chakra-ui-color-mode");
 
     //preload excalidraw
-    const { Excalidraw } = await import("@excalidraw/excalidraw");
+    await import("@excalidraw/excalidraw");
 
-    return { props: { isDarkMode: colorMode === "dark" ? true : false, Component: Excalidraw } };
+    return { props: { isDarkMode: colorMode === "dark" ? true : false } };
   }
 };
 

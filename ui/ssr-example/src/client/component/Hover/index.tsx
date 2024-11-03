@@ -20,3 +20,5 @@ export const Hover = forwardRef<BoxProps, "div">(({ children, transform, ...prop
     </Box>
   );
 });
+
+Hover.displayName = "Hover";

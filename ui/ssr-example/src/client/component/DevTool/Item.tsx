@@ -31,19 +31,20 @@ export const IframeDevTool = () => {
 
   useEffect(() => {
     const initIframeDevTool = async (c: AbortController) => {
-      if (loaded) {
+      const iframeContent = ref.current?.contentWindow;
+      if (loaded && iframeContent) {
         if (!window["__MY_REACT_DEVTOOL_RUNTIME__"] || typeof window["__MY_REACT_DEVTOOL_RUNTIME__"] !== "function") {
           await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");
 
-          const allDispatch = window['__@my-react/dispatch__'];
+          const allDispatch = window["__@my-react/dispatch__"];
 
-          allDispatch.forEach(d => window.__MY_REACT_DEVTOOL_RUNTIME__?.(d));
+          allDispatch.forEach((d) => window.__MY_REACT_DEVTOOL_RUNTIME__?.(d));
         }
         window.addEventListener(
           "message",
           (e) => {
             if (e.source === window && e.data && e.data.source === source && e.data.from === from) {
-              ref.current?.contentWindow?.postMessage?.(e.data, "*");
+              iframeContent?.postMessage?.(e.data, "*");
             }
           },
           { signal: c.signal }
@@ -57,6 +58,8 @@ export const IframeDevTool = () => {
 
       return () => {
         control.abort();
+
+        window.postMessage({ source, from: "iframe", type: "worker-close" }, "*");
       };
     }
   }, [loaded]);

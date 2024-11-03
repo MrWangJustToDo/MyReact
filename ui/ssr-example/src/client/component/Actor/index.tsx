@@ -29,3 +29,5 @@ export const Actor = forwardRef<ActorProps, "div">(({ avatarUrl, login, time, av
     </Flex>
   );
 });
+
+Actor.displayName = "Actor";

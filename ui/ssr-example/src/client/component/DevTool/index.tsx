@@ -7,7 +7,7 @@ export const DevTool = () => {
 
   return (
     <Portal>
-      <ButtonGroup variant="solid" position="fixed" bottom="4" left="4">
+      <ButtonGroup variant="solid" position="fixed" bottom="16" left="4" zIndex="1000000">
         <Button colorScheme="red" textTransform="capitalize" onClick={toggle}>
           {open ? "close" : "open"} DevTool
         </Button>

@@ -56,6 +56,8 @@ export const processState = (_params: UpdateQueue) => {
 
   _params.isImmediate = !currentScopeFiber.current || !!currentRunningFiber.current;
 
+  _params.isRetrigger = !!currentComponentFiber.current;
+
   const isImmediate = _params.isImmediate;
 
   if (_params.type === UpdateQueueType.component) {
@@ -93,6 +95,7 @@ export const processState = (_params: UpdateQueue) => {
         );
       } else if (!isErrorBoundariesComponent(ownerFiber)) {
         const triggeredElementName = getElementName(ownerFiber);
+        
         const currentElementName = getElementName(currentCFiber);
 
         onceWarnWithKeyAndFiber(
@@ -120,7 +123,6 @@ export const processState = (_params: UpdateQueue) => {
     ownerFiber.updateQueue.push(_params);
 
     prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate && renderDispatch?.isAppMounted);
-    // ownerFiber._prepare(isInitial && renderDispatch?.isAppMounted);
   } else if (_params.type === UpdateQueueType.hook) {
     const ownerFiber = getInstanceOwnerFiber(_params.trigger);
 
@@ -179,7 +181,6 @@ export const processState = (_params: UpdateQueue) => {
     ownerFiber.updateQueue.push(_params);
 
     prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate && renderDispatch?.isAppMounted);
-    // ownerFiber._prepare(isInitial && renderDispatch?.isAppMounted);
   } else {
     const ownerFiber = _params.trigger as MyReactFiberNode;
 
@@ -192,6 +193,5 @@ export const processState = (_params: UpdateQueue) => {
     ownerFiber.updateQueue.push(_params);
 
     prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate && renderDispatch?.isAppMounted);
-    // ownerFiber._prepare(isInitial && renderDispatch?.isAppMounted);
   }
 };

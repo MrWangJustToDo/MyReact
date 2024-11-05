@@ -12,6 +12,7 @@ export type ComponentUpdateQueue<State = Record<string, unknown>, Props = Record
   trigger: MyReactComponent;
   isForce?: boolean;
   isSync?: boolean;
+  isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Partial<State> | ((state: State, props: Props) => Partial<State>);
   callback?: () => void;
@@ -25,6 +26,7 @@ export type HookUpdateQueue = {
   trigger: RenderHook;
   isForce?: boolean;
   isSync?: boolean;
+  isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Action;
   callback?: () => void;
@@ -38,6 +40,7 @@ export type LazyUpdateQueue = {
   trigger: RenderFiber;
   isForce?: boolean;
   isSync?: boolean;
+  isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: MixinMyReactFunctionComponent | MixinMyReactClassComponent;
   callback?: () => void;
@@ -51,6 +54,7 @@ export type ContextUpdateQueue = {
   trigger: RenderFiber;
   isForce?: boolean;
   isSync?: boolean;
+  isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Record<string, unknown>;
   callback?: () => void;

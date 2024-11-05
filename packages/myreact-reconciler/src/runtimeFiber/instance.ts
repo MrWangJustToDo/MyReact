@@ -1,9 +1,10 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, include, merge, remove } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate } from "../dispatchQueue";
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { triggerRevert, triggerUpdate } from "../renderUpdate";
+import { setImmediateNextFiber } from "../runtimeUpdate";
 import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactFiberNodeDev } from "./interface";
@@ -13,7 +14,7 @@ import type { ListTree } from "@my-react/react-shared";
 
 type NativeNode = Record<string, any>;
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentRenderPlatform, currentRunningFiber } = __my_react_internal__;
 
 const { enableConcurrentMode } = __my_react_shared__;
 
@@ -101,7 +102,7 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
 
   const flag = enableConcurrentMode.current;
 
-  // const currentIsRunning = currentRunningFiber.current;
+  const currentRunning = currentRunningFiber.current;
 
   let updateState: UpdateState | null = null;
 
@@ -123,12 +124,23 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
       },
     });
 
+    // TODO get from updateState ?
+    if (currentRunning && currentRunning === fiber) {
+      fiber.state = remove(fiber.state, STATE_TYPE.__stable__);
+
+      fiber.state = merge(fiber.state, STATE_TYPE.__retrigger__);
+
+      setImmediateNextFiber(fiber);
+
+      return;
+    }
+
     if (updateState.isSync) {
       renderPlatform.microTask(function triggerSyncUpdateOnFiber() {
         triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);
       });
     } else {
-      renderPlatform.microTask(function processQueueAsync() {
+      renderPlatform.microTask(function triggerConcurrentUpdateOnFiber() {
         triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__, updateState.callback);
       });
     }
@@ -143,7 +155,7 @@ export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: Cu
   if (isImmediate) {
     processUpdateOnFiber(fiber, renderDispatch);
   } else {
-    renderPlatform.microTask(function processQueueAsync() {
+    renderPlatform.microTask(function asyncProcessUpdateOnFiber() {
       processUpdateOnFiber(fiber, renderDispatch);
     });
   }

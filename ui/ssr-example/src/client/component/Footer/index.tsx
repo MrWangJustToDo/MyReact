@@ -66,7 +66,7 @@ const _Footer = () => {
                   },
                 }}
               >
-                <AnimatePresence exitBeforeEnter>
+                <AnimatePresence mode='wait'>
                   <motion.div
                     key={year}
                     initial="initial"
@@ -82,7 +82,7 @@ const _Footer = () => {
                   </motion.div>
                 </AnimatePresence>
                 -
-                <AnimatePresence exitBeforeEnter>
+                <AnimatePresence mode='wait'>
                   <motion.div
                     key={month}
                     initial="initial"
@@ -98,7 +98,7 @@ const _Footer = () => {
                   </motion.div>
                 </AnimatePresence>
                 -
-                <AnimatePresence exitBeforeEnter>
+                <AnimatePresence mode='wait'>
                   <motion.div
                     key={date}
                     initial="initial"
@@ -114,7 +114,7 @@ const _Footer = () => {
                   </motion.div>
                 </AnimatePresence>
                 <div> </div>
-                <AnimatePresence exitBeforeEnter>
+                <AnimatePresence mode='wait'>
                   <motion.div
                     key={hour}
                     initial="initial"
@@ -130,7 +130,7 @@ const _Footer = () => {
                   </motion.div>
                 </AnimatePresence>
                 :
-                <AnimatePresence exitBeforeEnter>
+                <AnimatePresence mode='wait'>
                   <motion.div
                     key={minute}
                     initial="initial"
@@ -146,7 +146,7 @@ const _Footer = () => {
                   </motion.div>
                 </AnimatePresence>
                 :
-                <AnimatePresence exitBeforeEnter>
+                <AnimatePresence mode='wait'>
                   <motion.div
                     key={second}
                     initial="initial"

@@ -1,9 +1,11 @@
-import my_react from "@my-react/react-vite";
+import react from "@my-react/react-vite";
+// import react from '@vitejs/plugin-react';
 import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   ssr: {
+    // switch to react need disable all the config below
     optimizeDeps: {
       include: [
         "@my-react/react",
@@ -15,6 +17,7 @@ export default defineConfig({
         "react-router",
         "react-router-dom",
         "react-router-dom/server",
+        "framer-motion",
       ],
     },
     noExternal: [
@@ -27,6 +30,7 @@ export default defineConfig({
       "react-router",
       "react-router-dom",
       "react-router-dom/server",
+      "framer-motion",
     ],
   },
   // !SEE https://github.com/vitejs/vite/issues/12738
@@ -46,5 +50,5 @@ export default defineConfig({
   //     ],
   //   },
   // },
-  plugins: [my_react()],
+  plugins: [react()],
 });

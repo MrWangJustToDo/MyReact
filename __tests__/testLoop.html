@@ -18,7 +18,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useLayoutEffect } = React;
 
     const Bar = ({ set, s }) => {
       return <div>Bar {s}
@@ -28,27 +28,54 @@
 
     const App = () => {
       const [s, setS] = useState(0);
+      const [b, setB] = useState(0)
 
-      if (s < 40 && s > 0) {
+      console.log('s', s);
+
+      console.log('b', b);
+
+      if (s < 5 && s > 0) {
         setS(s + 1);
       }
+
+      if (b < 9 && b > 0) {
+        setB(b + 1);
+      }
+
+      useLayoutEffect(() => {
+        console.log('useLayoutEffect', s);
+
+        return () => {
+          console.log('useLayoutEffect return', s);
+        }
+      }, [s, b])
+
+      useEffect(() => {
+        console.log('useEffect', s);
+
+        return () => {
+          console.log('useEffect return', s);
+        }
+      }, [s, b])
 
       // useEffect(() => {
       //   setS((s) => s + 1)
       // })
 
-      return <div>123 {s}
+      return <div>123 {s}, {b}
         <br />
         <Bar s={s} set={() => { 
           console.warn('setS', s)
+          console.warn('setB', b)
           setS(s + 1) 
+          setB(b + 1)
         }} />
       </div>
     }
 
-    // ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 
-    ReactDOM.render(<App />, root);
+    // ReactDOM.render(<App />, root);
   </script>
 </body>
 

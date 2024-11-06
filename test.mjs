@@ -4,6 +4,10 @@ import { Text, render, Box } from "@my-react/react-terminal";
 const App = () => {
   const [a, setA] = useState(0);
 
+  if (a < 10) {
+    setA(a + 1);
+  }
+
   useEffect(() => {
     const i = setInterval(() => {
       setA((i) => i + 1);
@@ -13,6 +17,8 @@ const App = () => {
       clearInterval(i);
     }
   }, []);
+
+  // console.log(a);
 
   return createElement(
     Box,

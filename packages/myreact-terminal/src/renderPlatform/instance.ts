@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_scheduler__, __my_react_shared__ } from "@my-react/react";
 import { CustomRenderPlatform, processHookNode, processState, triggerError } from "@my-react/react-reconciler";
 
 import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
@@ -6,18 +6,21 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { initRenderPlatform } = __my_react_internal__;
 
+const { macroTask, yieldTask, microTask } = __my_react_scheduler__;
+
+__my_react_shared__.enableConcurrentMode.current = false;
+
 export class TerminalPlatform extends CustomRenderPlatform {
   isTerminal = true;
 
   microTask(_task: () => void): void {
-    _task();
+    microTask(_task);
   }
   macroTask(_task: () => void): void {
-    _task();
+    macroTask(_task);
   }
   yieldTask(_task: () => void): () => void {
-    _task();
-    return () => void 0;
+    return yieldTask(_task);
   }
   dispatchHook(_params: RenderHookParams): unknown {
     return processHookNode(_params);

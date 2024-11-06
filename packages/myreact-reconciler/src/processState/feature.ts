@@ -122,7 +122,7 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate && renderDispatch?.isAppMounted);
+    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate);
   } else if (_params.type === UpdateQueueType.hook) {
     const ownerFiber = getInstanceOwnerFiber(_params.trigger);
 
@@ -180,7 +180,7 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate && renderDispatch?.isAppMounted);
+    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate);
   } else {
     const ownerFiber = _params.trigger as MyReactFiberNode;
 
@@ -192,6 +192,6 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate && renderDispatch?.isAppMounted);
+    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate);
   }
 };

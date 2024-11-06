@@ -46,7 +46,7 @@ export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams
   let currentHook: MyReactHookNode | null = null;
 
   // initial
-  if (include(fiber.state, STATE_TYPE.__create__)) {
+  if (include(fiber.state, STATE_TYPE.__create__) && !include(fiber.state, STATE_TYPE.__rerun__)) {
     currentHook = createHookNode({ type, reducer, value, deps }, fiber);
 
     safeCall(function safeCallHookInitialListener() {

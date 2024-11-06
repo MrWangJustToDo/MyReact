@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { STATE_TYPE, include, remove } from "@my-react/react-shared";
+import { STATE_TYPE, include, merge, remove } from "@my-react/react-shared";
 
 import { runtimeNextWork, runtimeNextWorkDev } from "../runtimeGenerate";
 import { currentRenderDispatch, devErrorWithFiber } from "../share";
@@ -45,7 +45,11 @@ export const performToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispat
     currentRenderDispatch.current = null;
   }
 
-  if (!include(fiber.state, STATE_TYPE.__retrigger__)) fiber.state = STATE_TYPE.__stable__;
+  if (!include(fiber.state, STATE_TYPE.__retrigger__)) {
+    fiber.state = STATE_TYPE.__stable__;
+  } else {
+    fiber.state = merge(fiber.state, STATE_TYPE.__rerun__);
+  }
 
   if (fiber.child) return fiber.child;
 
@@ -99,7 +103,11 @@ export const performToNextFiberFromTrigger = (fiber: MyReactFiberNode, renderDis
 
     currentRenderDispatch.current = null;
 
-    if (!include(fiber.state, STATE_TYPE.__retrigger__)) fiber.state = STATE_TYPE.__stable__;
+    if (!include(fiber.state, STATE_TYPE.__retrigger__)) {
+      fiber.state = STATE_TYPE.__stable__;
+    } else {
+      fiber.state = merge(fiber.state, STATE_TYPE.__rerun__);
+    }
 
     if (fiber.child) return fiber.child;
   }

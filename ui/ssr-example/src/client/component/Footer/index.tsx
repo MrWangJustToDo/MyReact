@@ -44,7 +44,7 @@ const _Footer = () => {
           </Link>
         </Text>
       </Flex>
-      <Text fontSize="sm" marginTop="2.5" marginBottom="9" color="lightTextColor">
+      <Text fontSize="sm" marginTop="2.5" as="div" marginBottom="9" color="lightTextColor">
         <Time>
           {({ time, isMount }) => {
             if (!isMount) {
@@ -66,7 +66,7 @@ const _Footer = () => {
                   },
                 }}
               >
-                <AnimatePresence mode='wait'>
+                <AnimatePresence mode="wait">
                   <motion.div
                     key={year}
                     initial="initial"
@@ -82,7 +82,7 @@ const _Footer = () => {
                   </motion.div>
                 </AnimatePresence>
                 -
-                <AnimatePresence mode='wait'>
+                <AnimatePresence mode="wait">
                   <motion.div
                     key={month}
                     initial="initial"
@@ -98,7 +98,7 @@ const _Footer = () => {
                   </motion.div>
                 </AnimatePresence>
                 -
-                <AnimatePresence mode='wait'>
+                <AnimatePresence mode="wait">
                   <motion.div
                     key={date}
                     initial="initial"
@@ -114,7 +114,7 @@ const _Footer = () => {
                   </motion.div>
                 </AnimatePresence>
                 <div> </div>
-                <AnimatePresence mode='wait'>
+                <AnimatePresence mode="wait">
                   <motion.div
                     key={hour}
                     initial="initial"
@@ -130,7 +130,7 @@ const _Footer = () => {
                   </motion.div>
                 </AnimatePresence>
                 :
-                <AnimatePresence mode='wait'>
+                <AnimatePresence mode="wait">
                   <motion.div
                     key={minute}
                     initial="initial"
@@ -146,7 +146,7 @@ const _Footer = () => {
                   </motion.div>
                 </AnimatePresence>
                 :
-                <AnimatePresence mode='wait'>
+                <AnimatePresence mode="wait">
                   <motion.div
                     key={second}
                     initial="initial"

@@ -16,6 +16,10 @@ import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 const { currentRenderPlatform } = __my_react_internal__;
 
+let currentHydratedNode: ChildNode | null = null;
+
+export const getPreviousHydratedNode = () => currentHydratedNode;
+
 // TODO
 /**
  * @internal
@@ -46,7 +50,7 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
     let _final = _hydrate;
 
     if (_fiber.nativeNode) {
-      _dispatch._previousNativeNode = null;
+      currentHydratedNode = null;
     }
 
     if (_fiber.child) _final = mountCommit(_fiber.child, _result);
@@ -60,9 +64,9 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
 
     if (_fiber.nativeNode) {
       // current child have loop done, so it is safe to fallback here
-      fallback(_dispatch._previousNativeNode?.nextSibling);
+      fallback(currentHydratedNode?.nextSibling);
 
-      _dispatch._previousNativeNode = _fiber.nativeNode as ChildNode;
+      currentHydratedNode = _fiber.nativeNode as ChildNode;
     }
 
     if (_fiber.sibling) {
@@ -86,8 +90,6 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
     afterSyncUpdate();
 
     mountCommit(_fiber, _hydrate);
-
-    delete _dispatch._previousNativeNode;
 
     beforeSyncUpdate();
     _list.listToFoot(function invokeLayoutEffectList(fiber) {

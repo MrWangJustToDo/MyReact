@@ -9,6 +9,7 @@ import { MobileOverlay } from "./MobileOverlay";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const ModuleManager = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
   const { overlays, open, close } = useOverlaysProps();
+
   const overlaysObj = useBreakpointValue(
     useMemo(
       () => ({
@@ -16,7 +17,8 @@ export const ModuleManager = ({ children }: { children: JSX.Element | JSX.Elemen
         md: { mobile: [], desktop: overlays },
       }),
       [overlays]
-    )
+    ),
+    { ssr: true }
   );
 
   return (

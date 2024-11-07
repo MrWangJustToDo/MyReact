@@ -30,9 +30,9 @@
       const [s, setS] = useState(0);
       const [b, setB] = useState(0)
 
-      console.log('s', s);
+      console.warn('s', s);
 
-      console.log('b', b);
+      console.warn('b', b);
 
       if (s < 5 && s >= 0) {
         setS(s + 1);
@@ -43,18 +43,18 @@
       }
 
       useLayoutEffect(() => {
-        console.log('useLayoutEffect', s);
+        console.warn('useLayoutEffect', s);
 
         return () => {
-          console.log('useLayoutEffect return', s);
+          console.warn('useLayoutEffect return', s);
         }
       }, [s, b])
 
       useEffect(() => {
-        console.log('useEffect', s);
+        console.warn('useEffect', s);
 
         return () => {
-          console.log('useEffect return', s);
+          console.warn('useEffect return', s);
         }
       }, [s, b])
 

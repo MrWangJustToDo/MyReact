@@ -1,5 +1,6 @@
 /* eslint-disable react/no-deprecated */
 /* eslint-disable @typescript-eslint/no-var-requires */
+import { startTransition } from "react";
 import { hydrate } from "react-dom";
 import { hydrateRoot, createRoot } from "react-dom/client";
 
@@ -35,11 +36,13 @@ safeData(window.__PRELOAD_STORE_STATE__);
 
 safeData(window as unknown as Record<string, unknown>, "__PRELOAD_STORE_STATE__");
 
-const loadableReady = __STREAM__
-  ? (cb) => {
-      cb?.();
-    }
-  : require("@loadable/component").loadableReady;
+const loadableReady = async (cb: () => void) => {
+  if (__STREAM__) {
+    cb?.();
+  } else {
+    await import("@loadable/component").then(({ loadableReady }) => loadableReady(cb));
+  }
+};
 
 if (window.__ENV__.isPURE_CSR) {
   const { loadCurrentLang } = require("@shared");
@@ -48,6 +51,8 @@ if (window.__ENV__.isPURE_CSR) {
   if (!window.__ENV__.isSSR || (window.__ENV__.isDEVELOPMENT && window.__ENV__.isMIDDLEWARE)) {
     loadableReady(() => createRoot(place).render(<Root store={store} />));
   } else {
-    loadableReady(() => (__STREAM__ || __REACT__ ? hydrateRoot(place, <Root store={store} />) : hydrate(<Root store={store} />, place)));
+    startTransition(() => {
+      loadableReady(() => (__STREAM__ || __REACT__ ? hydrateRoot(place, <Root store={store} />) : hydrate(<Root store={store} />, place)));
+    });
   }
 }

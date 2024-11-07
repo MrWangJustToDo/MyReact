@@ -9,6 +9,7 @@
   "packageManager": "pnpm@9.12.0",
   "scripts": {
     "dev:ssr": "cd ./ui/ssr-example && pnpm run dev",
+    "dev:ssr-inspect": "cd ./ui/ssr-example && pnpm run dev:inspect",
     "dev:csr": "cd ./ui/csr-example && pnpm run dev",
     "dev:next": "cd ./ui/next-example && pnpm run dev",
     "dev:vite": "cd ./ui/vite-example && pnpm run dev",

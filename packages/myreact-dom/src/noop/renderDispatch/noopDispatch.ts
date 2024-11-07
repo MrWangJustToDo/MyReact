@@ -1,4 +1,4 @@
-import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, getElementName, NODE_TYPE } from "@my-react/react-reconciler";
 
 import { append, create, update } from "@my-react-dom-server/api";
 import { resolveLazyElementLatest, resolveLazyElementLegacy } from "@my-react-dom-server/renderDispatch/lazy";
@@ -40,6 +40,22 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
   renderTime: number | null;
 
   hydrateTime: number | null;
+
+  findFiberByName(name: string) {
+    const res: MyReactFiberNode[] = [];
+
+    const loop = (fiber: MyReactFiberNode) => {
+      if (getElementName(fiber).includes(name)) {
+        res.push(fiber);
+      }
+      fiber.child && loop(fiber.child);
+      fiber.sibling && loop(fiber.sibling);
+    };
+
+    loop(this.rootFiber);
+
+    return res;
+  }
 
   pendingRef(_fiber: MyReactFiberNode): void {
     void 0;
@@ -115,6 +131,22 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
   renderTime: number | null;
 
   hydrateTime: number | null;
+
+  findFiberByName(name: string) {
+    const res: MyReactFiberNode[] = [];
+
+    const loop = (fiber: MyReactFiberNode) => {
+      if (getElementName(fiber).includes(name)) {
+        res.push(fiber);
+      }
+      fiber.child && loop(fiber.child);
+      fiber.sibling && loop(fiber.sibling);
+    };
+
+    loop(this.rootFiber);
+
+    return res;
+  }
 
   pendingRef(_fiber: MyReactFiberNode): void {
     void 0;

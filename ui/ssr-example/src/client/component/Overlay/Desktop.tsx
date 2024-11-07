@@ -5,7 +5,7 @@ import type { OverlayProps } from "@client/hooks";
 export const Desktop = (props: OverlayProps) => {
   const { head, body, foot, showState, className, closeComplete, closeHandler } = props;
 
-  const size = useBreakpointValue({ base: "full", lg: "3xl" });
+  const size = useBreakpointValue({ base: "full", lg: "3xl" }, { ssr: true });
 
   return (
     <Modal size={size} isOpen={showState} scrollBehavior="inside" onClose={closeHandler} onCloseComplete={closeComplete}>

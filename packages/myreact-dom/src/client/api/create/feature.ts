@@ -1,6 +1,7 @@
 import { NODE_TYPE, getStackTree } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
+import { getPreviousHydratedNode } from "@my-react-dom-client/dispatchMount";
 import {
   validDomTag,
   type DomComment,
@@ -55,7 +56,7 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
 
     try {
       if (hydrate) {
-        const previousDom = renderDispatch._previousNativeNode;
+        const previousDom = getPreviousHydratedNode();
 
         const result = hydrateCreate(fiber, parentFiberWithNode || renderDispatch, previousDom);
 

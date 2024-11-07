@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, startTransition } from "react";
 
 export const useIsMounted = () => {
   const [mounted, setMounted] = useState(false);
+  
   useEffect(() => {
-    setMounted(true);
+    startTransition(() => {
+      setMounted(true);
+    })
   }, []);
 
   return mounted;

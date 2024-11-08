@@ -23,7 +23,8 @@
       "@client": ["./ui/ssr-example/src/client"],
       "@client/*": ["./ui/ssr-example/src/client/*"],
       "@shared": ["./ui/ssr-example/src/shared"],
-      "@shared/*": ["./ui/ssr-example/src/shared/*"]
+      "@shared/*": ["./ui/ssr-example/src/shared/*"],
+      "~/*": ["./ui/remix-example/app/*"]
     }
   }
 }

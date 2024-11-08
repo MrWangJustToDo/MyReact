@@ -12,6 +12,9 @@ const isValidHydrateDom = (el: ChildNode) => {
     if (el.textContent === commentS || el.textContent === commentE) return true;
     return false;
   }
+  if (el.nodeType === Node.DOCUMENT_TYPE_NODE) {
+    return false;
+  }
   return true;
 };
 

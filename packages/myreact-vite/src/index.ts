@@ -8,6 +8,7 @@ import type { BuildOptions, Plugin, PluginOption, ResolvedConfig, UserConfig } f
 
 // lazy load babel since it's not used during build if plugins are not used
 let babel: typeof babelCore | undefined;
+
 async function loadBabel() {
   if (!babel) {
     babel = await import("@babel/core");
@@ -33,6 +34,8 @@ export interface Options {
    * Babel configuration applied in both dev and prod.
    */
   babel?: BabelOptions | ((id: string, options: { ssr?: boolean }) => BabelOptions);
+
+  remix?: boolean;
 }
 
 export type BabelOptions = Omit<babelCore.TransformOptions, "ast" | "filename" | "root" | "sourceFileName" | "sourceMaps" | "inputSourceMap">;
@@ -85,7 +88,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
   const importReactRE = /\bimport\s+(?:\*\s+as\s+)?React\b/;
 
   const viteBabel: Plugin = {
-    name: "vite:react-babel",
+    name: "vite:my-react-babel",
     enforce: "pre",
     config() {
       if (opts.jsxRuntime === "classic") {
@@ -204,7 +207,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
   };
 
   const viteReactRefresh: Plugin = {
-    name: "vite:react-refresh",
+    name: "vite:my-react-refresh",
     enforce: "pre",
     config: (userConfig) => ({
       build: silenceUseClientWarning(userConfig),
@@ -254,7 +257,18 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
     },
   };
 
-  return [viteBabel, viteReactRefresh];
+  const viteRemixRefresh: Plugin = {
+    name: "vite:my-react-refresh-remix",
+    enforce: "post",
+    transform(code, id) {
+      // inject HMR runtime for remix
+      if(id === '\0virtual:remix/inject-hmr-runtime') {
+        return `${code} \n ${preambleCode.replace(`__BASE__`, devBase)}`;
+      }
+    },
+  };
+
+  return [viteBabel, viteReactRefresh, opts.remix ? viteRemixRefresh : null].filter(Boolean);
 }
 
 viteReact.preambleCode = preambleCode;

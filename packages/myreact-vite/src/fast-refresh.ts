@@ -10,7 +10,7 @@ if (!RefreshRuntime.version || !compareVersion(RefreshRuntime.version, "0.3.1"))
   );
 }
 
-export const runtimePublicPath = "/@react-refresh";
+export const runtimePublicPath = "/@my-react-refresh";
 
 const _require = createRequire(import.meta.url);
 const reactRefreshDir = path.dirname(_require.resolve("@my-react/react-refresh/package.json"));
@@ -29,21 +29,21 @@ export default exports
 `;
 
 export const preambleCode = `
-import RefreshRuntime from "__BASE__${runtimePublicPath.slice(1)}"
-RefreshRuntime.injectIntoGlobalHook(window)
+import MyRefreshRuntime from "__BASE__${runtimePublicPath.slice(1)}"
+MyRefreshRuntime.injectIntoGlobalHook(window);
 window.$RefreshReg$ = () => {}
 window.$RefreshSig$ = () => (type) => type
 window.__vite_plugin_react_preamble_installed__ = true
 `;
 
 const header = `
-import RefreshRuntime from "${runtimePublicPath}";
+import MyRefreshRuntime from "${runtimePublicPath}";
 
-const inWebWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
-let prevRefreshReg;
-let prevRefreshSig;
+const inWebWorker_ = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+let prevRefreshReg_;
+let prevRefreshSig_;
 
-if (import.meta.hot && !inWebWorker) {
+if (import.meta.hot && !inWebWorker_) {
   if (!window.__vite_plugin_react_preamble_installed__) {
     throw new Error(
       "@vitejs/plugin-react can't detect preamble. Something is wrong. " +
@@ -51,24 +51,24 @@ if (import.meta.hot && !inWebWorker) {
     );
   }
 
-  prevRefreshReg = window.$RefreshReg$;
-  prevRefreshSig = window.$RefreshSig$;
+  prevRefreshReg_ = window.$RefreshReg$;
+  prevRefreshSig_ = window.$RefreshSig$;
   window.$RefreshReg$ = (type, id) => {
-    RefreshRuntime.register(type, __SOURCE__ + " " + id)
+    MyRefreshRuntime.register(type, __SOURCE__ + " " + id)
   };
-  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+  window.$RefreshSig$ = MyRefreshRuntime.createSignatureFunctionForTransform;
 }`.replace(/\n+/g, "");
 
 const footer = `
-if (import.meta.hot && !inWebWorker) {
-  window.$RefreshReg$ = prevRefreshReg;
-  window.$RefreshSig$ = prevRefreshSig;
+if (import.meta.hot && !inWebWorker_) {
+  window.$RefreshReg$ = prevRefreshReg_;
+  window.$RefreshSig$ = prevRefreshSig_;
 
-  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
-    RefreshRuntime.registerExportsForReactRefresh(__SOURCE__, currentExports);
+  MyRefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    MyRefreshRuntime.registerExportsForReactRefresh(__SOURCE__, currentExports);
     import.meta.hot.accept((nextExports) => {
       if (!nextExports) return;
-      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate(currentExports, nextExports);
+      const invalidateMessage = MyRefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate(currentExports, nextExports);
       if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
     });
   });

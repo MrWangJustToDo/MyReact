@@ -4,8 +4,6 @@ import { createContext, useCallback, useContext, useRef, useState } from "react"
 import { delay } from "@client/utils";
 import { applyOverlaysStyles, cleanupOverlaysStyles } from "@client/utils/dom";
 
-import { useUpdate } from "./useUpdate";
-
 import type React from "react";
 
 const ROOT_BODY = "__content__";
@@ -45,7 +43,6 @@ export const OverlayArrayContext = createContext<{
 export const useOverlaysProps = () => {
   const [overlays, setOverlays] = useState<OverlayProps[]>([]);
   const overlaysRef = useRef(overlays);
-  const forceUpdate = useUpdate();
   overlaysRef.current = overlays;
   const applyOverlayStyle = useCallback((id: string, isOpen) => {
     delay(
@@ -87,7 +84,7 @@ export const useOverlaysProps = () => {
       overlayProps.closeHandler = () => {
         overlayProps.showState = false;
         closeHandler && closeHandler();
-        forceUpdate();
+        setOverlays((last) => Array.from(last));
       };
       overlayProps.closeComplete = () => {
         closeComplete && closeComplete();
@@ -113,7 +110,7 @@ export const useOverlaysProps = () => {
         return [...newAllOverlays, overlayProps];
       });
     },
-    [forceUpdate, applyOverlayStyle]
+    [applyOverlayStyle]
   );
   const close = useCallback((props?: { modalId?: string; closeAll?: boolean }) => {
     const allOverlay = overlaysRef.current;

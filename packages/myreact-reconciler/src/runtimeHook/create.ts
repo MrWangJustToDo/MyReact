@@ -152,6 +152,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     typedHook._debugIndex = currentHookIndex;
   }
 
+  // TODO: remove
   if (__DEV__ && enableHookStack.current) {
     try {
       const stack = getStack();

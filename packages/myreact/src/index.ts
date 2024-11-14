@@ -73,7 +73,25 @@ const version = enableMockReact.current ? "18.2.0" : __VERSION__;
 const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {
   ReactCurrentActQueue: {},
   ReactCurrentBatchConfig: {},
-  ReactCurrentDispatcher: { current: {} },
+  ReactCurrentDispatcher: {
+    current: {
+      useCallback,
+      useContext,
+      useDebugValue,
+      useDeferredValue,
+      useEffect,
+      useId,
+      useImperativeHandle,
+      useInsertionEffect,
+      useLayoutEffect,
+      useMemo,
+      useReducer,
+      useRef,
+      useState,
+      useSyncExternalStore,
+      useTransition,
+    },
+  },
   ReactCurrentOwner: { current: null },
   ReactDebugCurrentFrame: {},
 };

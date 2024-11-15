@@ -12,6 +12,12 @@ const DEV_TOOL_FIELD = "__@my-react/react-refresh-dev__";
 
 let hmrRuntime: HMR[];
 
+let id = 0;
+
+const obj: Record<number, number> = {};
+
+const hasPerformance = typeof performance === "object";
+
 type Family = {
   current: MyReactComponentType;
 };
@@ -344,31 +350,44 @@ export const performReactRefresh = () => {
   if (containers.size > 0) {
     console.log(`[@my-react/react-refresh] updating ...`);
 
-    console.time(`[@my-react/react-refresh] update take`);
+    const currentId = id++;
+
+    obj[currentId] = hasPerformance ? performance.now() : Date.now();
 
     let count = 0;
 
-    const updateDone = () => {
+    const updateDone = (id: number) => {
       count++;
 
       if (count === containers.size) {
-        console.timeEnd(`[@my-react/react-refresh] update take`);
+        const now = hasPerformance ? performance.now() : Date.now();
+
+        const before = obj[id];
+
+        if (hasPerformance) {
+          console.log(`[@my-react/react-refresh] update done in ${(now - before).toFixed(3)}ms`);
+        } else {
+          console.log(`[@my-react/react-refresh] update done in ${now - before}ms`);
+        }
       }
     };
 
     containers.forEach((hasRootUpdate, container: CustomRenderDispatchDev) => {
       if (container.isAppCrashed || container.isAppUnmounted) {
         // have a uncaught runtime error for prev render
-        container.__hmr_remount__?.(updateDone);
+        container.__hmr_remount__?.(updateDone.bind(null, currentId));
       } else if (container.runtimeFiber.errorCatchFiber) {
         // has a error for prev render
         const errorCatchFiber = container?.runtimeFiber.errorCatchFiber;
 
-        (errorCatchFiber as MyReactFiberNodeDev).__hmr_revert__?.(updateDone);
+        (errorCatchFiber as MyReactFiberNodeDev).__hmr_revert__?.(updateDone.bind(null, currentId));
       } else {
         const rootFiber = container.rootFiber;
 
-        (rootFiber as MyReactFiberNodeDev).__hmr_update__?.(hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__, updateDone);
+        (rootFiber as MyReactFiberNodeDev).__hmr_update__?.(
+          hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__,
+          updateDone.bind(null, currentId)
+        );
       }
       setRefreshRuntimeFieldForDev(container);
     });

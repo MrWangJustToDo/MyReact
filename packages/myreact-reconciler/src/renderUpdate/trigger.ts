@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude, include, merge } from "@my-react/react-shared";
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
-import { unmountFiber } from "../renderUnmount";
+import { unmountContainer } from "../renderUnmount";
 import { NODE_TYPE, currentTriggerFiber, devErrorWithFiber, devWarnWithFiber, fiberToDispatchMap } from "../share";
 
 import { updateConcurrentFromRoot, updateConcurrentFromTrigger, updateSyncFromRoot, updateSyncFromTrigger } from "./feature";
@@ -254,15 +254,11 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
     globalLoop.current = false;
 
     if (__DEV__) {
-      const rootFiber = renderDispatch.rootFiber;
-
       currentTriggerFiber.current = null;
 
       devErrorWithFiber(fiber, `[@my-react/react] a uncaught exception have been throw, current App will been unmount`);
 
-      unmountFiber(rootFiber);
-
-      cb?.();
+      unmountContainer(renderDispatch, cb);
 
       throw error;
     } else {

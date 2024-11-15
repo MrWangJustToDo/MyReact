@@ -131,7 +131,7 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
 
       delGlobalDispatch(renderContainer);
 
-      render(element, container);
+      render(element, container, cb);
 
       return;
     }

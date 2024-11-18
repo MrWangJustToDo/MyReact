@@ -18,9 +18,9 @@ export const position = (fiber: MyReactFiberNode, renderDispatch: TerminalDispat
     const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithNode || rootFiber);
 
     if (beforeFiberWithDom) {
-      insertBefore(fiber, beforeFiberWithDom, parentFiberWithNode);
+      insertBefore(fiber, beforeFiberWithDom, parentFiberWithNode || renderDispatch);
     } else {
-      append(fiber, parentFiberWithNode);
+      append(fiber, parentFiberWithNode || renderDispatch);
     }
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__position__);

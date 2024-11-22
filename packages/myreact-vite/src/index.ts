@@ -261,6 +261,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
     name: "vite:my-react-refresh-remix",
     enforce: "post",
     transform(code, id) {
+      // see https://github.com/remix-run/remix/blob/bff2d58bdd22fe305f3e7ca8ddad03c5940f4e90/packages/remix-dev/vite/plugin.ts#L1685
       // inject HMR runtime for remix
       if(id === '\0virtual:remix/inject-hmr-runtime') {
         return `${code} \n ${preambleCode.replace(`__BASE__`, devBase)}`;

@@ -1,3 +1,4 @@
+import { getSandpackCssText } from "@codesandbox/sandpack-react";
 import { version } from "@my-react/react";
 
 import { noBase } from "@shared";
@@ -37,6 +38,7 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     </>
     {preLoad.filter(Boolean).map((ele) => ele)}
     {link.filter(Boolean).map((ele) => ele)}
+    <style dangerouslySetInnerHTML={{ __html: getSandpackCssText() }} id="sandpack" key="sandpack-css" />
     {emotionChunks?.styles.map((style, index) => (
       <style data-server data-emotion={`${style.key} ${style.ids.join(" ")}`} key={style.key + "_" + index} dangerouslySetInnerHTML={{ __html: style.css }} />
     ))}

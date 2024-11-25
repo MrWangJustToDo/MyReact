@@ -19,3 +19,5 @@ export const currentCallingFiber = createRef<MyReactFiberNode | null>(null);
 export const fiberToDispatchMap = new MyWeakMap() as WeakMap<MyReactFiberNode, CustomRenderDispatch>;
 
 export const enableFiberForLog = createRef(false);
+
+export const enableLogForCurrentFlowIsRunning = createRef(false);

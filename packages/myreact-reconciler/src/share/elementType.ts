@@ -36,6 +36,15 @@ type ReturnTypeFromElement = {
 
 const emptyProps = {};
 
+const checkIsMyReactElement = (element: MyReactElementNode) => {
+  if (isValidElement(element)) {
+    const isMyReactElement = element._jsx || element._legacy;
+    if (!isMyReactElement) {
+      devWarn(`[@my-react/react] look like current element is not a valid @my-react element %o`, element);
+    }
+  }
+}
+
 export const getElementTypeFromType = (type: MyReactComponentType): MyReactComponentType => {
   if (typeof type === "object") {
     switch (type[TYPEKEY]) {
@@ -50,6 +59,10 @@ export const getElementTypeFromType = (type: MyReactComponentType): MyReactCompo
 
 export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeFromElement => {
   let nodeType = NODE_TYPE.__initial__;
+
+  if (__DEV__) {
+    checkIsMyReactElement(element);
+  }
 
   if (isValidElement(element)) {
     return getTypeFromElement(element);

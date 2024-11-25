@@ -5,7 +5,14 @@ import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { listenerMap } from "../renderDispatch";
 import { prepareUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
-import { getCurrentDispatchFromFiber, getElementName, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, syncFlush } from "../share";
+import {
+  enableLogForCurrentFlowIsRunning,
+  getCurrentDispatchFromFiber,
+  getElementName,
+  onceWarnWithKeyAndFiber,
+  safeCallWithCurrentFiber,
+  syncFlush,
+} from "../share";
 
 import type { MyReactHookNode } from "../runtimeHook";
 import type { MyReactComponent, MyReactInternalInstance, RenderFiber, UpdateQueue } from "@my-react/react";
@@ -95,14 +102,16 @@ export const processState = (_params: UpdateQueue) => {
         );
       } else if (!isErrorBoundariesComponent(ownerFiber)) {
         const triggeredElementName = getElementName(ownerFiber);
-        
+
         const currentElementName = getElementName(currentCFiber);
 
-        onceWarnWithKeyAndFiber(
-          currentRFiber,
-          `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
-          `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
-        );
+        if (enableLogForCurrentFlowIsRunning.current) {
+          onceWarnWithKeyAndFiber(
+            currentRFiber,
+            `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
+            `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
+          );
+        }
       }
 
       lastRenderComponentFiber = currentCFiber;
@@ -156,12 +165,16 @@ export const processState = (_params: UpdateQueue) => {
         );
       } else if (!isErrorBoundariesComponent(ownerFiber)) {
         const triggeredElementName = getElementName(ownerFiber);
+
         const currentElementName = getElementName(currentCFiber);
-        onceWarnWithKeyAndFiber(
-          currentRFiber,
-          `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
-          `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
-        );
+
+        if (enableLogForCurrentFlowIsRunning.current) {
+          onceWarnWithKeyAndFiber(
+            currentRFiber,
+            `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
+            `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
+          );
+        }
       }
       lastRenderComponentFiber = currentCFiber;
       lastRenderComponentTimeStep = now;

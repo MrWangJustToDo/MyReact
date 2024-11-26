@@ -1,5 +1,13 @@
 import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react";
-import { checkIsSameType, CustomRenderDispatch, initialFiberNode, MyReactFiberNode, triggerUpdate } from "@my-react/react-reconciler";
+import {
+  checkIsSameType,
+  CustomRenderDispatch,
+  initialFiberNode,
+  listenerMap,
+  MyReactFiberNode,
+  safeCallWithCurrentFiber,
+  triggerUpdate,
+} from "@my-react/react-reconciler";
 import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -138,6 +146,15 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
 
     if (checkIsSameType(containerFiber, element)) {
       containerFiber._installElement(element);
+
+      safeCallWithCurrentFiber({
+        fiber: containerFiber,
+        action: function safeCallFiberTriggerListener() {
+          listenerMap
+            .get(renderContainer)
+            ?.fiberTrigger?.forEach((_cb) => _cb(containerFiber, { needUpdate: true, isSync: true, isForce: false, callback: cb }));
+        },
+      });
 
       triggerUpdate(containerFiber, STATE_TYPE.__triggerSync__, cb);
 

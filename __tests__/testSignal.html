@@ -22,6 +22,8 @@
       const Count = () => {
         const [get, set] = useSignal(0);
 
+        console.log(get, set);
+
         return (
           <div>
             <p>value: {get()}</p>

@@ -21,6 +21,8 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   (function finishMount() {
+    __DEV__ && enableScopeTreeLog.current && setLogScope();
+
     renderDispatch.reconcileCommit(fiber);
 
     const commitList = renderDispatch.pendingCommitFiberList;
@@ -34,6 +36,8 @@ export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispa
     renderDispatch.pendingChangedFiberList = null;
 
     commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+    __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
     changedList?.length &&
       safeCallWithCurrentFiber({
@@ -75,9 +79,11 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
     }
   }
 
-  __DEV__ && enableScopeTreeLog.current && resetLogScope();
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
 
   (function finishMount() {
+    __DEV__ && enableScopeTreeLog.current && setLogScope();
+    
     renderDispatch.reconcileCommit(fiber);
 
     const commitList = renderDispatch.pendingCommitFiberList;
@@ -91,6 +97,8 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
     renderDispatch.pendingChangedFiberList = null;
 
     commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+    __DEV__ && enableScopeTreeLog.current && setLogScope();
 
     changedList?.length &&
       safeCallWithCurrentFiber({

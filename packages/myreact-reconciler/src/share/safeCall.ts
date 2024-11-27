@@ -19,11 +19,16 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
   }
 };
 
+const stack: MyReactFiberNode[] = [];
+
 export const safeCallWithCurrentFiber = <T extends any[] = any[], K = any>(
   { action, fiber, fallback }: { action: (...args: T) => K; fiber: MyReactFiberNode; fallback?: () => K },
   ...args: T
 ): K => {
+  stack.push(fiber);
+
   currentCallingFiber.current = fiber;
+
   try {
     return action.call(null, ...args);
   } catch (e) {
@@ -33,7 +38,9 @@ export const safeCallWithCurrentFiber = <T extends any[] = any[], K = any>(
 
     return fallback?.();
   } finally {
-    currentCallingFiber.current = null;
+    const l = stack.pop();
+
+    currentCallingFiber.current = l;
   }
 };
 

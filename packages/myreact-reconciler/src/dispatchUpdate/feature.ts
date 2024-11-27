@@ -1,15 +1,17 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude } from "@my-react/react-shared";
 
 import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
 import { unmountPending } from "../dispatchUnmount";
-import { afterSyncUpdate, beforeSyncUpdate, safeCallWithCurrentFiber } from "../share";
+import { afterSyncUpdate, beforeSyncUpdate, resetLogScope, safeCallWithCurrentFiber, setLogScope } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { ListTree } from "@my-react/react-shared";
 
 const { currentRenderPlatform } = __my_react_internal__;
+
+const { enableScopeTreeLog } = __my_react_shared__;
 
 export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispatch: CustomRenderDispatch) => {
   // TODO maybe need call `insertionEffect` in another function
@@ -73,10 +75,14 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   // TODO before next update flow, make sure all the effect has done
   renderPlatform.microTask(function invokeEffectListTask() {
+    __DEV__ && enableScopeTreeLog.current && setLogScope();
+
     _list.listToFoot(function invokeEffectList(_fiber) {
       if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
         effect(_fiber, _dispatch);
       }
     });
+
+    __DEV__ && enableScopeTreeLog.current && resetLogScope();
   });
 };

@@ -32,7 +32,11 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
 
     renderDispatch.pendingChangedFiberList = null;
 
+    __DEV__ && enableScopeTreeLog.current && setLogScope();
+
     commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+    __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
     changedList?.length &&
       safeCall(function safeCallFiberHasChangeListener() {
@@ -69,7 +73,11 @@ export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch) => {
 
     renderDispatch.pendingChangedFiberList = null;
 
+    __DEV__ && enableScopeTreeLog.current && setLogScope();
+
     commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+    __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
     changedList?.length &&
       safeCall(function safeCallFiberHasChangeListener() {
@@ -111,7 +119,11 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
 
       renderDispatch.pendingChangedFiberList = null;
 
+      __DEV__ && enableScopeTreeLog.current && setLogScope();
+
       commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+      __DEV__ && enableScopeTreeLog.current && setLogScope();
 
       changedList?.length &&
         safeCall(function safeCallFiberHasChangeListener() {
@@ -155,7 +167,11 @@ export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch
 
       renderDispatch.pendingChangedFiberList = null;
 
+      __DEV__ && enableScopeTreeLog.current && setLogScope();
+
       commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+      __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
       changedList?.length &&
         safeCall(function safeCallFiberHasChangeListener() {

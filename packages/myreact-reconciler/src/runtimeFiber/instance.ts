@@ -117,13 +117,6 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
   }
 
   if (updateState?.needUpdate) {
-    safeCallWithCurrentFiber({
-      fiber,
-      action: function safeCallFiberTriggerListener() {
-        listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, updateState));
-      },
-    });
-
     // TODO get from updateState ?
     if (currentRunning && currentRunning === fiber) {
       fiber.state = remove(fiber.state, STATE_TYPE.__stable__);
@@ -134,6 +127,13 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
 
       return;
     }
+
+    safeCallWithCurrentFiber({
+      fiber,
+      action: function safeCallFiberTriggerListener() {
+        listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, updateState));
+      },
+    });
 
     if (updateState.isSync) {
       renderPlatform.microTask(function triggerSyncUpdateOnFiber() {

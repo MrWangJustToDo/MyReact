@@ -1,12 +1,14 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
-import { afterSyncUpdate, beforeSyncUpdate, generateFiberToMountList, safeCallWithCurrentFiber } from "../share";
+import { afterSyncUpdate, beforeSyncUpdate, generateFiberToMountList, resetLogScope, safeCallWithCurrentFiber, setLogScope } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { currentRenderPlatform } = __my_react_internal__;
+
+const { enableScopeTreeLog } = __my_react_shared__;
 
 export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
   const mountInsertionEffectList = (_fiber: MyReactFiberNode) => {
@@ -71,7 +73,11 @@ export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: 
     const renderPlatform = currentRenderPlatform.current;
 
     renderPlatform.microTask(function invokeEffectList() {
+      __DEV__ && enableScopeTreeLog.current && setLogScope();
+
       mountEffectList(_fiber);
+
+      __DEV__ && enableScopeTreeLog.current && resetLogScope();
     });
   };
 
@@ -120,9 +126,13 @@ export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: 
   const renderPlatform = currentRenderPlatform.current;
 
   renderPlatform.microTask(function invokeEffectListTask() {
+    __DEV__ && enableScopeTreeLog.current && setLogScope();
+
     _list.listToFoot(function invokeEffectList(_fiber) {
       effect(_fiber, _dispatch);
     });
+
+    __DEV__ && enableScopeTreeLog.current && resetLogScope();
   });
 };
 

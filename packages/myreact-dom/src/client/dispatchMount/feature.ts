@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import {
   afterSyncUpdate,
   beforeSyncUpdate,
@@ -6,7 +6,9 @@ import {
   generateFiberToMountList,
   insertionEffect,
   layoutEffect,
+  resetLogScope,
   safeCallWithCurrentFiber,
+  setLogScope,
 } from "@my-react/react-reconciler";
 
 import { fallback } from "@my-react-dom-client/api";
@@ -15,6 +17,8 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
 const { currentRenderPlatform } = __my_react_internal__;
+
+const { enableScopeTreeLog } = __my_react_shared__;
 
 let currentHydratedNode: ChildNode | null = null;
 
@@ -100,9 +104,13 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
     const renderPlatform = currentRenderPlatform.current;
 
     renderPlatform.microTask(function invokeEffectListTask() {
+      __DEV__ && enableScopeTreeLog.current && setLogScope();
+
       _list.listToFoot(function invokeEffectList(fiber) {
         effect(fiber, _dispatch);
       });
+
+      __DEV__ && enableScopeTreeLog.current && resetLogScope();
     });
   };
 

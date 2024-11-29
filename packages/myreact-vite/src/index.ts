@@ -36,6 +36,8 @@ export interface Options {
   babel?: BabelOptions | ((id: string, options: { ssr?: boolean }) => BabelOptions);
 
   remix?: boolean;
+
+  reactRouter?: boolean;
 }
 
 export type BabelOptions = Omit<babelCore.TransformOptions, "ast" | "filename" | "root" | "sourceFileName" | "sourceMaps" | "inputSourceMap">;
@@ -263,13 +265,24 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
     transform(code, id) {
       // see https://github.com/remix-run/remix/blob/bff2d58bdd22fe305f3e7ca8ddad03c5940f4e90/packages/remix-dev/vite/plugin.ts#L1685
       // inject HMR runtime for remix
-      if(id === '\0virtual:remix/inject-hmr-runtime') {
+      if (id === "\0virtual:remix/inject-hmr-runtime") {
         return `${code} \n ${preambleCode.replace(`__BASE__`, devBase)}`;
       }
     },
   };
 
-  return [viteBabel, viteReactRefresh, opts.remix ? viteRemixRefresh : null].filter(Boolean);
+  const viteReactRouterRefresh: Plugin = {
+    name: "vite:my-react-refresh-react-router",
+    enforce: "post",
+    transform(code, id) {
+      // see https://github.com/remix-run/react-router/blob/20afd82a683f175150dd05095aa677686665fbc8/packages/react-router-dev/vite/plugin.ts#L1457
+      if (id === "\0virtual:react-router/inject-hmr-runtime") {
+        return `${code} \n ${preambleCode.replace(`__BASE__`, devBase)}`;
+      }
+    },
+  };
+
+  return [viteBabel, viteReactRefresh, opts.remix ? viteRemixRefresh : null, opts.reactRouter ? viteReactRouterRefresh : null].filter(Boolean);
 }
 
 viteReact.preambleCode = preambleCode;

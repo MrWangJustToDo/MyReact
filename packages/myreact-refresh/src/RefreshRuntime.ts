@@ -4,13 +4,17 @@ import { ForwardRef, Memo, STATE_TYPE, TYPEKEY } from "@my-react/react-shared";
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactComponentType, MyReactElementType } from "@my-react/react";
 import type { CustomRenderDispatch, CustomRenderDispatchDev, HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
+interface RefreshCustomRenderDispatch extends CustomRenderDispatch {
+  ["$$hasRefreshInject"]?: boolean;
+}
+
 const DISPATCH_FIELD = "__@my-react/dispatch__";
 
-const DEV_REFRESH_FIELD = "__@my-react/react-refresh__";
+const DEV_REFRESH_FIELD = "__@my-react/react-refresh-inject__";
 
 const DEV_TOOL_FIELD = "__@my-react/react-refresh-dev__";
 
-let hmrRuntime: HMR[];
+const hmrRuntime = new Set<HMR>();
 
 let id = 0;
 
@@ -276,7 +280,7 @@ export const createSignatureFunctionForTransform = () => {
 export const performReactRefresh = () => {
   if (!pendingUpdates.length) return;
 
-  if (hmrRuntime.length === 0) {
+  if (hmrRuntime.size === 0) {
     console.log(`[@my-react/react-refresh] try to refresh current App failed, current environment not have a valid HMR runtime`);
     return;
   }
@@ -440,10 +444,11 @@ export const isLikelyComponentType = (type: MyReactElementType) => {
   }
 };
 
-const setRefreshRuntimeFieldForDev = (container: CustomRenderDispatch) => {
-  if (Object.prototype.hasOwnProperty.call(container, "__refresh_runtime__")) {
-    return;
-  }
+const setRefreshRuntimeFieldForDev = (container: RefreshCustomRenderDispatch) => {
+  if (container['$$hasRefreshInject']) return;
+
+  container['$$hasRefreshInject'] = true;
+  
   Object.defineProperty(container, "__refresh_runtime__", {
     value: {
       version,
@@ -459,40 +464,34 @@ const setRefreshRuntimeFieldForDev = (container: CustomRenderDispatch) => {
   });
 };
 
-let hasInjected = false;
+const hmrSet = new Set<HMR["hmr"]>();
 
-const setupRefresh = (dispatchArray: CustomRenderDispatch[]) => {
-  if (hasInjected) return;
+const setupRefresh = (dispatchArray: RefreshCustomRenderDispatch[]) => {
+  const allNeedInject = dispatchArray.filter((item) => !item?.["$$hasRefreshInject"]);
 
-  const typedDispatchArray = dispatchArray as CustomRenderDispatchDev[];
+  const typedDispatchArray = allNeedInject as CustomRenderDispatchDev[];
 
   const allHMRRuntime = typedDispatchArray.map((item) => item?.["__hmr_runtime__"]);
 
-  allHMRRuntime.forEach((c, i) => {
-    const n = allHMRRuntime[i + 1];
-    if (n && c?.hmr !== n?.hmr) {
+  allHMRRuntime.forEach((c) => {
+    if (hmrSet.has(c?.hmr)) {
       console.warn(
         `[@my-react/react-refresh] find multiple HMR runtime in current environment, look like you are using multiple version of @my-react for current page, it may cause some problem!`
       );
     }
+    hmrSet.add(c?.hmr);
   });
 
   if (allHMRRuntime.length > 0) {
-    hmrRuntime = allHMRRuntime;
+    allHMRRuntime.forEach(i => hmrRuntime.add(i));
 
-    const setRefreshHandler = new Set(hmrRuntime.map((i) => i.setRefreshHandler));
+    const newAdded = new Set(allHMRRuntime.map(i => i.setRefreshHandler));
 
-    setRefreshHandler.forEach((item) => {
-      item(resolveFamily);
-    });
+    newAdded.forEach((item) => item(resolveFamily));
 
     dispatchArray.forEach((dispatch) => setRefreshRuntimeFieldForDev(dispatch));
 
     console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;");
-
-    hasInjected = true;
-
-    delete typedSelf[DEV_REFRESH_FIELD];
   } else {
     console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;");
   }

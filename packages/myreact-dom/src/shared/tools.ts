@@ -8,6 +8,11 @@ export const isInternal = (key: string) => key.startsWith("_");
 /**
  * @internal
  */
+export const isKeep = (key: string) => key === "suppressContentEditableWarning" || key === "suppressHydrationWarning";
+
+/**
+ * @internal
+ */
 export const isChildren = (key: string) => key === "children" || key === "dangerouslySetInnerHTML";
 
 /**
@@ -23,7 +28,7 @@ export const isStyle = (key: string) => key === "style";
 /**
  * @internal
  */
-export const isProperty = (key: string) => !isChildren(key) && !isEvent(key) && !isStyle(key) && !isInternal(key);
+export const isProperty = (key: string) => !isChildren(key) && !isEvent(key) && !isStyle(key) && !isInternal(key) && !isKeep(key);
 
 /**
  * @internal

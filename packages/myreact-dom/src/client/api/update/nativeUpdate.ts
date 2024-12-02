@@ -3,7 +3,7 @@ import { include } from "@my-react/react-shared";
 
 import { enableControlComponent, enableEventSystem, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
 
-import { addEventListener, controlElementTag, initSelect, removeEventListener, setAttribute, setStyle, updateSelect } from "../helper";
+import { addEventListener, controlElementTag, initSelect, removeEventListener, setAttribute, setInnerHtml, setStyle, setTextContent, updateSelect } from "../helper";
 
 import { mountControl, updateControl } from "./control";
 import { getAllKeys } from "./tool";
@@ -27,7 +27,7 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
   const isSVG = !!parentFiberWithSVG;
 
   if (include(fiber.type, NODE_TYPE.__text__)) {
-    node.textContent = fiber.elementType as string;
+    setTextContent(fiber);
   } else if (include(fiber.type, NODE_TYPE.__plain__)) {
     const dom = node as HTMLElement;
 
@@ -76,15 +76,6 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
       }
     }
 
-    if (oldProps["dangerouslySetInnerHTML"] && !newProps["dangerouslySetInnerHTML"]) {
-      dom.innerHTML = "";
-    } else if (
-      newProps["dangerouslySetInnerHTML"] &&
-      newProps["dangerouslySetInnerHTML"] !== oldProps["dangerouslySetInnerHTML"] &&
-      newProps["dangerouslySetInnerHTML"].__html !== oldProps["dangerouslySetInnerHTML"]?.__html
-    ) {
-      const typedProps = newProps["dangerouslySetInnerHTML"] as Record<string, unknown>;
-      dom.innerHTML = typedProps.__html as string;
-    }
+    setInnerHtml(fiber);
   }
 };

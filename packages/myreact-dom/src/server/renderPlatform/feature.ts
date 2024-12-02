@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { fiberToDispatchMap, getFiberTree, processHookNode, enableFiberForLog } from "@my-react/react-reconciler";
+import { fiberToDispatchMap, getFiberTree, processHookNode, enableFiberForLog, enableValidMyReactElement } from "@my-react/react-reconciler";
 
 import { DomPlatform } from "@my-react-dom-shared";
 
@@ -15,6 +15,8 @@ const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
  */
 export const initGlobalRenderPlatform = () => {
   enableFiberForLog.current = false;
+
+  enableValidMyReactElement.current = false;
 
   const MyReactServerDomPlatform = new DomPlatform(true);
 

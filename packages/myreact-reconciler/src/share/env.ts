@@ -20,4 +20,6 @@ export const fiberToDispatchMap = new MyWeakMap() as WeakMap<MyReactFiberNode, C
 
 export const enableFiberForLog = createRef(false);
 
+export const enableValidMyReactElement = createRef(false);
+
 export const enableLogForCurrentFlowIsRunning = createRef(false);

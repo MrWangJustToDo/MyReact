@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { devErrorWithFiber, enableFiberForLog, processHookNode, processState, triggerError } from "@my-react/react-reconciler";
+import { devErrorWithFiber, enableFiberForLog, enableValidMyReactElement, processHookNode, processState, triggerError } from "@my-react/react-reconciler";
 
 import { DomPlatform } from "@my-react-dom-shared";
 
@@ -42,6 +42,8 @@ function dispatchError(this: DomPlatform, _params: { fiber: MyReactFiberNode; er
  */
 export const initGlobalRenderPlatform = () => {
   enableFiberForLog.current = true;
+
+  enableValidMyReactElement.current = true;
 
   const MyReactServerDomPlatform = new DomPlatform(false);
 

@@ -18,6 +18,7 @@ import {
 } from "@my-react/react-shared";
 
 import { devWarn } from "./debug";
+import { enableValidMyReactElement } from "./env";
 import { NODE_TYPE } from "./fiberType";
 import { getElementFromRefreshIfExist } from "./refresh";
 
@@ -60,7 +61,7 @@ export const getElementTypeFromType = (type: MyReactComponentType): MyReactCompo
 export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeFromElement => {
   let nodeType = NODE_TYPE.__initial__;
 
-  if (__DEV__) {
+  if (__DEV__ && enableValidMyReactElement.current) {
     checkIsMyReactElement(element);
   }
 

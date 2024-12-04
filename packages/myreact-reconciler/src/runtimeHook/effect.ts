@@ -54,10 +54,15 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
 
     if (hookNode.type === HOOK_TYPE.useImperativeHandle) {
       renderDispatch.pendingLayoutEffect(fiber, function invokeLayoutEffectOnHook() {
+        hookNode.cancel && hookNode.cancel();
+
         // ref obj
         if (hookNode.value && typeof hookNode.value === "object") hookNode.value.current = hookNode.reducer.call(null);
         // ref function
         if (hookNode.value && typeof hookNode.value === "function") hookNode.value(hookNode.reducer.call(null));
+
+        // TODO
+        // hookNode.cancel = 
 
         hookNode.hasEffect = false;
 

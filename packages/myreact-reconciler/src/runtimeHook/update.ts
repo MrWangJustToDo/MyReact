@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { HOOK_TYPE, STATE_TYPE, include, isArrayEquals } from "@my-react/react-shared";
+import { HOOK_TYPE, STATE_TYPE, include, isArrayEquals, isNormalEquals } from "@my-react/react-shared";
 
 import { getInstanceContextFiber, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
 import { currentRenderDispatch, safeCallWithCurrentFiber } from "../share";
@@ -53,18 +53,30 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     }
   }
 
-  if (
-    currentHook.type === HOOK_TYPE.useEffect ||
-    currentHook.type === HOOK_TYPE.useLayoutEffect ||
-    currentHook.type === HOOK_TYPE.useInsertionEffect ||
-    currentHook.type === HOOK_TYPE.useImperativeHandle
-  ) {
+  if (currentHook.type === HOOK_TYPE.useEffect || currentHook.type === HOOK_TYPE.useLayoutEffect || currentHook.type === HOOK_TYPE.useInsertionEffect) {
     if (isHMR || !deps || !isArrayEquals(currentHook.deps, deps)) {
       currentHook.value = value;
 
       currentHook.result = value;
 
       currentHook.reducer = reducer || currentHook.reducer;
+
+      currentHook.deps = deps;
+
+      currentHook.hasEffect = true;
+    }
+    return currentHook;
+  }
+
+  if (currentHook.type === HOOK_TYPE.useImperativeHandle) {
+    let depsChanged = false;
+    // ref changed also need to trigger effect
+    if (isHMR || !deps || !isNormalEquals(currentHook.value, value) || (depsChanged = !isArrayEquals(currentHook.deps, deps), depsChanged)) {
+      currentHook.value = value;
+
+      currentHook.result = value;
+
+      currentHook.reducer = depsChanged ? reducer || currentHook.reducer : currentHook.reducer;
 
       currentHook.deps = deps;
 

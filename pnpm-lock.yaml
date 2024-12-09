@@ -136,7 +136,7 @@ importers:
   packages/myreact-dom:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.3'
+        specifier: '>=0.3.4'
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
@@ -149,7 +149,7 @@ importers:
   packages/myreact-jsx:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.3'
+        specifier: '>=0.3.4'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
@@ -159,7 +159,7 @@ importers:
   packages/myreact-reactivity:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.3'
+        specifier: '>=0.3.4'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
@@ -169,7 +169,7 @@ importers:
   packages/myreact-reconciler:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.3'
+        specifier: '>=0.3.4'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
@@ -179,7 +179,7 @@ importers:
   packages/myreact-refresh:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.3'
+        specifier: '>=0.3.4'
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
@@ -192,7 +192,7 @@ importers:
   packages/myreact-refresh-tools:
     dependencies:
       '@my-react/react-refresh':
-        specifier: '>=0.3.3'
+        specifier: '>=0.3.4'
         version: link:../myreact-refresh
       webpack:
         specifier: ^4 || ^5
@@ -210,7 +210,7 @@ importers:
         specifier: ^0.1.3
         version: 0.1.3
       '@my-react/react':
-        specifier: '>=0.3.3'
+        specifier: '>=0.3.4'
         version: link:../myreact
       ansi-escapes:
         specifier: ^6.2.0
@@ -304,7 +304,7 @@ importers:
         specifier: ^7.22.5
         version: 7.22.5(@babel/core@7.22.5)
       '@my-react/react-refresh':
-        specifier: '>=0.3.3'
+        specifier: '>=0.3.4'
         version: link:../myreact-refresh
       vite:
         specifier: ^4 || ^5

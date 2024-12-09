@@ -27,11 +27,12 @@ type Listeners = {
   fiberTrigger: Set<(fiber: MyReactFiberNode, state: UpdateState) => void>;
   fiberUnmount: Set<(fiber: MyReactFiberNode) => void>;
   fiberHMR?: Set<(fiber: MyReactFiberNode) => void>;
-  fiberRun?: Set<(fiber: MyReactFiberNode) => void>;
   fiberWarn?: Set<(fiber: MyReactFiberNode, ...args: any) => void>;
   fiberError?: Set<(fiber: MyReactFiberNode, ...args: any) => void>;
   fiberHasChange: Set<(list: ListTree<MyReactFiberNode>) => void>;
   performanceWarn?: Set<(fiber: MyReactFiberNode) => void>;
+  beforeFiberRun?: Set<(fiber: MyReactFiberNode) => void>;
+  afterFiberRun?: Set<(fiber: MyReactFiberNode) => void>;
 
   instanceInitial: Set<(instance: MyReactComponent, fiber: MyReactFiberNode) => void>;
   instanceUpdate: Set<(instance: MyReactComponent, fiber: MyReactFiberNode) => void>;
@@ -59,7 +60,8 @@ const getInitialValue = (): Listeners => {
         fiberHasChange: new Set(),
         fiberUnmount: new Set(),
         fiberHMR: new Set(),
-        fiberRun: new Set(),
+        beforeFiberRun: new Set(),
+        afterFiberRun: new Set(),
         fiberWarn: new Set(),
         fiberError: new Set(),
         fiberState: new Set(),
@@ -342,26 +344,6 @@ export class CustomRenderDispatch implements RenderDispatch {
     set?.add?.(onceCb);
   }
 
-  onFiberRun(cb: (_fiber: MyReactFiberNode) => void) {
-    const set = listenerMap.get(this).fiberRun;
-
-    set?.add?.(cb);
-
-    return () => set?.delete?.(cb);
-  }
-
-  onceFiberRun(cb: (_fiber: MyReactFiberNode) => void) {
-    const set = listenerMap.get(this).fiberRun;
-
-    const onceCb = (_fiber: MyReactFiberNode) => {
-      cb(_fiber);
-
-      set?.delete?.(onceCb);
-    };
-
-    set?.add?.(onceCb);
-  }
-
   onFiberWarn(cb: (_fiber: MyReactFiberNode, ...args: any) => void) {
     const set = listenerMap.get(this).fiberWarn;
 
@@ -412,6 +394,46 @@ export class CustomRenderDispatch implements RenderDispatch {
 
   oncePerformanceWarn(cb: (_fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).performanceWarn;
+
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      set?.delete?.(onceCb);
+    };
+
+    set?.add?.(onceCb);
+  }
+
+  onBeforeFiberRun(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).beforeFiberRun;
+
+    set?.add?.(cb);
+
+    return () => set?.delete?.(cb);
+  }
+
+  onceBeforeFiberRun(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).beforeFiberRun;
+
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      set?.delete?.(onceCb);
+    };
+
+    set?.add?.(onceCb);
+  }
+
+  onAfterFiberRun(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).afterFiberRun;
+
+    set?.add?.(cb);
+
+    return () => set?.delete?.(cb);
+  }
+
+  onceAfterFiberRun(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).afterFiberRun;
 
     const onceCb = (_fiber: MyReactFiberNode) => {
       cb(_fiber);

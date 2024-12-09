@@ -70,7 +70,7 @@
     }
   },
   "peerDependencies": {
-    "@my-react/react-refresh": ">=0.3.3",
+    "@my-react/react-refresh": ">=0.3.4",
     "webpack": "^4 || ^5"
   }
 }

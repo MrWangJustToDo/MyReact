@@ -176,11 +176,20 @@ export const runtimeNextWork = (fiber: MyReactFiberNode) => {
 export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   const renderDispatch = currentRenderDispatch.current;
 
+  safeCallWithCurrentFiber({
+    fiber,
+    action: function safeCallFiberRunListener() {
+      listenerMap.get(renderDispatch)?.beforeFiberRun?.forEach((cb) => cb(fiber));
+    },
+  });
+
   setRefreshTypeMap(fiber);
+
+  const typedFiber = fiber as MyReactFiberNodeDev;
 
   const start = Date.now();
 
-  const res = runtimeNextWork(fiber);
+  runtimeNextWork(fiber);
 
   const end = Date.now();
 
@@ -200,8 +209,6 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
       },
     });
   }
-
-  const typedFiber = fiber as MyReactFiberNodeDev;
 
   const timeNow = end;
 
@@ -234,9 +241,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberRunListener() {
-      listenerMap.get(renderDispatch)?.fiberRun?.forEach((cb) => cb(fiber));
+      listenerMap.get(renderDispatch)?.afterFiberRun?.forEach((cb) => cb(fiber));
     },
   });
-
-  return res;
 };

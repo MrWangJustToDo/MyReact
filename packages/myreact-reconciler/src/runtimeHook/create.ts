@@ -4,7 +4,7 @@ import { HOOK_TYPE } from "@my-react/react-shared";
 import { initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
 import { currentRenderDispatch, getStack, safeCallWithCurrentFiber } from "../share";
 
-import { checkHookValid, isValidHookName, isValidInternalHookName } from "./check";
+import { checkHookValid, isValidInternalHookName } from "./check";
 import { MyReactHookNode } from "./instance";
 import { MyReactSignal } from "./signal";
 
@@ -157,26 +157,35 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     try {
       const stack = getStack();
 
-      const res: NodeJS.CallSite[] = [];
+      const res = [];
 
-      while (stack.length > 0 && !isValidInternalHookName(stack[0].getFunctionName())) {
-        stack.shift();
+      const typedStack = stack.map((i) => {
+        const line = i.getEnclosingLineNumber();
+        const column = i.getEnclosingColumnNumber();
+        const fileName = i.getFileName() || "Unknown";
+        const functionName = i.getFunctionName() || "Anonymous";
+        const scriptName = i.getScriptNameOrSourceURL() || "Unknown";
+        return {
+          id: `${scriptName}-${fileName}-${functionName}-${line}-${column}`,
+          name: i.getMethodName() || i.getFunctionName() || "Anonymous",
+        };
+      });
+
+      while (typedStack.length > 0 && !isValidInternalHookName(typedStack[0].name)) {
+        typedStack.shift();
       }
 
-      while (stack.length > 0 && isValidHookName(stack[0].getFunctionName())) {
-        res.push(stack.shift());
+      while (typedStack.length > 0) {
+        if (typedStack[0].name === "safeCallForwardRefFunctionalComponent" || typedStack[0].name === "safeCallFunctionalComponent") {
+          break;
+        }
+        res.push(typedStack.shift());
       }
 
-      typedHook._debugStack = res
-        .map((i) => {
-          const line = i.getEnclosingLineNumber();
-          const column = i.getEnclosingColumnNumber();
-          const fileName = i.getFileName() || 'Unknown';
-          const functionName = i.getFunctionName() || "Anonymous";
-          const scriptName = i.getScriptNameOrSourceURL() || 'Unknown';
-          return { id: `${scriptName}:${fileName}:${line}:${column}`, name: functionName };
-        })
-        .reverse();
+      // pop current component
+      res.pop();
+
+      typedHook._debugStack = res.reverse();
     } catch (e) {
       void 0;
     }

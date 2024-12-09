@@ -42,6 +42,6 @@
     "@my-react/react-shared": "^0.3.4"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.3"
+    "@my-react/react": ">=0.3.4"
   }
 }

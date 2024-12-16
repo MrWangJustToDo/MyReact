@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.production.js"></script>
+  <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+  <script src="../packages/myreact-dom/dist/umd/index.production.js"></script>
+  <!-- <script src="../bundle/react.18.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    function SubComponent({ prop }) {
+      return <p>array length: {prop.length}</p>;
+    }
+
+    function Test({ prop }) {
+      return (
+        <div className="holder">
+          <SubComponent prop={prop} />
+        </div>
+      );
+    }
+
+    function App() {
+      // Initially, a very large state.
+      const [state, setState] = React.useState(
+        Array.from({ length: 20_000_000 }, () => Math.random())
+      );
+
+      const [b, setB] = React.useState(0);
+
+      return (
+        <>
+          {b}
+          <Test prop={state} />
+          <button
+            onClick={() => {
+              // Any next state is a lot smaller.
+              setState(Array.from({ length: 1_000_000 }, () => Math.random()));
+              setB(b + 1);
+            }}
+          >
+            Next
+          </button>
+        </>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+
+</html>

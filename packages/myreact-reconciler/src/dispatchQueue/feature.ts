@@ -31,8 +31,6 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
   const typedFiber = fiber as MyReactFiberNodeDev;
 
-  if (__DEV__ && enableDebugFiled.current) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
-
   let node = allQueue?.head;
 
   let isSync = false;
@@ -92,6 +90,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
           typedNode._debugAfterValue = fiber.pendingState;
 
           typedNode._debugUpdateState = { needUpdate: true, isSync, isForce, callbacks: callbacks.slice(0) };
+
+          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
           typedFiber._debugUpdateQueue.push(typedNode);
         }
@@ -157,6 +157,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
           typedNode._debugUpdateState = { needUpdate: true, isSync, isForce, callbacks: callbacks.slice(0) };
 
+          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+
           typedFiber._debugUpdateQueue.push(typedNode);
         }
       }
@@ -191,8 +193,6 @@ export const processFunctionComponentUpdateQueue = (
   const allQueue = fiber.updateQueue;
 
   const typedFiber = fiber as MyReactFiberNodeDev;
-
-  if (__DEV__ && enableDebugFiled.current && allQueue) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
   let node = allQueue?.head;
 
@@ -250,6 +250,8 @@ export const processFunctionComponentUpdateQueue = (
           typedNode._debugAfterValue = typedTrigger.result;
 
           typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
+
+          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
           typedFiber._debugUpdateQueue.push(typedNode);
 
@@ -324,6 +326,8 @@ export const processFunctionComponentUpdateQueue = (
           typedNode._debugAfterValue = typedTrigger.result;
 
           typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
+          
+          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
           typedFiber._debugUpdateQueue.push(typedNode);
 
@@ -357,8 +361,6 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
   const allQueue = fiber.updateQueue;
 
   const typedFiber = fiber as MyReactFiberNodeDev;
-
-  if (__DEV__ && enableDebugFiled.current && allQueue) typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
   let node = allQueue?.head;
 
@@ -400,6 +402,8 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
         typedNode._debugAfterValue = payLoad;
 
         typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
+
+        typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
         typedFiber._debugUpdateQueue.push(typedNode);
       }

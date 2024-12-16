@@ -19,7 +19,7 @@
     "@types/react-dom": "^18.2.19",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
-    "next": "^15.0.3",
+    "next": "^15.1.0",
     "postcss": "^8.4.47",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -30,14 +30,9 @@
     "react": "node_modules/@my-react/react",
     "react-dom": "node_modules/@my-react/react-dom"
   },
-  "aliases": {
-    "react": "node_modules/@my-react/react/index.js",
-    "react-dom": "node_modules/@my-react/react-dom/index.js"
-  },
   "devDependencies": {
-    "babel-plugin-react-compiler": "19.0.0-beta-a7bf2bd-20241110",
-    "esm-module-alias": "^2.2.0",
+    "babel-plugin-react-compiler": "19.0.0-beta-37ed2a7-20241206",
     "module-alias": "^2.2.3",
-    "react-compiler-runtime": "19.0.0-beta-a7bf2bd-20241110"
+    "react-compiler-runtime": "19.0.0-beta-37ed2a7-20241206"
   }
 }

@@ -435,14 +435,14 @@ export function validateDOMNesting(fiber: MyReactFiberNodeClientDev, childTag: s
         fiber,
         "error",
         "validateDOMNesting",
-        `In HTML, ${tagDisplayName} cannot be a child of <${ancestorTag}>.${info}\nThis will cause a hydration error.`
+        `In HTML, ${tagDisplayName} cannot be a child of <${ancestorTag}>.${info} This will cause a hydration error.`
       );
     } else {
       logOnce(
         fiber,
         "error",
         "validateDOMNesting",
-        `In HTML, ${tagDisplayName} cannot be a descendant of <${ancestorTag}>.\nThis will cause a hydration error.`
+        `In HTML, ${tagDisplayName} cannot be a descendant of <${ancestorTag}>. This will cause a hydration error.`
       );
     }
 
@@ -474,7 +474,7 @@ export function validateTextNesting(fiber: MyReactFiberNodeClientDev, childText:
     hasWarnMap[tree] = true;
 
     if (/\S/.test(childText)) {
-      logOnce(fiber, "error", "validateTextNesting", `In HTML, text nodes cannot be a child of <${parentTag}>.\nThis will cause a hydration error.`);
+      logOnce(fiber, "error", "validateTextNesting", `In HTML, text nodes cannot be a child of <${parentTag}>. This will cause a hydration error.`);
     } else {
       logOnce(
         fiber,
@@ -482,7 +482,7 @@ export function validateTextNesting(fiber: MyReactFiberNodeClientDev, childText:
         "validateTextNesting",
         `In HTML, whitespace text nodes cannot be a child of <${parentTag}>. ` +
           "Make sure you don't have any extra whitespace between tags on " +
-          "each line of your source code.\n" +
+          "each line of your source code. " +
           "This will cause a hydration error."
       );
     }

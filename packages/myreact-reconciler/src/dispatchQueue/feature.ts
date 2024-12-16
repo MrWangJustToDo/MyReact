@@ -101,7 +101,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
     if (allQueue.length) {
       renderPlatform.microTask(function prepareUpdateOnFiberTask() {
-        prepareUpdateOnFiber(fiber, renderDispatch);
+        prepareUpdateOnFiber(fiber, renderDispatch, true);
       });
     }
 
@@ -266,7 +266,7 @@ export const processFunctionComponentUpdateQueue = (
 
     if (allQueue.length) {
       renderPlatform.microTask(function prepareUpdateOnFiberTask() {
-        prepareUpdateOnFiber(fiber, renderDispatch);
+        prepareUpdateOnFiber(fiber, renderDispatch, true);
       });
     }
 

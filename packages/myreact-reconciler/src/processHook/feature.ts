@@ -2,21 +2,23 @@ import { __my_react_internal__ } from "@my-react/react";
 import { HOOK_TYPE, ListTree, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { listenerMap } from "../renderDispatch";
+import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { createHookNode, effectHookNode, updateHookNode } from "../runtimeHook";
 import { currentRenderDispatch, safeCall } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { MyReactHookNode } from "../runtimeHook";
+import type { InstanceField } from "../runtimeGenerate";
+import type { HookInstanceField, MyReactHookNode } from "../runtimeHook";
 import type { RenderHookParams } from "@my-react/react";
 
 const { currentComponentFiber, currentHookNodeIndex } = __my_react_internal__;
 
-const resolveHookValue = (hookNode: MyReactHookNode) => {
+const resolveHookValue = (hookNode: MyReactHookNode, field: InstanceField) => {
   if (hookNode) {
     switch (hookNode.type) {
       case HOOK_TYPE.useState:
       case HOOK_TYPE.useReducer:
-        return [hookNode.result, hookNode._dispatch];
+        return [hookNode.result, (field as HookInstanceField).dispatch];
       case HOOK_TYPE.useId:
       case HOOK_TYPE.useRef:
       case HOOK_TYPE.useMemo:
@@ -63,7 +65,9 @@ export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams
 
   currentHookNodeIndex.current++;
 
-  effectHookNode(fiber, currentHook);
+  const field = getInstanceFieldByInstance(currentHook);
 
-  return resolveHookValue(currentHook);
+  effectHookNode(fiber, currentHook, field);
+
+  return resolveHookValue(currentHook, field);
 };

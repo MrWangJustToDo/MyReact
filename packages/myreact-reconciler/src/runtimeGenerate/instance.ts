@@ -5,17 +5,19 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { MyReactInternalInstance: MyReactInternalInstanceClass } = __my_react_internal__;
 
-type InstanceField = {
+export type InstanceField = {
   _context: MyReactFiberNode | null;
   _owner: MyReactFiberNode | null;
   effect: Effect_TYPE;
 };
 
 // support private instance field
-export const instanceMap = new Map<MyReactInternalInstance, InstanceField>();
+const instanceMap = new Map<MyReactInternalInstance, InstanceField>();
 
 export const initInstance = (instance: MyReactInternalInstance) => {
-  if (instanceMap.has(instance)) return;
+  const exist = instanceMap.get(instance);
+
+  if (exist) return exist; 
 
   const field: InstanceField = {
     _context: null,
@@ -24,10 +26,12 @@ export const initInstance = (instance: MyReactInternalInstance) => {
   };
 
   instanceMap.set(instance, field);
+
+  return field;
 };
 
-export const setContextForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode | null) => {
-  const field = instanceMap.get(instance);
+export const setContextForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode | null, instanceField?: InstanceField) => {
+  const field = instanceField || instanceMap.get(instance);
 
   // unmount instance
   if (!field) return;
@@ -39,8 +43,8 @@ export const setContextForInstance = (instance: MyReactInternalInstance, fiber: 
   field._context?._addDependence(instance);
 };
 
-export const setOwnerForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode) => {
-  const field = instanceMap.get(instance);
+export const setOwnerForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode, instanceField?: InstanceField) => {
+  const field = instanceField || instanceMap.get(instance);
 
   // unmount instance
   if (!field) return;
@@ -48,8 +52,8 @@ export const setOwnerForInstance = (instance: MyReactInternalInstance, fiber: My
   field._owner = fiber;
 };
 
-export const setEffectForInstance = (instance: MyReactInternalInstance, effect: Effect_TYPE) => {
-  const field = instanceMap.get(instance);
+export const setEffectForInstance = (instance: MyReactInternalInstance, effect: Effect_TYPE, instanceField?: InstanceField) => {
+  const field = instanceField || instanceMap.get(instance);
 
   // unmount instance
   if (!field) return;
@@ -71,6 +75,14 @@ export const unmountInstance = (instance: MyReactInternalInstance) => {
   field._context = null;
 
   instanceMap.delete(instance);
+};
+
+export const getInstanceFieldByInstance = (instance: MyReactInternalInstance) => {
+  const field = instanceMap.get(instance);
+
+  if (!field) throw new Error("[@my-react/react] instance not found, look like a bug for @my-react");
+
+  return field;
 };
 
 export const getInstanceOwnerFiber = (instance: MyReactInternalInstance | MyReactFiberNode): MyReactFiberNode => {

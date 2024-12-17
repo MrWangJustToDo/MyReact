@@ -5,7 +5,7 @@ import { initInstance, setContextForInstance, setOwnerForInstance } from "../run
 import { currentRenderDispatch, getStack, safeCallWithCurrentFiber } from "../share";
 
 import { checkHookValid, isValidInternalHookName } from "./check";
-import { MyReactHookNode } from "./instance";
+import { initHookInstance, MyReactHookNode } from "./instance";
 import { MyReactSignal } from "./signal";
 
 import type { MyReactHookNodeDev } from "./instance";
@@ -34,6 +34,8 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   const hookNode = new MyReactHookNode(type, value, reducer || defaultReducer, deps);
 
   initInstance(hookNode);
+
+  initHookInstance(hookNode);
 
   setOwnerForInstance(hookNode, fiber);
 

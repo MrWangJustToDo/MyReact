@@ -1,6 +1,8 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { UpdateQueueType } from "@my-react/react-shared";
 
+import { getInstanceFieldByInstance, type InstanceField } from "../runtimeGenerate";
+
 import type { UpdateQueueDev } from "../processState";
 import type { RenderHook, Action, HookUpdateQueue } from "@my-react/react";
 import type { ListTree, HOOK_TYPE } from "@my-react/react-shared";
@@ -33,7 +35,7 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
     this.value = value;
     this.reducer = reducer;
 
-    this._dispatch = this._dispatch.bind(this);
+    // this._dispatch = this._dispatch.bind(this);
   }
 
   get isMyReactHook() {
@@ -66,3 +68,17 @@ export interface MyReactHookNodeDev extends MyReactHookNode {
   _debugStack: { id: string; name: string }[];
   _debugUpdateQueue: ListTree<UpdateQueueDev>;
 }
+
+export type HookInstanceField = InstanceField & {
+  dispatch: (action: Action) => void;
+};
+
+export const initHookInstance = (hookNode: MyReactHookNode) => {
+  const field = getInstanceFieldByInstance(hookNode);
+
+  if (!field) throw new Error("[@my-react/react] hook instance not found, look like a bug for @my-react");
+
+  const typedField = field as HookInstanceField;
+
+  typedField.dispatch = (action: Action) => hookNode._dispatch(action);
+};

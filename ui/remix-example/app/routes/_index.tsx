@@ -16,6 +16,8 @@ export default function Index() {
     setTheme((prevTheme) => (prevTheme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT));
   };
 
+  console.warn("This is an error message");
+
   return (
     <>
       <button onClick={toggleTheme}>Toggle</button>

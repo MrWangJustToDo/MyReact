@@ -39,7 +39,11 @@ const fiberWarn = (fiber: MyReactFiberNode, ...args) => {
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberWarnListener() {
-      listenerMap.get(renderDispatch)?.fiberWarn?.forEach((listener) => listener(fiber, ...args));
+      try {
+        listenerMap.get(renderDispatch)?.fiberWarn?.forEach((listener) => listener(fiber, ...args));
+      } catch {
+        void 0;
+      }
     },
   });
 };
@@ -50,7 +54,11 @@ const fiberError = (fiber: MyReactFiberNode, ...args) => {
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberErrorListener() {
-      listenerMap.get(renderDispatch)?.fiberError?.forEach((listener) => listener(fiber, ...args));
+      try {
+        listenerMap.get(renderDispatch)?.fiberError?.forEach((listener) => listener(fiber, ...args));
+      } catch {
+        void 0;
+      }
     },
   });
 };

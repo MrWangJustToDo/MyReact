@@ -29,6 +29,9 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env, ass
 
   let initial = false;
 
+  /**
+   * React 原始的stream render会对组件执行顺序进行排序？
+   */
   const stream = renderToPipeableStream(
     <HTML
       lang={lang}

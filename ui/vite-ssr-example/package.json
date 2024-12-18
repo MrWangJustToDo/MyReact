@@ -1,5 +1,5 @@
 {
-  "name": "vite-example",
+  "name": "vite-ssr-example",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -15,7 +15,7 @@
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "express": "^4.21.1",
-    "framer-motion": "^11.14.4",
+    "framer-motion": "^11.15.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router": "^6.27.0",

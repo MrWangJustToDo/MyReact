@@ -43,7 +43,7 @@ function dispatchError(this: DomPlatform, _params: { fiber: MyReactFiberNode; er
 export const initGlobalRenderPlatform = () => {
   enableFiberForLog.current = true;
 
-  enableValidMyReactElement.current = true;
+  enableValidMyReactElement.current = false;
 
   const MyReactServerDomPlatform = new DomPlatform(false);
 

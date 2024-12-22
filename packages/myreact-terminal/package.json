@@ -3,7 +3,7 @@
   "description": "@my-react/react-terminal",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "main": "index.mjs",
   "types": "./index.d.ts",
   "type": "module",
@@ -52,8 +52,8 @@
     "yoga-layout": "^3.1.0"
   },
   "devDependencies": {
-    "@my-react/react-reconciler": "^0.3.4",
-    "@my-react/react-shared": "^0.3.4",
+    "@my-react/react-reconciler": "^0.3.5",
+    "@my-react/react-shared": "^0.3.5",
     "@types/lodash": "^4.17.13",
     "@types/signal-exit": "^3.0.4",
     "@types/slice-ansi": "^5.0.2",
@@ -61,6 +61,6 @@
     "@types/wrap-ansi": "^8.1.0"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.4"
+    "@my-react/react": ">=0.3.5"
   }
 }

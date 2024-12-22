@@ -113,7 +113,10 @@ class RefImpl {
 
 class ObjectRefImpl {
   public readonly [RefFlags.Ref_key] = true;
-  constructor(private readonly _object: Record<string, unknown>, private readonly _key: string | number) {}
+  constructor(
+    private readonly _object: Record<string, unknown>,
+    private readonly _key: string | number
+  ) {}
 
   get value() {
     return this._object[this._key];

@@ -33,7 +33,7 @@ export const outputConfig = ({
         chunkFilename: isDEV ? "[name].js" : "[name]-[contenthash].js",
         // 引入资源的url路径
         // publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `http://${PROD_HOST}:${PROD_PORT}/${_OUTPUT_SCOPE__}client/`,
-        // githubPage 
+        // githubPage
         publicPath: isDEV ? (isMIDDLEWARE ? "/dev/" : `http://${DEV_HOST}:${WDS_PORT}/dev/`) : `${currentBaseName}client/`,
       }
     : {

@@ -2,71 +2,67 @@
 function debounce(fn: Function, delay: number) {
   let handle: number;
   return () => {
-    clearTimeout(handle)
-    handle = setTimeout(fn, delay)
-  }
+    clearTimeout(handle);
+    handle = setTimeout(fn, delay);
+  };
 }
 
 /* eslint-disable no-undef */
-const enqueueUpdate = debounce(exports.performReactRefresh, 16)
+const enqueueUpdate = debounce(exports.performReactRefresh, 16);
 
 // Taken from https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/main/lib/runtime/RefreshUtils.js#L141
 // This allows to resister components not detected by SWC like styled component
 function registerExportsForReactRefresh(filename: string, moduleExports: Record<string, any>) {
   for (const key in moduleExports) {
-    if (key === '__esModule') continue
-    const exportValue = moduleExports[key]
+    if (key === "__esModule") continue;
+    const exportValue = moduleExports[key];
     if (exports.isLikelyComponentType(exportValue)) {
       // 'export' is required to avoid key collision when renamed exports that
       // shadow a local component name: https://github.com/vitejs/vite-plugin-react/issues/116
       // The register function has an identity check to not register twice the same component,
       // so this is safe to not used the same key here.
-      exports.register(exportValue, filename + ' export ' + key)
+      exports.register(exportValue, filename + " export " + key);
     }
   }
 }
 
 function validateRefreshBoundaryAndEnqueueUpdate(prevExports: Record<string, any>, nextExports: Record<string, any>) {
   if (!predicateOnExport(prevExports, (key: string) => key in nextExports)) {
-    return 'Could not Fast Refresh (export removed)'
+    return "Could not Fast Refresh (export removed)";
   }
   if (!predicateOnExport(nextExports, (key: string) => key in prevExports)) {
-    return 'Could not Fast Refresh (new export)'
+    return "Could not Fast Refresh (new export)";
   }
 
-  let hasExports = false
-  const allExportsAreComponentsOrUnchanged = predicateOnExport(
-    nextExports,
-    (key: string, value: any) => {
-      hasExports = true
-      if (exports.isLikelyComponentType(value)) return true
-      return prevExports[key] === nextExports[key]
-    },
-  )
+  let hasExports = false;
+  const allExportsAreComponentsOrUnchanged = predicateOnExport(nextExports, (key: string, value: any) => {
+    hasExports = true;
+    if (exports.isLikelyComponentType(value)) return true;
+    return prevExports[key] === nextExports[key];
+  });
   if (hasExports && allExportsAreComponentsOrUnchanged) {
-    enqueueUpdate()
+    enqueueUpdate();
   } else {
-    return 'Could not Fast Refresh. Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports'
+    return "Could not Fast Refresh. Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports";
   }
 }
 
 function predicateOnExport(moduleExports: any, predicate: (key: string, value: any) => boolean) {
   for (const key in moduleExports) {
-    if (key === '__esModule') continue
-    const desc = Object.getOwnPropertyDescriptor(moduleExports, key)
-    if (desc && desc.get) return false
-    if (!predicate(key, moduleExports[key])) return false
+    if (key === "__esModule") continue;
+    const desc = Object.getOwnPropertyDescriptor(moduleExports, key);
+    if (desc && desc.get) return false;
+    if (!predicate(key, moduleExports[key])) return false;
   }
-  return true
+  return true;
 }
 
 // Hides vite-ignored dynamic import so that Vite can skip analysis if no other
 // dynamic import is present (https://github.com/vitejs/vite/pull/12732)
 function __hmr_import(module: any) {
-  return import(/* @vite-ignore */ module)
+  return import(/* @vite-ignore */ module);
 }
 
-exports.__hmr_import = __hmr_import
-exports.registerExportsForReactRefresh = registerExportsForReactRefresh
-exports.validateRefreshBoundaryAndEnqueueUpdate =
-  validateRefreshBoundaryAndEnqueueUpdate
+exports.__hmr_import = __hmr_import;
+exports.registerExportsForReactRefresh = registerExportsForReactRefresh;
+exports.validateRefreshBoundaryAndEnqueueUpdate = validateRefreshBoundaryAndEnqueueUpdate;

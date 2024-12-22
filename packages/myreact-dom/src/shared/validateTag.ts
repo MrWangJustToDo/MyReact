@@ -4,7 +4,6 @@ import { include } from "@my-react/react-shared";
 import { logOnce } from "./debug";
 import { isHTMLTag, isSVGTag } from "./elementTag";
 
-
 /**
  * @internal
  */

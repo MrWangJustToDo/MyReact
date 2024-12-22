@@ -1,58 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-</head>
+  <body>
+    <div id="root"></div>
 
-<body>
-  <div id="root"></div>
+    <script type="text/babel">
+      const { Component } = React;
 
-  <script type="text/babel">
-    const { Component } = React;
+      class App extends Component {
+        state = {
+          a: 1,
+        };
 
-    class App extends Component {
-      state = {
-        a: 1
+        add = () => {
+          this.setState({
+            a: this.state.a + 1,
+          });
+        };
+
+        notChange = () => {
+          this.setState(
+            (a) => a,
+            () => {
+              console.log("callback");
+            }
+          );
+        };
+
+        componentDidUpdate() {
+          console.log(arguments);
+        }
+
+        render() {
+          return (
+            <div>
+              <p>{this.state.a};</p>
+              <button onClick={this.add}>add</button>
+              <button onClick={this.notChange}>no change</button>
+            </div>
+          );
+        }
       }
 
-      add = () => {
-
-        this.setState({
-          a: this.state.a + 1
-        })
-      }
-
-      notChange = () => {
-        this.setState((a) => a, () => {
-          console.log('callback');
-        });
-      }
-
-      componentDidUpdate() {
-        console.log(arguments);
-      }
-
-      render() {
-        return <div>
-          <p>
-            {this.state.a};
-          </p>
-          <button onClick={this.add}>add</button>
-          <button onClick={this.notChange}>no change</button>
-        </div>
-      }
-    }
-
-    ReactDOM.render(<App />, document.getElementById('root'));
-  </script>
-</body>
-
+      ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+  </body>
 </html>

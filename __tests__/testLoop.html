@@ -1,82 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <!-- <script src="../bundle/react.18.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  <!-- <script src="../bundle/react.18.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
-</head>
+  <body>
+    <div id="root"></div>
 
-<body>
-  <div id="root"></div>
+    <script type="text/babel">
+      const { useState, useEffect, useLayoutEffect } = React;
 
-  <script type="text/babel">
-    const { useState, useEffect, useLayoutEffect } = React;
+      const Bar = ({ set, s }) => {
+        return (
+          <div>
+            Bar {s}
+            <button onClick={set}>add</button>
+          </div>
+        );
+      };
 
-    const Bar = ({ set, s }) => {
-      return <div>Bar {s}
-        <button onClick={set}>add</button>
-      </div>
-    }
+      const App = () => {
+        const [s, setS] = useState(0);
+        const [b, setB] = useState(0);
 
-    const App = () => {
-      const [s, setS] = useState(0);
-      const [b, setB] = useState(0)
+        console.warn("s", s);
 
-      console.warn('s', s);
+        console.warn("b", b);
 
-      console.warn('b', b);
-
-      if (s < 5 && s >= 0) {
-        setS(s + 1);
-      }
-
-      if (b < 9 && b >= 0) {
-        setB(b + 1);
-      }
-
-      useLayoutEffect(() => {
-        console.warn('useLayoutEffect', s);
-
-        return () => {
-          console.warn('useLayoutEffect return', s);
+        if (s < 5 && s >= 0) {
+          setS(s + 1);
         }
-      }, [s, b])
 
-      useEffect(() => {
-        console.warn('useEffect', s);
-
-        return () => {
-          console.warn('useEffect return', s);
+        if (b < 9 && b >= 0) {
+          setB(b + 1);
         }
-      }, [s, b])
 
-      // useEffect(() => {
-      //   setS((s) => s + 1)
-      // })
+        useLayoutEffect(() => {
+          console.warn("useLayoutEffect", s);
 
-      return <div>123 {s}, {b}
-        <br />
-        <Bar s={s} set={() => { 
-          console.warn('setS', s)
-          console.warn('setB', b)
-          setS(s + 1) 
-          setB(b + 1)
-        }} />
-      </div>
-    }
+          return () => {
+            console.warn("useLayoutEffect return", s);
+          };
+        }, [s, b]);
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+        useEffect(() => {
+          console.warn("useEffect", s);
 
-    // ReactDOM.render(<App />, root);
-  </script>
-</body>
+          return () => {
+            console.warn("useEffect return", s);
+          };
+        }, [s, b]);
 
+        // useEffect(() => {
+        //   setS((s) => s + 1)
+        // })
+
+        return (
+          <div>
+            123 {s}, {b}
+            <br />
+            <Bar
+              s={s}
+              set={() => {
+                console.warn("setS", s);
+                console.warn("setB", b);
+                setS(s + 1);
+                setB(b + 1);
+              }}
+            />
+          </div>
+        );
+      };
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+      // ReactDOM.render(<App />, root);
+    </script>
+  </body>
 </html>

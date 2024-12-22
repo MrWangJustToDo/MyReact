@@ -17,7 +17,7 @@ const instanceMap = new Map<MyReactInternalInstance, InstanceField>();
 export const initInstance = (instance: MyReactInternalInstance) => {
   const exist = instanceMap.get(instance);
 
-  if (exist) return exist; 
+  if (exist) return exist;
 
   const field: InstanceField = {
     _context: null,

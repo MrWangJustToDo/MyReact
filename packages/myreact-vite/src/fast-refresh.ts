@@ -1,4 +1,4 @@
-import RefreshRuntime from '@my-react/react-refresh';
+import RefreshRuntime from "@my-react/react-refresh";
 import { compareVersion } from "@my-react/react-shared";
 import fs from "node:fs";
 import { createRequire } from "node:module";
@@ -19,7 +19,7 @@ const vitePluginDir = path.dirname(_require.resolve("@my-react/react-vite/packag
 
 const runtimeFilePath = path.join(reactRefreshDir, "dist/cjs/RefreshRuntime.development.js");
 
-const refreshUtilsPath = path.join(vitePluginDir, 'dist/cjs/refreshUtils.development.js')
+const refreshUtilsPath = path.join(vitePluginDir, "dist/cjs/refreshUtils.development.js");
 
 export const runtimeCode = `
 const exports = {}

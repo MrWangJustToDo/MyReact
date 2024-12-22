@@ -9,13 +9,7 @@ import { MANIFEST } from "../utils";
 import type { SafeGenerateActionProps } from "../type";
 import type { Configuration } from "webpack";
 
-export const pluginsConfig = ({
-  env,
-  isDEV,
-  TS_CHECK,
-  ESLINT_CHECK,
-  BUNDLE_CHECK,
-}: SafeGenerateActionProps): Configuration["plugins"] =>
+export const pluginsConfig = ({ env, isDEV, TS_CHECK, ESLINT_CHECK, BUNDLE_CHECK }: SafeGenerateActionProps): Configuration["plugins"] =>
   [
     env === "client" &&
       new WebpackManifestPlugin({

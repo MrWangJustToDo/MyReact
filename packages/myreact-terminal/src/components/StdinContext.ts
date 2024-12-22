@@ -2,7 +2,6 @@ import { createContext } from "@my-react/react";
 import { EventEmitter } from "node:events";
 import process from "node:process";
 
-
 export type StdinContextProps = {
   /**
    * Stdin stream passed to `render()` in `options.stdin` or `process.stdin` by default. Useful if your app needs to handle user input.

@@ -9,7 +9,6 @@ export const enum ReactiveFlags {
   Raw_key = "__my_raw__",
 }
 
-
 /**
  * @internal
  */
@@ -17,14 +16,12 @@ export const enum RefFlags {
   Ref_key = "__my_ref__",
 }
 
-
 /**
  * @internal
  */
 export const enum EffectFlags {
   Effect_key = "__my_effect__",
 }
-
 
 /**
  * @internal

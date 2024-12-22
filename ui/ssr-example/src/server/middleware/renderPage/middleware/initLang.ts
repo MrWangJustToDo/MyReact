@@ -11,7 +11,7 @@ export const initLang: Middleware = (next) => async (args) => {
   const { req, res } = args;
 
   const cookieLang = req.cookies?.site_lang;
-  
+
   const lang = cookieLang || defaultLang;
 
   res.cookie("site_lang", lang);

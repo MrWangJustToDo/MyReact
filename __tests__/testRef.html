@@ -1,84 +1,88 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-</head>
+  <body>
+    <div id="root"></div>
 
-<body>
-  <div id="root"></div>
+    <script type="text/babel">
+      const { forwardRef, useRef, useImperativeHandle, useEffect, useLayoutEffect, useState, useCallback } = React;
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
 
-  <script type="text/babel">
-    const { forwardRef, useRef, useImperativeHandle, useEffect, useLayoutEffect, useState, useCallback } = React;
-    const useCounter = (init = 1) => {
-      const [count, setCount] = useState(init);
-      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
-      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+        return [count, i, j];
+      };
 
-      return [count, i, j];
-    };
+      const Foo = forwardRef((p, ref) => {
+        const bRef = useRef();
 
-    const Foo = forwardRef((p, ref) => {
-      const bRef = useRef();
+        useLayoutEffect(() => {
+          console.log("layout inner");
+        }, []);
 
-      useLayoutEffect(() => {
-        console.log("layout inner");
-      }, []);
+        useEffect(() => {
+          console.log("inner");
+        }, []);
 
-      useEffect(() => {
-        console.log("inner");
-      }, []);
+        useImperativeHandle(ref, () => {
+          console.log("inner handler");
+          return {
+            foo: bRef.current,
+          };
+        });
 
-      useImperativeHandle(ref, () => {
-        console.log("inner handler");
-        return {
-          foo: bRef.current,
-        };
+        return <div ref={bRef}>12345</div>;
       });
 
-      return <div ref={bRef}>12345</div>;
-    });
+      const Bar = () => {
+        const ref = useRef();
 
-    const Bar = () => {
-      const ref = useRef();
+        useLayoutEffect(() => {
+          console.log("layout outer");
+        }, []);
 
-      useLayoutEffect(() => {
-        console.log("layout outer");
-      }, []);
+        useEffect(() => {
+          console.log("outer");
+        }, []);
 
-      useEffect(() => {
-        console.log("outer");
-      }, []);
+        console.log(ref);
 
-      console.log(ref);
+        return <Foo ref={ref} />;
+      };
 
-      return <Foo ref={ref} />;
-    };
+      const App = () => {
+        const [c, add] = useCounter();
+        useLayoutEffect(() => console.log("layout"));
 
-    const App = () => {
-      const [c, add] = useCounter();
-      useLayoutEffect(() => console.log('layout'))
+        return (
+          <>
+            <p>{c}</p>
+            <button onClick={add}>add</button>
+            <p
+              ref={(n) => {
+                // add();
+                console.log(n);
+              }}
+            >
+              fff
+            </p>
+          </>
+        );
+      };
 
-      return <>
-        <p>{c}</p>
-        <button onClick={add}>add</button>
-        <p ref={(n) => {
-          // add();
-          console.log(n)
-        }}>fff</p>
-      </>
-    }
-
-    ReactDOM.render(<App />, document.querySelector("#root"));
-  </script>
-</body>
-
+      ReactDOM.render(<App />, document.querySelector("#root"));
+    </script>
+  </body>
 </html>

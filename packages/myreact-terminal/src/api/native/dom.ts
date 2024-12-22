@@ -82,7 +82,7 @@ const markNodeAsDirty = (node?: DOMNode): void => {
 };
 
 export const setTextNodeValue = (node: TextElement, text: string): void => {
-	node.nodeValue = text.toString();
+  node.nodeValue = text.toString();
 
-	markNodeAsDirty(node);
+  markNodeAsDirty(node);
 };

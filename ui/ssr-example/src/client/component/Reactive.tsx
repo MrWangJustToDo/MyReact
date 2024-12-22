@@ -4,7 +4,7 @@ import throttle from "lodash/throttle";
 
 export const Reactive = __REACT__
   ? () => <div>123</div>
-  : createReactive({
+  : (createReactive({
       setup: () => {
         const countRef = ref(0);
         const changeRef = ref(0);
@@ -54,4 +54,4 @@ export const Reactive = __REACT__
 
         return Element;
       },
-    }) as () => JSX.Element;
+    }) as () => JSX.Element);

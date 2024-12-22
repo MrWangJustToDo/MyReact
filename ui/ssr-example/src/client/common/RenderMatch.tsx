@@ -18,7 +18,7 @@ export const RenderMatch = () => {
   return (
     <>
       {getIsAnimateRouter() ? (
-        <AnimatePresence mode='wait'>
+        <AnimatePresence mode="wait">
           <Fragment key={loaded?.location.pathname}>
             <motion.div
               initial={isMounted ? "initial" : "in"}

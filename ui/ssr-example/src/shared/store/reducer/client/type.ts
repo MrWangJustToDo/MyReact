@@ -1,4 +1,3 @@
-
 import type { clientLangReducer, clientPropsReducer } from "./action";
 import type { clientActionName } from "@shared/store/action";
 import type { ReducerStateAction } from "@shared/store/type";

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -39,12 +39,12 @@
           <>
             <div>no key</div>
             {arr1.map((i) => (
-              <Bar i={i}  />
+              <Bar i={i} />
             ))}
             <button onClick={() => setArr1((l) => [Math.random(), ...l])}>添加</button>
             <div>has key</div>
             {arr2.map((i) => (
-              <Bar i={i} key={i}  />
+              <Bar i={i} key={i} />
             ))}
             <button onClick={() => setArr2((l) => [Math.random(), ...l])}>添加</button>
           </>

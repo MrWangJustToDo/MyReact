@@ -1,20 +1,6 @@
-import {
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  json,
-  useLoaderData,
-} from "@remix-run/react";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, json, useLoaderData } from "@remix-run/react";
 
-
-import {
-  ThemeBody,
-  ThemeHead,
-  ThemeProvider,
-  useTheme,
-} from "~/utils/theme-provider";
+import { ThemeBody, ThemeHead, ThemeProvider, useTheme } from "~/utils/theme-provider";
 import { getThemeSession } from "~/utils/theme.server";
 
 import type { LoaderFunctionArgs } from "@remix-run/node";

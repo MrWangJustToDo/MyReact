@@ -13,7 +13,10 @@ export class ReactiveEffect<T = any> {
   public readonly [EffectFlags.Effect_key] = true;
   private readonly _depsSetArray: Set<ReactiveEffect>[] = [];
 
-  constructor(private readonly _action: () => T, private readonly _scheduler?: (newValue: unknown, oldValue: unknown) => unknown) {}
+  constructor(
+    private readonly _action: () => T,
+    private readonly _scheduler?: (newValue: unknown, oldValue: unknown) => unknown
+  ) {}
 
   cleanDeps() {
     // delete current effect deps

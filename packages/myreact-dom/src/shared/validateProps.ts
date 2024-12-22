@@ -4,7 +4,6 @@ import { include } from "@my-react/react-shared";
 import { logOnce } from "./debug";
 import { isProperty, isStyle } from "./tools";
 
-
 const checkValidSelectProps = (fiber: MyReactFiberNode) => {
   const valuePropNames = ["value", "defaultValue"];
   const props = fiber.pendingProps;

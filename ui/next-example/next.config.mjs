@@ -5,10 +5,10 @@ const config = {
   reactStrictMode: true,
   experimental: {
     reactCompiler: {
-      target: '18',
+      target: "18",
     }, // or React Compiler options
   },
-}
+};
 
 const nextConfig = withNext(config);
 

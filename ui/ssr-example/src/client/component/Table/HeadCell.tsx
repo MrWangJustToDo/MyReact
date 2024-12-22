@@ -28,7 +28,7 @@ export function HeadCell<T>({
 
   const getColor = useCallback(
     (targetOrder: SortOrder) => (sorter?.by === dataIndex && sorter?.order === targetOrder ? sortedColor : undefined),
-    [dataIndex, sorter, sortedColor],
+    [dataIndex, sorter, sortedColor]
   );
 
   const toggledSortOrder = useMemo(() => {

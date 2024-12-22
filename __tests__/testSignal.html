@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -17,7 +17,7 @@
 
       const Bar = memo(({ get }) => <div>{get()}</div>);
 
-      const Baz = ({get}) => <div>{get()}</div>
+      const Baz = ({ get }) => <div>{get()}</div>;
 
       const Count = () => {
         const [get, set] = useSignal(0);

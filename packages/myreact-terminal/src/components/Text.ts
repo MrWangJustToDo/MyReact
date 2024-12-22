@@ -114,5 +114,9 @@ export function Text({
     return children;
   };
 
-  return createElement(PlainTextType, { style: { flexGrow: 0, flexShrink: 1, flexDirection: "row", textWrap: wrap }, ["internal_transform"]: transform }, children);
+  return createElement(
+    PlainTextType,
+    { style: { flexGrow: 0, flexShrink: 1, flexDirection: "row", textWrap: wrap }, ["internal_transform"]: transform },
+    children
+  );
 }

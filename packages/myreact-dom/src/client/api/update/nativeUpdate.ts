@@ -3,7 +3,17 @@ import { include } from "@my-react/react-shared";
 
 import { enableControlComponent, enableEventSystem, isEvent, isProperty, isStyle } from "@my-react-dom-shared";
 
-import { addEventListener, controlElementTag, initSelect, removeEventListener, setAttribute, setInnerHtml, setStyle, setTextContent, updateSelect } from "../helper";
+import {
+  addEventListener,
+  controlElementTag,
+  initSelect,
+  removeEventListener,
+  setAttribute,
+  setInnerHtml,
+  setStyle,
+  setTextContent,
+  updateSelect,
+} from "../helper";
 
 import { mountControl, updateControl } from "./control";
 import { getAllKeys } from "./tool";

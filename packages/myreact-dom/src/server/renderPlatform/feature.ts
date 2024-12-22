@@ -49,7 +49,7 @@ const dispatchError = ({ fiber, error }: { fiber: MyReactFiberNode; error: Error
  * @internal
  */
 export const prepareRenderPlatform = () => {
-  let renderPlatform = currentRenderPlatform.current as DomPlatform
+  let renderPlatform = currentRenderPlatform.current as DomPlatform;
 
   if (!renderPlatform) initGlobalRenderPlatform();
 

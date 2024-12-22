@@ -1,62 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh_cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>测试react框架</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  <style>
-    .red {
-      color: red;
-      font-size: 20px;
-    }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
 
-    .box {
-      width: 100px;
-      height: 100px;
-      border: 1px solid red;
-      border-radius: 3px;
-    }
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
 
-    .green {
-      color: green;
-    }
-  </style>
-</head>
+  <body>
+    <div id="root"></div>
 
-<body>
-  <div id="root"></div>
+    <script type="text/babel" async>
+      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, Component } = React;
 
-  <script type="text/babel" async>
-    const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, Component } = React;
+      const string = `<div>innerHTML</div>`;
 
-    const string = `<div>innerHTML</div>`
+      const App = () => {
+        const [a, setA] = useState(0);
 
-    const App = () => {
-      const [a, setA] = useState(0);
+        return (
+          <div>
+            <div>
+              {a % 2 === 0 ? (
+                <div dangerouslySetInnerHTML={{ __html: string }} />
+              ) : (
+                <div>
+                  <div>normal</div>
+                </div>
+              )}
+            </div>
+            <button onClick={() => setA((a) => a + 1)}>click</button>
+          </div>
+        );
+      };
 
-      return <div>
-        <div>
-          {
-            a % 2 === 0 ?
-              <div dangerouslySetInnerHTML={{ __html: string }} /> :
-              <div>
-                <div>normal</div>
-              </div>
-          }
-        </div>
-        <button onClick={() => setA(a => a + 1)}>click</button>
-      </div>
-    }
-
-    const container = document.getElementById("root");
-    ReactDOM.render(<App />, container);
-  </script>
-</body>
-
+      const container = document.getElementById("root");
+      ReactDOM.render(<App />, container);
+    </script>
+  </body>
 </html>

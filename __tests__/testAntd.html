@@ -1,50 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <!-- <script src="https://unpkg.com/preact@latest/dist/preact.umd.js"></script> -->
+    <!-- <script src="https://unpkg.com/preact@latest/hooks/dist/hooks.umd.js"></script> -->
+    <!-- <script src="https://unpkg.com/preact@latest/compat/dist/compat.umd.js"></script> -->
+    <style>
+      #_1 {
+        width: 300px;
+        height: 300px;
+        border: 1px solid red;
+      }
 
-  <!-- <script src="https://unpkg.com/preact@latest/dist/preact.umd.js"></script> -->
-  <!-- <script src="https://unpkg.com/preact@latest/hooks/dist/hooks.umd.js"></script> -->
-  <!-- <script src="https://unpkg.com/preact@latest/compat/dist/compat.umd.js"></script> -->
-  <style>
-    #_1 {
-      width: 300px;
-      height: 300px;
-      border: 1px solid red;
-    }
+      #_2 {
+        width: 200px;
+        height: 200px;
+        border: 1px solid green;
+      }
 
-    #_2 {
-      width: 200px;
-      height: 200px;
-      border: 1px solid green;
-    }
+      #_3 {
+        width: 100px;
+        height: 100px;
+        border: 1px solid blue;
+      }
+    </style>
+    <script>
+      var React = preactCompat;
+      var ReactDOM = preactCompat;
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
+    <script src="https://unpkg.com/antd@latest/dist/antd-with-locales.js"></script>
+  </head>
 
-    #_3 {
-      width: 100px;
-      height: 100px;
-      border: 1px solid blue;
-    }
-  </style>
-  <script>
-    var React = preactCompat;
-    var ReactDOM = preactCompat;
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.7/dayjs.min.js"></script>
-  <script src="https://unpkg.com/antd@latest/dist/antd-with-locales.js"></script>
-</head>
-
-<body>
-  <div id="root"></div>
-  <!-- <div id="room">
+  <body>
+    <div id="root"></div>
+    <!-- <div id="room">
     <div id="_1">
       1
       <div id="_2">
@@ -54,9 +53,7 @@
     </div>
   </div> -->
 
-
-
-  <!-- <script>
+    <!-- <script>
     const div1 =document.querySelector('#_1');
     const div2 =document.querySelector('#_2');
     const div3 =document.querySelector('#_3');
@@ -72,191 +69,205 @@
     })
   </script> -->
 
-  <script type="text/babel">
-    const { useState, useEffect, useLayoutEffect } = React;
-    const antd = antd || {};
-    const { AutoComplete, message, ColorPicker, Select, Popover, Button, Input } = antd;
+    <script type="text/babel">
+      const { useState, useEffect, useLayoutEffect } = React;
+      const antd = antd || {};
+      const { AutoComplete, message, ColorPicker, Select, Popover, Button, Input } = antd;
 
-    const mockVal = (str, repeat = 1) => ({
-      value: str.repeat(repeat),
-    });
+      const mockVal = (str, repeat = 1) => ({
+        value: str.repeat(repeat),
+      });
 
-    // const App = () => {
-    //   const [value, setValue] = useState("");
-    //   const [options, setOptions] = useState([]);
-    //   const [options_2, setOptions_2] = useState([]);
+      // const App = () => {
+      //   const [value, setValue] = useState("");
+      //   const [options, setOptions] = useState([]);
+      //   const [options_2, setOptions_2] = useState([]);
 
-    //   const onSearch = (searchText) => {
-    //     setOptions(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
-    //   };
+      //   const onSearch = (searchText) => {
+      //     setOptions(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
+      //   };
 
-    //   const onSearch_2 = (searchText) => {
-    //     setOptions_2(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
-    //   };
+      //   const onSearch_2 = (searchText) => {
+      //     setOptions_2(!searchText ? [] : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]);
+      //   };
 
-    //   const onSelect = (data) => {
-    //     console.log("onSelect", data);
-    //   };
+      //   const onSelect = (data) => {
+      //     console.log("onSelect", data);
+      //   };
 
-    //   const onChange = (data) => {
-    //     setValue(data);
-    //   };
+      //   const onChange = (data) => {
+      //     setValue(data);
+      //   };
 
-    //   console.log(value, options);
+      //   console.log(value, options);
 
-    //   return (
-    //     <>
-    //       <AutoComplete options={options_2} style={{ width: 200 }} onSelect={onSelect} onSearch={onSearch_2} placeholder="input here" />
-    //       <br />
-    //       <br />
-    //       <AutoComplete
-    //         value={value}
-    //         options={options}
-    //         style={{ width: 200 }}
-    //         onSelect={onSelect}
-    //         onSearch={onSearch}
-    //         onChange={onChange}
-    //         placeholder="control mode"
-    //       />
-    //     </>
-    //   );
-    // };
+      //   return (
+      //     <>
+      //       <AutoComplete options={options_2} style={{ width: 200 }} onSelect={onSelect} onSearch={onSearch_2} placeholder="input here" />
+      //       <br />
+      //       <br />
+      //       <AutoComplete
+      //         value={value}
+      //         options={options}
+      //         style={{ width: 200 }}
+      //         onSelect={onSelect}
+      //         onSearch={onSearch}
+      //         onChange={onChange}
+      //         placeholder="control mode"
+      //       />
+      //     </>
+      //   );
+      // };
 
-    const AntdNotification = () => {
-      const openNotification = () => {
-        antd.notification.open({
-          message: 'Notification Title',
-          description:
-            'This is the content of the notification. This is the content of the notification. This is the content of the notification.',
-          onClick: () => {
-            console.log('Notification Clicked!');
-          },
-        });
+      const AntdNotification = () => {
+        const openNotification = () => {
+          antd.notification.open({
+            message: "Notification Title",
+            description: "This is the content of the notification. This is the content of the notification. This is the content of the notification.",
+            onClick: () => {
+              console.log("Notification Clicked!");
+            },
+          });
+        };
+
+        return (
+          <Button type="primary" onClick={openNotification}>
+            Open the notification box
+          </Button>
+        );
       };
 
-      return (
-        <Button type="primary" onClick={openNotification}>
-          Open the notification box
-        </Button>
-      )
-    }
+      const _Select = () => {
+        const [open, setOpen] = useState(false);
+        const [v, setV] = useState("hex");
 
-    const _Select = () => {
-      const [open, setOpen] = useState(false);
-      const [v, setV] = useState('hex');
+        return (
+          <Select
+            getPopupContainer={(current) => current}
+            placement="bottomRight"
+            size="small"
+            value={v}
+            onChange={setV}
+            options={[
+              {
+                value: "hex",
+                label: "HEX",
+              },
+              {
+                value: "hsb",
+                label: "HSB",
+              },
+              {
+                value: "rgb",
+                label: "RGB",
+              },
+            ]}
+          />
+        );
 
-      return <Select getPopupContainer={(current) => current} placement
-        ="bottomRight"
-        size=
-        "small" value={v} onChange={setV} options={[
-          {
-            "value": "hex",
-            "label": "HEX"
-          },
-          {
-            "value": "hsb",
-            "label": "HSB"
-          },
-          {
-            "value": "rgb",
-            "label": "RGB"
-          }
-        ]} />
+        // return <Popover trigger="click" open={open} onOpenChange={setOpen} content={<Select getPopupContainer={(current) => current} placement
+        //   ="bottomRight"
+        //   size=
+        //   "small" value={v} onChange={setV} options={[
+        //     {
+        //       "value": "hex",
+        //       "label": "HEX"
+        //     },
+        //     {
+        //       "value": "hsb",
+        //       "label": "HSB"
+        //     },
+        //     {
+        //       "value": "rgb",
+        //       "label": "RGB"
+        //     }
+        //   ]} optionRender={(...args) => {
+        //     console.log(args);
+        //     return args[0];
+        //   }} />}><Button onClick={setOpen}>open</Button></Popover>
+      };
 
-      // return <Popover trigger="click" open={open} onOpenChange={setOpen} content={<Select getPopupContainer={(current) => current} placement
-      //   ="bottomRight"
-      //   size=
-      //   "small" value={v} onChange={setV} options={[
-      //     {
-      //       "value": "hex",
-      //       "label": "HEX"
-      //     },
-      //     {
-      //       "value": "hsb",
-      //       "label": "HSB"
-      //     },
-      //     {
-      //       "value": "rgb",
-      //       "label": "RGB"
-      //     }
-      //   ]} optionRender={(...args) => {
-      //     console.log(args);
-      //     return args[0];
-      //   }} />}><Button onClick={setOpen}>open</Button></Popover>
-    }
+      // TODO
+      const App = () => {
+        const click = () => {
+          message.info("click on the button");
+        };
 
-    // TODO
-    const App = () => {
+        return (
+          <div>
+            <button onClick={click}>click</button>
+          </div>
+        );
+      };
 
-      const click = () => {
-        message.info('click on the button');
-      }
+      // React.__my_react_shared__.enableConcurrentMode.current = false;
+      // React.__my_react_shared__.enableLoopFromRoot.current = true;
 
-      return (
-        <div>
-          <button onClick={click}>click</button>
-        </div>
-      );
-    };
+      const Content = ({ setState }) => {
+        return (
+          <div
+            id="_2"
+            onMouseDown={() => {
+              console.log("mousedown");
+              setState(true);
+            }}
+            onClick={() => {
+              console.log("click");
+            }}
+          >
+            2
+          </div>
+        );
+      };
 
-    // React.__my_react_shared__.enableConcurrentMode.current = false;
-    // React.__my_react_shared__.enableLoopFromRoot.current = true;
+      const Test = () => {
+        const [state, setState] = useState(false);
+        // const [_state, _setState] = useState(false);
 
-    const Content = ({ setState }) => {
+        // useEffect(() => {
+        //   // setTimeout(() => {
+        //   //   _setState(state);
+        //   // }, 50)
+        //   _setState(state);
+        // }, [state]);
 
-      return <div id='_2' onMouseDown={() => {
-        console.log('mousedown');
-        setState(true)
-      }} onClick={() => {
-        console.log('click')
-      }}>2</div>
-    }
+        return (
+          <div id="_1" style={{ pointerEvents: state ? "none" : "initial" }}>
+            1
+            <Content setState={setState} />
+          </div>
+        );
+      };
 
-    const Test = () => {
-      const [state, setState] = useState(false);
-      // const [_state, _setState] = useState(false);
+      // TODO 点击无法选择
+      // 原因 点击事件被父元素的pointer-events: "none"给阻止了
+      // React的事件调度
+      ReactDOM.render(<_Select />, root);
+    </script>
 
-      // useEffect(() => {
-      //   // setTimeout(() => {
-      //   //   _setState(state);
-      //   // }, 50)
-      //   _setState(state);
-      // }, [state]);
+    <script type="text/babel">
+      const App = () => {
+        // return <antd.Input.TextArea autoSize onChange={() => {
+        //   console.log('onChange')
+        // }} onInput={() => {
+        //   console.log('onInput')
+        // }} />
 
+        return (
+          <textarea
+            onChange={() => {
+              console.log("onChange");
+            }}
+          />
+        );
+        // return <input onChange={() => {
+        //   console.log('onChange')
+        // }} onInput={() => {
+        //   console.log('onInput')
+        // }} />
+      };
 
-      return <div id='_1' style={{ pointerEvents: state ? 'none' : 'initial' }}>
-        1
-        <Content setState={setState} />
-      </div>
-    }
-
-    // TODO 点击无法选择
-    // 原因 点击事件被父元素的pointer-events: "none"给阻止了
-    // React的事件调度
-    ReactDOM.render(<_Select />, root);
-  </script>
-
-  <script type="text/babel">
-
-    const App = () => {
-      // return <antd.Input.TextArea autoSize onChange={() => {
-      //   console.log('onChange')
-      // }} onInput={() => {
-      //   console.log('onInput')
-      // }} />
-
-      return <textarea onChange={() => {
-        console.log('onChange')
-      }} />
-      // return <input onChange={() => {
-      //   console.log('onChange')
-      // }} onInput={() => {
-      //   console.log('onInput')
-      // }} />
-    }
-
-    // ReactDOM.render(<App />, root);
-  </script>
-</body>
-
+      // ReactDOM.render(<App />, root);
+    </script>
+  </body>
 </html>

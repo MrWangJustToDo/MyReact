@@ -19,10 +19,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   }
 
   themeSession.setTheme(theme);
-  return json(
-    { success: true },
-    { headers: { "Set-Cookie": await themeSession.commit() } },
-  );
+  return json({ success: true }, { headers: { "Set-Cookie": await themeSession.commit() } });
 };
 
 export const loader = async () => redirect("/", { status: 404 });

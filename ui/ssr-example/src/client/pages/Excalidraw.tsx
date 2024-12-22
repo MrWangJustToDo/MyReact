@@ -31,8 +31,7 @@ export default function Excalidraw({ isDarkMode }: { isDarkMode: boolean }) {
 
     const id = setTimeout(() => {
       fetch();
-    }, 2000)
-
+    }, 2000);
 
     return () => {
       enable();

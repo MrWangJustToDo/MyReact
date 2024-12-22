@@ -19,7 +19,8 @@
 }
 
 .fm-contextmenu:hover {
-  box-shadow: 0.044776rem 0.044776rem 0.059701rem 0.044776rem rgba(150, 150, 150, 0.2),
+  box-shadow:
+    0.044776rem 0.044776rem 0.059701rem 0.044776rem rgba(150, 150, 150, 0.2),
     -0.029851rem -0.029851rem 0.044776rem 0.029851rem rgba(150, 150, 150, 0.2);
 }
 
@@ -260,8 +261,11 @@
 .fm-table .fm-table-show tbody tr td .fm-table-rename {
   border: none;
   outline: none;
-  box-shadow: 0.014925rem 0.014925rem 0 0.014925rem #ccc inset, -0.014925rem -0.014925rem 0 0.014925rem #ccc inset,
-    0.014925rem -0.014925rem 0 0.014925rem #ccc inset, -0.014925rem 0.014925rem 0 0.014925rem #ccc inset;
+  box-shadow:
+    0.014925rem 0.014925rem 0 0.014925rem #ccc inset,
+    -0.014925rem -0.014925rem 0 0.014925rem #ccc inset,
+    0.014925rem -0.014925rem 0 0.014925rem #ccc inset,
+    -0.014925rem 0.014925rem 0 0.014925rem #ccc inset;
   border-radius: 0.149254rem;
   font-family: "consolas";
   top: 0;
@@ -380,7 +384,9 @@
 .fm-table-big .fm-file-item:hover,
 .fm-table-big .fm-folder-item:hover {
   background-color: rgba(0, 0, 0, 0.08);
-  box-shadow: 0 0 0 0.014925rem rgba(0, 0, 0, 0.08) inset, 0 0 0.149254rem 0.029851rem rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 0 0 0.014925rem rgba(0, 0, 0, 0.08) inset,
+    0 0 0.149254rem 0.029851rem rgba(0, 0, 0, 0.12);
 }
 
 .fm-table-big .fm-file-item i,

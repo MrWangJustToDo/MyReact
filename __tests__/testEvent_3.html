@@ -1,67 +1,60 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <script src="../bundle/react.development.js"></script>
+    <script src="../bundle/react-dom.development.js"></script>
+    <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../packages/myreact-dom/dist/umd/server.development.js"></script> -->
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <script src="../bundle/babel.min.js"></script>
-  <script src="../bundle/react.development.js"></script>
-  <script src="../bundle/react-dom.development.js"></script>
-  <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
-  <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
-  <!-- <script src="../packages/myreact-dom/dist/umd/server.development.js"></script> -->
-</head>
+  <body>
+    <div id="root"></div>
 
-<body>
-  <div id="root"></div>
-
-  <script type="text/babel">
-    const { useState } = React;
-    const I = ({ option, setOption }) => {
-      const cb2 = (e) => {
-        console.log('option', e._dispatched, ', option', cb2._attached);
-        console.warn("Set option", option);
-        setOption(option);
-      }
-      return <div
-        style={{ padding: "10px" }}
-        onClick={cb2}
-      >
-        {option}
-      </div>
-    }
-    function Combobox({ options }) {
-      const [option, setOption] = useState(undefined);
-      const cb1 = (e) => {
-        console.log('parent', e._dispatched, ', parent', cb1._attached);
-        console.warn("Clear option");
-        setOption(undefined);
-      }
-
-      if (option !== undefined) {
+    <script type="text/babel">
+      const { useState } = React;
+      const I = ({ option, setOption }) => {
+        const cb2 = (e) => {
+          console.log("option", e._dispatched, ", option", cb2._attached);
+          console.warn("Set option", option);
+          setOption(option);
+        };
         return (
-          <div style={{ border: "1px solid #ccc", margin: "10px", padding: "10px", cursor: "pointer" }}
-            onClick={cb1}
-          >
+          <div style={{ padding: "10px" }} onClick={cb2}>
             {option}
           </div>
         );
-      } else {
-        return (
-          <div style={{ border: "1px solid #ccc", margin: "10px", cursor: "pointer" }} onClick={cb1}>
-            {options.map((option) => {
-              return (
-                <I option={option} setOption={setOption} />
-              );
-            })}
-          </div>
-        );
+      };
+      function Combobox({ options }) {
+        const [option, setOption] = useState(undefined);
+        const cb1 = (e) => {
+          console.log("parent", e._dispatched, ", parent", cb1._attached);
+          console.warn("Clear option");
+          setOption(undefined);
+        };
+
+        if (option !== undefined) {
+          return (
+            <div style={{ border: "1px solid #ccc", margin: "10px", padding: "10px", cursor: "pointer" }} onClick={cb1}>
+              {option}
+            </div>
+          );
+        } else {
+          return (
+            <div style={{ border: "1px solid #ccc", margin: "10px", cursor: "pointer" }} onClick={cb1}>
+              {options.map((option) => {
+                return <I option={option} setOption={setOption} />;
+              })}
+            </div>
+          );
+        }
       }
-    }
 
-    ReactDOM.render(<Combobox options={["option 1", "option 2"]} />, root);
-  </script>
-</body>
-
+      ReactDOM.render(<Combobox options={["option 1", "option 2"]} />, root);
+    </script>
+  </body>
 </html>

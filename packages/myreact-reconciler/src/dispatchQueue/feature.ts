@@ -326,7 +326,7 @@ export const processFunctionComponentUpdateQueue = (
           typedNode._debugAfterValue = typedTrigger.result;
 
           typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
-          
+
           typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
           typedFiber._debugUpdateQueue.push(typedNode);

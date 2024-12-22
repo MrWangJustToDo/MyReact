@@ -10,7 +10,7 @@ const from = "hook";
 const source = "@my-react/devtool";
 
 // const iframeSrc = "http://localhost:3000";
-const iframeSrc = 'https://mrwangjusttodo.github.io/myreact-devtools/devTool';
+const iframeSrc = "https://mrwangjusttodo.github.io/myreact-devtools/devTool";
 
 const loadScript = (url: string) => {
   const script = document.createElement("script");

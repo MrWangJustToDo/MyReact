@@ -13,7 +13,7 @@ type ScrollControlProps = {
 
 export const ScrollControl = ({ onSectionIndexChange, children, initialSectionLength }: ScrollControlProps) => {
   const [currentSection, setCurrentSection] = useState(0);
-  
+
   const [totalSection, setTotalSection] = useState(initialSectionLength || 0);
 
   const prevSection = usePrevious(currentSection);

@@ -41,6 +41,6 @@ export const wrapperFrameworkEvent = (e: Event | MyReactEvent) => {
   typedE.isPropagationStopped = function () {
     return typedE._isPropagationStopped;
   };
-  
+
   typedE._isMyReactEvent = true;
 };

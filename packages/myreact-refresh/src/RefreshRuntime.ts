@@ -445,10 +445,10 @@ export const isLikelyComponentType = (type: MyReactElementType) => {
 };
 
 const setRefreshRuntimeFieldForDev = (container: RefreshCustomRenderDispatch) => {
-  if (container['$$hasRefreshInject']) return;
+  if (container["$$hasRefreshInject"]) return;
 
-  container['$$hasRefreshInject'] = true;
-  
+  container["$$hasRefreshInject"] = true;
+
   Object.defineProperty(container, "__refresh_runtime__", {
     value: {
       version,
@@ -483,9 +483,9 @@ const setupRefresh = (dispatchArray: RefreshCustomRenderDispatch[]) => {
   });
 
   if (allHMRRuntime.length > 0) {
-    allHMRRuntime.forEach(i => hmrRuntime.add(i));
+    allHMRRuntime.forEach((i) => hmrRuntime.add(i));
 
-    const newAdded = new Set(allHMRRuntime.map(i => i.setRefreshHandler));
+    const newAdded = new Set(allHMRRuntime.map((i) => i.setRefreshHandler));
 
     newAdded.forEach((item) => item(resolveFamily));
 

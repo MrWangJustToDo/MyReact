@@ -26,7 +26,7 @@ export function useSorter<T extends Record<string, string>>(sorter?: Sorter<T>, 
       sorter.onSort?.(newSorter);
       setInnerSorter(newSorter);
     },
-    [innerSorter],
+    [innerSorter]
   );
 
   const sortedRows = useMemo(() => {

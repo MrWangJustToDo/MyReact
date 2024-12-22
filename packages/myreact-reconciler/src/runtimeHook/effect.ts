@@ -3,7 +3,7 @@ import { Effect_TYPE, HOOK_TYPE, STATE_TYPE, exclude } from "@my-react/react-sha
 import { getInstanceOwnerFiber, setEffectForInstance } from "../runtimeGenerate";
 import { currentRenderDispatch } from "../share";
 
-import type { InstanceField} from "../runtimeGenerate";
+import type { InstanceField } from "../runtimeGenerate";
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
@@ -63,7 +63,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
         if (hookNode.value && typeof hookNode.value === "function") hookNode.value(hookNode.reducer.call(null));
 
         // TODO
-        // hookNode.cancel = 
+        // hookNode.cancel =
 
         hookNode.hasEffect = false;
 

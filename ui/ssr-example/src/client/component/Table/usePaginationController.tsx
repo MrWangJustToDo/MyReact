@@ -45,7 +45,7 @@ const getBarItems = (curPage: number, totalPage: number, unfoldedPages: number):
           pageNumber,
           key: pageNumber,
         };
-      }),
+      })
     );
     return buttons;
   }, []);

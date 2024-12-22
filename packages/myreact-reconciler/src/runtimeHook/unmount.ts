@@ -13,7 +13,7 @@ export const hookListUnmount = (fiber: MyReactFiberNode, renderDispatch: CustomR
         listenerMap.get(renderDispatch)?.hookUnmount?.forEach((cb) => cb(hookNode as MyReactHookNode, fiber));
       },
     });
-    
+
     safeCallWithCurrentFiber({
       fiber,
       action: function safeCallHookNodeUnmount() {

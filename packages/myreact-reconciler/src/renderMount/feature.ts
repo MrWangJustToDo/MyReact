@@ -83,7 +83,7 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
 
   (function finishMount() {
     __DEV__ && enableScopeTreeLog.current && setLogScope();
-    
+
     renderDispatch.reconcileCommit(fiber);
 
     const commitList = renderDispatch.pendingCommitFiberList;

@@ -7,7 +7,6 @@ import { logger } from "./log";
 import { startDevServer } from "./startDevServer";
 import { startServerWatch } from "./startServerWatch";
 
-
 const withHydrate = async () => {
   await Promise.all([kill(process.env.DEV_PORT as string), kill(process.env.WDS_PORT as string)]);
   const multiConfig = getConfig();

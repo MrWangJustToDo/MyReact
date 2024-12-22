@@ -29,11 +29,15 @@
 }
 
 .bg-head-mask {
-  text-shadow: 0.029851rem 0.029851rem 0.029851rem #444, -0.029851rem -0.029851rem 0.029851rem #eee;
+  text-shadow:
+    0.029851rem 0.029851rem 0.029851rem #444,
+    -0.029851rem -0.029851rem 0.029851rem #eee;
 }
 
 .bg-foot-mask {
-  text-shadow: 0.00597rem 0.00597rem 0.00597rem #444, -0.00597rem -0.00597rem 0.00597rem #aaa;
+  text-shadow:
+    0.00597rem 0.00597rem 0.00597rem #444,
+    -0.00597rem -0.00597rem 0.00597rem #aaa;
 }
 
 .bg-head-mask::before,

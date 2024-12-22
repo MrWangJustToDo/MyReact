@@ -15,7 +15,7 @@ const App = () => {
     return () => {
       // console.log('unmount');
       clearInterval(i);
-    }
+    };
   }, []);
 
   // console.log(a);

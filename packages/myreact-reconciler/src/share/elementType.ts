@@ -44,7 +44,7 @@ const checkIsMyReactElement = (element: MyReactElementNode) => {
       devWarn(`[@my-react/react] look like current element is not a valid @my-react element %o`, element);
     }
   }
-}
+};
 
 export const getElementTypeFromType = (type: MyReactComponentType): MyReactComponentType => {
   if (typeof type === "object") {

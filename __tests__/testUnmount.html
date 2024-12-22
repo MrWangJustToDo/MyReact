@@ -1,179 +1,200 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-</head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { memo, useState, useCallback, useEffect, useLayoutEffect, useRef, useMemo, map, Component, PureComponent, cloneElement, createContext } = React;
 
-<body>
-  <div id="root"></div>
-  <script type="text/babel">
-    const { memo, useState, useCallback, useEffect, useLayoutEffect, useRef, useMemo, map, Component, PureComponent, cloneElement, createContext } = React;
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
 
-    const useCounter = (init = 1) => {
-      const [count, setCount] = useState(init);
-      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
-      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+        return [count, i, j];
+      };
 
-      return [count, i, j];
-    };
+      const useUnmount = (cb) => {
+        useEffect(() => cb, []);
+      };
 
-    const useUnmount = (cb) => {
-      useEffect(() => cb, []);
-    }
+      class Cl extends Component {
+        componentWillUnmount() {
+          console.log("class unmount");
+        }
 
-    class Cl extends Component {
-      componentWillUnmount() {
-        console.log('class unmount')
+        render() {
+          return (
+            <div>
+              Class
+              <B />
+              {this.props.children}
+            </div>
+          );
+        }
       }
 
-      render() {
-        return <div>Class
-          <B />
-          {this.props.children}
-        </div>
-      }
-    }
+      const A = ({ children }) => {
+        useEffect(() => console.log("a mount"), []);
+        useUnmount(() => console.log("a unmount"));
 
-    const A = ({ children }) => {
-      useEffect(() => console.log('a mount'), [])
-      useUnmount(() => console.log('a unmount'));
+        return <div>A {children}</div>;
+      };
+      const B = ({ children }) => {
+        const ref = useRef();
 
-      return <div>A {children}</div>
-    }
-    const B = ({ children }) => {
-      const ref = useRef();
+        useUnmount(() => console.log("b unmount"));
 
-      useUnmount(() => console.log('b unmount'));
+        useUnmount(() => {
+          console.log("dom unmount?", document.body.contains(ref.current));
+          setTimeout(() => {
+            console.log("settimeout dom unmount?", document.body.contains(ref.current));
+          });
+        });
 
-      useUnmount(() => {
-        console.log('dom unmount?', document.body.contains(ref.current))
-        setTimeout(() => {
-          console.log('settimeout dom unmount?', document.body.contains(ref.current))
-        })
-      })
+        return <div ref={ref}>B {children}</div>;
+      };
+      const C = ({ children }) => {
+        useUnmount(() => console.log("c unmount"));
 
-      return <div ref={ref}>B {children}</div>
-    }
-    const C = ({ children }) => {
-      useUnmount(() => console.log('c unmount'));
+        return <div>C {children}</div>;
+      };
+      const D = ({ children }) => {
+        useUnmount(() => console.log("d unmount"));
 
-      return <div>C {children}</div>
-    }
-    const D = ({ children }) => {
-      useUnmount(() => console.log('d unmount'));
+        return <div>D {children}</div>;
+      };
 
-      return <div>D {children}</div>
-    }
+      const App = () => {
+        const [c, add] = useCounter();
 
-    const App = () => {
-      const [c, add] = useCounter();
+        return (
+          <div>
+            {c % 2 === 0 ? (
+              <A>
+                <B>
+                  <C>
+                    <A />
+                  </C>
+                </B>
+                <D />
+              </A>
+            ) : (
+              <Cl>
+                <C>
+                  <D />
+                  <A />
+                </C>
+              </Cl>
+            )}
+            <button onClick={add}>add</button>
+          </div>
+        );
+      };
 
-      return <div>
-        {c % 2 === 0 ? <A><B><C><A /></C></B><D /></A> : <Cl><C><D /><A /></C></Cl>}
-        <button onClick={add}>add</button>
-      </div>
-    }
+      const A1 = ({ children }) => {
+        useUnmount(() => console.log("a1 unmount"));
 
-    const A1 = ({ children }) => {
-      useUnmount(() => console.log('a1 unmount'));
+        return <>{children}</>;
+      };
 
-      return <>{children}</>
-    }
+      const B1 = ({ children }) => {
+        useUnmount(() => console.log("b1 unmount"));
 
-    const B1 = ({ children }) => {
-      useUnmount(() => console.log('b1 unmount'));
+        return <>{children}</>;
+      };
 
-      return <>{children}</>
-    }
+      const B2 = ({ children }) => {
+        useUnmount(() => console.log("b2 unmount"));
 
-    const B2 = ({ children }) => {
-      useUnmount(() => console.log('b2 unmount'));
+        return <>{children}</>;
+      };
 
-      return <>{children}</>
-    }
+      const C1 = ({ children }) => {
+        useUnmount(() => console.log("c1 unmount"));
 
-    const C1 = ({ children }) => {
-      useUnmount(() => console.log('c1 unmount'));
+        return <>{children}</>;
+      };
 
-      return <>{children}</>
-    }
+      const C2 = ({ children }) => {
+        useUnmount(() => console.log("c2 unmount"));
 
-    const C2 = ({ children }) => {
-      useUnmount(() => console.log('c2 unmount'));
+        return <>{children}</>;
+      };
 
-      return <>{children}</>
-    }
+      const C3 = ({ children }) => {
+        useUnmount(() => console.log("c3 unmount"));
 
-    const C3 = ({ children }) => {
-      useUnmount(() => console.log('c3 unmount'));
+        return <>{children}</>;
+      };
 
-      return <>{children}</>
-    }
+      const D1 = ({ children }) => {
+        useUnmount(() => console.log("d1 unmount"));
 
-    const D1 = ({ children }) => {
-      useUnmount(() => console.log('d1 unmount'));
+        return <>{children}</>;
+      };
 
-      return <>{children}</>
-    }
+      const D2 = ({ children }) => {
+        useUnmount(() => console.log("d2 unmount"));
 
-    const D2 = ({ children }) => {
-      useUnmount(() => console.log('d2 unmount'));
+        return <>{children}</>;
+      };
 
-      return <>{children}</>
-    }
+      const D3 = ({ children }) => {
+        useUnmount(() => console.log("d3 unmount"));
 
-    const D3 = ({ children }) => {
-      useUnmount(() => console.log('d3 unmount'));
+        return <>{children}</>;
+      };
 
-      return <>{children}</>
-    }
+      const D4 = ({ children }) => {
+        useUnmount(() => console.log("d4 unmount"));
 
-    const D4 = ({ children }) => {
-      useUnmount(() => console.log('d4 unmount'));
+        return <>{children}</>;
+      };
 
-      return <>{children}</>
-    }
+      const ele = (
+        <A1>
+          <B1>
+            <D1 />
+          </B1>
+          <B2>
+            <C1 />
+            <C2>
+              <D2 />
+            </C2>
+            <C3>
+              <D3>
+                <D4 />
+              </D3>
+            </C3>
+          </B2>
+        </A1>
+      );
 
-    const ele = <A1>
-      <B1>
-        <D1 />
-      </B1>
-      <B2>
-        <C1 />
-        <C2>
-          <D2 />
-        </C2>
-        <C3>
-          <D3>
-            <D4 />
-          </D3>
-        </C3>
-      </B2>
-    </A1>
+      const App1 = () => {
+        const [c, add] = useCounter();
 
-    const App1 = () => {
-      const [c, add] = useCounter();
+        return (
+          <div>
+            <div>{c % 2 !== 0 ? ele : <div>123</div>}</div>
+            <p>{c}</p>
+            <button onClick={add}>add</button>
+          </div>
+        );
+      };
 
-      return <div>
-        <div>
-          {c % 2 !== 0 ? ele : <div>123</div>}
-        </div>
-        <p>{c}</p>
-        <button onClick={add}>add</button>
-      </div>
-    }
-
-    ReactDOM.render(<App1 />, document.querySelector('#root'))
-  </script>
-</body>
-
+      ReactDOM.render(<App1 />, document.querySelector("#root"));
+    </script>
+  </body>
 </html>

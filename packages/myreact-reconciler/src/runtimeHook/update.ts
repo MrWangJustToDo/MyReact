@@ -71,7 +71,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   if (currentHook.type === HOOK_TYPE.useImperativeHandle) {
     let depsChanged = false;
     // ref changed also need to trigger effect
-    if (isHMR || !deps || !isNormalEquals(currentHook.value, value) || (depsChanged = !isArrayEquals(currentHook.deps, deps), depsChanged)) {
+    if (isHMR || !deps || !isNormalEquals(currentHook.value, value) || ((depsChanged = !isArrayEquals(currentHook.deps, deps)), depsChanged)) {
       currentHook.value = value;
 
       currentHook.result = value;

@@ -4,7 +4,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  ignorePatterns: [".eslintrc.cjs", "postcss.config.cjs", 'vite.config.ts'],
+  ignorePatterns: [".eslintrc.cjs", "postcss.config.cjs", "vite.config.ts"],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,

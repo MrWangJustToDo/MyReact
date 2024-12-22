@@ -15,6 +15,7 @@ pnpm add @my-react/react @my-react/react-dom
 ```
 
 ## start in Next.js
+
 ```bash
 # quick start in next.js
 pnpm add -D @my-react/react-refresh @my-react/react-refresh-tools
@@ -26,6 +27,7 @@ modules.export = withNext(nextConfig);
 ```
 
 ## start in Vite
+
 ```bash
 # quick start in vite
 pnpm add -D @my-react/react-refresh @my-react/react-vite
@@ -78,25 +80,24 @@ pnpm dev:ssr / dev:csr / dev:next / dev:vite
 
 ## Api
 
-| @my-react/react | @my-react/react-dom    | @my-react/react-reactive | @my-react/react (hook)     | @my-react/react-refresh | @my-react/react-refresh-tools | @my-react/react-vite |
-| --------------- | ---------------------- | ------------------------ | -------------------------- | ----------------------- | ----------------------------- | -------------------- |
-| createELement   | render                 | createReactive           | useState                   | babel plugin            | webpack plugin                | vite plugin          |
-| cloneElement    | renderToString         | reactive                 | useEffect                  | refresh runtime         | next.js plugin                |
-| isValidElement  | findDOMNode            | ref                      | useLayoutEffect            |                         | webpack loader                |
-| Children        | hydrate                | computed                 | useRef                     |
-| lazy            | createPortal           | watch                    | useMemo                    |
-| forwardRef      | unmountComponentAtNode | onBeforeMount            | useReducer                 |
-| createContext   | createRoot (new)       | onBeforeUnmount          | useCallback                |
-| createRef       | hydrateRoot (new)      | onBeforeUpdate           | useContext                 |
-| memo            | renderToNodeStream     | onMounted                | useImperativeHandle        |
-| Component       | renderToStaticMarkup   | onUnmounted              | useDebugValue              |
-| PureComponent   | renderToStaticNodeStream | onUpdated                | useSignal                  |
+| @my-react/react | @my-react/react-dom          | @my-react/react-reactive | @my-react/react (hook)     | @my-react/react-refresh | @my-react/react-refresh-tools | @my-react/react-vite |
+| --------------- | ---------------------------- | ------------------------ | -------------------------- | ----------------------- | ----------------------------- | -------------------- |
+| createELement   | render                       | createReactive           | useState                   | babel plugin            | webpack plugin                | vite plugin          |
+| cloneElement    | renderToString               | reactive                 | useEffect                  | refresh runtime         | next.js plugin                |
+| isValidElement  | findDOMNode                  | ref                      | useLayoutEffect            |                         | webpack loader                |
+| Children        | hydrate                      | computed                 | useRef                     |
+| lazy            | createPortal                 | watch                    | useMemo                    |
+| forwardRef      | unmountComponentAtNode       | onBeforeMount            | useReducer                 |
+| createContext   | createRoot (new)             | onBeforeUnmount          | useCallback                |
+| createRef       | hydrateRoot (new)            | onBeforeUpdate           | useContext                 |
+| memo            | renderToNodeStream           | onMounted                | useImperativeHandle        |
+| Component       | renderToStaticMarkup         | onUnmounted              | useDebugValue              |
+| PureComponent   | renderToStaticNodeStream     | onUpdated                | useSignal                  |
 | StrictMode      | renderToPipeableStream (new) |                          | useDeferredValue (new)     |
 | Fragment        | renderToReadableStream (new) |                          | useId (new)                |
-| Suspense        |                        |                          | useInsertionEffect (new)   |
-| startTransition |                        |                          | useSyncExternalStore (new) |
-|                 |                        |                          | useTransition (new)        |
-
+| Suspense        |                              |                          | useInsertionEffect (new)   |
+| startTransition |                              |                          | useSyncExternalStore (new) |
+|                 |                              |                          | useTransition (new)        |
 
 ## DevTool
 

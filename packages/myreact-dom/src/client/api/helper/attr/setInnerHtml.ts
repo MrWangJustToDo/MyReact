@@ -25,7 +25,7 @@ export const setInnerHtml = (fiber: MyReactFiberNode) => {
     const typedProps = newProps["dangerouslySetInnerHTML"] as Record<string, unknown>;
     dom.innerHTML = typedProps.__html as string;
   }
-}
+};
 
 /**
  * @internal
@@ -40,7 +40,7 @@ export const hydrateInnerHtml = (fiber: MyReactFiberNode) => {
 
     const incomingInnerHTML = typedProps.__html as string;
 
-    const ignoreWarn = props['suppressHydrationWarning'] || !enableHydrateWarn.current;
+    const ignoreWarn = props["suppressHydrationWarning"] || !enableHydrateWarn.current;
 
     if (!isSameInnerHTML(typedDOM, incomingInnerHTML)) {
       if (!ignoreWarn) {
@@ -50,4 +50,4 @@ export const hydrateInnerHtml = (fiber: MyReactFiberNode) => {
       typedDOM.innerHTML = typedProps.__html as string;
     }
   }
-}
+};

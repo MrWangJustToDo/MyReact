@@ -83,7 +83,7 @@ export const generateFiberToMountList = (fiber: MyReactFiberNode) => {
       let temp = getSibling(current);
       if (temp) {
         listTree.push(temp);
-        mode = 'child';
+        mode = "child";
       } else {
         temp = getParent(current);
         if (temp) {

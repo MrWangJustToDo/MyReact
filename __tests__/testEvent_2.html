@@ -1,40 +1,46 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.18.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <!-- <script src="../packages/myreact-dom/dist/umd/server.development.js"></script> -->
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.18.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  <!-- <script src="../packages/myreact-dom/dist/umd/server.development.js"></script> -->
-</head>
+  <body>
+    <div id="root"></div>
 
-<body>
-  <div id="root"></div>
+    <script type="text/babel">
+      const { useState, useRef, useEffect } = React;
 
-  <script type="text/babel">
-    const { useState, useRef, useEffect } = React;
+      const App = () => {
+        const [mouseDown, setMouseDown] = useState("0");
+        const [click, setClick] = useState("0");
+        return (
+          <div
+            onClick={(e) => {
+              console.log("click", e);
+              e.preventDefault();
+              setClick("1");
+            }}
+            onMouseDown={(e) => {
+              console.log("mousedown", e);
+              e.preventDefault();
+              setMouseDown("1");
+            }}
+            style={{ width: "100px", height: "100px", border: "1px solid red" }}
+          >
+            mousedown: {mouseDown}, click: {click}
+          </div>
+        );
+      };
 
-    const App = () => {
-      const [mouseDown, setMouseDown] = useState('0');
-      const [click, setClick] = useState('0')
-      return <div onClick={(e) => {
-        console.log('click', e);
-        e.preventDefault();
-        setClick('1')
-      }} onMouseDown={(e) => {
-        console.log('mousedown', e);
-        e.preventDefault();
-        setMouseDown('1');
-      }} style={{ width: '100px', height: '100px', border: '1px solid red' }}>mousedown: {mouseDown}, click: {click}</div>;
-    }
-
-    ReactDOM.render(<App />, root)
-  </script>
-</body>
-
+      ReactDOM.render(<App />, root);
+    </script>
+  </body>
 </html>

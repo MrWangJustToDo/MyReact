@@ -1,155 +1,160 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh_cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>测试react框架</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
-  <style>
-    .red {
-      color: red;
-      font-size: 20px;
-    }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
 
-    .box {
-      width: 100px;
-      height: 100px;
-      border: 1px solid red;
-      border-radius: 3px;
-    }
+      .green {
+        color: green;
+      }
+    </style>
+    <script>
+      window.__highlight__ = true;
+    </script>
+  </head>
 
-    .green {
-      color: green;
-    }
-  </style>
-  <script>
-    window.__highlight__ = true;
-  </script>
-</head>
+  <body>
+    <div id="root"></div>
 
-<body>
-  <div id="root"></div>
+    <script type="text/babel" async>
+      const { memo, useState, useCallback, useEffect, useRef, useMemo, map, lazy, Suspense, cloneElement, createContext } = React;
 
-  <script type="text/babel" async>
-    const { memo, useState, useCallback, useEffect, useRef, useMemo, map, lazy, Suspense, cloneElement, createContext } = React;
+      const useCounter = (init = 1) => {
+        const [count, setCount] = useState(init);
+        const i = useCallback(() => setCount((last) => last + 1), [setCount]);
+        const j = useCallback(() => setCount((last) => last - 1), [setCount]);
 
-    const useCounter = (init = 1) => {
-      const [count, setCount] = useState(init);
-      const i = useCallback(() => setCount((last) => last + 1), [setCount]);
-      const j = useCallback(() => setCount((last) => last - 1), [setCount]);
+        return [count, i, j];
+      };
 
-      return [count, i, j];
-    };
+      const useTime = () => {
+        const [c, setC] = useState(100);
+        const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
+        useEffect(() => {
+          console.log("init");
+          const id = setInterval(() => {
+            setCurrentTime(new Date().toLocaleString());
+          }, 1000);
+          return () => clearInterval(id);
+        }, []);
 
-    const useTime = () => {
-      const [c, setC] = useState(100);
-      const [currentTime, setCurrentTime] = useState(() => new Date().toLocaleString());
-      useEffect(() => {
-        console.log("init");
-        const id = setInterval(() => {
-          setCurrentTime(new Date().toLocaleString());
-        }, 1000);
-        return () => clearInterval(id);
-      }, []);
+        return currentTime;
+      };
 
-      return currentTime;
-    };
+      const usePosition = () => {
+        const [currentPosition, setCurrentPosition] = useState({
+          x: 0,
+          y: 0,
+        });
 
-    const usePosition = () => {
-      const [currentPosition, setCurrentPosition] = useState({
-        x: 0,
-        y: 0,
+        useEffect(() => {
+          const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
+          window.addEventListener("mousemove", action);
+          return () => window.removeEventListener("mousemove", action);
+        }, []);
+
+        return [currentPosition.x, currentPosition.y];
+      };
+
+      const delay = (time) =>
+        new Promise((r) => {
+          setTimeout(r, time);
+        });
+
+      const Foo = ({ t }) => {
+        const time = useTime();
+        return (
+          <div>
+            foo render {time} {t}
+          </div>
+        );
+      };
+
+      const Bbb = ({ children }) => children;
+
+      const LazyFoo = lazy(async () => {
+        await delay(60);
+        throw new Error("lll");
+        return { default: Foo };
       });
 
-      useEffect(() => {
-        const action = (e) => setCurrentPosition({ x: e.clientX, y: e.clientY });
-        window.addEventListener("mousemove", action);
-        return () => window.removeEventListener("mousemove", action);
-      }, []);
-
-      return [currentPosition.x, currentPosition.y];
-    };
-
-    const delay = (time) =>
-      new Promise((r) => {
-        setTimeout(r, time);
+      const LazyBar = lazy(async () => {
+        await delay(100);
+        return { default: Foo };
       });
 
-    const Foo = ({ t }) => {
-      const time = useTime();
-      return (
-        <div>
-          foo render {time} {t}
-        </div>
-      );
-    };
+      const LazyBgg = lazy(async () => {
+        await delay(1000);
+        return {
+          default: () => (
+            <>
+              {[1, 2, 3].map((i) => (
+                <p>{i}</p>
+              ))}
+            </>
+          ),
+        };
+      });
 
-    const Bbb = ({ children }) => children
+      const Baz = () => <LazyFoo />;
 
-    const LazyFoo = lazy(async () => {
-      await delay(60);
-      throw new Error('lll')
-      return { default: Foo };
-    });
+      const Bar = memo(() => {
+        const [x] = usePosition();
 
+        return <div>bar {x}</div>;
+      });
 
-    const LazyBar = lazy(async () => {
-      await delay(100);
-      return { default: Foo };
-    });
+      const App = () => {
+        const time = useTime();
+        const [x] = usePosition();
 
-    const LazyBgg = lazy(async () => {
-      await delay(1000);
-      return { default: () => <>{[1, 2, 3].map((i) => <p>{i}</p>)}</> }
-    })
-
-    const Baz = () => <LazyFoo />;
-
-    const Bar = memo(() => {
-      const [x] = usePosition();
-
-      return <div>bar {x}</div>;
-    });
-
-    const App = () => {
-      const time = useTime();
-      const [x] = usePosition();
-
-      return (
-        <div>
-          <Suspense fallback={<>123</>}>
-            <div>
-              app: {time} {x}
-              <Bar />
-              <div>last render</div>
-              <LazyBgg />
-              <Bbb>
+        return (
+          <div>
+            <Suspense fallback={<>123</>}>
+              <div>
+                app: {time} {x}
+                <Bar />
+                <div>last render</div>
+                <LazyBgg />
                 <Bbb>
-                  <LazyFoo />
-                  <LazyFoo t={time} />
-                  <LazyFoo t={x} />
+                  <Bbb>
+                    <LazyFoo />
+                    <LazyFoo t={time} />
+                    <LazyFoo t={x} />
+                  </Bbb>
                 </Bbb>
-              </Bbb>
-            </div>
-          </Suspense>
-        </div>
-      );
-    };
+              </div>
+            </Suspense>
+          </div>
+        );
+      };
 
-    const container = document.getElementById("root");
-    ReactDOM.render(<App />, container);
-    // ReactDOMServer.renderToString(<App />)
+      const container = document.getElementById("root");
+      ReactDOM.render(<App />, container);
+      // ReactDOMServer.renderToString(<App />)
 
-    // lazy hydrate
-    // ReactDOM.renderToString(<App />, true).then((r) => container.innerHTML = r).then(() => ReactDOM.hydrate(<App />, container, true))
-    // container.innerHTML = ReactDOM.renderToString(<App />)
-  </script>
-</body>
-
+      // lazy hydrate
+      // ReactDOM.renderToString(<App />, true).then((r) => container.innerHTML = r).then(() => ReactDOM.hydrate(<App />, container, true))
+      // container.innerHTML = ReactDOM.renderToString(<App />)
+    </script>
+  </body>
 </html>

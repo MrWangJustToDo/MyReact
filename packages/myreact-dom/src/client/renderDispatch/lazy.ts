@@ -44,8 +44,8 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cl
     if (_dispatch.isHydrateRender) {
       currentRenderPlatform.current.microTask(function triggerUpdateOnFiberTask() {
         typedElementType._update(_fiber, typedElementType.render);
-      })
-      
+      });
+
       return WrapperByScope(_dispatch.resolveSuspense(_fiber));
     } else {
       const render = typedElementType.render as ReturnType<typeof lazy>["render"];

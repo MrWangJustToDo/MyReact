@@ -147,7 +147,9 @@ export const lazy = <P extends Record<string, unknown> = any>(
   };
   return config as {
     [TYPEKEY]: symbol;
-    loader: () => Promise<{ default: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> } | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>>;
+    loader: () => Promise<
+      { default: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> } | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>
+    >;
     _loading: boolean;
     _loaded: boolean;
     _update: (fiber: RenderFiber, loaded: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent) => void;
@@ -157,7 +159,9 @@ export const lazy = <P extends Record<string, unknown> = any>(
 
 export type LazyType<P extends Record<string, unknown>> = {
   [TYPEKEY]: symbol;
-  loader: () => Promise<{ default: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> } | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>>;
+  loader: () => Promise<
+    { default: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> } | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>
+  >;
   _loading: boolean;
   _loaded: boolean;
   _update: (fiber: RenderFiber, loaded: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent) => void;

@@ -24,7 +24,7 @@ export class ErrorCatch extends Component<Record<string, unknown>, { error: stri
     const { hasError, stack, error } = this.state;
     if (hasError) {
       console.error(error, stack);
-      return 'some error happen';
+      return "some error happen";
     } else {
       return this.props.children as ReactNode;
     }

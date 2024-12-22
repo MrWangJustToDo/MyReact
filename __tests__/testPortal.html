@@ -1,42 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh_cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <!-- <script src="../bundle/react.18.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>测试react框架</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  <!-- <script src="../bundle/react.18.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
-  <style>
-    .red {
-      color: red;
-      font-size: 20px;
-    }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
 
-    .box {
-      width: 100px;
-      height: 100px;
-      border: 1px solid red;
-      border-radius: 3px;
-    }
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
 
-    .green {
-      color: green;
-    }
-  </style>
-</head>
+  <body>
+    <div id="root"></div>
+    <div id="foo"></div>
+    <div id="bar"></div>
 
-<body>
-  <div id="root"></div>
-  <div id="foo"></div>
-  <div id="bar"></div>
-
-  <!-- <script type="text/babel" defer>
+    <!-- <script type="text/babel" defer>
       const { memo, useState, useCallback, useEffect, useRef, useMemo, map, cloneElement, createContext, KeepLive } = React;
 
       const useCounter = (init = 1) => {
@@ -144,14 +143,12 @@
       // console.log(ReactDOM.renderToString(<Tt />))
     </script> -->
 
-  <script type="text/babel">
-    const { render, createPortal } = ReactDOM;
+    <script type="text/babel">
+      const { render, createPortal } = ReactDOM;
 
-    render(createPortal(<div>portal</div>, document.querySelector('#foo')
-    ), document.querySelector('#root'))
+      render(createPortal(<div>portal</div>, document.querySelector("#foo")), document.querySelector("#root"));
 
-    render(<div>123</div>, document.querySelector('#root'))
-  </script>
-</body>
-
+      render(<div>123</div>, document.querySelector("#root"));
+    </script>
+  </body>
 </html>

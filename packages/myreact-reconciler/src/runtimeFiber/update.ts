@@ -5,7 +5,7 @@ import { prepareUpdateAllDependence, /* prepareUpdateAllDependenceFromProvider, 
 import { listenerMap } from "../renderDispatch";
 import { currentRenderDispatch, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
-import type { CustomRenderDispatch} from "../renderDispatch";
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactElement, MyReactElementNode, memo } from "@my-react/react";
 
@@ -37,7 +37,7 @@ export const updateFiberNode = (
 
   parent.child = parent.child || fiber;
 
-  nextElement =  fiber._installElement(nextElement);
+  nextElement = fiber._installElement(nextElement);
 
   const nextElementType = fiber.elementType;
 
@@ -127,4 +127,4 @@ export const triggerFiberUpdateListener = (renderDispatch: CustomRenderDispatch,
       listenerMap.get(renderDispatch)?.fiberUpdate?.forEach((listener) => listener(fiber));
     },
   });
-}
+};

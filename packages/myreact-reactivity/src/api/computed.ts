@@ -34,7 +34,10 @@ class ComputedRefImpl<T> {
   public readonly [ComputedFlags.Computed_key] = true;
   private readonly _depsSet: Set<ReactiveEffect> = new Set();
 
-  constructor(readonly _getter: () => T, private readonly _setter: (v: T) => void) {
+  constructor(
+    readonly _getter: () => T,
+    private readonly _setter: (v: T) => void
+  ) {
     this._effect = new ReactiveEffect<T>(_getter, () => {
       if (!this._dirty) {
         this._dirty = true;

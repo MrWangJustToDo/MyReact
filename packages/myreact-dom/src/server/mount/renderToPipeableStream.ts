@@ -6,7 +6,7 @@ import { LatestServerStreamDispatch } from "@my-react-dom-server/renderDispatch"
 import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
 import { checkRoot, isServer, startRenderAsync } from "@my-react-dom-shared";
 
-import type { BootstrapScriptDescriptor, ErrorInfo} from "@my-react-dom-server/renderDispatch";
+import type { BootstrapScriptDescriptor, ErrorInfo } from "@my-react-dom-server/renderDispatch";
 
 type RenderToPipeableStreamOptions = {
   identifierPrefix?: string;

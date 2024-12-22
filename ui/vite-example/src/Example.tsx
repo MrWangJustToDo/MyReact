@@ -1,8 +1,21 @@
-import { Checkbox, Chip, ColorInput, ColorPicker, Space, Fieldset, TextInput, FileInput, JsonInput, SegmentedControl, Slider, Burger, Pagination } from "@mantine/core";
+import {
+  Checkbox,
+  Chip,
+  ColorInput,
+  ColorPicker,
+  Space,
+  Fieldset,
+  TextInput,
+  FileInput,
+  JsonInput,
+  SegmentedControl,
+  Slider,
+  Burger,
+  Pagination,
+} from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
 export const Example = () => {
-
   const [opened, { toggle }] = useDisclosure();
 
   return (

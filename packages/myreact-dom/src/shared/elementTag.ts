@@ -44,4 +44,4 @@ export const isNativeTag = (type: string) => {
     return false;
   }
   return true;
-} 
+};

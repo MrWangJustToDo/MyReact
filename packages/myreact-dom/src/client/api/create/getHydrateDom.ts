@@ -84,7 +84,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
     }
     return dom;
   }
-  log(fiber, 'error', `hydrate error, unknown node type: ${fiber.type}`);
+  log(fiber, "error", `hydrate error, unknown node type: ${fiber.type}`);
 };
 
 /**

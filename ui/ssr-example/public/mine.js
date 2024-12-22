@@ -82,28 +82,16 @@
     }
 
     _randomAttrMine() {
-      this.mine.style.left = `${tools.getRandom(
-        this.min + this.col * this.baseSize,
-        this.max + this.col * this.baseSize
-      )}px`;
+      this.mine.style.left = `${tools.getRandom(this.min + this.col * this.baseSize, this.max + this.col * this.baseSize)}px`;
       this.mine.style.top = `${tools.getRandom(this.min, this.max)}px`;
-      this.mine.style.transform = `rotateX(${tools.getRandom(
-        0,
-        360
-      )}deg) rotateY(${tools.getRandom(0, 360)}deg)`;
+      this.mine.style.transform = `rotateX(${tools.getRandom(0, 360)}deg) rotateY(${tools.getRandom(0, 360)}deg)`;
       this.mine.style.opacity = tools.getRandom(0, 1);
     }
 
     _randomAttrBack() {
-      this.back.style.left = `${tools.getRandom(
-        this.min + this.col * this.baseSize,
-        this.max + this.col * this.baseSize
-      )}px`;
+      this.back.style.left = `${tools.getRandom(this.min + this.col * this.baseSize, this.max + this.col * this.baseSize)}px`;
       this.back.style.top = `${tools.getRandom(this.min, this.max)}px`;
-      this.back.style.transform = `rotateX(${tools.getRandom(
-        0,
-        360
-      )}deg) rotateY(${tools.getRandom(0, 360)}deg)`;
+      this.back.style.transform = `rotateX(${tools.getRandom(0, 360)}deg) rotateY(${tools.getRandom(0, 360)}deg)`;
       this.back.style.opacity = tools.getRandom(0, 1);
     }
 
@@ -160,12 +148,8 @@
         this.showFlag = true;
         return tools
           .promiseNext(0, this._appendMine.bind(this))
-          .then(() =>
-            tools.promiseNext(this.shortDelay, this._reSetAttrMine.bind(this))
-          )
-          .then(() =>
-            tools.promiseNext(this.longDelay, this._appendBack.bind(this))
-          );
+          .then(() => tools.promiseNext(this.shortDelay, this._reSetAttrMine.bind(this)))
+          .then(() => tools.promiseNext(this.longDelay, this._appendBack.bind(this)));
       } else {
         return Promise.resolve();
       }
@@ -178,9 +162,7 @@
         this.mine.style.zIndex = 2;
         return tools
           .promiseNext(this.shortDelay, this._randomAttrMine.bind(this))
-          .then(() =>
-            tools.promiseNext(this.longDelay, this._removeMine.bind(this))
-          )
+          .then(() => tools.promiseNext(this.longDelay, this._removeMine.bind(this)))
           .then(() => tools.promiseNext(this.shortDelay));
       } else {
         return Promise.resolve();
@@ -214,18 +196,11 @@
             tools.promiseNext(this.shortDelay, () => {
               let temp = this.mine.children;
               for (let i = 0; i < temp.length; i++) {
-                temp[i].style.left = `${tools.getRandom(
-                  this.min + (i * this.baseSize) / 3,
-                  this.max + (i * this.baseSize) / 3
-                )}px`;
+                temp[i].style.left = `${tools.getRandom(this.min + (i * this.baseSize) / 3, this.max + (i * this.baseSize) / 3)}px`;
                 temp[i].style.top = `${tools.getRandom(this.min, this.max)}px`;
-                temp[i].style.transform = `rotateX(${tools.getRandom(
-                  0,
-                  360
-                )}deg) rotateY(${tools.getRandom(0, 360)}deg)`;
+                temp[i].style.transform = `rotateX(${tools.getRandom(0, 360)}deg) rotateY(${tools.getRandom(0, 360)}deg)`;
                 temp[i].style.opacity = tools.getRandom(0, 1);
-                temp[i].style.boxShadow =
-                  "0px 0px 6px 1px rgba(120, 120, 120, 0.8)";
+                temp[i].style.boxShadow = "0px 0px 6px 1px rgba(120, 120, 120, 0.8)";
               }
             })
           )
@@ -308,9 +283,7 @@
           this._initMine();
         })
         .then(() => tools.promiseNext(0, this._appendMine.bind(this)))
-        .then(() =>
-          tools.promiseNext(this.shortDelay, this._reSetAttrMine.bind(this))
-        )
+        .then(() => tools.promiseNext(this.shortDelay, this._reSetAttrMine.bind(this)))
         .then(() => tools.promiseNext(this.longDelay));
     }
 
@@ -351,9 +324,7 @@
       this.row.style.height = `${this.baseSize}px`;
       this.list = [];
       for (let i = 0; i < this.col; i++) {
-        this.list.push(
-          new Mine(this.options, this.row, this.currentRowIndex, i)
-        );
+        this.list.push(new Mine(this.options, this.row, this.currentRowIndex, i));
       }
     }
 
@@ -366,9 +337,7 @@
     }
 
     show() {
-      return tools
-        .promiseNext(0, this._appendRow.bind(this))
-        .then(() => Promise.all(this.list.map((it) => it.animateShow())));
+      return tools.promiseNext(0, this._appendRow.bind(this)).then(() => Promise.all(this.list.map((it) => it.animateShow())));
     }
 
     remove() {
@@ -432,9 +401,7 @@
     }
 
     removeAll() {
-      return tools
-        .promiseNext(0, this.clearMsg.bind(this))
-        .then(() => Promise.all(this.allEle.map((it) => it.remove())));
+      return tools.promiseNext(0, this.clearMsg.bind(this)).then(() => Promise.all(this.allEle.map((it) => it.remove())));
     }
 
     clearMsg() {
@@ -454,9 +421,7 @@
     }
 
     removeMap() {
-      return this.removeAll().then(() =>
-        Promise.all(this.allEle.map((it) => it._removeRowBack()))
-      );
+      return this.removeAll().then(() => Promise.all(this.allEle.map((it) => it._removeRowBack())));
     }
   }
 
@@ -693,10 +658,7 @@
       this.mineMap = new MineMap(this.options);
       this.closeEle.disabled = true;
       this.selectEle.disabled = true;
-      return Promise.all([
-        this.mineMap.showAll(),
-        (this.headParent.style.width = `${this.col * this.baseSize + 0.3}px`),
-      ])
+      return Promise.all([this.mineMap.showAll(), (this.headParent.style.width = `${this.col * this.baseSize + 0.3}px`)])
         .then(() =>
           tools.promiseNext(this.shortDelay, () => {
             this.mask = new MapMask(this.options, this.mineMap);
@@ -733,8 +695,7 @@
             that.clickItem(this, that.mineMap);
           } else if (e.which == 3) {
             this._pick();
-            that.flagEle.textContent =
-              this.options.totalFlags - this.options.picked;
+            that.flagEle.textContent = this.options.totalFlags - this.options.picked;
             if (this.options.lastMines == 0) {
               that.success();
             }
@@ -748,11 +709,7 @@
         .removeAll()
         .then(() => this._resetTime())
         .then(() => this.mask.initMask())
-        .then(() =>
-          tools.promiseNext(this.shortDelay, () =>
-            this.log.initMsg("恭喜通关", this._reset.bind(this))
-          )
-        );
+        .then(() => tools.promiseNext(this.shortDelay, () => this.log.initMsg("恭喜通关", this._reset.bind(this))));
     }
 
     _timeStart() {
@@ -850,20 +807,11 @@
     }
 
     _close() {
-      return Promise.all([
-        this._end(),
-        this.mineMap.removeAll(),
-        tools.promiseNext(0, this._resetTime.bind(this)),
-      ])
+      return Promise.all([this._end(), this.mineMap.removeAll(), tools.promiseNext(0, this._resetTime.bind(this))])
         .then(() => this.mask.initMask())
         .then(() =>
           tools.promiseNext(this.shortDelay, () =>
-            this.log.initPoint(
-              this.totalMines -
-                this.options.totalMines -
-                this.options.lastMines,
-              this._reset.bind(this)
-            )
+            this.log.initPoint(this.totalMines - this.options.totalMines - this.options.lastMines, this._reset.bind(this))
           )
         );
     }
@@ -875,9 +823,7 @@
     clearAll() {
       return tools.promiseNext(this.shortDelay, () => {
         this._resetTime();
-        Array.from(
-          document.querySelectorAll("." + this.rowClassName)
-        ).forEach((it) => it.remove());
+        Array.from(document.querySelectorAll("." + this.rowClassName)).forEach((it) => it.remove());
       });
     }
   }

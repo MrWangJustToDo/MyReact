@@ -4,7 +4,7 @@ import { include, STATE_TYPE } from "@my-react/react-shared";
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MyReactElementNode} from "@my-react/react";
+import type { MyReactElementNode } from "@my-react/react";
 
 const { enableDebugFiled } = __my_react_shared__;
 
@@ -44,7 +44,7 @@ export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: WeakMap
 
 export const defaultResolveSuspense = (fiber: MyReactFiberNode): MyReactElementNode => {
   let parent = fiber.parent;
-  
+
   while (parent) {
     if (include(parent.type, NODE_TYPE.__suspense__)) {
       return parent.pendingProps?.["fallback"];

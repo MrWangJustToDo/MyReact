@@ -23,7 +23,7 @@ export const generateArrayProxyHandler = () => {
   // 这些方法会修改数组  同时也会访问length属性，对于数组的操作可能会死循环
   const noTrackMethodNames = ["push", "pop", "shift", "unshift", "splice"] as const;
 
-  const handlerObject: Partial<Record<typeof methodNames[number] | typeof noTrackMethodNames[number], (...args: unknown[]) => unknown>> = {};
+  const handlerObject: Partial<Record<(typeof methodNames)[number] | (typeof noTrackMethodNames)[number], (...args: unknown[]) => unknown>> = {};
 
   methodNames.reduce((p, c) => {
     p[c] = function (this: unknown[], ...args: unknown[]) {

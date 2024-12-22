@@ -2,10 +2,10 @@
   "object" == typeof exports && "object" == typeof module
     ? (module.exports = t(require("react"), require("react-dom")))
     : "function" == typeof define && define.amd
-    ? define(["react", "react-dom"], t)
-    : "object" == typeof exports
-    ? (exports.ReactGridLayout = t(require("react"), require("react-dom")))
-    : (e.ReactGridLayout = t(e.React, e.ReactDOM));
+      ? define(["react", "react-dom"], t)
+      : "object" == typeof exports
+        ? (exports.ReactGridLayout = t(require("react"), require("react-dom")))
+        : (e.ReactGridLayout = t(e.React, e.ReactDOM));
 })(self, function (e, t) {
   return (function () {
     var r = {
@@ -162,10 +162,10 @@
                     C(e, t, r[t]);
                   })
                 : Object.getOwnPropertyDescriptors
-                ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
-                : S(Object(r)).forEach(function (t) {
-                    Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
-                  });
+                  ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
+                  : S(Object(r)).forEach(function (t) {
+                      Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
+                    });
             }
             return e;
           }
@@ -628,10 +628,10 @@
                     Y(e, t, r[t]);
                   })
                 : Object.getOwnPropertyDescriptors
-                ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
-                : M(Object(r)).forEach(function (t) {
-                    Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
-                  });
+                  ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
+                  : M(Object(r)).forEach(function (t) {
+                      Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
+                    });
             }
             return e;
           }
@@ -753,32 +753,32 @@
               return "number" != typeof r
                 ? new Error("minWidth not Number")
                 : r > e.w || r > e.maxW
-                ? new Error("minWidth larger than item width/maxWidth")
-                : void 0;
+                  ? new Error("minWidth larger than item width/maxWidth")
+                  : void 0;
             },
             maxW: function (e, t) {
               var r = e[t];
               return "number" != typeof r
                 ? new Error("maxWidth not Number")
                 : r < e.w || r < e.minW
-                ? new Error("maxWidth smaller than item width/minWidth")
-                : void 0;
+                  ? new Error("maxWidth smaller than item width/minWidth")
+                  : void 0;
             },
             minH: function (e, t) {
               var r = e[t];
               return "number" != typeof r
                 ? new Error("minHeight not Number")
                 : r > e.h || r > e.maxH
-                ? new Error("minHeight larger than item height/maxHeight")
-                : void 0;
+                  ? new Error("minHeight larger than item height/maxHeight")
+                  : void 0;
             },
             maxH: function (e, t) {
               var r = e[t];
               return "number" != typeof r
                 ? new Error("maxHeight not Number")
                 : r < e.h || r < e.minH
-                ? new Error("maxHeight smaller than item height/minHeight")
-                : void 0;
+                  ? new Error("maxHeight smaller than item height/minHeight")
+                  : void 0;
             },
             i: h().string.isRequired,
             resizeHandles: m,
@@ -1424,10 +1424,10 @@
                     S(e, t, r[t]);
                   })
                 : Object.getOwnPropertyDescriptors
-                ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
-                : y(Object(r)).forEach(function (t) {
-                    Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
-                  });
+                  ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
+                  : y(Object(r)).forEach(function (t) {
+                      Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
+                    });
             }
             return e;
           }
@@ -2098,10 +2098,10 @@
                     l(e, t, r[t]);
                   })
                 : Object.getOwnPropertyDescriptors
-                ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
-                : s(Object(r)).forEach(function (t) {
-                    Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
-                  });
+                  ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
+                  : s(Object(r)).forEach(function (t) {
+                      Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
+                    });
             }
             return e;
           }
@@ -2532,19 +2532,19 @@
                 ? "[object Undefined]"
                 : "[object Null]"
               : Z && Z in Object(e)
-              ? (function (e) {
-                  var t = X.call(e, Z),
-                    r = e[Z];
-                  try {
-                    e[Z] = void 0;
-                    var n = !0;
-                  } catch (e) {}
-                  var o = F.call(e);
-                  return n && (t ? (e[Z] = r) : delete e[Z]), o;
-                })(e)
-              : (function (e) {
-                  return F.call(e);
-                })(e);
+                ? (function (e) {
+                    var t = X.call(e, Z),
+                      r = e[Z];
+                    try {
+                      e[Z] = void 0;
+                      var n = !0;
+                    } catch (e) {}
+                    var o = F.call(e);
+                    return n && (t ? (e[Z] = r) : delete e[Z]), o;
+                  })(e)
+                : (function (e) {
+                    return F.call(e);
+                  })(e);
           }
           function je(e) {
             return Ie(e) && Se(e) == a;
@@ -3113,10 +3113,10 @@
                     D(e, t, r[t]);
                   })
                 : Object.getOwnPropertyDescriptors
-                ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
-                : b(Object(r)).forEach(function (t) {
-                    Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
-                  });
+                  ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
+                  : b(Object(r)).forEach(function (t) {
+                      Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
+                    });
             }
             return e;
           }
@@ -3265,8 +3265,8 @@
                                 "Map" === r || "Set" === r
                                   ? Array.from(e)
                                   : "Arguments" === r || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)
-                                  ? v(e, t)
-                                  : void 0
+                                    ? v(e, t)
+                                    : void 0
                               );
                             }
                           })(n, o) ||
@@ -3951,8 +3951,8 @@
               return e.targetTouches && e.targetTouches[0]
                 ? e.targetTouches[0].identifier
                 : e.changedTouches && e.changedTouches[0]
-                ? e.changedTouches[0].identifier
-                : void 0;
+                  ? e.changedTouches[0].identifier
+                  : void 0;
             }),
             (t.addUserSelectStyles = function (e) {
               if (e) {
@@ -4021,10 +4021,10 @@
                     l(e, t, r[t]);
                   })
                 : Object.getOwnPropertyDescriptors
-                ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
-                : s(Object(r)).forEach(function (t) {
-                    Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
-                  });
+                  ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
+                  : s(Object(r)).forEach(function (t) {
+                      Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
+                    });
             }
             return e;
           }
@@ -4308,10 +4308,10 @@
                     p(e, t, r[t]);
                   })
                 : Object.getOwnPropertyDescriptors
-                ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
-                : c(Object(r)).forEach(function (t) {
-                    Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
-                  });
+                  ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
+                  : c(Object(r)).forEach(function (t) {
+                      Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
+                    });
             }
             return e;
           }
@@ -4581,10 +4581,10 @@
                     d(e, t, r[t]);
                   })
                 : Object.getOwnPropertyDescriptors
-                ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
-                : f(Object(r)).forEach(function (t) {
-                    Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
-                  });
+                  ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
+                  : f(Object(r)).forEach(function (t) {
+                      Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
+                    });
             }
             return e;
           }
@@ -4783,10 +4783,10 @@
                     s(e, t, r[t]);
                   })
                 : Object.getOwnPropertyDescriptors
-                ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
-                : a(Object(r)).forEach(function (t) {
-                    Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
-                  });
+                  ? Object.defineProperties(e, Object.getOwnPropertyDescriptors(r))
+                  : a(Object(r)).forEach(function (t) {
+                      Object.defineProperty(e, t, Object.getOwnPropertyDescriptor(r, t));
+                    });
             }
             return e;
           }

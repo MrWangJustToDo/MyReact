@@ -41,7 +41,11 @@ export type PaginationBarButton = {
 
 // with dataIndex field, we use sorter by dataIndex
 export type HeadCellPropsWithDataIndex<T, K extends keyof T = keyof T> = {
-  Render?: (({ dataIndex, rowIndex, colIndex }: { dataIndex: K; rowIndex: number; colIndex: number }) => React.ReactElement) | string | number | React.ReactNode;
+  Render?:
+    | (({ dataIndex, rowIndex, colIndex }: { dataIndex: K; rowIndex: number; colIndex: number }) => React.ReactElement)
+    | string
+    | number
+    | React.ReactNode;
   CustomRender?: ({
     dataIndex,
     rowIndex,

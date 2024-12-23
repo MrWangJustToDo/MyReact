@@ -15,7 +15,7 @@ import { MyWeakMap, NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../shar
 
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
 import type { UpdateState } from "../dispatchQueue";
-import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { HMR } from "../share";
 import type { createContext, MyReactComponent, MyReactElementNode, UpdateQueue } from "@my-react/react";
@@ -197,7 +197,7 @@ export class CustomRenderDispatch implements RenderDispatch {
     readonly rootNode: any,
     readonly rootFiber: MyReactFiberNode
   ) {
-    const typedFiber = rootFiber as MyReactFiberContainer;
+    const typedFiber = rootFiber as MyReactFiberRoot;
 
     typedFiber.renderDispatch = this;
 

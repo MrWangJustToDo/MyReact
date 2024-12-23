@@ -263,5 +263,8 @@ if (__DEV__) {
 
 export interface MyReactFiberContainer extends MyReactFiberNode {
   containerNode: NativeNode;
+}
+
+export interface MyReactFiberRoot extends MyReactFiberNode {
   renderDispatch: CustomRenderDispatch;
 }

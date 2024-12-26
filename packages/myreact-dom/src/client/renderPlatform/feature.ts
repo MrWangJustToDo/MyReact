@@ -1,9 +1,9 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { devErrorWithFiber, enableFiberForLog, enableValidMyReactElement, processHookNode, processState, triggerError } from "@my-react/react-reconciler";
+import { devErrorWithFiber, enableFiberForLog, enableValidMyReactElement, processHook, processState, triggerError } from "@my-react/react-reconciler";
 
 import { DomPlatform } from "@my-react-dom-shared";
 
-import type { UpdateQueue } from "@my-react/react";
+import type { RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
@@ -14,6 +14,10 @@ function dispatchState(this: DomPlatform, _params: UpdateQueue) {
   if (!this.isServer) {
     processState(_params);
   }
+}
+
+function dispatchHook(this: DomPlatform, _params: RenderHookParams) {
+  return processHook(_params);
 }
 
 function dispatchError(this: DomPlatform, _params: { fiber: MyReactFiberNode; error: Error }) {
@@ -72,7 +76,7 @@ export const prepareRenderPlatform = () => {
 
   renderPlatform.dispatchState = dispatchState;
 
-  renderPlatform.dispatchHook = processHookNode;
+  renderPlatform.dispatchHook = dispatchHook;
 
   renderPlatform.dispatchError = dispatchError;
 };

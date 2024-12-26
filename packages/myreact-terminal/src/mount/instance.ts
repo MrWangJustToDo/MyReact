@@ -1,5 +1,5 @@
 import { createElement } from "@my-react/react";
-import { MyReactFiberNode, clearContainer, initialFiberNode, mount, unmountFiber } from "@my-react/react-reconciler";
+import { MyReactFiberNode, clearContainer, initialFiberNode, mountSync, unmountFiber } from "@my-react/react-reconciler";
 import ansiEscapes from "ansi-escapes";
 import autoBind from "auto-bind";
 import isInCi from "is-in-ci";
@@ -194,7 +194,7 @@ export class Instance {
       this.rootNode.__fiber__ = fiber as MyReactFiberNodeDev;
     }
 
-    mount(fiber, renderDispatch);
+    mountSync(fiber, renderDispatch);
 
     renderDispatch.isAppMounted = true;
   };

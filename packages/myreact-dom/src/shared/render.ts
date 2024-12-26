@@ -1,4 +1,4 @@
-import { mount, mountAsync } from "@my-react/react-reconciler";
+import { mountSync, mountAsync } from "@my-react/react-reconciler";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -15,7 +15,7 @@ export const startRender = (
 ) => {
   const startTime = Date.now();
 
-  mount(fiber, renderDispatch);
+  mountSync(fiber, renderDispatch);
 
   const endTime = Date.now();
 

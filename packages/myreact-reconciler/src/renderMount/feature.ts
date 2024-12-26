@@ -1,8 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { processLazy } from "../processLazy";
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
-import { mountLoop } from "../runtimeMount";
+import { mountLoopAll, processMountLoopAll } from "../runtimeMount";
 import { resetLogScope, safeCallWithCurrentFiber, setLogScope } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -11,12 +10,12 @@ const { globalLoop } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const mount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const mountSync = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  mountLoop(fiber, renderDispatch);
+  mountLoopAll(fiber, renderDispatch);
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
@@ -56,28 +55,9 @@ export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: Custom
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  mountLoop(fiber, renderDispatch);
+  mountLoopAll(fiber, renderDispatch);
 
-  let loopCount = 0;
-
-  while (renderDispatch.pendingAsyncLoadFiberList?.length) {
-    const beforeLength = renderDispatch.pendingAsyncLoadFiberList.length;
-
-    const node = renderDispatch.pendingAsyncLoadFiberList.shift();
-
-    await processLazy(node);
-
-    mountLoop(node, renderDispatch);
-
-    const afterLength = renderDispatch.pendingAsyncLoadFiberList.length;
-
-    if (beforeLength === afterLength) {
-      loopCount++;
-      if (loopCount > 5) {
-        throw new Error("lazy() load loop count is too much");
-      }
-    }
-  }
+  await processMountLoopAll(fiber, renderDispatch);
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 

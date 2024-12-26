@@ -2,10 +2,8 @@ import { __my_react_shared__ } from "@my-react/react";
 import { exclude, include, isNormalEquals, merge, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
 
 import { prepareUpdateAllDependence, /* prepareUpdateAllDependenceFromProvider, */ prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
-import { listenerMap } from "../renderDispatch";
-import { currentRenderDispatch, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
+import { currentRenderDispatch, NODE_TYPE } from "../share";
 
-import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactElement, MyReactElementNode, memo } from "@my-react/react";
 
@@ -111,20 +109,4 @@ export const updateFiberNode = (
   }
 
   return fiber;
-};
-
-export const triggerFiberUpdateListener = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
-  safeCallWithCurrentFiber({
-    fiber,
-    action: function safeCallPatchToFiberUpdate() {
-      renderDispatch.patchToFiberUpdate?.(fiber);
-    },
-  });
-
-  safeCallWithCurrentFiber({
-    fiber,
-    action: function safeCallFiberUpdateListener() {
-      listenerMap.get(renderDispatch)?.fiberUpdate?.forEach((listener) => listener(fiber));
-    },
-  });
 };

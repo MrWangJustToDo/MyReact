@@ -1,5 +1,5 @@
 import { __my_react_internal__, createElement } from "@my-react/react";
-import { devWarnWithFiber, WrapperByScope } from "@my-react/react-reconciler";
+import { devWarnWithFiber, nextWorkCommon, WrapperByScope } from "@my-react/react-reconciler";
 import { isPromise, ListTree } from "@my-react/react-shared";
 
 import type { ClientDomDispatch } from "./instance";
@@ -8,7 +8,12 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { currentRenderPlatform } = __my_react_internal__;
 
-const loadLazy = async (fiber: MyReactFiberNode, typedElementType: ReturnType<typeof lazy>) => {
+/**
+ * @internal
+ */
+export const loadLazy = async (fiber: MyReactFiberNode, typedElementType: ReturnType<typeof lazy>) => {
+  if (typedElementType._loaded) return;
+
   try {
     typedElementType._loading = true;
 
@@ -25,16 +30,20 @@ const loadLazy = async (fiber: MyReactFiberNode, typedElementType: ReturnType<ty
     typedElementType._loaded = true;
 
     typedElementType.render = render as ReturnType<typeof lazy>["render"];
-
-    typedElementType._update(fiber, typedElementType.render);
   } catch (e) {
-    currentRenderPlatform.current.dispatchError({ fiber, error: e });
+    currentRenderPlatform.current.dispatchError?.({ fiber, error: e });
   } finally {
     typedElementType._loading = false;
   }
 };
 
-// TODO
+/**
+ * @internal
+ */
+export const updateLazy = (fiber: MyReactFiberNode, typedElementType: ReturnType<typeof lazy>) => {
+  typedElementType._update(fiber, typedElementType.render);
+};
+
 /**
  * @internal
  */
@@ -43,7 +52,7 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cl
   if (typedElementType._loaded === true) {
     if (_dispatch.isHydrateRender) {
       currentRenderPlatform.current.microTask(function triggerUpdateOnFiberTask() {
-        typedElementType._update(_fiber, typedElementType.render);
+        updateLazy(_fiber, typedElementType);
       });
 
       return WrapperByScope(_dispatch.resolveSuspense(_fiber));
@@ -53,7 +62,7 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cl
       return WrapperByScope(createElement(render as MixinMyReactFunctionComponent, _fiber.pendingProps));
     }
   } else if (typedElementType._loading === false) {
-    loadLazy(_fiber, typedElementType);
+    loadLazy(_fiber, typedElementType).then(() => updateLazy(_fiber, typedElementType));
   }
 
   return WrapperByScope(_dispatch.resolveSuspense(_fiber));
@@ -75,9 +84,24 @@ export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: Cl
 
       return null;
     } else if (typedElementType._loading === false) {
-      loadLazy(_fiber, typedElementType);
+      loadLazy(_fiber, typedElementType).then(() => updateLazy(_fiber, typedElementType));
     }
 
     return WrapperByScope(_dispatch.resolveSuspense(_fiber));
+  }
+};
+
+/**
+ * @internal
+ */
+export const nextWorkLazy = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
+  if (_dispatch.enableASyncHydrate) {
+    const children = resolveLazyElementLatest(_fiber, _dispatch);
+
+    nextWorkCommon(_fiber, children);
+  } else {
+    const children = resolveLazyElementLegacy(_fiber, _dispatch);
+
+    nextWorkCommon(_fiber, children);
   }
 };

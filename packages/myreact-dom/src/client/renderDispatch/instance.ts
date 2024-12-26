@@ -1,4 +1,4 @@
-import { __my_react_shared__, createElement, type MyReactElement, type MyReactElementNode, type MyReactElementType } from "@my-react/react";
+import { __my_react_shared__, createElement, type MyReactElement, type MyReactElementType } from "@my-react/react";
 import { CustomRenderDispatch, NODE_TYPE, initHMR, listenerMap, safeCallWithCurrentFiber, unmountFiber } from "@my-react/react-reconciler";
 
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
@@ -17,7 +17,8 @@ import {
   parse,
 } from "@my-react-dom-shared";
 
-import { resolveLazyElementLegacy, resolveLazyElementLatest } from "./lazy";
+import { clientDispatchFiber } from "./dispatch";
+import { clientProcessFiber } from "./process";
 
 import type { HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 import type { PlainElementDev } from "@my-react-dom-server/api";
@@ -158,6 +159,14 @@ export class ClientDomDispatch extends CustomRenderDispatch {
    */
   patchToCommitSetRef?: (_fiber: MyReactFiberNode) => void;
 
+  dispatchFiber(_fiber: MyReactFiberNode): void {
+    clientDispatchFiber(_fiber, this);
+  }
+
+  processFiber(_fiber: MyReactFiberNode): Promise<void> {
+    return clientProcessFiber(_fiber);
+  }
+
   clientCommitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(_fiber, this, !!_hydrate);
   }
@@ -184,13 +193,6 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
   commitClear(_fiber: MyReactFiberNode): void {
     clearNode(_fiber);
-  }
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    if (this.enableASyncHydrate) {
-      return resolveLazyElementLatest(_fiber, this);
-    } else {
-      return resolveLazyElementLegacy(_fiber, this);
-    }
   }
   reconcileCommit(_fiber: MyReactFiberNode) {
     // eslint-disable-next-line @typescript-eslint/no-this-alias

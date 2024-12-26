@@ -34,7 +34,7 @@ const resolveHookValue = (hookNode: MyReactHookNode, field: InstanceField) => {
   }
 };
 
-export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams) => {
+export const processHook = ({ type, reducer, value, deps }: RenderHookParams) => {
   const fiber = currentComponentFiber.current as MyReactFiberNode;
 
   const renderDispatch = currentRenderDispatch.current;
@@ -48,7 +48,7 @@ export const processHookNode = ({ type, reducer, value, deps }: RenderHookParams
   let currentHook: MyReactHookNode | null = null;
 
   // initial
-  if (include(fiber.state, STATE_TYPE.__create__) && !include(fiber.state, STATE_TYPE.__rerun__)) {
+  if (include(fiber.state, STATE_TYPE.__create__)) {
     currentHook = createHookNode({ type, reducer, value, deps }, fiber);
 
     safeCall(function safeCallHookInitialListener() {

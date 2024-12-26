@@ -1,8 +1,9 @@
-import { createElement } from "@my-react/react";
+import { __my_react_internal__, createElement } from "@my-react/react";
 import { STATE_TYPE, include, merge } from "@my-react/react-shared";
 
 import { deleteEffect } from "../dispatchEffect";
 import { listenerMap } from "../renderDispatch";
+import { triggerRevert, triggerUpdate } from "../renderUpdate";
 import { classComponentUnmount } from "../runtimeComponent";
 import { hookListUnmount } from "../runtimeHook";
 import { getCurrentDispatchFromFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
@@ -10,6 +11,8 @@ import { getCurrentDispatchFromFiber, safeCallWithCurrentFiber, setRefreshTypeMa
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
 import type { MyReactComponentType } from "@my-react/react";
+
+const { currentRenderPlatform } = __my_react_internal__;
 
 export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, forceRefresh?: boolean) => {
   if (__DEV__) {
@@ -64,3 +67,22 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
     throw new Error(`[@my-react/react] can not try to dev refresh this app in prod env!`);
   }
 };
+
+export function hmrRevert(this: MyReactFiberNode, cb?: () => void) {
+  if (include(this.state, STATE_TYPE.__unmount__)) return;
+
+  triggerRevert(this, cb);
+}
+
+export function hmrUpdate(this: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) {
+  if (include(this.state, STATE_TYPE.__unmount__)) return;
+
+  const renderPlatform = currentRenderPlatform.current;
+
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const fiber = this;
+
+  renderPlatform.microTask(function triggerHMRUpdateOnFiber() {
+    triggerUpdate(fiber, state, cb);
+  });
+}

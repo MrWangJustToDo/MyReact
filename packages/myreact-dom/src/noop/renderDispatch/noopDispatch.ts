@@ -1,10 +1,11 @@
 import { CustomRenderDispatch, getElementName, NODE_TYPE } from "@my-react/react-reconciler";
 
 import { append, create, update } from "@my-react-dom-server/api";
-import { resolveLazyElementLatest, resolveLazyElementLegacy } from "@my-react-dom-server/renderDispatch/lazy";
 import { initialElementMap } from "@my-react-dom-shared";
 
-import type { MyReactElementNode } from "@my-react/react";
+import { noopDispatchFiber } from "./dispatch";
+import { noopProcessFiber } from "./process";
+
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
@@ -101,8 +102,12 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
     append(_fiber, parentFiberWithNode, this);
   }
 
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementLegacy(_fiber, this);
+  dispatchFiber(_fiber: MyReactFiberNode): void {
+    noopDispatchFiber(_fiber, this);
+  }
+
+  processFiber(_fiber: MyReactFiberNode): Promise<void> {
+    return noopProcessFiber(_fiber);
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
@@ -192,8 +197,12 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
     append(_fiber, parentFiberWithNode, this);
   }
 
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementLatest(_fiber, this);
+  dispatchFiber(_fiber: MyReactFiberNode): void {
+    noopDispatchFiber(_fiber, this);
+  }
+
+  processFiber(_fiber: MyReactFiberNode): Promise<void> {
+    return noopProcessFiber(_fiber);
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {

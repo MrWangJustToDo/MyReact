@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { STATE_TYPE, include, merge, remove } from "@my-react/react-shared";
+import { STATE_TYPE, include, remove } from "@my-react/react-shared";
 
 import { runtimeNextWork, runtimeNextWorkDev } from "../runtimeGenerate";
 import { currentRenderDispatch, devErrorWithFiber } from "../share";
@@ -25,7 +25,8 @@ export const performToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispat
         STATE_TYPE.__triggerSyncForce__ |
         STATE_TYPE.__triggerConcurrent__ |
         STATE_TYPE.__triggerConcurrentForce__ |
-        STATE_TYPE.__retrigger__
+        STATE_TYPE.__retrigger__ |
+        STATE_TYPE.__reschedule__
     )
   ) {
     fiber.state = remove(fiber.state, STATE_TYPE.__retrigger__);
@@ -48,7 +49,7 @@ export const performToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispat
   if (!include(fiber.state, STATE_TYPE.__retrigger__)) {
     fiber.state = STATE_TYPE.__stable__;
   } else {
-    fiber.state = merge(fiber.state, STATE_TYPE.__rerun__);
+    fiber.state = STATE_TYPE.__inherit__;
   }
 
   if (fiber.child) return fiber.child;
@@ -84,7 +85,8 @@ export const performToNextFiberFromTrigger = (fiber: MyReactFiberNode, renderDis
         STATE_TYPE.__triggerSyncForce__ |
         STATE_TYPE.__triggerConcurrent__ |
         STATE_TYPE.__triggerConcurrentForce__ |
-        STATE_TYPE.__retrigger__
+        STATE_TYPE.__retrigger__ |
+        STATE_TYPE.__reschedule__
     )
   ) {
     fiber.state = remove(fiber.state, STATE_TYPE.__retrigger__);
@@ -106,7 +108,7 @@ export const performToNextFiberFromTrigger = (fiber: MyReactFiberNode, renderDis
     if (!include(fiber.state, STATE_TYPE.__retrigger__)) {
       fiber.state = STATE_TYPE.__stable__;
     } else {
-      fiber.state = merge(fiber.state, STATE_TYPE.__rerun__);
+      fiber.state = STATE_TYPE.__inherit__;
     }
 
     if (fiber.child) return fiber.child;

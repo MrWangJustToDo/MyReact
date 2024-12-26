@@ -1,7 +1,9 @@
 import { createElement } from "@my-react/react";
-import { WrapperByScope } from "@my-react/react-reconciler";
+import { nextWorkCommon, WrapperByScope } from "@my-react/react-reconciler";
 import { ListTree } from "@my-react/react-shared";
 
+import type { ServerDomDispatch } from "./serverDomDispatch";
+import type { LegacyServerStreamDispatch, LatestServerStreamDispatch } from "./serverStreamDispatch";
 import type { lazy, MixinMyReactFunctionComponent } from "@my-react/react";
 import type { MyReactFiberNode, CustomRenderDispatch } from "@my-react/react-reconciler";
 
@@ -26,3 +28,15 @@ export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: Cu
 
   return null;
 };
+
+export const nextWorkLazy = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatch | LegacyServerStreamDispatch | LatestServerStreamDispatch) => {
+  if (renderDispatch.enableASyncHydrate) {
+    const children = resolveLazyElementLatest(fiber, renderDispatch);
+
+    nextWorkCommon(fiber, children);
+  } else {
+    const children = resolveLazyElementLegacy(fiber, renderDispatch);
+
+    nextWorkCommon(fiber, children);
+  }
+}

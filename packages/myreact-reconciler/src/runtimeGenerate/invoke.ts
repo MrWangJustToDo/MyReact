@@ -39,7 +39,7 @@ export const nextWorkNormal = (fiber: MyReactFiberNode) => {
   ) {
     const { children } = fiber.pendingProps;
 
-    transformChildrenFiber(fiber, children);
+    nextWorkCommon(fiber, children);
   }
 };
 
@@ -59,8 +59,6 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
   currentHookTreeNode.current = fiber.hookList?.head;
 
   currentHookNodeIndex.current = 0;
-
-  currentComponentFiber.current = fiber;
 
   const typedElementType = fiber.elementType as MixinMyReactFunctionComponent;
 
@@ -83,8 +81,6 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
       },
     });
   }
-
-  currentComponentFiber.current = null;
 
   currentHookNodeIndex.current = 0;
 
@@ -112,7 +108,7 @@ export const nextWorkComponent = (fiber: MyReactFiberNode) => {
 export const nextWorkLazy = (fiber: MyReactFiberNode) => {
   const renderDispatch = currentRenderDispatch.current;
 
-  const children = renderDispatch.resolveLazyElement(fiber);
+  const children = renderDispatch.resolveSuspense(fiber);
 
   nextWorkCommon(fiber, children);
 };
@@ -164,13 +160,9 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 };
 
 export const runtimeNextWork = (fiber: MyReactFiberNode) => {
-  if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) return nextWorkComponent(fiber);
+  const renderDispatch = currentRenderDispatch.current;
 
-  if (include(fiber.type, NODE_TYPE.__lazy__)) return nextWorkLazy(fiber);
-
-  if (include(fiber.type, NODE_TYPE.__consumer__)) return nextWorkConsumer(fiber);
-
-  nextWorkNormal(fiber);
+  renderDispatch.dispatchFiber(fiber);
 };
 
 export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {

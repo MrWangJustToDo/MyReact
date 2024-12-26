@@ -3,9 +3,9 @@ import { CustomRenderDispatch, NODE_TYPE } from "@my-react/react-reconciler";
 import { append, create, update } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
-import { resolveLazyElementLegacy } from "./lazy";
+import { serverDispatchFiber } from "./dispatch";
+import { serverProcessFiber } from "./process";
 
-import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
@@ -89,8 +89,13 @@ export class ServerDomDispatch extends CustomRenderDispatch {
     append(_fiber, parentFiberWithNode, this);
   }
 
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementLegacy(_fiber, this);
+  dispatchFiber(_fiber: MyReactFiberNode): void {
+    serverDispatchFiber(_fiber, this);
+  }
+
+  // will never be called
+  processFiber(_fiber: MyReactFiberNode): Promise<void> {
+    return serverProcessFiber(_fiber);
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {

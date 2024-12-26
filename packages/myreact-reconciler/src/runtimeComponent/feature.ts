@@ -2,7 +2,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { Effect_TYPE, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
-import { syncFlushComponentQueue } from "../dispatchQueue";
+import { syncFlushComponentQueue } from "../processQueue";
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import {
   getInstanceContextFiber,

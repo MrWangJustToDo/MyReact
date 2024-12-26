@@ -1,14 +1,17 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { fiberToDispatchMap, getFiberTree, processHookNode, enableFiberForLog, enableValidMyReactElement } from "@my-react/react-reconciler";
+import { fiberToDispatchMap, getFiberTree, enableFiberForLog, enableValidMyReactElement, processHook } from "@my-react/react-reconciler";
 
 import { DomPlatform } from "@my-react-dom-shared";
 
+import type { RenderHookParams } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { LatestServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
 
 const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
+
+const dispatchHook = (params: RenderHookParams) => processHook(params);
 
 /**
  * @internal
@@ -67,7 +70,7 @@ export const prepareRenderPlatform = () => {
 
   renderPlatform.dispatchState = () => void 0;
 
-  renderPlatform.dispatchHook = processHookNode;
+  renderPlatform.dispatchHook = dispatchHook;
 
   renderPlatform.dispatchError = dispatchError;
 };

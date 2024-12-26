@@ -96,8 +96,6 @@ export class ListTree<T> {
     const listNode = new ListTreeNode(node);
 
     this.stickyFoot = listNode;
-
-    this.length++;
   }
 
   pushToHead(node: T) {
@@ -112,8 +110,6 @@ export class ListTree<T> {
     const listNode = new ListTreeNode(node);
 
     this.stickyHead = listNode;
-
-    this.length++;
   }
 
   pop() {

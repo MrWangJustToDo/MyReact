@@ -3,10 +3,10 @@ import { CustomRenderDispatch, listenerMap, NODE_TYPE, safeCallWithCurrentFiber 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
+import { serverDispatchFiber } from "./dispatch";
 import { generateBootstrap, generateModuleBootstrap } from "./generateBootstrap";
-import { resolveLazyElementLatest, resolveLazyElementLegacy } from "./lazy";
+import { serverProcessFiber } from "./process";
 
-import type { MyReactElementNode } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export type SimpleReadable = {
@@ -92,8 +92,13 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
     void 0;
   }
 
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementLegacy(_fiber, this);
+  dispatchFiber(_fiber: MyReactFiberNode): void {
+    serverDispatchFiber(_fiber, this);
+  }
+
+  // will never be called
+  processFiber(_fiber: MyReactFiberNode): Promise<void> {
+    return serverProcessFiber(_fiber);
   }
 
   reconcileCommit(_fiber: MyReactFiberNode): void {
@@ -231,8 +236,12 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
     void 0;
   }
 
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    return resolveLazyElementLatest(_fiber, this);
+  dispatchFiber(_fiber: MyReactFiberNode): void {
+    serverDispatchFiber(_fiber, this);
+  }
+
+  processFiber(_fiber: MyReactFiberNode): Promise<void> {
+    return serverProcessFiber(_fiber);
   }
 
   reconcileCommit(_fiber: MyReactFiberNode): void {

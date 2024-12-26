@@ -4,7 +4,6 @@ import { append, clear, create, position, update } from "../api";
 import { patchToFiberInitial, patchToFiberUnmount } from "../shared";
 
 import type { ContainerElement } from "../api/native";
-import type { MyReactElementNode } from "@my-react/react";
 
 const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
@@ -46,10 +45,6 @@ export class TerminalDispatch extends CustomRenderDispatch {
   }
   commitClear(_fiber: MyReactFiberNode): void {
     clear(_fiber, this);
-  }
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode {
-    // throw new Error("terminal platform not support lazy component");
-    return null;
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     patchToFiberInitial(_fiber, this);

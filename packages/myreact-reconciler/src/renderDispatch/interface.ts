@@ -66,11 +66,11 @@ type DefaultRenderDispatch = {
 
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void;
 
-  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void, option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void;
+  pendingEffect(_fiber: MyReactFiberNode, _effect: () => void, _option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void;
 
-  pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void, option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void;
+  pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void, _option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void;
 
-  pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void, option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void;
+  pendingInsertionEffect(_fiber: MyReactFiberNode, _insertionEffect: () => void, _option?: { stickyToHead?: boolean; stickyToFoot?: boolean }): void;
 
   /**
    * @deprecated
@@ -153,6 +153,10 @@ type DefaultRenderDispatch = {
 
   onceAfterUnmount?: (cb: () => void) => void;
 
+  dispatchFiber(_fiber: MyReactFiberNode): void;
+
+  processFiber(_fiber: MyReactFiberNode): Promise<void>;
+
   commitCreate(_fiber: MyReactFiberNode): void;
 
   commitUpdate(_fiber: MyReactFiberNode): void;
@@ -166,8 +170,6 @@ type DefaultRenderDispatch = {
   commitUnsetRef(_fiber: MyReactFiberNode): void;
 
   commitClear(_fiber: MyReactFiberNode): void;
-
-  resolveLazyElement(_fiber: MyReactFiberNode): MyReactElementNode;
 
   resolveStrictMap(_fiber: MyReactFiberNode): void;
 

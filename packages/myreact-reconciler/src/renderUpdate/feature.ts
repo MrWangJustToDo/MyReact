@@ -4,7 +4,7 @@ import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { updateLoopConcurrentFromRoot, updateLoopConcurrentFromTrigger, updateLoopSyncFromRoot, updateLoopSyncFromTrigger } from "../runtimeUpdate";
 import { resetLogScope, safeCall, setLogScope } from "../share";
 
-import { scheduleNext } from "./trigger";
+import { scheduleNext } from "./schedule";
 
 const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 

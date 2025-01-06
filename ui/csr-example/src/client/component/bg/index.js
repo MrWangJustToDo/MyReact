@@ -105,7 +105,7 @@ export class CanvasBG extends Component {
           ctx.lineTo(b.x, b.y);
           ctx.closePath();
           ctx.lineWidth = "0.5";
-          ctx.strokeStyle = `rgba(100, 100, 100, ${0.00021 * (5000 - instance)})`;
+          ctx.strokeStyle = `rgba(100, 100, 100, ${0.00012 * (5000 - instance)})`;
           ctx.stroke();
         }
       }

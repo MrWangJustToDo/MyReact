@@ -24,7 +24,7 @@ function Ediotr() {
   const { 0: path, id } = useParams();
   const [code, setCode] = useState(null);
   const [editable, setEditable] = useState(true);
-  let { data, editableLength } = useSelector((state) => state);
+  let { data, editableLength, editorItems } = useSelector((state) => state);
   let dispatch = useDispatch();
 
   // 初始化编辑器
@@ -36,7 +36,7 @@ function Ediotr() {
   // 加载内容
   useEffect(() => {
     if (code) {
-      let { fileTypeExtention, length } = data.files.filter((it) => it.id === +id)[0];
+      let { fileTypeExtention, length, relativePath } = data.files.filter((it) => it.id === +id)[0];
       if (fileTypeExtention) {
         code.setOption("mode", fileTypeExtention);
       }
@@ -61,7 +61,12 @@ function Ediotr() {
             code.setValue(" 文件内容过大,不支持预览 ");
           });
       } else {
-        axiosPost("/api/file/", { requestPath: path })
+        const cacheValue = editorItems[relativePath];
+        if (cacheValue) {
+          loadItem.remove();
+          code.setValue(cacheValue);
+        } else {
+          axiosPost("/api/file/", { requestPath: path })
           .then((data) => {
             promiseNext(500, () => {
               loadItem.css("height", 0);
@@ -83,10 +88,11 @@ function Ediotr() {
           .catch((e) => {
             code.setValue(e.toString());
           });
+        }
       }
     }
     return () => code && code.setValue("");
-  }, [data, code, path, id, editableLength, setEditable]);
+  }, [data, code, path, id, editableLength, setEditable, editorItems]);
   // 保存按钮点击
   let saveHandler = useCallback(() => {
     dispatch({

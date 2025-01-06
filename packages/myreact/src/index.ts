@@ -4,6 +4,7 @@ import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
 import { createElement, cloneElement, createFactory, isValidElement, forwardRef, createContext, memo, lazy } from "./element";
 import {
+  use,
   useId,
   useRef,
   useMemo,
@@ -75,6 +76,8 @@ const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {
   ReactCurrentBatchConfig: {},
   ReactCurrentDispatcher: {
     current: {
+      readContext: use,
+      use,
       useCallback,
       useContext,
       useDebugValue,
@@ -172,6 +175,7 @@ export {
   Suspense,
   StrictMode,
   // hook
+  use,
   useId,
   useRef,
   useMemo,

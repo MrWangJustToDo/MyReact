@@ -1,11 +1,13 @@
 import { UniqueArray } from "@my-react/react-shared";
 
+import { defaultReadContext } from "../dispatchContext";
+import { defaultReadPromise } from "../dispatchSuspense";
 import { getFiberTree, getHookTree } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
-import type { MyReactElementNode, RenderFiber, RenderHookParams, RenderPlatform, UpdateQueue } from "@my-react/react";
+import type { createContext, MyReactElementNode, RenderFiber, RenderHookParams, RenderPlatform, UpdateQueue } from "@my-react/react";
 import type { ListTreeNode, HOOK_TYPE } from "@my-react/react-shared";
 
 export class CustomRenderPlatform implements RenderPlatform {
@@ -23,6 +25,12 @@ export class CustomRenderPlatform implements RenderPlatform {
   }
   getHookTree(_treeHookNode: ListTreeNode<MyReactHookNode>, _errorType: { lastRender: HOOK_TYPE; nextRender: HOOK_TYPE }): string {
     return getHookTree(_treeHookNode, _errorType);
+  }
+  readPromise(_params: Promise<unknown>): unknown {
+    return defaultReadPromise(_params);
+  }
+  readContext(_params: ReturnType<typeof createContext>): unknown {
+    return defaultReadContext(_params);
   }
   dispatchHook(_params: RenderHookParams): unknown {
     return void 0;

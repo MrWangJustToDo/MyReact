@@ -1,4 +1,4 @@
-import { HOOK_TYPE } from "@my-react/react-shared";
+import { HOOK_TYPE, isPromise } from "@my-react/react-shared";
 
 import { createRef, currentRenderPlatform } from "../share";
 
@@ -129,6 +129,24 @@ export const useRef = <T = any>(value: T): { current: T } => {
     deps: defaultDeps,
   }) as { current: T };
 };
+
+/**
+ * @public
+ */
+export const use = <T = any>(Context: ReturnType<typeof createContext<T>> | Promise<T>): T => {
+  const renderPlatform = currentRenderPlatform.current;
+
+  if (!renderPlatform)
+    throw new Error(
+      `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
+
+  if (isPromise(Context)) {
+    return renderPlatform.readPromise(Context) as T;
+  } else {
+    return renderPlatform.readContext(Context) as T;
+  }
+}
 
 /**
  * @public

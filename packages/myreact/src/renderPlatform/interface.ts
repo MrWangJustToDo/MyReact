@@ -1,4 +1,4 @@
-import type { MyReactElementNode } from "../element";
+import type { createContext, MyReactElementNode } from "../element";
 import type { RenderFiber } from "../renderFiber";
 import type { RenderHook, RenderHookParams } from "../renderHook";
 import type { UpdateQueue } from "../renderQueue";
@@ -19,6 +19,10 @@ export interface DefaultRenderPlatform {
   getHookTree(_treeHookNode: ListTreeNode<RenderHook>, _errorType: { lastRender: RenderHook["type"]; nextRender: RenderHook["type"] }): string;
 
   dispatchHook(_params: RenderHookParams): unknown;
+
+  readContext(_params: ReturnType<typeof createContext>): unknown;
+
+  readPromise(_params: Promise<unknown>): unknown;
 
   dispatchState(_params: UpdateQueue): void;
 

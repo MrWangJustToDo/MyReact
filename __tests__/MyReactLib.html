@@ -53,6 +53,7 @@
         useContext,
         useEffect,
         useRef,
+        use,
         useMemo,
         Children: { map },
         cloneElement,
@@ -309,6 +310,7 @@
 
       const Pi = memo(() => {
         const c = useContext(Context);
+        console.log(use(Context), Context);
 
         // console.log('pi', c);
 

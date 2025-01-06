@@ -1,4 +1,4 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
 import { triggerUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
@@ -10,6 +10,8 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 import type { createContext } from "@my-react/react";
 
 const { enableDebugFiled } = __my_react_shared__;
+
+const { currentRunningFiber } = __my_react_internal__;
 
 const emptyObj = {};
 
@@ -69,6 +71,22 @@ export const defaultGetContextFiber = (
   } else {
     return null;
   }
+};
+
+export const defaultReadContext = (Context: ReturnType<typeof createContext>) => {
+  const fiber = currentRunningFiber.current;
+
+  if (!Context) {
+    throw new Error("the Context what you read is not exist");
+  }
+  
+  if (!fiber) {
+    throw new Error('current environment is not support "readContext"');
+  }
+
+  const contextFiber = defaultGetContextFiber(fiber as MyReactFiberNode, null, Context);
+  
+  return defaultGetContextValue(contextFiber, Context);
 };
 
 export const prepareUpdateAllDependence = (fiber: MyReactFiberNode, beforeValue: Record<string, unknown>, afterValue: Record<string, unknown>) => {

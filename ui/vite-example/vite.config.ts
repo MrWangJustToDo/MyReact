@@ -1,11 +1,54 @@
-import { defineConfig } from "vite";
-import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin";
-import react from "@my-react/react-vite";
-// import react from "@vitejs/plugin-react";
+import { defineConfig } from 'vite';
+// import react from '@vitejs/plugin-react';
+import react from '@my-react/react-vite';
+import { visualizer } from 'rollup-plugin-visualizer';
+import path from 'path';
+import UnpluginInjectPreload from 'unplugin-inject-preload/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  // 使用monorepo软链接时build会失败，npm安装正常，所以在当前案例中 build总是会失败
-  // https://github.com/vitejs/vite/issues/12738
-  plugins: [react(), vanillaExtractPlugin()],
+    plugins: [
+        react(),
+        // @ts-ignore
+        visualizer({
+            filename: './stats/stats.html',
+            open: false,
+        }),
+        UnpluginInjectPreload({
+            files: [
+                {
+                    entryMatch: /logo-light.png$/,
+                    outputMatch: /logo-light-.*.png$/,
+                },
+                {
+                    entryMatch: /logo-dark.png$/,
+                    outputMatch: /logo-dark-.*.png$/,
+                },
+            ],
+        }),
+    ],
+    resolve: {
+        alias: {
+            '@': path.resolve(__dirname, './src'),
+        },
+    },
+    build: {
+        rollupOptions: {
+            output: {
+                assetFileNames: (assetInfo) => {
+                    if (
+                        // @ts-ignore
+                        assetInfo.names &&
+                        // @ts-ignore
+                        assetInfo.originalFileNames.some((name) =>
+                            name.startsWith('src/assets/templates/')
+                        )
+                    ) {
+                        return 'assets/[name][extname]';
+                    }
+                    return 'assets/[name]-[hash][extname]';
+                },
+            },
+        },
+    },
 });

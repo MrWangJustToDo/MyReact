@@ -78,7 +78,7 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
         const storeApi = hookNode.value;
 
         hookNode.cancel = storeApi.subscribe(function triggerHookUpdate() {
-          hookNode._update({ isForce: true });
+          hookNode._update({ payLoad: () => storeApi.getSnapshot.call(null) });
         });
 
         hookNode.hasEffect = false;

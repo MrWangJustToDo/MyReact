@@ -31,6 +31,7 @@
         }
 
         componentDidCatch(error, info) {
+          console.log(error, info);
           this.setState({
             error: error.message,
             stack: info.componentStack,
@@ -63,7 +64,9 @@
 
         return (
           <div>
-            <Bar />
+            <WrapperErrorCatch>
+              <Bar />
+            </WrapperErrorCatch>
           </div>
         );
       };

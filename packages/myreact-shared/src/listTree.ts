@@ -91,6 +91,8 @@ export class ListTree<T> {
       this.push(node.value);
 
       this.stickyFoot = null;
+    } else {
+      this.length++;
     }
 
     const listNode = new ListTreeNode(node);
@@ -105,6 +107,8 @@ export class ListTree<T> {
       this.unshift(node.value);
 
       this.stickyHead = null;
+    } else {
+      this.length++;
     }
 
     const listNode = new ListTreeNode(node);
@@ -142,6 +146,8 @@ export class ListTree<T> {
       this.unshift(node.value);
 
       this.stickyHead = null;
+    } else {
+      this.length++;
     }
 
     const listNode = new ListTreeNode(node);
@@ -156,6 +162,8 @@ export class ListTree<T> {
       this.push(node.value);
 
       this.stickyFoot = null;
+    } else {
+      this.length++;
     }
 
     const listNode = new ListTreeNode(node);

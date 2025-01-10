@@ -52,9 +52,9 @@ export const processState = (_params: UpdateQueue) => {
 
   const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
-  _params.isImmediate = !currentScopeFiber.current || !!currentRunningFiber.current;
+  _params.isImmediate = !currentScopeFiber.current || !!currentRunningFiber.current || _params.isImmediate;
 
-  _params.isRetrigger = !!currentComponentFiber.current;
+  _params.isRetrigger = !!currentComponentFiber.current || _params.isRetrigger;
 
   if (renderDispatch?.enableUpdate) {
     safeCallWithCurrentFiber({

@@ -1,5 +1,5 @@
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
-import { performToNextFiberFromRoot, performToNextFiberFromTrigger } from "../renderNextWork";
+import { performToNextFiberFromRoot, performToNextFiberFromTrigger, mountToNextFiberFromRoot } from "../renderNextWork";
 import { safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -17,13 +17,13 @@ export const mountLoopAllSync = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
     nextWorkFiber = null;
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
-    const nextFiber = performToNextFiberFromRoot(currentFiber, renderDispatch);
+    const nextFiber = mountToNextFiberFromRoot(currentFiber, renderDispatch);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber || nextFiber;
     nextWorkFiber = null;
   }
 };
 
-const triggerFiberUpdateListener = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export const triggerFiberUpdateListener = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallPatchToFiberUpdate() {
@@ -44,7 +44,6 @@ export const updateLoopSyncFromRoot = (renderDispatch: CustomRenderDispatch) => 
     nextWorkFiber = null;
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
     const nextFiber = performToNextFiberFromRoot(currentFiber, renderDispatch);
-    triggerFiberUpdateListener(renderDispatch, currentFiber);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber || nextFiber;
     nextWorkFiber = null;
   }
@@ -55,7 +54,6 @@ export const updateLoopSyncFromTrigger = (renderDispatch: CustomRenderDispatch) 
     nextWorkFiber = null;
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
     const nextFiber = performToNextFiberFromTrigger(currentFiber, renderDispatch);
-    triggerFiberUpdateListener(renderDispatch, currentFiber);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber || nextFiber;
     nextWorkFiber = null;
   }
@@ -66,7 +64,6 @@ export const updateLoopConcurrentFromRoot = (renderDispatch: CustomRenderDispatc
     nextWorkFiber = null;
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
     const nextFiber = performToNextFiberFromRoot(currentFiber, renderDispatch);
-    triggerFiberUpdateListener(renderDispatch, currentFiber);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber || nextFiber;
     nextWorkFiber = null;
   }
@@ -77,7 +74,6 @@ export const updateLoopConcurrentFromTrigger = (renderDispatch: CustomRenderDisp
     nextWorkFiber = null;
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
     const nextFiber = performToNextFiberFromTrigger(currentFiber, renderDispatch);
-    triggerFiberUpdateListener(renderDispatch, currentFiber);
     renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber || nextFiber;
     nextWorkFiber = null;
   }

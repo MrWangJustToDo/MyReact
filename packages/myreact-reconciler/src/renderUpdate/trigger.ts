@@ -103,7 +103,9 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
     const payloadState = typedComponent.getDerivedStateFromError?.(error);
 
-    errorBoundariesFiber.memoizedState = Object.assign({}, errorBoundariesFiber.pendingState);
+    if (!errorBoundariesFiber.memoizedState) {
+      errorBoundariesFiber.memoizedState = Object.assign({}, errorBoundariesFiber.pendingState);
+    }
 
     typedInstance.setState(payloadState, function finishTriggerErrorOnFiber() {
       typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });

@@ -12,6 +12,8 @@ import {
   updatedAncestorInfoDev,
   validateTextNesting,
   validateDOMNesting,
+  isSVGTag,
+  isHTMLTag,
 } from "@my-react-dom-shared";
 
 import { hydrateCreate } from "./hydrateCreate";
@@ -29,7 +31,11 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
 
     const parentFiberWithSVG = getValidParentFiberWithSVG(fiber, renderDispatch);
 
-    const isSVG = !!parentFiberWithSVG;
+    const cIsSVG = isSVGTag[fiber.elementType as string];
+
+    const cIsNotSVG = isHTMLTag[fiber.elementType as string];
+
+    const isSVG = cIsNotSVG ? false : cIsSVG || !!parentFiberWithSVG;
 
     let re = false;
 

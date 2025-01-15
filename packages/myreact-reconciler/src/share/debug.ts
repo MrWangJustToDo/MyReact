@@ -229,7 +229,7 @@ export const getPlainFiberName = (fiber: MyReactFiberNode) => {
       const type = element?.type as MixinMyReactObjectComponent;
       name = type?.displayName || name;
     }
-    return `${name || "anonymous"}`;
+    return `${name || "Anonymous"}`;
   }
   if (fiber.type & NODE_TYPE.__portal__) return `Portal`;
   if (fiber.type & NODE_TYPE.__null__) return `Null`;
@@ -245,7 +245,7 @@ export const getPlainFiberName = (fiber: MyReactFiberNode) => {
   if (typeof fiber.elementType === "string") return `${fiber.elementType}`;
   if (typeof fiber.elementType === "function") {
     const typedElementType = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
-    let name = typedElementType.displayName || typedElementType.name || "anonymous";
+    let name = typedElementType.displayName || typedElementType.name || "Anonymous";
     if (__DEV__) {
       const element = typedFiber._debugElement as MyReactElement;
       const type = element?.type as MixinMyReactObjectComponent;

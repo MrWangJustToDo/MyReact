@@ -42,8 +42,9 @@ export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: WeakMap
   }
 };
 
+// TODO! implement this
 export const defaultReadPromise = (_promise: Promise<unknown>) => {
-  throw new Error(`[@my-react/react] currently not support promise in suspense`);
+  throw new Error(`[@my-react/react] not implement yet`);
 };
 
 export const defaultResolveSuspense = (fiber: MyReactFiberNode): MyReactElementNode => {

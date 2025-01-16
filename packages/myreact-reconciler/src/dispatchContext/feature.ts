@@ -31,6 +31,16 @@ export const defaultGenerateContextMap = (fiber: MyReactFiberNode, map: WeakMap<
       parentMap = Object.assign({}, parentMap, { [contextId]: parent });
     }
 
+    if (include(parent.type, NODE_TYPE.__context__)) {
+      const typedElementType = parent.elementType as ReturnType<typeof createContext>;
+
+      const contextObj = typedElementType;
+
+      const contextId = contextObj["contextId"];
+
+      parentMap = Object.assign({}, parentMap, { [contextId]: parent });
+    }
+
     map.set(fiber, parentMap);
 
     if (__DEV__ && enableDebugFiled.current) {
@@ -61,6 +71,16 @@ export const defaultGetContextFiber = (
         const typedElementType = parent.elementType as ReturnType<typeof createContext>["Provider"];
 
         const contextObj = typedElementType["Context"];
+
+        if (contextObj === ContextObject) {
+          return parent;
+        }
+      }
+      
+      if (include(parent.type, NODE_TYPE.__context__)) {
+        const typedElementType = parent.elementType as ReturnType<typeof createContext>;
+
+        const contextObj = typedElementType;
 
         if (contextObj === ContextObject) {
           return parent;

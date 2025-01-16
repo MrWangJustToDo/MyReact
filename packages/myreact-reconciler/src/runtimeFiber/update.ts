@@ -72,7 +72,7 @@ export const updateFiberNode = (
   }
 
   if (fiber.state !== STATE_TYPE.__stable__) {
-    if (include(fiber.type, NODE_TYPE.__provider__)) {
+    if (include(fiber.type, NODE_TYPE.__provider__) || include(fiber.type, NODE_TYPE.__context__)) {
       if (!isNormalEquals(fiber.pendingProps.value as Record<string, unknown>, fiber.memoizedProps.value as Record<string, unknown>)) {
         if (enableLoopFromRoot.current) {
           prepareUpdateAllDependence(fiber, fiber.memoizedProps.value, fiber.pendingProps.value);

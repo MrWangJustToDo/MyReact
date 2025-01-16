@@ -214,6 +214,11 @@ export const getPlainFiberName = (fiber: MyReactFiberNode) => {
     const name = typedElementType.Context.displayName;
     return `${name || "Context"}.Provider`;
   }
+  if (fiber.type & NODE_TYPE.__context__) {
+    const typedElementType = fiber.elementType as ReturnType<typeof createContext>;
+    const name = typedElementType.displayName;
+    return `${name || "Context"}`;
+  }
   if (fiber.type & NODE_TYPE.__consumer__) {
     const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
     const name = typedElementType.Context.displayName;

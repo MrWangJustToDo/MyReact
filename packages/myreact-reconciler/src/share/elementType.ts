@@ -15,6 +15,7 @@ import {
   TYPEKEY,
   Profiler,
   merge,
+  Context,
 } from "@my-react/react-shared";
 
 import { devWarn } from "./debug";
@@ -115,6 +116,10 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
       case Provider:
         nodeType = merge(nodeType, NODE_TYPE.__provider__);
         break;
+      // support react 19 context api
+      case Context:
+        nodeType = merge(nodeType, NODE_TYPE.__context__);
+        break;
       case Consumer:
         nodeType = merge(nodeType, NODE_TYPE.__consumer__);
         break;
@@ -139,6 +144,9 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
       }
       if (elementType[TYPEKEY] === Provider) {
         nodeType = merge(nodeType, NODE_TYPE.__provider__);
+      }
+      if (elementType[TYPEKEY] === Context) {
+        nodeType = merge(nodeType, NODE_TYPE.__context__);
       }
       if (elementType[TYPEKEY] === Consumer) {
         nodeType = merge(nodeType, NODE_TYPE.__consumer__);

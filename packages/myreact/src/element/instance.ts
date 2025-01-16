@@ -31,6 +31,7 @@ export type MyReactClassComponent<
 export type MyReactObjectComponent<P extends Record<string, unknown> = any> =
   | ReturnType<typeof createContext<P>>["Consumer"]
   | ReturnType<typeof createContext<P>>["Provider"]
+  | ReturnType<typeof createContext<P>>
   | ReturnType<typeof forwardRef<P>>
   | ReturnType<typeof memo<P>>
   | ReturnType<typeof lazy>;

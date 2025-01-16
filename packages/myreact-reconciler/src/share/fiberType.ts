@@ -19,4 +19,5 @@ export enum NODE_TYPE {
   __scope__ = 1 << 16,
   __comment__ = 1 << 17,
   __profiler__ = 1 << 18,
+  __context__ = 1 << 19,
 }

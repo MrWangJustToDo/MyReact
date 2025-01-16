@@ -27,7 +27,12 @@ export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyRe
     console.error(`[@my-react/react] render function should not return a promise, please check your code`);
   }
 
-  transformChildrenFiber(fiber, children);
+  safeCallWithCurrentFiber({
+    fiber,
+    action: function safeCallTransformChildrenFiber() {
+      transformChildrenFiber(fiber, children);
+    },
+  });
 };
 
 export const nextWorkNormal = (fiber: MyReactFiberNode) => {
@@ -152,7 +157,12 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   const typedChildren = fiber.pendingProps.children as MyReactFunctionComponent;
 
-  const children = typedChildren(finalContext);
+  const children = safeCallWithCurrentFiber({
+    fiber,
+    action: function safeCallConsumerChildren() {
+      return typedChildren(finalContext);
+    },
+  });
 
   currentComponentFiber.current = null;
 

@@ -129,9 +129,16 @@ export const checkValidElement = (element: MyReactElementNode) => {
         }
         // check <Context />
         else if (typedRawType[TYPEKEY] === Context) {
-          throw new Error(
-            `[@my-react/react] look like you are using Context like <Context />, this is unsupported usage, please use <Context.Provider /> or <Context.Consumer />`
-          );
+          // throw new Error(
+          //   `[@my-react/react] look like you are using Context like <Context />, this is unsupported usage, please use <Context.Provider /> or <Context.Consumer />`
+          // );
+          const props = element.props;
+
+          for (const key in props) {
+            if (key !== "key" && key !== "children" && key !== "value" && !key.startsWith("_")) {
+              console.warn(`[@my-react/react] <Context /> element only support 'key' / 'value' / 'children' props, but got ${key}`);
+            }
+          }
         }
         // check <Context.Provider />
         else if (typedRawType[TYPEKEY] === Provider) {

@@ -37,6 +37,8 @@ declare global {
 
     __MY_REACT_DEVTOOL_RUNTIME__?: ((dispatch: ClientDomDispatch) => void) & { init: () => void };
 
+    __MY_REACT_DEVTOOL_IFRAME__?: ((origin: string, token?: string) => void) & { close: () => void };
+
     ["__@my-react/dispatch__"]: ClientDomDispatch[];
   }
 

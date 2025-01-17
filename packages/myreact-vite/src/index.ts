@@ -35,8 +35,14 @@ export interface Options {
    */
   babel?: BabelOptions | ((id: string, options: { ssr?: boolean }) => BabelOptions);
 
+  /**
+   * for remix fast refresh
+   */
   remix?: boolean;
 
+  /**
+   * for react-router >= 7 fast refresh
+   */
   reactRouter?: boolean;
 }
 

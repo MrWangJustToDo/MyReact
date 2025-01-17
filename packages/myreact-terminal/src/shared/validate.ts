@@ -52,7 +52,7 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
     }
 
     if (props["dangerouslySetInnerHTML"]) {
-      if (typeof props["dangerouslySetInnerHTML"] !== "object" || typeof props["dangerouslySetInnerHTML"].__html !== "string") {
+      if (typeof props["dangerouslySetInnerHTML"] !== "object" || !("__html" in props["dangerouslySetInnerHTML"])) {
         throw new Error(`invalid "dangerouslySetInnerHTML" props, should be a object like {__html: string}`);
       }
     }

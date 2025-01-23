@@ -196,6 +196,8 @@
         return (
           <div>
             <button onClick={click}>click</button>
+            <AntdNotification />
+            <_Select />
           </div>
         );
       };
@@ -242,30 +244,30 @@
       // TODO 点击无法选择
       // 原因 点击事件被父元素的pointer-events: "none"给阻止了
       // React的事件调度
-      ReactDOM.render(<_Select />, root);
+      ReactDOM.render(<App />, root);
     </script>
 
     <script type="text/babel">
-      const App = () => {
+      // const App = () => {
         // return <antd.Input.TextArea autoSize onChange={() => {
         //   console.log('onChange')
         // }} onInput={() => {
         //   console.log('onInput')
         // }} />
 
-        return (
-          <textarea
-            onChange={() => {
-              console.log("onChange");
-            }}
-          />
-        );
+        // return (
+        //   <textarea
+        //     onChange={() => {
+        //       console.log("onChange");
+        //     }}
+        //   />
+        // );
         // return <input onChange={() => {
         //   console.log('onChange')
         // }} onInput={() => {
         //   console.log('onInput')
         // }} />
-      };
+      // };
 
       // ReactDOM.render(<App />, root);
     </script>

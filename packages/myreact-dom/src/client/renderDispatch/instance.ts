@@ -12,7 +12,6 @@ import {
   setRef,
   shouldPauseAsyncUpdate,
   unsetRef,
-  enableASyncHydrate,
   patchDOMField,
   parse,
 } from "@my-react-dom-shared";
@@ -69,7 +68,9 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   hydrateTime: number | null;
 
-  enableASyncHydrate = enableASyncHydrate.current;
+  enableAsyncHydrate: boolean;
+
+  enableAsyncRender: boolean;
 
   constructor(
     readonly rootNode: any,
@@ -276,7 +277,7 @@ if (__DEV__) {
       const rootElement = createElement(rootElementType, rootElementProps);
 
       const get = async () => {
-        if (this.enableASyncHydrate) {
+        if (this.enableAsyncHydrate) {
           const _re = enableScopeTreeLog.current;
 
           enableScopeTreeLog.current = false;

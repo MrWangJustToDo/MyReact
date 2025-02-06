@@ -1,6 +1,7 @@
 import { once } from "@my-react/react-shared";
 
 import { unmountComponentAtNode } from "@my-react-dom-client/tools";
+import { enableAsyncRender } from "@my-react-dom-shared";
 
 import { render as originalRender } from "./render";
 
@@ -29,7 +30,9 @@ export const createRoot = (container: Partial<RenderContainer>, _option?: Option
   }
 
   const render = function createRootRender(element: LikeJSX) {
+    enableAsyncRender.current = true;
     originalRender(element, container);
+    enableAsyncRender.current = false;
   };
 
   const unmount = function createRootUnmount() {

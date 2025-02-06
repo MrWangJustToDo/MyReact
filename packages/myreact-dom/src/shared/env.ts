@@ -26,7 +26,12 @@ export const enableEventSystem = createReadonlyRef(true);
 /**
  * @internal
  */
-export const enableASyncHydrate = createRef(false);
+export const enableAsyncHydrate = createRef(false);
+
+/**
+ * @internal
+ */
+export const enableAsyncRender = createRef(false);
 
 /**
  * @internal

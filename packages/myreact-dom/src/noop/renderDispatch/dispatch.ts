@@ -12,7 +12,7 @@ export const noopDispatchFiber = (_fiber: MyReactFiberNode, _dispatch: NoopLegac
     } else if (include(_fiber.type, NODE_TYPE.__consumer__)) {
       nextWorkConsumer(_fiber);
     } else if (include(_fiber.type, NODE_TYPE.__lazy__)) {
-      if (_dispatch.enableASyncHydrate) {
+      if (_dispatch.enableAsyncHydrate) {
         const children = resolveLazyElementLatest(_fiber, _dispatch);
 
         nextWorkCommon(_fiber, children);

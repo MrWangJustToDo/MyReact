@@ -62,7 +62,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
-  enableASyncHydrate = false;
+  enableAsyncHydrate = false;
 
   renderTime: number | null;
 
@@ -189,7 +189,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
-  enableASyncHydrate = true;
+  enableAsyncHydrate = true;
 
   renderTime: number | null;
 

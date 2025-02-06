@@ -3,7 +3,7 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
-import { autoSetDevTools, checkRehydrate, checkRoot, enableASyncHydrate, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { autoSetDevTools, checkRehydrate, checkRoot, enableAsyncHydrate, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogPerformanceWarn } from "./render";
 
@@ -51,7 +51,7 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
 
   container.__container__ = renderDispatch;
 
-  renderDispatch.enableASyncHydrate = false;
+  renderDispatch.enableAsyncHydrate = enableAsyncHydrate.current;
 
   renderDispatch.isHydrateRender = true;
 
@@ -87,7 +87,7 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
 
   container.__container__ = renderDispatch;
 
-  renderDispatch.enableASyncHydrate = true;
+  renderDispatch.enableAsyncHydrate = enableAsyncHydrate.current;
 
   renderDispatch.isHydrateRender = true;
 
@@ -129,7 +129,7 @@ export const internalHydrate = (element: LikeJSX, container: Partial<RenderConta
     checkRehydrate(container);
   }
 
-  const asyncHydrate = enableASyncHydrate.current;
+  const asyncHydrate = enableAsyncHydrate.current;
 
   if (asyncHydrate) {
     hydrateAsync(element, container as RenderContainer, cb);
@@ -139,7 +139,7 @@ export const internalHydrate = (element: LikeJSX, container: Partial<RenderConta
 };
 
 export const hydrate = (element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) => {
-  enableASyncHydrate.current = false;
+  enableAsyncHydrate.current = false;
 
   internalHydrate(element, container, cb);
 };

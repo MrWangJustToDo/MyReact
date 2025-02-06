@@ -13,7 +13,7 @@ import { include, once, STATE_TYPE } from "@my-react/react-shared";
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { unmountComponentAtNode } from "@my-react-dom-client/tools";
-import { autoSetDevTools, checkRoot, delGlobalDispatch, prepareDevContainer, startRender } from "@my-react-dom-shared";
+import { autoSetDevTools, checkRoot, delGlobalDispatch, enableAsyncRender, prepareDevContainer, startRender } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 import type { CustomRenderPlatform } from "@my-react/react-reconciler";
@@ -104,7 +104,7 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
 
   container.__container__ = renderDispatch;
 
-  renderDispatch.enableASyncHydrate = false;
+  renderDispatch.enableAsyncRender = enableAsyncRender.current;
 
   renderDispatch.isClientRender = true;
 

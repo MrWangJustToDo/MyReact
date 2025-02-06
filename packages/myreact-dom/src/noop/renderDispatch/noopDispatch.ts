@@ -36,7 +36,7 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
-  enableASyncHydrate = false;
+  enableAsyncHydrate = false;
 
   renderTime: number | null;
 
@@ -131,7 +131,7 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
-  enableASyncHydrate = true;
+  enableAsyncHydrate = true;
 
   renderTime: number | null;
 

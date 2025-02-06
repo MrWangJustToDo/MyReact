@@ -95,7 +95,7 @@ export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: Cl
  * @internal
  */
 export const nextWorkLazy = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
-  if (_dispatch.enableASyncHydrate) {
+  if (_dispatch.enableAsyncHydrate) {
     const children = resolveLazyElementLatest(_fiber, _dispatch);
 
     nextWorkCommon(_fiber, children);

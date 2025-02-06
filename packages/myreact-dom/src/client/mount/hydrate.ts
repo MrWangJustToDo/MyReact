@@ -53,6 +53,8 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
 
   renderDispatch.enableAsyncHydrate = enableAsyncHydrate.current;
 
+  renderDispatch.renderMode = "hydrate";
+
   renderDispatch.isHydrateRender = true;
 
   autoSetDevTools(renderDispatch, renderPlatform);
@@ -88,6 +90,8 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
   container.__container__ = renderDispatch;
 
   renderDispatch.enableAsyncHydrate = enableAsyncHydrate.current;
+
+  renderDispatch.renderMode = "hydrateRoot";
 
   renderDispatch.isHydrateRender = true;
 

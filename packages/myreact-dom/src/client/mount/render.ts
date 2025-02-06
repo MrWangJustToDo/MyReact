@@ -106,6 +106,8 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
 
   renderDispatch.enableAsyncRender = enableAsyncRender.current;
 
+  renderDispatch.renderMode = enableAsyncRender.current ? "createRoot" : "render";
+
   renderDispatch.isClientRender = true;
 
   autoSetDevTools(renderDispatch, renderPlatform);

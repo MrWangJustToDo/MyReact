@@ -61,6 +61,8 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   enableUpdate: boolean;
 
+  renderMode?: string;
+
   pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
 
   pendingCommitFiberPatch: PATCH_TYPE = PATCH_TYPE.__initial__;

@@ -33,8 +33,7 @@
         "entryFileNames": "cjs/index.js",
         "format": "cjs",
         "type": true,
-        "multiple": true,
-        "sourcemap": true
+        "multiple": true
       },
       {
         "dir": "./dist",
@@ -44,8 +43,7 @@
         "globals": {
           "@my-react/react": "React"
         },
-        "name": "ReactReactive",
-        "sourcemap": true
+        "name": "ReactReactive"
       }
     ]
   },

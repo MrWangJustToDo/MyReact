@@ -33,8 +33,7 @@
           "entryFileNames": "cjs/RefreshBabelPlugin.js",
           "format": "cjs",
           "type": true,
-          "multiple": true,
-          "sourcemap": true
+          "multiple": true
         }
       ]
     },
@@ -47,8 +46,7 @@
           "entryFileNames": "cjs/RefreshRuntime.js",
           "format": "cjs",
           "type": true,
-          "multiple": true,
-          "sourcemap": true
+          "multiple": true
         }
       ]
     }

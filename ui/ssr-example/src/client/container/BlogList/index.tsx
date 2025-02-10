@@ -76,7 +76,7 @@ const _BlogListWithInfinityScroll = () => {
         <ErrorCom error={error} />
         <Portal>
           <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
-            <Button colorScheme="facebook" textTransform="capitalize" onClick={() => refetch()}>
+            <Button colorScheme="green" textTransform="capitalize" onClick={() => refetch()}>
               refresh
             </Button>
           </ButtonGroup>
@@ -96,7 +96,7 @@ const _BlogListWithInfinityScroll = () => {
       </Box>
       <Portal>
         <ButtonGroup variant="solid" position="fixed" bottom="4" right="4" className="tour_buttons">
-          <Button colorScheme="facebook" textTransform="capitalize" onClick={() => refetch()}>
+          <Button colorScheme="green" textTransform="capitalize" onClick={() => refetch()}>
             refresh
           </Button>
         </ButtonGroup>

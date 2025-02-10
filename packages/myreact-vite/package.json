@@ -31,14 +31,12 @@
           "entryFileNames": "cjs/index.js",
           "format": "cjs",
           "type": true,
-          "multiple": true,
-          "sourcemap": true
+          "multiple": true
         },
         {
           "dir": "./dist",
           "entryFileNames": "esm/index.mjs",
-          "format": "esm",
-          "sourcemap": true
+          "format": "esm"
         }
       ]
     },
@@ -51,8 +49,7 @@
           "entryFileNames": "cjs/refreshUtils.js",
           "format": "cjs",
           "type": true,
-          "multiple": true,
-          "sourcemap": true
+          "multiple": true
         }
       ]
     }

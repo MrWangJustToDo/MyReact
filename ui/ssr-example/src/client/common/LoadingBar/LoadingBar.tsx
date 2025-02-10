@@ -1,7 +1,7 @@
 import { memo, forwardRef, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
-import style from "./index.module.scss";
+import * as style from "./index.module.scss";
 
 const _Bar = forwardRef<HTMLDivElement>(function Bar(_, ref) {
   const [ele, setEle] = useState<HTMLDivElement>();

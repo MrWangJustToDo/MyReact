@@ -64,10 +64,10 @@ export const MainSection = () => {
             @my-react/react-dom [{reactDOMVersion}] (enableMockReact: <Checkbox verticalAlign="middle" isChecked={enableMockReact.current} isReadOnly />)
           </Text>
           <HStack marginTop="14" spacing="3" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "13px", xl: "14px" }}>
-            <Button variant="solid" fontSize="inherit" colorScheme="messenger" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
+            <Button variant="solid" fontSize="inherit" colorScheme="green" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
               View Example
             </Button>
-            <Button variant="solid" fontSize="inherit" colorScheme="whatsapp" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
+            <Button variant="solid" fontSize="inherit" colorScheme="blue" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
               View on GitHub
             </Button>
             <Button

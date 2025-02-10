@@ -27,8 +27,7 @@
           "entryFileNames": "cjs/loader.js",
           "format": "cjs",
           "type": true,
-          "multiple": true,
-          "sourcemap": true
+          "multiple": true
         }
       ]
     },
@@ -41,8 +40,7 @@
           "entryFileNames": "cjs/runtime.js",
           "format": "cjs",
           "type": true,
-          "multiple": true,
-          "sourcemap": true
+          "multiple": true
         }
       ]
     },
@@ -55,8 +53,7 @@
           "entryFileNames": "cjs/webpackPlugin.js",
           "format": "cjs",
           "type": true,
-          "multiple": true,
-          "sourcemap": true
+          "multiple": true
         }
       ]
     }

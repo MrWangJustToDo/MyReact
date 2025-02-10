@@ -24,8 +24,7 @@
         "dir": "./dist",
         "entryFileNames": "esm/index.mjs",
         "format": "esm",
-        "type": true,
-        "sourcemap": true
+        "type": true
       }
     ]
   },
@@ -54,7 +53,7 @@
   "devDependencies": {
     "@my-react/react-reconciler": "^0.3.5",
     "@my-react/react-shared": "^0.3.5",
-    "@types/lodash": "^4.17.13",
+    "@types/lodash": "^4.17.15",
     "@types/signal-exit": "^3.0.4",
     "@types/slice-ansi": "^5.0.2",
     "@types/stack-utils": "^2.0.3",

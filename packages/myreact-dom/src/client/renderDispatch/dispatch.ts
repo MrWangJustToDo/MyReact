@@ -1,8 +1,6 @@
 import { nextWorkComponent, nextWorkConsumer, NODE_TYPE } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
-import { rerunHead } from "@my-react-dom-shared";
-
 import { nextWorkCommon } from "./common";
 import { nextWorkLazy } from "./lazy";
 
@@ -17,7 +15,7 @@ export const clientDispatchFiber = (fiber: MyReactFiberNode, renderDispatch: Cli
   } else if (include(fiber.type, NODE_TYPE.__lazy__)) {
     nextWorkLazy(fiber, renderDispatch);
   } else {
-    rerunHead(fiber, renderDispatch);
+    // rerunHead(fiber, renderDispatch);
     nextWorkCommon(fiber, renderDispatch);
   }
 };

@@ -2,11 +2,11 @@ import { __my_react_internal__ } from "@my-react/react";
 import { STATE_TYPE, include, remove } from "@my-react/react-shared";
 
 import { runtimeNextWork, runtimeNextWorkDev } from "../runtimeGenerate";
+import { triggerFiberUpdateListener } from "../runtimeUpdate";
 import { currentRenderDispatch, devErrorWithFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import { triggerFiberUpdateListener } from "../runtimeUpdate";
 
 const { currentRunningFiber } = __my_react_internal__;
 

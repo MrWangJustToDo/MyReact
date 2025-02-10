@@ -117,7 +117,7 @@ export class ListTree<T> {
   }
 
   pop() {
-    const foot = this.stickyFoot || this.foot;
+    const foot = this.stickyFoot || this.foot || this.stickyHead;
     if (foot) {
       this.delete(foot);
       return foot.value;
@@ -172,7 +172,7 @@ export class ListTree<T> {
   }
 
   shift() {
-    const head = this.stickyHead || this.head;
+    const head = this.stickyHead || this.head || this.stickyFoot;
     if (head) {
       this.delete(head);
       return head.value;

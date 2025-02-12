@@ -51,6 +51,7 @@ import {
   microTask,
   enableHookStack,
   currentScopeFiber,
+  cache,
 } from "./share";
 
 /**
@@ -166,6 +167,7 @@ export {
   startTransition,
   lazy,
   memo,
+  cache,
   createRef,
   forwardRef,
   createContext,

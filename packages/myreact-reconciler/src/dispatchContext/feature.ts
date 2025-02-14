@@ -3,7 +3,7 @@ import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-rea
 
 import { triggerUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
-import { NODE_TYPE } from "../share";
+import { enableDebugUpdateQueue, NODE_TYPE } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -115,7 +115,7 @@ export const prepareUpdateAllDependence = (fiber: MyReactFiberNode, beforeValue:
     const owner = getInstanceOwnerFiber(i);
     if (owner && exclude(owner.state, STATE_TYPE.__unmount__)) {
       const typedFiber = owner as MyReactFiberNodeDev;
-      if (__DEV__ && enableDebugFiled.current) {
+      if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
         typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
         const now = Date.now();
         const updater: UpdateQueueDev = {
@@ -184,7 +184,7 @@ export const prepareUpdateAllDependenceFromRoot = (
 
   const root = renderDispatch.rootFiber as MyReactFiberNodeDev;
 
-  if (__DEV__ && enableDebugFiled.current) {
+  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
     root._debugUpdateQueue = root._debugUpdateQueue || new ListTree();
     root._debugUpdateQueue.push(updater);
   }
@@ -229,7 +229,7 @@ export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, 
 
   const typedFiber = fiber as MyReactFiberNodeDev;
 
-  if (__DEV__ && enableDebugFiled.current) {
+  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
     typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
     typedFiber._debugUpdateQueue.push(updater);
   }

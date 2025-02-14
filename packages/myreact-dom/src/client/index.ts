@@ -1,5 +1,5 @@
 import { __my_react_shared__ } from "@my-react/react";
-import { safeCall, safeCallWithSync } from "@my-react/react-reconciler";
+import { enableDebugUpdateQueue, enableFiberForLog, enableLogForCurrentFlowIsRunning, enableValidMyReactElement, safeCall, safeCallWithSync } from "@my-react/react-reconciler";
 
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount";
 
@@ -43,6 +43,10 @@ checkMyReactVersion();
 const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {};
 
 const __my_react_dom_shared__ = {
+  enableFiberForLog,
+  enableDebugUpdateQueue,
+  enableValidMyReactElement,
+  enableLogForCurrentFlowIsRunning,
   enableControlComponent,
   enableDOMField,
   enableEventSystem,

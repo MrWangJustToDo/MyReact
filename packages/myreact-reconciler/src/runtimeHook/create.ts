@@ -188,7 +188,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
       res.pop();
 
       typedHook._debugStack = res.reverse();
-    } catch (e) {
+    } catch {
       void 0;
     }
   }

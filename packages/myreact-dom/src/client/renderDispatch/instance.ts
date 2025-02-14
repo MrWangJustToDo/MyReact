@@ -1,6 +1,7 @@
-import { __my_react_shared__, createElement, type MyReactElement, type MyReactElementType } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, createElement, type MyReactElement, type MyReactElementType } from "@my-react/react";
 import { CustomRenderDispatch, NODE_TYPE, initHMR, listenerMap, safeCallWithCurrentFiber, unmountFiber } from "@my-react/react-reconciler";
 
+import { __my_react_dom_internal__, __my_react_dom_shared__ } from "@my-react-dom-client";
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
@@ -250,6 +251,14 @@ export interface ClientDomDispatchDev extends ClientDomDispatch {
   __hmr_remount__: (cb?: () => void) => void;
   _debugVersion: string;
   _debugRender: Promise<PlainElementDev>;
+  __my_react__: {
+    __my_react_shared__: typeof __my_react_shared__;
+    __my_react_internal__: typeof __my_react_internal__;
+  };
+  __my_react_dom__: {
+    __my_react_dom_shared__: typeof __my_react_dom_shared__;
+    __my_react_dom_internal__: typeof __my_react_dom_internal__;
+  };
 }
 
 function hmrRemount(this: ClientDomDispatch, cb?: () => void) {
@@ -331,6 +340,20 @@ if (__DEV__) {
   // TODO remove
   Object.defineProperty(ClientDomDispatch.prototype, "_remountOnDev", {
     value: hmrRemount,
+  });
+
+  Object.defineProperty(ClientDomDispatch.prototype, "__my_react__", {
+    value: {
+      __my_react_shared__,
+      __my_react_internal__,
+    },
+  });
+
+  Object.defineProperty(ClientDomDispatch.prototype, "__my_react_dom__", {
+    value: {
+      __my_react_dom_shared__,
+      __my_react_dom_internal__,
+    },
   });
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

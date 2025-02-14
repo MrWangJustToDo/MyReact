@@ -4,7 +4,7 @@ import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-rea
 import { syncComponentStateToFiber } from "../runtimeComponent";
 import { prepareUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
-import { currentRenderDispatch, getCurrentDispatchFromFiber, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
+import { currentRenderDispatch, enableDebugUpdateQueue, getCurrentDispatchFromFiber, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -91,9 +91,11 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
           typedNode._debugUpdateState = { needUpdate: true, isSync, isForce, callbacks: callbacks.slice(0) };
 
-          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+          if (enableDebugUpdateQueue.current) {
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
-          typedFiber._debugUpdateQueue.push(typedNode);
+            typedFiber._debugUpdateQueue.push(typedNode);
+          }
         }
       }
       node = nextNode;
@@ -157,9 +159,11 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
           typedNode._debugUpdateState = { needUpdate: true, isSync, isForce, callbacks: callbacks.slice(0) };
 
-          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+          if (enableDebugUpdateQueue.current) {
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
-          typedFiber._debugUpdateQueue.push(typedNode);
+            typedFiber._debugUpdateQueue.push(typedNode);
+          }
         }
       }
       node = nextNode;
@@ -251,13 +255,15 @@ export const processFunctionComponentUpdateQueue = (
 
           typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
 
-          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+          if (enableDebugUpdateQueue.current) {
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
-          typedFiber._debugUpdateQueue.push(typedNode);
-
-          typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
-
-          typedTrigger._debugUpdateQueue.push(typedNode);
+            typedFiber._debugUpdateQueue.push(typedNode);
+  
+            typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
+  
+            typedTrigger._debugUpdateQueue.push(typedNode);
+          }
         }
       }
 
@@ -327,13 +333,15 @@ export const processFunctionComponentUpdateQueue = (
 
           typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
 
-          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+          if (enableDebugUpdateQueue.current) {
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
-          typedFiber._debugUpdateQueue.push(typedNode);
-
-          typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
-
-          typedTrigger._debugUpdateQueue.push(typedNode);
+            typedFiber._debugUpdateQueue.push(typedNode);
+  
+            typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
+  
+            typedTrigger._debugUpdateQueue.push(typedNode);
+          }
         }
       }
 
@@ -403,9 +411,11 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
 
         typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
 
-        typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+        if (enableDebugUpdateQueue.current) {
+          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
-        typedFiber._debugUpdateQueue.push(typedNode);
+          typedFiber._debugUpdateQueue.push(typedNode);
+        }
       }
     }
 

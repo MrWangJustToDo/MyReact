@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/ban-types
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 const memorize = <T extends Function>(fn: T): T => {
   const map: Record<string, any> = {};
   return ((...p: any[]) => {

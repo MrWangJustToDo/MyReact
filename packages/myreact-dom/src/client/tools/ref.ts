@@ -2,8 +2,7 @@ import { NODE_TYPE, safeCallWithCurrentFiber } from "@my-react/react-reconciler"
 import { PATCH_TYPE, STATE_TYPE, include, remove } from "@my-react/react-shared";
 
 import { domListenersMap, type ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
-
-import { logOnce } from "./debug";
+import { logOnce } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 

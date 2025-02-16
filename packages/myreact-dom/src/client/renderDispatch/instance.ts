@@ -5,16 +5,13 @@ import { __my_react_dom_internal__, __my_react_dom_shared__ } from "@my-react-do
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
 import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
+import { parse, patchDOMField, setRef, unsetRef } from "@my-react-dom-client/tools";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount";
 import {
   asyncUpdateTimeLimit,
   initialElementMap,
   unmountElementMap,
-  setRef,
   shouldPauseAsyncUpdate,
-  unsetRef,
-  patchDOMField,
-  parse,
 } from "@my-react-dom-shared";
 
 import { clientDispatchFiber } from "./dispatch";

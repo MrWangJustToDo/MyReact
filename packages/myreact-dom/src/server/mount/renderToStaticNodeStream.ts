@@ -21,7 +21,7 @@ export const renderToStaticNodeStream = (element: LikeJSX): Readable => {
       return temp;
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-empty-function
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const stream = isServer ? new (require("stream").Readable)({ read() {} }) : temp;
 
     const container = new ContainerElement();

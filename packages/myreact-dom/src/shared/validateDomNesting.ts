@@ -2,7 +2,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { getFiberTree } from "@my-react/react-reconciler";
 
-import { logOnce } from "./debug";
+import { logOnce } from "./log";
 import { makeMap } from "./tools";
 
 import type { MyReactFiberNodeClientDev } from "@my-react-dom-client/renderDispatch";

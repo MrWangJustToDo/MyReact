@@ -1,7 +1,8 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { afterSyncUpdate, beforeSyncUpdate, callWithFiber } from "@my-react/react-reconciler";
 
-import { clearEvent, enableControlComponent, enableEventSystem, enableEventTrack, log, triggerEvent } from "@my-react-dom-shared";
+import { clearEvent, triggerEvent } from "@my-react-dom-client/tools";
+import { enableControlComponent, enableEventSystem, enableEventTrack, log } from "@my-react-dom-shared";
 
 import { controlElementTag, generateOnChangeFun } from "../control";
 

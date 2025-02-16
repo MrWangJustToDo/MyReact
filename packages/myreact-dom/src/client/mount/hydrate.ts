@@ -3,7 +3,8 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
-import { autoSetDevTools, checkRehydrate, checkRoot, enableAsyncHydrate, prepareDevContainer, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { prepareDevContainer, checkRehydrate } from "@my-react-dom-client/tools";
+import { autoSetDevTools, checkRoot, enableAsyncHydrate, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogPerformanceWarn } from "./render";
 

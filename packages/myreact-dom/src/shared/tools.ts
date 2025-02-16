@@ -85,7 +85,7 @@ export const generateGetRawAttrKey = (map: string) => {
 /**
  * @internal
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export const debounce = <T extends Function>(callback: T, time?: number): T => {
   let id = null;
   return ((...args) => {

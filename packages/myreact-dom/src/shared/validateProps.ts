@@ -1,7 +1,7 @@
 import { NODE_TYPE, type MyReactFiberNode } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
-import { logOnce } from "./debug";
+import { logOnce } from "./log";
 import { isProperty, isStyle } from "./tools";
 
 const checkValidSelectProps = (fiber: MyReactFiberNode) => {

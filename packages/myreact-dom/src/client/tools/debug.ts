@@ -2,12 +2,12 @@ import { __my_react_internal__, __my_react_shared__, cloneElement, isValidElemen
 import {
   MyReactFiberNode,
   debugWithNode,
-  devErrorWithFiber,
-  devWarnWithFiber,
+  enableDebugUpdateQueue,
+  enableFiberForLog,
+  enableLogForCurrentFlowIsRunning,
+  enableValidMyReactElement,
   getCurrentDispatchFromFiber,
   // getFiberTree,
-  onceErrorWithKeyAndFiber,
-  onceWarnWithKeyAndFiber,
   unmountFiber,
 } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
@@ -15,9 +15,7 @@ import { include } from "@my-react/react-shared";
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount/render";
 import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-dom-server/api";
-
-import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, isServer } from "./env";
-import { debounce } from "./tools";
+import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, debounce, isServer } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 import type { CustomRenderDispatch, MyReactFiberNodeDev } from "@my-react/react-reconciler";
@@ -25,84 +23,22 @@ import type { RenderContainer } from "@my-react-dom-client/mount";
 import type { CommentEndElement, TextElement } from "@my-react-dom-server/api";
 import type { LatestServerStreamDispatch, LegacyServerStreamDispatch, ServerDomDispatch } from "@my-react-dom-server/renderDispatch";
 
-const { enableOptimizeTreeLog, enableScopeTreeLog } = __my_react_shared__;
+const { enableScopeTreeLog } = __my_react_shared__;
 
-const __my_react_dom_shared__ = {
+export const __my_react_dom_shared__ = {
+  enableFiberForLog,
+  enableDebugUpdateQueue,
+  enableValidMyReactElement,
+  enableLogForCurrentFlowIsRunning,
   enableControlComponent,
   enableDOMField,
   enableEventSystem,
   enableEventTrack,
 };
 
-const __my_react_dom_internal__ = {
-  legacyNoopRender: (ele: LikeJSX) => legacyNoopRender(ele),
-  latestNoopRender: (ele: LikeJSX) => latestNoopRender(ele),
-};
-
-/**
- * @internal
- */
-export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: any) => {
-  if (__DEV__) {
-    const last = enableOptimizeTreeLog.current;
-
-    // const renderDispatch = getCurrentDispatchFromFiber(fiber) as ClientDomDispatch;
-
-    enableOptimizeTreeLog.current = false;
-
-    if (level === "warn") {
-      devWarnWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
-    }
-    if (level === "error") {
-      devErrorWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
-
-      // if (renderDispatch.isClientRender || renderDispatch.isHydrateRender) {
-      //   renderDispatch._runtimeError = renderDispatch._runtimeError || [];
-
-      //   const stack = getFiberTree(fiber);
-
-      //   renderDispatch._runtimeError.push({
-      //     source: fiber,
-      //     stack,
-      //     value: Error(rest.filter((s) => typeof s === "string").join(", ") + stack),
-      //   });
-      // }
-    }
-
-    enableOptimizeTreeLog.current = last;
-
-    return;
-  }
-
-  if (level === "error") {
-    console.error(`[@my-react/react-dom]`, ...rest);
-  }
-};
-
-const onceMap: Record<string, boolean> = {};
-
-/**
- * @internal
- */
-export const logOnce = (fiber: MyReactFiberNode, level: "warn" | "error", key: string, ...rest: string[]) => {
-  if (__DEV__) {
-    if (level === "warn") {
-      onceWarnWithKeyAndFiber(fiber, key, `[@my-react/react-dom]`, ...rest);
-    }
-    if (level === "error") {
-      onceErrorWithKeyAndFiber(fiber, key, `[@my-react/react-dom]`, ...rest);
-    }
-
-    return;
-  }
-
-  if (level === "error") {
-    if (onceMap[key]) return;
-
-    onceMap[key] = true;
-
-    console.error(`[@my-react/react-dom]`, ...rest);
-  }
+export const __my_react_dom_internal__ = {
+  legacyNoopRender: (ele: LikeJSX) => __DEV__ ? legacyNoopRender(ele) : null,
+  latestNoopRender: (ele: LikeJSX) => __DEV__ ? latestNoopRender(ele) : null,
 };
 
 /**

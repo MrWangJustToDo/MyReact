@@ -1,8 +1,9 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
+import { enableMoveBefore, type DomElement, type DomNode } from "@my-react-dom-shared";
+
 import type { MyReactFiberNode, MyReactFiberContainer, CustomRenderDispatch } from "@my-react/react-reconciler";
-import type { DomElement, DomNode } from "@my-react-dom-shared";
 
 /**
  * @internal
@@ -27,7 +28,13 @@ export const append = (fiber: MyReactFiberNode, parentItemWithDom: MyReactFiberN
 
     const childDOM = fiber.nativeNode as DomNode;
 
-    parentDOM.appendChild(childDOM);
+    if (enableMoveBefore.current) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      parentDOM.moveBefore(childDOM, null);
+    } else {
+      parentDOM.appendChild(childDOM);
+    }
 
     return;
   }

@@ -52,3 +52,8 @@ export const enableHydrateWarn = createRef(true);
  * @internal
  */
 export const isServer = typeof window === "undefined";
+
+/**
+ * @internal
+ */
+export const enableMoveBefore = createRef(false);

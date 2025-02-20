@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { devErrorWithFiber, enableFiberForLog, enableValidMyReactElement, processHook, processState, triggerError } from "@my-react/react-reconciler";
 
-import { DomPlatform } from "@my-react-dom-shared";
+import { DomPlatform, enableMoveBefore } from "@my-react-dom-shared";
 
 import type { RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -65,6 +65,10 @@ export const prepareRenderPlatform = () => {
   enableDebugFiled.current = true;
 
   enableScopeTreeLog.current = true;
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  enableMoveBefore.current = enableMoveBefore.current && typeof window !== "undefined" && typeof window?.Node?.prototype?.moveBefore === "function";
 
   renderPlatform = currentRenderPlatform.current as DomPlatform;
 

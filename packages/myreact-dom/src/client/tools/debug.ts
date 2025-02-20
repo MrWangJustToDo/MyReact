@@ -15,7 +15,7 @@ import { include } from "@my-react/react-shared";
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount/render";
 import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-dom-server/api";
-import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, debounce, isServer } from "@my-react-dom-shared";
+import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, debounce, isServer, enableMoveBefore } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 import type { CustomRenderDispatch, MyReactFiberNodeDev } from "@my-react/react-reconciler";
@@ -34,6 +34,7 @@ export const __my_react_dom_shared__ = {
   enableDOMField,
   enableEventSystem,
   enableEventTrack,
+  enableMoveBefore,
 };
 
 export const __my_react_dom_internal__ = {

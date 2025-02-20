@@ -1,17 +1,11 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { safeCall, safeCallWithSync } from "@my-react/react-reconciler";
 
-import {
-  checkMyReactVersion,
-  checkReconcilerVersion,
-  injectDevField,
-} from "../shared";
+import { checkMyReactVersion, checkReconcilerVersion, injectDevField } from "../shared";
 
 import { render, hydrate, hydrateRoot, createRoot } from "./mount";
 import { initGlobalRenderPlatform } from "./renderPlatform";
-import { findDOMNode, createPortal, unmountComponentAtNode, /* initGlobalHMR */ 
-__my_react_dom_shared__,
-__my_react_dom_internal__} from "./tools";
+import { findDOMNode, createPortal, unmountComponentAtNode /* initGlobalHMR */, __my_react_dom_shared__, __my_react_dom_internal__ } from "./tools";
 
 import type { ClientDomDispatch, ClientDomDispatchDev } from "./renderDispatch";
 

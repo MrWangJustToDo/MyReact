@@ -26,7 +26,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   afterSyncUpdate();
 
-  _list.listToFoot(function invokeCreateAdnUpdateList(_fiber) {
+  _list.listToFoot(function invokeCreateAndUpdateList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithCurrentFiber({
         fiber: _fiber,
@@ -53,7 +53,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithCurrentFiber({
         fiber: _fiber,
-        action: function safeCallAppendAdnSetRef() {
+        action: function safeCallAppendAndSetRef() {
           _dispatch.commitAppend(_fiber);
           _dispatch.commitSetRef(_fiber);
         },

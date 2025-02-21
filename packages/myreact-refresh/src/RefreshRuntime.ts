@@ -59,7 +59,7 @@ const updatedFamiliesByType = new WeakMap<MyReactComponentType, Family>();
 const getProperty = (object: Record<string, unknown>, property: string) => {
   try {
     return object[property];
-  } catch (err) {
+  } catch {
     // Intentionally ignore.
     return undefined;
   }
@@ -71,7 +71,7 @@ const computeFullKey = (signature: Signature) => {
 
   try {
     hooks = signature.getCustomHooks();
-  } catch (err) {
+  } catch {
     signature.forceReset = true;
     return fullKey;
   }

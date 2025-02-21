@@ -13,7 +13,7 @@ type Listeners = {
   fiberState: Set<(fiber: MyReactFiberNode, updater: UpdateQueue) => void>;
   fiberTrigger: Set<(fiber: MyReactFiberNode, state: UpdateState) => void>;
   fiberUnmount: Set<(fiber: MyReactFiberNode) => void>;
-  fiberHMR?: Set<(fiber: MyReactFiberNode) => void>;
+  fiberHMR?: Set<(fiber: MyReactFiberNode, forceRefresh?: boolean) => void>;
   fiberWarn?: Set<(fiber: MyReactFiberNode, ...args: any) => void>;
   fiberError?: Set<(fiber: MyReactFiberNode, ...args: any) => void>;
   fiberHasChange: Set<(list: ListTree<MyReactFiberNode>) => void>;
@@ -326,7 +326,7 @@ export class RenderDispatchEvent implements RenderDispatch {
     set.add(onceCb);
   }
 
-  onFiberHMR(cb: (_fiber: MyReactFiberNode) => void) {
+  onFiberHMR(cb: (_fiber: MyReactFiberNode, _forceRefresh?: boolean) => void) {
     const set = listenerMap.get(this).fiberHMR;
 
     set?.add?.(cb);
@@ -334,11 +334,11 @@ export class RenderDispatchEvent implements RenderDispatch {
     return () => set?.delete?.(cb);
   }
 
-  onceFiberHMR(cb: (_fiber: MyReactFiberNode) => void) {
+  onceFiberHMR(cb: (_fiber: MyReactFiberNode, _forceRefresh?: boolean) => void) {
     const set = listenerMap.get(this).fiberHMR;
 
-    const onceCb = (_fiber: MyReactFiberNode) => {
-      cb(_fiber);
+    const onceCb = (_fiber: MyReactFiberNode, _forceRefresh?: boolean) => {
+      cb(_fiber, _forceRefresh);
 
       set?.delete?.(onceCb);
     };

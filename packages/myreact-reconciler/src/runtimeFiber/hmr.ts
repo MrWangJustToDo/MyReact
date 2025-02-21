@@ -58,7 +58,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
     safeCallWithCurrentFiber({
       fiber,
       action: function safeCallFiberHMRListener() {
-        listenerMap.get(renderDispatch)?.fiberHMR?.forEach((cb) => cb(fiber));
+        listenerMap.get(renderDispatch)?.fiberHMR?.forEach((cb) => cb(fiber, forceRefresh));
       },
     });
 

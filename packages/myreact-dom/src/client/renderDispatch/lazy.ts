@@ -1,9 +1,9 @@
-import { __my_react_internal__, createElement } from "@my-react/react";
+import { __my_react_internal__, createElement , lazy } from "@my-react/react";
 import { devWarnWithFiber, nextWorkCommon, WrapperByScope } from "@my-react/react-reconciler";
 import { isPromise, ListTree } from "@my-react/react-shared";
 
 import type { ClientDomDispatch } from "./instance";
-import type { lazy, MixinMyReactFunctionComponent } from "@my-react/react";
+import type { MixinMyReactFunctionComponent } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { currentRenderPlatform } = __my_react_internal__;
@@ -41,7 +41,7 @@ export const loadLazy = async (fiber: MyReactFiberNode, typedElementType: Return
  * @internal
  */
 export const updateLazy = (fiber: MyReactFiberNode, typedElementType: ReturnType<typeof lazy>) => {
-  typedElementType._update(fiber, typedElementType.render);
+  lazy._updater(fiber, typedElementType.render);
 };
 
 /**

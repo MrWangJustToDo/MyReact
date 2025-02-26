@@ -18,7 +18,7 @@ import type {
   MyReactFunctionComponent,
 } from "@my-react/react";
 
-const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber } = __my_react_internal__;
+const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
 
 const { enablePerformanceLog, enableDebugFiled } = __my_react_shared__;
 
@@ -75,14 +75,34 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
     children = safeCallWithCurrentFiber({
       fiber,
       action: function safeCallForwardRefFunctionalComponent() {
-        return typedElementTypeWithRef(fiber.pendingProps, fiber.ref);
+        let re = undefined;
+        try {
+          re = typedElementTypeWithRef(fiber.pendingProps, fiber.ref);
+        } catch (e) {
+          if (isPromise(e)) {
+            currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
+            return;
+          }
+          throw e;
+        }
+        return re;
       },
     });
   } else {
     children = safeCallWithCurrentFiber({
       fiber,
       action: function safeCallFunctionalComponent() {
-        return typedElementType(fiber.pendingProps);
+        let re = undefined;
+        try {
+          re = typedElementType(fiber.pendingProps);
+        } catch (e) {
+          if (isPromise(e)) {
+            currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
+            return;
+          }
+          throw e;
+        }
+        return re;
       },
     });
   }

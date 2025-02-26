@@ -10,6 +10,7 @@ let contextId = 0;
 
 const defaultObject = { [TYPEKEY]: Context, contextId: 0, displayName: "" };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const defaultCompare = <P extends Record<string, unknown>>(oldProps: P, newProps: P) => isNormalEquals(oldProps, newProps);
 
 /**
@@ -142,7 +143,6 @@ export const lazy = <P extends Record<string, unknown> = any>(
     loader,
     _loading: false,
     _loaded: false,
-    _update: lazyLoaded,
     render: null,
   };
   return config as {
@@ -152,10 +152,11 @@ export const lazy = <P extends Record<string, unknown> = any>(
     >;
     _loading: boolean;
     _loaded: boolean;
-    _update: (fiber: RenderFiber, loaded: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent) => void;
     render: null | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>;
   };
 };
+
+lazy._updater = lazyLoaded;
 
 export type LazyType<P extends Record<string, unknown>> = {
   [TYPEKEY]: symbol;

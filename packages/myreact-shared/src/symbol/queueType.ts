@@ -3,4 +3,5 @@ export enum UpdateQueueType {
   component = 1,
   lazy = 3,
   context = 4,
+  promise = 5,
 }

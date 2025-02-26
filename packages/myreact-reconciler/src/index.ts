@@ -10,6 +10,7 @@ export * from "./dispatchUpdate";
 export * from "./processQueue";
 export * from "./processHook";
 export * from "./processState";
+export * from "./processPromise";
 export * from "./share";
 export * from "./renderDispatch";
 export * from "./renderMount";

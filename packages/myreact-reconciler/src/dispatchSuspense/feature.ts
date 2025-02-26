@@ -3,6 +3,7 @@ import { include, STATE_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
+import type { PromiseWithState } from "../processPromise";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactElementNode } from "@my-react/react";
 
@@ -42,9 +43,14 @@ export const defaultGenerateSuspenseMap = (fiber: MyReactFiberNode, map: WeakMap
   }
 };
 
-// TODO! implement this
-export const defaultReadPromise = (_promise: Promise<unknown>) => {
-  throw new Error(`[@my-react/react] not implement yet`);
+export const defaultReadPromise = (_promise: PromiseWithState<unknown>) => {
+  if (_promise.state === 'fulfilled') {
+    return _promise.value;
+  } else if (_promise.state === 'rejected') {
+    throw _promise.reason;
+  } else {
+    throw _promise;
+  }
 };
 
 export const defaultResolveSuspense = (fiber: MyReactFiberNode): MyReactElementNode => {

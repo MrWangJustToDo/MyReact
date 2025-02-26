@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { devErrorWithFiber, enableFiberForLog, enableValidMyReactElement, processHook, processState, triggerError } from "@my-react/react-reconciler";
+import { devErrorWithFiber, enableFiberForLog, enableValidMyReactElement, processHook, processPromise, processState, triggerError } from "@my-react/react-reconciler";
 
 import { DomPlatform, enableMoveBefore } from "@my-react-dom-shared";
 
@@ -18,6 +18,11 @@ function dispatchState(this: DomPlatform, _params: UpdateQueue) {
 
 function dispatchHook(this: DomPlatform, _params: RenderHookParams) {
   return processHook(_params);
+}
+
+function dispatchPromise(this: DomPlatform, _params: {fiber: MyReactFiberNode; promise: Promise<unknown>}) {
+  processPromise(_params.fiber, _params.promise);
+  return void 0;
 }
 
 function dispatchError(this: DomPlatform, _params: { fiber: MyReactFiberNode; error: Error }) {
@@ -83,4 +88,6 @@ export const prepareRenderPlatform = () => {
   renderPlatform.dispatchHook = dispatchHook;
 
   renderPlatform.dispatchError = dispatchError;
+
+  renderPlatform.dispatchPromise = dispatchPromise;
 };

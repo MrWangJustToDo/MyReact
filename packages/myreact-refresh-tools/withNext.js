@@ -58,6 +58,8 @@ module.exports = function withNext(nextConfig = {}) {
       const aliases = config.resolve.alias || (config.resolve.alias = {});
       aliases["react"] = "@my-react/react";
       aliases["react-dom$"] = "@my-react/react-dom";
+      aliases["react-dom/server$"] = "@my-react/react-dom/server";
+      aliases["react-dom/client$"] = "@my-react/react-dom/client";
 
       return config;
     },

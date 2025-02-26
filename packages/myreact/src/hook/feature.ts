@@ -1,6 +1,6 @@
 import { HOOK_TYPE, isPromise } from "@my-react/react-shared";
 
-import { createRef, currentRenderPlatform } from "../share";
+import { createRef, currentRenderPlatform, promiseLoad } from "../share";
 
 import type { createContext } from "../element";
 import type { Action, Reducer } from "../renderHook";
@@ -147,6 +147,8 @@ export const use = <T = any>(Context: ReturnType<typeof createContext<T>> | Prom
     return renderPlatform.readContext(Context) as T;
   }
 }
+
+use._updater = promiseLoad;
 
 /**
  * @public

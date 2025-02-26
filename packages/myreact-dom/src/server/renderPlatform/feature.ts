@@ -13,6 +13,10 @@ const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
 
 const dispatchHook = (params: RenderHookParams) => processHook(params);
 
+const dispatchPromise = ({ promise }: { fiber: MyReactFiberNode; promise: Promise<unknown> }) => {
+  throw promise;
+};
+
 /**
  * @internal
  */
@@ -73,4 +77,6 @@ export const prepareRenderPlatform = () => {
   renderPlatform.dispatchHook = dispatchHook;
 
   renderPlatform.dispatchError = dispatchError;
+
+  renderPlatform.dispatchPromise = dispatchPromise;
 };

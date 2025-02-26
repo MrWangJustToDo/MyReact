@@ -4,6 +4,7 @@ import { defaultReadContext } from "../dispatchContext";
 import { defaultReadPromise } from "../dispatchSuspense";
 import { getFiberTree, getHookTree } from "../share";
 
+import type { PromiseWithState } from "../processPromise";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
@@ -26,7 +27,7 @@ export class CustomRenderPlatform implements RenderPlatform {
   getHookTree(_treeHookNode: ListTreeNode<MyReactHookNode>, _errorType: { lastRender: HOOK_TYPE; nextRender: HOOK_TYPE }): string {
     return getHookTree(_treeHookNode, _errorType);
   }
-  readPromise(_params: Promise<unknown>): unknown {
+  readPromise(_params: PromiseWithState<unknown>): unknown {
     return defaultReadPromise(_params);
   }
   readContext(_params: ReturnType<typeof createContext>): unknown {

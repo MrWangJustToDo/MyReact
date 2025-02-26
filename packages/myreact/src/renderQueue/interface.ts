@@ -63,4 +63,18 @@ export type ContextUpdateQueue = {
 /**
  * @public
  */
-export type UpdateQueue<T = Record<string, any>> = (ComponentUpdateQueue | HookUpdateQueue | LazyUpdateQueue | ContextUpdateQueue) & T;
+export type PromiseUpdateQueue = {
+  type: UpdateQueueType.promise;
+  trigger: RenderFiber;
+  isForce?: boolean;
+  isSync?: boolean;
+  isRetrigger?: boolean;
+  isImmediate?: boolean;
+  payLoad?: Record<string, unknown>;
+  callback?: () => void;
+}
+
+/**
+ * @public
+ */
+export type UpdateQueue<T = Record<string, any>> = (ComponentUpdateQueue | HookUpdateQueue | LazyUpdateQueue | ContextUpdateQueue | PromiseUpdateQueue) & T;

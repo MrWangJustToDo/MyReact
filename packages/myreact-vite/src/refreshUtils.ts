@@ -1,4 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
+
 function debounce(fn: Function, delay: number) {
   let handle: number;
   return () => {
@@ -8,10 +10,18 @@ function debounce(fn: Function, delay: number) {
 }
 
 /* eslint-disable no-undef */
-const enqueueUpdate = debounce(exports.performReactRefresh, 16);
+const hooks: Function[] = [];
+// @ts-ignore
+window.__registerBeforePerformReactRefresh = (cb: Function) => {
+  hooks.push(cb);
+};
+const enqueueUpdate = debounce(async () => {
+  if (hooks.length) await Promise.all(hooks.map((cb) => cb()));
+  exports.performReactRefresh();
+}, 16);
 
 // Taken from https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/main/lib/runtime/RefreshUtils.js#L141
-// This allows to resister components not detected by SWC like styled component
+// This allows to register components not detected by SWC like styled component
 function registerExportsForReactRefresh(filename: string, moduleExports: Record<string, any>) {
   for (const key in moduleExports) {
     if (key === "__esModule") continue;
@@ -26,33 +36,36 @@ function registerExportsForReactRefresh(filename: string, moduleExports: Record<
   }
 }
 
-function validateRefreshBoundaryAndEnqueueUpdate(prevExports: Record<string, any>, nextExports: Record<string, any>) {
-  if (!predicateOnExport(prevExports, (key: string) => key in nextExports)) {
+function validateRefreshBoundaryAndEnqueueUpdate(id: number, prevExports: Record<string, boolean>, nextExports: Record<string, boolean>) {
+  // @ts-ignore
+  const ignoredExports = window.__getReactRefreshIgnoredExports?.({ id }) ?? [];
+  if (predicateOnExport(ignoredExports, prevExports, (key: string) => key in nextExports) !== true) {
     return "Could not Fast Refresh (export removed)";
   }
-  if (!predicateOnExport(nextExports, (key: string) => key in prevExports)) {
+  if (predicateOnExport(ignoredExports, nextExports, (key: string) => key in prevExports) !== true) {
     return "Could not Fast Refresh (new export)";
   }
 
   let hasExports = false;
-  const allExportsAreComponentsOrUnchanged = predicateOnExport(nextExports, (key: string, value: any) => {
+  const allExportsAreComponentsOrUnchanged = predicateOnExport(ignoredExports, nextExports, (key: string, value: boolean) => {
     hasExports = true;
     if (exports.isLikelyComponentType(value)) return true;
     return prevExports[key] === nextExports[key];
   });
-  if (hasExports && allExportsAreComponentsOrUnchanged) {
+  if (hasExports && allExportsAreComponentsOrUnchanged === true) {
     enqueueUpdate();
   } else {
-    return "Could not Fast Refresh. Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports";
+    return `Could not Fast Refresh ("${allExportsAreComponentsOrUnchanged}" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports`;
   }
 }
 
-function predicateOnExport(moduleExports: any, predicate: (key: string, value: any) => boolean) {
+function predicateOnExport(ignoredExports: Record<string, any>, moduleExports: Record<string, any>, predicate: Function) {
   for (const key in moduleExports) {
     if (key === "__esModule") continue;
+    if (ignoredExports.includes(key)) continue;
     const desc = Object.getOwnPropertyDescriptor(moduleExports, key);
-    if (desc && desc.get) return false;
-    if (!predicate(key, moduleExports[key])) return false;
+    if (desc && desc.get) return key;
+    if (!predicate(key, moduleExports[key])) return key;
   }
   return true;
 }

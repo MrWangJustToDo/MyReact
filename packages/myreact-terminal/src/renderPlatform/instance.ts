@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_scheduler__, __my_react_shared__ } from "@my-react/react";
-import { CustomRenderPlatform, processHook, processState, triggerError } from "@my-react/react-reconciler";
+import { CustomRenderPlatform, processHook, processPromise, processState, triggerError } from "@my-react/react-reconciler";
 
 import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -31,6 +31,10 @@ export class TerminalPlatform extends CustomRenderPlatform {
   }
   dispatchState(_params: UpdateQueue): void {
     processState(_params);
+  }
+  dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown>; }): MyReactElementNode {
+    processPromise(_params.fiber, _params.promise);
+    return void 0;
   }
 }
 

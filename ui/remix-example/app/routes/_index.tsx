@@ -1,5 +1,6 @@
 import { useNavigate } from "@remix-run/react";
 
+import { Test } from "~/components/Test";
 import styles from "~/styles/styles.css?url";
 import { Theme, Themed, useTheme } from "~/utils/theme-provider";
 
@@ -28,6 +29,7 @@ export default function Index() {
         dark={<h1 className="dark-component">I&apos;m only seen in dark mode</h1>}
         light={<h1 className="light-component">I&apos;m only seen in light mode</h1>}
       />
+      <Test />
     </>
   );
 }

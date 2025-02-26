@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-duplicates
 import { createFilter } from "vite";
 
-import { addRefreshWrapper, preambleCode, runtimeCode, runtimePublicPath } from "./fast-refresh";
+import { addClassComponentRefreshWrapper, addRefreshWrapper, preambleCode, runtimeCode, runtimePublicPath } from "./fast-refresh";
 
 import type * as babelCore from "@babel/core";
 import type { BuildOptions, Plugin, PluginOption, ResolvedConfig, UserConfig } from "vite";
@@ -72,6 +72,7 @@ export type ViteReactPluginApi = {
   reactBabel?: ReactBabelHook;
 };
 
+const reactCompRE = /extends\s+(?:React\.)?(?:Pure)?Component/;
 const refreshContentRE = /\$Refresh(?:Reg|Sig)\$\(/;
 const defaultIncludeRE = /\.[tj]sx?$/;
 const tsRE = /\.tsx?$/;
@@ -142,22 +143,30 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
       if (id.includes("/node_modules/")) return;
 
       const [filepath] = id.split("?");
+
       if (!filter(filepath)) return;
 
       const ssr = options?.ssr === true;
+
       const babelOptions = (() => {
         if (staticBabelOptions) return staticBabelOptions;
+
         const newBabelOptions = createBabelOptions(typeof opts.babel === "function" ? opts.babel(id, { ssr }) : opts.babel);
+
         runPluginOverrides?.(newBabelOptions, { id, ssr });
+
         return newBabelOptions;
       })();
+
       const plugins = [...babelOptions.plugins];
 
       const isJSX = filepath.endsWith("x");
+
       const useFastRefresh =
         !skipFastRefresh &&
         !ssr &&
         (isJSX || (opts.jsxRuntime === "classic" ? importReactRE.test(code) : code.includes(jsxImportDevRuntime) || code.includes(jsxImportRuntime)));
+
       if (useFastRefresh) {
         plugins.push([await loadPlugin("@my-react/react-refresh/babel"), { skipEnvCheck: true }]);
       }
@@ -185,11 +194,16 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
       }
 
       const babel = await loadBabel();
+
       const result = await babel.transformAsync(code, {
         ...babelOptions,
         root: projectRoot,
         filename: id,
         sourceFileName: filepath,
+        // Required for esbuild.jsxDev to provide correct line numbers
+        // This creates issues the react compiler because the re-order is too important
+        // People should use @babel/plugin-transform-react-jsx-development to get back good line numbers
+        retainLines: getReactCompilerPlugin(plugins) != null ? false : !isProduction && isJSX && opts.jsxRuntime !== "classic",
         parserOpts: {
           ...babelOptions.parserOpts,
           sourceType: "module",
@@ -198,6 +212,10 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
         },
         generatorOpts: {
           ...babelOptions.generatorOpts,
+          // import attributes parsing available without plugin since 7.26
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          importAttributesKeyword: "with",
           decoratorsBeforeExport: true,
         },
         plugins,
@@ -206,13 +224,21 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
 
       if (result) {
         let code = result.code!;
-        if (useFastRefresh && refreshContentRE.test(code)) {
-          code = addRefreshWrapper(code, id);
+        if (useFastRefresh) {
+          if (refreshContentRE.test(code)) {
+            code = addRefreshWrapper(code, id);
+          } else if (reactCompRE.test(code)) {
+            code = addClassComponentRefreshWrapper(code, id);
+          }
         }
         return { code, map: result.map };
       }
     },
   };
+
+  const staticBabelPlugins = typeof opts.babel === "object" ? (opts.babel?.plugins ?? []) : [];
+
+  const reactCompilerPlugin = getReactCompilerPlugin(staticBabelPlugins);
 
   const viteReactRefresh: Plugin = {
     name: "vite:my-react-refresh",
@@ -225,6 +251,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
         // what React version the user has installed.
         include: [
           "react",
+          "react-dom",
           jsxImportRuntime,
           jsxImportDevRuntime,
           "@my-react/react",
@@ -233,7 +260,8 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
           "@my-react/react-dom",
           "@my-react/react-dom/client",
           "@my-react/react-dom/server",
-        ],
+          reactCompilerPlugin ? "react-compiler-runtime" : undefined,
+        ].filter(Boolean) as string[],
       },
       resolve: {
         alias: {
@@ -299,6 +327,10 @@ const silenceUseClientWarning = (userConfig: UserConfig): BuildOptions => ({
       if (warning.code === "MODULE_LEVEL_DIRECTIVE" && warning.message.includes("use client")) {
         return;
       }
+      // https://github.com/vitejs/vite/issues/15012
+      if (warning.code === "SOURCEMAP_ERROR" && warning.message.includes("resolve original location") && warning.pos === 0) {
+        return;
+      }
       if (userConfig.build?.rollupOptions?.onwarn) {
         userConfig.build.rollupOptions.onwarn(warning, defaultHandler);
       } else {
@@ -309,16 +341,22 @@ const silenceUseClientWarning = (userConfig: UserConfig): BuildOptions => ({
 });
 
 const loadedPlugin = new Map<string, any>();
+
 function loadPlugin(path: string): any {
   const cached = loadedPlugin.get(path);
+
   if (cached) return cached;
 
   const promise = import(path).then((module) => {
     const value = module.default || module;
+
     loadedPlugin.set(path, value);
+
     return value;
   });
+
   loadedPlugin.set(path, promise);
+
   return promise;
 }
 
@@ -340,4 +378,8 @@ function createBabelOptions(rawOptions?: BabelOptions) {
 
 function defined<T>(value: T | undefined): value is T {
   return value !== undefined;
+}
+
+function getReactCompilerPlugin(plugins: ReactBabelOptions["plugins"]) {
+  return plugins.find((p) => p === "babel-plugin-react-compiler" || (Array.isArray(p) && p[0] === "babel-plugin-react-compiler"));
 }

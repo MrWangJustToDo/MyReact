@@ -4,7 +4,6 @@ import { MyReactInternalInstance } from "../internal";
 import { lazyLoaded } from "../share";
 
 import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "./instance";
-import type { RenderFiber } from "../renderFiber";
 
 let contextId = 0;
 
@@ -165,6 +164,5 @@ export type LazyType<P extends Record<string, unknown>> = {
   >;
   _loading: boolean;
   _loaded: boolean;
-  _update: (fiber: RenderFiber, loaded: null | MixinMyReactFunctionComponent | MixinMyReactClassComponent) => void;
   render: null | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>;
 };

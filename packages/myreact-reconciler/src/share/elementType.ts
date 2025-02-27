@@ -16,6 +16,8 @@ import {
   Profiler,
   merge,
   Context,
+  ScopeLazy,
+  ScopeSuspense,
 } from "@my-react/react-shared";
 
 import { devWarn } from "./debug";
@@ -181,6 +183,12 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
         break;
       case Scope:
         nodeType = merge(nodeType, NODE_TYPE.__scope__);
+        break;
+      case ScopeLazy:
+        nodeType = merge(nodeType, NODE_TYPE.__scopeLazy__);
+        break;
+      case ScopeSuspense:
+        nodeType = merge(nodeType, NODE_TYPE.__scopeSuspense__);
         break;
       case Comment:
         nodeType = merge(nodeType, NODE_TYPE.__comment__);

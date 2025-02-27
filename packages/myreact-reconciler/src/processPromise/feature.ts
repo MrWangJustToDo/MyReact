@@ -1,7 +1,8 @@
-import { __my_react_internal__, use } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, use } from "@my-react/react";
 import { merge, STATE_TYPE } from "@my-react/react-shared";
 
 import { deleteEffect } from "../dispatchEffect";
+import { classComponentUnmount } from "../runtimeComponent";
 import { hookListUnmount } from "../runtimeHook";
 import { getCurrentDispatchFromFiber } from "../share";
 
@@ -11,40 +12,49 @@ export type PromiseWithState<T> = Promise<T> & { state?: "fulfilled" | "rejected
 
 const { currentRenderPlatform } = __my_react_internal__;
 
+const { enableDebugFiled } = __my_react_shared__;
+
 export const processPromise = (fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
   if (promise.state === "fulfilled") {
     use._updater(fiber, promise.value);
   } else if (promise.state === "rejected") {
     currentRenderPlatform.current.dispatchError?.({ fiber, error: promise.reason });
   } else {
-    // unmount state
-    const renderDispatch = getCurrentDispatchFromFiber(fiber);
-
-    hookListUnmount(fiber, renderDispatch);
-
-    fiber.hookList = null;
-
-    fiber.updateQueue = null;
-
-    if (__DEV__) {
-      const typedFiber = fiber as MyReactFiberNodeDev;
-
-      typedFiber._debugHookTypes = [];
-    }
-
-    deleteEffect(fiber, renderDispatch);
-
-    fiber.state = merge(STATE_TYPE.__create__, STATE_TYPE.__promise__);
-
     promise.then(
       (value) => {
         promise.state = "fulfilled";
+
         promise.value = value;
+
+        const renderDispatch = getCurrentDispatchFromFiber(fiber);
+
+        hookListUnmount(fiber, renderDispatch);
+
+        classComponentUnmount(fiber, renderDispatch);
+
+        fiber.instance = null;
+
+        fiber.hookList = null;
+
+        fiber.updateQueue = null;
+
+        deleteEffect(fiber, renderDispatch);
+
+        renderDispatch.commitUnsetRef(fiber);
+
+        fiber.state = merge(STATE_TYPE.__create__, STATE_TYPE.__promise__);
+
+        if (__DEV__ && enableDebugFiled.current) {
+          const typedFiber = fiber as MyReactFiberNodeDev;
+
+          typedFiber._debugHookTypes = [];
+        }
 
         use._updater(fiber, value);
       },
       (reason) => {
         promise.state = "rejected";
+
         promise.reason = reason;
 
         currentRenderPlatform.current.dispatchError?.({ fiber, error: reason });

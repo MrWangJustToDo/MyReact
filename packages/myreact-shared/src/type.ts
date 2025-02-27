@@ -27,6 +27,10 @@ export const KeepLive = Symbol.for("react.keep_live");
 
 export const Scope = Symbol.for("react.scope");
 
+export const ScopeLazy = Symbol.for("react.scope_lazy");
+
+export const ScopeSuspense = Symbol.for("react.scope_suspense");
+
 export const Comment = Symbol.for("react.comment");
 
 export const Offscreen = Symbol.for("react.offscreen");

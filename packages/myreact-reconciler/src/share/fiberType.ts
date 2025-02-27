@@ -20,4 +20,6 @@ export enum NODE_TYPE {
   __comment__ = 1 << 17,
   __profiler__ = 1 << 18,
   __context__ = 1 << 19,
+  __scopeLazy__ = 1 << 20,
+  __scopeSuspense__ = 1 << 21,
 }

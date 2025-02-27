@@ -10,6 +10,7 @@ export const promiseLoad = (fiber: RenderFiber, loaded: any) => {
     type: UpdateQueueType.promise,
     payLoad: loaded,
     trigger: fiber,
+    isImmediate: true,
     isForce: true,
     isSync: true,
   };

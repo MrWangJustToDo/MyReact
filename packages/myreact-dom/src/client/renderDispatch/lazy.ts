@@ -1,5 +1,5 @@
-import { __my_react_internal__, createElement , lazy } from "@my-react/react";
-import { devWarnWithFiber, nextWorkCommon, WrapperByScope } from "@my-react/react-reconciler";
+import { __my_react_internal__, createElement, lazy } from "@my-react/react";
+import { devWarnWithFiber, nextWorkCommon, WrapperByLazyScope } from "@my-react/react-reconciler";
 import { isPromise, ListTree } from "@my-react/react-shared";
 
 import type { ClientDomDispatch } from "./instance";
@@ -55,17 +55,17 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cl
         updateLazy(_fiber, typedElementType);
       });
 
-      return WrapperByScope(_dispatch.resolveSuspense(_fiber));
+      return WrapperByLazyScope(_dispatch.resolveSuspense(_fiber));
     } else {
       const render = typedElementType.render as ReturnType<typeof lazy>["render"];
 
-      return WrapperByScope(createElement(render as MixinMyReactFunctionComponent, _fiber.pendingProps));
+      return WrapperByLazyScope(createElement(render as MixinMyReactFunctionComponent, _fiber.pendingProps));
     }
   } else if (typedElementType._loading === false) {
     loadLazy(_fiber, typedElementType).then(() => updateLazy(_fiber, typedElementType));
   }
 
-  return WrapperByScope(_dispatch.resolveSuspense(_fiber));
+  return WrapperByLazyScope(_dispatch.resolveSuspense(_fiber));
 };
 
 /**
@@ -75,7 +75,7 @@ export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: Cl
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
 
   if (typedElementType._loaded === true) {
-    return WrapperByScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
+    return WrapperByLazyScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
   } else {
     if (_dispatch.isHydrateRender) {
       _dispatch.pendingAsyncLoadFiberList = _dispatch.pendingAsyncLoadFiberList || new ListTree<MyReactFiberNode>();
@@ -87,7 +87,7 @@ export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: Cl
       loadLazy(_fiber, typedElementType).then(() => updateLazy(_fiber, typedElementType));
     }
 
-    return WrapperByScope(_dispatch.resolveSuspense(_fiber));
+    return WrapperByLazyScope(_dispatch.resolveSuspense(_fiber));
   }
 };
 

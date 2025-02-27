@@ -1,7 +1,7 @@
 import { NODE_TYPE, getElementName } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
-import { commentE, commentS, enableHydrateWarn, log } from "@my-react-dom-shared";
+import { commentE, commentE_, commentS, commentS_, enableHydrateWarn, log } from "@my-react-dom-shared";
 
 import { fallback } from "../fallback";
 
@@ -9,7 +9,7 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const isValidHydrateDom = (el: ChildNode) => {
   if (el.nodeType === Node.COMMENT_NODE) {
-    if (el.textContent === commentS || el.textContent === commentE) return true;
+    if (el.textContent === commentS || el.textContent === commentE || el.textContent === commentS_ || el.textContent === commentE_) return true;
     return false;
   }
   if (el.nodeType === Node.DOCUMENT_TYPE_NODE) {

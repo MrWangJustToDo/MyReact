@@ -3,6 +3,7 @@ import { STATE_TYPE, include, isPromise } from "@my-react/react-shared";
 
 import { listenerMap } from "../renderDispatch";
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
+import { WrapperBySuspense } from "../runtimeScope";
 import { currentRenderDispatch, currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
@@ -81,7 +82,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
         } catch (e) {
           if (isPromise(e)) {
             currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
-            return;
+            return re;
           }
           throw e;
         }
@@ -98,7 +99,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
         } catch (e) {
           if (isPromise(e)) {
             currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
-            return;
+            return re;
           }
           throw e;
         }
@@ -134,6 +135,12 @@ export const nextWorkLazy = (fiber: MyReactFiberNode) => {
   const renderDispatch = currentRenderDispatch.current;
 
   const children = renderDispatch.resolveSuspense(fiber);
+
+  nextWorkCommon(fiber, children);
+};
+
+export const nextWorkSuspense = (fiber: MyReactFiberNode) => {
+  const children = WrapperBySuspense(fiber.pendingProps.children);
 
   nextWorkCommon(fiber, children);
 };

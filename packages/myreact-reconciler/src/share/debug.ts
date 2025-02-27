@@ -240,6 +240,8 @@ export const getPlainFiberName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__null__) return `Null`;
   if (fiber.type & NODE_TYPE.__empty__) return `Empty`;
   if (fiber.type & NODE_TYPE.__scope__) return `Scope`;
+  if (fiber.type & NODE_TYPE.__scopeLazy__) return `ScopeLazy`;
+  if (fiber.type & NODE_TYPE.__scopeSuspense__) return `ScopeSuspense`;
   if (fiber.type & NODE_TYPE.__strict__) return `Strict`;
   if (fiber.type & NODE_TYPE.__profiler__) return `Profiler`;
   if (fiber.type & NODE_TYPE.__suspense__) return `Suspense`;

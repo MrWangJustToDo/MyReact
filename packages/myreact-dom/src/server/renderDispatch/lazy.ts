@@ -1,5 +1,5 @@
 import { createElement } from "@my-react/react";
-import { nextWorkCommon, WrapperByScope } from "@my-react/react-reconciler";
+import { nextWorkCommon, WrapperByLazyScope } from "@my-react/react-reconciler";
 import { ListTree } from "@my-react/react-shared";
 
 import type { ServerDomDispatch } from "./serverDomDispatch";
@@ -11,7 +11,7 @@ import type { MyReactFiberNode, CustomRenderDispatch } from "@my-react/react-rec
  * @internal
  */
 export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
-  return WrapperByScope(_dispatch.resolveSuspense(_fiber));
+  return WrapperByLazyScope(_dispatch.resolveSuspense(_fiber));
 };
 
 /**
@@ -20,7 +20,7 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cu
 export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
 
-  if (typedElementType._loaded) return WrapperByScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
+  if (typedElementType._loaded) return WrapperByLazyScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
 
   _dispatch.pendingAsyncLoadFiberList = _dispatch.pendingAsyncLoadFiberList || new ListTree<MyReactFiberNode>();
 
@@ -39,4 +39,4 @@ export const nextWorkLazy = (fiber: MyReactFiberNode, renderDispatch: ServerDomD
 
     nextWorkCommon(fiber, children);
   }
-}
+};

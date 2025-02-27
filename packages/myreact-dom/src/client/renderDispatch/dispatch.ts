@@ -1,4 +1,4 @@
-import { nextWorkComponent, nextWorkConsumer, NODE_TYPE } from "@my-react/react-reconciler";
+import { nextWorkComponent, nextWorkConsumer, nextWorkSuspense, NODE_TYPE } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
 import { nextWorkCommon } from "./common";
@@ -14,6 +14,8 @@ export const clientDispatchFiber = (fiber: MyReactFiberNode, renderDispatch: Cli
     nextWorkConsumer(fiber);
   } else if (include(fiber.type, NODE_TYPE.__lazy__)) {
     nextWorkLazy(fiber, renderDispatch);
+  } else if (include(fiber.type, NODE_TYPE.__suspense__)) {
+    nextWorkSuspense(fiber);
   } else {
     // rerunHead(fiber, renderDispatch);
     nextWorkCommon(fiber, renderDispatch);

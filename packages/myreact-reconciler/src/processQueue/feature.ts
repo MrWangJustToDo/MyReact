@@ -189,8 +189,9 @@ export const processFunctionComponentUpdateQueue = (
 ): UpdateState => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
-  if (exclude(fiber.type, NODE_TYPE.__function__))
+  if (exclude(fiber.type, NODE_TYPE.__function__)) {
     throw new Error("[@my-react/react] current fiber is not a function component, look like a bug for @my-react");
+  }
 
   const renderPlatform = currentRenderPlatform.current;
 
@@ -215,8 +216,9 @@ export const processFunctionComponentUpdateQueue = (
       const nextNode = node.next;
 
       if (updater.type === UpdateQueueType.hook && updater.isSync) {
-        if (__DEV__ && getInstanceOwnerFiber(updater.trigger) !== fiber)
+        if (__DEV__ && getInstanceOwnerFiber(updater.trigger) !== fiber) {
           throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+        }
 
         allQueue.delete(node);
 
@@ -259,10 +261,44 @@ export const processFunctionComponentUpdateQueue = (
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
             typedFiber._debugUpdateQueue.push(typedNode);
-  
+
             typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
-  
+
             typedTrigger._debugUpdateQueue.push(typedNode);
+          }
+        }
+      }
+
+      if (updater.type === UpdateQueueType.promise && updater.isSync) {
+        if (__DEV__ && updater.trigger !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+
+        allQueue.delete(node);
+
+        const { payLoad } = updater;
+
+        isSync = isSync || updater.isSync;
+
+        isForce = isForce || updater.isForce;
+
+        updater.callback && callbacks.push(updater.callback);
+
+        needUpdate = true;
+
+        if (__DEV__ && enableDebugFiled.current) {
+          const typedNode = node.value as UpdateQueueDev;
+
+          typedNode._debugRunTime = Date.now();
+
+          typedNode._debugBeforeValue = undefined;
+
+          typedNode._debugAfterValue = payLoad;
+
+          typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
+
+          if (enableDebugUpdateQueue.current) {
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+
+            typedFiber._debugUpdateQueue.push(typedNode);
           }
         }
       }
@@ -293,8 +329,9 @@ export const processFunctionComponentUpdateQueue = (
       const nextNode = node.next;
 
       if (updater.type === UpdateQueueType.hook) {
-        if (__DEV__ && getInstanceOwnerFiber(updater.trigger) !== fiber)
+        if (__DEV__ && getInstanceOwnerFiber(updater.trigger) !== fiber) {
           throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+        }
 
         allQueue.delete(node);
 
@@ -337,10 +374,44 @@ export const processFunctionComponentUpdateQueue = (
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
             typedFiber._debugUpdateQueue.push(typedNode);
-  
+
             typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
-  
+
             typedTrigger._debugUpdateQueue.push(typedNode);
+          }
+        }
+      }
+
+      if (updater.type === UpdateQueueType.promise) {
+        if (__DEV__ && updater.trigger !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+
+        allQueue.delete(node);
+
+        const { payLoad } = updater;
+
+        isSync = isSync || updater.isSync;
+
+        isForce = isForce || updater.isForce;
+
+        updater.callback && callbacks.push(updater.callback);
+
+        needUpdate = true;
+
+        if (__DEV__ && enableDebugFiled.current) {
+          const typedNode = node.value as UpdateQueueDev;
+
+          typedNode._debugRunTime = Date.now();
+
+          typedNode._debugBeforeValue = undefined;
+
+          typedNode._debugAfterValue = payLoad;
+
+          typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
+
+          if (enableDebugUpdateQueue.current) {
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+
+            typedFiber._debugUpdateQueue.push(typedNode);
           }
         }
       }

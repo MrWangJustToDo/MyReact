@@ -11,6 +11,7 @@ export const lazyLoaded = (fiber: RenderFiber, loaded: null | MixinMyReactFuncti
     type: UpdateQueueType.lazy,
     payLoad: loaded,
     trigger: fiber,
+    isImmediate: true,
     isForce: true,
     isSync: true,
   };

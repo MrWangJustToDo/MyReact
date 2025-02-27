@@ -12,7 +12,7 @@ export const defaultGenerateScopeMap = (fiber: MyReactFiberNode, map: WeakMap<My
   const parent = fiber.parent;
 
   if (parent) {
-    if (include(parent.type, NODE_TYPE.__scope__)) {
+    if (include(parent.type, NODE_TYPE.__scope__) || include(parent.type, NODE_TYPE.__scopeSuspense__)) {
       map.set(fiber, parent);
     } else {
       const parentScopeFiber = map.get(parent);
@@ -46,7 +46,7 @@ export const defaultResolveScope = (fiber: MyReactFiberNode) => {
   let parent = fiber.parent;
 
   while (parent) {
-    if (include(parent.type, NODE_TYPE.__scope__)) {
+    if (include(parent.type, NODE_TYPE.__scope__) || include(parent.type, NODE_TYPE.__scopeSuspense__)) {
       return parent;
     }
     parent = parent.parent;

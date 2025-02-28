@@ -33,18 +33,10 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
   }
 
   if (name === "className") {
-    if (isSVG) {
-      if (value === null || value === undefined) {
-        el.removeAttribute("class");
-      } else {
-        el.setAttribute("class", String(value));
-      }
+    if (value === null || value === undefined) {
+      el.removeAttribute("class");
     } else {
-      if (value === null || value === undefined) {
-        el[name] = "";
-      } else {
-        el[name] = String(value);
-      }
+      el.setAttribute("class", String(value));
     }
     return;
   }
@@ -97,32 +89,30 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
 export const hydrateAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: string, isSVG: boolean, value?: string | boolean | null): void => {
   const ignoreWarn = fiber.pendingProps["suppressHydrationWarning"] || !enableHydrateWarn.current;
 
+  if (name === "download" && value === true) {
+    value = "";
+  }
+  if (name.toLocaleLowerCase() === "translate" && value === "no") {
+    value = false;
+  }
+
   if (value !== null && value !== undefined) {
     if (name === "className") {
-      if (isSVG) {
-        const has = el.hasAttribute("class");
-        if (!has) {
-          if (!ignoreWarn) {
-            log(fiber, "warn", `hydrate warning, dom '${name}' not match from server. no have this attr from server, client: ${value}`);
-          }
-          el.setAttribute("class", value as string);
-          return;
+      const has = el.hasAttribute("class");
+      if (!has) {
+        if (!ignoreWarn) {
+          log(fiber, "warn", `hydrate warning, dom '${name}' not match from server. no have this attr from server, client: ${value}`);
         }
-        const v = el.getAttribute("class")?.toString();
+        el.setAttribute("class", value as string);
+        return;
+      }
+      const v = el.getAttribute("class")?.toString();
 
-        if (v !== String(value)) {
-          if (!ignoreWarn) {
-            log(fiber, "warn", `hydrate warning, dom '${name}' not match from server. server: ${v}, client: ${value}`);
-          }
-          el.setAttribute("class", value as string);
+      if (v !== String(value)) {
+        if (!ignoreWarn) {
+          log(fiber, "warn", `hydrate warning, dom '${name}' not match from server. server: ${v}, client: ${value}`);
         }
-      } else {
-        if (el[name].toString() !== String(value)) {
-          if (!ignoreWarn) {
-            log(fiber, "warn", `hydrate warning, dom '${name}' not match from server. server: ${el[name]}, client: ${value}`);
-          }
-          el[name] = value as string;
-        }
+        el.setAttribute("class", value as string);
       }
     } else if (isSVG && name.charCodeAt(0) === X_CHAR) {
       if (name.startsWith("xmlns")) {

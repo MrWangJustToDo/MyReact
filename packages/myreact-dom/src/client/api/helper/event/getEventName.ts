@@ -6,14 +6,19 @@ export const getNativeEventName = (eventName: string, tagName: string, props: Re
 
   let nativeName = eventName;
 
+  let lowerCased = nativeName.toLowerCase();
+
   if (eventName.endsWith("Capture")) {
     isCapture = true;
 
     nativeName = eventName.split("Capture")[0];
+
+    lowerCased = nativeName.toLowerCase();
   }
-  if (nativeName === "DoubleClick") {
+
+  if (lowerCased === "doubleclick") {
     nativeName = "dblclick";
-  } else if (nativeName === "Change") {
+  } else if (lowerCased === "change") {
     if (tagName === "input") {
       if (props.type === "radio" || props.type === "checkbox") {
         nativeName = "click";
@@ -25,8 +30,12 @@ export const getNativeEventName = (eventName: string, tagName: string, props: Re
     } else {
       nativeName = "change";
     }
+  } else if (lowerCased === "focus") {
+    nativeName = "focusin";
+  } else if (lowerCased === "blur") {
+    nativeName = "focusout";
   } else {
-    nativeName = nativeName.toLowerCase();
+    nativeName = lowerCased;
   }
 
   return { nativeName, isCapture };

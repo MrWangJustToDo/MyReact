@@ -52,7 +52,6 @@
     "@my-react/react-refresh": "workspace:*",
     "@my-react/react-refresh-tools": "workspace:*",
     "@my-react/react-shared": "workspace:*",
-    "@my-react/react-terminal": "workspace:*",
     "@swc/core": "^1.10.15",
     "@types/lodash": "^4.17.15",
     "@types/node": "^22.13.1",

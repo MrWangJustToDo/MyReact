@@ -5,5 +5,3 @@ const external = (id: string) => id.includes("@my-react/") || (id.includes("node
 rollupWatch({ packageName: "myreact-reconciler", packageScope: "packages", external });
 
 // rollupWatch({ packageName: "myreact-dom", packageScope: "packages", external });
-
-rollupWatch({ packageName: "myreact-terminal", packageScope: "packages", external: external });

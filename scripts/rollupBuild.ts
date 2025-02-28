@@ -13,7 +13,6 @@ const buildPackages = async () => {
   await rollupBuild({ packageName: "myreact", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-jsx", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-reconciler", packageScope: "packages", external: externalReact });
-  await rollupBuild({ packageName: "myreact-terminal", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-reactivity", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external: externalReact });

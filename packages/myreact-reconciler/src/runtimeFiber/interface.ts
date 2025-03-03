@@ -13,7 +13,7 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
     timeForUpdate?: number;
     // 本地render花费时间
     timeForRender?: number;
-    trigger?: MyReactFiberNode;
+    trigger?: MyReactFiberNode | MyReactFiberNode[];
 
     // 最大render耗时
     maxTimeForRender?: number;

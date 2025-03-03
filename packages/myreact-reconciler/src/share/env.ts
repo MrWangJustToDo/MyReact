@@ -12,7 +12,7 @@ export const currentRefreshHandler = createRef<RefreshHandler | null>(null);
 
 // TODO
 // need improve
-export const currentTriggerFiber = createRef<MyReactFiberNode | null>(null);
+export const currentTriggerFiber = createRef<MyReactFiberNode | MyReactFiberNode[] | null>(null);
 
 export const currentCallingFiber = createRef<MyReactFiberNode | null>(null);
 

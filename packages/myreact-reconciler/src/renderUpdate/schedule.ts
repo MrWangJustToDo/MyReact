@@ -23,7 +23,7 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
 
     renderDispatch.runtimeFiber.nextWorkingFiber = renderDispatch.rootFiber;
 
-    if (__DEV__) currentTriggerFiber.current = renderDispatch.rootFiber;
+    if (__DEV__) currentTriggerFiber.current = allLive.length > 1 ? allLive : allLive[0];
 
     if (
       !enableConcurrentMode.current ||

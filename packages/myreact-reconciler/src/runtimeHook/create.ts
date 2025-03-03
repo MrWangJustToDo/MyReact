@@ -165,11 +165,11 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
         const line = i.getEnclosingLineNumber();
         const column = i.getEnclosingColumnNumber();
         const fileName = i.getFileName() || "Unknown";
-        const functionName = i.getFunctionName() || "Anonymous";
+        const functionName = i.getMethodName() || i.getFunctionName() || "Anonymous";
         const scriptName = i.getScriptNameOrSourceURL() || "Unknown";
         return {
           id: `${scriptName}-${fileName}-${functionName}-${line}-${column}`,
-          name: i.getMethodName() || i.getFunctionName() || "Anonymous",
+          name: functionName,
         };
       });
 

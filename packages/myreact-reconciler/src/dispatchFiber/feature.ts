@@ -1,6 +1,6 @@
 import { include } from "@my-react/react-shared";
 
-import { nextWorkComponent, nextWorkConsumer, nextWorkLazy, nextWorkNormal, nextWorkSuspense } from "../runtimeGenerate";
+import { nextWorkComponent, nextWorkConsumer, nextWorkLazy, nextWorkNormal, nextWorkProvider, nextWorkSuspense } from "../runtimeGenerate";
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -14,6 +14,8 @@ export const defaultDispatchFiber = (fiber: MyReactFiberNode) => {
     nextWorkSuspense(fiber);
   } else if (include(fiber.type, NODE_TYPE.__consumer__)) {
     nextWorkConsumer(fiber);
+  } else if (include(fiber.type, NODE_TYPE.__provider__ | NODE_TYPE.__context__)) {
+    nextWorkProvider(fiber);
   } else {
     nextWorkNormal(fiber);
   }

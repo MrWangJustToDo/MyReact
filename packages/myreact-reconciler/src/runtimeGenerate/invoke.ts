@@ -1,6 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { STATE_TYPE, include, isPromise } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, exclude, include, isNormalEquals, isPromise } from "@my-react/react-shared";
 
+import { prepareUpdateAllDependence, prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
 import { listenerMap } from "../renderDispatch";
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
 import { WrapperBySuspense } from "../runtimeScope";
@@ -19,13 +20,17 @@ import type {
   MyReactFunctionComponent,
 } from "@my-react/react";
 
-const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber, currentRenderPlatform } = __my_react_internal__;
+const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber, currentRenderPlatform, MyReactInternalInstance } = __my_react_internal__;
 
-const { enablePerformanceLog, enableDebugFiled } = __my_react_shared__;
+const { enablePerformanceLog, enableDebugFiled, enableLoopFromRoot } = __my_react_shared__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   if (__DEV__ && isPromise(children)) {
     console.error(`[@my-react/react] render function should not return a promise, please check your code`);
+  }
+
+  if (exclude(fiber.patch, PATCH_TYPE.__update__)) {
+    fiber.memoizedProps = fiber.pendingProps;
   }
 
   safeCallWithCurrentFiber({
@@ -145,6 +150,30 @@ export const nextWorkSuspense = (fiber: MyReactFiberNode) => {
   nextWorkCommon(fiber, children);
 };
 
+export const nextWorkProvider = (fiber: MyReactFiberNode) => {
+  const renderDispatch = currentRenderDispatch.current;
+
+  if (renderDispatch.isAppMounted) {
+    const prevProps = fiber.memoizedProps.value;
+
+    const nextProps = fiber.pendingProps.value;
+
+    if (!isNormalEquals(prevProps as Record<string, unknown>, nextProps as Record<string, unknown>)) {
+      if (enableLoopFromRoot.current) {
+        prepareUpdateAllDependence(fiber, prevProps, nextProps);
+      } else {
+        renderDispatch.pendingLayoutEffect(fiber, function invokePrepareUpdateAllDependenceFromRoot() {
+          prepareUpdateAllDependenceFromRoot(renderDispatch, fiber, prevProps, nextProps);
+        });
+      }
+    }
+
+    nextWorkNormal(fiber);
+  } else {
+    nextWorkNormal(fiber);
+  }
+};
+
 export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
   const renderDispatch = currentRenderDispatch.current;
 
@@ -152,7 +181,7 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
 
   const isUpdate = !!fiber.instance;
 
-  fiber.instance = fiber.instance || new typedElementType.Internal();
+  fiber.instance = fiber.instance || new MyReactInternalInstance();
 
   !isUpdate && initInstance(fiber.instance);
 

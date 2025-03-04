@@ -188,14 +188,14 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
         lastFiber = newFiber;
 
-        if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(newFiber);
+        if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(newChild);
 
         index++;
       }
     } else {
-      const child = getNewFiberWithUpdate(children, parentFiber, existingChildrenMap, existingChildrenArray[0], 0);
+      getNewFiberWithUpdate(children, parentFiber, existingChildrenMap, existingChildrenArray[0], 0);
 
-      if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(child);
+      if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(children);
     }
 
     deleteIfNeed(parentFiber, existingChildrenMap);
@@ -231,14 +231,14 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
         lastFiber = newFiber;
 
-        if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(newFiber);
+        if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(newChild);
 
         index++;
       }
     } else {
-      const child = getNewFiberWithInitial(children, parentFiber);
+      getNewFiberWithInitial(children, parentFiber);
 
-      if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(child);
+      if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(children);
     }
   }
 };

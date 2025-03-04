@@ -1,7 +1,7 @@
-import { nextWorkCommon, nextWorkComponent, nextWorkConsumer, nextWorkNormal, nextWorkSuspense, NODE_TYPE } from "@my-react/react-reconciler";
+import { nextWorkComponent, nextWorkConsumer, nextWorkNormal, nextWorkProvider, nextWorkSuspense, NODE_TYPE } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
-import { resolveLazyElementLatest, resolveLazyElementLegacy } from "@my-react-dom-server/renderDispatch/lazy";
+import { nextWorkLazy } from "./lazy";
 
 import type { NoopLatestRenderDispatch, NoopLegacyRenderDispatch } from "./noopDispatch";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -12,17 +12,11 @@ export const noopDispatchFiber = (_fiber: MyReactFiberNode, _dispatch: NoopLegac
   } else if (include(_fiber.type, NODE_TYPE.__consumer__)) {
     nextWorkConsumer(_fiber);
   } else if (include(_fiber.type, NODE_TYPE.__lazy__)) {
-    if (_dispatch.enableAsyncHydrate) {
-      const children = resolveLazyElementLatest(_fiber, _dispatch);
-
-      nextWorkCommon(_fiber, children);
-    } else {
-      const children = resolveLazyElementLegacy(_fiber, _dispatch);
-
-      nextWorkCommon(_fiber, children);
-    }
+    nextWorkLazy(_fiber, _dispatch);
   } else if (include(_fiber.type, NODE_TYPE.__suspense__)) {
     nextWorkSuspense(_fiber);
+  } else if (include(_fiber.type, NODE_TYPE.__provider__ | NODE_TYPE.__context__)) {
+    nextWorkProvider(_fiber);
   } else {
     nextWorkNormal(_fiber);
   }

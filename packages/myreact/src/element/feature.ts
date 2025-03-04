@@ -1,6 +1,5 @@
 import { Consumer, Context, ForwardRef, isNormalEquals, Lazy, Memo, Provider, TYPEKEY } from "@my-react/react-shared";
 
-import { MyReactInternalInstance } from "../internal";
 import { lazyLoaded } from "../share";
 
 import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "./instance";
@@ -42,7 +41,6 @@ export const createContext = <T = any>(value: T) => {
 
   const ConsumerObject = {
     [TYPEKEY]: Consumer,
-    Internal: MyReactInternalInstance,
     Context: defaultObject,
   };
 

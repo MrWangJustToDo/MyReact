@@ -1,5 +1,5 @@
 import type { MyReactFiberNode } from "./instance";
-import type { MyReactElementNode, UpdateQueue } from "@my-react/react";
+import type { MaybeArrayMyReactElementNode, MyReactElementNode, UpdateQueue } from "@my-react/react";
 import type { ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 export interface MyReactFiberNodeDev extends MyReactFiberNode {
@@ -23,9 +23,9 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugContextMap: Record<string, MyReactFiberNode>;
 
-  _debugRenderChildrenCurrent: MyReactFiberNode[];
+  _debugRenderChildrenCurrent: MaybeArrayMyReactElementNode[];
 
-  _debugRenderChildrenPrevious: MyReactFiberNode[];
+  _debugRenderChildrenPrevious: MaybeArrayMyReactElementNode[];
 
   _debugSuspense: MyReactFiberNode;
 

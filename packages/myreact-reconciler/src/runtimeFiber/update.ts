@@ -1,13 +1,9 @@
-import { __my_react_shared__ } from "@my-react/react";
-import { exclude, include, isNormalEquals, merge, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
+import { exclude, include, isNormalEquals, merge, remove, STATE_TYPE } from "@my-react/react-shared";
 
-import { prepareUpdateAllDependence, /* prepareUpdateAllDependenceFromProvider, */ prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
 import { currentRenderDispatch, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactElement, MyReactElementNode, memo } from "@my-react/react";
-
-const { enableLoopFromRoot } = __my_react_shared__;
 
 export const updateFiberNode = (
   {
@@ -72,19 +68,6 @@ export const updateFiberNode = (
   }
 
   if (fiber.state !== STATE_TYPE.__stable__) {
-    if (include(fiber.type, NODE_TYPE.__provider__) || include(fiber.type, NODE_TYPE.__context__)) {
-      if (!isNormalEquals(fiber.pendingProps.value as Record<string, unknown>, fiber.memoizedProps.value as Record<string, unknown>)) {
-        if (enableLoopFromRoot.current) {
-          prepareUpdateAllDependence(fiber, fiber.memoizedProps.value, fiber.pendingProps.value);
-        } else {
-          // renderDispatch.pendingLayoutEffect(fiber, () => prepareUpdateAllDependenceFromProvider(fiber, fiber.memoizedProps.value, fiber.pendingProps.value));
-          renderDispatch.pendingLayoutEffect(fiber, function invokePrepareUpdateAllDependenceFromRoot() {
-            prepareUpdateAllDependenceFromRoot(renderDispatch, fiber, fiber.memoizedProps.value, fiber.pendingProps.value);
-          });
-        }
-      }
-    }
-
     if (include(fiber.type, NODE_TYPE.__plain__)) {
       if (!isNormalEquals(fiber.pendingProps, fiber.memoizedProps, (key: string) => key === "children")) {
         renderDispatch.pendingUpdate(fiber);
@@ -104,9 +87,9 @@ export const updateFiberNode = (
     renderDispatch.pendingPosition(fiber);
   }
 
-  if (exclude(fiber.patch, PATCH_TYPE.__update__)) {
-    fiber.memoizedProps = fiber.pendingProps;
-  }
+  // if (exclude(fiber.patch, PATCH_TYPE.__update__)) {
+  //   fiber.memoizedProps = fiber.pendingProps;
+  // }
 
   return fiber;
 };

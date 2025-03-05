@@ -90,20 +90,61 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
     const newStoreApi = value;
 
-    if (isHMR || !Object.is(storeApi.subscribe, newStoreApi.subscribe)) {
-      storeApi.subscribe = newStoreApi.subscribe;
+    const prevResult = storeApi.result;
 
-      currentHook.hasEffect = true;
-    }
-
-    storeApi.getSnapshot = newStoreApi.getSnapshot;
-
-    currentHook.result = safeCallWithCurrentFiber({
+    const nextResult = safeCallWithCurrentFiber({
       fiber,
       action: function safeCallGetSnapshot() {
-        return storeApi.getSnapshot.call(null);
+        return newStoreApi.getSnapshot.call(null);
       },
     });
+
+    if (!Object.is(nextResult, newStoreApi.getSnapshot.call(null))) {
+      throw new Error(`[@my-react/react] syncExternalStore getSnapshot not stable!`);
+    }
+
+    currentHook.result = nextResult;
+
+    const checkResultUpdate = function checkResultUpdate() {
+      const prevResult = storeApi.result;
+
+      let hasChange = true;
+
+      try {
+        const nextResult = storeApi.getSnapshot.call(null);
+        hasChange = !Object.is(prevResult, nextResult);
+      } catch {
+        hasChange = true;
+      }
+
+      if (hasChange) {
+        currentHook._update({ isForce: true, isSync: true });
+      }
+    };
+
+    if (
+      !Object.is(prevResult, nextResult) ||
+      !Object.is(storeApi.getSnapshot, newStoreApi.getSnapshot) ||
+      !Object.is(storeApi.subscribe, newStoreApi.subscribe)
+    ) {
+      renderDispatch.pendingLayoutEffect(fiber, function invokeLayoutEffectOnHook() {
+        storeApi.result = nextResult;
+
+        storeApi.getSnapshot = newStoreApi.getSnapshot;
+
+        checkResultUpdate();
+      });
+    }
+
+    if (isHMR || !Object.is(storeApi.subscribe, newStoreApi.subscribe)) {
+      renderDispatch.pendingEffect(fiber, function invokeEffectOnHook() {
+        currentHook.cancel && currentHook.cancel();
+
+        checkResultUpdate();
+
+        currentHook.cancel = storeApi.subscribe(checkResultUpdate);
+      });
+    }
 
     return currentHook;
   }

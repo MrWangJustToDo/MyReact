@@ -146,7 +146,7 @@ export const use = <T = any>(Context: ReturnType<typeof createContext<T>> | Prom
   } else {
     return renderPlatform.readContext(Context) as T;
   }
-}
+};
 
 use._updater = promiseLoad;
 

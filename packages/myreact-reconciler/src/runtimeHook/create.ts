@@ -91,18 +91,56 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
     const storeApi = hookNode.value;
 
-    hookNode.result = safeCallWithCurrentFiber({
-      fiber,
-      action: function safeCallGetSnapshot() {
-        return renderDispatch.isAppMounted
-          ? storeApi.getSnapshot.call(null)
-          : storeApi.getServerSnapshot
-            ? storeApi.getServerSnapshot?.call(null)
-            : storeApi.getSnapshot.call(null);
-      },
+    const getNextResult = () =>
+      safeCallWithCurrentFiber({
+        fiber,
+        action: function safeCallGetSnapshot() {
+          return renderDispatch.isAppMounted
+            ? storeApi.getSnapshot.call(null)
+            : storeApi.getServerSnapshot
+              ? storeApi.getServerSnapshot?.call(null)
+              : storeApi.getSnapshot.call(null);
+        },
+      });
+
+    const nextResult = getNextResult();
+
+    if (!Object.is(nextResult, getNextResult())) {
+      throw new Error(`[@my-react/react] syncExternalStore getSnapshot not stable!`);
+    }
+
+    storeApi.result = nextResult;
+
+    hookNode.result = nextResult;
+
+    const checkResultUpdate = function checkResultUpdate() {
+      const prevResult = storeApi.result;
+
+      let hasChange = true;
+
+      try {
+        const nextResult = storeApi.getSnapshot.call(null);
+        hasChange = !Object.is(prevResult, nextResult);
+      } catch {
+        hasChange = true;
+      }
+
+      if (hasChange) {
+        hookNode._update({ isForce: true, isSync: true });
+      }
+    };
+
+    renderDispatch.pendingLayoutEffect(fiber, function invokeLayoutEffectOnHook() {
+      checkResultUpdate();
     });
 
-    hookNode.hasEffect = true;
+    renderDispatch.pendingEffect(fiber, function invokeEffectOnHook() {
+      hookNode.cancel && hookNode.cancel();
+
+      checkResultUpdate();
+
+      hookNode.cancel = storeApi.subscribe(checkResultUpdate);
+    });
   }
 
   if (hookNode.type === HOOK_TYPE.useSignal) {

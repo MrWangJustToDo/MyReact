@@ -18,6 +18,7 @@ export type UpdateState = {
   needUpdate: boolean;
   nodes?: Array<UpdateQueue | UpdateQueueDev>;
   isSync: boolean;
+  isSkip: boolean;
   isForce: boolean;
   isImmediate?: boolean;
   isRetrigger?: boolean;
@@ -38,6 +39,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
   let node = allQueue?.head;
 
   let isSync = false;
+
+  let isSkip = true;
 
   let isForce = false;
 
@@ -88,6 +91,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         isSync = isSync || updater.isSync;
 
+        isSkip = isSkip && updater.isSkip;
+
         isForce = isForce || updater.isForce;
 
         isImmediate = isImmediate || updater.isImmediate;
@@ -107,14 +112,45 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
           typedNode._debugAfterValue = fiber.pendingState;
 
-          typedNode._debugUpdateState = {
-            needUpdate: true,
-            isSync: updater.isSync,
-            isForce: updater.isForce,
-            isImmediate: updater.isImmediate,
-            isRetrigger: updater.isRetrigger,
-            callbacks: callbacks.slice(0),
-          };
+          if (enableDebugUpdateQueue.current) {
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+
+            typedFiber._debugUpdateQueue.push(typedNode);
+          }
+        }
+      }
+
+      if ((updater.type === UpdateQueueType.hmr || updater.type === UpdateQueueType.trigger) && updater.isSync) {
+        if (__DEV__ && updater.trigger !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+
+        allQueue.delete(node);
+
+        if (__DEV__) {
+          processedNodes.push(updater);
+        }
+
+        isSync = isSync || updater.isSync;
+
+        isSkip = isSkip && updater.isSkip;
+
+        isForce = isForce || updater.isForce;
+
+        isImmediate = isImmediate || updater.isImmediate;
+
+        isRetrigger = isRetrigger || updater.isRetrigger;
+
+        updater.callback && callbacks.push(updater.callback);
+
+        if (__DEV__ && enableDebugFiled.current) {
+          const typedNode = updater as UpdateQueueDev;
+
+          typedNode._debugRunTime = Date.now();
+
+          typedNode._debugBeforeValue = pendingState;
+
+          typedNode._debugBaseValue = baseState;
+
+          typedNode._debugAfterValue = fiber.pendingState;
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -123,6 +159,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
           }
         }
       }
+
       node = nextNode;
     }
 
@@ -143,6 +180,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
         needUpdate: true,
         nodes: processedNodes,
         isSync,
+        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -152,6 +190,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
       return {
         needUpdate: true,
         isSync,
+        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -187,6 +226,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         isSync = isSync || updater.isSync;
 
+        isSkip = isSkip && updater.isSkip;
+
         isForce = isForce || updater.isForce;
 
         isImmediate = isImmediate || updater.isImmediate;
@@ -206,14 +247,45 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
           typedNode._debugAfterValue = fiber.pendingState;
 
-          typedNode._debugUpdateState = {
-            needUpdate: true,
-            isSync: updater.isSync,
-            isForce: updater.isForce,
-            isImmediate: updater.isImmediate,
-            isRetrigger: updater.isRetrigger,
-            callbacks: callbacks.slice(0),
-          };
+          if (enableDebugUpdateQueue.current) {
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+
+            typedFiber._debugUpdateQueue.push(typedNode);
+          }
+        }
+      }
+
+      if (updater.type === UpdateQueueType.hmr || updater.type === UpdateQueueType.trigger) {
+        if (__DEV__ && updater.trigger !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+
+        allQueue.delete(node);
+
+        if (__DEV__) {
+          processedNodes.push(updater);
+        }
+
+        isSync = isSync || updater.isSync;
+
+        isSkip = isSkip && updater.isSkip;
+
+        isForce = isForce || updater.isForce;
+
+        isImmediate = isImmediate || updater.isImmediate;
+
+        isRetrigger = isRetrigger || updater.isRetrigger;
+
+        updater.callback && callbacks.push(updater.callback);
+
+        if (__DEV__ && enableDebugFiled.current) {
+          const typedNode = updater as UpdateQueueDev;
+
+          typedNode._debugRunTime = Date.now();
+
+          typedNode._debugBeforeValue = pendingState;
+
+          typedNode._debugBaseValue = baseState;
+
+          typedNode._debugAfterValue = fiber.pendingState;
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -236,6 +308,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
         needUpdate: true,
         nodes: processedNodes,
         isSync,
+        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -245,6 +318,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
       return {
         needUpdate: true,
         isSync,
+        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -276,6 +350,8 @@ export const processFunctionComponentUpdateQueue = (
   let needUpdate = false;
 
   let isSync = false;
+
+  let isSkip = true;
 
   let isForce = false;
 
@@ -322,6 +398,8 @@ export const processFunctionComponentUpdateQueue = (
 
         isSync = isSync || updater.isSync;
 
+        isSkip = isSkip && updater.isSkip;
+
         isForce = isForce || updater.isForce;
 
         isImmediate = isImmediate || updater.isImmediate;
@@ -340,15 +418,6 @@ export const processFunctionComponentUpdateQueue = (
           typedNode._debugBeforeValue = lastResult;
 
           typedNode._debugAfterValue = typedTrigger.result;
-
-          typedNode._debugUpdateState = {
-            needUpdate,
-            isSync: updater.isSync,
-            isForce: updater.isForce,
-            isImmediate: updater.isImmediate,
-            isRetrigger: updater.isRetrigger,
-            callbacks: callbacks.slice(0),
-          };
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -375,6 +444,8 @@ export const processFunctionComponentUpdateQueue = (
 
         isSync = isSync || updater.isSync;
 
+        isSkip = isSkip && updater.isSkip;
+
         isForce = isForce || updater.isForce;
 
         isImmediate = isImmediate || updater.isImmediate;
@@ -394,14 +465,45 @@ export const processFunctionComponentUpdateQueue = (
 
           typedNode._debugAfterValue = payLoad;
 
-          typedNode._debugUpdateState = {
-            needUpdate,
-            isSync: updater.isSync,
-            isForce: updater.isForce,
-            isImmediate: updater.isImmediate,
-            isRetrigger: updater.isRetrigger,
-            callbacks: callbacks.slice(0),
-          };
+          if (enableDebugUpdateQueue.current) {
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+
+            typedFiber._debugUpdateQueue.push(typedNode);
+          }
+        }
+      }
+
+      if ((updater.type === UpdateQueueType.hmr || updater.type === UpdateQueueType.trigger) && updater.isSync) {
+        if (__DEV__ && updater.trigger !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+
+        allQueue.delete(node);
+
+        if (__DEV__) {
+          processedNodes.push(updater);
+        }
+
+        isSync = isSync || updater.isSync;
+
+        isSkip = isSkip && updater.isSkip;
+
+        isForce = isForce || updater.isForce;
+
+        isImmediate = isImmediate || updater.isImmediate;
+
+        isRetrigger = isRetrigger || updater.isRetrigger;
+
+        updater.callback && callbacks.push(updater.callback);
+
+        needUpdate = true;
+
+        if (__DEV__ && enableDebugFiled.current) {
+          const typedNode = updater as UpdateQueueDev;
+
+          typedNode._debugRunTime = Date.now();
+
+          typedNode._debugBeforeValue = undefined;
+
+          typedNode._debugAfterValue = undefined;
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -431,6 +533,7 @@ export const processFunctionComponentUpdateQueue = (
         needUpdate,
         nodes: processedNodes,
         isSync,
+        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -440,6 +543,7 @@ export const processFunctionComponentUpdateQueue = (
       return {
         needUpdate,
         isSync,
+        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -481,6 +585,8 @@ export const processFunctionComponentUpdateQueue = (
 
         isSync = isSync || updater.isSync;
 
+        isSkip = isSkip && updater.isSkip;
+
         isForce = isForce || updater.isForce;
 
         isImmediate = isImmediate || updater.isImmediate;
@@ -499,15 +605,6 @@ export const processFunctionComponentUpdateQueue = (
           typedNode._debugBeforeValue = lastResult;
 
           typedNode._debugAfterValue = typedTrigger.result;
-
-          typedNode._debugUpdateState = {
-            needUpdate,
-            isSync: updater.isSync,
-            isForce: updater.isForce,
-            isImmediate: updater.isImmediate,
-            isRetrigger: updater.isRetrigger,
-            callbacks: callbacks.slice(0),
-          };
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -534,6 +631,8 @@ export const processFunctionComponentUpdateQueue = (
 
         isSync = isSync || updater.isSync;
 
+        isSkip = isSkip && updater.isSkip;
+
         isForce = isForce || updater.isForce;
 
         isImmediate = isImmediate || updater.isImmediate;
@@ -553,14 +652,45 @@ export const processFunctionComponentUpdateQueue = (
 
           typedNode._debugAfterValue = payLoad;
 
-          typedNode._debugUpdateState = {
-            needUpdate,
-            isSync: updater.isSync,
-            isForce: updater.isForce,
-            isImmediate: updater.isImmediate,
-            isRetrigger: updater.isRetrigger,
-            callbacks: callbacks.slice(0),
-          };
+          if (enableDebugUpdateQueue.current) {
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+
+            typedFiber._debugUpdateQueue.push(typedNode);
+          }
+        }
+      }
+
+      if (updater.type === UpdateQueueType.hmr || updater.type === UpdateQueueType.trigger) {
+        if (__DEV__ && updater.trigger !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+
+        allQueue.delete(node);
+
+        if (__DEV__) {
+          processedNodes.push(updater);
+        }
+
+        isSync = isSync || updater.isSync;
+
+        isSkip = isSkip && updater.isSkip;
+
+        isForce = isForce || updater.isForce;
+
+        isImmediate = isImmediate || updater.isImmediate;
+
+        isRetrigger = isRetrigger || updater.isRetrigger;
+
+        updater.callback && callbacks.push(updater.callback);
+
+        needUpdate = true;
+
+        if (__DEV__ && enableDebugFiled.current) {
+          const typedNode = updater as UpdateQueueDev;
+
+          typedNode._debugRunTime = Date.now();
+
+          typedNode._debugBeforeValue = undefined;
+
+          typedNode._debugAfterValue = undefined;
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -584,6 +714,7 @@ export const processFunctionComponentUpdateQueue = (
         needUpdate,
         nodes: processedNodes,
         isSync,
+        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -593,6 +724,7 @@ export const processFunctionComponentUpdateQueue = (
       return {
         needUpdate,
         isSync,
+        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -616,6 +748,8 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
   let needUpdate = false;
 
   let isSync = false;
+
+  let isSkip = true;
 
   let isForce = false;
 
@@ -645,6 +779,8 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
 
       isSync = isSync || updater.isSync;
 
+      isSkip = isSkip && updater.isSkip;
+
       isForce = isForce || updater.isForce;
 
       isImmediate = isImmediate || updater.isImmediate;
@@ -663,15 +799,6 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
         typedNode._debugBeforeValue = null;
 
         typedNode._debugAfterValue = payLoad;
-
-        typedNode._debugUpdateState = {
-          needUpdate,
-          isSync: updater.isSync,
-          isForce: updater.isForce,
-          isImmediate: updater.isImmediate,
-          isRetrigger: updater.isRetrigger,
-          callbacks: callbacks.slice(0),
-        };
 
         if (enableDebugUpdateQueue.current) {
           typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -695,6 +822,7 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
       needUpdate,
       nodes: processedNodes,
       isSync,
+      isSkip,
       isForce,
       isImmediate,
       isRetrigger,
@@ -704,6 +832,7 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
     return {
       needUpdate,
       isSync,
+      isSkip,
       isForce,
       isImmediate,
       isRetrigger,

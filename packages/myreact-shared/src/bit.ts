@@ -11,7 +11,7 @@ export const remove = (src: number, rest: number) => {
 };
 
 export const include = (src: number, rest: number) => {
-  return src & rest;
+  return !!(src & rest);
 };
 
 export const exclude = (src: number, rest: number) => {

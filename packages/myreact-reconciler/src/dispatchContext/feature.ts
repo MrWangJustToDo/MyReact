@@ -149,14 +149,6 @@ export const prepareUpdateAllDependence = (
       _debugCreateTime: now,
       _debugRunTime: now,
       _debugType: UpdateQueueType[UpdateQueueType.context],
-      _debugUpdateState: {
-        isSync: true,
-        isForce: true,
-        isImmediate: true,
-        isRetrigger: true,
-        needUpdate: true,
-        callbacks: [],
-      },
     };
 
     processedNodes.push(updater);
@@ -177,6 +169,7 @@ export const prepareUpdateAllDependence = (
                 needUpdate: true,
                 nodes: processedNodes,
                 isSync: true,
+                isSkip: false,
                 isForce: true,
                 isImmediate: true,
                 isRetrigger: true,
@@ -184,6 +177,7 @@ export const prepareUpdateAllDependence = (
             : {
                 needUpdate: true,
                 isSync: true,
+                isSkip: false,
                 isForce: true,
                 isImmediate: true,
                 isRetrigger: true,
@@ -218,14 +212,6 @@ export const prepareUpdateAllDependenceFromRoot = (
     _debugCreateTime: now,
     _debugRunTime: now,
     _debugType: UpdateQueueType[UpdateQueueType.context],
-    _debugUpdateState: {
-      needUpdate: true,
-      isSync: true,
-      isForce: true,
-      isImmediate: true,
-      isRetrigger: false,
-      callbacks: [],
-    },
   };
 
   consumerList.forEach(function prepareUpdateSingleConsumer(i) {
@@ -267,14 +253,6 @@ export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, 
     _debugCreateTime: now,
     _debugRunTime: now,
     _debugType: UpdateQueueType[UpdateQueueType.context],
-    _debugUpdateState: {
-      needUpdate: true,
-      isSync: true,
-      isForce: true,
-      isImmediate: true,
-      isRetrigger: true,
-      callbacks: [],
-    },
   };
 
   consumerList.forEach(function prepareUpdateSingleConsumer(i) {

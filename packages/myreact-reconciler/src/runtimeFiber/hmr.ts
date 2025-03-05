@@ -1,16 +1,16 @@
 import { __my_react_internal__, createElement } from "@my-react/react";
-import { STATE_TYPE, include, merge } from "@my-react/react-shared";
+import { STATE_TYPE, UpdateQueueType, include, merge } from "@my-react/react-shared";
 
 import { deleteEffect } from "../dispatchEffect";
 import { listenerMap } from "../renderDispatch";
-import { triggerRevert, triggerUpdate } from "../renderUpdate";
+import { triggerRevert } from "../renderUpdate";
 import { classComponentUnmount } from "../runtimeComponent";
 import { hookListUnmount } from "../runtimeHook";
 import { getCurrentDispatchFromFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactFiberNodeDev } from "./interface";
-import type { MyReactComponentType } from "@my-react/react";
+import type { HMRUpdateQueue, MyReactComponentType } from "@my-react/react";
 
 const { currentRenderPlatform } = __my_react_internal__;
 
@@ -79,10 +79,16 @@ export function hmrUpdate(this: MyReactFiberNode, state?: STATE_TYPE, cb?: () =>
 
   const renderPlatform = currentRenderPlatform.current;
 
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
-  const fiber = this;
+  const updater: HMRUpdateQueue = {
+    type: UpdateQueueType.hmr,
+    trigger: this,
+    isSync: true,
+    isForce: false,
+    isSkip: include(state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__),
+    isImmediate: true,
+    isRetrigger: false,
+    callback: cb,
+  };
 
-  renderPlatform.microTask(function triggerHMRUpdateOnFiber() {
-    triggerUpdate(fiber, state, cb);
-  });
+  renderPlatform.dispatchState(updater);
 }

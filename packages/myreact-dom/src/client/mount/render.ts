@@ -1,21 +1,13 @@
 import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react";
-import {
-  checkIsSameType,
-  CustomRenderDispatch,
-  initialFiberNode,
-  listenerMap,
-  MyReactFiberNode,
-  safeCallWithCurrentFiber,
-  triggerUpdate,
-} from "@my-react/react-reconciler";
-import { include, once, STATE_TYPE } from "@my-react/react-shared";
+import { checkIsSameType, CustomRenderDispatch, initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
+import { include, once, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { prepareDevContainer, unmountComponentAtNode } from "@my-react-dom-client/tools";
 import { autoSetDevTools, checkRoot, delGlobalDispatch, enableAsyncRender, startRender } from "@my-react-dom-shared";
 
-import type { LikeJSX } from "@my-react/react";
+import type { LikeJSX, TriggerUpdateQueue } from "@my-react/react";
 import type { CustomRenderPlatform } from "@my-react/react-reconciler";
 
 export type RenderContainer = Element & {
@@ -149,17 +141,18 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
     if (checkIsSameType(containerFiber, element)) {
       containerFiber._installElement(element);
 
-      safeCallWithCurrentFiber({
-        fiber: containerFiber,
-        action: function safeCallFiberTriggerListener() {
-          listenerMap
-            .get(renderContainer)
-            ?.fiberTrigger?.forEach((_cb) => _cb(containerFiber, { needUpdate: true, isSync: true, isForce: false, callback: cb }));
-        },
-      });
+      const updater: TriggerUpdateQueue = {
+        type: UpdateQueueType.trigger,
+        trigger: containerFiber,
+        isSync: true,
+        isForce: false,
+        isSkip: false,
+        isImmediate: true,
+        isRetrigger: false,
+        callback: cb,
+      };
 
-      triggerUpdate(containerFiber, STATE_TYPE.__triggerSync__, cb);
-
+      currentRenderPlatform.current.dispatchState(updater);
       return;
     } else {
       unmountComponentAtNode(container);

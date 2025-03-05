@@ -24,7 +24,6 @@ export type UpdateQueueDev = UpdateQueue<{
   _debugAfterValue: any;
   _debugBaseValue: any;
   _debugRunTime: number;
-  _debugUpdateState: { needUpdate: boolean; isSync: boolean; isForce: boolean; isImmediate: boolean; isRetrigger: boolean; callbacks: (() => void)[] };
 }>;
 
 const { currentComponentFiber, currentRunningFiber, currentScopeFiber } = __my_react_internal__;
@@ -55,9 +54,11 @@ export const processState = (_params: UpdateQueue) => {
   // if current dispatch is a server || noop
   if (!renderDispatch || !renderDispatch.enableUpdate) return;
 
-  _params.isImmediate = !currentScopeFiber.current || !!currentRunningFiber.current || _params.isImmediate;
+  _params.isSkip = !!_params.isSkip;
 
-  _params.isRetrigger = currentRunningFiber.current === ownerFiber || _params.isRetrigger;
+  _params.isImmediate = !currentScopeFiber.current || !!currentRunningFiber.current || !!_params.isImmediate;
+
+  _params.isRetrigger = currentRunningFiber.current === ownerFiber || !!_params.isRetrigger;
 
   safeCallWithCurrentFiber({
     fiber: ownerFiber,

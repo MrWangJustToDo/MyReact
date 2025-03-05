@@ -1,15 +1,16 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { include, merge, remove, STATE_TYPE } from "@my-react/react-shared";
+import { include, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate } from "../processQueue";
 import { listenerMap } from "../renderDispatch";
 import { triggerUpdate } from "../renderUpdate";
 import { setImmediateNextFiber } from "../runtimeUpdate";
-import { NODE_TYPE, safeCallWithCurrentFiber, getCurrentDispatchFromFiber } from "../share";
+import { NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { UpdateState } from "../processQueue";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "./instance";
+import type { TriggerUpdateQueue } from "@my-react/react";
 
 const { enableConcurrentMode } = __my_react_shared__;
 
@@ -53,18 +54,42 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
 
     if (updateState.isSync) {
       if (updateState.isImmediate) {
-        triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);
+        triggerUpdate(
+          fiber,
+          updateState.isSkip ? STATE_TYPE.__skippedSync__ : updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__,
+          updateState.callback
+        );
       } else {
         renderPlatform.microTask(function triggerSyncUpdateOnFiber() {
-          triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);
+          triggerUpdate(
+            fiber,
+            updateState.isSkip ? STATE_TYPE.__skippedSync__ : updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__,
+            updateState.callback
+          );
         });
       }
     } else {
       if (updateState.isImmediate) {
-        triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__, updateState.callback);
+        triggerUpdate(
+          fiber,
+          updateState.isSkip
+            ? STATE_TYPE.__skippedConcurrent__
+            : updateState.isForce
+              ? STATE_TYPE.__triggerConcurrentForce__
+              : STATE_TYPE.__triggerConcurrent__,
+          updateState.callback
+        );
       } else {
         renderPlatform.microTask(function triggerConcurrentUpdateOnFiber() {
-          triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__, updateState.callback);
+          triggerUpdate(
+            fiber,
+            updateState.isSkip
+              ? STATE_TYPE.__skippedConcurrent__
+              : updateState.isForce
+                ? STATE_TYPE.__triggerConcurrentForce__
+                : STATE_TYPE.__triggerConcurrent__,
+            updateState.callback
+          );
         });
       }
     }
@@ -89,28 +114,23 @@ const SyncState = merge(STATE_TYPE.__triggerSyncForce__, merge(STATE_TYPE.__skip
 
 const ForceState = merge(STATE_TYPE.__triggerSyncForce__, STATE_TYPE.__triggerConcurrentForce__);
 
-// TODO
+const SkipState = merge(STATE_TYPE.__skippedSync__, STATE_TYPE.__skippedConcurrent__);
+
 export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const renderPlatform = currentRenderPlatform.current;
 
-  const renderDispatch = getCurrentDispatchFromFiber(fiber);
+  const updater: TriggerUpdateQueue = {
+    type: UpdateQueueType.trigger,
+    trigger: fiber,
+    isSync: include(state, SyncState),
+    isForce: include(state, ForceState),
+    isSkip: include(state, SkipState),
+    isImmediate: true,
+    isRetrigger: false,
+    callback: undefined,
+  };
 
-  safeCallWithCurrentFiber({
-    fiber,
-    action: function safeCallFiberTriggerListener() {
-      listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) =>
-        cb(fiber, {
-          needUpdate: true,
-          isSync: !!include(state, SyncState),
-          isForce: !!include(state, ForceState),
-        })
-      );
-    },
-  });
-
-  renderPlatform.microTask(function invokeTriggerUpdateOnFiber() {
-    triggerUpdate(fiber, state);
-  });
+  renderPlatform.dispatchState(updater);
 };

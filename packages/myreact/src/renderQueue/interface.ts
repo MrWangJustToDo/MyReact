@@ -12,6 +12,7 @@ export type ComponentUpdateQueue<State = Record<string, unknown>, Props = Record
   trigger: MyReactComponent;
   isForce?: boolean;
   isSync?: boolean;
+  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Partial<State> | ((state: State, props: Props) => Partial<State>);
@@ -26,6 +27,7 @@ export type HookUpdateQueue = {
   trigger: RenderHook;
   isForce?: boolean;
   isSync?: boolean;
+  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Action;
@@ -40,6 +42,7 @@ export type LazyUpdateQueue = {
   trigger: RenderFiber;
   isForce?: boolean;
   isSync?: boolean;
+  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: MixinMyReactFunctionComponent | MixinMyReactClassComponent;
@@ -54,6 +57,7 @@ export type ContextUpdateQueue = {
   trigger: RenderFiber;
   isForce?: boolean;
   isSync?: boolean;
+  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Record<string, unknown>;
@@ -68,13 +72,53 @@ export type PromiseUpdateQueue = {
   trigger: RenderFiber;
   isForce?: boolean;
   isSync?: boolean;
+  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Record<string, unknown>;
   callback?: () => void;
-}
+};
 
 /**
  * @public
  */
-export type UpdateQueue<T = Record<string, any>> = (ComponentUpdateQueue | HookUpdateQueue | LazyUpdateQueue | ContextUpdateQueue | PromiseUpdateQueue) & T;
+export type HMRUpdateQueue = {
+  type: UpdateQueueType.hmr;
+  trigger: RenderFiber;
+  isForce?: boolean;
+  isSync?: boolean;
+  isSkip?: boolean;
+  isRetrigger?: boolean;
+  isImmediate?: boolean;
+  payLoad?: Record<string, unknown>;
+  callback?: () => void;
+};
+
+/**
+ * @public
+ */
+export type TriggerUpdateQueue = {
+  type: UpdateQueueType.trigger;
+  trigger: RenderFiber;
+  isForce?: boolean;
+  isSync?: boolean;
+  isSkip?: boolean;
+  isRetrigger?: boolean;
+  isImmediate?: boolean;
+  payLoad?: Record<string, unknown>;
+  callback?: () => void;
+};
+
+/**
+ * @public
+ */
+export type UpdateQueue<T = Record<string, any>> = (
+  | ComponentUpdateQueue
+  | HookUpdateQueue
+  | LazyUpdateQueue
+  | ContextUpdateQueue
+  | PromiseUpdateQueue
+  | HMRUpdateQueue
+  | TriggerUpdateQueue
+) &
+  T;

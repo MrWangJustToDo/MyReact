@@ -49,7 +49,6 @@ import {
   yieldTask,
   macroTask,
   microTask,
-  enableHookStack,
   currentScopeFiber,
   cache,
 } from "./share";
@@ -107,7 +106,6 @@ const __my_react_shared__ = {
   enableMockReact,
   enableDebugLog,
   enableSyncFlush,
-  enableHookStack,
   enableHMRForDev,
   enableDebugFiled,
   enableScopeTreeLog,

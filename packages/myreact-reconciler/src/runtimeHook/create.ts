@@ -2,9 +2,9 @@ import { __my_react_internal__, __my_react_shared__, startTransition } from "@my
 import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
-import { currentRenderDispatch, getStack, safeCallWithCurrentFiber } from "../share";
+import { currentRenderDispatch, safeCallWithCurrentFiber } from "../share";
 
-import { checkHookValid, isValidInternalHookName } from "./check";
+import { checkHookValid } from "./check";
 import { initHookInstance, MyReactHookNode } from "./instance";
 import { MyReactSignal } from "./signal";
 
@@ -12,7 +12,7 @@ import type { MyReactHookNodeDev } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { Action, Reducer, RenderHookParams } from "@my-react/react";
 
-const { enableDebugLog, enableDebugFiled, enableHookStack } = __my_react_shared__;
+const { enableDebugLog, enableDebugFiled } = __my_react_shared__;
 
 const { currentHookTreeNode, currentHookNodeIndex } = __my_react_internal__;
 
@@ -152,45 +152,6 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     typedHook._debugType = HOOK_TYPE[hookNode.type];
 
     typedHook._debugIndex = currentHookIndex;
-  }
-
-  // TODO: remove
-  if (__DEV__ && enableHookStack.current) {
-    try {
-      const stack = getStack();
-
-      const res = [];
-
-      const typedStack = stack.map((i) => {
-        const line = i.getEnclosingLineNumber();
-        const column = i.getEnclosingColumnNumber();
-        const fileName = i.getFileName() || "Unknown";
-        const functionName = i.getMethodName() || i.getFunctionName() || "Anonymous";
-        const scriptName = i.getScriptNameOrSourceURL() || "Unknown";
-        return {
-          id: `${scriptName}-${fileName}-${functionName}-${line}-${column}`,
-          name: functionName,
-        };
-      });
-
-      while (typedStack.length > 0 && !isValidInternalHookName(typedStack[0].name)) {
-        typedStack.shift();
-      }
-
-      while (typedStack.length > 0) {
-        if (typedStack[0].name === "safeCallForwardRefFunctionalComponent" || typedStack[0].name === "safeCallFunctionalComponent") {
-          break;
-        }
-        res.push(typedStack.shift());
-      }
-
-      // pop current component
-      res.pop();
-
-      typedHook._debugStack = res.reverse();
-    } catch {
-      void 0;
-    }
   }
 
   return hookNode;

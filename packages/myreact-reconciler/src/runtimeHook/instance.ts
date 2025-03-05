@@ -65,7 +65,6 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
 export interface MyReactHookNodeDev extends MyReactHookNode {
   _debugType: string;
   _debugIndex: number;
-  _debugStack: { id: string; name: string }[];
   _debugUpdateQueue: ListTree<UpdateQueueDev>;
 }
 

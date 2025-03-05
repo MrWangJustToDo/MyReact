@@ -13,14 +13,12 @@ import type { MyReactFiberNode } from "./instance";
 
 const { enableConcurrentMode } = __my_react_shared__;
 
-const { currentRenderPlatform, currentRunningFiber } = __my_react_internal__;
+const { currentRenderPlatform } = __my_react_internal__;
 
-const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, _isImmediate: boolean, _isRetrigger: boolean) => {
   const renderPlatform = currentRenderPlatform.current;
 
   const flag = enableConcurrentMode.current;
-
-  const currentRunning = currentRunningFiber.current;
 
   let updateState: UpdateState | null = null;
 
@@ -35,8 +33,15 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
   }
 
   if (updateState?.needUpdate) {
+    safeCallWithCurrentFiber({
+      fiber,
+      action: function safeCallFiberTriggerListener() {
+        listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, updateState));
+      },
+    });
+
     // TODO get from updateState ?
-    if (currentRunning && currentRunning === fiber) {
+    if (updateState.isRetrigger) {
       fiber.state = remove(fiber.state, STATE_TYPE.__stable__);
 
       fiber.state = merge(fiber.state, STATE_TYPE.__retrigger__);
@@ -46,35 +51,36 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
       return;
     }
 
-    safeCallWithCurrentFiber({
-      fiber,
-      action: function safeCallFiberTriggerListener() {
-        listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, updateState));
-      },
-    });
-
     if (updateState.isSync) {
-      renderPlatform.microTask(function triggerSyncUpdateOnFiber() {
+      if (updateState.isImmediate) {
         triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);
-      });
+      } else {
+        renderPlatform.microTask(function triggerSyncUpdateOnFiber() {
+          triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);
+        });
+      }
     } else {
-      renderPlatform.microTask(function triggerConcurrentUpdateOnFiber() {
+      if (updateState.isImmediate) {
         triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__, updateState.callback);
-      });
+      } else {
+        renderPlatform.microTask(function triggerConcurrentUpdateOnFiber() {
+          triggerUpdate(fiber, updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__, updateState.callback);
+        });
+      }
     }
   }
 };
 
-export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, isImmediate?: boolean) => {
+export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, isImmediate: boolean, isRetrigger: boolean) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const renderPlatform = currentRenderPlatform.current;
 
   if (isImmediate) {
-    processUpdateOnFiber(fiber, renderDispatch);
+    processUpdateOnFiber(fiber, renderDispatch, isImmediate, isRetrigger);
   } else {
     renderPlatform.microTask(function asyncProcessUpdateOnFiber() {
-      processUpdateOnFiber(fiber, renderDispatch);
+      processUpdateOnFiber(fiber, renderDispatch, isImmediate, isRetrigger);
     });
   }
 };
@@ -83,6 +89,7 @@ const SyncState = merge(STATE_TYPE.__triggerSyncForce__, merge(STATE_TYPE.__skip
 
 const ForceState = merge(STATE_TYPE.__triggerSyncForce__, STATE_TYPE.__triggerConcurrentForce__);
 
+// TODO
 export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 

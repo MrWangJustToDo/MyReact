@@ -24,7 +24,7 @@ export type UpdateQueueDev = UpdateQueue<{
   _debugAfterValue: any;
   _debugBaseValue: any;
   _debugRunTime: number;
-  _debugUpdateState: { needUpdate: boolean; isSync: boolean; isForce: boolean; callbacks: (() => void)[] };
+  _debugUpdateState: { needUpdate: boolean; isSync: boolean; isForce: boolean; isImmediate: boolean; isRetrigger: boolean; callbacks: (() => void)[] };
 }>;
 
 const { currentComponentFiber, currentRunningFiber, currentScopeFiber } = __my_react_internal__;
@@ -52,28 +52,26 @@ export const processState = (_params: UpdateQueue) => {
 
   const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
+  // if current dispatch is a server || noop
+  if (!renderDispatch || !renderDispatch.enableUpdate) return;
+
   _params.isImmediate = !currentScopeFiber.current || !!currentRunningFiber.current || _params.isImmediate;
 
-  _params.isRetrigger = !!currentComponentFiber.current || _params.isRetrigger;
+  _params.isRetrigger = currentRunningFiber.current === ownerFiber || _params.isRetrigger;
 
-  if (renderDispatch?.enableUpdate) {
-    safeCallWithCurrentFiber({
-      fiber: ownerFiber,
-      action: function safeCallFiberStateListener() {
-        listenerMap.get(renderDispatch)?.fiberState?.forEach((cb) => cb(ownerFiber, _params));
-      },
-    });
-  }
+  safeCallWithCurrentFiber({
+    fiber: ownerFiber,
+    action: function safeCallFiberStateListener() {
+      listenerMap.get(renderDispatch)?.fiberState?.forEach((cb) => cb(ownerFiber, _params));
+    },
+  });
 
   const isImmediate = _params.isImmediate;
 
+  const isRetrigger = _params.isRetrigger;
+
   if (_params.type === UpdateQueueType.component) {
-    const ownerFiber = getInstanceOwnerFiber(_params.trigger);
-
     if (!ownerFiber || include(ownerFiber.state, STATE_TYPE.__unmount__)) return;
-
-    // if current dispatch is a server || noop
-    if (!renderDispatch.enableUpdate) return;
 
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
       const currentRFiber = currentRunningFiber.current as MyReactFiberNode;
@@ -131,13 +129,9 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate);
+    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate, isRetrigger);
   } else if (_params.type === UpdateQueueType.hook) {
-    const ownerFiber = getInstanceOwnerFiber(_params.trigger);
-
     if (!ownerFiber || include(ownerFiber?.state, STATE_TYPE.__unmount__)) return;
-
-    if (!renderDispatch.enableUpdate) return;
 
     if (__DEV__ && !syncFlush && currentComponentFiber.current) {
       const currentRFiber = currentRunningFiber.current as MyReactFiberNode;
@@ -193,18 +187,16 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate);
+    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate, isRetrigger);
   } else {
     const ownerFiber = _params.trigger as MyReactFiberNode;
 
     if (!ownerFiber || include(ownerFiber.state, STATE_TYPE.__unmount__)) return;
 
-    if (!renderDispatch.enableUpdate) return;
-
     ownerFiber.updateQueue = ownerFiber.updateQueue || new ListTree();
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate);
+    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate, isRetrigger);
   }
 };

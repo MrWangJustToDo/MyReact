@@ -129,7 +129,7 @@ export const prepareUpdateAllDependence = (
 
   const processedNodes: Array<UpdateQueue> = [];
 
-  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
+  if (__DEV__ && enableDebugFiled.current) {
     typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
 
     const now = Date.now();
@@ -140,6 +140,9 @@ export const prepareUpdateAllDependence = (
       payLoad: afterValue,
       isSync: true,
       isForce: true,
+      isImmediate: true,
+      // TODO
+      isRetrigger: true,
       _debugBaseValue: beforeValue,
       _debugBeforeValue: beforeValue,
       _debugAfterValue: afterValue,
@@ -147,16 +150,20 @@ export const prepareUpdateAllDependence = (
       _debugRunTime: now,
       _debugType: UpdateQueueType[UpdateQueueType.context],
       _debugUpdateState: {
-        needUpdate: true,
         isSync: true,
         isForce: true,
+        isImmediate: true,
+        isRetrigger: true,
+        needUpdate: true,
         callbacks: [],
       },
     };
 
     processedNodes.push(updater);
 
-    typedFiber._debugUpdateQueue.push(updater);
+    if (enableDebugUpdateQueue.current) {
+      typedFiber._debugUpdateQueue.push(updater);
+    }
   }
 
   safeCallWithCurrentFiber({
@@ -171,11 +178,15 @@ export const prepareUpdateAllDependence = (
                 nodes: processedNodes,
                 isSync: true,
                 isForce: true,
+                isImmediate: true,
+                isRetrigger: true,
               }
             : {
                 needUpdate: true,
                 isSync: true,
                 isForce: true,
+                isImmediate: true,
+                isRetrigger: true,
               }
         )
       );
@@ -199,6 +210,8 @@ export const prepareUpdateAllDependenceFromRoot = (
     payLoad: afterValue,
     isSync: true,
     isForce: true,
+    isImmediate: true,
+    isRetrigger: false,
     _debugBaseValue: beforeValue,
     _debugBeforeValue: beforeValue,
     _debugAfterValue: afterValue,
@@ -209,6 +222,8 @@ export const prepareUpdateAllDependenceFromRoot = (
       needUpdate: true,
       isSync: true,
       isForce: true,
+      isImmediate: true,
+      isRetrigger: false,
       callbacks: [],
     },
   };
@@ -244,6 +259,8 @@ export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, 
     payLoad: afterValue,
     isSync: true,
     isForce: true,
+    isImmediate: true,
+    isRetrigger: true,
     _debugBaseValue: beforeValue,
     _debugBeforeValue: beforeValue,
     _debugAfterValue: afterValue,
@@ -254,6 +271,8 @@ export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, 
       needUpdate: true,
       isSync: true,
       isForce: true,
+      isImmediate: true,
+      isRetrigger: true,
       callbacks: [],
     },
   };

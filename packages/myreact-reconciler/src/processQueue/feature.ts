@@ -19,6 +19,8 @@ export type UpdateState = {
   nodes?: Array<UpdateQueue | UpdateQueueDev>;
   isSync: boolean;
   isForce: boolean;
+  isImmediate?: boolean;
+  isRetrigger?: boolean;
   callback?: () => void;
 };
 
@@ -38,6 +40,10 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
   let isSync = false;
 
   let isForce = false;
+
+  let isImmediate = false;
+
+  let isRetrigger = false;
 
   const callbacks: Array<() => void> = [];
 
@@ -84,6 +90,10 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         isForce = isForce || updater.isForce;
 
+        isImmediate = isImmediate || updater.isImmediate;
+
+        isRetrigger = isRetrigger || updater.isRetrigger;
+
         updater.callback && callbacks.push(updater.callback);
 
         if (__DEV__ && enableDebugFiled.current) {
@@ -97,7 +107,14 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
           typedNode._debugAfterValue = fiber.pendingState;
 
-          typedNode._debugUpdateState = { needUpdate: true, isSync, isForce, callbacks: callbacks.slice(0) };
+          typedNode._debugUpdateState = {
+            needUpdate: true,
+            isSync: updater.isSync,
+            isForce: updater.isForce,
+            isImmediate: updater.isImmediate,
+            isRetrigger: updater.isRetrigger,
+            callbacks: callbacks.slice(0),
+          };
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -111,9 +128,15 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
     if (allQueue.length) {
       renderPlatform.macroTask(function prepareUpdateOnFiberTask() {
-        prepareUpdateOnFiber(fiber, renderDispatch, true);
+        prepareUpdateOnFiber(fiber, renderDispatch, true, false);
       });
     }
+
+    const invokeCallbackArray = callbacks.length
+      ? function invokeCallbackArray() {
+          return callbacks.forEach((cb) => cb?.());
+        }
+      : void 0;
 
     if (__DEV__) {
       return {
@@ -121,22 +144,18 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
         nodes: processedNodes,
         isSync,
         isForce,
-        callback: callbacks.length
-          ? function invokeCallbackArray() {
-              return callbacks.forEach((cb) => cb?.());
-            }
-          : void 0,
+        isImmediate,
+        isRetrigger,
+        callback: invokeCallbackArray,
       };
     } else {
       return {
         needUpdate: true,
         isSync,
         isForce,
-        callback: callbacks.length
-          ? function invokeCallbackArray() {
-              return callbacks.forEach((cb) => cb?.());
-            }
-          : void 0,
+        isImmediate,
+        isRetrigger,
+        callback: invokeCallbackArray,
       };
     }
   } else {
@@ -170,6 +189,10 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         isForce = isForce || updater.isForce;
 
+        isImmediate = isImmediate || updater.isImmediate;
+
+        isRetrigger = isRetrigger || updater.isRetrigger;
+
         updater.callback && callbacks.push(updater.callback);
 
         if (__DEV__ && enableDebugFiled.current) {
@@ -183,7 +206,14 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
           typedNode._debugAfterValue = fiber.pendingState;
 
-          typedNode._debugUpdateState = { needUpdate: true, isSync, isForce, callbacks: callbacks.slice(0) };
+          typedNode._debugUpdateState = {
+            needUpdate: true,
+            isSync: updater.isSync,
+            isForce: updater.isForce,
+            isImmediate: updater.isImmediate,
+            isRetrigger: updater.isRetrigger,
+            callbacks: callbacks.slice(0),
+          };
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -195,28 +225,30 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
       node = nextNode;
     }
 
+    const invokeCallbackArray = callbacks.length
+      ? function invokeCallbackArray() {
+          return callbacks.forEach((cb) => cb?.());
+        }
+      : void 0;
+
     if (__DEV__) {
       return {
         needUpdate: true,
         nodes: processedNodes,
         isSync,
         isForce,
-        callback: callbacks.length
-          ? function invokeCallbackArray() {
-              return callbacks.forEach((cb) => cb?.());
-            }
-          : void 0,
+        isImmediate,
+        isRetrigger,
+        callback: invokeCallbackArray,
       };
     } else {
       return {
         needUpdate: true,
         isSync,
         isForce,
-        callback: callbacks.length
-          ? function invokeCallbackArray() {
-              return callbacks.forEach((cb) => cb?.());
-            }
-          : void 0,
+        isImmediate,
+        isRetrigger,
+        callback: invokeCallbackArray,
       };
     }
   }
@@ -246,6 +278,10 @@ export const processFunctionComponentUpdateQueue = (
   let isSync = false;
 
   let isForce = false;
+
+  let isImmediate = false;
+
+  let isRetrigger = false;
 
   const processedNodes: Array<UpdateQueue> = [];
 
@@ -288,6 +324,10 @@ export const processFunctionComponentUpdateQueue = (
 
         isForce = isForce || updater.isForce;
 
+        isImmediate = isImmediate || updater.isImmediate;
+
+        isRetrigger = isRetrigger || updater.isRetrigger;
+
         updater.callback && callbacks.push(updater.callback);
 
         if (!needUpdate && (isForce || callbacks.length || !Object.is(lastResult, typedTrigger.result))) needUpdate = true;
@@ -301,7 +341,14 @@ export const processFunctionComponentUpdateQueue = (
 
           typedNode._debugAfterValue = typedTrigger.result;
 
-          typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
+          typedNode._debugUpdateState = {
+            needUpdate,
+            isSync: updater.isSync,
+            isForce: updater.isForce,
+            isImmediate: updater.isImmediate,
+            isRetrigger: updater.isRetrigger,
+            callbacks: callbacks.slice(0),
+          };
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -330,6 +377,10 @@ export const processFunctionComponentUpdateQueue = (
 
         isForce = isForce || updater.isForce;
 
+        isImmediate = isImmediate || updater.isImmediate;
+
+        isRetrigger = isRetrigger || updater.isRetrigger;
+
         updater.callback && callbacks.push(updater.callback);
 
         needUpdate = true;
@@ -343,7 +394,14 @@ export const processFunctionComponentUpdateQueue = (
 
           typedNode._debugAfterValue = payLoad;
 
-          typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
+          typedNode._debugUpdateState = {
+            needUpdate,
+            isSync: updater.isSync,
+            isForce: updater.isForce,
+            isImmediate: updater.isImmediate,
+            isRetrigger: updater.isRetrigger,
+            callbacks: callbacks.slice(0),
+          };
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -358,9 +416,15 @@ export const processFunctionComponentUpdateQueue = (
 
     if (allQueue.length) {
       renderPlatform.macroTask(function prepareUpdateOnFiberTask() {
-        prepareUpdateOnFiber(fiber, renderDispatch, true);
+        prepareUpdateOnFiber(fiber, renderDispatch, true, false);
       });
     }
+
+    const invokeCallbackArray = callbacks.length
+      ? function invokeCallbackArray() {
+          return callbacks.forEach((cb) => cb?.());
+        }
+      : void 0;
 
     if (__DEV__) {
       return {
@@ -368,22 +432,18 @@ export const processFunctionComponentUpdateQueue = (
         nodes: processedNodes,
         isSync,
         isForce,
-        callback: callbacks.length
-          ? function invokeCallbackArray() {
-              return callbacks.forEach((cb) => cb?.());
-            }
-          : void 0,
+        isImmediate,
+        isRetrigger,
+        callback: invokeCallbackArray,
       };
     } else {
       return {
         needUpdate,
         isSync,
         isForce,
-        callback: callbacks.length
-          ? function invokeCallbackArray() {
-              return callbacks.forEach((cb) => cb?.());
-            }
-          : void 0,
+        isImmediate,
+        isRetrigger,
+        callback: invokeCallbackArray,
       };
     }
   } else {
@@ -423,6 +483,10 @@ export const processFunctionComponentUpdateQueue = (
 
         isForce = isForce || updater.isForce;
 
+        isImmediate = isImmediate || updater.isImmediate;
+
+        isRetrigger = isRetrigger || updater.isRetrigger;
+
         updater.callback && callbacks.push(updater.callback);
 
         if (!needUpdate && (isForce || callbacks.length || !Object.is(lastResult, typedTrigger.result))) needUpdate = true;
@@ -436,7 +500,14 @@ export const processFunctionComponentUpdateQueue = (
 
           typedNode._debugAfterValue = typedTrigger.result;
 
-          typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
+          typedNode._debugUpdateState = {
+            needUpdate,
+            isSync: updater.isSync,
+            isForce: updater.isForce,
+            isImmediate: updater.isImmediate,
+            isRetrigger: updater.isRetrigger,
+            callbacks: callbacks.slice(0),
+          };
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -465,6 +536,10 @@ export const processFunctionComponentUpdateQueue = (
 
         isForce = isForce || updater.isForce;
 
+        isImmediate = isImmediate || updater.isImmediate;
+
+        isRetrigger = isRetrigger || updater.isRetrigger;
+
         updater.callback && callbacks.push(updater.callback);
 
         needUpdate = true;
@@ -478,7 +553,14 @@ export const processFunctionComponentUpdateQueue = (
 
           typedNode._debugAfterValue = payLoad;
 
-          typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
+          typedNode._debugUpdateState = {
+            needUpdate,
+            isSync: updater.isSync,
+            isForce: updater.isForce,
+            isImmediate: updater.isImmediate,
+            isRetrigger: updater.isRetrigger,
+            callbacks: callbacks.slice(0),
+          };
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -491,28 +573,30 @@ export const processFunctionComponentUpdateQueue = (
       node = nextNode;
     }
 
+    const invokeCallbackArray = callbacks.length
+      ? function invokeCallbackArray() {
+          return callbacks.forEach((cb) => cb?.());
+        }
+      : void 0;
+
     if (__DEV__) {
       return {
         needUpdate,
         nodes: processedNodes,
         isSync,
         isForce,
-        callback: callbacks.length
-          ? function invokeCallbackArray() {
-              return callbacks.forEach((cb) => cb?.());
-            }
-          : void 0,
+        isImmediate,
+        isRetrigger,
+        callback: invokeCallbackArray,
       };
     } else {
       return {
         needUpdate,
         isSync,
         isForce,
-        callback: callbacks.length
-          ? function invokeCallbackArray() {
-              return callbacks.forEach((cb) => cb?.());
-            }
-          : void 0,
+        isImmediate,
+        isRetrigger,
+        callback: invokeCallbackArray,
       };
     }
   }
@@ -534,6 +618,10 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
   let isSync = false;
 
   let isForce = false;
+
+  let isImmediate = false;
+
+  let isRetrigger = false;
 
   const processedNodes: Array<UpdateQueue> = [];
 
@@ -559,6 +647,10 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
 
       isForce = isForce || updater.isForce;
 
+      isImmediate = isImmediate || updater.isImmediate;
+
+      isRetrigger = isRetrigger || updater.isRetrigger;
+
       needUpdate = true;
 
       updater.callback && callbacks.push(updater.callback);
@@ -572,7 +664,14 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
 
         typedNode._debugAfterValue = payLoad;
 
-        typedNode._debugUpdateState = { needUpdate, isSync, isForce, callbacks: callbacks.slice(0) };
+        typedNode._debugUpdateState = {
+          needUpdate,
+          isSync: updater.isSync,
+          isForce: updater.isForce,
+          isImmediate: updater.isImmediate,
+          isRetrigger: updater.isRetrigger,
+          callbacks: callbacks.slice(0),
+        };
 
         if (enableDebugUpdateQueue.current) {
           typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
@@ -585,28 +684,30 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
     node = nextNode;
   }
 
+  const invokeCallbackArray = callbacks.length
+    ? function invokeCallbackArray() {
+        return callbacks.forEach((cb) => cb?.());
+      }
+    : void 0;
+
   if (__DEV__) {
     return {
       needUpdate,
       nodes: processedNodes,
       isSync,
       isForce,
-      callback: callbacks.length
-        ? function invokeCallbackArray() {
-            return callbacks.forEach((cb) => cb?.());
-          }
-        : void 0,
+      isImmediate,
+      isRetrigger,
+      callback: invokeCallbackArray,
     };
   } else {
     return {
       needUpdate,
       isSync,
       isForce,
-      callback: callbacks.length
-        ? function invokeCallbackArray() {
-            return callbacks.forEach((cb) => cb?.());
-          }
-        : void 0,
+      isImmediate,
+      isRetrigger,
+      callback: invokeCallbackArray,
     };
   }
 };

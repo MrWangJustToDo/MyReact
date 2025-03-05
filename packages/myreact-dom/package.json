@@ -53,8 +53,7 @@
           "globals": {
             "@my-react/react": "React"
           },
-          "name": "ReactDOM",
-          "sourcemap": "inline"
+          "name": "ReactDOM"
         }
       ]
     },

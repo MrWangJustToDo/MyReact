@@ -160,7 +160,7 @@ export const nextWorkProvider = (fiber: MyReactFiberNode) => {
 
     if (!isNormalEquals(prevProps as Record<string, unknown>, nextProps as Record<string, unknown>)) {
       if (enableLoopFromRoot.current) {
-        prepareUpdateAllDependence(fiber, prevProps, nextProps);
+        prepareUpdateAllDependence(renderDispatch, fiber, prevProps, nextProps);
       } else {
         renderDispatch.pendingLayoutEffect(fiber, function invokePrepareUpdateAllDependenceFromRoot() {
           prepareUpdateAllDependenceFromRoot(renderDispatch, fiber, prevProps, nextProps);

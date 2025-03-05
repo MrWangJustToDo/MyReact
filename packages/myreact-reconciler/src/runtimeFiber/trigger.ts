@@ -103,7 +103,7 @@ export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE
     },
   });
 
-  renderPlatform.microTask(function triggerUpdateOnFiber() {
+  renderPlatform.microTask(function invokeTriggerUpdateOnFiber() {
     triggerUpdate(fiber, state);
   });
 };

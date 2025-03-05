@@ -1,4 +1,5 @@
-import { __my_react_internal__, __my_react_shared__, type MyReactComponent } from "@my-react/react";
+/* eslint-disable max-lines */
+import { __my_react_internal__, __my_react_shared__, type MyReactComponent, type UpdateQueue } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
 import { syncComponentStateToFiber } from "../runtimeComponent";
@@ -15,6 +16,7 @@ const { currentRenderPlatform } = __my_react_internal__;
 
 export type UpdateState = {
   needUpdate: boolean;
+  nodes?: Array<UpdateQueue | UpdateQueueDev>;
   isSync: boolean;
   isForce: boolean;
   callback?: () => void;
@@ -39,6 +41,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
   const callbacks: Array<() => void> = [];
 
+  const processedNodes: Array<UpdateQueue> = [];
+
   const typedInstance = fiber.instance as MyReactComponent;
 
   const baseState = Object.assign({}, typedInstance.state);
@@ -60,6 +64,10 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         allQueue.delete(node);
 
+        if (__DEV__) {
+          processedNodes.push(updater);
+        }
+
         const { payLoad } = updater;
 
         fiber.pendingState = safeCallWithCurrentFiber({
@@ -79,7 +87,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
         updater.callback && callbacks.push(updater.callback);
 
         if (__DEV__ && enableDebugFiled.current) {
-          const typedNode = node.value as UpdateQueueDev;
+          const typedNode = updater as UpdateQueueDev;
 
           typedNode._debugRunTime = Date.now();
 
@@ -107,16 +115,30 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
       });
     }
 
-    return {
-      needUpdate: true,
-      isSync,
-      isForce,
-      callback: callbacks.length
-        ? function invokeCallbackArray() {
-            return callbacks.forEach((cb) => cb?.());
-          }
-        : void 0,
-    };
+    if (__DEV__) {
+      return {
+        needUpdate: true,
+        nodes: processedNodes,
+        isSync,
+        isForce,
+        callback: callbacks.length
+          ? function invokeCallbackArray() {
+              return callbacks.forEach((cb) => cb?.());
+            }
+          : void 0,
+      };
+    } else {
+      return {
+        needUpdate: true,
+        isSync,
+        isForce,
+        callback: callbacks.length
+          ? function invokeCallbackArray() {
+              return callbacks.forEach((cb) => cb?.());
+            }
+          : void 0,
+      };
+    }
   } else {
     while (node) {
       const updater = node.value;
@@ -127,6 +149,10 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
         if (__DEV__ && updater.trigger !== typedInstance) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
         allQueue.delete(node);
+
+        if (__DEV__) {
+          processedNodes.push(updater);
+        }
 
         const { payLoad } = updater;
 
@@ -147,7 +173,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
         updater.callback && callbacks.push(updater.callback);
 
         if (__DEV__ && enableDebugFiled.current) {
-          const typedNode = node.value as UpdateQueueDev;
+          const typedNode = updater as UpdateQueueDev;
 
           typedNode._debugRunTime = Date.now();
 
@@ -169,16 +195,30 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
       node = nextNode;
     }
 
-    return {
-      needUpdate: true,
-      isSync,
-      isForce,
-      callback: callbacks.length
-        ? function invokeCallbackArray() {
-            return callbacks.forEach((cb) => cb?.());
-          }
-        : void 0,
-    };
+    if (__DEV__) {
+      return {
+        needUpdate: true,
+        nodes: processedNodes,
+        isSync,
+        isForce,
+        callback: callbacks.length
+          ? function invokeCallbackArray() {
+              return callbacks.forEach((cb) => cb?.());
+            }
+          : void 0,
+      };
+    } else {
+      return {
+        needUpdate: true,
+        isSync,
+        isForce,
+        callback: callbacks.length
+          ? function invokeCallbackArray() {
+              return callbacks.forEach((cb) => cb?.());
+            }
+          : void 0,
+      };
+    }
   }
 };
 
@@ -207,6 +247,8 @@ export const processFunctionComponentUpdateQueue = (
 
   let isForce = false;
 
+  const processedNodes: Array<UpdateQueue> = [];
+
   const callbacks: Array<() => void> = [];
 
   if (enableTaskPriority && allQueue.some((l) => l.isSync)) {
@@ -221,6 +263,10 @@ export const processFunctionComponentUpdateQueue = (
         }
 
         allQueue.delete(node);
+
+        if (__DEV__) {
+          processedNodes.push(updater);
+        }
 
         const { trigger, payLoad } = updater;
 
@@ -247,7 +293,7 @@ export const processFunctionComponentUpdateQueue = (
         if (!needUpdate && (isForce || callbacks.length || !Object.is(lastResult, typedTrigger.result))) needUpdate = true;
 
         if (__DEV__ && enableDebugFiled.current) {
-          const typedNode = node.value as UpdateQueueDev;
+          const typedNode = updater as UpdateQueueDev;
 
           typedNode._debugRunTime = Date.now();
 
@@ -274,6 +320,10 @@ export const processFunctionComponentUpdateQueue = (
 
         allQueue.delete(node);
 
+        if (__DEV__) {
+          processedNodes.push(updater);
+        }
+
         const { payLoad } = updater;
 
         isSync = isSync || updater.isSync;
@@ -285,7 +335,7 @@ export const processFunctionComponentUpdateQueue = (
         needUpdate = true;
 
         if (__DEV__ && enableDebugFiled.current) {
-          const typedNode = node.value as UpdateQueueDev;
+          const typedNode = updater as UpdateQueueDev;
 
           typedNode._debugRunTime = Date.now();
 
@@ -312,16 +362,30 @@ export const processFunctionComponentUpdateQueue = (
       });
     }
 
-    return {
-      needUpdate,
-      isSync,
-      isForce,
-      callback: callbacks.length
-        ? function invokeCallbackArray() {
-            return callbacks.forEach((cb) => cb?.());
-          }
-        : void 0,
-    };
+    if (__DEV__) {
+      return {
+        needUpdate,
+        nodes: processedNodes,
+        isSync,
+        isForce,
+        callback: callbacks.length
+          ? function invokeCallbackArray() {
+              return callbacks.forEach((cb) => cb?.());
+            }
+          : void 0,
+      };
+    } else {
+      return {
+        needUpdate,
+        isSync,
+        isForce,
+        callback: callbacks.length
+          ? function invokeCallbackArray() {
+              return callbacks.forEach((cb) => cb?.());
+            }
+          : void 0,
+      };
+    }
   } else {
     while (node) {
       const updater = node.value;
@@ -334,6 +398,10 @@ export const processFunctionComponentUpdateQueue = (
         }
 
         allQueue.delete(node);
+
+        if (__DEV__) {
+          processedNodes.push(updater);
+        }
 
         const { trigger, payLoad } = updater;
 
@@ -360,7 +428,7 @@ export const processFunctionComponentUpdateQueue = (
         if (!needUpdate && (isForce || callbacks.length || !Object.is(lastResult, typedTrigger.result))) needUpdate = true;
 
         if (__DEV__ && enableDebugFiled.current) {
-          const typedNode = node.value as UpdateQueueDev;
+          const typedNode = updater as UpdateQueueDev;
 
           typedNode._debugRunTime = Date.now();
 
@@ -386,6 +454,10 @@ export const processFunctionComponentUpdateQueue = (
         if (__DEV__ && updater.trigger !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
         allQueue.delete(node);
+
+        if (__DEV__) {
+          processedNodes.push(updater);
+        }
 
         const { payLoad } = updater;
 
@@ -419,16 +491,30 @@ export const processFunctionComponentUpdateQueue = (
       node = nextNode;
     }
 
-    return {
-      needUpdate,
-      isSync,
-      isForce,
-      callback: callbacks.length
-        ? function invokeCallbackArray() {
-            return callbacks.forEach((cb) => cb?.());
-          }
-        : void 0,
-    };
+    if (__DEV__) {
+      return {
+        needUpdate,
+        nodes: processedNodes,
+        isSync,
+        isForce,
+        callback: callbacks.length
+          ? function invokeCallbackArray() {
+              return callbacks.forEach((cb) => cb?.());
+            }
+          : void 0,
+      };
+    } else {
+      return {
+        needUpdate,
+        isSync,
+        isForce,
+        callback: callbacks.length
+          ? function invokeCallbackArray() {
+              return callbacks.forEach((cb) => cb?.());
+            }
+          : void 0,
+      };
+    }
   }
 };
 
@@ -449,6 +535,8 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
 
   let isForce = false;
 
+  const processedNodes: Array<UpdateQueue> = [];
+
   const callbacks: Array<() => void> = [];
 
   while (node) {
@@ -461,6 +549,10 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
 
       allQueue.delete(node);
 
+      if (__DEV__) {
+        processedNodes.push(updater);
+      }
+
       const { payLoad } = updater;
 
       isSync = isSync || updater.isSync;
@@ -472,7 +564,7 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
       updater.callback && callbacks.push(updater.callback);
 
       if (__DEV__ && enableDebugFiled.current) {
-        const typedNode = node.value as UpdateQueueDev;
+        const typedNode = updater as UpdateQueueDev;
 
         typedNode._debugRunTime = Date.now();
 
@@ -493,16 +585,30 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
     node = nextNode;
   }
 
-  return {
-    needUpdate,
-    isSync,
-    isForce,
-    callback: callbacks.length
-      ? function invokeCallbackArray() {
-          return callbacks.forEach((cb) => cb?.());
-        }
-      : void 0,
-  };
+  if (__DEV__) {
+    return {
+      needUpdate,
+      nodes: processedNodes,
+      isSync,
+      isForce,
+      callback: callbacks.length
+        ? function invokeCallbackArray() {
+            return callbacks.forEach((cb) => cb?.());
+          }
+        : void 0,
+    };
+  } else {
+    return {
+      needUpdate,
+      isSync,
+      isForce,
+      callback: callbacks.length
+        ? function invokeCallbackArray() {
+            return callbacks.forEach((cb) => cb?.());
+          }
+        : void 0,
+    };
+  }
 };
 
 /**

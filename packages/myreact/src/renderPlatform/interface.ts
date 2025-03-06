@@ -2,12 +2,15 @@ import type { createContext, MyReactElementNode } from "../element";
 import type { RenderFiber } from "../renderFiber";
 import type { RenderHook, RenderHookParams } from "../renderHook";
 import type { UpdateQueue } from "../renderQueue";
+import type { Dispatcher } from "../share";
 import type { ListTreeNode } from "@my-react/react-shared";
 
 /**
  * @public
  */
 export interface DefaultRenderPlatform {
+  dispatcher: typeof Dispatcher;
+
   microTask(_task: () => void): void;
 
   macroTask(_task: () => void): void;

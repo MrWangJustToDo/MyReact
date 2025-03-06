@@ -51,6 +51,7 @@ import {
   microTask,
   currentScopeFiber,
   cache,
+  Dispatcher,
 } from "./share";
 
 /**
@@ -74,27 +75,7 @@ const version = enableMockReact.current ? "18.2.0" : __VERSION__;
 const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {
   ReactCurrentActQueue: {},
   ReactCurrentBatchConfig: {},
-  ReactCurrentDispatcher: {
-    current: {
-      readContext: use,
-      use,
-      useCallback,
-      useContext,
-      useDebugValue,
-      useDeferredValue,
-      useEffect,
-      useId,
-      useImperativeHandle,
-      useInsertionEffect,
-      useLayoutEffect,
-      useMemo,
-      useReducer,
-      useRef,
-      useState,
-      useSyncExternalStore,
-      useTransition,
-    },
-  },
+  ReactCurrentDispatcher: Dispatcher,
   ReactCurrentOwner: { current: null },
   ReactDebugCurrentFrame: {},
 };
@@ -135,6 +116,7 @@ const __my_react_internal__ = {
 
   initRenderPlatform,
   createReadonlyRef,
+  Dispatcher,
 
   currentScopeFiber,
   currentRunningFiber,

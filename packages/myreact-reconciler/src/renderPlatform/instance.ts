@@ -1,3 +1,12 @@
+import {
+  __my_react_internal__,
+  type createContext,
+  type MyReactElementNode,
+  type RenderFiber,
+  type RenderHookParams,
+  type RenderPlatform,
+  type UpdateQueue,
+} from "@my-react/react";
 import { UniqueArray } from "@my-react/react-shared";
 
 import { defaultReadContext } from "../dispatchContext";
@@ -8,8 +17,9 @@ import type { PromiseWithState } from "../processPromise";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
-import type { createContext, MyReactElementNode, RenderFiber, RenderHookParams, RenderPlatform, UpdateQueue } from "@my-react/react";
 import type { ListTreeNode, HOOK_TYPE } from "@my-react/react-shared";
+
+const { Dispatcher } = __my_react_internal__;
 
 export class CustomRenderPlatform implements RenderPlatform {
   microTask(_task: () => void): void {
@@ -46,6 +56,8 @@ export class CustomRenderPlatform implements RenderPlatform {
   dispatchPromise(_params: { fiber?: RenderFiber; promise?: Promise<unknown> }): MyReactElementNode {
     return void 0;
   }
+
+  dispatcher = Dispatcher;
 
   dispatchSet = new UniqueArray<CustomRenderDispatch>();
 }

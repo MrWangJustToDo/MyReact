@@ -75,8 +75,6 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         if (__DEV__) {
           processedNodes.push(updater);
-        } else {
-          processedNodes.push(updater.trigger);
         }
 
         const { payLoad } = updater;
@@ -129,8 +127,6 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         if (__DEV__) {
           processedNodes.push(updater);
-        } else {
-          processedNodes.push(updater.trigger);
         }
 
         isSync = isSync || updater.isSync;
@@ -193,7 +189,6 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
     } else {
       return {
         needUpdate: true,
-        nodes: processedNodes,
         isSync,
         isSkip,
         isForce,
@@ -215,8 +210,6 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         if (__DEV__) {
           processedNodes.push(updater);
-        } else {
-          processedNodes.push(updater.trigger);
         }
 
         const { payLoad } = updater;
@@ -269,8 +262,6 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         if (__DEV__) {
           processedNodes.push(updater);
-        } else {
-          processedNodes.push(updater.trigger);
         }
 
         isSync = isSync || updater.isSync;
@@ -326,7 +317,6 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
     } else {
       return {
         needUpdate: true,
-        nodes: processedNodes,
         isSync,
         isSkip,
         isForce,
@@ -388,8 +378,6 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
-        } else {
-          processedNodes.push(updater.trigger);
         }
 
         const { trigger, payLoad } = updater;
@@ -450,8 +438,6 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
-        } else {
-          processedNodes.push(updater.trigger);
         }
 
         const { payLoad } = updater;
@@ -494,8 +480,6 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
-        } else {
-          processedNodes.push(updater.trigger);
         }
 
         isSync = isSync || updater.isSync;
@@ -558,7 +542,6 @@ export const processFunctionComponentUpdateQueue = (
     } else {
       return {
         needUpdate,
-        nodes: processedNodes,
         isSync,
         isSkip,
         isForce,
@@ -582,8 +565,6 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
-        } else {
-          processedNodes.push(updater.trigger);
         }
 
         const { trigger, payLoad } = updater;
@@ -644,8 +625,6 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
-        } else {
-          processedNodes.push(updater.trigger);
         }
 
         const { payLoad } = updater;
@@ -688,8 +667,6 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
-        } else {
-          processedNodes.push(updater.trigger);
         }
 
         isSync = isSync || updater.isSync;
@@ -746,7 +723,6 @@ export const processFunctionComponentUpdateQueue = (
     } else {
       return {
         needUpdate,
-        nodes: processedNodes,
         isSync,
         isSkip,
         isForce,
@@ -797,8 +773,6 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
 
       if (__DEV__) {
         processedNodes.push(updater);
-      } else {
-        processedNodes.push(updater.trigger);
       }
 
       const { payLoad } = updater;
@@ -857,7 +831,6 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
   } else {
     return {
       needUpdate,
-      nodes: processedNodes,
       isSync,
       isSkip,
       isForce,

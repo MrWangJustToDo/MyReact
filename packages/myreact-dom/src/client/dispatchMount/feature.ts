@@ -95,6 +95,8 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
 
     mountCommit(_fiber, _hydrate);
 
+    currentHydratedNode = null;
+
     beforeSyncUpdate();
     _list.listToFoot(function invokeLayoutEffectList(fiber) {
       layoutEffect(fiber, _dispatch);

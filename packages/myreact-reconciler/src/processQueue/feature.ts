@@ -16,7 +16,7 @@ const { currentRenderPlatform } = __my_react_internal__;
 
 export type UpdateState = {
   needUpdate: boolean;
-  nodes?: Array<UpdateQueue | UpdateQueueDev>;
+  nodes?: Array<UpdateQueue | UpdateQueueDev | UpdateQueue["trigger"]>;
   isSync: boolean;
   isSkip: boolean;
   isForce: boolean;
@@ -50,7 +50,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
   const callbacks: Array<() => void> = [];
 
-  const processedNodes: Array<UpdateQueue> = [];
+  const processedNodes: Array<UpdateQueue | UpdateQueue["trigger"]> = [];
 
   const typedInstance = fiber.instance as MyReactComponent;
 
@@ -75,6 +75,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         if (__DEV__) {
           processedNodes.push(updater);
+        } else {
+          processedNodes.push(updater.trigger);
         }
 
         const { payLoad } = updater;
@@ -127,6 +129,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         if (__DEV__) {
           processedNodes.push(updater);
+        } else {
+          processedNodes.push(updater.trigger);
         }
 
         isSync = isSync || updater.isSync;
@@ -189,6 +193,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
     } else {
       return {
         needUpdate: true,
+        nodes: processedNodes,
         isSync,
         isSkip,
         isForce,
@@ -210,6 +215,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         if (__DEV__) {
           processedNodes.push(updater);
+        } else {
+          processedNodes.push(updater.trigger);
         }
 
         const { payLoad } = updater;
@@ -262,6 +269,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
         if (__DEV__) {
           processedNodes.push(updater);
+        } else {
+          processedNodes.push(updater.trigger);
         }
 
         isSync = isSync || updater.isSync;
@@ -317,6 +326,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
     } else {
       return {
         needUpdate: true,
+        nodes: processedNodes,
         isSync,
         isSkip,
         isForce,
@@ -359,7 +369,7 @@ export const processFunctionComponentUpdateQueue = (
 
   let isRetrigger = false;
 
-  const processedNodes: Array<UpdateQueue> = [];
+  const processedNodes: Array<UpdateQueue | UpdateQueue["trigger"]> = [];
 
   const callbacks: Array<() => void> = [];
 
@@ -378,6 +388,8 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
+        } else {
+          processedNodes.push(updater.trigger);
         }
 
         const { trigger, payLoad } = updater;
@@ -438,6 +450,8 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
+        } else {
+          processedNodes.push(updater.trigger);
         }
 
         const { payLoad } = updater;
@@ -480,6 +494,8 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
+        } else {
+          processedNodes.push(updater.trigger);
         }
 
         isSync = isSync || updater.isSync;
@@ -542,6 +558,7 @@ export const processFunctionComponentUpdateQueue = (
     } else {
       return {
         needUpdate,
+        nodes: processedNodes,
         isSync,
         isSkip,
         isForce,
@@ -565,6 +582,8 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
+        } else {
+          processedNodes.push(updater.trigger);
         }
 
         const { trigger, payLoad } = updater;
@@ -625,6 +644,8 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
+        } else {
+          processedNodes.push(updater.trigger);
         }
 
         const { payLoad } = updater;
@@ -667,6 +688,8 @@ export const processFunctionComponentUpdateQueue = (
 
         if (__DEV__) {
           processedNodes.push(updater);
+        } else {
+          processedNodes.push(updater.trigger);
         }
 
         isSync = isSync || updater.isSync;
@@ -723,6 +746,7 @@ export const processFunctionComponentUpdateQueue = (
     } else {
       return {
         needUpdate,
+        nodes: processedNodes,
         isSync,
         isSkip,
         isForce,
@@ -757,7 +781,7 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
 
   let isRetrigger = false;
 
-  const processedNodes: Array<UpdateQueue> = [];
+  const processedNodes: Array<UpdateQueue | UpdateQueue["trigger"]> = [];
 
   const callbacks: Array<() => void> = [];
 
@@ -773,6 +797,8 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
 
       if (__DEV__) {
         processedNodes.push(updater);
+      } else {
+        processedNodes.push(updater.trigger);
       }
 
       const { payLoad } = updater;
@@ -831,6 +857,7 @@ export const processLazyComponentUpdate = (fiber: MyReactFiberNode): UpdateState
   } else {
     return {
       needUpdate,
+      nodes: processedNodes,
       isSync,
       isSkip,
       isForce,

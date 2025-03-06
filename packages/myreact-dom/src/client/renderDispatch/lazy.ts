@@ -51,7 +51,7 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cl
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
   if (typedElementType._loaded === true) {
     if (_dispatch.isHydrateRender) {
-      currentRenderPlatform.current.microTask(function inVokeUpdateLazy() {
+      currentRenderPlatform.current.microTask(function invokeUpdateLazy() {
         updateLazy(_fiber, typedElementType);
       });
 

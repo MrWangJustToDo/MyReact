@@ -56,7 +56,7 @@ const release = async (pkgName: keyof typeof pkgNameAlias) => {
       console.log(`new version: ${version} of ${pkgName} will release, current is: ${cVersion}`);
     }
 
-    await publish(pkgName, resolve(process.cwd(), path));
+    // await publish(pkgName, resolve(process.cwd(), path));
 
     console.log(`success release ${pkgName} @${version}`);
   } catch (e) {

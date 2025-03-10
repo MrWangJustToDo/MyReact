@@ -13,8 +13,9 @@ const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
 
 const dispatchHook = (params: RenderHookParams) => processHook(params);
 
-const dispatchPromise = ({ promise }: { fiber: MyReactFiberNode; promise: Promise<unknown> }) => {
-  throw promise;
+const dispatchPromise = (_props: { fiber: MyReactFiberNode; promise: Promise<unknown> }) => {
+  // throw promise;
+  throw new Error("Server side does not support promise");
 };
 
 /**

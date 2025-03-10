@@ -87,9 +87,10 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
         } catch (e) {
           if (isPromise(e)) {
             currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
-            return re;
+            re = currentRenderDispatch.current?.resolveSuspense(fiber);
+          } else {
+            throw e;
           }
-          throw e;
         }
         return re;
       },
@@ -104,9 +105,10 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
         } catch (e) {
           if (isPromise(e)) {
             currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
-            return re;
+            re = currentRenderDispatch.current?.resolveSuspense(fiber);
+          } else {
+            throw e;
           }
-          throw e;
         }
         return re;
       },

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <!-- <script src="../bundle/react.18.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef, Suspense } = React;
+
+    const Demo = ({ active }) => {
+      console.log('demo', active);
+      const resolveRef = useRef();
+      console.log('11111');
+      (() => {
+        if (active) {
+          resolveRef.current && resolveRef?.current();
+          resolveRef.current = null;
+        } else {
+          console.log('2222');
+          throw new Promise((resolve) => {
+            resolveRef.current = resolve;
+          });
+        }
+      })();
+      console.log('========');
+
+      return (
+        <div>
+          <span>this is demo:{String(active)}</span>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const [active, setActive] = useState(false);
+      const handleToggle = () => {
+        setActive(!active);
+      };
+      console.log('App active', active);
+      return (
+        <>
+          <div
+            onClick={handleToggle}
+            style={{
+              width: '100px',
+              height: '100px',
+              backgroundColor: active ? 'red' : 'blue',
+            }}
+          />
+          <Suspense
+            fallback={
+              <div>
+                <span>loading...</span>
+              </div>
+            }
+          >
+            <Demo active={active} />
+          </Suspense>
+        </>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+
+</html>

@@ -141,7 +141,7 @@ export type Props = {
 export type CreateElementProps<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any> = {
   type: MyReactElementType<P, S, C>;
   key: string | number | null;
-  ref: ReturnType<typeof createRef> | ((node?: { [p: string]: any } | MyReactInternalInstance) => void) | null;
+  ref: ReturnType<typeof createRef> | ((node?: { [p: string]: any } | MyReactInternalInstance) => (() => void) | void) | null;
   props: P & Props;
   _self: MyReactInternalInstance | null;
   _source: { fileName: string; lineNumber: string } | null;

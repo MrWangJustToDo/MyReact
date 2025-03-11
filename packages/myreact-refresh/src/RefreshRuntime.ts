@@ -6,11 +6,15 @@ import type { CustomRenderDispatch, CustomRenderDispatchDev, HMR, MyReactFiberNo
 
 interface RefreshCustomRenderDispatch extends CustomRenderDispatch {
   ["$$hasRefreshInject"]?: boolean;
+  __dev_hmr_runtime__?: HMR;
+  __dev_hmr_remount__?: (cb: () => void) => void;
 }
 
 const DISPATCH_FIELD = "__@my-react/dispatch__";
 
 const DEV_REFRESH_FIELD = "__@my-react/react-refresh-inject__";
+
+const PENDING_DEV_REFRESH_FIELD = "__@my-react/react-refresh-inject-pending__";
 
 const DEV_TOOL_FIELD = "__@my-react/react-refresh-dev__";
 
@@ -36,7 +40,8 @@ type Signature = {
 
 type HMRGlobal = {
   [DISPATCH_FIELD]: CustomRenderDispatch[];
-  [DEV_REFRESH_FIELD]: (dispatchArray: CustomRenderDispatch[]) => void;
+  [DEV_REFRESH_FIELD]: (dispatch: CustomRenderDispatch) => void;
+  [PENDING_DEV_REFRESH_FIELD]: () => void;
   [DEV_TOOL_FIELD]: {
     allFamiliesByID: typeof allFamiliesByID;
     allSignaturesByType: typeof allSignaturesByType;
@@ -464,41 +469,30 @@ const setRefreshRuntimeFieldForDev = (container: RefreshCustomRenderDispatch) =>
   });
 };
 
-const hmrSet = new Set<HMR["hmr"]>();
-
 const logOnceSuccess = once(() => console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;"));
 
 const logOnceFailed = once(() => console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;"));
 
-const setupRefresh = (dispatchArray: RefreshCustomRenderDispatch[]) => {
-  const allNeedInject = dispatchArray.filter((item) => !item?.["$$hasRefreshInject"]);
+const setupRefresh = (dispatch: RefreshCustomRenderDispatch) => {
+  const hmr = dispatch["__dev_hmr_runtime__"];
 
-  const typedDispatchArray = allNeedInject as CustomRenderDispatchDev[];
-
-  const allHMRRuntime = typedDispatchArray.map((item) => item?.["__dev_hmr_runtime__"]);
-
-  allHMRRuntime.forEach((c) => {
-    if (hmrSet.has(c?.hmr)) {
-      console.warn(
-        `[@my-react/react-refresh] find multiple HMR runtime in current environment, look like you are using multiple version of @my-react for current page, it may cause some problem!`
-      );
-    }
-    hmrSet.add(c?.hmr);
-  });
-
-  if (allHMRRuntime.length > 0) {
-    allHMRRuntime.forEach((i) => hmrRuntime.add(i));
-
-    const newAdded = new Set(allHMRRuntime.map((i) => i.setRefreshHandler));
-
-    newAdded.forEach((item) => item(resolveFamily));
-
-    dispatchArray.forEach((dispatch) => setRefreshRuntimeFieldForDev(dispatch));
-
-    logOnceSuccess();
-  } else {
+  if (!hmr) {
     logOnceFailed();
+
+    return;
   }
+
+  if (hmrRuntime.size > 0 && !hmrRuntime.has(hmr)) {
+    console.warn(
+      `[@my-react/react-refresh] find multiple HMR runtime in current environment, look like you are using multiple version of @my-react for current page, it may cause some problem!`
+    );
+  }
+
+  hmr.setRefreshHandler(resolveFamily);
+
+  setRefreshRuntimeFieldForDev(dispatch);
+
+  logOnceSuccess();
 };
 
 const tryToRegister = () => {
@@ -507,7 +501,7 @@ const tryToRegister = () => {
       typedSelf[DEV_REFRESH_FIELD] = setupRefresh;
 
       if (Array.isArray(typedSelf?.[DISPATCH_FIELD])) {
-        setupRefresh(typedSelf[DISPATCH_FIELD]);
+        typedSelf[DISPATCH_FIELD].forEach(setupRefresh);
       }
     } catch {
       console.error(`%c[@my-react/react-refresh] try inject Dev refresh failed!`, "color: red; font-size: 14px;");
@@ -515,7 +509,7 @@ const tryToRegister = () => {
   }
 };
 
-export const injectIntoGlobalHook = (_context: Window) => setTimeout(tryToRegister, 0);
+export const injectIntoGlobalHook = (_context: Window) => tryToRegister();
 
 export const version = __VERSION__;
 
@@ -525,6 +519,8 @@ if (__DEV__) {
     allSignaturesByType,
     updatedFamiliesByType,
   };
+
+  typedSelf[PENDING_DEV_REFRESH_FIELD]?.();
 } else {
   console.warn("[@my-react/react-refresh] current environment is not in development mode!");
 }

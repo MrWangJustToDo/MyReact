@@ -4,7 +4,7 @@ import type { CustomRenderDispatch, CustomRenderPlatform } from "@my-react/react
 
 type DevToolRuntime = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform, hmrRuntime: typeof initHMR) => void;
 
-type RefreshRuntime = (dispatch: CustomRenderDispatch[]) => void;
+type RefreshRuntime = (dispatch: CustomRenderDispatch) => void;
 
 const pendingDevTool: Array<[dispatch: CustomRenderDispatch, platform: CustomRenderPlatform, hmrRuntime: typeof initHMR]> = [];
 
@@ -45,7 +45,7 @@ export const delGlobalDispatch = (dispatch: CustomRenderDispatch) => {
 export const autoSetDevTools = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform) => {
   addGlobalDispatch(dispatch);
 
-  if (typeof globalThis === "undefined" && globalThis[DEV_TOOL_RUNTIME_FIELD]) {
+  if (typeof globalThis !== "undefined" && globalThis[DEV_TOOL_RUNTIME_FIELD]) {
     try {
       const typedRuntimeField = globalThis[DEV_TOOL_RUNTIME_FIELD] as DevToolRuntime;
 
@@ -63,7 +63,7 @@ export const autoSetDevHMR = (dispatch: CustomRenderDispatch) => {
     try {
       const typedRuntimeField = globalThis[DEV_REFRESH_FIELD] as RefreshRuntime;
 
-      typedRuntimeField?.([dispatch]);
+      typedRuntimeField?.(dispatch);
     } catch {
       void 0;
     }
@@ -73,16 +73,16 @@ export const autoSetDevHMR = (dispatch: CustomRenderDispatch) => {
 };
 
 const injectDevTool = () => {
-  if (typeof globalThis === "undefined" && globalThis[DEV_TOOL_RUNTIME_FIELD]) {
+  if (typeof globalThis !== "undefined" && globalThis[DEV_TOOL_RUNTIME_FIELD]) {
     try {
       const typedRuntimeField = globalThis[DEV_TOOL_RUNTIME_FIELD] as DevToolRuntime;
 
-      pendingDevTool.forEach(([dispatch, platform, initHMR]) => {
-        typedRuntimeField?.(dispatch, platform, initHMR);
-      });
+      pendingDevTool.forEach(([dispatch, platform, initHMR]) => typedRuntimeField?.(dispatch, platform, initHMR));
     } catch {
       void 0;
     }
+  } else {
+    console.warn(`[@my-react/react-dom] Devtool runtime not found, SEE https://github.com/MrWangJustToDo/myreact-devtools`);
   }
 };
 
@@ -91,10 +91,12 @@ const injectDevRefresh = () => {
     try {
       const typedRuntimeField = globalThis[DEV_REFRESH_FIELD] as RefreshRuntime;
 
-      typedRuntimeField?.(pendingRefresh);
+      pendingRefresh.forEach(typedRuntimeField);
     } catch {
       void 0;
     }
+  } else {
+    console.warn(`[@my-react/react-dom] Refresh runtime not found, please check your configuration`);
   }
 };
 

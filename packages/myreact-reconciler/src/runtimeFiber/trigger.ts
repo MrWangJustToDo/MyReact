@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { include, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
-import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate } from "../processQueue";
+import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate, processNormalComponentUpdate } from "../processQueue";
 import { listenerMap } from "../renderDispatch";
 import { triggerUpdate } from "../renderUpdate";
 import { setImmediateNextFiber } from "../runtimeUpdate";
@@ -30,7 +30,7 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
   } else if (include(fiber.type, NODE_TYPE.__lazy__)) {
     updateState = processLazyComponentUpdate(fiber);
   } else {
-    throw new Error("unknown runtime error, this is a bug for @my-react");
+    updateState = processNormalComponentUpdate(fiber);
   }
 
   if (updateState?.needUpdate) {

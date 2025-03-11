@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { ForwardRef, Memo, STATE_TYPE, TYPEKEY } from "@my-react/react-shared";
+import { ForwardRef, Memo, STATE_TYPE, TYPEKEY, once } from "@my-react/react-shared";
 
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactComponentType, MyReactElementType } from "@my-react/react";
 import type { CustomRenderDispatch, CustomRenderDispatchDev, HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
@@ -335,7 +335,7 @@ export const performReactRefresh = () => {
 
           const hasRootUpdate = containers.get(container) || f === container.rootFiber;
 
-          container.__hmr_runtime__?.hmr?.(f, _nextType, forceReset);
+          container.__dev_hmr_runtime__?.hmr?.(f, _nextType, forceReset);
 
           containers.set(container, hasRootUpdate);
         });
@@ -379,16 +379,16 @@ export const performReactRefresh = () => {
     containers.forEach((hasRootUpdate, container: CustomRenderDispatchDev) => {
       if (container.isAppCrashed || container.isAppUnmounted) {
         // have a uncaught runtime error for prev render
-        container.__hmr_remount__?.(updateDone.bind(null, currentId));
+        container.__dev_hmr_remount__?.(updateDone.bind(null, currentId));
       } else if (container.runtimeFiber.errorCatchFiber) {
         // has a error for prev render
         const errorCatchFiber = container?.runtimeFiber.errorCatchFiber;
 
-        (errorCatchFiber as MyReactFiberNodeDev).__hmr_revert__?.(updateDone.bind(null, currentId));
+        (errorCatchFiber as MyReactFiberNodeDev).__dev_hmr_revert__?.(updateDone.bind(null, currentId));
       } else {
         const rootFiber = container.rootFiber;
 
-        (rootFiber as MyReactFiberNodeDev).__hmr_update__?.(
+        (rootFiber as MyReactFiberNodeDev).__dev_hmr_update__?.(
           hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__,
           updateDone.bind(null, currentId)
         );
@@ -449,7 +449,7 @@ const setRefreshRuntimeFieldForDev = (container: RefreshCustomRenderDispatch) =>
 
   container["$$hasRefreshInject"] = true;
 
-  Object.defineProperty(container, "__refresh_runtime__", {
+  Object.defineProperty(container, "__dev_refresh_runtime__", {
     value: {
       version,
       register,
@@ -466,12 +466,16 @@ const setRefreshRuntimeFieldForDev = (container: RefreshCustomRenderDispatch) =>
 
 const hmrSet = new Set<HMR["hmr"]>();
 
+const logOnceSuccess = once(() => console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;"));
+
+const logOnceFailed = once(() => console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;"));
+
 const setupRefresh = (dispatchArray: RefreshCustomRenderDispatch[]) => {
   const allNeedInject = dispatchArray.filter((item) => !item?.["$$hasRefreshInject"]);
 
   const typedDispatchArray = allNeedInject as CustomRenderDispatchDev[];
 
-  const allHMRRuntime = typedDispatchArray.map((item) => item?.["__hmr_runtime__"]);
+  const allHMRRuntime = typedDispatchArray.map((item) => item?.["__dev_hmr_runtime__"]);
 
   allHMRRuntime.forEach((c) => {
     if (hmrSet.has(c?.hmr)) {
@@ -491,9 +495,9 @@ const setupRefresh = (dispatchArray: RefreshCustomRenderDispatch[]) => {
 
     dispatchArray.forEach((dispatch) => setRefreshRuntimeFieldForDev(dispatch));
 
-    console.log(`%c[@my-react/react-refresh] Dev refresh have been enabled!`, "color: #38B2AC; font-size: 14px;");
+    logOnceSuccess();
   } else {
-    console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;");
+    logOnceFailed();
   }
 };
 
@@ -501,11 +505,12 @@ const tryToRegister = () => {
   if (__DEV__) {
     try {
       typedSelf[DEV_REFRESH_FIELD] = setupRefresh;
+
       if (Array.isArray(typedSelf?.[DISPATCH_FIELD])) {
         setupRefresh(typedSelf[DISPATCH_FIELD]);
       }
     } catch {
-      console.error(`%c[@my-react/react-refresh] inject Dev refresh failed!`, "color: red; font-size: 14px;");
+      console.error(`%c[@my-react/react-refresh] try inject Dev refresh failed!`, "color: red; font-size: 14px;");
     }
   }
 };

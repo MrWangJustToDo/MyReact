@@ -2,32 +2,25 @@ import { initHMR } from "@my-react/react-reconciler";
 
 import type { CustomRenderDispatch, CustomRenderPlatform } from "@my-react/react-reconciler";
 
-export type DevToolRuntime = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform, hmrRuntime: typeof initHMR) => void;
+type DevToolRuntime = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform, hmrRuntime: typeof initHMR) => void;
 
-export const setDevTools = (devToolRuntime: DevToolRuntime, dispatch: CustomRenderDispatch, platform: CustomRenderPlatform) => {
-  try {
-    devToolRuntime(dispatch, platform, initHMR);
-  } catch (e) {
-    if (__DEV__) {
-      console.error("devToolRuntime failed:", e);
-    }
-    void 0;
-  }
-};
+type RefreshRuntime = (dispatch: CustomRenderDispatch[]) => void;
+
+const pendingDevTool: Array<[dispatch: CustomRenderDispatch, platform: CustomRenderPlatform, hmrRuntime: typeof initHMR]> = [];
+
+const pendingRefresh: Array<CustomRenderDispatch> = [];
 
 export const DEV_TOOL_RUNTIME_FIELD = "__MY_REACT_DEVTOOL_RUNTIME__";
 
 export const DISPATCH_FIELD = "__@my-react/dispatch__";
 
-const DEV_TOOL_FIELD = "__@my-react/react-devtool-inject__";
+// const DEV_TOOL_FIELD = "__@my-react/react-devtool-inject__";
+
+const PENDING_DEV_TOOL_FIELD = "__@my-react/react-devtool-inject-pending__";
 
 const DEV_REFRESH_FIELD = "__@my-react/react-refresh-inject__";
 
-export const injectDevField = () => {
-  if (__DEV__ && typeof globalThis !== "undefined") {
-    globalThis[DEV_TOOL_FIELD] = setDevTools;
-  }
-};
+const PENDING_DEV_REFRESH_FIELD = "__@my-react/react-refresh-inject-pending__";
 
 export const addGlobalDispatch = (dispatch: CustomRenderDispatch) => {
   if (typeof globalThis !== "undefined") {
@@ -50,19 +43,61 @@ export const delGlobalDispatch = (dispatch: CustomRenderDispatch) => {
 };
 
 export const autoSetDevTools = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform) => {
-  const runtime = globalThis[DEV_TOOL_RUNTIME_FIELD];
-
-  if (runtime) {
-    setDevTools(runtime, dispatch, platform);
-  }
-
   addGlobalDispatch(dispatch);
 
+  if (typeof globalThis === "undefined" && globalThis[DEV_TOOL_RUNTIME_FIELD]) {
+    try {
+      const typedRuntimeField = globalThis[DEV_TOOL_RUNTIME_FIELD] as DevToolRuntime;
+
+      typedRuntimeField?.(dispatch, platform, initHMR);
+    } catch {
+      void 0;
+    }
+  } else {
+    pendingDevTool.push([dispatch, platform, initHMR]);
+  }
+};
+
+export const autoSetDevHMR = (dispatch: CustomRenderDispatch) => {
   if (typeof globalThis !== "undefined" && globalThis[DEV_REFRESH_FIELD]) {
     try {
-      globalThis[DEV_REFRESH_FIELD]?.(globalThis[DISPATCH_FIELD]);
+      const typedRuntimeField = globalThis[DEV_REFRESH_FIELD] as RefreshRuntime;
+
+      typedRuntimeField?.([dispatch]);
+    } catch {
+      void 0;
+    }
+  } else {
+    pendingRefresh.push(dispatch);
+  }
+};
+
+const injectDevTool = () => {
+  if (typeof globalThis === "undefined" && globalThis[DEV_TOOL_RUNTIME_FIELD]) {
+    try {
+      const typedRuntimeField = globalThis[DEV_TOOL_RUNTIME_FIELD] as DevToolRuntime;
+
+      pendingDevTool.forEach(([dispatch, platform, initHMR]) => {
+        typedRuntimeField?.(dispatch, platform, initHMR);
+      });
     } catch {
       void 0;
     }
   }
 };
+
+const injectDevRefresh = () => {
+  if (typeof globalThis !== "undefined" && globalThis[DEV_REFRESH_FIELD]) {
+    try {
+      const typedRuntimeField = globalThis[DEV_REFRESH_FIELD] as RefreshRuntime;
+
+      typedRuntimeField?.(pendingRefresh);
+    } catch {
+      void 0;
+    }
+  }
+};
+
+globalThis[PENDING_DEV_TOOL_FIELD] = injectDevTool;
+
+globalThis[PENDING_DEV_REFRESH_FIELD] = injectDevRefresh;

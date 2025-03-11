@@ -5,7 +5,7 @@ import { include, once, STATE_TYPE, UpdateQueueType } from "@my-react/react-shar
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { prepareDevContainer, unmountComponentAtNode } from "@my-react-dom-client/tools";
-import { autoSetDevTools, checkRoot, delGlobalDispatch, enableAsyncRender, startRender } from "@my-react-dom-shared";
+import { autoSetDevHMR, autoSetDevTools, checkRoot, delGlobalDispatch, enableAsyncRender, startRender } from "@my-react-dom-shared";
 
 import type { LikeJSX, TriggerUpdateQueue } from "@my-react/react";
 import type { CustomRenderPlatform } from "@my-react/react-reconciler";
@@ -103,6 +103,8 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
   renderDispatch.isClientRender = true;
 
   autoSetDevTools(renderDispatch, renderPlatform);
+
+  autoSetDevHMR(renderDispatch);
 
   initialFiberNode(fiber, renderDispatch);
 

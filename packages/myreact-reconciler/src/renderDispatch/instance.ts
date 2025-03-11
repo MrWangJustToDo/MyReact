@@ -11,47 +11,17 @@ import { defaultGenerateStrict, defaultGenerateStrictMap } from "../dispatchStri
 import { defaultGenerateSuspenseMap, defaultResolveSuspense } from "../dispatchSuspense";
 import { defaultDispatchUnmount, defaultGenerateUnmountMap } from "../dispatchUnmount";
 import { defaultDispatchUpdate } from "../dispatchUpdate";
-import { MyWeakMap, NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
+import { NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
 
 import { listenerMap, RenderDispatchEvent } from "./event";
 
-import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
+import type { refKey, RenderDispatch } from "./interface";
 import type { MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
 import type { HMR } from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
 
 export class CustomRenderDispatch extends RenderDispatchEvent implements RenderDispatch {
   runtimeRef: Record<refKey, NODE_TYPE>;
-
-  runtimeMap: RuntimeMap = {
-    suspenseMap: new MyWeakMap(),
-
-    strictMap: new MyWeakMap(),
-
-    scopeMap: new MyWeakMap(),
-
-    errorBoundariesMap: new MyWeakMap(),
-
-    effectMap: new MyWeakMap(),
-
-    layoutEffectMap: new MyWeakMap(),
-
-    insertionEffectMap: new MyWeakMap(),
-
-    contextMap: new MyWeakMap(),
-
-    unmountMap: new MyWeakMap(),
-
-    eventMap: new MyWeakMap(),
-  };
-
-  runtimeFiber: Record<fiberKey, MyReactFiberNode | null> = {
-    scheduledFiber: null,
-
-    errorCatchFiber: null,
-
-    nextWorkingFiber: null,
-  };
 
   isAppMounted = false;
 
@@ -345,6 +315,6 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 }
 
 export interface CustomRenderDispatchDev extends CustomRenderDispatch {
-  __hmr_runtime__: HMR;
-  __hmr_remount__: (cb?: () => void) => void;
+  __dev_hmr_runtime__: HMR;
+  __dev_hmr_remount__: (cb?: () => void) => void;
 }

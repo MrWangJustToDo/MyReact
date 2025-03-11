@@ -1,5 +1,17 @@
 import { __my_react_internal__, __my_react_shared__, createElement, type MyReactElement, type MyReactElementType } from "@my-react/react";
-import { CustomRenderDispatch, NODE_TYPE, initHMR, listenerMap, safeCallWithCurrentFiber, unmountFiber } from "@my-react/react-reconciler";
+import {
+  CustomRenderDispatch,
+  NODE_TYPE,
+  getCurrentDispatchFromFiber,
+  getCurrentDispatchFromType,
+  getCurrentFibersFromType,
+  hmr,
+  listenerMap,
+  safeCallWithCurrentFiber,
+  setRefreshHandler,
+  typeToFibersMap,
+  unmountFiber,
+} from "@my-react/react-reconciler";
 
 import { __my_react_dom_internal__, __my_react_dom_shared__ } from "@my-react-dom-client";
 import { append, clearNode, create, position, update } from "@my-react-dom-client/api";
@@ -7,12 +19,7 @@ import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
 import { parse, patchDOMField, setRef, unsetRef } from "@my-react-dom-client/tools";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount";
-import {
-  asyncUpdateTimeLimit,
-  initialElementMap,
-  unmountElementMap,
-  shouldPauseAsyncUpdate,
-} from "@my-react-dom-shared";
+import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, shouldPauseAsyncUpdate } from "@my-react-dom-shared";
 
 import { clientDispatchFiber } from "./dispatch";
 import { clientProcessFiber } from "./process";
@@ -21,6 +28,8 @@ import type { HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react
 import type { PlainElementDev } from "@my-react-dom-server/api";
 
 const { enableScopeTreeLog } = __my_react_shared__;
+
+const { currentComponentFiber } = __my_react_internal__;
 
 const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
@@ -243,9 +252,9 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
 }
 
-export interface ClientDomDispatchDev extends ClientDomDispatch {
-  __hmr_runtime__: HMR;
-  __hmr_remount__: (cb?: () => void) => void;
+export class ClientDomDispatchDev extends ClientDomDispatch {
+  __dev_hmr_runtime__: HMR;
+  __dev_hmr_remount__: (cb?: () => void) => void;
   _debugVersion: string;
   _debugRender: Promise<PlainElementDev>;
   __my_react__: {
@@ -325,18 +334,21 @@ if (__DEV__) {
   });
 
   // hmr remount
-  Object.defineProperty(ClientDomDispatch.prototype, "__hmr_remount__", {
+  Object.defineProperty(ClientDomDispatch.prototype, "__dev_hmr_remount__", {
     value: hmrRemount,
   });
 
   // hmr runtime
-  Object.defineProperty(ClientDomDispatch.prototype, "__hmr_runtime__", {
-    value: {},
-  });
-
-  // TODO remove
-  Object.defineProperty(ClientDomDispatch.prototype, "_remountOnDev", {
-    value: hmrRemount,
+  Object.defineProperty(ClientDomDispatch.prototype, "__dev_hmr_runtime__", {
+    value: {
+      hmr,
+      typeToFibersMap,
+      setRefreshHandler,
+      currentComponentFiber,
+      getCurrentFibersFromType,
+      getCurrentDispatchFromType,
+      getCurrentDispatchFromFiber,
+    } as HMR,
   });
 
   Object.defineProperty(ClientDomDispatch.prototype, "__my_react__", {
@@ -352,10 +364,6 @@ if (__DEV__) {
       __my_react_dom_internal__,
     },
   });
-
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  initHMR(ClientDomDispatch.prototype.__hmr_runtime__);
 }
 
 // SEE https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/client/validateDOMNesting.js

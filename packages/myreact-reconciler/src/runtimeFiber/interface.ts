@@ -43,7 +43,7 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugLog: boolean;
 
-  __hmr_revert__: (cb?: () => void) => void;
+  __dev_hmr_revert__: (cb?: () => void) => void;
 
-  __hmr_update__: (state?: STATE_TYPE, cb?: () => void) => void;
+  __dev_hmr_update__: (state?: STATE_TYPE, cb?: () => void) => void;
 }

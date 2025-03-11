@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { safeCall, safeCallWithSync } from "@my-react/react-reconciler";
 
-import { checkMyReactVersion, checkReconcilerVersion, injectDevField } from "../shared";
+import { checkMyReactVersion, checkReconcilerVersion } from "../shared";
 
 import { render, hydrate, hydrateRoot, createRoot } from "./mount";
 import { initGlobalRenderPlatform } from "./renderPlatform";
@@ -18,11 +18,6 @@ const flushSync = safeCallWithSync;
 const unstable_batchedUpdates = safeCall;
 
 initGlobalRenderPlatform();
-
-// not need for new refresh runtime package
-// initGlobalHMR();
-
-injectDevField();
 
 checkReconcilerVersion();
 

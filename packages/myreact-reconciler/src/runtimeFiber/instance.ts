@@ -122,24 +122,14 @@ if (__DEV__) {
     configurable: true,
   });
 
-  Object.defineProperty(MyReactFiberNode.prototype, "__hmr_revert__", {
+  Object.defineProperty(MyReactFiberNode.prototype, "__dev_hmr_revert__", {
     value: hmrRevert,
     configurable: true,
   });
 
-  Object.defineProperty(MyReactFiberNode.prototype, "__hmr_update__", {
+  Object.defineProperty(MyReactFiberNode.prototype, "__dev_hmr_update__", {
     value: hmrUpdate,
     configurable: true,
-  });
-
-  // TODO remove
-  Object.defineProperty(MyReactFiberNode.prototype, "_devRevert", {
-    value: hmrRevert,
-  });
-
-  // TODO remove
-  Object.defineProperty(MyReactFiberNode.prototype, "_devUpdate", {
-    value: hmrUpdate,
   });
 }
 

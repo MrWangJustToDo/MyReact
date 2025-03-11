@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
-import type { NODE_TYPE } from "../share";
+import { MyWeakMap, type NODE_TYPE } from "../share";
+
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
 import type { UpdateState } from "../processQueue";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -93,14 +94,42 @@ const getInitialValue = (): Listeners => {
       };
 };
 
+const getInitialMap = (): RuntimeMap => ({
+  suspenseMap: new MyWeakMap(),
+
+  strictMap: new MyWeakMap(),
+
+  scopeMap: new MyWeakMap(),
+
+  errorBoundariesMap: new MyWeakMap(),
+
+  effectMap: new MyWeakMap(),
+
+  layoutEffectMap: new MyWeakMap(),
+
+  insertionEffectMap: new MyWeakMap(),
+
+  contextMap: new MyWeakMap(),
+
+  unmountMap: new MyWeakMap(),
+
+  eventMap: new MyWeakMap(),
+});
+
 export const listenerMap = new Map<RenderDispatch, Listeners>();
 
 export class RenderDispatchEvent implements RenderDispatch {
   runtimeRef: Record<refKey, NODE_TYPE>;
 
-  runtimeMap: RuntimeMap;
+  runtimeMap = getInitialMap();
 
-  runtimeFiber: Record<fiberKey, MyReactFiberNode>;
+  runtimeFiber: Record<fiberKey, MyReactFiberNode | null> = {
+    scheduledFiber: null,
+
+    errorCatchFiber: null,
+
+    nextWorkingFiber: null,
+  };
 
   rootNode: any;
 

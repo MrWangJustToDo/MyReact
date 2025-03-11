@@ -10,11 +10,10 @@ const pendingDevTool: Array<[dispatch: CustomRenderDispatch, platform: CustomRen
 
 const pendingRefresh: Array<CustomRenderDispatch> = [];
 
-export const DEV_TOOL_RUNTIME_FIELD = "__MY_REACT_DEVTOOL_RUNTIME__";
+const DISPATCH_FIELD = "__@my-react/dispatch__";
 
-export const DISPATCH_FIELD = "__@my-react/dispatch__";
-
-// const DEV_TOOL_FIELD = "__@my-react/react-devtool-inject__";
+const DEV_TOOL_RUNTIME_FIELD = "__MY_REACT_DEVTOOL_RUNTIME__";
+// const DEV_TOOL_RUNTIME_FIELD = "__@my-react/react-devtool-inject__";
 
 const PENDING_DEV_TOOL_FIELD = "__@my-react/react-devtool-inject-pending__";
 
@@ -77,7 +76,9 @@ const injectDevTool = () => {
     try {
       const typedRuntimeField = globalThis[DEV_TOOL_RUNTIME_FIELD] as DevToolRuntime;
 
-      pendingDevTool.forEach(([dispatch, platform, initHMR]) => typedRuntimeField?.(dispatch, platform, initHMR));
+      pendingDevTool.forEach(([dispatch, platform, initHMR]) => typedRuntimeField(dispatch, platform, initHMR));
+
+      pendingDevTool.length = 0;
     } catch {
       void 0;
     }
@@ -87,16 +88,20 @@ const injectDevTool = () => {
 };
 
 const injectDevRefresh = () => {
-  if (typeof globalThis !== "undefined" && globalThis[DEV_REFRESH_FIELD]) {
-    try {
-      const typedRuntimeField = globalThis[DEV_REFRESH_FIELD] as RefreshRuntime;
+  if (__DEV__) {
+    if (typeof globalThis !== "undefined" && globalThis[DEV_REFRESH_FIELD]) {
+      try {
+        const typedRuntimeField = globalThis[DEV_REFRESH_FIELD] as RefreshRuntime;
 
-      pendingRefresh.forEach(typedRuntimeField);
-    } catch {
-      void 0;
+        pendingRefresh.forEach(typedRuntimeField);
+
+        pendingRefresh.length = 0;
+      } catch {
+        void 0;
+      }
+    } else {
+      console.warn(`[@my-react/react-dom] Refresh runtime not found, please check your configuration`);
     }
-  } else {
-    console.warn(`[@my-react/react-dom] Refresh runtime not found, please check your configuration`);
   }
 };
 

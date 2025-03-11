@@ -305,6 +305,7 @@ export default function (babel, opts: Record<string, any> = {}) {
       // e.g. a useState initializer with some code inside.
       // We also need it for www that has transforms like cx()
       // that don't understand if something is part of a string.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
       finalKey = require("crypto").createHash("sha1").update(key).digest("base64");
     }
 

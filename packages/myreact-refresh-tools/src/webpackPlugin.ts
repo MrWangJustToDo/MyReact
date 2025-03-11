@@ -128,6 +128,7 @@ class RefreshWebpackPlugin {
   // @ts-ignore exists in webpack 5
   RuntimeModule: typeof WebpackRuntimeModule;
   Template: typeof WebpackTemplate;
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   constructor({ version, RuntimeGlobals, RuntimeModule, Template } = require("webpack")) {
     this.webpackMajorVersion = parseInt(version ?? "", 10);
     this.RuntimeGlobals = RuntimeGlobals;

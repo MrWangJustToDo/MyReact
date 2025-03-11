@@ -38,9 +38,27 @@ export const __my_react_dom_shared__ = {
 };
 
 export const __my_react_dom_internal__ = {
-  legacyNoopRender: (ele: LikeJSX) => __DEV__ ? legacyNoopRender(ele) : null,
-  latestNoopRender: (ele: LikeJSX) => __DEV__ ? latestNoopRender(ele) : null,
+  legacyNoopRender: (ele: LikeJSX) => (__DEV__ ? legacyNoopRender(ele) : null),
+  latestNoopRender: (ele: LikeJSX) => (__DEV__ ? latestNoopRender(ele) : null),
 };
+
+const errorMap = new Map<CustomRenderDispatch, Array<{ value: any; stack: string; source?: MyReactFiberNode }>>();
+
+export const setError = (renderDispatch: CustomRenderDispatch, error: { value: any; stack: string; source?: MyReactFiberNode }) => {
+  const temp = errorMap.get(renderDispatch) || [];
+
+  temp.push(error);
+  
+  errorMap.set(renderDispatch, temp);
+};
+
+export const getError = (renderDispatch: CustomRenderDispatch) => {
+  return errorMap.get(renderDispatch);
+}
+
+export const clearError = (renderDispatch: CustomRenderDispatch) => {
+  errorMap.delete(renderDispatch);
+}
 
 /**
  * @internal

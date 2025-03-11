@@ -63,8 +63,6 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   runtimeRef = runtimeRef;
 
-  _runtimeError: { value: any; stack: string; source?: MyReactFiberNode }[];
-
   isHydrateRender: boolean;
 
   isClientRender: boolean;

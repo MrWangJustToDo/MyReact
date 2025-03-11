@@ -12,8 +12,6 @@ export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: a
   if (__DEV__) {
     const last = enableOptimizeTreeLog.current;
 
-    // const renderDispatch = getCurrentDispatchFromFiber(fiber) as ClientDomDispatch;
-
     enableOptimizeTreeLog.current = false;
 
     if (level === "warn") {
@@ -21,18 +19,6 @@ export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: a
     }
     if (level === "error") {
       devErrorWithFiber(fiber, `[@my-react/react-dom]`, ...rest);
-
-      // if (renderDispatch.isClientRender || renderDispatch.isHydrateRender) {
-      //   renderDispatch._runtimeError = renderDispatch._runtimeError || [];
-
-      //   const stack = getFiberTree(fiber);
-
-      //   renderDispatch._runtimeError.push({
-      //     source: fiber,
-      //     stack,
-      //     value: Error(rest.filter((s) => typeof s === "string").join(", ") + stack),
-      //   });
-      // }
     }
 
     enableOptimizeTreeLog.current = last;

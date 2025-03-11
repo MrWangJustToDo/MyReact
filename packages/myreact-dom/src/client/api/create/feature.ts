@@ -2,6 +2,7 @@ import { NODE_TYPE, getStackTree } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import { getPreviousHydratedNode } from "@my-react-dom-client/dispatchMount";
+import { setError } from "@my-react-dom-client/tools";
 import {
   validDomTag,
   type DomComment,
@@ -72,13 +73,9 @@ export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
       }
     } catch (e) {
       if (__DEV__) {
-        renderDispatch._runtimeError = renderDispatch._runtimeError || [];
-
         const stack = getStackTree(fiber);
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        renderDispatch._runtimeError.push({ source: fiber, value: Error(e?.message + stack, { cause: e }), stack });
+        setError(renderDispatch, { source: fiber, value: Error(e?.message + stack), stack });
       }
 
       nativeCreate(fiber, isSVG, parentFiberWithNode || renderDispatch);

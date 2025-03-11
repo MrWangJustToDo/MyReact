@@ -3,7 +3,7 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
-import { prepareDevContainer, checkRehydrate } from "@my-react-dom-client/tools";
+import { prepareDevContainer, checkRehydrate, getError, clearError } from "@my-react-dom-client/tools";
 import { autoSetDevHMR, autoSetDevTools, checkRoot, enableAsyncHydrate, startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogPerformanceWarn } from "./render";
@@ -17,18 +17,21 @@ const { currentRenderPlatform } = __my_react_internal__;
 const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __my_react_shared__;
 
 const throwHydrateError = (renderDispatch: ClientDomDispatch) => {
-  if (renderDispatch?._runtimeError) {
-    while (renderDispatch._runtimeError.length > 0) {
-      const error = renderDispatch._runtimeError.shift();
-      window.dispatchEvent(
-        new ErrorEvent("error", {
-          error: error.value,
-          message: error?.value?.message,
-        })
-      );
-    }
-    delete renderDispatch._runtimeError;
+  const errorArray = getError(renderDispatch);
+
+  if (!errorArray) return;
+
+  while (errorArray?.length > 0) {
+    const error = errorArray.shift();
+    window.dispatchEvent(
+      new ErrorEvent("error", {
+        error: error.value,
+        message: error?.value?.message,
+      })
+    );
   }
+
+  clearError(renderDispatch);
 };
 
 const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: () => void) => {

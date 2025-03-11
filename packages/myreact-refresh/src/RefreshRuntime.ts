@@ -488,6 +488,8 @@ const setupRefresh = (dispatch: RefreshCustomRenderDispatch) => {
     );
   }
 
+  hmrRuntime.add(hmr);
+
   hmr.setRefreshHandler(resolveFamily);
 
   setRefreshRuntimeFieldForDev(dispatch);

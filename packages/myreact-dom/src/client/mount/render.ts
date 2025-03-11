@@ -1,13 +1,13 @@
 import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react";
-import { checkIsSameType, CustomRenderDispatch, initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
-import { include, once, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
+import { checkIsSameType, CustomRenderDispatch, initialFiberNode, MyReactFiberNode, triggerUpdateOnFiber } from "@my-react/react-reconciler";
+import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { prepareDevContainer, unmountComponentAtNode } from "@my-react-dom-client/tools";
 import { autoSetDevHMR, autoSetDevTools, checkRoot, delGlobalDispatch, enableAsyncRender, startRender } from "@my-react-dom-shared";
 
-import type { LikeJSX, TriggerUpdateQueue } from "@my-react/react";
+import type { LikeJSX } from "@my-react/react";
 import type { CustomRenderPlatform } from "@my-react/react-reconciler";
 
 export type RenderContainer = Element & {
@@ -143,18 +143,7 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
     if (checkIsSameType(containerFiber, element)) {
       containerFiber._installElement(element);
 
-      const updater: TriggerUpdateQueue = {
-        type: UpdateQueueType.trigger,
-        trigger: containerFiber,
-        isSync: true,
-        isForce: false,
-        isSkip: false,
-        isImmediate: true,
-        isRetrigger: false,
-        callback: cb,
-      };
-
-      currentRenderPlatform.current.dispatchState(updater);
+      triggerUpdateOnFiber(containerFiber, STATE_TYPE.__triggerSync__, cb);
       return;
     } else {
       unmountComponentAtNode(container);

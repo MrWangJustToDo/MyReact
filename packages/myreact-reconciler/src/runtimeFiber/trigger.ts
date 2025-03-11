@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { include, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
-import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processLazyComponentUpdate, processNormalComponentUpdate } from "../processQueue";
+import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processNormalComponentUpdate } from "../processQueue";
 import { listenerMap } from "../renderDispatch";
 import { triggerUpdate } from "../renderUpdate";
 import { setImmediateNextFiber } from "../runtimeUpdate";
@@ -27,8 +27,6 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
     updateState = processClassComponentUpdateQueue(fiber, renderDispatch, flag);
   } else if (include(fiber.type, NODE_TYPE.__function__)) {
     updateState = processFunctionComponentUpdateQueue(fiber, renderDispatch, flag);
-  } else if (include(fiber.type, NODE_TYPE.__lazy__)) {
-    updateState = processLazyComponentUpdate(fiber);
   } else {
     updateState = processNormalComponentUpdate(fiber);
   }
@@ -116,7 +114,7 @@ const ForceState = merge(STATE_TYPE.__triggerSyncForce__, STATE_TYPE.__triggerCo
 
 const SkipState = merge(STATE_TYPE.__skippedSync__, STATE_TYPE.__skippedConcurrent__);
 
-export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE) => {
+export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE, callback?: () => void) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const renderPlatform = currentRenderPlatform.current;
@@ -129,7 +127,7 @@ export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE
     isSkip: include(state, SkipState),
     isImmediate: true,
     isRetrigger: false,
-    callback: undefined,
+    callback,
   };
 
   renderPlatform.dispatchState(updater);

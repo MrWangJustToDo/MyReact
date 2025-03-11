@@ -74,6 +74,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
 
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 
+  // TODO
   if (cb) {
     if (include(fiber.type, NODE_TYPE.__class__)) {
       renderDispatch.pendingLayoutEffect(fiber, cb, { stickyToFoot: true });

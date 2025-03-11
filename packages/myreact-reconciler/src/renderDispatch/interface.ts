@@ -1,6 +1,6 @@
-import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactFiberNode, triggerUpdateOnFiber } from "../runtimeFiber";
 import type { NODE_TYPE } from "../share";
-import type { createContext, MyReactElementNode } from "@my-react/react";
+import type { createContext, MyReactElementNode, RenderPlatform } from "@my-react/react";
 import type { ListTree, UniqueArray } from "@my-react/react-shared";
 
 export type refKey = "typeForRef" | "typeForCreate" | "typeForUpdate" | "typeForAppend" | "typeForNativeNode";
@@ -39,6 +39,10 @@ type DefaultRenderDispatch = {
   rootNode: any;
 
   rootFiber: MyReactFiberNode;
+
+  dispatcher: RenderPlatform['dispatcher'];
+
+  trigger: typeof triggerUpdateOnFiber;
 
   isAppMounted: boolean;
 

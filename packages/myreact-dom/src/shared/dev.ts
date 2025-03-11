@@ -12,8 +12,8 @@ const pendingRefresh: Array<CustomRenderDispatch> = [];
 
 const DISPATCH_FIELD = "__@my-react/dispatch__";
 
-const DEV_TOOL_RUNTIME_FIELD = "__MY_REACT_DEVTOOL_RUNTIME__";
-// const DEV_TOOL_RUNTIME_FIELD = "__@my-react/react-devtool-inject__";
+// const DEV_TOOL_FIELD = "__MY_REACT_DEVTOOL_RUNTIME__";
+const DEV_TOOL_FIELD = "__@my-react/react-devtool-inject__";
 
 const PENDING_DEV_TOOL_FIELD = "__@my-react/react-devtool-inject-pending__";
 
@@ -44,9 +44,9 @@ export const delGlobalDispatch = (dispatch: CustomRenderDispatch) => {
 export const autoSetDevTools = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform) => {
   addGlobalDispatch(dispatch);
 
-  if (typeof globalThis !== "undefined" && globalThis[DEV_TOOL_RUNTIME_FIELD]) {
+  if (typeof globalThis !== "undefined" && globalThis[DEV_TOOL_FIELD]) {
     try {
-      const typedRuntimeField = globalThis[DEV_TOOL_RUNTIME_FIELD] as DevToolRuntime;
+      const typedRuntimeField = globalThis[DEV_TOOL_FIELD] as DevToolRuntime;
 
       typedRuntimeField?.(dispatch, platform, initHMR);
     } catch {
@@ -72,9 +72,9 @@ export const autoSetDevHMR = (dispatch: CustomRenderDispatch) => {
 };
 
 const injectDevTool = () => {
-  if (typeof globalThis !== "undefined" && globalThis[DEV_TOOL_RUNTIME_FIELD]) {
+  if (typeof globalThis !== "undefined" && globalThis[DEV_TOOL_FIELD]) {
     try {
-      const typedRuntimeField = globalThis[DEV_TOOL_RUNTIME_FIELD] as DevToolRuntime;
+      const typedRuntimeField = globalThis[DEV_TOOL_FIELD] as DevToolRuntime;
 
       pendingDevTool.forEach(([dispatch, platform, initHMR]) => typedRuntimeField(dispatch, platform, initHMR));
 

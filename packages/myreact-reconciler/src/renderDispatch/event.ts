@@ -1,12 +1,15 @@
 /* eslint-disable max-lines */
+import { __my_react_internal__, type createContext, type MyReactComponent, type MyReactElementNode, type UpdateQueue } from "@my-react/react";
+
+import { triggerUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
 import { MyWeakMap, type NODE_TYPE } from "../share";
 
 import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
 import type { UpdateState } from "../processQueue";
-import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";
-import type { createContext, MyReactComponent, MyReactElementNode, UpdateQueue } from "@my-react/react";
-import type { ListTree, UniqueArray } from "@my-react/react-shared";
+import type { ListTree, STATE_TYPE, UniqueArray } from "@my-react/react-shared";
+
+const { Dispatcher } = __my_react_internal__;
 
 type Listeners = {
   fiberInitial: Set<(fiber: MyReactFiberNode) => void>;
@@ -131,6 +134,8 @@ export class RenderDispatchEvent implements RenderDispatch {
     nextWorkingFiber: null,
   };
 
+  dispatcher = Dispatcher;
+
   rootNode: any;
 
   rootFiber: MyReactFiberNode;
@@ -149,6 +154,17 @@ export class RenderDispatchEvent implements RenderDispatch {
 
   constructor() {
     listenerMap.set(this, getInitialValue());
+
+    Object.defineProperty(this, "dispatcher", {
+      value: Dispatcher,
+      writable: false,
+      enumerable: false,
+      configurable: false,
+    });
+  }
+
+  trigger(_fiber: MyReactFiberNode, _state?: STATE_TYPE, cb?: () => void) {
+    return triggerUpdateOnFiber(_fiber, _state, cb);
   }
 
   generateCommitList(_fiber: MyReactFiberNode): void {}

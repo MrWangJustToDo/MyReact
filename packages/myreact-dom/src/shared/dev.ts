@@ -58,16 +58,18 @@ export const autoSetDevTools = (dispatch: CustomRenderDispatch, platform: Custom
 };
 
 export const autoSetDevHMR = (dispatch: CustomRenderDispatch) => {
-  if (typeof globalThis !== "undefined" && globalThis[DEV_REFRESH_FIELD]) {
-    try {
-      const typedRuntimeField = globalThis[DEV_REFRESH_FIELD] as RefreshRuntime;
+  if (__DEV__) {
+    if (typeof globalThis !== "undefined" && globalThis[DEV_REFRESH_FIELD]) {
+      try {
+        const typedRuntimeField = globalThis[DEV_REFRESH_FIELD] as RefreshRuntime;
 
-      typedRuntimeField?.(dispatch);
-    } catch {
-      void 0;
+        typedRuntimeField?.(dispatch);
+      } catch {
+        void 0;
+      }
+    } else {
+      pendingRefresh.push(dispatch);
     }
-  } else {
-    pendingRefresh.push(dispatch);
   }
 };
 

@@ -116,17 +116,19 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     const checkResultUpdate = function checkResultUpdate() {
       const prevResult = storeApi.result;
 
+      let nextResult = null;
+
       let hasChange = true;
 
       try {
-        const nextResult = storeApi.getSnapshot.call(null);
+        nextResult = storeApi.getSnapshot.call(null);
         hasChange = !Object.is(prevResult, nextResult);
       } catch {
         hasChange = true;
       }
 
       if (hasChange) {
-        hookNode._update({ isForce: true, isSync: true });
+        hookNode._update({ isForce: true, isSync: true, payLoad: () => nextResult });
       }
     };
 
@@ -142,6 +144,34 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
       hookNode.cancel = storeApi.subscribe(checkResultUpdate);
     });
   }
+
+  // if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
+  //   const storeApi = hookNode.value;
+
+  //   const getNextResult = () =>
+  //     safeCallWithCurrentFiber({
+  //       fiber,
+  //       action: function safeCallGetSnapshot() {
+  //         return renderDispatch.isAppMounted
+  //           ? storeApi.getSnapshot.call(null)
+  //           : storeApi.getServerSnapshot
+  //             ? storeApi.getServerSnapshot?.call(null)
+  //             : storeApi.getSnapshot.call(null);
+  //       },
+  //     });
+
+  //   const nextResult = getNextResult();
+
+  //   if (!Object.is(nextResult, getNextResult())) {
+  //     throw new Error(`[@my-react/react] syncExternalStore getSnapshot not stable!`);
+  //   }
+
+  //   storeApi.result = nextResult;
+
+  //   hookNode.result = nextResult;
+
+  //   hookNode.hasEffect = true;
+  // }
 
   if (hookNode.type === HOOK_TYPE.useSignal) {
     hookNode.result = new MyReactSignal(hookNode.value.call(null), renderDispatch);

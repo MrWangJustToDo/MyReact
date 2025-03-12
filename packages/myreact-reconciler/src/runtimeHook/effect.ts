@@ -71,20 +71,20 @@ export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNod
       });
     }
 
-    // if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
-    //   renderDispatch.pendingEffect(fiber, function invokeEffectOnHook() {
-    //     hookNode.cancel && hookNode.cancel();
+    if (hookNode.type === HOOK_TYPE.useSyncExternalStore) {
+      renderDispatch.pendingEffect(fiber, function invokeEffectOnHook() {
+        hookNode.cancel && hookNode.cancel();
 
-    //     const storeApi = hookNode.value;
+        const storeApi = hookNode.value;
 
-    //     hookNode.cancel = storeApi.subscribe(function triggerHookUpdate() {
-    //       hookNode._update({ payLoad: () => storeApi.getSnapshot.call(null) });
-    //     });
+        hookNode.cancel = storeApi.subscribe(function triggerHookUpdate() {
+          hookNode._update({ payLoad: () => storeApi.getSnapshot.call(null) });
+        });
 
-    //     hookNode.hasEffect = false;
+        hookNode.hasEffect = false;
 
-    //     setEffectForInstance(hookNode, Effect_TYPE.__initial__);
-    //   });
-    // }
+        setEffectForInstance(hookNode, Effect_TYPE.__initial__);
+      });
+    }
   }
 };

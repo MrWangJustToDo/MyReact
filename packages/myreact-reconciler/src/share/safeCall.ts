@@ -32,11 +32,13 @@ export const safeCallWithCurrentFiber = <T extends any[] = any[], K = any>(
   try {
     return action.call(null, ...args);
   } catch (e) {
-    const renderPlatform = currentRenderPlatform.current;
+    if (fallback) {
+      return fallback();
+    } else {
+      const renderPlatform = currentRenderPlatform.current;
 
-    renderPlatform.dispatchError({ fiber, error: e });
-
-    return fallback?.();
+      renderPlatform.dispatchError({ fiber, error: e });
+    }
   } finally {
     const l = stack.pop();
 

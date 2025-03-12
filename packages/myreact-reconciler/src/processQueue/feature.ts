@@ -1,6 +1,6 @@
 /* eslint-disable max-lines */
 import { __my_react_internal__, __my_react_shared__, type MyReactComponent, type UpdateQueue } from "@my-react/react";
-import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
+import { HOOK_TYPE, ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
 import { syncComponentStateToFiber } from "../runtimeComponent";
 import { prepareUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
@@ -467,11 +467,18 @@ export const processFunctionComponentUpdateQueue = (
 
         const typedTrigger = trigger as MyReactHookNodeDev;
 
-        const lastResult = typedTrigger.result;
+        let lastResult = typedTrigger.result;
+
+        if (typedTrigger.type === HOOK_TYPE.useSyncExternalStore) {
+          lastResult = trigger.value?.result;
+        }
+
+        let hasError = false;
 
         typedTrigger.result = safeCallWithCurrentFiber({
           fiber,
           fallback: function safeFallbackForState() {
+            hasError = true;
             return lastResult;
           },
           action: function safeGetNextState() {
@@ -491,7 +498,7 @@ export const processFunctionComponentUpdateQueue = (
 
         updater.callback && callbacks.push(updater.callback);
 
-        if (!needUpdate && (isForce || callbacks.length || !Object.is(lastResult, typedTrigger.result))) needUpdate = true;
+        if (!needUpdate && (isForce || hasError || callbacks.length || !Object.is(lastResult, typedTrigger.result))) needUpdate = true;
 
         if (__DEV__ && enableDebugFiled.current) {
           const typedNode = updater as UpdateQueueDev;
@@ -692,11 +699,18 @@ export const processFunctionComponentUpdateQueue = (
 
         const typedTrigger = trigger as MyReactHookNodeDev;
 
-        const lastResult = typedTrigger.result;
+        let lastResult = typedTrigger.result;
+
+        if (typedTrigger.type === HOOK_TYPE.useSyncExternalStore) {
+          lastResult = trigger.value?.result;
+        }
+
+        let hasError = false;
 
         typedTrigger.result = safeCallWithCurrentFiber({
           fiber,
           fallback: function safeFallbackForState() {
+            hasError = true;
             return lastResult;
           },
           action: function safeGetNextState() {
@@ -716,7 +730,7 @@ export const processFunctionComponentUpdateQueue = (
 
         updater.callback && callbacks.push(updater.callback);
 
-        if (!needUpdate && (isForce || callbacks.length || !Object.is(lastResult, typedTrigger.result))) needUpdate = true;
+        if (!needUpdate && (isForce || hasError || callbacks.length || !Object.is(lastResult, typedTrigger.result))) needUpdate = true;
 
         if (__DEV__ && enableDebugFiled.current) {
           const typedNode = updater as UpdateQueueDev;

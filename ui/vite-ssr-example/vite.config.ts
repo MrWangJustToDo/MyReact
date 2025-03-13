@@ -20,6 +20,7 @@ export default defineConfig({
         "react-router-dom",
         "react-router-dom/server",
         "framer-motion",
+        "react-compiler-runtime"
       ],
     },
     noExternal: [
@@ -33,7 +34,21 @@ export default defineConfig({
       "react-router-dom",
       "react-router-dom/server",
       "framer-motion",
+      "react-compiler-runtime"
     ],
   },
-  plugins: [react()],
+  plugins: [
+    react({
+      babel: {
+        plugins: [
+          [
+            "babel-plugin-react-compiler",
+            {
+              target: "18",
+            },
+          ],
+        ],
+      },
+    }),
+  ],
 });

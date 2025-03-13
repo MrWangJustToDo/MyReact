@@ -230,6 +230,8 @@ export default function (babel, opts: Record<string, any> = {}) {
       case "React.useActionState":
       case "useOptimistic":
       case "React.useOptimistic":
+      case "useSignal":
+      case "React.useSignal":
         return true;
       default:
         return false;

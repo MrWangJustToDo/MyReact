@@ -17,26 +17,11 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
+  // only need for local monorepo symlinks
   ssr: {
     optimizeDeps: {
-      include: [
-        "@my-react/react",
-        "@my-react/react-dom",
-        "@my-react/react-dom/server",
-        "@my-react/react-dom/client",
-        "@my-react/react/jsx-runtime",
-        "@my-react/react/jsx-dev-runtime",
-        "@remix-run/react",
-      ],
+      include: ["react", "react/jsx-dev-runtime", "react/jsx-runtime", "react-dom", "react-dom/server", "react-dom/client", "@remix-run/react"],
     },
-    noExternal: [
-      "@my-react/react",
-      "@my-react/react-dom",
-      "@my-react/react-dom/server",
-      "@my-react/react-dom/client",
-      "@my-react/react/jsx-runtime",
-      "@my-react/react/jsx-dev-runtime",
-      "@remix-run/react",
-    ],
+    noExternal: ["react", "react/jsx-dev-runtime", "react/jsx-runtime", "react-dom", "react-dom/server", "react-dom/client", "@remix-run/react"],
   },
 });

@@ -17,8 +17,8 @@
     "@remix-run/react": "^2.15.3",
     "@remix-run/serve": "^2.15.3",
     "isbot": "^4.4.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "npm:@my-react/react@*",
+    "react-dom": "npm:@my-react/react-dom@*"
   },
   "devDependencies": {
     "@my-react/react-refresh": "workspace:*",

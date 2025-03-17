@@ -36,6 +36,11 @@ export interface Options {
   babel?: BabelOptions | ((id: string, options: { ssr?: boolean }) => BabelOptions);
 
   /**
+   * default false for remix & react-router >= 7
+   */
+  enableResolveAlias?: boolean;
+
+  /**
    * for remix fast refresh
    */
   remix?: boolean;
@@ -96,6 +101,8 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
   // - import React, {useEffect} from 'react';
   const importReactRE = /\bimport\s+(?:\*\s+as\s+)?React\b/;
 
+  opts.enableResolveAlias ??= true;
+
   const viteBabel: Plugin = {
     name: "vite:my-react-babel",
     enforce: "pre",
@@ -110,7 +117,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
         return {
           esbuild: {
             jsx: "automatic",
-            jsxImportSource: opts.jsxImportSource ?? "@my-react/react",
+            jsxImportSource: opts.jsxImportSource ?? jsxImportSource,
           },
           optimizeDeps: { esbuildOptions: { jsx: "automatic" }, include: ["@my-react/react/jsx-runtime", "@my-react/react/jsx-dev-runtime"] },
         };
@@ -264,10 +271,13 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
         ].filter(Boolean) as string[],
       },
       resolve: {
-        alias: {
-          react: "@my-react/react",
-          "react-dom": "@my-react/react-dom",
-        },
+        alias:
+          !opts.reactRouter && !opts.remix && opts.enableResolveAlias
+            ? {
+                react: "@my-react/react",
+                "react-dom": "@my-react/react-dom",
+              }
+            : undefined,
         dedupe: ["react", "react-dom", "@my-react/react", "@my-react/react-dom"],
       },
     }),
@@ -300,7 +310,16 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
       // see https://github.com/remix-run/remix/blob/bff2d58bdd22fe305f3e7ca8ddad03c5940f4e90/packages/remix-dev/vite/plugin.ts#L1685
       // inject HMR runtime for remix
       if (id === "\0virtual:remix/inject-hmr-runtime") {
-        return `${code} \n ${preambleCode.replace(`__BASE__`, devBase)}`;
+        return `${preambleCode.replace(`__BASE__`, devBase)}`;
+      }
+    },
+  };
+  const viteRemixRefreshRuntime: Plugin = {
+    name: "vite:my-react-refresh-remix-runtime",
+    enforce: "post",
+    transform(code, id) {
+      if (id === "\0virtual:remix/hmr-runtime") {
+        return runtimeCode;
       }
     },
   };
@@ -311,12 +330,29 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
     transform(code, id) {
       // see https://github.com/remix-run/react-router/blob/20afd82a683f175150dd05095aa677686665fbc8/packages/react-router-dev/vite/plugin.ts#L1457
       if (id === "\0virtual:react-router/inject-hmr-runtime") {
-        return `${code} \n ${preambleCode.replace(`__BASE__`, devBase)}`;
+        return `${preambleCode.replace(`__BASE__`, devBase)}`;
       }
     },
   };
 
-  return [viteBabel, viteReactRefresh, opts.remix ? viteRemixRefresh : null, opts.reactRouter ? viteReactRouterRefresh : null].filter(Boolean);
+  const viteReactRouterRefreshRuntime: Plugin = {
+    name: "vite:my-react-refresh-react-router-runtime",
+    enforce: "post",
+    transform(code, id) {
+      if (id === "\0virtual:react-router/hmr-runtime") {
+        return runtimeCode;
+      }
+    },
+  };
+
+  return [
+    viteBabel,
+    viteReactRefresh,
+    opts.remix ? viteRemixRefresh : null,
+    opts.remix ? viteRemixRefreshRuntime : null,
+    opts.reactRouter ? viteReactRouterRefresh : null,
+    opts.reactRouter ? viteReactRouterRefreshRuntime : null,
+  ].filter(Boolean);
 }
 
 viteReact.preambleCode = preambleCode;

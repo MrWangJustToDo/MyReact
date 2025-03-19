@@ -188,7 +188,15 @@ export type { RenderPlatform, DefaultRenderPlatform } from "./renderPlatform";
 
 export type { RenderFiber, DefaultRenderFiber } from "./renderFiber";
 
-export type { UpdateQueue, ComponentUpdateQueue, HookUpdateQueue, HMRUpdateQueue, PromiseUpdateQueue, TriggerUpdateQueue } from "./renderQueue";
+export type {
+  UpdateQueue,
+  ComponentUpdateQueue,
+  HookUpdateQueue,
+  HMRUpdateQueue,
+  PromiseUpdateQueue,
+  TriggerUpdateQueue,
+  ContextUpdateQueue,
+} from "./renderQueue";
 
 export type {
   LikeJSX,

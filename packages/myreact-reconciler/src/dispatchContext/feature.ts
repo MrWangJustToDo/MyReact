@@ -6,7 +6,6 @@ import { triggerUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev }
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { enableDebugUpdateQueue, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
-import type { UpdateQueueDev } from "../processState";
 import type { createContext, UpdateQueue } from "@my-react/react";
 
 const { enableDebugFiled } = __my_react_shared__;
@@ -134,7 +133,7 @@ export const prepareUpdateAllDependence = (
 
     const now = Date.now();
 
-    const updater: UpdateQueueDev = {
+    const updater: UpdateQueue = {
       type: UpdateQueueType.context,
       trigger: fiber,
       payLoad: afterValue,
@@ -143,7 +142,6 @@ export const prepareUpdateAllDependence = (
       isImmediate: true,
       // TODO
       isRetrigger: true,
-      _debugBaseValue: beforeValue,
       _debugBeforeValue: beforeValue,
       _debugAfterValue: afterValue,
       _debugCreateTime: now,
@@ -198,7 +196,7 @@ export const prepareUpdateAllDependenceFromRoot = (
 
   const now = Date.now();
 
-  const updater: UpdateQueueDev = {
+  const updater: UpdateQueue = {
     type: UpdateQueueType.context,
     trigger: fiber,
     payLoad: afterValue,
@@ -206,7 +204,6 @@ export const prepareUpdateAllDependenceFromRoot = (
     isForce: true,
     isImmediate: true,
     isRetrigger: false,
-    _debugBaseValue: beforeValue,
     _debugBeforeValue: beforeValue,
     _debugAfterValue: afterValue,
     _debugCreateTime: now,
@@ -239,7 +236,7 @@ export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, 
 
   const now = Date.now();
 
-  const updater: UpdateQueueDev = {
+  const updater: UpdateQueue = {
     type: UpdateQueueType.context,
     trigger: fiber,
     payLoad: afterValue,
@@ -247,7 +244,6 @@ export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, 
     isForce: true,
     isImmediate: true,
     isRetrigger: true,
-    _debugBaseValue: beforeValue,
     _debugBeforeValue: beforeValue,
     _debugAfterValue: afterValue,
     _debugCreateTime: now,

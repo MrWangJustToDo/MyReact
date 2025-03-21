@@ -82,14 +82,10 @@ export const devWarn = (...args) => {
 
   const treeLog = renderFiber ? renderPlatform.getFiberTree(renderFiber) : "";
 
-  const obj = [];
-
-  const log = args.map((i) => (typeof i === "object" ? (obj.push(i), "%o") : i)).join(" ") + treeLog;
-
   if (enableFiberForLog.current && renderFiber) {
-    originalWarn.call(console, log + "\n%o", ...obj, renderFiber);
+    originalWarn.call(console, ...args, treeLog + "\n", renderFiber);
   } else {
-    originalWarn.call(console, log);
+    originalWarn.call(console, ...args, treeLog);
   }
 };
 
@@ -111,14 +107,10 @@ export const devError = (...args) => {
 
   const treeLog = renderFiber ? renderPlatform.getFiberTree(renderFiber) : "";
 
-  const obj = [];
-
-  const log = args.map((i) => (typeof i === "object" ? (obj.push(i), "%o") : i)).join(" ") + treeLog;
-
   if (enableFiberForLog.current && renderFiber) {
-    originalError.call(console, log + "\n%o", ...obj, renderFiber);
+    originalError.call(console, ...args, treeLog + "\n", renderFiber);
   } else {
-    originalError.call(console, log);
+    originalError.call(console, ...args, treeLog);
   }
 };
 

@@ -34,8 +34,6 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
     this.deps = deps;
     this.value = value;
     this.reducer = reducer;
-
-    // this._dispatch = this._dispatch.bind(this);
   }
 
   get isMyReactHook() {
@@ -56,10 +54,6 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
 
     renderPlatform?.dispatchState(updater);
   }
-
-  _dispatch(action: Action) {
-    this._update({ payLoad: action, isForce: false, isSync: enableSyncFlush.current });
-  }
 }
 
 export interface MyReactHookNodeDev extends MyReactHookNode {
@@ -79,5 +73,5 @@ export const initHookInstance = (hookNode: MyReactHookNode) => {
 
   const typedField = field as HookInstanceField;
 
-  typedField.dispatch = (action: Action) => hookNode._dispatch(action);
+  typedField.dispatch = (action: Action) => hookNode._update({ payLoad: action, isForce: false, isSync: enableSyncFlush.current });
 };

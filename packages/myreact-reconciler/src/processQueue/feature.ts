@@ -463,7 +463,7 @@ export const processFunctionComponentUpdateQueue = (
           processedNodes.push(updater);
         }
 
-        const { trigger, payLoad } = updater;
+        const { trigger, payLoad, reducer } = updater;
 
         const typedTrigger = trigger as MyReactHookNodeDev;
 
@@ -482,7 +482,11 @@ export const processFunctionComponentUpdateQueue = (
             return lastResult;
           },
           action: function safeGetNextState() {
-            return typedTrigger.reducer(lastResult, payLoad);
+            if (reducer && typeof reducer === "function") {
+              return reducer(lastResult, payLoad);
+            } else {
+              return typedTrigger.reducer(lastResult, payLoad);
+            }
           },
         });
 
@@ -695,7 +699,7 @@ export const processFunctionComponentUpdateQueue = (
           processedNodes.push(updater);
         }
 
-        const { trigger, payLoad } = updater;
+        const { trigger, payLoad, reducer } = updater;
 
         const typedTrigger = trigger as MyReactHookNodeDev;
 
@@ -714,7 +718,11 @@ export const processFunctionComponentUpdateQueue = (
             return lastResult;
           },
           action: function safeGetNextState() {
-            return typedTrigger.reducer(lastResult, payLoad);
+            if (reducer && typeof reducer === "function") {
+              return reducer(lastResult, payLoad);
+            } else {
+              return typedTrigger.reducer(lastResult, payLoad);
+            }
           },
         });
 

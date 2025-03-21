@@ -1,7 +1,7 @@
 import type { MyReactComponent } from "../component";
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "../element";
 import type { RenderFiber } from "../renderFiber";
-import type { Action, RenderHook } from "../renderHook";
+import type { Action, Reducer, RenderHook } from "../renderHook";
 import type { UpdateQueueType } from "@my-react/react-shared";
 
 /**
@@ -31,6 +31,7 @@ export type HookUpdateQueue = {
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Action;
+  reducer?: Reducer;
   callback?: () => void;
 };
 

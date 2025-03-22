@@ -12,11 +12,12 @@ pnpm install
 
 // 3. prepare
 pnpm run build:packages
-pnpm run build:extension
-// install this extension in chrome
 
-// 4. start
-pnpm run build:web
+// 4. dev / build
+// local dev by web
+pnpm run dev:web
+// install this extension in chrome
+pnpm run build:extension
 
 // 5. connect a @my-react app
 // copy the connect command in the webUI into the @my-react app console`;
@@ -33,7 +34,7 @@ export const DevToolSection = () => {
       <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
         <Box alignSelf="flex-start" marginRight={{ base: "1%", md: "2%", lg: "3%", "2xl": "4%" }} maxWidth={{ base: "100%", md: "42%" }}>
           <Heading as="h1" fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} marginTop="6">
-            @my-react DevTool <Tag colorScheme="orange">Alpha</Tag>
+            @my-react DevTool <Tag colorScheme="red">Beta</Tag>
           </Heading>
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
             A chrome extension help to debug <Tag>@my-react</Tag> app, just like <Tag>React DevTool</Tag>.

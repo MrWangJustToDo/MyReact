@@ -4,7 +4,7 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 import { ContainerElement } from "@my-react-dom-server/api";
 import { LatestServerStreamDispatch, type BootstrapScriptDescriptor } from "@my-react-dom-server/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
-import { checkRoot, startRenderAsync } from "@my-react-dom-shared";
+import { checkRoot, createControlPromise, startRenderAsync } from "@my-react-dom-shared";
 
 type RenderToReadableStreamOptions = {
   identifierPrefix?: string;
@@ -19,7 +19,11 @@ type RenderToReadableStreamOptions = {
   onPostpone?: (reason: string) => void;
 };
 
-export const renderToReadableStream = (element: LikeJSX, options?: RenderToReadableStreamOptions): Promise<ReadableStream> => {
+type ReactDOMServerReadableStream = ReadableStream & {
+  allReady: Promise<void>;
+}
+
+export const renderToReadableStream = (element: LikeJSX, options?: RenderToReadableStreamOptions): Promise<ReactDOMServerReadableStream> => {
   if (isValidElement(element)) {
     prepareRenderPlatform();
 
@@ -47,7 +51,9 @@ export const renderToReadableStream = (element: LikeJSX, options?: RenderToReada
 
     initialFiberNode(fiber, renderDispatch);
 
-    return new Promise((resolve, reject) => {
+    return new Promise<ReactDOMServerReadableStream>((resolve, reject) => {
+      const { promise, resolve: _resolve, reject: _reject } = createControlPromise();
+
       const stream = new ReadableStream({
         start: (controller) => {
           const internalStream = {
@@ -63,6 +69,7 @@ export const renderToReadableStream = (element: LikeJSX, options?: RenderToReada
           };
           const onAllReady = () => {
             controller.close();
+            _resolve();
           };
 
           const onShellReady = () => {
@@ -71,6 +78,7 @@ export const renderToReadableStream = (element: LikeJSX, options?: RenderToReada
 
           const onShellError = (error: unknown) => {
             reject(error);
+            _reject(error as Error);
           };
 
           renderDispatch.stream = internalStream;
@@ -86,7 +94,9 @@ export const renderToReadableStream = (element: LikeJSX, options?: RenderToReada
         cancel: () => {
           canceled = true;
         },
-      });
+      }) as ReactDOMServerReadableStream;
+
+      stream.allReady = promise;
     });
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToReadableStream' can only render a '@my-react' element`);

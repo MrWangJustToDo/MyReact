@@ -5,6 +5,7 @@ export * from "./log";
 export * from "./head";
 export * from "./tools";
 export * from "./render";
+export * from "./promise";
 export * from "./version";
 export * from "./comment";
 export * from "./platform";

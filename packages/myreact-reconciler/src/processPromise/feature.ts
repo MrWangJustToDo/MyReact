@@ -2,7 +2,6 @@ import { __my_react_internal__, __my_react_shared__, use } from "@my-react/react
 import { merge, STATE_TYPE } from "@my-react/react-shared";
 
 import { deleteEffect } from "../dispatchEffect";
-import { classComponentUnmount } from "../runtimeComponent";
 import { hookListUnmount } from "../runtimeHook";
 import { getCurrentDispatchFromFiber } from "../share";
 
@@ -15,6 +14,8 @@ const { currentRenderPlatform } = __my_react_internal__;
 const { enableDebugFiled } = __my_react_shared__;
 
 export const processPromise = (fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
+  deleteEffect(fiber, getCurrentDispatchFromFiber(fiber));
+  
   if (promise.state === "fulfilled") {
     use._updater(fiber, promise.value);
   } else if (promise.state === "rejected") {
@@ -29,10 +30,6 @@ export const processPromise = (fiber: MyReactFiberNode, promise: PromiseWithStat
         const renderDispatch = getCurrentDispatchFromFiber(fiber);
 
         hookListUnmount(fiber, renderDispatch);
-
-        classComponentUnmount(fiber, renderDispatch);
-
-        fiber.instance = null;
 
         fiber.hookList = null;
 

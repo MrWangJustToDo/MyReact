@@ -4,7 +4,6 @@ import { safeCall, safeCallWithSync } from "@my-react/react-reconciler";
 import { checkMyReactVersion, checkReconcilerVersion } from "../shared";
 
 import { render, hydrate, hydrateRoot, createRoot } from "./mount";
-import { initGlobalRenderPlatform } from "./renderPlatform";
 import { findDOMNode, createPortal, unmountComponentAtNode /* initGlobalHMR */, __my_react_dom_shared__, __my_react_dom_internal__ } from "./tools";
 
 import type { ClientDomDispatch, ClientDomDispatchDev } from "./renderDispatch";
@@ -16,8 +15,6 @@ const version = enableMockReact.current ? "18.2.0" : __VERSION__;
 const flushSync = safeCallWithSync;
 
 const unstable_batchedUpdates = safeCall;
-
-initGlobalRenderPlatform();
 
 checkReconcilerVersion();
 

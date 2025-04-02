@@ -67,6 +67,10 @@ export const prepareRenderPlatform = () => {
 
   if (!renderPlatform) initGlobalRenderPlatform();
 
+  if (!(currentRenderPlatform.current instanceof DomPlatform)) {
+    throw new Error(`[@my-react/react-dom] renderPlatform is not instance of DomPlatform`);
+  }
+
   enableDebugFiled.current = true;
 
   enableScopeTreeLog.current = true;
@@ -76,10 +80,6 @@ export const prepareRenderPlatform = () => {
   enableMoveBefore.current = enableMoveBefore.current && typeof window !== "undefined" && typeof window?.Node?.prototype?.moveBefore === "function";
 
   renderPlatform = currentRenderPlatform.current as DomPlatform;
-
-  // if (__DEV__ && renderPlatform.isServer) {
-  //   console.warn(`[@my-react/react-dom] current environment is server, please use 'renderToString' instead of 'render'`);
-  // }
 
   renderPlatform.isServer = false;
 

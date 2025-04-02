@@ -1,4 +1,5 @@
 import { render } from "react-dom";
+// import { render } from "./test";
 import { __my_react_dom_shared__ } from "@my-react/react-dom";
 import "./index.css";
 import App from "./App";

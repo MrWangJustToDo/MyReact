@@ -58,6 +58,10 @@ export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatc
 
     fiber.memoizedProps = fiber.pendingProps;
 
+    if (typeof fiber.pendingText === "string") {
+      fiber.memoizedText = fiber.pendingText;
+    }
+
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__update__);
   }
 };

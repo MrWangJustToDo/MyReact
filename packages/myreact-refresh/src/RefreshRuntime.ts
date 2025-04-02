@@ -286,7 +286,7 @@ export const performReactRefresh = () => {
   if (!pendingUpdates.length) return;
 
   if (hmrRuntime.size === 0) {
-    console.log(`[@my-react/react-refresh] try to refresh current App failed, current environment not have a valid HMR runtime`);
+    console.warn(`[@my-react/react-refresh] try to refresh current App failed, current environment not have a valid HMR runtime`);
     return;
   }
 
@@ -401,7 +401,7 @@ export const performReactRefresh = () => {
       setRefreshRuntimeFieldForDev(container);
     });
   } else {
-    console.log(`[@my-react/react-refresh] nothing need to update, you may need a full reload to get the effect`);
+    console.warn(`[@my-react/react-refresh] nothing need to update, you may need a full reload to get the effect`);
   }
 };
 

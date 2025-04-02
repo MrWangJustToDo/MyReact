@@ -51,6 +51,10 @@ export class MyReactFiberNode implements RenderFiber {
 
   memoizedState: Record<string, unknown>;
 
+  pendingText: string;
+
+  memoizedText: string;
+
   constructor(element: MyReactElementNode) {
     this.state = STATE_TYPE.__create__;
 
@@ -58,7 +62,7 @@ export class MyReactFiberNode implements RenderFiber {
   }
 
   _installElement(element: MyReactElementNode) {
-    const { key, ref, nodeType, elementType, pendingProps } = getTypeFromElementNode(element);
+    const { key, ref, nodeType, elementType, pendingProps, pendingText } = getTypeFromElementNode(element);
 
     this.ref = ref;
 
@@ -69,6 +73,10 @@ export class MyReactFiberNode implements RenderFiber {
     this.elementType = elementType;
 
     this.pendingProps = pendingProps;
+
+    if (typeof pendingText === 'string') {
+      this.pendingText = pendingText;
+    }
 
     if (__DEV__) {
       const typeThis = this as unknown as MyReactFiberNodeDev;

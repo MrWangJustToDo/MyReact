@@ -12,6 +12,7 @@ export * from "./processHook";
 export * from "./processState";
 export * from "./processPromise";
 export * from "./share";
+export * from "./compact";
 export * from "./renderDispatch";
 export * from "./renderMount";
 export * from "./renderUnmount";

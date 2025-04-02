@@ -108,9 +108,9 @@ export const devError = (...args) => {
   const treeLog = renderFiber ? renderPlatform.getFiberTree(renderFiber) : "";
 
   if (enableFiberForLog.current && renderFiber) {
-    originalError.call(console, ...args, treeLog + "\n", renderFiber);
+    originalError.call(console, ...args, "", treeLog + "\n", renderFiber);
   } else {
-    originalError.call(console, ...args, treeLog);
+    originalError.call(console, ...args, "", treeLog);
   }
 };
 

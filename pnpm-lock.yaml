@@ -216,7 +216,7 @@ importers:
         specifier: '>=0.3.7'
         version: link:../myreact-refresh
       vite:
-        specifier: ^4 || ^5
+        specifier: ^4 || ^5 || ^6
         version: 5.4.14(@types/node@22.13.1)(sass@1.84.0)(sugarss@4.0.1(postcss@8.5.1))(terser@5.28.1)
     devDependencies:
       '@my-react/react-shared':

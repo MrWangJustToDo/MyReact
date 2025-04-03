@@ -76,6 +76,8 @@ let errorFiber: MyReactFiberNode | null = null;
 export const devWarn = (...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
+  const startWithPlain = typeof args[0] === "string" || typeof args[0] === "number" || typeof args[0] === "boolean";
+
   const renderFiber = warnFiber || currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
 
   renderFiber && fiberWarn(renderFiber as MyReactFiberNode, ...args);
@@ -83,9 +85,17 @@ export const devWarn = (...args) => {
   const treeLog = renderFiber ? renderPlatform.getFiberTree(renderFiber) : "";
 
   if (enableFiberForLog.current && renderFiber) {
-    originalWarn.call(console, ...args, treeLog + "\n", renderFiber);
+    if (startWithPlain) {
+      originalWarn.call(console, ...args, treeLog, "\n", renderFiber);
+    } else {
+      originalWarn.call(console, "", ...args, treeLog, "\n", renderFiber);
+    }
   } else {
-    originalWarn.call(console, ...args, treeLog);
+    if (startWithPlain) {
+      originalWarn.call(console, ...args, treeLog);
+    } else {
+      originalWarn.call(console, "", ...args, treeLog);
+    }
   }
 };
 
@@ -101,6 +111,8 @@ export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
 export const devError = (...args) => {
   const renderPlatform = currentRenderPlatform.current;
 
+  const startWithPlain = typeof args[0] === "string" || typeof args[0] === "number" || typeof args[0] === "boolean";
+
   const renderFiber = errorFiber || currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
 
   renderFiber && fiberError(renderFiber as MyReactFiberNode, ...args);
@@ -108,9 +120,17 @@ export const devError = (...args) => {
   const treeLog = renderFiber ? renderPlatform.getFiberTree(renderFiber) : "";
 
   if (enableFiberForLog.current && renderFiber) {
-    originalError.call(console, ...args, "", treeLog + "\n", renderFiber);
+    if (startWithPlain) {
+      originalError.call(console, ...args, treeLog, "\n", renderFiber);
+    } else {
+      originalError.call(console, "", ...args, treeLog, "\n", renderFiber);
+    }
   } else {
-    originalError.call(console, ...args, "", treeLog);
+    if (startWithPlain) {
+      originalError.call(console, ...args, treeLog);
+    } else {
+      originalError.call(console, "", ...args, treeLog);
+    }
   }
 };
 

@@ -1,5 +1,5 @@
 import { unmountComponentAtNode } from "@my-react-dom-client/tools";
-import { enableAsyncHydrate } from "@my-react-dom-shared";
+import { enableAsyncHydrate, wrapperFunc } from "@my-react-dom-shared";
 
 import { onceLogNewEntry } from "./createRoot";
 import { internalHydrate } from "./hydrate";
@@ -9,7 +9,7 @@ import type { Options } from "./createRoot";
 import type { RenderContainer } from "./render";
 import type { LikeJSX } from "@my-react/react";
 
-export const hydrateRoot = (container: Partial<RenderContainer>, element: LikeJSX, _option?: Options) => {
+export const hydrateRoot = wrapperFunc((container: Partial<RenderContainer>, element: LikeJSX, _option?: Options) => {
   const render = function hydrateRootRender(element: LikeJSX) {
     originalRender(element, container);
   };
@@ -29,4 +29,4 @@ export const hydrateRoot = (container: Partial<RenderContainer>, element: LikeJS
     render,
     unmount,
   };
-};
+});

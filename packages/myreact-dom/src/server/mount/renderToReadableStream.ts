@@ -4,7 +4,7 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 import { ContainerElement } from "@my-react-dom-server/api";
 import { LatestServerStreamDispatch, type BootstrapScriptDescriptor } from "@my-react-dom-server/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
-import { checkRoot, createControlPromise, startRenderAsync } from "@my-react-dom-shared";
+import { checkRoot, createControlPromise, startRenderAsync, wrapperFunc } from "@my-react-dom-shared";
 
 type RenderToReadableStreamOptions = {
   identifierPrefix?: string;
@@ -21,9 +21,9 @@ type RenderToReadableStreamOptions = {
 
 type ReactDOMServerReadableStream = ReadableStream & {
   allReady: Promise<void>;
-}
+};
 
-export const renderToReadableStream = (element: LikeJSX, options?: RenderToReadableStreamOptions): Promise<ReactDOMServerReadableStream> => {
+export const renderToReadableStream = wrapperFunc((element: LikeJSX, options?: RenderToReadableStreamOptions): Promise<ReactDOMServerReadableStream> => {
   if (isValidElement(element)) {
     prepareRenderPlatform();
 
@@ -101,4 +101,4 @@ export const renderToReadableStream = (element: LikeJSX, options?: RenderToReada
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToReadableStream' can only render a '@my-react' element`);
   }
-};
+});

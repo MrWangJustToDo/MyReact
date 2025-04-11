@@ -4,7 +4,7 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 import { ContainerElement } from "@my-react-dom-server/api";
 import { LatestServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
-import { checkRoot, isServer, startRenderAsync } from "@my-react-dom-shared";
+import { checkRoot, isServer, startRenderAsync, wrapperFunc } from "@my-react-dom-shared";
 
 import type { BootstrapScriptDescriptor, ErrorInfo } from "@my-react-dom-server/renderDispatch";
 
@@ -27,7 +27,7 @@ type PipeableStream = {
   pipe: <Writable extends NodeJS.WritableStream>(destination: Writable) => Writable;
 };
 
-export const renderToPipeableStream = (element: LikeJSX, options?: RenderToPipeableStreamOptions): PipeableStream => {
+export const renderToPipeableStream = wrapperFunc((element: LikeJSX, options?: RenderToPipeableStreamOptions): PipeableStream => {
   if (isValidElement(element)) {
     prepareRenderPlatform();
 
@@ -79,4 +79,4 @@ export const renderToPipeableStream = (element: LikeJSX, options?: RenderToPipea
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToPipeableStream' can only render a '@my-react' element`);
   }
-};
+});

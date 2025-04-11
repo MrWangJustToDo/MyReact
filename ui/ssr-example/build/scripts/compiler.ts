@@ -22,9 +22,11 @@ export const compilerPromise = (name: "client" | "server", compiler: Compiler, d
     }
     compiler.hooks.done.tap(name, (stats) => {
       if (!stats.hasErrors()) {
-        development
-          ? logger().info(`[${name}] compiler done, compiler count: ${count++} -- time: ${stats.endTime - stats.startTime} ms`)
-          : logger().info(`[${name}] production code compiler done -- time: ${stats.endTime - stats.startTime} ms`);
+        if (development) {
+          logger().info(`[${name}] compiler done, compiler count: ${count++} -- time: ${stats.endTime - stats.startTime} ms`);
+        } else {
+          logger().info(`[${name}] production code compiler done -- time: ${stats.endTime - stats.startTime} ms`);
+        }
         if (name === "server") {
           require.cache = {};
         }

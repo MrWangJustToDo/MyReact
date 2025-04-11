@@ -4,7 +4,7 @@ import path, { resolve } from "path";
 import type { SafeGenerateActionPropsWithReact } from "..";
 import type { RuleSetRule, RuleSetUseItem } from "webpack";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const threadLoader = require("thread-loader");
 
 const cssRules = ({ env, isDEV }: SafeGenerateActionPropsWithReact): RuleSetRule => ({
@@ -43,7 +43,8 @@ const jsRules = ({ env, isDEV }: SafeGenerateActionPropsWithReact): RuleSetRule 
           sourceType: "unambiguous",
           cacheDirectory: true,
           configFile: resolve(process.cwd(), "babel.config.js"),
-          plugins: env === "client" ? [isDEV && (process.env.REACT === "react" ? "react-refresh/babel" : "@my-react/react-refresh/babel")].filter(Boolean) : [],
+          // already add in babel.config.js
+          // plugins: env === "client" ? [isDEV && (process.env.REACT === "react" ? "react-refresh/babel" : "@my-react/react-refresh/babel")].filter(Boolean) : [],
         },
       },
     ],

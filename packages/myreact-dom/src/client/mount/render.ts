@@ -5,7 +5,7 @@ import { include, once, STATE_TYPE } from "@my-react/react-shared";
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { prepareDevContainer, unmountComponentAtNode } from "@my-react-dom-client/tools";
-import { autoSetDevHMR, autoSetDevTools, checkRoot, delGlobalDispatch, enableAsyncRender, startRender } from "@my-react-dom-shared";
+import { autoSetDevHMR, autoSetDevTools, checkRoot, delGlobalDispatch, enableAsyncRender, startRender, wrapperFunc } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 import type { CustomRenderPlatform } from "@my-react/react-reconciler";
@@ -115,7 +115,7 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
   return renderDispatch;
 };
 
-export const render = (element: LikeJSX, _container: Partial<RenderContainer>, cb?: () => void) => {
+export const render = wrapperFunc((element: LikeJSX, _container: Partial<RenderContainer>, cb?: () => void) => {
   if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'render' can only render a '@my-react' element`);
 
   prepareRenderPlatform();
@@ -151,4 +151,4 @@ export const render = (element: LikeJSX, _container: Partial<RenderContainer>, c
   }
 
   internalRender(element, container, cb);
-};
+});

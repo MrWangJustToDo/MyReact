@@ -4,7 +4,7 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { prepareDevContainer, checkRehydrate, getError, clearError } from "@my-react-dom-client/tools";
-import { autoSetDevHMR, autoSetDevTools, checkRoot, enableAsyncHydrate, startRender, startRenderAsync } from "@my-react-dom-shared";
+import { autoSetDevHMR, autoSetDevTools, checkRoot, enableAsyncHydrate, startRender, startRenderAsync, wrapperFunc } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogPerformanceWarn } from "./render";
 
@@ -150,8 +150,8 @@ export const internalHydrate = (element: LikeJSX, container: Partial<RenderConta
   }
 };
 
-export const hydrate = (element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) => {
+export const hydrate = wrapperFunc((element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) => {
   enableAsyncHydrate.current = false;
 
   internalHydrate(element, container, cb);
-};
+});

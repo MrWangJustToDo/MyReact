@@ -6,6 +6,7 @@ import dayjs from "dayjs";
 import { resolve } from "path";
 import { DefinePlugin, HotModuleReplacementPlugin } from "webpack";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 require("dayjs/locale/zh-cn");
 
 dayjs.locale("zh-cn");

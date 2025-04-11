@@ -4,12 +4,12 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 import { ContainerElement } from "@my-react-dom-server/api";
 import { LegacyServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
-import { checkRoot, isServer, startRender } from "@my-react-dom-shared";
+import { checkRoot, isServer, startRender, wrapperFunc } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 import type { Readable } from "stream";
 
-export const renderToNodeStream = (element: LikeJSX): Readable => {
+export const renderToNodeStream = wrapperFunc((element: LikeJSX): Readable => {
   if (isValidElement(element)) {
     prepareRenderPlatform();
 
@@ -44,4 +44,4 @@ export const renderToNodeStream = (element: LikeJSX): Readable => {
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToNodeStream' can only render a '@my-react' element`);
   }
-};
+});

@@ -110,3 +110,13 @@ const injectDevRefresh = () => {
 globalThis[PENDING_DEV_TOOL_FIELD] = injectDevTool;
 
 globalThis[PENDING_DEV_REFRESH_FIELD] = injectDevRefresh;
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export const wrapperFunc = <T = Function>(fn: T) => {
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  fn.isMyReactRender = true;
+  
+  return fn;
+};

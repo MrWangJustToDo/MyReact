@@ -67,6 +67,6 @@
   },
   "peerDependencies": {
     "eslint": "^8.57.0",
-    "webpack": "^5.97.1"
+    "webpack": "^5.99.5"
   }
 }

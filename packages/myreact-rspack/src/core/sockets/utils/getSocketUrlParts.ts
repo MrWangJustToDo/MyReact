@@ -50,7 +50,7 @@ export default function getSocketUrlParts(
       // and will have no effect if `scriptSource` is a fully valid URL.
       // biome-ignore lint: reason
       url = new URL(scriptSource!, window.location.href);
-    } catch (e) {
+    } catch {
       // URL parsing failed, do nothing.
       // We will still proceed to see if we can recover using `resourceQuery`
     }

@@ -8,7 +8,7 @@
  * https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/0b960573797bf38926937994c481e4fec9ed8aa6/LICENSE
  */
 
-var RefreshRuntime = require('react-refresh/runtime');
+var RefreshRuntime = require('@my-react/react-refresh/runtime');
 var safeThis = (function () {
   // copied from core-js-pure/features/global-this
   'use strict';

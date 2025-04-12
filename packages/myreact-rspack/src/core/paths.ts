@@ -6,7 +6,7 @@ export const reactRefreshEntryPath = require.resolve(
 );
 export const refreshUtilsPath = require.resolve('../client/refreshUtils.js');
 export const refreshRuntimeDirPath = path.dirname(
-  require.resolve('react-refresh', {
+  require.resolve('@my-react/react-refresh', {
     paths: [reactRefreshPath],
   }),
 );

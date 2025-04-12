@@ -9,7 +9,7 @@
  */
 
 /* global __webpack_require__ */
-var Refresh = require('react-refresh/runtime');
+var Refresh = require('@my-react/react-refresh/runtime');
 
 /**
  * Extracts exports from a webpack module object.

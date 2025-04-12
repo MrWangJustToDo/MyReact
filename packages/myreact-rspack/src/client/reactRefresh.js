@@ -1,6 +1,6 @@
 // Thanks https://github.com/pmmmwh/react-refresh-webpack-plugin
 const RefreshUtils = require('./refreshUtils');
-const RefreshRuntime = require('react-refresh/runtime');
+const RefreshRuntime = require('@my-react/react-refresh/runtime');
 
 // Port from https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/main/loader/utils/getRefreshModuleRuntime.js#L29
 function refresh(moduleId, webpackHot) {

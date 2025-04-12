@@ -42,7 +42,7 @@ class ReactRefreshRspackPlugin {
       (compiler.options.mode !== "development" ||
         // We also check for production process.env.NODE_ENV,
         // in case it was set and mode is non-development (e.g. 'none')
-        (process.env.NODE_ENV && process.env.NODE_ENV === "production")) &&
+        (process.env && process.env.NODE_ENV === "production")) &&
       !this.options.forceEnable
     ) {
       return;
@@ -107,10 +107,17 @@ class ReactRefreshRspackPlugin {
     new compiler.webpack.DefinePlugin(definedModules).apply(compiler);
     new compiler.webpack.ProvidePlugin(providedModules).apply(compiler);
 
-    const refreshPath = path.dirname(require.resolve("react-refresh"));
+    const refreshPath = path.dirname(require.resolve("@my-react/react-refresh"));
     compiler.options.resolve.alias = {
       "react-refresh": refreshPath,
+      "@my-react/react-refresh": refreshPath,
       ...compiler.options.resolve.alias,
+      react: "@my-react/react",
+      "react-dom$": "@my-react/react-dom",
+      "react-dom/server$": "@my-react/react-dom/server",
+      "react-dom/client$": "@my-react/react-dom/client",
+      "react/jsx-runtime$": "@my-react/react/jsx-runtime",
+      "react/jsx-dev-runtime$": "@my-react/react/jsx-dev-runtime",
     };
   }
 }

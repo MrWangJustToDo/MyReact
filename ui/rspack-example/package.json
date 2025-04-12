@@ -1,0 +1,23 @@
+{
+  "name": "rspack-example",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production rspack build",
+    "dev": "rspack serve "
+  },
+  "dependencies": {
+    "@my-react/react": "workspace:*",
+    "@my-react/react-dom": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@my-react/react-refresh": "workspace:*",
+    "@my-react/react-rspack": "workspace:*",
+    "@rspack/cli": "1.3.2",
+    "@rspack/core": "1.3.2"
+  }
+}

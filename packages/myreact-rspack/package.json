@@ -1,0 +1,69 @@
+{
+  "name": "@my-react/react-rspack",
+  "version": "0.0.1",
+  "description": "make @my-react work for rspack",
+  "files": [
+    "dist",
+    "index.js"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "node": "./index.js",
+      "require": "./index.js"
+    },
+    "./refreshUtils": {
+      "require": "./refreshUtils.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "buildOptions": [
+    {
+      "input": "./src/index.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/index.js",
+          "format": "cjs",
+          "type": true,
+          "multiple": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/index.mjs",
+          "format": "esm"
+        }
+      ]
+    },
+    {
+      "input": "./src/refreshUtils.ts",
+      "pkgName": "refreshUtils",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/refreshUtils.js",
+          "format": "cjs",
+          "type": true,
+          "multiple": true
+        }
+      ]
+    }
+  ],
+  "peerDependencies": {
+    "@my-react/react-refresh": ">=0.3.7",
+    "webpack-hot-middleware": "2.x"
+  },
+  "dependencies": {
+    "error-stack-parser": "^2.1.4",
+    "html-entities": "^2.6.0"
+  },
+  "devDependencies": {
+    "@my-react/react-shared": "^0.3.7",
+    "@rspack/core": "1.3.1"
+  }
+}

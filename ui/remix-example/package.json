@@ -13,9 +13,9 @@
   "dependencies": {
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
-    "@remix-run/node": "^2.15.3",
-    "@remix-run/react": "^2.15.3",
-    "@remix-run/serve": "^2.15.3",
+    "@remix-run/node": "^2.16.5",
+    "@remix-run/react": "^2.16.5",
+    "@remix-run/serve": "^2.16.5",
     "isbot": "^4.4.0",
     "react": "npm:@my-react/react@*",
     "react-dom": "npm:@my-react/react-dom@*"
@@ -23,7 +23,7 @@
   "devDependencies": {
     "@my-react/react-refresh": "workspace:*",
     "@my-react/react-vite": "workspace:*",
-    "@remix-run/dev": "^2.15.3",
+    "@remix-run/dev": "^2.16.5",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "eslint": "^8.57.0",

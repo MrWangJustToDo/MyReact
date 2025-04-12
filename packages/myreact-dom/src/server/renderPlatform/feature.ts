@@ -15,7 +15,7 @@ const dispatchHook = (params: RenderHookParams) => processHook(params);
 
 const dispatchPromise = (_props: { fiber: MyReactFiberNode; promise: Promise<unknown> }) => {
   // throw promise;
-  throw new Error("Server side does not support promise");
+  throw new Error("Server side does not support render promise");
 };
 
 /**
@@ -61,7 +61,9 @@ export const prepareRenderPlatform = () => {
 
   if (!renderPlatform) initGlobalRenderPlatform();
 
-  if (!(currentRenderPlatform.current instanceof DomPlatform)) {
+  renderPlatform = currentRenderPlatform.current as DomPlatform;
+
+  if (!renderPlatform.isDOMPlatform) {
     throw new Error(`[@my-react/react-dom] renderPlatform is not instance of DomPlatform`);
   }
 

@@ -29,12 +29,13 @@ export function App() {
         <a href="https://vitejs.dev" target="_blank">
           Vite
         </a>
-        <div style={{ width: "50%" }}></div>
+        <span style={{ marginLeft: "10px", marginRight: "10px" }}>+</span>
         <a href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
           @my-react
         </a>
+        <span style={{ marginLeft: "10px", marginRight: "10px" }}>+</span>
+        ssr
       </div>
-      <h1>Vite + @my-react + ssr</h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
         <p>

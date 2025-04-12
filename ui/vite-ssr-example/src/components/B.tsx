@@ -21,6 +21,7 @@ export const B = () => {
 
   return (
     <>
+      <br />
       <AnimatePresence mode="wait">
         <motion.div
           key={f}

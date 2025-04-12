@@ -11,7 +11,7 @@ import type {
 function injectRefreshFunctions(compilation: WebpackCompilation, Template: typeof WebpackTemplate) {
   const hookVars: any = (compilation.mainTemplate.hooks as any).localVars;
 
-  hookVars.tap("RefreshWebpackPlugin", (source: string) =>
+  hookVars.tap("MyReactRefreshWebpackPlugin", (source: string) =>
     Template.asString([
       source,
       "",
@@ -28,7 +28,7 @@ function injectRefreshFunctions(compilation: WebpackCompilation, Template: typeo
   );
 }
 
-function webpack4(this: RefreshWebpackPlugin, compiler: WebpackCompiler) {
+function webpack4(this: MyReactRefreshWebpackPlugin, compiler: WebpackCompiler) {
   const { Template } = this;
   // Webpack 4 does not have a method to handle interception of module
   // execution.
@@ -36,12 +36,12 @@ function webpack4(this: RefreshWebpackPlugin, compiler: WebpackCompiler) {
   // `strictModuleExceptionHandling` in `MainTemplate`:
   // https://github.com/webpack/webpack/blob/4c644bf1f7cb067c748a52614500e0e2182b2700/lib/MainTemplate.js#L200
 
-  compiler.hooks.compilation.tap("RefreshWebpackPlugin", (compilation) => {
+  compiler.hooks.compilation.tap("MyReactRefreshWebpackPlugin", (compilation) => {
     injectRefreshFunctions(compilation, Template);
 
     const hookRequire: any = (compilation.mainTemplate.hooks as any).require;
 
-    hookRequire.tap("RefreshWebpackPlugin", (source: string) => {
+    hookRequire.tap("MyReactRefreshWebpackPlugin", (source: string) => {
       // Webpack 4 evaluates module code on the following line:
       // ```
       // modules[moduleId].call(module.exports, module, module.exports, hotCreateRequire(moduleId));
@@ -79,7 +79,7 @@ function webpack4(this: RefreshWebpackPlugin, compiler: WebpackCompiler) {
   });
 }
 
-function webpack5(this: RefreshWebpackPlugin, compiler: WebpackCompiler) {
+function webpack5(this: MyReactRefreshWebpackPlugin, compiler: WebpackCompiler) {
   const { RuntimeGlobals, RuntimeModule, Template } = this;
   class RefreshRuntimeModule extends RuntimeModule {
     constructor() {
@@ -112,16 +112,16 @@ function webpack5(this: RefreshWebpackPlugin, compiler: WebpackCompiler) {
     }
   }
 
-  compiler.hooks.compilation.tap("RefreshWebpackPlugin", (compilation) => {
+  compiler.hooks.compilation.tap("MyReactRefreshWebpackPlugin", (compilation) => {
     injectRefreshFunctions(compilation, Template);
 
-    compilation.hooks.additionalTreeRuntimeRequirements.tap("RefreshWebpackPlugin", (chunk: any) => {
+    compilation.hooks.additionalTreeRuntimeRequirements.tap("MyReactRefreshWebpackPlugin", (chunk: any) => {
       compilation.addRuntimeModule(chunk, new RefreshRuntimeModule());
     });
   });
 }
 
-class RefreshWebpackPlugin {
+class MyReactRefreshWebpackPlugin {
   webpackMajorVersion: number;
   // @ts-ignore exists in webpack 5
   RuntimeGlobals: typeof WebpackRuntimeGlobals;
@@ -146,10 +146,10 @@ class RefreshWebpackPlugin {
         break;
       }
       default: {
-        throw new Error(`RefreshWebpackPlugin does not support webpack v${this.webpackMajorVersion}.`);
+        throw new Error(`MyReactRefreshWebpackPlugin does not support webpack v${this.webpackMajorVersion}.`);
       }
     }
   }
 }
 
-export default RefreshWebpackPlugin;
+export default MyReactRefreshWebpackPlugin;

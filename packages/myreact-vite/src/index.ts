@@ -267,6 +267,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
           "@my-react/react-dom",
           "@my-react/react-dom/client",
           "@my-react/react-dom/server",
+          // no build in compiler module
           reactCompilerPlugin ? "react-compiler-runtime" : undefined,
         ].filter(Boolean) as string[],
       },

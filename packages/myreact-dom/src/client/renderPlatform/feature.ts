@@ -1,5 +1,13 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { devErrorWithFiber, enableFiberForLog, enableValidMyReactElement, processHook, processPromise, processState, triggerError } from "@my-react/react-reconciler";
+import {
+  devErrorWithFiber,
+  enableFiberForLog,
+  enableValidMyReactElement,
+  processHook,
+  processPromise,
+  processState,
+  triggerError,
+} from "@my-react/react-reconciler";
 
 import { DomPlatform, enableMoveBefore } from "@my-react-dom-shared";
 
@@ -20,7 +28,7 @@ function dispatchHook(this: DomPlatform, _params: RenderHookParams) {
   return processHook(_params);
 }
 
-function dispatchPromise(this: DomPlatform, _params: {fiber: MyReactFiberNode; promise: Promise<unknown>}) {
+function dispatchPromise(this: DomPlatform, _params: { fiber: MyReactFiberNode; promise: Promise<unknown> }) {
   processPromise(_params.fiber, _params.promise);
   return void 0;
 }
@@ -67,7 +75,9 @@ export const prepareRenderPlatform = () => {
 
   if (!renderPlatform) initGlobalRenderPlatform();
 
-  if (!(currentRenderPlatform.current instanceof DomPlatform)) {
+  renderPlatform = currentRenderPlatform.current as DomPlatform;
+
+  if (!renderPlatform.isDOMPlatform) {
     throw new Error(`[@my-react/react-dom] renderPlatform is not instance of DomPlatform`);
   }
 

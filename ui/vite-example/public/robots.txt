@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://app.chartdb.io/sitemap.xml

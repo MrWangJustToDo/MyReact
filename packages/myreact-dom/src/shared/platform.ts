@@ -6,6 +6,8 @@ const { yieldTask, macroTask, microTask } = __my_react_scheduler__;
 export class DomPlatform extends CustomRenderPlatform {
   isServer: boolean;
 
+  isDOMPlatform = true;
+
   constructor(isServer: boolean) {
     super();
     this.isServer = isServer;

@@ -1,55 +1,54 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import { defineConfig } from 'vite';
+import react from "@my-react/react-vite";
 // import react from '@vitejs/plugin-react';
-import react from '@my-react/react-vite';
-import { visualizer } from 'rollup-plugin-visualizer';
-import path from 'path';
-import UnpluginInjectPreload from 'unplugin-inject-preload/vite';
+import { defineConfig } from "vite";
 
+// !SEE https://github.com/vitejs/vite/issues/12738
+// !build will fail when using monorepo symlinks, npm install works fine, so build always fails in this case
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [
-        react(),
-        // @ts-ignore
-        visualizer({
-            filename: './stats/stats.html',
-            open: false,
-        }),
-        UnpluginInjectPreload({
-            files: [
-                {
-                    entryMatch: /logo-light.png$/,
-                    outputMatch: /logo-light-.*.png$/,
-                },
-                {
-                    entryMatch: /logo-dark.png$/,
-                    outputMatch: /logo-dark-.*.png$/,
-                },
-            ],
-        }),
+  ssr: {
+    // switch to react need disable all the config below
+    optimizeDeps: {
+      include: [
+        "react",
+        "react-dom",
+        "react-dom/server",
+        "react-dom/client",
+        "react/jsx-runtime",
+        "react/jsx-dev-runtime",
+        "react-router",
+        "react-router-dom",
+        "react-router-dom/server",
+        "framer-motion",
+        "react-compiler-runtime"
+      ],
+    },
+    noExternal: [
+      "react",
+      "react-dom",
+      "react-dom/server",
+      "react-dom/client",
+      "react/jsx-runtime",
+      "react/jsx-dev-runtime",
+      "react-router",
+      "react-router-dom",
+      "react-router-dom/server",
+      "framer-motion",
+      "react-compiler-runtime"
     ],
-    resolve: {
-        alias: {
-            '@': path.resolve(__dirname, './src'),
-        },
-    },
-    build: {
-        rollupOptions: {
-            output: {
-                assetFileNames: (assetInfo) => {
-                    if (
-                        // @ts-ignore
-                        assetInfo.names &&
-                        // @ts-ignore
-                        assetInfo.originalFileNames.some((name) =>
-                            name.startsWith('src/assets/templates/')
-                        )
-                    ) {
-                        return 'assets/[name][extname]';
-                    }
-                    return 'assets/[name]-[hash][extname]';
-                },
+  },
+  plugins: [
+    react({
+      babel: {
+        plugins: [
+          [
+            "babel-plugin-react-compiler",
+            {
+              target: "18",
             },
-        },
-    },
+          ],
+        ],
+      },
+    }),
+  ],
 });

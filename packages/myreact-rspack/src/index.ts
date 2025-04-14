@@ -25,7 +25,7 @@ function addSocketEntry(sockIntegration: IntegrationType, compiler: Compiler) {
   }
 }
 
-class ReactRefreshRspackPlugin {
+class RefreshRspackPlugin {
   options: NormalizedPluginOptions;
 
   static deprecated_runtimePaths = runtimePaths;
@@ -45,6 +45,15 @@ class ReactRefreshRspackPlugin {
         (process.env && process.env.NODE_ENV === "production")) &&
       !this.options.forceEnable
     ) {
+      compiler.options.resolve.alias = {
+        ...compiler.options.resolve.alias,
+        react: "@my-react/react",
+        "react-dom$": "@my-react/react-dom",
+        "react-dom/server$": "@my-react/react-dom/server",
+        "react-dom/client$": "@my-react/react-dom/client",
+        "react/jsx-runtime$": "@my-react/react/jsx-runtime",
+        "react/jsx-dev-runtime$": "@my-react/react/jsx-dev-runtime",
+      };
       return;
     }
     const addEntries = getAdditionalEntries({
@@ -78,7 +87,7 @@ class ReactRefreshRspackPlugin {
           // biome-ignore lint: exists
           or: [this.options.exclude!, [...runtimePaths]].filter(Boolean),
         },
-        use: ReactRefreshRspackPlugin.loader,
+        use: RefreshRspackPlugin.loader,
       });
     }
 
@@ -123,4 +132,4 @@ class ReactRefreshRspackPlugin {
 }
 
 // @ts-expect-error output module.exports
-export = ReactRefreshRspackPlugin;
+export = RefreshRspackPlugin;

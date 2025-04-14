@@ -1,5 +1,5 @@
 const { rspack } = require('@rspack/core');
-const ReactRefreshPlugin = require('@my-react/react-rspack');
+const RefreshPlugin = require('@my-react/react-rspack');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -41,7 +41,8 @@ const config = {
   },
   plugins: [
     new rspack.HtmlRspackPlugin({ template: './index.html' }),
-    !isProduction && new ReactRefreshPlugin(),
+    // always enable module alias for react packages
+    new RefreshPlugin(),
   ].filter(Boolean),
 };
 

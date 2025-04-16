@@ -80,9 +80,9 @@ pnpm dev:ssr / dev:csr / dev:next / dev:vite
 
 ## Api
 
-| @my-react/react | @my-react/react-dom          | @my-react/react-reactive | @my-react/react (hook)     | @my-react/react-refresh | @my-react/react-refresh-tools | @my-react/react-vite |
-| --------------- | ---------------------------- | ------------------------ | -------------------------- | ----------------------- | ----------------------------- | -------------------- |
-| createELement   | render                       | createReactive           | useState                   | babel plugin            | webpack plugin                | vite plugin          |
+| @my-react/react | @my-react/react-dom          | @my-react/react-reactive | @my-react/react (hook)     | @my-react/react-refresh | @my-react/react-refresh-tools | @my-react/react-vite | @my-react/react-rspack |
+| --------------- | ---------------------------- | ------------------------ | -------------------------- | ----------------------- | ----------------------------- | -------------------- | ---------------------- |
+| createELement   | render                       | createReactive           | useState                   | babel plugin            | webpack plugin                | vite plugin          | rspack plugin          |
 | cloneElement    | renderToString               | reactive                 | useEffect                  | refresh runtime         | next.js plugin                |
 | isValidElement  | findDOMNode                  | ref                      | useLayoutEffect            |                         | webpack loader                |
 | Children        | hydrate                      | computed                 | useRef                     |

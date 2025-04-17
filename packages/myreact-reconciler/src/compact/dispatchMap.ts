@@ -2,7 +2,7 @@ import { exclude, include, STATE_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
-import type { MyReactFiberContainer, MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
 import type { ReconcilerDispatch } from "./dispatch";
 
 export const initialMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch, config: any) => {
@@ -13,10 +13,6 @@ export const initialMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch
   let hostContext: any | null = null;
 
   if (fiber.parent) {
-    parentFiberHostContext = dispatch.runtimeDom.hostContextMap.get(fiber.parent);
-
-    hostContext = config.getChildHostContext(parentFiberHostContext, fiber.elementType, dispatch.rootNode);
-
     const mayFiberContainer = fiber.parent as MyReactFiberContainer;
 
     if (mayFiberContainer.containerNode) {
@@ -24,7 +20,15 @@ export const initialMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch
     } else if (include(fiber.parent.type, dispatch.runtimeRef.typeForNativeNode)) {
       parentFiberWithNode = fiber.parent;
     } else {
-      parentFiberWithNode = dispatch.runtimeDom.elementMap.get(fiber.parent);
+      parentFiberWithNode = dispatch.runtimeDom.elementMap.get(fiber.parent) || dispatch.rootFiber;
+    }
+
+    parentFiberHostContext = dispatch.runtimeDom.hostContextMap.get(parentFiberWithNode);
+
+    if (checkFiberWithNativeNode(fiber, dispatch)) {
+      hostContext = config.getChildHostContext(parentFiberHostContext, fiber.elementType, dispatch.rootNode, fiber);
+    } else {
+      hostContext = parentFiberHostContext;
     }
   } else {
     hostContext = config.getRootHostContext(dispatch.rootNode);
@@ -34,9 +38,7 @@ export const initialMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch
     dispatch.runtimeDom.elementMap.set(fiber, parentFiberWithNode);
   }
 
-  if (parentFiberHostContext) {
-    dispatch.runtimeDom.hostContextMap.set(fiber, hostContext);
-  }
+  dispatch.runtimeDom.hostContextMap.set(fiber, hostContext);
 };
 
 export const unmountMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch) => {
@@ -45,7 +47,10 @@ export const unmountMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch
   dispatch.runtimeDom.elementMap.delete(fiber);
 };
 
-export const getFiberWithNativeNode = (fiber: MyReactFiberNode | null, transform: (f: MyReactFiberNode) => MyReactFiberNode | null): MyReactFiberNode | null => {
+export const getFiberWithNativeNode = (
+  fiber: MyReactFiberNode | null,
+  transform: (f: MyReactFiberNode) => MyReactFiberNode | null
+): MyReactFiberNode | null => {
   while (fiber) {
     const maybeContainer = fiber as MyReactFiberContainer;
 
@@ -107,4 +112,22 @@ export const getInsertBeforeNodeFromSiblingAndParent = (fiber: MyReactFiberNode 
   if (beforeDom) return beforeDom;
 
   return getInsertBeforeNodeFromSiblingAndParent(fiber.parent, parentFiber) as MyReactFiberNode | null;
+};
+
+const checkFiberWithNativeNode = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch): boolean => {
+  const maybeContainer = fiber as MyReactFiberContainer;
+
+  const maybeRoot = fiber as MyReactFiberRoot;
+
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return false;
+
+  if (maybeContainer.containerNode) return true;
+
+  if (maybeRoot.renderDispatch?.rootNode) return true;
+
+  if (include(fiber.type, dispatch.runtimeRef.typeForNativeNode)) {
+    return true;
+  }
+
+  return false;
 };

@@ -33,7 +33,7 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
 
   if (validElement.length) {
     validElement.forEach(function checkSingleElementValidKey(c) {
-      if (!c._store["validKey"]) {
+      if (!c._store?.["validKey"]) {
         if (typeof c.key === "string") {
           if (obj[c.key]) {
             const renderTree = renderPlatform.getFiberTree(currentFiber);
@@ -51,7 +51,9 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
 
           keysMap[renderTree] = true;
         }
-        c._store["validKey"] = true;
+        if (c._store) {
+          c._store["validKey"] = true;
+        }
       }
     });
   }
@@ -68,7 +70,7 @@ export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) =
   if (Array.isArray(children)) {
     checkValidKey(children);
   } else {
-    if (isValidElement(children)) children._store["validKey"] = true;
+    if (isValidElement(children) && children._store) children._store["validKey"] = true;
   }
 
   enableOptimizeTreeLog.current = last;
@@ -90,7 +92,7 @@ export const checkValidElement = (element: MyReactElementNode) => {
   enableOptimizeTreeLog.current = false;
 
   if (isValidElement(element)) {
-    if (!element._store["validType"]) {
+    if (!element._store?.["validType"]) {
       const rawType = element.type;
 
       if (element.ref && typeof element.ref !== "object" && typeof element.ref !== "function") {
@@ -225,7 +227,9 @@ export const checkValidElement = (element: MyReactElementNode) => {
         }
       }
     }
-    element._store["validType"] = true;
+    if (element._store) {
+      element._store["validType"] = true;
+    }
   }
 
   enableOptimizeTreeLog.current = last;

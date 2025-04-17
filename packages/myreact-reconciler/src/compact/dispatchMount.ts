@@ -53,7 +53,7 @@ export const defaultDispatchMount = (_fiber: MyReactFiberNode, _dispatch: Reconc
 
       const rootContainerInstance = config.getPublicInstance(_dispatch.rootNode);
 
-      const hostContext = _dispatch.runtimeDom.hostContextMap.get(_fiber);
+      const hostContext = _dispatch.runtimeDom.hostContextMap.get(_fiber.parent || _fiber);
 
       if (config.finalizeInitialChildren(node, type, props, rootContainerInstance, hostContext)) {
         pendingCommitFiberArray.push(_fiber);

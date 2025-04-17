@@ -3,10 +3,11 @@ import { rollupBuild } from "project-tool/rollup";
 
 const external = (id: string) => id.includes("@my-react/") || (id.includes("node_modules") && !id.includes("tslib"));
 
-const externalReact = (id: string) =>
+export const externalReact = (id: string) =>
   id.endsWith("@my-react/react") ||
   id.endsWith("@my-react/react-dom") ||
   id.includes("@my-react/react-refresh") ||
+  id.endsWith("@my-react/react-terminal") ||
   (id.includes("node_modules") && !id.includes("tslib"));
 
 const buildPackages = async () => {
@@ -15,6 +16,7 @@ const buildPackages = async () => {
   await rollupBuild({ packageName: "myreact-jsx", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-reconciler", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external: externalReact });
+  await rollupBuild({ packageName: "myreact-terminal", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-reactivity", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-vite", packageScope: "packages", external: externalReact });

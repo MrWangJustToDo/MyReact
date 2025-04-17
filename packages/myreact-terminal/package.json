@@ -1,0 +1,66 @@
+{
+  "name": "@my-react/react-terminal",
+  "description": "@my-react/react-terminal",
+  "author": "MrWangJustToDo",
+  "license": "MIT",
+  "version": "0.3.7",
+  "main": "index.mjs",
+  "types": "./index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "index.mjs",
+    "index.d.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWangJustToDo/MyReact",
+    "directory": "packages/myreact-terminal"
+  },
+  "buildOptions": {
+    "input": "./src/index.ts",
+    "output": [
+      {
+        "dir": "./dist",
+        "entryFileNames": "esm/index.mjs",
+        "format": "esm",
+        "type": true,
+        "sourcemap": true
+      }
+    ]
+  },
+  "dependencies": {
+    "@alcalzone/ansi-tokenize": "^0.1.3",
+    "ansi-escapes": "^7.0.0",
+    "ansi-styles": "^6.2.1",
+    "auto-bind": "^5.0.1",
+    "chalk": "^5.3.0",
+    "cli-boxes": "^3.0.0",
+    "cli-cursor": "^4.0.0",
+    "cli-truncate": "^4.0.0",
+    "code-excerpt": "^4.0.0",
+    "es-toolkit": "^1.35.0",
+    "indent-string": "^5.0.0",
+    "is-in-ci": "^1.0.0",
+    "patch-console": "^2.0.0",
+    "signal-exit": "^4.1.0",
+    "slice-ansi": "^7.1.0",
+    "stack-utils": "^2.0.6",
+    "string-width": "^7.2.0",
+    "type-fest": "^4.27.0",
+    "widest-line": "^5.0.0",
+    "wrap-ansi": "^9.0.0",
+    "yoga-layout": "^3.2.1"
+  },
+  "devDependencies": {
+    "@my-react/react-reconciler": "^0.3.7",
+    "@my-react/react-shared": "^0.3.7",
+    "@types/react-reconciler": "^0.31.0",
+    "@types/signal-exit": "^3.0.4",
+    "@types/slice-ansi": "^5.0.2",
+    "@types/stack-utils": "^2.0.3"
+  },
+  "peerDependencies": {
+    "@my-react/react": ">=0.3.7"
+  }
+}

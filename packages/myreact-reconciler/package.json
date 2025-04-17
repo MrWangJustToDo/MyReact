@@ -36,7 +36,9 @@
     ]
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.7"
+    "@my-react/react-shared": "^0.3.7",
+    "@types/react": "^18 || ^19",
+    "@types/react-reconciler": "^0.31.0"
   },
   "peerDependencies": {
     "@my-react/react": ">=0.3.7"

@@ -406,7 +406,7 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
     _owner: owner,
   });
 
-  if (__DEV__) clonedElement._store["clonedEle"] = true;
+  if (__DEV__ && clonedElement._store) clonedElement._store["clonedEle"] = true;
 
   if (__DEV__) checkValidElement(clonedElement);
 

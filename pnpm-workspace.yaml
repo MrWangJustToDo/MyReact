@@ -1,5 +1,6 @@
 packages:
   - "packages/*"
   - "ui/*"
+  - "test/*"
   - "site/*"
   - "site/!lib"

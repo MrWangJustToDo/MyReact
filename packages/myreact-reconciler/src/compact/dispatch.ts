@@ -5,10 +5,12 @@ import { CustomRenderDispatch, listenerMap } from "../renderDispatch";
 import { NODE_TYPE, safeCall } from "../share";
 
 import { append, insertBefore, setRef, unsetRef } from "./api";
+import { defaultDispatchFiber } from "./dispatchFiber";
 import { getInsertBeforeNodeFromSiblingAndParent, getValidParentFiberWithNode, initialMap, unmountMap } from "./dispatchMap";
 import { defaultDispatchMount } from "./dispatchMount";
 
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
+import type { ListTree } from "@my-react/react-shared";
 
 const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
   typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
@@ -33,6 +35,10 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, confi
       elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
     };
 
+    dispatchFiber(_fiber: MyReactFiberNode): void {
+      return defaultDispatchFiber(_fiber);
+    }
+
     commitCreate(_fiber: MyReactFiberNode): void {
       if (!include(_fiber.patch, PATCH_TYPE.__create__)) return;
 
@@ -42,11 +48,11 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, confi
 
       const rootContainerInstance = config.getPublicInstance(rootNode);
 
-      const hostContext = this.runtimeDom.hostContextMap.get(_fiber);
+      const hostContext = this.runtimeDom.hostContextMap.get(_fiber.parent || _fiber);
 
       // TODO
       if (include(_fiber.type, NODE_TYPE.__text__)) {
-        _fiber.nativeNode = config.createTextInstance(props, rootContainerInstance, hostContext, _fiber);
+        _fiber.nativeNode = config.createTextInstance(type, rootContainerInstance, hostContext, _fiber);
       } else if (include(_fiber.type, NODE_TYPE.__plain__)) {
         _fiber.nativeNode = config.createInstance(type, props, rootContainerInstance, hostContext, _fiber);
       } else if (include(_fiber.type, NODE_TYPE.__portal__)) {
@@ -79,7 +85,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, confi
 
       const rootContainerInstance = config.getPublicInstance(rootNode);
 
-      const hostContext = this.runtimeDom.hostContextMap.get(_fiber);
+      const hostContext = this.runtimeDom.hostContextMap.get(_fiber.parent || _fiber);
 
       if (include(_fiber.type, NODE_TYPE.__text__)) {
         config.commitTextUpdate?.(node, _fiber.memoizedText, _fiber.pendingText);
@@ -204,6 +210,14 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, confi
       safeCall(function safeCallAfterCommit() {
         instance.afterCommit?.();
       });
+
+      config.resetAfterCommit?.(rootNode);
+    }
+
+    reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
+      config.prepareForCommit?.(rootNode);
+
+      super.reconcileUpdate(_list);
 
       config.resetAfterCommit?.(rootNode);
     }

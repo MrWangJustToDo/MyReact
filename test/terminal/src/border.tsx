@@ -47,4 +47,4 @@ function Test() {
   );
 }
 
-export const test = () => render(<Test />);
+export const test = () => render(<Borders />);

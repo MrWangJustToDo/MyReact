@@ -39,7 +39,11 @@ export const insertBefore = (
     const childNode = config?.getPublicInstance?.(fiber.nativeNode);
 
     if (!parentNode) {
-      config.insertInContainerBefore?.(rootNode, childNode, beforeNode, fiber);
+      if (config.insertInContainerBefore) {
+        config.insertInContainerBefore?.(rootNode, childNode, beforeNode, fiber);
+      } else {
+        config.insertBefore?.(rootNode, childNode, beforeNode, fiber);
+      }
     } else {
       config.insertBefore?.(parentNode, childNode, beforeNode, fiber);
     }

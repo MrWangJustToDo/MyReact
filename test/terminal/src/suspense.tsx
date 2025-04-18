@@ -31,7 +31,6 @@ const read = () => {
 
 function Example() {
   const message = read();
-  // console.log(message);
   return <Text>{message}</Text>;
 }
 

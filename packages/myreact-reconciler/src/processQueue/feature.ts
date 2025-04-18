@@ -57,7 +57,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const baseState = Object.assign({}, typedInstance.state);
+  const baseState = Object.assign({}, fiber.pendingState);
 
   const baseProps = Object.assign({}, typedInstance.props);
 

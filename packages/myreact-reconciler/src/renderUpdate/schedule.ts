@@ -4,6 +4,7 @@ import { exclude, STATE_TYPE, include } from "@my-react/react-shared";
 import { currentTriggerFiber } from "../share";
 
 import { updateSyncFromRoot, updateConcurrentFromRoot, updateSyncFromTrigger, updateConcurrentFromTrigger } from "./feature";
+import { applyTriggerFiberCb } from "./trigger";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { CustomRenderPlatform } from "../renderPlatform";
@@ -24,6 +25,8 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
     renderDispatch.runtimeFiber.nextWorkingFiber = renderDispatch.rootFiber;
 
     if (__DEV__) currentTriggerFiber.current = allLive.length > 1 ? allLive : allLive[0];
+
+    allLive.forEach((fiber) => applyTriggerFiberCb(fiber, renderDispatch));
 
     if (
       !enableConcurrentMode.current ||
@@ -58,6 +61,8 @@ const scheduleUpdateFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   }
 
   if (nextWorkFiber) {
+    applyTriggerFiberCb(nextWorkFiber, renderDispatch);
+
     if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__)) {
       renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;
 

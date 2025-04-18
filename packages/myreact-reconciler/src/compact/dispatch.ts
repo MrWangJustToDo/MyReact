@@ -125,13 +125,21 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, confi
 
       if (isRender) {
         if (!parentNode) {
-          config.appendChildToContainer?.(rootNode, currentNode, _fiber);
+          if (config.appendInContainer) {
+            config.appendInContainer?.(rootNode, currentNode, _fiber);
+          } else {
+            config.appendInitialChild?.(rootNode, currentNode, _fiber);
+          }
         } else {
           config.appendInitialChild?.(parentNode, currentNode, _fiber);
         }
       } else {
         if (!parentNode) {
-          config.appendChildToContainer?.(rootNode, currentNode, _fiber);
+          if (config.appendChildToContainer) {
+            config.appendChildToContainer?.(rootNode, currentNode, _fiber);
+          } else {
+            config.appendChild?.(rootNode, currentNode, _fiber);
+          }
         } else {
           config.appendChild?.(parentNode, currentNode, _fiber);
         }

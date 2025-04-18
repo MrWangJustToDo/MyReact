@@ -3,14 +3,34 @@ import { STATE_TYPE, include, merge } from "@my-react/react-shared";
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { unmountContainer } from "../renderUnmount";
+// import { switchErrorState } from "../runtimeFiber/error";
 import { NODE_TYPE, currentTriggerFiber, devErrorWithFiber, devWarnWithFiber, fiberToDispatchMap } from "../share";
 
 import { scheduleUpdate } from "./schedule";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
 
 const { globalLoop, currentRenderPlatform } = __my_react_internal__;
+
+const cbMap = new Map<MyReactFiberNode, Array<() => void>>();
+
+export const applyTriggerFiberCb = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+  const cbArray = cbMap.get(fiber);
+  if (include(fiber.type, NODE_TYPE.__class__)) {
+    cbArray?.forEach?.((cb) => {
+      renderDispatch.pendingLayoutEffect(fiber, cb, { stickyToFoot: true });
+    });
+  } else {
+    cbArray?.forEach?.((cb) => {
+      renderDispatch.pendingEffect(fiber, cb, { stickyToFoot: true });
+    });
+  }
+  cbMap.delete(fiber);
+};
+
+export const deleteTriggerFiberCb = (fiber: MyReactFiberNode) => cbMap.delete(fiber);
 
 /**
  * only used for dev HMR
@@ -74,13 +94,12 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
 
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 
-  // TODO
   if (cb) {
-    if (include(fiber.type, NODE_TYPE.__class__)) {
-      renderDispatch.pendingLayoutEffect(fiber, cb, { stickyToFoot: true });
-    } else {
-      renderDispatch.pendingEffect(fiber, cb, { stickyToFoot: true });
-    }
+    const exist = cbMap.get(fiber) || [];
+
+    exist.push(cb);
+
+    cbMap.set(fiber, exist);
   }
 
   if (globalLoop.current) return;
@@ -90,6 +109,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
   scheduleUpdate(renderDispatch);
 };
 
+// TODO: error flow
 export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => void) => {
   const renderDispatch = fiberToDispatchMap.get(fiber);
 

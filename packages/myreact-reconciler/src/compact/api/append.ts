@@ -26,7 +26,11 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithNode: MyReactFibe
     const childNode = config?.getPublicInstance?.(fiber.nativeNode);
 
     if (!parentNode) {
-      config.appendInContainer?.(rootNode, childNode, fiber);
+      if (config.appendInContainer) {
+        config.appendInContainer?.(rootNode, childNode, fiber);
+      } else {
+        config.appendChild?.(rootNode, childNode, fiber);
+      }
     } else {
       config.appendChild?.(parentNode, childNode, fiber);
     }

@@ -1,4 +1,5 @@
 export * from "./hmr";
+export * from "./error";
 export * from "./trigger";
 export * from "./create";
 export * from "./update";

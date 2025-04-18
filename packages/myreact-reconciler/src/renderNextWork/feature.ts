@@ -168,13 +168,13 @@ export const performToNextFiberFromTrigger = (fiber: MyReactFiberNode, renderDis
 
     currentRenderDispatch.current = null;
 
+    triggerFiberUpdateListener(renderDispatch, fiber);
+
     if (!include(fiber.state, STATE_TYPE.__retrigger__)) {
       fiber.state = STATE_TYPE.__stable__;
     } else {
       fiber.state = STATE_TYPE.__inherit__;
     }
-
-    triggerFiberUpdateListener(renderDispatch, fiber);
 
     if (fiber.child) return fiber.child;
   }

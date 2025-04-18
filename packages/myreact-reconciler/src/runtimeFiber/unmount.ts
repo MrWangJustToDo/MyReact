@@ -2,6 +2,7 @@ import { __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { deleteTriggerFiberCb } from "../renderUpdate";
 import { classComponentUnmount } from "../runtimeComponent";
 import { hookListUnmount } from "../runtimeHook";
 import { fiberToDispatchMap, safeCallWithCurrentFiber } from "../share";
@@ -47,6 +48,8 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
   });
 
   __DEV__ ? "" : fiberToDispatchMap.delete(fiber);
+
+  deleteTriggerFiberCb(fiber);
 
   renderDispatch.runtimeMap.suspenseMap.delete(fiber);
 

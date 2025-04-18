@@ -1,4 +1,4 @@
-import { Reconciler } from "@my-react/react-reconciler";
+import { createReconciler } from "@my-react/react-reconciler";
 
 function traceWrap(hostConfig) {
   let traceWrappedHostConfig = {};
@@ -92,7 +92,7 @@ const hostConfig = {
   },
 };
 
-const ReactReconcilerInst = Reconciler(traceWrap(hostConfig));
+const ReactReconcilerInst = createReconciler(traceWrap(hostConfig));
 
 export const render = (reactElement, domElement, callback) => {
   ReactReconcilerInst.createContainer(domElement, false);

@@ -134,29 +134,39 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
       errorBoundariesFiber.memoizedState = Object.assign({}, errorBoundariesFiber.pendingState);
     }
 
-    const updateQueue: ComponentUpdateQueue = {
-      type: UpdateQueueType.component,
-      trigger: typedInstance,
-      payLoad: payloadState,
-      isSync: true,
-      isForce: true,
-      isRetrigger: true,
-      isImmediate: true,
-    };
+    if (globalLoop.current) {
+      const updateQueue: ComponentUpdateQueue = {
+        type: UpdateQueueType.component,
+        trigger: typedInstance,
+        payLoad: payloadState,
+        isSync: true,
+        isForce: true,
+        isRetrigger: true,
+        isImmediate: true,
+      };
 
-    errorBoundariesFiber.state = merge(errorBoundariesFiber.state, STATE_TYPE.__create__);
+      errorBoundariesFiber.state = merge(errorBoundariesFiber.state, STATE_TYPE.__create__);
 
-    errorBoundariesFiber.state = merge(errorBoundariesFiber.state, STATE_TYPE.__triggerSyncForce__);
+      errorBoundariesFiber.state = merge(errorBoundariesFiber.state, STATE_TYPE.__triggerSyncForce__);
 
-    processState(updateQueue);
+      processState(updateQueue);
 
-    syncFiberStateToComponent(errorBoundariesFiber, renderDispatch, function finishTriggerErrorOnFiber() {
-      typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
+      syncFiberStateToComponent(errorBoundariesFiber, renderDispatch, function finishTriggerErrorOnFiber() {
+        typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
 
-      renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
+        renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
 
-      cb?.();
-    });
+        cb?.();
+      });
+    } else {
+      typedInstance.setState(payloadState, function finishTriggerErrorOnFiber() {
+        typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
+
+        renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
+
+        cb?.();
+      });
+    }
   } else {
     if (renderDispatch.isAppCrashed) return;
 

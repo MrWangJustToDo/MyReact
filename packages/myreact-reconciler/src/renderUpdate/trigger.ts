@@ -1,16 +1,18 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { STATE_TYPE, include, merge } from "@my-react/react-shared";
+import { STATE_TYPE, UpdateQueueType, include, merge } from "@my-react/react-shared";
 
+import { deleteAllChildEffect } from "../dispatchEffect";
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
+import { syncFiberStateToComponent } from "../processQueue";
+import { processState } from "../processState";
 import { unmountContainer } from "../renderUnmount";
-// import { switchErrorState } from "../runtimeFiber/error";
+import { type MyReactFiberNode } from "../runtimeFiber";
 import { NODE_TYPE, currentTriggerFiber, devErrorWithFiber, devWarnWithFiber, fiberToDispatchMap } from "../share";
 
 import { scheduleUpdate } from "./schedule";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode } from "../runtimeFiber";
-import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
+import type { ComponentUpdateQueue, MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
 
 const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 
@@ -110,6 +112,8 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
 };
 
 // TODO: error flow
+// currently only work render flow
+// commit flow not work as expected
 export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => void) => {
   const renderDispatch = fiberToDispatchMap.get(fiber);
 
@@ -118,6 +122,8 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
   const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
 
   if (errorBoundariesFiber) {
+    deleteAllChildEffect(fiber, renderDispatch);
+
     const typedComponent = errorBoundariesFiber.elementType as MixinMyReactClassComponent;
 
     const typedInstance = errorBoundariesFiber.instance as MyReactComponent;
@@ -128,7 +134,23 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
       errorBoundariesFiber.memoizedState = Object.assign({}, errorBoundariesFiber.pendingState);
     }
 
-    typedInstance.setState(payloadState, function finishTriggerErrorOnFiber() {
+    const updateQueue: ComponentUpdateQueue = {
+      type: UpdateQueueType.component,
+      trigger: typedInstance,
+      payLoad: payloadState,
+      isSync: true,
+      isForce: true,
+      isRetrigger: true,
+      isImmediate: true,
+    };
+
+    errorBoundariesFiber.state = merge(errorBoundariesFiber.state, STATE_TYPE.__create__);
+
+    errorBoundariesFiber.state = merge(errorBoundariesFiber.state, STATE_TYPE.__triggerSyncForce__);
+
+    processState(updateQueue);
+
+    syncFiberStateToComponent(errorBoundariesFiber, renderDispatch, function finishTriggerErrorOnFiber() {
       typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
 
       renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;

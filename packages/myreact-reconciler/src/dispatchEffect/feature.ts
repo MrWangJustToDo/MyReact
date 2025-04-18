@@ -122,3 +122,15 @@ export const deleteEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRend
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__effect__);
   }
 };
+
+export const deleteAllChildEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+  let child = fiber.child;
+
+  while(child) {
+    deleteEffect(child, renderDispatch);
+
+    deleteAllChildEffect(child, renderDispatch);
+
+    child = child.sibling;
+  }
+}

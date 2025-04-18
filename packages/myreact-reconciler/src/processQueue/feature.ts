@@ -5,7 +5,7 @@ import { HOOK_TYPE, ListTree, STATE_TYPE, UpdateQueueType, exclude, include } fr
 import { syncComponentStateToFiber } from "../runtimeComponent";
 import { prepareUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
-import { currentRenderDispatch, enableDebugUpdateQueue, getCurrentDispatchFromFiber, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
+import { enableDebugUpdateQueue, getCurrentDispatchFromFiber, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -1093,14 +1093,12 @@ export const processNormalComponentUpdate = (fiber: MyReactFiberNode): UpdateSta
 /**
  * @deprecated
  */
-export const syncFiberStateToComponent = (fiber: MyReactFiberNode, callback?: () => void) => {
+export const syncFiberStateToComponent = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, callback?: () => void) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   const typedPendingState = fiber.pendingState;
 
   typedInstance.state = Object.assign({}, typedInstance.state, typedPendingState);
-
-  const renderDispatch = currentRenderDispatch.current;
 
   callback && renderDispatch.pendingLayoutEffect(fiber, callback, { stickyToFoot: true });
 };
@@ -1113,7 +1111,7 @@ export const syncFlushComponentQueue = (fiber: MyReactFiberNode) => {
 
   const { needUpdate, callback } = processClassComponentUpdateQueue(fiber, renderDispatch);
 
-  needUpdate && syncFiberStateToComponent(fiber, callback);
+  needUpdate && syncFiberStateToComponent(fiber, renderDispatch, callback);
 
   syncComponentStateToFiber(fiber);
 };

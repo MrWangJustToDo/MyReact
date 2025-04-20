@@ -1,6 +1,6 @@
 import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 
-import { unmountPending } from "../dispatchUnmount";
+import { defaultInvokeUnmountList } from "../dispatchUnmount";
 // import { triggerUnmount } from "../renderUpdate";
 import { unmountFiberNode } from "../runtimeFiber";
 import { currentTriggerFiber, fiberToDispatchMap, generateFiberToUnmountList, safeCallWithCurrentFiber } from "../share";
@@ -12,7 +12,7 @@ import type { ListTree } from "@my-react/react-shared";
 export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: CustomRenderDispatch) => {
   // will happen when app crash
   list.listToFoot(function invokeUnmountPendingList(f) {
-    unmountPending(f, renderDispatch);
+    defaultInvokeUnmountList(f, renderDispatch);
   });
 
   list.listToFoot(function invokeFiberUnmountList(f) {

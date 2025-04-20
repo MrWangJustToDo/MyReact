@@ -5,6 +5,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 
 export const mountLoopAll = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   renderDispatch.runtimeFiber.nextWorkingFiber = fiber;
+
   mountLoopAllSync(renderDispatch);
 };
 

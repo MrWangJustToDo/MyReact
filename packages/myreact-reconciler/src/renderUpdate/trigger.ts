@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { STATE_TYPE, UpdateQueueType, include, merge } from "@my-react/react-shared";
+import { ListTree, STATE_TYPE, UpdateQueueType, include, merge } from "@my-react/react-shared";
 
-import { deleteAllChildEffect } from "../dispatchEffect";
+import { defaultDeleteChildEffect } from "../dispatchEffect";
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { syncFiberStateToComponent } from "../processQueue";
 import { processState } from "../processState";
@@ -16,23 +16,21 @@ import type { ComponentUpdateQueue, MixinMyReactClassComponent, MyReactComponent
 
 const { globalLoop, currentRenderPlatform } = __my_react_internal__;
 
-const cbMap = new Map<MyReactFiberNode, Array<() => void>>();
-
 export const applyTriggerFiberCb = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
-  const cbArray = cbMap.get(fiber);
+  const cbArray = renderDispatch.runtimeMap.triggerCallbackMap.get(fiber);
+
   if (include(fiber.type, NODE_TYPE.__class__)) {
-    cbArray?.forEach?.((cb) => {
+    cbArray?.listToFoot?.((cb) => {
       renderDispatch.pendingLayoutEffect(fiber, cb, { stickyToFoot: true });
     });
   } else {
-    cbArray?.forEach?.((cb) => {
+    cbArray?.listToFoot?.((cb) => {
       renderDispatch.pendingEffect(fiber, cb, { stickyToFoot: true });
     });
   }
-  cbMap.delete(fiber);
-};
 
-export const deleteTriggerFiberCb = (fiber: MyReactFiberNode) => cbMap.delete(fiber);
+  renderDispatch.runtimeMap.triggerCallbackMap.delete(fiber);
+};
 
 /**
  * only used for dev HMR
@@ -97,11 +95,13 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
   renderDispatch.pendingUpdateFiberArray.uniPush(fiber);
 
   if (cb) {
-    const exist = cbMap.get(fiber) || [];
+    const map = renderDispatch.runtimeMap.triggerCallbackMap;
+
+    const exist = map.get(fiber) || new ListTree();
 
     exist.push(cb);
 
-    cbMap.set(fiber, exist);
+    map.set(fiber, exist);
   }
 
   if (globalLoop.current) return;
@@ -122,7 +122,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
   const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
 
   if (errorBoundariesFiber) {
-    deleteAllChildEffect(fiber, renderDispatch);
+    defaultDeleteChildEffect(fiber, renderDispatch);
 
     const typedComponent = errorBoundariesFiber.elementType as MixinMyReactClassComponent;
 

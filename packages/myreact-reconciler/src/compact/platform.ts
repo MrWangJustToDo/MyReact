@@ -33,8 +33,7 @@ class ReconcilerPlatform extends CustomRenderPlatform {
     return processHook(_params);
   }
   dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
-    processPromise(_params.fiber, _params.promise);
-    return void 0;
+    return processPromise(_params.fiber, _params.promise);
   }
   dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {
     if (__DEV__) {

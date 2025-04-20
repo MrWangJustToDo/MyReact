@@ -12,44 +12,6 @@ const { enableDebugFiled } = __my_react_shared__;
 
 const { currentRunningFiber } = __my_react_internal__;
 
-const emptyObj = {};
-
-export const defaultGenerateContextMap = (fiber: MyReactFiberNode, map: WeakMap<MyReactFiberNode, Record<string, MyReactFiberNode>>) => {
-  const parent = fiber.parent;
-
-  if (parent) {
-    let parentMap = map.get(parent) || emptyObj;
-
-    if (include(parent.type, NODE_TYPE.__provider__)) {
-      const typedElementType = parent.elementType as ReturnType<typeof createContext>["Provider"];
-
-      const contextObj = typedElementType["Context"];
-
-      const contextId = contextObj["contextId"];
-
-      parentMap = Object.assign({}, parentMap, { [contextId]: parent });
-    }
-
-    if (include(parent.type, NODE_TYPE.__context__)) {
-      const typedElementType = parent.elementType as ReturnType<typeof createContext>;
-
-      const contextObj = typedElementType;
-
-      const contextId = contextObj["contextId"];
-
-      parentMap = Object.assign({}, parentMap, { [contextId]: parent });
-    }
-
-    map.set(fiber, parentMap);
-
-    if (__DEV__ && enableDebugFiled.current) {
-      const typedFiber = fiber as MyReactFiberNodeDev;
-
-      typedFiber._debugContextMap = parentMap;
-    }
-  }
-};
-
 export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextObject?: ReturnType<typeof createContext> | null) => {
   if (fiber) {
     return fiber.pendingProps["value"] as Record<string, unknown>;

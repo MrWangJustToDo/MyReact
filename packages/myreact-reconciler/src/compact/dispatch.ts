@@ -12,23 +12,9 @@ import { defaultDispatchMount } from "./dispatchMount";
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
 import type { ListTree } from "@my-react/react-shared";
 
-const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
-  typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
-
-  typeForCreate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
-
-  typeForUpdate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
-
-  typeForAppend: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
-
-  typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
-};
-
 export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, config: any) => {
   class ReconcilerDispatch extends CustomRenderDispatch {
     enableUpdate = true;
-
-    runtimeRef = runtimeRef;
 
     runtimeDom = {
       hostContextMap: new WeakMap<MyReactFiberNode, any>(),

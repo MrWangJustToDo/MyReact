@@ -21,23 +21,15 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugHookTypes: string[];
 
-  _debugContextMap: Record<string, MyReactFiberNode>;
-
   _debugRenderChildrenCurrent: MaybeArrayMyReactElementNode[];
 
   _debugRenderChildrenPrevious: MaybeArrayMyReactElementNode[];
-
-  _debugSuspense: MyReactFiberNode;
 
   _debugStrict: boolean;
 
   _debugIsMount: boolean;
 
-  _debugScope: MyReactFiberNode;
-
   _debugEventMap: Record<string, ((...args: any[]) => void) & { cb?: any }>;
-
-  _debugErrorBoundaries: MyReactFiberNode;
 
   _debugUpdateQueue: ListTree<UpdateQueue>;
 

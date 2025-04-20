@@ -2,9 +2,9 @@
 import { __my_react_internal__, type createContext, type MyReactComponent, type MyReactElementNode, type UpdateQueue } from "@my-react/react";
 
 import { triggerUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
-import { MyWeakMap, type NODE_TYPE } from "../share";
+import { MyWeakMap, NODE_TYPE } from "../share";
 
-import type { fiberKey, refKey, RenderDispatch, RuntimeMap } from "./interface";
+import type { RenderDispatch, RuntimeMap } from "./interface";
 import type { UpdateState } from "../processQueue";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { ListTree, STATE_TYPE, UniqueArray } from "@my-react/react-shared";
@@ -43,7 +43,7 @@ type Listeners = {
   afterUnmount: Set<() => void>;
 };
 
-const getInitialValue = (): Listeners => {
+const getInitialListeners = (): Listeners => {
   return __DEV__
     ? {
         fiberInitial: new Set(),
@@ -98,41 +98,47 @@ const getInitialValue = (): Listeners => {
 };
 
 const getInitialMap = (): RuntimeMap => ({
-  suspenseMap: new MyWeakMap(),
-
-  strictMap: new MyWeakMap(),
-
-  scopeMap: new MyWeakMap(),
-
-  errorBoundariesMap: new MyWeakMap(),
-
   effectMap: new MyWeakMap(),
 
   layoutEffectMap: new MyWeakMap(),
 
   insertionEffectMap: new MyWeakMap(),
 
-  contextMap: new MyWeakMap(),
-
   unmountMap: new MyWeakMap(),
 
   eventMap: new MyWeakMap(),
+
+  triggerCallbackMap: new MyWeakMap(),
 });
+
+const getInitialFiber = (): RenderDispatch["runtimeFiber"] => ({
+  scheduledFiber: null,
+
+  errorCatchFiber: null,
+
+  nextWorkingFiber: null,
+});
+
+const initialRef: RenderDispatch["runtimeRef"] = {
+  typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
+
+  typeForCreate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
+
+  typeForUpdate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
+
+  typeForAppend: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
+
+  typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
+};
 
 export const listenerMap = new Map<RenderDispatch, Listeners>();
 
 export class RenderDispatchEvent implements RenderDispatch {
-  runtimeRef: Record<refKey, NODE_TYPE>;
+  runtimeMap: RuntimeMap;
 
-  runtimeMap = getInitialMap();
+  runtimeRef: RenderDispatch["runtimeRef"];
 
-  runtimeFiber: Record<fiberKey, MyReactFiberNode | null> = {
-    scheduledFiber: null,
-
-    errorCatchFiber: null,
-
-    nextWorkingFiber: null,
-  };
+  runtimeFiber: RenderDispatch["runtimeFiber"];
 
   dispatcher = Dispatcher;
 
@@ -153,7 +159,13 @@ export class RenderDispatchEvent implements RenderDispatch {
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode>;
 
   constructor() {
-    listenerMap.set(this, getInitialValue());
+    this.runtimeRef = initialRef;
+
+    this.runtimeMap = getInitialMap();
+
+    this.runtimeFiber = getInitialFiber();
+
+    listenerMap.set(this, getInitialListeners());
 
     Object.defineProperty(this, "dispatcher", {
       value: Dispatcher,
@@ -207,31 +219,21 @@ export class RenderDispatchEvent implements RenderDispatch {
 
   commitClear(_fiber: MyReactFiberNode): void {}
 
-  resolveStrictMap(_fiber: MyReactFiberNode): void {}
-
   resolveStrict(_fiber: MyReactFiberNode): boolean {
     return false;
   }
-
-  resolveScopeMap(_fiber: MyReactFiberNode): void {}
 
   resolveScope(_fiber: MyReactFiberNode): MyReactFiberNode | null {
     return null;
   }
 
-  resolveSuspenseMap(_fiber: MyReactFiberNode): void {}
-
   resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode {
     return null;
   }
 
-  resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {}
-
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
     return null;
   }
-
-  resolveContextMap(_fiber: MyReactFiberNode): void {}
 
   resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): null | MyReactFiberNode {
     return null;

@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude } from "@my-react/react-shared";
 
 import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
-import { unmountPending } from "../dispatchUnmount";
+import { defaultInvokeUnmountList } from "../dispatchUnmount";
 import { afterSyncUpdate, beforeSyncUpdate, resetLogScope, safeCallWithCurrentFiber, setLogScope } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -19,7 +19,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
-      unmountPending(_fiber, _dispatch);
+      defaultInvokeUnmountList(_fiber, _dispatch);
       insertionEffect(_fiber, _dispatch);
     }
   });

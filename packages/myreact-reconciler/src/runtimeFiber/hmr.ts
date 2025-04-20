@@ -1,15 +1,13 @@
 import { __my_react_internal__, createElement } from "@my-react/react";
 import { STATE_TYPE, UpdateQueueType, include, merge } from "@my-react/react-shared";
 
-import { deleteEffect } from "../dispatchEffect";
 import { listenerMap } from "../renderDispatch";
 import { triggerRevert } from "../renderUpdate";
-import { classComponentUnmount } from "../runtimeComponent";
-import { hookListUnmount } from "../runtimeHook";
 import { getCurrentDispatchFromFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
+import { clearFiberNode } from "./clear";
+
 import type { MyReactFiberNode } from "./instance";
-import type { MyReactFiberNodeDev } from "./interface";
 import type { HMRUpdateQueue, MyReactComponentType } from "@my-react/react";
 
 const { currentRenderPlatform } = __my_react_internal__;
@@ -31,24 +29,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
     setRefreshTypeMap(fiber);
 
     if (forceRefresh) {
-      hookListUnmount(fiber, renderDispatch);
-
-      classComponentUnmount(fiber, renderDispatch);
-
-      fiber.instance = null;
-
-      fiber.hookList = null;
-
-      fiber.updateQueue = null;
-
-      const typedFiber = fiber as MyReactFiberNodeDev;
-
-      typedFiber._debugHookTypes = [];
-
-      // TODO
-      deleteEffect(fiber, renderDispatch);
-
-      renderDispatch.commitUnsetRef(fiber);
+      clearFiberNode(fiber, renderDispatch);
 
       fiber.state = merge(STATE_TYPE.__create__, STATE_TYPE.__hmr__);
     } else {

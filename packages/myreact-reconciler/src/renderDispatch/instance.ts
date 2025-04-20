@@ -1,28 +1,26 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { PATCH_TYPE, ListTree, UniqueArray, include, merge, exclude } from "@my-react/react-shared";
 
-import { defaultGenerateContextMap, defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
+import { defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
 import { defaultGenerateEffectMap } from "../dispatchEffect";
-import { defaultGenerateErrorBoundariesMap, defaultResolveErrorBoundaries } from "../dispatchErrorBoundaries";
+import { defaultResolveErrorBoundaries } from "../dispatchErrorBoundaries";
 import { defaultDispatchFiber } from "../dispatchFiber";
 import { defaultDispatchMount } from "../dispatchMount";
-import { defaultGenerateScopeMap, defaultResolveScope } from "../dispatchScope";
-import { defaultGenerateStrict, defaultGenerateStrictMap } from "../dispatchStrict";
-import { defaultGenerateSuspenseMap, defaultResolveSuspense } from "../dispatchSuspense";
+import { defaultResolveScope } from "../dispatchScope";
+import { defaultGenerateStrict } from "../dispatchStrict";
+import { defaultResolveSuspense } from "../dispatchSuspense";
 import { defaultDispatchUnmount, defaultGenerateUnmountMap } from "../dispatchUnmount";
 import { defaultDispatchUpdate } from "../dispatchUpdate";
 import { NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
 
 import { listenerMap, RenderDispatchEvent } from "./event";
 
-import type { refKey, RenderDispatch } from "./interface";
+import type { RenderDispatch } from "./interface";
 import type { MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
 import type { HMR } from "../share";
 import type { createContext, MyReactElementNode } from "@my-react/react";
 
 export class CustomRenderDispatch extends RenderDispatchEvent implements RenderDispatch {
-  runtimeRef: Record<refKey, NODE_TYPE>;
-
   isAppMounted = false;
 
   isAppCrashed = false;
@@ -206,32 +204,17 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
   commitClear(_fiber: MyReactFiberNode): void {
     void 0;
   }
-  resolveStrictMap(_fiber: MyReactFiberNode): void {
-    __DEV__ && defaultGenerateStrictMap(_fiber, this.runtimeMap.strictMap);
-  }
   resolveStrict(_fiber: MyReactFiberNode): boolean {
     return defaultGenerateStrict(_fiber);
-  }
-  resolveScopeMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateScopeMap(_fiber, this.runtimeMap.scopeMap);
   }
   resolveScope(_fiber: MyReactFiberNode): MyReactFiberNode | null {
     return defaultResolveScope(_fiber);
   }
-  resolveSuspenseMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateSuspenseMap(_fiber, this.runtimeMap.suspenseMap);
-  }
   resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode {
     return defaultResolveSuspense(_fiber);
   }
-  resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateErrorBoundariesMap(_fiber, this.runtimeMap.errorBoundariesMap);
-  }
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
     return defaultResolveErrorBoundaries(_fiber);
-  }
-  resolveContextMap(_fiber: MyReactFiberNode): void {
-    defaultGenerateContextMap(_fiber, this.runtimeMap.contextMap);
   }
   resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): MyReactFiberNode | null {
     return defaultGetContextFiber(_fiber, this, _contextObject);

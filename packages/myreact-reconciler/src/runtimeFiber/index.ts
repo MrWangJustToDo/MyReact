@@ -1,6 +1,7 @@
 export * from "./hmr";
 export * from "./trigger";
 export * from "./create";
+export * from "./clear";
 export * from "./update";
 export * from "./initial";
 export * from "./unmount";

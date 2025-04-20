@@ -2,7 +2,7 @@ import { __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
-import { deleteTriggerFiberCb } from "../renderUpdate";
+// import { deleteTriggerFiberCb } from "../renderUpdate";
 import { classComponentUnmount } from "../runtimeComponent";
 import { hookListUnmount } from "../runtimeHook";
 import { fiberToDispatchMap, safeCallWithCurrentFiber } from "../share";
@@ -49,27 +49,17 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
   __DEV__ ? "" : fiberToDispatchMap.delete(fiber);
 
-  deleteTriggerFiberCb(fiber);
-
-  renderDispatch.runtimeMap.suspenseMap.delete(fiber);
-
-  renderDispatch.runtimeMap.strictMap.delete(fiber);
-
   renderDispatch.runtimeMap.insertionEffectMap.delete(fiber);
-
-  renderDispatch.runtimeMap.scopeMap.delete(fiber);
-
-  renderDispatch.runtimeMap.errorBoundariesMap.delete(fiber);
 
   renderDispatch.runtimeMap.effectMap.delete(fiber);
 
   renderDispatch.runtimeMap.layoutEffectMap.delete(fiber);
 
-  renderDispatch.runtimeMap.contextMap.delete(fiber);
-
   renderDispatch.runtimeMap.unmountMap.delete(fiber);
 
   renderDispatch.runtimeMap.eventMap.delete(fiber);
+
+  renderDispatch.runtimeMap.triggerCallbackMap.delete(fiber);
 
   if (Boolean(__DEV__) === false) {
     fiber.child = null;
@@ -98,13 +88,7 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
 
     typedFiber._debugIsMount = false;
 
-    delete typedFiber._debugContextMap;
-
-    delete typedFiber._debugSuspense;
-
     delete typedFiber._debugStrict;
-
-    delete typedFiber._debugScope;
 
     delete typedFiber._debugEventMap;
 

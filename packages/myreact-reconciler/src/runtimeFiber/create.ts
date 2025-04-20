@@ -57,17 +57,5 @@ export const createFiberNode = (
     newFiberNode.memoizedProps = newFiberNode.pendingProps;
   }
 
-  if (__DEV__) {
-    renderDispatch.resolveScopeMap(newFiberNode);
-
-    renderDispatch.resolveStrictMap(newFiberNode);
-
-    renderDispatch.resolveContextMap(newFiberNode);
-
-    renderDispatch.resolveSuspenseMap(newFiberNode);
-
-    renderDispatch.resolveErrorBoundariesMap(newFiberNode);
-  }
-
   return newFiberNode;
 };

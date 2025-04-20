@@ -24,7 +24,7 @@ export const defaultDispatchUnmount = (renderDispatch: CustomRenderDispatch) => 
   clearContainer(renderDispatch);
 };
 
-export const unmountPending = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const defaultInvokeUnmountList = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   if (include(fiber.patch, PATCH_TYPE.__unmount__)) {
     const unmountMap = renderDispatch.runtimeMap.unmountMap;
 

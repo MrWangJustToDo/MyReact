@@ -6,25 +6,17 @@ import type { ListTree, UniqueArray } from "@my-react/react-shared";
 export type refKey = "typeForRef" | "typeForCreate" | "typeForUpdate" | "typeForAppend" | "typeForNativeNode";
 
 export type RuntimeMap = {
-  suspenseMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
-
-  strictMap: WeakMap<MyReactFiberNode, boolean>;
-
-  scopeMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
-
-  errorBoundariesMap: WeakMap<MyReactFiberNode, MyReactFiberNode>;
-
   effectMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 
   layoutEffectMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 
   insertionEffectMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 
-  contextMap: WeakMap<MyReactFiberNode, Record<string, MyReactFiberNode>>;
-
   unmountMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>;
 
   eventMap: WeakMap<MyReactFiberNode, Record<string, ((...args: any[]) => void) & { cb?: any }>>;
+
+  triggerCallbackMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 };
 
 export type fiberKey = "scheduledFiber" | "errorCatchFiber" | "nextWorkingFiber";
@@ -40,7 +32,7 @@ type DefaultRenderDispatch = {
 
   rootFiber: MyReactFiberNode;
 
-  dispatcher: RenderPlatform['dispatcher'];
+  dispatcher: RenderPlatform["dispatcher"];
 
   trigger: typeof triggerUpdateOnFiber;
 
@@ -175,23 +167,13 @@ type DefaultRenderDispatch = {
 
   commitClear(_fiber: MyReactFiberNode): void;
 
-  resolveStrictMap(_fiber: MyReactFiberNode): void;
-
   resolveStrict(_fiber: MyReactFiberNode): boolean;
-
-  resolveScopeMap(_fiber: MyReactFiberNode): void;
 
   resolveScope(_fiber: MyReactFiberNode): MyReactFiberNode | null;
 
-  resolveSuspenseMap(_fiber: MyReactFiberNode): void;
-
   resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode;
 
-  resolveErrorBoundariesMap(_fiber: MyReactFiberNode): void;
-
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null;
-
-  resolveContextMap(_fiber: MyReactFiberNode): void;
 
   resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): null | MyReactFiberNode;
 

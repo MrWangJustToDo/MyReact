@@ -86,8 +86,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
           re = typedElementTypeWithRef(fiber.pendingProps, fiber.ref);
         } catch (e) {
           if (isPromise(e)) {
-            currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
-            re = currentRenderDispatch.current?.resolveSuspense(fiber);
+            re = currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
           } else {
             throw e;
           }
@@ -104,8 +103,7 @@ export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
           re = typedElementType(fiber.pendingProps);
         } catch (e) {
           if (isPromise(e)) {
-            currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
-            re = currentRenderDispatch.current?.resolveSuspense(fiber);
+            re = currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
           } else {
             throw e;
           }

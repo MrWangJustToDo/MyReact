@@ -7,6 +7,6 @@ module.exports = {
   extends: [require.resolve("project-tool/baseLint")],
   ignorePatterns: ["dist", "dev", "lib", "__tests__", "bundle", "ui/vite-example"],
   rules: {
-    "@typescript-eslint/no-unused-expressions": "warn",
+    "@typescript-eslint/no-unused-expressions": "off",
   }
 };

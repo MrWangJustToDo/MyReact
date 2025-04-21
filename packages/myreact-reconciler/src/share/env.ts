@@ -25,3 +25,5 @@ export const enableDebugUpdateQueue = createRef(false);
 export const enableValidMyReactElement = createRef(false);
 
 export const enableLogForCurrentFlowIsRunning = createRef(false);
+
+export const globalError = createRef<Error | null>(null);

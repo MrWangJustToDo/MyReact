@@ -56,7 +56,7 @@ export const processState = (_params: UpdateQueue) => {
 
   _params.isSkip = !!_params.isSkip;
 
-  _params.isImmediate = !currentScopeFiber.current || !!currentRunningFiber.current || !!_params.isImmediate;
+  _params.isImmediate = typeof _params.isImmediate === "boolean" ? _params.isImmediate : !currentScopeFiber.current || !!currentRunningFiber.current;
 
   _params.isRetrigger = currentRunningFiber.current === ownerFiber || !!_params.isRetrigger;
 

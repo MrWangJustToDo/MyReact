@@ -1,6 +1,6 @@
 import { __my_react_internal__ } from "@my-react/react";
 
-import { currentCallingFiber } from "./env";
+import { currentCallingFiber, globalError } from "./env";
 import { afterSyncUpdate, beforeSyncUpdate } from "./sync";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -15,7 +15,9 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
 
     const renderPlatform = currentRenderPlatform.current;
 
-    renderPlatform.dispatchError({ fiber, error: e });
+    globalError.current = globalError.current || e;
+
+    renderPlatform.dispatchError({ fiber, error: globalError.current });
   }
 };
 
@@ -37,7 +39,9 @@ export const safeCallWithCurrentFiber = <T extends any[] = any[], K = any>(
     } else {
       const renderPlatform = currentRenderPlatform.current;
 
-      renderPlatform.dispatchError({ fiber, error: e });
+      globalError.current = globalError.current || e;
+
+      renderPlatform.dispatchError({ fiber, error: globalError.current });
     }
   } finally {
     const l = stack.pop();
@@ -65,7 +69,9 @@ export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...a
 
     const renderPlatform = currentRenderPlatform.current;
 
-    renderPlatform.dispatchError({ fiber, error: e });
+    globalError.current = globalError.current || e;
+
+    renderPlatform.dispatchError({ fiber, error: globalError.current });
   } finally {
     afterSyncUpdate();
   }

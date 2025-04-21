@@ -7,7 +7,7 @@ import { syncFiberStateToComponent } from "../processQueue";
 import { processState } from "../processState";
 import { unmountContainer } from "../renderUnmount";
 import { type MyReactFiberNode } from "../runtimeFiber";
-import { NODE_TYPE, currentTriggerFiber, devErrorWithFiber, devWarnWithFiber, fiberToDispatchMap } from "../share";
+import { NODE_TYPE, currentTriggerFiber, devErrorWithFiber, devWarnWithFiber, fiberToDispatchMap, globalError } from "../share";
 
 import { scheduleUpdate } from "./schedule";
 
@@ -134,7 +134,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
       errorBoundariesFiber.memoizedState = Object.assign({}, errorBoundariesFiber.pendingState);
     }
 
-    if (globalLoop.current) {
+    if (renderDispatch.runtimeFiber.nextWorkingFiber) {
       const updateQueue: ComponentUpdateQueue = {
         type: UpdateQueueType.component,
         trigger: typedInstance,
@@ -157,15 +157,30 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
         renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
 
         cb?.();
+
+        globalError.current = null;
       });
     } else {
-      typedInstance.setState(payloadState, function finishTriggerErrorOnFiber() {
-        typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
+      const updateQueue: ComponentUpdateQueue = {
+        type: UpdateQueueType.component,
+        trigger: typedInstance,
+        payLoad: payloadState,
+        isSync: false,
+        isForce: true,
+        isRetrigger: false,
+        isImmediate: false,
+        callback: function finishTriggerErrorOnFiber() {
+          typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
 
-        renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
+          renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
 
-        cb?.();
-      });
+          cb?.();
+
+          globalError.current = null;
+        },
+      };
+
+      processState(updateQueue);
     }
   } else {
     if (renderDispatch.isAppCrashed) return;

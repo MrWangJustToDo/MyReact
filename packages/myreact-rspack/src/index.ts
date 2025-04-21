@@ -25,6 +25,8 @@ function addSocketEntry(sockIntegration: IntegrationType, compiler: Compiler) {
   }
 }
 
+const PLUGIN_NAME = "RefreshRspackPlugin";
+
 class RefreshRspackPlugin {
   options: NormalizedPluginOptions;
 
@@ -128,6 +130,12 @@ class RefreshRspackPlugin {
       "react/jsx-runtime$": "@my-react/react/jsx-runtime",
       "react/jsx-dev-runtime$": "@my-react/react/jsx-dev-runtime",
     };
+
+    compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+      compilation.hooks.additionalTreeRuntimeRequirements.tap(PLUGIN_NAME, (_, runtimeRequirements) => {
+        runtimeRequirements.add(compiler.rspack.RuntimeGlobals.moduleCache);
+      });
+    });
   }
 }
 

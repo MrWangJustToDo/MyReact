@@ -8,7 +8,7 @@
     "index.js",
     "overlay.js",
     "react-refresh.js",
-    "react-refresh-utils.js"
+    "react-refresh-entry.js"
   ],
   "license": "MIT",
   "main": "index.js",

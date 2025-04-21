@@ -67,7 +67,7 @@ export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams,
   }
 
   if (hookNode.type === HOOK_TYPE.useId) {
-    hookNode.result = `:-${currentHookIndex}-${renderDispatch.uniqueIdCount++}-:`;
+    hookNode.result = `«-${currentHookIndex}-${renderDispatch.uniqueIdCount++}-»`;
     hookNode.cancel = () => renderDispatch.uniqueIdCount--;
   }
 

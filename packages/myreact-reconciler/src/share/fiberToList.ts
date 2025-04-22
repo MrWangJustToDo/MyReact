@@ -5,31 +5,31 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 export const generateFiberToMountList = (fiber: MyReactFiberNode) => {
   const listTree = new ListTree<MyReactFiberNode>();
 
-  const getNext = (current: MyReactFiberNode) => {
-    if (include(current.state, STATE_TYPE.__unmount__)) return;
+  const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
+    if (include(fiber.state, STATE_TYPE.__unmount__)) return null;
+  
+    if (fiber.child) return fiber.child;
+  
+    while (fiber && fiber !== root) {
+      listTree.push(fiber);
 
-    if (current.child) {
-      getNext(current.child);
-      return;
+      if (fiber.sibling) return fiber.sibling;
+
+      fiber = fiber.parent;
     }
 
-    while (current && current !== fiber) {
-      listTree.push(current);
-
-      if (current.sibling) {
-        getNext(current.sibling);
-        return;
-      }
-
-      current = current.parent;
+    if (fiber === root) {
+      listTree.push(fiber);
     }
 
-    if (current === fiber) {
-      listTree.push(current);
-    }
-  };
+    return null;
+  }
 
-  getNext(fiber);
+  let f = fiber;
+
+  while(f) {
+    f = getNext(f, fiber);
+  }
 
   return listTree;
 };

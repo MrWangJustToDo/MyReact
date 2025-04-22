@@ -27,7 +27,7 @@
     "lint": "eslint --cache --ext ts,tsx .",
     "lint:fix": "pnpm run lint --fix",
     "prettier": "prettier --ignore-path .prettierignore --write .",
-    "clean": "pnpm -p -r -c exec rm -rf dist dev .cache .next",
+    "clean": "pnpm -p -r -c exec rm -rf dist dev .cache .next tsconfig.build.tsbuildinfo",
     "purge": "pnpm -p -r -c exec rm -rf node_modules"
   },
   "husky": {

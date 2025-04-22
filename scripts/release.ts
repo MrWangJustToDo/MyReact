@@ -12,6 +12,7 @@ const pkgNameAlias = {
   "@my-react/react-shared": "myreact-shared",
   "@my-react/react-refresh-tools": "myreact-refresh-tools",
   "@my-react/react-vite": "myreact-vite",
+  "@my-react/react-rspack": "myreact-rspack",
 };
 
 const getVersion = (pkgName: string) =>
@@ -74,6 +75,7 @@ const run = async () => {
   await release("@my-react/react-shared");
   await release("@my-react/react-refresh-tools");
   await release("@my-react/react-vite");
+  await release("@my-react/react-rspack");
 };
 
 run();

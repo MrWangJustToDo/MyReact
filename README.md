@@ -52,6 +52,7 @@ export default defineConfig({
 | [`@my-react/react-refresh`](packages/myreact-refresh)             | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh)](https://www.npmjs.com/package/@my-react/react-refresh)             |
 | [`@my-react/react-refresh-tools`](packages/myreact-refresh-tools) | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh-tools)](https://www.npmjs.com/package/@my-react/react-refresh-tools) |
 | [`@my-react/react-vite`](packages/myreact-vite)                   | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-vite)](https://www.npmjs.com/package/@my-react/react-vite)                   |
+| [`@my-react/react-rspack`](packages/myreact-vite)                 | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-rspack)](https://www.npmjs.com/package/@my-react/react-rspack)                   |
 | **internal**                                                      |                                                                                                                                              |
 | [`@my-react/react-jsx`](packages/myreact-jsx)                     | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-jsx)](https://www.npmjs.com/package/@my-react/react-jsx)                     |
 | [`@my-react/react-shared`](packages/myreact-shared)               | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-shared)](https://www.npmjs.com/package/@my-react/react-shared)               |

@@ -8,6 +8,8 @@ import type { MyReactElementNode } from "@my-react/react";
 
 export const WrapperByLazyScope = (children: MyReactElementNode) => createElement(ScopeLazy, null, children);
 
+export const WrapperBySuspenseScope = (children: MyReactElementNode) => createElement(ScopeSuspense, null, children);
+
 export const WrapperBySuspense = (children: MyReactElementNode) =>
   createElement(ScopeSuspense, null, createElement(Comment, { mode: "s" }), children, createElement(Comment, { mode: "e" }));
 

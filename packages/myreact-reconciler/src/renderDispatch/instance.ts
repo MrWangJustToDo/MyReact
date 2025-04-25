@@ -27,9 +27,15 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   isAppUnmounted = false;
 
+  version = __VERSION__;
+
+  mode = __DEV__ ? "development" : "production";
+
   enableUpdate: boolean;
 
-  renderMode?: string;
+  renderMode = "render";
+
+  renderPackage?: string;
 
   pendingCommitFiberList: ListTree<MyReactFiberNode> | null = null;
 

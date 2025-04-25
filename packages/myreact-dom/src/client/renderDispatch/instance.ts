@@ -57,10 +57,6 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
   };
 
-  mode = __DEV__ ? "development" : "production";
-
-  version = __VERSION__;
-
   enableUpdate = true;
 
   runtimeRef = runtimeRef;

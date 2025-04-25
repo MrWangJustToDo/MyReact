@@ -44,6 +44,7 @@
     "patch-console": "^2.0.0",
     "signal-exit": "^4.1.0",
     "slice-ansi": "^7.1.0",
+    "socket.io-client": "^4.8.1",
     "stack-utils": "^2.0.6",
     "string-width": "^7.2.0",
     "type-fest": "^4.27.0",

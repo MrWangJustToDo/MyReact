@@ -1,4 +1,4 @@
-import { createContext } from "@my-react/react-reconciler";
+import { createContext } from "@my-react/react-reconciler/compact";
 import process from "node:process";
 
 

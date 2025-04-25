@@ -1,4 +1,4 @@
-import { forwardRef } from "@my-react/react-reconciler";
+import { forwardRef } from "@my-react/react-reconciler/compact";
 import { type Except } from "type-fest";
 
 import { type DOMElement } from "../dom";

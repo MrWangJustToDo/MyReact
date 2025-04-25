@@ -7,8 +7,10 @@ import { unmountContainer } from "../renderUnmount";
 import { initialFiberNode, MyReactFiberNode, triggerUpdateOnFiber } from "../runtimeFiber";
 import { checkIsSameType, enableFiberForLog, safeCallWithSync } from "../share";
 
+import { autoSetDevTools, delGlobalDispatch } from "./devtool";
 import { createDispatch } from "./dispatch";
 import { prepareRenderPlatform } from "./platform";
+import { loadScript } from "./polyfill";
 
 import type { ReconcilerDispatch } from "./dispatch";
 import type { MyReactFiberRoot } from "../runtimeFiber";
@@ -59,6 +61,8 @@ export const Reconciler = (_config: any) => {
       }
 
       unmountContainer(renderDispatch);
+
+      delGlobalDispatch(renderDispatch);
     }
     const _fiber = new MyReactFiberNode(_element) as MyReactFiberRoot;
 
@@ -70,6 +74,8 @@ export const Reconciler = (_config: any) => {
 
     _container.__container__ = _renderDispatch;
 
+    autoSetDevTools(_renderDispatch);
+
     initialFiberNode(_fiber, _renderDispatch);
 
     mountSync(_fiber, _renderDispatch);
@@ -77,12 +83,31 @@ export const Reconciler = (_config: any) => {
     _renderDispatch.isAppMounted = true;
   };
 
-  const injectIntoDevTools = (_config: any) => {};
+  const injectIntoDevTools = async (_config: any) => {
+    // load core runtime
+    // await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");
+    await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");
+    // connect to devtools, current need run https://github.com/MrWangJustToDo/myreact-devtools with pnpm run dev:web command
+  };
+
+  const injectIntoDevToolsWithSocketIO = async (url: string) => {
+    // load core runtime
+    await injectIntoDevTools({});
+    // start, see https://github.com/MrWangJustToDo/myreact-devtools/blob/main/packages/bridge/src/hook.ts
+    const init = globalThis["__MY_REACT_DEVTOOL_NODE__"];
+
+    try {
+      await init(url);
+    } catch {
+      // ignore error
+    }
+  };
 
   return {
     createContainer,
     updateContainer,
     injectIntoDevTools,
+    injectIntoDevToolsWithSocketIO,
     flushSync: safeCallWithSync,
     batchedUpdates: safeCallWithSync,
   };

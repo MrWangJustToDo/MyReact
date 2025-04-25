@@ -95,13 +95,17 @@ export default class Ink {
     this.unsubscribeExit = signalExit.onExit(this.unmount, { alwaysLast: false });
 
     if (process.env["DEV"] === "true") {
-      Reconciler.injectIntoDevTools({
-        bundleType: 0,
-        // Reporting React DOM's version, not Ink's
-        // See https://github.com/facebook/react/issues/16666#issuecomment-532639905
-        version: "16.13.1",
-        rendererPackageName: "ink",
-      });
+      const injectIntoDevTools = async (url: string) => {
+        const { io } = await import("socket.io-client");
+        globalThis.io = io;
+        const typedReconciler = Reconciler as typeof Reconciler & {
+          injectIntoDevToolsWithSocketIO: (url: string) => Promise<void>;
+        };
+        typedReconciler.injectIntoDevToolsWithSocketIO(url);
+      };
+
+      // TODO: make this configurable
+      injectIntoDevTools('http://localhost:3002');
     }
 
     if (options.patchConsole) {

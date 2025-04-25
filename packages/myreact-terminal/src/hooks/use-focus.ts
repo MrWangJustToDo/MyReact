@@ -1,4 +1,4 @@
-import { useEffect, useContext, useMemo } from "@my-react/react-reconciler";
+import { useEffect, useContext, useMemo } from "@my-react/react-reconciler/compact";
 
 import FocusContext from "../components/FocusContext";
 

@@ -1,4 +1,4 @@
-import { useEffect } from "@my-react/react-reconciler";
+import { useEffect } from "@my-react/react-reconciler/compact";
 
 import parseKeypress, { nonAlphanumericKeys } from "../parse-keypress";
 import { Reconciler } from "../reconciler";

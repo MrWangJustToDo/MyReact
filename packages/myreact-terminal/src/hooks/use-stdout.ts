@@ -1,4 +1,4 @@
-import { useContext } from "@my-react/react-reconciler";
+import { useContext } from "@my-react/react-reconciler/compact";
 
 import StdoutContext from "../components/StdoutContext";
 

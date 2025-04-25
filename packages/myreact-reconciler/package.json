@@ -9,7 +9,9 @@
   "files": [
     "dist",
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "compact.js",
+    "compact.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -18,23 +20,42 @@
   },
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
-    "node": "./index.js",
-    "require": "./index.js",
-    "types": "./index.d.ts",
-    "default": "./index.js"
+    ".": {
+      "default": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./compact": {
+      "default": "./compact.js",
+      "types": "./compact.d.ts"
+    },
+    "./package.json": "./package.json"
   },
-  "buildOptions": {
-    "input": "./src/index.ts",
-    "output": [
-      {
-        "dir": "./dist",
-        "entryFileNames": "cjs/index.js",
-        "format": "cjs",
-        "type": true,
-        "multiple": true
-      }
-    ]
-  },
+  "buildOptions": [
+    {
+      "input": "./src/index.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/index.js",
+          "format": "cjs",
+          "type": true,
+          "multiple": true
+        }
+      ]
+    },
+    {
+      "input": "./src/compact/index.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/compact.js",
+          "format": "cjs",
+          "type": true,
+          "multiple": true
+        }
+      ]
+    }
+  ],
   "devDependencies": {
     "@my-react/react-shared": "^0.3.9",
     "@types/react": "^18 || ^19",

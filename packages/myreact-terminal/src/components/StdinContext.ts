@@ -1,4 +1,4 @@
-import { createContext } from "@my-react/react-reconciler";
+import { createContext } from "@my-react/react-reconciler/compact";
 import { EventEmitter } from "node:events";
 import process from "node:process";
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { include, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
+import { exclude, include, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
 
 import { CustomRenderDispatch, listenerMap } from "../renderDispatch";
 import { NODE_TYPE, safeCall } from "../share";
@@ -143,7 +143,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, confi
 
       const beforeFiberWithNode = getInsertBeforeNodeFromSiblingAndParent(_fiber, parentFiberWithNode || rootFiber);
 
-      if (beforeFiberWithNode) {
+      if (beforeFiberWithNode && exclude(beforeFiberWithNode.patch, PATCH_TYPE.__append__ | PATCH_TYPE.__position__)) {
         insertBefore(_fiber, beforeFiberWithNode, parentFiberWithNode, this, config);
       } else {
         append(_fiber, parentFiberWithNode, this, config);

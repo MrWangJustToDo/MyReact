@@ -95,17 +95,19 @@ export default class Ink {
     this.unsubscribeExit = signalExit.onExit(this.unmount, { alwaysLast: false });
 
     if (process.env["DEV"] === "true") {
-      const injectIntoDevTools = async (url: string) => {
+      const injectIntoDevTools = async (url: string, config: any) => {
         const { io } = await import("socket.io-client");
         globalThis.io = io;
         const typedReconciler = Reconciler as typeof Reconciler & {
-          injectIntoDevToolsWithSocketIO: (url: string) => Promise<void>;
+          injectIntoDevToolsWithSocketIO: (url: string, config: any) => Promise<void>;
         };
-        typedReconciler.injectIntoDevToolsWithSocketIO(url);
+        typedReconciler.injectIntoDevToolsWithSocketIO(url, config);
       };
 
       // TODO: make this configurable
-      injectIntoDevTools('http://localhost:3002');
+      injectIntoDevTools("http://localhost:3002", {
+        rendererPackageName: "@my-react/react-terminal",
+      });
     }
 
     if (options.patchConsole) {

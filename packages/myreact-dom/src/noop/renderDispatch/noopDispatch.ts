@@ -1,4 +1,4 @@
-import { CustomRenderDispatch, getElementName, NODE_TYPE } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, getElementName } from "@my-react/react-reconciler";
 
 import { append, create, update } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
@@ -8,18 +8,6 @@ import { noopProcessFiber } from "./process";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
-  typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
-
-  typeForCreate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
-
-  typeForUpdate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
-
-  typeForAppend: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
-
-  typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
-};
-
 export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
   runtimeDom = {
     svgMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
@@ -27,8 +15,6 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
   };
 
   enableUpdate = false;
-
-  runtimeRef = runtimeRef;
 
   isHydrateRender: boolean;
 
@@ -122,8 +108,6 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
   };
 
   enableUpdate = false;
-
-  runtimeRef = runtimeRef;
 
   isHydrateRender: boolean;
 

@@ -24,6 +24,10 @@ export type RenderContainer = Record<string, any> & {
 
 // react-reconciler compact implementation
 export const Reconciler = (_config: any) => {
+  let rendererPackageName = "@my-react";
+
+  const ReconcilerSet = new Set<CustomRenderDispatch>();
+
   const createContainer = (_container: RenderContainer) => {
     prepareRenderPlatform();
 
@@ -62,6 +66,8 @@ export const Reconciler = (_config: any) => {
 
       unmountContainer(renderDispatch);
 
+      ReconcilerSet.delete(renderDispatch);
+
       delGlobalDispatch(renderDispatch);
     }
     const _fiber = new MyReactFiberNode(_element) as MyReactFiberRoot;
@@ -69,6 +75,10 @@ export const Reconciler = (_config: any) => {
     const _renderDispatch = createDispatch(_container, _fiber, _config);
 
     _cb && _renderDispatch.pendingEffect(_fiber, _cb);
+
+    ReconcilerSet.add(_renderDispatch);
+
+    _renderDispatch.renderPackage = rendererPackageName;
 
     _container.__fiber__ = _fiber;
 
@@ -84,15 +94,19 @@ export const Reconciler = (_config: any) => {
   };
 
   const injectIntoDevTools = async (_config: any) => {
+    rendererPackageName = _config.rendererPackageName || rendererPackageName;
+
+    ReconcilerSet.forEach((renderDispatch) => (renderDispatch.renderPackage = rendererPackageName));
+    
     // load core runtime
     // await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");
     await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");
     // connect to devtools, current need run https://github.com/MrWangJustToDo/myreact-devtools with pnpm run dev:web command
   };
 
-  const injectIntoDevToolsWithSocketIO = async (url: string) => {
+  const injectIntoDevToolsWithSocketIO = async (url: string, _config: any) => {
     // load core runtime
-    await injectIntoDevTools({});
+    await injectIntoDevTools(_config || {});
     // start, see https://github.com/MrWangJustToDo/myreact-devtools/blob/main/packages/bridge/src/hook.ts
     const init = globalThis["__MY_REACT_DEVTOOL_NODE__"];
 

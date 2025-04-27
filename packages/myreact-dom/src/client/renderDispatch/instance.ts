@@ -1,7 +1,6 @@
 import { __my_react_internal__, __my_react_shared__, createElement, type MyReactElement, type MyReactElementType } from "@my-react/react";
 import {
   CustomRenderDispatch,
-  NODE_TYPE,
   getCurrentDispatchFromFiber,
   getCurrentDispatchFromType,
   getCurrentFibersFromType,
@@ -31,18 +30,6 @@ const { enableScopeTreeLog } = __my_react_shared__;
 
 const { currentComponentFiber } = __my_react_internal__;
 
-const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
-  typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
-
-  typeForCreate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
-
-  typeForUpdate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
-
-  typeForAppend: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
-
-  typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
-};
-
 type Listeners = {
   domAppend: Set<(f: MyReactFiberNode) => void>;
   domUpdate: Set<(f: MyReactFiberNode) => void>;
@@ -59,7 +46,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   enableUpdate = true;
 
-  runtimeRef = runtimeRef;
+  renderPackage = "@my-react/react-dom";
 
   isHydrateRender: boolean;
 

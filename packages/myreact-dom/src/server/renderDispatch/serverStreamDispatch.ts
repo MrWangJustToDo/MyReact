@@ -1,4 +1,4 @@
-import { CustomRenderDispatch, listenerMap, NODE_TYPE, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, listenerMap, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
@@ -25,18 +25,6 @@ export type ErrorInfo = {
   componentStack?: string;
 };
 
-const runtimeRef: CustomRenderDispatch["runtimeRef"] = {
-  typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
-
-  typeForCreate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
-
-  typeForUpdate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
-
-  typeForAppend: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__,
-
-  typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
-};
-
 /**
  * @internal
  */
@@ -47,8 +35,6 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
   };
 
   enableUpdate = false;
-
-  runtimeRef = runtimeRef;
 
   stream: SimpleReadable;
 
@@ -174,8 +160,6 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
   };
 
   enableUpdate = false;
-
-  runtimeRef = runtimeRef;
 
   stream: SimpleReadable;
 

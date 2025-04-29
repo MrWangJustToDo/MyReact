@@ -1,4 +1,4 @@
-import { include } from "@my-react/react-shared";
+import { include, STATE_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
@@ -10,7 +10,7 @@ export const isErrorBoundariesInstance = (instance: MyReactComponent, Component:
 };
 
 export const isErrorBoundariesComponent = (fiber: MyReactFiberNode) => {
-  if (include(fiber.type, NODE_TYPE.__class__)) {
+  if (include(fiber.type, NODE_TYPE.__class__) && include(fiber.state, STATE_TYPE.__stable__)) {
     const Component = fiber.elementType;
 
     const typedComponent = Component as MixinMyReactClassComponent;

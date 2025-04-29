@@ -2,14 +2,16 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE, exclude, include, isNormalEquals, isPromise } from "@my-react/react-shared";
 
 import { prepareUpdateAllDependence, prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
+import { processLazy } from "../processLazy";
 import { listenerMap } from "../renderDispatch";
 import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
-import { WrapperBySuspense } from "../runtimeScope";
+import { WrapperBySuspenseScope } from "../runtimeScope";
 import { currentRenderDispatch, currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
-import { getInstanceContextFiber, initInstance, setContextForInstance, setOwnerForInstance } from "./instance";
+import { getInstanceContextFiber, getInstanceFieldByInstance, initInstance, initVisibleInstance, setContextForInstance, setOwnerForInstance } from "./instance";
 
+import type { VisibleInstanceField } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type {
   MyReactElementNode,
@@ -137,17 +139,33 @@ export const nextWorkComponent = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkLazy = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current;
-
-  const children = renderDispatch.resolveSuspense(fiber);
+  const children = processLazy(fiber);
 
   nextWorkCommon(fiber, children);
 };
 
 export const nextWorkSuspense = (fiber: MyReactFiberNode) => {
-  const children = WrapperBySuspense(fiber.pendingProps.children);
+  const isUpdate = !!fiber.instance;
 
-  nextWorkCommon(fiber, children);
+  fiber.instance = fiber.instance || new MyReactInternalInstance();
+
+  !isUpdate && initInstance(fiber.instance);
+
+  !isUpdate && initVisibleInstance(fiber.instance);
+
+  setOwnerForInstance(fiber.instance, fiber);
+
+  const instanceField = getInstanceFieldByInstance(fiber.instance) as VisibleInstanceField;
+
+  if (instanceField.isHidden) {
+    const children = WrapperBySuspenseScope(fiber.pendingProps.fallback);
+
+    nextWorkCommon(fiber, children);
+  } else {
+    const children = WrapperBySuspenseScope(fiber.pendingProps.children);
+
+    nextWorkCommon(fiber, children);
+  }
 };
 
 export const nextWorkProvider = (fiber: MyReactFiberNode) => {
@@ -223,6 +241,24 @@ export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
   currentComponentFiber.current = null;
 
   nextWorkCommon(fiber, children);
+};
+
+export const nextWorkRoot = (fiber: MyReactFiberNode) => {
+  const isUpdate = !!fiber.instance;
+
+  fiber.instance = fiber.instance || new MyReactInternalInstance();
+
+  !isUpdate && initInstance(fiber.instance);
+
+  !isUpdate && initVisibleInstance(fiber.instance);
+
+  const instanceField = getInstanceFieldByInstance(fiber.instance) as VisibleInstanceField;
+
+  if (instanceField.isHidden) {
+    nextWorkCommon(fiber, null);
+  } else {
+    nextWorkNormal(fiber);
+  }
 };
 
 export const runtimeNextWork = (fiber: MyReactFiberNode) => {

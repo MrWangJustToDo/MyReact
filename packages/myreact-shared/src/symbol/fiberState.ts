@@ -12,6 +12,5 @@ export enum STATE_TYPE {
   __unmount__ = 1 << 9,
   __hmr__ = 1 << 10,
   __retrigger__ = 1 << 11,
-  __reschedule__ = 1 << 12,
-  __promise__ = 1 << 13,
+  __reschedule__ = 1 << 12
 }

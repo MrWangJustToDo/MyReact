@@ -15,7 +15,7 @@ export enum NODE_TYPE {
   __strict__ = 1 << 12,
   __suspense__ = 1 << 13,
   __fragment__ = 1 << 14,
-  __keepLive__ = 1 << 15,
+  __root__ = 1 << 15,
   __scope__ = 1 << 16,
   __comment__ = 1 << 17,
   __profiler__ = 1 << 18,

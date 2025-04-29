@@ -1,9 +1,9 @@
-import { __my_react_internal__, createElement, lazy } from "@my-react/react";
-import { devWarnWithFiber, nextWorkCommon, WrapperByLazyScope } from "@my-react/react-reconciler";
+import { __my_react_internal__, createElement } from "@my-react/react";
+import { devWarnWithFiber, nextWorkCommon, processLazy, WrapperByLazyScope } from "@my-react/react-reconciler";
 import { isPromise, ListTree } from "@my-react/react-shared";
 
 import type { ClientDomDispatch } from "./instance";
-import type { MixinMyReactFunctionComponent } from "@my-react/react";
+import type { MixinMyReactFunctionComponent , lazy } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { currentRenderPlatform } = __my_react_internal__;
@@ -40,54 +40,27 @@ export const loadLazy = async (fiber: MyReactFiberNode, typedElementType: Return
 /**
  * @internal
  */
-export const updateLazy = (fiber: MyReactFiberNode, typedElementType: ReturnType<typeof lazy>) => {
-  lazy._updater(fiber, typedElementType.render);
-};
-
-/**
- * @internal
- */
 export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
-  const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
-  if (typedElementType._loaded === true) {
-    if (_dispatch.isHydrateRender) {
-      currentRenderPlatform.current.microTask(function invokeUpdateLazy() {
-        updateLazy(_fiber, typedElementType);
-      });
-
-      return WrapperByLazyScope(_dispatch.resolveSuspense(_fiber));
-    } else {
-      const render = typedElementType.render as ReturnType<typeof lazy>["render"];
-
-      return WrapperByLazyScope(createElement(render as MixinMyReactFunctionComponent, _fiber.pendingProps));
-    }
-  } else if (typedElementType._loading === false) {
-    loadLazy(_fiber, typedElementType).then(() => updateLazy(_fiber, typedElementType));
-  }
-
-  return WrapperByLazyScope(_dispatch.resolveSuspense(_fiber));
+  return processLazy(_fiber);
 };
 
 /**
  * @internal
  */
 export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
-  const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
-
-  if (typedElementType._loaded === true) {
-    return WrapperByLazyScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
-  } else {
-    if (_dispatch.isHydrateRender) {
+  if (_dispatch.isHydrateRender) {
+    const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
+    if (typedElementType._loaded === true) {
+      return WrapperByLazyScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
+    } else {
       _dispatch.pendingAsyncLoadFiberList = _dispatch.pendingAsyncLoadFiberList || new ListTree<MyReactFiberNode>();
 
       _dispatch.pendingAsyncLoadFiberList.push(_fiber);
 
       return null;
-    } else if (typedElementType._loading === false) {
-      loadLazy(_fiber, typedElementType).then(() => updateLazy(_fiber, typedElementType));
     }
-
-    return WrapperByLazyScope(_dispatch.resolveSuspense(_fiber));
+  } else {
+    return processLazy(_fiber);
   }
 };
 

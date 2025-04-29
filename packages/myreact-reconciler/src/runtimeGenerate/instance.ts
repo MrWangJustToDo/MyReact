@@ -11,6 +11,10 @@ export type InstanceField = {
   effect: Effect_TYPE;
 };
 
+export type VisibleInstanceField = InstanceField & {
+  isHidden: boolean;
+};
+
 // support private instance field
 const instanceMap = new Map<MyReactInternalInstance, InstanceField>();
 
@@ -28,6 +32,16 @@ export const initInstance = (instance: MyReactInternalInstance) => {
   instanceMap.set(instance, field);
 
   return field;
+};
+
+export const initVisibleInstance = (instance: MyReactInternalInstance) => {
+  const field = getInstanceFieldByInstance(instance);
+
+  if (!field) throw new Error(`[@my-react/react] can not get field for instance, this is a bug for @my-react`);
+
+  const typedField = field as VisibleInstanceField;
+
+  typedField.isHidden = false;
 };
 
 export const setContextForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode | null, instanceField?: InstanceField) => {

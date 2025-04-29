@@ -52,6 +52,10 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
         );
       }
 
+      if (updateState.callback) {
+        renderDispatch.pendingLayoutEffect(fiber, updateState.callback, { stickyToFoot: true });
+      }
+
       setImmediateNextFiber(fiber);
 
       return;

@@ -983,6 +983,44 @@ export const processNormalComponentUpdate = (fiber: MyReactFiberNode): UpdateSta
           typedFiber._debugUpdateQueue.push(typedNode);
         }
       }
+    } else if (updater.type === UpdateQueueType.promise) {
+      if (__DEV__ && updater.trigger !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
+
+      allQueue.delete(node);
+
+      if (__DEV__) {
+        processedNodes.push(updater);
+      }
+
+      const { payLoad } = updater;
+
+      isSync = isSync || updater.isSync;
+
+      isSkip = isSkip && updater.isSkip;
+
+      isForce = isForce || updater.isForce;
+
+      isImmediate = isImmediate || updater.isImmediate;
+
+      isRetrigger = isRetrigger || updater.isRetrigger;
+
+      updater.callback && callbacks.push(updater.callback);
+
+      if (__DEV__ && enableDebugFiled.current) {
+        const typedNode = updater as UpdateQueueDev;
+
+        typedNode._debugRunTime = Date.now();
+
+        typedNode._debugBeforeValue = null;
+
+        typedNode._debugAfterValue = payLoad;
+
+        if (enableDebugUpdateQueue.current) {
+          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+
+          typedFiber._debugUpdateQueue.push(typedNode);
+        }
+      }
     } else if (updater.type === UpdateQueueType.hmr || updater.type === UpdateQueueType.trigger) {
       if (__DEV__ && updater.trigger !== fiber) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 

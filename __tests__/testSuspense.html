@@ -1,86 +1,149 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <script src="../bundle/babel.min.js"></script>
-    <!-- <script src="../bundle/react.development.js"></script> -->
-    <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <script src="../bundle/react.18.development.js"></script>
-    <script src="../bundle/react-dom.18.development.js"></script>
-    <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
-    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
-  </head>
 
-  <body>
-    <div id="root"></div>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <!-- <script src="../bundle/react.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.development.js"></script> -->
+  <!-- <script src="../bundle/react.18.development.js"></script> -->
+  <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
+  <script src="../packages/myreact/dist/umd/index.development.js"></script>
+  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+</head>
 
-    <script type="text/babel">
-      const { Component, Suspense, lazy } = React;
+<body>
+  <div id="root"></div>
 
-      const delay = (time) => {
-        new Promise((r) => {
-          setTimeout(r, time);
-        });
-      };
+  <script type="text/babel">
+    const { Component, Suspense, lazy } = React;
 
-      // class WrapperErrorCatch extends Component {
-      //   state = {
-      //     stack: "",
-      //     error: "",
-      //     hasError: false,
-      //   };
+    let p = null;
 
-      //   static getDerivedStateFromError() {
-      //     return { hasError: true };
-      //   }
+    const delay = (time) => {
+      console.log('delay');
 
-      //   componentDidCatch(error, info) {
-      //     console.log(error, info, "xxxxxxxxxxxx");
-      //     this.setState({
-      //       error: error?.message,
-      //       stack: info.componentStack,
-      //     });
-      //   }
+      if (p) return p;
 
-      //   render() {
-      //     console.log(this, "xxxxxxxxxxxx");
-      //     if (this.state.hasError)
-      //       return (
-      //         <pre>
-      //           <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
-      //           {this.state.stack}
-      //         </pre>
-      //       );
-      //     return this.props.children;
-      //   }
-      // }
+      p = new Promise((r) => {
+        setTimeout(r, time);
+      });
 
-      const Bar = () => {
-        throw delay(2000);
+      return p;
+    };
 
-        return <div>bar</div>;
-      };
-
-      const Baz = ({ children }) => {
-        return <Bar />;
-      };
-
-      const App = () => {
-        return (
-          // <WrapperErrorCatch>
-          <div>
-            <Suspense fallback={<>123</>}>
-              <Baz />
-            </Suspense>
-          </div>
-          // </WrapperErrorCatch>
+    function use(promise) {
+      if (promise.status === 'fulfilled') {
+        return promise.value;
+      } else if (promise.status === 'rejected') {
+        throw promise.reason;
+      } else if (promise.status === 'pending') {
+        throw promise;
+      } else {
+        promise.status = 'pending';
+        promise.then(
+          (result) => {
+            promise.status = 'fulfilled';
+            promise.value = result;
+          },
+          (reason) => {
+            promise.status = 'rejected';
+            promise.reason = reason;
+          }
         );
-      };
+        throw promise;
+      }
+    }
 
-      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-    </script>
-  </body>
+    let promise;
+    let state;
+    let value;
+
+    const read = () => {
+      console.log('read');
+      if (!promise) {
+        promise = new Promise((resolve) => {
+          setTimeout(resolve, 5000);
+        });
+
+        state = "pending";
+
+        (async () => {
+          await promise;
+          state = "done";
+          value = "Hello World";
+        })();
+      }
+
+      if (state === "pending") {
+        throw promise;
+      }
+
+      if (state === "done") {
+        return value;
+      }
+    };
+
+    // class WrapperErrorCatch extends Component {
+    //   state = {
+    //     stack: "",
+    //     error: "",
+    //     hasError: false,
+    //   };
+
+    //   static getDerivedStateFromError() {
+    //     return { hasError: true };
+    //   }
+
+    //   componentDidCatch(error, info) {
+    //     console.log(error, info, "xxxxxxxxxxxx");
+    //     this.setState({
+    //       error: error?.message,
+    //       stack: info.componentStack,
+    //     });
+    //   }
+
+    //   render() {
+    //     console.log(this, "xxxxxxxxxxxx");
+    //     if (this.state.hasError)
+    //       return (
+    //         <pre>
+    //           <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
+    //           {this.state.stack}
+    //         </pre>
+    //       );
+    //     return this.props.children;
+    //   }
+    // }
+
+    const Bar = () => {
+      read();
+      use(delay(2000));
+      // throw delay(2000)
+
+      return <div>bar</div>;
+    };
+
+    const Baz = ({ children }) => {
+      return <div>Baz start -- <Bar /> -- <span>Baz end</span> </div>;
+    };
+
+    const App = () => {
+      return (
+        // <WrapperErrorCatch>
+        <div>
+            <Baz />
+        </div>
+        // </WrapperErrorCatch>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    // ReactDOM.render(<App />, document.getElementById("root"));
+  </script>
+</body>
+
 </html>

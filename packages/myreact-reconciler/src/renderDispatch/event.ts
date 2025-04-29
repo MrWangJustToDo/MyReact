@@ -227,7 +227,11 @@ export class RenderDispatchEvent implements RenderDispatch {
     return null;
   }
 
-  resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode {
+  resolveSuspenseValue(_fiber: MyReactFiberNode): MyReactElementNode {
+    return null;
+  }
+
+  resolveSuspenseFiber(_fiber: MyReactFiberNode): MyReactFiberNode | null {
     return null;
   }
 

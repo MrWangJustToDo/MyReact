@@ -63,6 +63,8 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
 
   const renderDispatch = fiberToDispatchMap.get(fiber);
 
+  if (!renderDispatch || !renderDispatch.enableUpdate) return;
+
   if (renderDispatch.isAppCrashed) return;
 
   if (renderDispatch.isAppUnmounted) return;
@@ -143,6 +145,15 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
         isForce: true,
         isRetrigger: true,
         isImmediate: true,
+        callback: function finishTriggerErrorOnFiber() {
+          typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
+
+          renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
+
+          cb?.();
+
+          globalError.current = null;
+        },
       };
 
       errorBoundariesFiber.state = merge(errorBoundariesFiber.state, STATE_TYPE.__create__);
@@ -151,15 +162,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
       processState(updateQueue);
 
-      syncFiberStateToComponent(errorBoundariesFiber, renderDispatch, function finishTriggerErrorOnFiber() {
-        typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
-
-        renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
-
-        cb?.();
-
-        globalError.current = null;
-      });
+      syncFiberStateToComponent(errorBoundariesFiber, renderDispatch);
     } else {
       const updateQueue: ComponentUpdateQueue = {
         type: UpdateQueueType.component,

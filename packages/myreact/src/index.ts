@@ -193,6 +193,7 @@ export type {
   ComponentUpdateQueue,
   HookUpdateQueue,
   HMRUpdateQueue,
+  LazyUpdateQueue,
   PromiseUpdateQueue,
   TriggerUpdateQueue,
   ContextUpdateQueue,

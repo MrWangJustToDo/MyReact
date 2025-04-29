@@ -171,7 +171,9 @@ type DefaultRenderDispatch = {
 
   resolveScope(_fiber: MyReactFiberNode): MyReactFiberNode | null;
 
-  resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode;
+  resolveSuspenseFiber(_fiber: MyReactFiberNode): MyReactFiberNode | null;
+
+  resolveSuspenseValue(_fiber: MyReactFiberNode): MyReactElementNode | null;
 
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null;
 

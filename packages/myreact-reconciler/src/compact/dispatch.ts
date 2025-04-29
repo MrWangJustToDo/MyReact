@@ -5,12 +5,23 @@ import { CustomRenderDispatch, listenerMap } from "../renderDispatch";
 import { NODE_TYPE, safeCall } from "../share";
 
 import { append, insertBefore, setRef, unsetRef } from "./api";
-import { defaultDispatchFiber } from "./dispatchFiber";
 import { getInsertBeforeNodeFromSiblingAndParent, getValidParentFiberWithNode, initialMap, unmountMap } from "./dispatchMap";
 import { defaultDispatchMount } from "./dispatchMount";
 
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
 import type { ListTree } from "@my-react/react-shared";
+
+const initialRef: CustomRenderDispatch["runtimeRef"] = {
+  typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
+
+  typeForCreate: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__,
+
+  typeForUpdate: NODE_TYPE.__text__ | NODE_TYPE.__plain__,
+
+  typeForAppend: NODE_TYPE.__text__ | NODE_TYPE.__plain__,
+
+  typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__,
+};
 
 export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, config: any) => {
   class ReconcilerDispatch extends CustomRenderDispatch {
@@ -21,9 +32,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, confi
       elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
     };
 
-    dispatchFiber(_fiber: MyReactFiberNode): void {
-      return defaultDispatchFiber(_fiber);
-    }
+    runtimeRef = initialRef;
 
     commitCreate(_fiber: MyReactFiberNode): void {
       if (!include(_fiber.patch, PATCH_TYPE.__create__)) return;

@@ -1,4 +1,4 @@
-import { nextWorkComponent, nextWorkConsumer, nextWorkProvider, nextWorkSuspense, NODE_TYPE } from "@my-react/react-reconciler";
+import { nextWorkComponent, nextWorkConsumer, nextWorkProvider, nextWorkRoot, nextWorkSuspense, NODE_TYPE } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
 import { nextWorkCommon } from "./common";
@@ -8,7 +8,9 @@ import type { ClientDomDispatch } from "./instance";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export const clientDispatchFiber = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
-  if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
+  if (include(fiber.type, NODE_TYPE.__root__)) {
+    nextWorkRoot(fiber);
+  } else if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
     nextWorkComponent(fiber);
   } else if (include(fiber.type, NODE_TYPE.__consumer__)) {
     nextWorkConsumer(fiber);

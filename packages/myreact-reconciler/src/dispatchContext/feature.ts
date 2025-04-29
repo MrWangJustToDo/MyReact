@@ -6,6 +6,7 @@ import { triggerUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev }
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { enableDebugUpdateQueue, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
+import type { UpdateState } from "../processQueue";
 import type { createContext, UpdateQueue } from "@my-react/react";
 
 const { enableDebugFiled } = __my_react_shared__;
@@ -102,7 +103,6 @@ export const prepareUpdateAllDependence = (
       isSync: true,
       isForce: true,
       isImmediate: true,
-      // TODO
       isRetrigger: true,
       _debugBeforeValue: beforeValue,
       _debugAfterValue: afterValue,
@@ -118,32 +118,29 @@ export const prepareUpdateAllDependence = (
     }
   }
 
+  const devUpdater: UpdateState = {
+    needUpdate: true,
+    nodes: processedNodes,
+    isSync: true,
+    isSkip: false,
+    isForce: true,
+    isImmediate: true,
+    isRetrigger: true,
+  };
+
+  const proUpdater: UpdateState = {
+    needUpdate: true,
+    isSync: true,
+    isSkip: false,
+    isForce: true,
+    isImmediate: true,
+    isRetrigger: true,
+  };
+
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberTriggerListener() {
-      listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) =>
-        cb(
-          fiber,
-          __DEV__
-            ? {
-                needUpdate: true,
-                nodes: processedNodes,
-                isSync: true,
-                isSkip: false,
-                isForce: true,
-                isImmediate: true,
-                isRetrigger: true,
-              }
-            : {
-                needUpdate: true,
-                isSync: true,
-                isSkip: false,
-                isForce: true,
-                isImmediate: true,
-                isRetrigger: true,
-              }
-        )
-      );
+      listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, __DEV__ ? devUpdater : proUpdater));
     },
   });
 };

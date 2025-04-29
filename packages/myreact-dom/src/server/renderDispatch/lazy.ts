@@ -1,17 +1,39 @@
 import { createElement } from "@my-react/react";
-import { nextWorkCommon, WrapperByLazyScope } from "@my-react/react-reconciler";
-import { ListTree } from "@my-react/react-shared";
+import { getInstanceFieldByInstance, nextWorkCommon, processState, WrapperByLazyScope } from "@my-react/react-reconciler";
+import { ListTree, merge, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import type { ServerDomDispatch } from "./serverDomDispatch";
 import type { LegacyServerStreamDispatch, LatestServerStreamDispatch } from "./serverStreamDispatch";
-import type { lazy, MixinMyReactFunctionComponent } from "@my-react/react";
-import type { MyReactFiberNode, CustomRenderDispatch } from "@my-react/react-reconciler";
+import type { lazy, LazyUpdateQueue, MixinMyReactFunctionComponent } from "@my-react/react";
+import type { MyReactFiberNode, CustomRenderDispatch, VisibleInstanceField } from "@my-react/react-reconciler";
 
 /**
  * @internal
  */
 export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
-  return WrapperByLazyScope(_dispatch.resolveSuspense(_fiber));
+  const visibleFiber = _dispatch.resolveSuspenseFiber(_fiber) || _dispatch.rootFiber;
+
+  const updateQueue: LazyUpdateQueue = {
+    type: UpdateQueueType.lazy,
+    trigger: visibleFiber,
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    payLoad: _fiber.elementType,
+    isSync: true,
+    isForce: true,
+    isRetrigger: true,
+    isImmediate: true,
+  };
+
+  const visibleField = getInstanceFieldByInstance(visibleFiber.instance) as VisibleInstanceField;
+
+  visibleField.isHidden = true;
+
+  visibleFiber.state = merge(visibleFiber.state, STATE_TYPE.__create__);
+
+  processState(updateQueue);
+
+  return null;
 };
 
 /**

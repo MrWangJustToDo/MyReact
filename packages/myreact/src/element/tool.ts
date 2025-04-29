@@ -58,15 +58,25 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
   }
 };
 
+const optimizes: boolean[] = [];
+
+const pushOptimizes = (optimize: boolean) => {
+  optimizes.push(enableOptimizeTreeLog.current);
+
+  enableOptimizeTreeLog.current = optimize;
+}
+
+const popOptimizes = () => {
+  enableOptimizeTreeLog.current = optimizes.pop() || false;
+}
+
 // TODO
 /**
  * @internal
  *
  */
 export const checkValidElement = (element: MyReactElementNode) => {
-  const last = enableOptimizeTreeLog.current;
-
-  enableOptimizeTreeLog.current = false;
+  pushOptimizes(false);
 
   if (isValidElement(element)) {
     if (!element._store?.["validType"]) {
@@ -209,16 +219,14 @@ export const checkValidElement = (element: MyReactElementNode) => {
     }
   }
 
-  enableOptimizeTreeLog.current = last;
+  popOptimizes();
 };
 
 /**
  * @internal
  */
 export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => {
-  const last = enableOptimizeTreeLog.current;
-
-  enableOptimizeTreeLog.current = false;
+  pushOptimizes(false);
 
   children.forEach(function checkArrayChildKey(child) {
     if (Array.isArray(child)) {
@@ -228,16 +236,14 @@ export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => 
     }
   });
 
-  enableOptimizeTreeLog.current = last;
+  popOptimizes();
 };
 
 /**
  * @internal
  */
 export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) => {
-  const last = enableOptimizeTreeLog.current;
-
-  enableOptimizeTreeLog.current = false;
+  pushOptimizes(false);
 
   if (Array.isArray(children)) {
     checkValidKey(children);
@@ -245,5 +251,5 @@ export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) =
     if (isValidElement(children) && children._store) children._store["validKey"] = true;
   }
 
-  enableOptimizeTreeLog.current = last;
+  popOptimizes();
 };

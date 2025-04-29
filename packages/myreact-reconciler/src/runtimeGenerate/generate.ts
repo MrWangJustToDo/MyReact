@@ -151,8 +151,6 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
   const isHMR = include(parentFiber.state, STATE_TYPE.__hmr__);
 
-  const isPromise = include(parentFiber.state, STATE_TYPE.__promise__);
-
   const isRetrigger = include(parentFiber.state, STATE_TYPE.__retrigger__);
 
   const renderDispatch = currentRenderDispatch.current;
@@ -160,7 +158,7 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
   // is current is retrigger update, skip update children
   if (isRetrigger) return;
 
-  if (isUpdate || isHMR || isPromise) {
+  if (isUpdate || isHMR) {
     const { existingChildrenMap, existingChildrenArray } = getExistingChildren(parentFiber);
 
     parentFiber.child = null;

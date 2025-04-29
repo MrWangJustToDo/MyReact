@@ -51,8 +51,7 @@ export const processState = (_params: UpdateQueue) => {
 
   const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
-  // if current dispatch is a server || noop
-  if (!renderDispatch || !renderDispatch.enableUpdate) return;
+  if (!renderDispatch) return;
 
   _params.isSkip = !!_params.isSkip;
 

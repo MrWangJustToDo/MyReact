@@ -11,6 +11,7 @@ export * from "./processQueue";
 export * from "./processHook";
 export * from "./processState";
 export * from "./processPromise";
+export * from "./processLazy";
 export * from "./share";
 export * from "./renderDispatch";
 export * from "./renderMount";

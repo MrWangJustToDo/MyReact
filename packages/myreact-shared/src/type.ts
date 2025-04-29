@@ -22,8 +22,7 @@ export const Suspense = Symbol.for("react.suspense");
 
 export const Strict = Symbol.for("react.strict_mode");
 
-// TODO
-export const KeepLive = Symbol.for("react.keep_live");
+export const Root = Symbol.for("react.root");
 
 export const Scope = Symbol.for("react.scope");
 

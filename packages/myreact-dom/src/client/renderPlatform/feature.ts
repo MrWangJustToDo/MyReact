@@ -29,8 +29,7 @@ function dispatchHook(this: DomPlatform, _params: RenderHookParams) {
 }
 
 function dispatchPromise(this: DomPlatform, _params: { fiber: MyReactFiberNode; promise: Promise<unknown> }) {
-  processPromise(_params.fiber, _params.promise);
-  return void 0;
+  return processPromise(_params.fiber, _params.promise);
 }
 
 function dispatchError(this: DomPlatform, _params: { fiber: MyReactFiberNode; error: Error }) {

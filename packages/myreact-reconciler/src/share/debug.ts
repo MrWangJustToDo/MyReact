@@ -258,7 +258,7 @@ export const getPlainFiberName = (fiber: MyReactFiberNode) => {
   if (fiber.type & NODE_TYPE.__profiler__) return `Profiler`;
   if (fiber.type & NODE_TYPE.__suspense__) return `Suspense`;
   if (fiber.type & NODE_TYPE.__comment__) return `Comment`;
-  if (fiber.type & NODE_TYPE.__keepLive__) return `KeepAlive`;
+  if (fiber.type & NODE_TYPE.__root__) return `Root`;
   if (fiber.type & NODE_TYPE.__fragment__) return `Fragment`;
   if (fiber.type & NODE_TYPE.__text__) return `text`;
   if (typeof fiber.elementType === "string") return `${fiber.elementType}`;

@@ -3,7 +3,6 @@ import {
   Consumer,
   ForwardRef,
   Fragment,
-  KeepLive,
   Lazy,
   Memo,
   Portal,
@@ -18,6 +17,7 @@ import {
   Context,
   ScopeLazy,
   ScopeSuspense,
+  Root,
 } from "@my-react/react-shared";
 
 import { devWarn } from "./debug";
@@ -170,8 +170,8 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
     }
   } else if (typeof elementType === "symbol") {
     switch (elementType) {
-      case KeepLive:
-        nodeType = merge(nodeType, NODE_TYPE.__keepLive__);
+      case Root:
+        nodeType = merge(nodeType, NODE_TYPE.__root__);
         break;
       case Fragment:
         nodeType = merge(nodeType, NODE_TYPE.__fragment__);

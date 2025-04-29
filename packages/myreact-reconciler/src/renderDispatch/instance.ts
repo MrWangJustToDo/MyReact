@@ -8,7 +8,7 @@ import { defaultDispatchFiber } from "../dispatchFiber";
 import { defaultDispatchMount } from "../dispatchMount";
 import { defaultResolveScope } from "../dispatchScope";
 import { defaultGenerateStrict } from "../dispatchStrict";
-import { defaultResolveSuspense } from "../dispatchSuspense";
+import { defaultResolveSuspenseFiber, defaultResolveSuspenseValue } from "../dispatchSuspense";
 import { defaultDispatchUnmount, defaultGenerateUnmountMap } from "../dispatchUnmount";
 import { defaultDispatchUpdate } from "../dispatchUpdate";
 import { NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
@@ -216,8 +216,11 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
   resolveScope(_fiber: MyReactFiberNode): MyReactFiberNode | null {
     return defaultResolveScope(_fiber);
   }
-  resolveSuspense(_fiber: MyReactFiberNode): MyReactElementNode {
-    return defaultResolveSuspense(_fiber);
+  resolveSuspenseValue(_fiber: MyReactFiberNode): MyReactElementNode {
+    return defaultResolveSuspenseValue(_fiber);
+  }
+  resolveSuspenseFiber(_fiber: MyReactFiberNode): MyReactFiberNode | null {
+    return defaultResolveSuspenseFiber(_fiber);
   }
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
     return defaultResolveErrorBoundaries(_fiber);

@@ -1,4 +1,4 @@
-import { createReconciler } from "@my-react/react-reconciler";
+import { createReconciler } from "@my-react/react-reconciler/compact";
 
 function traceWrap(hostConfig) {
   let traceWrappedHostConfig = {};

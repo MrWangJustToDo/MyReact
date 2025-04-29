@@ -27,10 +27,14 @@ import {
   useImperativeHandle as useImperativeHandleCompact,
   useSyncExternalStore as useSyncExternalStoreCompact,
   Children as ChildrenCompact,
+  StrictMode as StrictModeCompact,
+  Fragment as FragmentCompact,
+  Suspense as SuspenseCompact,
 } from "@my-react/react";
 
 import { Reconciler } from "./feature";
 
+import type { MyReactFiberNode } from "../runtimeFiber";
 import type {
   Component as ComponentType,
   PureComponent as PureComponentType,
@@ -60,6 +64,9 @@ import type {
   useImperativeHandle as useImperativeHandleType,
   useSyncExternalStore as useSyncExternalStoreType,
   Children as ChildrenType,
+  StrictMode as StrictModeType,
+  Fragment as FragmentType,
+  Suspense as SuspenseType,
 } from "react";
 import type createReconcilerType from "react-reconciler";
 
@@ -123,3 +130,17 @@ export const useSyncExternalStore = useSyncExternalStoreCompact as unknown as ty
 export const Children = ChildrenCompact as unknown as typeof ChildrenType;
 
 export const createReconciler = Reconciler as unknown as typeof createReconcilerType;
+
+export const StrictMode = StrictModeCompact as unknown as typeof StrictModeType;
+
+export const Fragment = FragmentCompact as unknown as typeof FragmentType;
+
+export const Suspense = SuspenseCompact as unknown as typeof SuspenseType;
+
+export interface FiberNode<T = Record<string, any>> extends MyReactFiberNode {
+  stateNode: T;
+  return: FiberNode | null;
+  child: FiberNode | null;
+  sibling: FiberNode | null;
+  alternate?: FiberNode | null;
+}

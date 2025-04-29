@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { __my_react_shared__ } from "@my-react/react";
+import { __my_react_shared__, Component } from "@my-react/react";
 import { Effect_TYPE, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { syncFlushComponentQueue } from "../processQueue";
@@ -7,6 +7,7 @@ import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import {
   getInstanceContextFiber,
   getInstanceEffectState,
+  getInstanceOwnerFiber,
   initInstance,
   setContextForInstance,
   setEffectForInstance,
@@ -19,6 +20,16 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
 const { enableLegacyLifeCycle } = __my_react_shared__;
+
+Object.defineProperty(Component.prototype, "_reactInternals", {
+  get() {
+    return getInstanceOwnerFiber(this);
+  },
+  set() {
+    // do nothing
+  },
+  configurable: true,
+});
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const Component = fiber.elementType;

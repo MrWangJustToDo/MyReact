@@ -16,7 +16,7 @@ export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextOb
   if (fiber) {
     return fiber.pendingProps["value"] as Record<string, unknown>;
   } else {
-    return ContextObject?.Provider["value"] as Record<string, unknown>;
+    return ContextObject?.Provider?.["value"] as Record<string, unknown>;
   }
 };
 

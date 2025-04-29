@@ -44,7 +44,7 @@ export const getConfig = () => {
 
       return {
         plugins,
-        resolve: resolveConfig,
+        resolve: { ...resolveConfig, fallback: { http: false, https: false, vm: false } },
         entry: arrayEntry as Record<string, string>,
         resolveLoader: {
           modules: ["node_modules", resolve(process.cwd(), "..", "..", "site", "webpack", "node_modules")],

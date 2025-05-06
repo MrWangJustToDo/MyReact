@@ -30,7 +30,7 @@ export const renderToStaticNodeStream = wrapperFunc((element: LikeJSX): Readable
 
     __DEV__ && checkRoot(fiber);
 
-    const renderDispatch = new LegacyServerStreamDispatch(container, fiber);
+    const renderDispatch = new LegacyServerStreamDispatch(container, fiber, element);
 
     renderDispatch.stream = stream;
 

@@ -2,14 +2,15 @@
 import { __my_react_internal__, type createContext, type MyReactComponent, type MyReactElementNode, type UpdateQueue } from "@my-react/react";
 
 import { triggerUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
+import { initInstance, initVisibleInstance } from "../runtimeGenerate";
 import { MyWeakMap, NODE_TYPE } from "../share";
 
-import type { RenderDispatch, RuntimeMap } from "./interface";
+import type { RenderDispatch } from "./interface";
 import type { UpdateState } from "../processQueue";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { ListTree, STATE_TYPE, UniqueArray } from "@my-react/react-shared";
 
-const { Dispatcher } = __my_react_internal__;
+const { Dispatcher, MyReactInternalInstance } = __my_react_internal__;
 
 type Listeners = {
   fiberInitial: Set<(fiber: MyReactFiberNode) => void>;
@@ -97,7 +98,7 @@ const getInitialListeners = (): Listeners => {
       };
 };
 
-const getInitialMap = (): RuntimeMap => ({
+const getInitialMap = (): RenderDispatch["runtimeMap"] => ({
   effectMap: new MyWeakMap(),
 
   layoutEffectMap: new MyWeakMap(),
@@ -133,8 +134,8 @@ const initialRef: RenderDispatch["runtimeRef"] = {
 
 export const listenerMap = new Map<RenderDispatch, Listeners>();
 
-export class RenderDispatchEvent implements RenderDispatch {
-  runtimeMap: RuntimeMap;
+export class RenderDispatchEvent extends MyReactInternalInstance implements RenderDispatch {
+  runtimeMap: RenderDispatch["runtimeMap"];
 
   runtimeRef: RenderDispatch["runtimeRef"];
 
@@ -145,6 +146,8 @@ export class RenderDispatchEvent implements RenderDispatch {
   rootNode: any;
 
   rootFiber: MyReactFiberNode;
+
+  rootElement: MyReactElementNode;
 
   isAppMounted: boolean;
 
@@ -159,6 +162,8 @@ export class RenderDispatchEvent implements RenderDispatch {
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode>;
 
   constructor() {
+    super();
+
     this.runtimeRef = initialRef;
 
     this.runtimeMap = getInitialMap();
@@ -166,6 +171,10 @@ export class RenderDispatchEvent implements RenderDispatch {
     this.runtimeFiber = getInitialFiber();
 
     listenerMap.set(this, getInitialListeners());
+
+    initInstance(this);
+
+    initVisibleInstance(this);
 
     Object.defineProperty(this, "dispatcher", {
       value: Dispatcher,

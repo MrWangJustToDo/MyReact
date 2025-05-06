@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
+import { type createContext, type MyReactElementNode } from "@my-react/react";
 import { PATCH_TYPE, ListTree, UniqueArray, include, merge, exclude } from "@my-react/react-shared";
 
 import { defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
@@ -18,7 +19,6 @@ import { listenerMap, RenderDispatchEvent } from "./event";
 import type { RenderDispatch } from "./interface";
 import type { MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
 import type { HMR } from "../share";
-import type { createContext, MyReactElementNode } from "@my-react/react";
 
 export class CustomRenderDispatch extends RenderDispatchEvent implements RenderDispatch {
   isAppMounted = false;
@@ -83,9 +83,12 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   constructor(
     readonly rootNode: any,
-    readonly rootFiber: MyReactFiberNode
+    readonly rootFiber: MyReactFiberNode,
+    rootElement: MyReactElementNode
   ) {
     super();
+
+    this.rootElement = rootElement;
 
     const typedFiber = rootFiber as MyReactFiberRoot;
 

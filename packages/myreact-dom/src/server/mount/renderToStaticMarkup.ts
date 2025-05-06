@@ -18,7 +18,7 @@ export const renderToStaticMarkup = wrapperFunc((element: LikeJSX) => {
 
     __DEV__ && checkRoot(fiber);
 
-    const renderDispatch = new ServerDomDispatch(container, fiber);
+    const renderDispatch = new ServerDomDispatch(container, fiber, element);
 
     renderDispatch.isServerRender = true;
 

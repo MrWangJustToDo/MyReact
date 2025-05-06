@@ -388,7 +388,7 @@ const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextSt
   }
 };
 
-export const classComponentMount = (fiber: MyReactFiberNode) => {
+export const processClassComponentMount = (fiber: MyReactFiberNode) => {
   processComponentInstanceOnMount(fiber);
 
   processComponentStateFromProps(fiber);
@@ -408,7 +408,7 @@ export const classComponentMount = (fiber: MyReactFiberNode) => {
 };
 
 // TODO
-export const classComponentActive = (fiber: MyReactFiberNode) => {
+export const processClassComponentActive = (fiber: MyReactFiberNode) => {
   processComponentFiberOnUpdate(fiber);
 
   processComponentPropsAndContextOnActive(fiber);
@@ -489,7 +489,7 @@ export const syncComponentStateToFiber = (fiber: MyReactFiberNode) => {
   fiber.pendingState = Object.assign({}, typedInstance.state);
 };
 
-export const classComponentUpdate = (fiber: MyReactFiberNode) => {
+export const processClassComponentUpdate = (fiber: MyReactFiberNode) => {
   const res = classComponentUpdateImpl(fiber);
 
   syncComponentStateToFiber(fiber);
@@ -497,7 +497,7 @@ export const classComponentUpdate = (fiber: MyReactFiberNode) => {
   return res;
 };
 
-export const classComponentUnmount = (fiber: MyReactFiberNode, _renderDispatch: CustomRenderDispatch) => {
+export const processClassComponentUnmount = (fiber: MyReactFiberNode, _renderDispatch: CustomRenderDispatch) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   safeCallWithCurrentFiber({

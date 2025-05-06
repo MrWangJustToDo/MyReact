@@ -72,7 +72,7 @@ export const Reconciler = (_config: any) => {
     }
     const _fiber = new MyReactFiberNode(_element) as MyReactFiberRoot;
 
-    const _renderDispatch = createDispatch(_container, _fiber, _config);
+    const _renderDispatch = createDispatch(_container, _fiber, _element, _config);
 
     _cb && _renderDispatch.pendingEffect(_fiber, _cb);
 
@@ -97,7 +97,7 @@ export const Reconciler = (_config: any) => {
     rendererPackageName = _config.rendererPackageName || rendererPackageName;
 
     ReconcilerSet.forEach((renderDispatch) => (renderDispatch.renderPackage = rendererPackageName));
-    
+
     // load core runtime
     // await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");
     await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");

@@ -74,7 +74,7 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
 
   const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ClientDomDispatch(container, fiber);
+  const renderDispatch = new ClientDomDispatch(container, fiber, element);
 
   const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 
@@ -141,6 +141,8 @@ export const render = wrapperFunc((element: LikeJSX, _container: Partial<RenderC
     }
 
     if (checkIsSameType(containerFiber, element)) {
+      renderContainer.rootElement = element;
+
       containerFiber._installElement(element);
 
       triggerUpdateOnFiber(containerFiber, STATE_TYPE.__triggerSync__, cb);

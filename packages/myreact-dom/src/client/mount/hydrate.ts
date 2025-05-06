@@ -37,7 +37,7 @@ const throwHydrateError = (renderDispatch: ClientDomDispatch) => {
 const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: () => void) => {
   const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ClientDomDispatch(container, fiber);
+  const renderDispatch = new ClientDomDispatch(container, fiber, element);
 
   const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 
@@ -77,7 +77,7 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
 const hydrateAsync = async (element: MyReactElement, container: RenderContainer, cb?: () => void) => {
   const fiber = new MyReactFiberNode(element);
 
-  const renderDispatch = new ClientDomDispatch(container, fiber);
+  const renderDispatch = new ClientDomDispatch(container, fiber, element);
 
   const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
 

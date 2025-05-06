@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__, createElement, type MyReactElement, type MyReactElementType } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, createElement } from "@my-react/react";
 import {
   CustomRenderDispatch,
   getCurrentDispatchFromFiber,
@@ -23,6 +23,7 @@ import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, shouldPause
 import { clientDispatchFiber } from "./dispatch";
 import { clientProcessFiber } from "./process";
 
+import type { MyReactElement, MyReactElementNode, MyReactElementType } from "@my-react/react";
 import type { HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 import type { PlainElementDev } from "@my-react-dom-server/api";
 
@@ -64,9 +65,10 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   constructor(
     readonly rootNode: any,
-    readonly rootFiber: MyReactFiberNode
+    readonly rootFiber: MyReactFiberNode,
+    rootElement: MyReactElementNode
   ) {
-    super(rootNode, rootFiber);
+    super(rootNode, rootFiber, rootElement);
 
     domListenersMap.set(this, { domAppend: new Set(), domUpdate: new Set(), domSetRef: new Set() });
 

@@ -2,7 +2,7 @@
 import { __my_react_internal__, __my_react_shared__, type MyReactComponent, type UpdateQueue } from "@my-react/react";
 import { HOOK_TYPE, ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
-import { syncComponentStateToFiber } from "../runtimeComponent";
+import { syncComponentStateToFiber } from "../processClass";
 import { prepareUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { enableDebugUpdateQueue, getCurrentDispatchFromFiber, NODE_TYPE, safeCallWithCurrentFiber } from "../share";

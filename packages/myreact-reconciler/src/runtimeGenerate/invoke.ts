@@ -1,30 +1,24 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { PATCH_TYPE, STATE_TYPE, exclude, include, isNormalEquals, isPromise } from "@my-react/react-shared";
+import { PATCH_TYPE, STATE_TYPE, exclude, include, isPromise } from "@my-react/react-shared";
 
-import { prepareUpdateAllDependence, prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
+import { processClassComponentMount, processClassComponentUpdate } from "../processClass";
+import { processConsumer, processProvider } from "../processContext";
+import { processFunction } from "../processFunction";
 import { processLazy } from "../processLazy";
+import { processSuspense } from "../processSuspense";
 import { listenerMap } from "../renderDispatch";
-import { classComponentMount, classComponentUpdate } from "../runtimeComponent";
-import { WrapperBySuspenseScope } from "../runtimeScope";
 import { currentRenderDispatch, currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
-import { getInstanceContextFiber, getInstanceFieldByInstance, initInstance, initVisibleInstance, setContextForInstance, setOwnerForInstance } from "./instance";
+import { getInstanceFieldByInstance, initInstance, initVisibleInstance } from "./instance";
 
 import type { VisibleInstanceField } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type {
-  MyReactElementNode,
-  MixinMyReactFunctionComponent,
-  MaybeArrayMyReactElementNode,
-  createContext,
-  forwardRef,
-  MyReactFunctionComponent,
-} from "@my-react/react";
+import type { MaybeArrayMyReactElementNode } from "@my-react/react";
 
-const { currentHookTreeNode, currentHookNodeIndex, currentComponentFiber, currentRenderPlatform, MyReactInternalInstance } = __my_react_internal__;
+const { currentComponentFiber, MyReactInternalInstance } = __my_react_internal__;
 
-const { enablePerformanceLog, enableDebugFiled, enableLoopFromRoot } = __my_react_shared__;
+const { enablePerformanceLog, enableDebugFiled } = __my_react_shared__;
 
 export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   if (__DEV__ && isPromise(children)) {
@@ -58,66 +52,18 @@ export const nextWorkNormal = (fiber: MyReactFiberNode) => {
 
 export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
   if (!fiber.instance) {
-    const children = classComponentMount(fiber);
+    const children = processClassComponentMount(fiber);
 
     nextWorkCommon(fiber, children);
   } else {
-    const { updated, children } = classComponentUpdate(fiber);
+    const { updated, children } = processClassComponentUpdate(fiber);
 
     if (updated) nextWorkCommon(fiber, children);
   }
 };
 
 export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
-  currentHookTreeNode.current = fiber.hookList?.head;
-
-  currentHookNodeIndex.current = 0;
-
-  const typedElementType = fiber.elementType as MixinMyReactFunctionComponent;
-
-  let children: MyReactElementNode = null;
-
-  if (include(fiber.type, NODE_TYPE.__forwardRef__)) {
-    const typedElementTypeWithRef = typedElementType as ReturnType<typeof forwardRef>["render"];
-
-    children = safeCallWithCurrentFiber({
-      fiber,
-      action: function safeCallForwardRefFunctionalComponent() {
-        let re = undefined;
-        try {
-          re = typedElementTypeWithRef(fiber.pendingProps, fiber.ref);
-        } catch (e) {
-          if (isPromise(e)) {
-            re = currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
-          } else {
-            throw e;
-          }
-        }
-        return re;
-      },
-    });
-  } else {
-    children = safeCallWithCurrentFiber({
-      fiber,
-      action: function safeCallFunctionalComponent() {
-        let re = undefined;
-        try {
-          re = typedElementType(fiber.pendingProps);
-        } catch (e) {
-          if (isPromise(e)) {
-            re = currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
-          } else {
-            throw e;
-          }
-        }
-        return re;
-      },
-    });
-  }
-
-  currentHookNodeIndex.current = 0;
-
-  currentHookTreeNode.current = null;
+  const children = processFunction(fiber);
 
   nextWorkCommon(fiber, children);
 };
@@ -145,100 +91,19 @@ export const nextWorkLazy = (fiber: MyReactFiberNode) => {
 };
 
 export const nextWorkSuspense = (fiber: MyReactFiberNode) => {
-  const isUpdate = !!fiber.instance;
+  const children = processSuspense(fiber);
 
-  fiber.instance = fiber.instance || new MyReactInternalInstance();
-
-  !isUpdate && initInstance(fiber.instance);
-
-  !isUpdate && initVisibleInstance(fiber.instance);
-
-  setOwnerForInstance(fiber.instance, fiber);
-
-  const instanceField = getInstanceFieldByInstance(fiber.instance) as VisibleInstanceField;
-
-  if (instanceField.isHidden) {
-    const children = WrapperBySuspenseScope(fiber.pendingProps.fallback);
-
-    nextWorkCommon(fiber, children);
-  } else {
-    const children = WrapperBySuspenseScope(fiber.pendingProps.children);
-
-    nextWorkCommon(fiber, children);
-  }
+  nextWorkCommon(fiber, children);
 };
 
 export const nextWorkProvider = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current;
+  processProvider(fiber);
 
-  if (renderDispatch.isAppMounted) {
-    const prevProps = fiber.memoizedProps.value;
-
-    const nextProps = fiber.pendingProps.value;
-
-    if (!isNormalEquals(prevProps as Record<string, unknown>, nextProps as Record<string, unknown>)) {
-      if (enableLoopFromRoot.current) {
-        prepareUpdateAllDependence(renderDispatch, fiber, prevProps, nextProps);
-      } else {
-        renderDispatch.pendingLayoutEffect(fiber, function invokePrepareUpdateAllDependenceFromRoot() {
-          prepareUpdateAllDependenceFromRoot(renderDispatch, fiber, prevProps, nextProps);
-        });
-      }
-    }
-
-    nextWorkNormal(fiber);
-  } else {
-    nextWorkNormal(fiber);
-  }
+  nextWorkNormal(fiber);
 };
 
 export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current;
-
-  const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
-
-  const isUpdate = !!fiber.instance;
-
-  fiber.instance = fiber.instance || new MyReactInternalInstance();
-
-  !isUpdate && initInstance(fiber.instance);
-
-  setOwnerForInstance(fiber.instance, fiber);
-
-  const Context = typedElementType.Context as ReturnType<typeof createContext>;
-
-  currentComponentFiber.current = fiber;
-
-  const contextFiber = getInstanceContextFiber(fiber.instance);
-
-  let finalContext = null;
-
-  if (!contextFiber || include(contextFiber.state, STATE_TYPE.__unmount__)) {
-    const providerFiber = renderDispatch.resolveContextFiber(fiber, Context);
-
-    const context = renderDispatch.resolveContextValue(providerFiber, Context);
-
-    finalContext = context;
-
-    setContextForInstance(fiber.instance, providerFiber);
-  } else {
-    const context = renderDispatch.resolveContextValue(contextFiber, Context);
-
-    setContextForInstance(fiber.instance, contextFiber);
-
-    finalContext = context;
-  }
-
-  const typedChildren = fiber.pendingProps.children as MyReactFunctionComponent;
-
-  const children = safeCallWithCurrentFiber({
-    fiber,
-    action: function safeCallConsumerChildren() {
-      return typedChildren(finalContext);
-    },
-  });
-
-  currentComponentFiber.current = null;
+  const children = processConsumer(fiber);
 
   nextWorkCommon(fiber, children);
 };

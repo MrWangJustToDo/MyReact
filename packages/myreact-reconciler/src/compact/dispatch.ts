@@ -9,6 +9,7 @@ import { getInsertBeforeNodeFromSiblingAndParent, getValidParentFiberWithNode, i
 import { defaultDispatchMount } from "./dispatchMount";
 
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
+import type { MyReactElementNode } from "@my-react/react/dist/types";
 import type { ListTree } from "@my-react/react-shared";
 
 const initialRef: CustomRenderDispatch["runtimeRef"] = {
@@ -23,7 +24,7 @@ const initialRef: CustomRenderDispatch["runtimeRef"] = {
   typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__,
 };
 
-export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, config: any) => {
+export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootElement: MyReactElementNode, config: any) => {
   class ReconcilerDispatch extends CustomRenderDispatch {
     enableUpdate = true;
 
@@ -234,7 +235,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, confi
     }
   }
 
-  return new ReconcilerDispatch(rootNode, rootFiber);
+  return new ReconcilerDispatch(rootNode, rootFiber, rootElement);
 };
 
 export type ReconcilerDispatch = ReturnType<typeof createDispatch>;

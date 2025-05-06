@@ -3,9 +3,9 @@ import type { NODE_TYPE } from "../share";
 import type { createContext, MyReactElementNode, RenderPlatform } from "@my-react/react";
 import type { ListTree, UniqueArray } from "@my-react/react-shared";
 
-export type refKey = "typeForRef" | "typeForCreate" | "typeForUpdate" | "typeForAppend" | "typeForNativeNode";
+type RefKey = "typeForRef" | "typeForCreate" | "typeForUpdate" | "typeForAppend" | "typeForNativeNode";
 
-export type RuntimeMap = {
+type RuntimeMap = {
   effectMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 
   layoutEffectMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
@@ -19,18 +19,20 @@ export type RuntimeMap = {
   triggerCallbackMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 };
 
-export type fiberKey = "scheduledFiber" | "errorCatchFiber" | "nextWorkingFiber";
+type FiberKey = "scheduledFiber" | "errorCatchFiber" | "nextWorkingFiber";
 
 type DefaultRenderDispatch = {
-  runtimeRef: Record<refKey, NODE_TYPE>;
+  runtimeRef: Record<RefKey, NODE_TYPE>;
 
   runtimeMap: RuntimeMap;
 
-  runtimeFiber: Record<fiberKey, MyReactFiberNode>;
+  runtimeFiber: Record<FiberKey, MyReactFiberNode>;
 
   rootNode: any;
 
   rootFiber: MyReactFiberNode;
+
+  rootElement: MyReactElementNode;
 
   dispatcher: RenderPlatform["dispatcher"];
 

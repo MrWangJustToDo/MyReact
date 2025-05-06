@@ -48,7 +48,7 @@ export const renderToPipeableStream = wrapperFunc((element: LikeJSX, options?: R
 
     __DEV__ && checkRoot(fiber);
 
-    const renderDispatch = new LatestServerStreamDispatch(container, fiber);
+    const renderDispatch = new LatestServerStreamDispatch(container, fiber, element);
 
     renderDispatch.stream = stream;
 

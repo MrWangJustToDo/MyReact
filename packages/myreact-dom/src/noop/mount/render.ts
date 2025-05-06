@@ -22,7 +22,7 @@ export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
       return legacyNoopRender(createElement(Root));
     }
 
-    const renderDispatch = new NoopLegacyRenderDispatch(container, fiber);
+    const renderDispatch = new NoopLegacyRenderDispatch(container, fiber, element);
 
     renderDispatch.isServerRender = true;
 
@@ -49,7 +49,7 @@ export const latestNoopRender = async (element: LikeJSX): Promise<ContainerEleme
       return latestNoopRender(createElement(Root));
     }
 
-    const renderDispatch = new NoopLatestRenderDispatch(container, fiber);
+    const renderDispatch = new NoopLatestRenderDispatch(container, fiber, element);
 
     renderDispatch.isServerRender = true;
 

@@ -33,7 +33,7 @@ export const renderToReadableStream = wrapperFunc((element: LikeJSX, options?: R
 
     __DEV__ && checkRoot(fiber);
 
-    const renderDispatch = new LatestServerStreamDispatch(container, fiber);
+    const renderDispatch = new LatestServerStreamDispatch(container, fiber, element);
 
     options?.onError && (renderDispatch.onError = options.onError);
 

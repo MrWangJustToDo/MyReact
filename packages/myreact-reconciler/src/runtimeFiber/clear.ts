@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 
 import { defaultDeleteCurrentEffect } from "../dispatchEffect";
-import { classComponentUnmount } from "../runtimeComponent";
+import { processClassComponentUnmount } from "../processClass";
 import { hookListUnmount } from "../runtimeHook";
 
 import type { MyReactFiberNode } from "./instance";
@@ -13,7 +13,7 @@ const { enableDebugFiled } = __my_react_shared__;
 export const clearFiberNode = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   hookListUnmount(fiber, renderDispatch);
 
-  classComponentUnmount(fiber, renderDispatch);
+  processClassComponentUnmount(fiber, renderDispatch);
 
   defaultDeleteCurrentEffect(fiber, renderDispatch);
 

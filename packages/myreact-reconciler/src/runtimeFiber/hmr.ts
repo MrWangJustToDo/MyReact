@@ -21,8 +21,14 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
     safeCallWithCurrentFiber({
       fiber,
       action: function safeCallHMR() {
+        // keep the type
+        const nodeType = fiber.type;
+
         const element = createElement(nextType, { ...fiber.pendingProps, key: fiber.key ?? undefined, ref: fiber.ref ?? undefined });
+
         fiber._installElement(element);
+        
+        fiber.type = nodeType;
       },
     });
 

@@ -1,5 +1,5 @@
 import { Tooltip, Box, Text, Flex, Avatar, Icon, VStack, StackDivider, useDisclosure } from "@chakra-ui/react";
-import { AiOutlineMail, AiOutlineUser } from "react-icons/ai";
+import { MailIcon, UserIcon } from "lucide-react";
 
 import { Hover } from "../Hover";
 
@@ -20,14 +20,14 @@ export const Follower = ({ isFirst, name, email, avatarUrl, bioHTML }: FollowerP
         label={
           <VStack divider={<StackDivider borderColor="cardBorderColor" />} alignItems="flex-start" spacing="1">
             <Flex alignItems="center" width="100%">
-              <Icon as={AiOutlineUser} />
+              <Icon as={UserIcon} />
               <Text fontWeight="semibold" marginLeft="1" noOfLines={1}>
                 {name}
               </Text>
             </Flex>
             {email && (
               <Flex alignItems="center" width="100%">
-                <Icon as={AiOutlineMail} />
+                <Icon as={MailIcon} />
                 <Text marginLeft="1" noOfLines={1}>
                   {email}
                 </Text>

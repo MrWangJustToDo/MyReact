@@ -6,6 +6,8 @@ import dayjs from "dayjs";
 import { resolve } from "path";
 import { DefinePlugin, HotModuleReplacementPlugin } from "webpack";
 
+import type { ResolveOptions } from "webpack";
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 require("dayjs/locale/zh-cn");
 
@@ -41,7 +43,7 @@ export const getConfig = () => {
         isDEV && isMIDDLEWARE && new HotModuleReplacementPlugin(),
       ].filter(Boolean);
 
-      const resolveConfig = {
+      const resolveConfig: ResolveOptions = {
         alias: {
           react: isReact ? "react" : "@my-react/react",
           "react-dom": isReact ? "react-dom" : "@my-react/react-dom",
@@ -86,7 +88,7 @@ export const getConfig = () => {
         isDEV && !isMIDDLEWARE && new HotModuleReplacementPlugin(),
       ].filter(Boolean);
 
-      const resolveConfig = {
+      const resolveConfig: ResolveOptions = {
         alias: {
           // react: isReact ? "react" : "@my-react/react",
           // "react-dom": isReact ? "react-dom" : "@my-react/react-dom",

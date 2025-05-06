@@ -2,8 +2,8 @@ import { NetworkStatus, useApolloClient, useQuery } from "@apollo/client";
 import { Box, Text, SkeletonText, SkeletonCircle, useCallbackRef, Icon, IconButton } from "@chakra-ui/react";
 import { GetSingleBlogDocument } from "@site/graphql";
 import { throttle } from "lodash-es";
+import { LoaderCircleIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
-import { AiOutlineReload } from "react-icons/ai";
 
 import { Actor } from "@client/component/Actor";
 import { Card } from "@client/component/Card";
@@ -136,7 +136,7 @@ export const DetailModalHeader = ({ id }: { id: string }) => (
           <Text as="h1" fontSize={{ base: "lg", md: "xl", lg: "2xl" }}>
             {data?.repository?.issue?.title}
             <Hover marginLeft="2" display="inline-flex" alignItems="center">
-              <IconButton size="sm" variant="link" aria-label="reload" onClick={() => refetch()} icon={<Icon as={AiOutlineReload} />} />
+              <IconButton size="sm" variant="link" aria-label="reload" onClick={() => refetch()} icon={<Icon as={LoaderCircleIcon} />} />
             </Hover>
           </Text>
         </Box>

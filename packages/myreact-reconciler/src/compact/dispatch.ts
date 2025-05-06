@@ -61,8 +61,8 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
         fiberContainer.containerNode = containerNode;
 
         if (__DEV__) containerNode.setAttribute?.("portal", "@my-react");
-      } else if (include(_fiber.type, NODE_TYPE.__comment__)) {
-        throw new Error("Comment not supported");
+      } else {
+        throw new Error("current type node not supported");
       }
 
       _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__create__);

@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { Badge, Icon, Link, SkeletonText, Text } from "@chakra-ui/react";
 import { GetRepoAboutDocument } from "@site/graphql";
-import { VscStarFull } from "react-icons/vsc";
+import { StarIcon as VscStarFull } from "lucide-react";
 
 import { Card } from "../Card";
 

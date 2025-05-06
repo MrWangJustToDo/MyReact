@@ -1,6 +1,6 @@
 import { Box, Flex, Th, Tooltip, Icon, IconButton } from "@chakra-ui/react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useCallback, useContext, useMemo } from "react";
-import { AiOutlineDown, AiOutlineUp } from "react-icons/ai";
 
 import { SortOrder } from "./type";
 import { SorterContext } from "./useSorter";
@@ -118,8 +118,8 @@ export function HeadCell<T>({
     >
       {content}
       <Flex transform="scale(0.7)" marginStart="2px" flexDirection="column">
-        <IconButton icon={<Icon as={AiOutlineUp} />} aria-label="Sort ascend" fontSize="xx-small" color={getColor(SortOrder.Asc)} />
-        <IconButton icon={<Icon as={AiOutlineDown} />} aria-label="Sort descend" fontSize="xx-small" color={getColor(SortOrder.Desc)} />
+        <IconButton icon={<Icon as={ChevronUp} />} aria-label="Sort ascend" fontSize="xx-small" color={getColor(SortOrder.Asc)} />
+        <IconButton icon={<Icon as={ChevronDown} />} aria-label="Sort descend" fontSize="xx-small" color={getColor(SortOrder.Desc)} />
       </Flex>
     </Flex>
   ) : (

@@ -1,6 +1,8 @@
 import { nextWorkComponent, nextWorkConsumer, nextWorkProvider, nextWorkRoot, nextWorkSuspense, NODE_TYPE } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
+import { nextWorkPortal } from "@my-react-dom-client/tools";
+
 import { nextWorkCommon } from "./common";
 import { nextWorkLazy } from "./lazy";
 
@@ -12,6 +14,8 @@ export const clientDispatchFiber = (fiber: MyReactFiberNode, renderDispatch: Cli
     nextWorkRoot(fiber);
   } else if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
     nextWorkComponent(fiber);
+  } else if (include(fiber.type, NODE_TYPE.__portal__)) {
+    nextWorkPortal(fiber);
   } else if (include(fiber.type, NODE_TYPE.__consumer__)) {
     nextWorkConsumer(fiber);
   } else if (include(fiber.type, NODE_TYPE.__lazy__)) {

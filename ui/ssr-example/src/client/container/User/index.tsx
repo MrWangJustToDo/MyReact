@@ -16,13 +16,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { GetViewerDocument } from "@site/graphql";
+import { GithubIcon, MailIcon, UserIcon } from "lucide-react";
 import { memo } from "react";
-import { AiOutlineGithub, AiOutlineMail, AiOutlineUser } from "react-icons/ai";
-import { SiLeetcode } from "react-icons/si";
 
 import { Chart } from "@client/component/Chart";
 import { ErrorCom } from "@client/component/Error";
 import { Followers } from "@client/component/Follower";
+import { LeetCode } from "@client/component/Icons";
 import { Blog, GitDiffView, RStore, SSR } from "@client/component/Recommend";
 import { useEffectOnce } from "@client/hooks";
 import { momentTo } from "@client/utils/time";
@@ -37,7 +37,7 @@ const UserLoading = () => (
   </Box>
 );
 
-const _User = () => {
+const UserImpl = () => {
   const { data, loading, error, refetch } = useQuery(GetViewerDocument, {
     variables: {
       first: ITEM_FOLLOWER,
@@ -66,7 +66,7 @@ const _User = () => {
           variant="outline"
           aria-label="github"
           href="https://github.com/MrWangJustToDo/"
-          icon={<Icon as={AiOutlineGithub} fontSize="xl" />}
+          icon={<Icon as={GithubIcon} fontSize="xl" />}
         />
         <IconButton
           as="a"
@@ -74,7 +74,7 @@ const _User = () => {
           variant="outline"
           aria-label="leetcode"
           href="https://leetcode.com/MrWangSay/"
-          icon={<Icon as={SiLeetcode} fontSize="xl" />}
+          icon={<Icon as={LeetCode} fontSize="xl" />}
         />
       </HStack>
       {/* <Text fontWeight="semibold">{data.viewer.login}</Text> */}
@@ -88,13 +88,13 @@ const _User = () => {
         </VStack>
       </Box>
       <Flex alignItems="center" marginTop="1">
-        <Icon as={AiOutlineUser} />
+        <Icon as={UserIcon} />
         <Text fontSize="small" marginLeft="2">
           {data.viewer.login}
         </Text>
       </Flex>
       <Flex alignItems="center" marginTop="1" color="lightTextColor">
-        <Icon as={AiOutlineMail} />
+        <Icon as={MailIcon} />
         <Text fontSize="small" marginLeft="2">
           {data.viewer.email}
         </Text>
@@ -127,4 +127,4 @@ const _User = () => {
   );
 };
 
-export const User = memo(_User);
+export const User = memo(UserImpl);

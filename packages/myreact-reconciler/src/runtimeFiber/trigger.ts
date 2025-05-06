@@ -5,7 +5,7 @@ import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, 
 import { listenerMap } from "../renderDispatch";
 import { triggerUpdate } from "../renderUpdate";
 import { setImmediateNextFiber } from "../runtimeUpdate";
-import { devWarnWithFiber, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
+import { NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { UpdateState } from "../processQueue";
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -44,13 +44,6 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
       fiber.state = remove(fiber.state, STATE_TYPE.__stable__);
 
       fiber.state = merge(fiber.state, STATE_TYPE.__retrigger__);
-
-      if (__DEV__ && updateState.callback) {
-        devWarnWithFiber(
-          fiber,
-          `[@my-react/react] retrigger update current fiber with callback, this callback will never be called and this may cause a memory leak, please check your code`
-        );
-      }
 
       if (updateState.callback) {
         renderDispatch.pendingLayoutEffect(fiber, updateState.callback, { stickyToFoot: true });

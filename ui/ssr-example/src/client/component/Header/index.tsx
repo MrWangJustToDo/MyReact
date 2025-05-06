@@ -3,9 +3,8 @@ import { Button, Container, Flex, HStack, Icon, Tag, TagLabel, TagLeftIcon, Text
 import { GetStarCountDocument } from "@site/graphql";
 import { motion, useScroll, useTransform } from "framer-motion";
 import debounce from "lodash/debounce";
+import { StarIcon as FaStar, GithubIcon as SiGithub } from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
-import { FaStar } from "react-icons/fa";
-import { SiGithub } from "react-icons/si";
 import { useIntl } from "react-intl";
 import { useLocation, useNavigate } from "react-router";
 
@@ -25,7 +24,7 @@ const map = {
   "/excalidraw": "excalidraw",
 };
 
-const _Header = () => {
+const HeaderImpl = () => {
   const location = useLocation();
 
   const navigate = useNavigate();
@@ -175,4 +174,4 @@ const _Header = () => {
   );
 };
 
-export const Header = memo(_Header);
+export const Header = memo(HeaderImpl);

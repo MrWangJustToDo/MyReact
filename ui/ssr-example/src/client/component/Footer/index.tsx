@@ -1,8 +1,8 @@
 import { Text, Icon, Link, Flex, Box } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { AnimatePresence, motion } from "framer-motion";
+import { HeartIcon as AiFillHeart } from "lucide-react";
 import { memo } from "react";
-import { AiFillHeart } from "react-icons/ai";
 
 // import { BLOG_SOURCE } from "@client/config/source";
 import { useFoot } from "@client/hooks";
@@ -25,7 +25,7 @@ const variants = {
   },
 };
 
-const _Footer = () => {
+const FooterImpl = () => {
   // const isMounted = useIsMounted();
   const state = useFoot((s) => s.state);
 
@@ -171,4 +171,4 @@ const _Footer = () => {
   );
 };
 
-export const Footer = memo(_Footer);
+export const Footer = memo(FooterImpl);

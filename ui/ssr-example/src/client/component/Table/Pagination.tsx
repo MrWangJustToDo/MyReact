@@ -1,5 +1,5 @@
 import { Box, Button, Flex, Icon } from "@chakra-ui/react";
-import { AiOutlineLeft, AiOutlineRight } from "react-icons/ai";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { usePagination, usePaginationBar } from "./usePaginationController";
 
@@ -38,7 +38,7 @@ export const Pagination = ({ page, total, pageSize = 50, onChange, preButtonProp
       {hasPrePage && (
         <Navigator
           aria-label="Prev page"
-          leftIcon={<Icon as={AiOutlineLeft} />}
+          leftIcon={<Icon as={ChevronLeft} />}
           onClick={() => {
             onChange(page - 1);
           }}
@@ -51,7 +51,7 @@ export const Pagination = ({ page, total, pageSize = 50, onChange, preButtonProp
       {hasNextPage && (
         <Navigator
           aria-label="Next page"
-          rightIcon={<Icon as={AiOutlineRight} />}
+          rightIcon={<Icon as={ChevronRight} />}
           onClick={() => {
             onChange(page + 1);
           }}
@@ -154,7 +154,7 @@ export const PaginationBar = ({
               {...(navigate < 0 ? preButtonProps : nextButtonProps)}
               className={`table__pagination__${navigate < 0 ? "previous" : "next"}-page-button`}
             >
-              {navigate < 0 ? <Icon {...chevronStyles} as={AiOutlineLeft} /> : <Icon {...chevronStyles} as={AiOutlineRight} />}
+              {navigate < 0 ? <Icon {...chevronStyles} as={ChevronLeft} /> : <Icon {...chevronStyles} as={ChevronRight} />}
             </BarNavigator>
           );
         }

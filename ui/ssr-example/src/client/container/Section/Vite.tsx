@@ -1,7 +1,7 @@
 import { Box, Button, Container, Flex, Heading, Icon, Spacer, Tag, Text, Tooltip, useColorModeValue } from "@chakra-ui/react";
 import { SandpackProvider, SandpackLayout, SandpackCodeEditor } from "@codesandbox/sandpack-react";
+import { ChevronsRightIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { HiChevronDoubleRight } from "react-icons/hi";
 import { useLocation } from "react-router";
 
 import { Section } from "@client/component";
@@ -106,7 +106,7 @@ export const ViteSection = () => {
       </Flex>
       <Card ref={ref} overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
         <Flex padding="1" fontFamily="monospace" alignItems="center" as="a" href="#vite-section">
-          <Icon as={HiChevronDoubleRight}></Icon>
+          <Icon as={ChevronsRightIcon}></Icon>
           <Text marginLeft={2}>Vite + @my-react</Text>
         </Flex>
         <VitePlayground />

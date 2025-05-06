@@ -1,7 +1,6 @@
 import { Text, Flex, Box, Icon, IconButton, Divider, Tooltip } from "@chakra-ui/react";
+import { ChevronRightIcon as AiOutlineRight, ExternalLink as VscLinkExternal } from "lucide-react";
 import { useMemo } from "react";
-import { AiOutlineRight } from "react-icons/ai";
-import { VscLinkExternal } from "react-icons/vsc";
 import { useLocation, useNavigate } from "react-router";
 
 import { markNOLineNumber } from "@client/utils/markdown";

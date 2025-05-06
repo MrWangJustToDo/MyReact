@@ -62,7 +62,7 @@ export const getInitialState: GetInitialStateType = async () => {
     const colorMode = localStorage.getItem("chakra-ui-color-mode");
 
     //preload excalidraw
-    // await import("@excalidraw/excalidraw");
+    await import("@excalidraw/excalidraw");
 
     return { props: { isDarkMode: colorMode === "dark" ? true : false } };
   }

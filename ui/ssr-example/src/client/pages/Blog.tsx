@@ -8,6 +8,7 @@ import { DISABLE_DRAG_HANDLER_SELECTOR, DRAG_HANDLER_SELECTOR, GRID_ROW_HEIGHT }
 import { BASIC_VARIABLE, BlogGridWithInfinityScroll } from "@client/container/BlogList";
 import { User } from "@client/container/User";
 import { useMainCard } from "@client/hooks/useMainCard";
+import { delay } from "@client/utils";
 
 import type { GetInitialStateType } from "@client/types/common";
 
@@ -92,6 +93,8 @@ export default Page;
 export const getInitialState: GetInitialStateType = async () => {
   if (__CLIENT__) {
     const client = getApolloClient(null, false);
+
+    await delay(1000);
 
     await Promise.all([
       client.query({

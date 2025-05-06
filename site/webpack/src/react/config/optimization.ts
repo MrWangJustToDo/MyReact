@@ -11,9 +11,10 @@ const splitChunk = (packageArray: string[]) => {
   if (pnpmPackages.includes("/@chakra-ui")) return "vendor-ui";
   if (pnpmPackages.includes("/@babel")) return "vendor-babel";
   if (pnpmPackages.includes("@emotion")) return "vendor-emotion";
-  if (pnpmPackages.includes("/react-icons")) return "vendor-icons";
+  if (pnpmPackages.includes("lucide-react")) return "vendor-icons";
   if (pnpmPackages.includes("/react")) return "vendor-react";
   if (pnpmPackages.includes("/lodash")) return "vendor-lodash";
+  if (pnpmPackages.includes("@my-react")) return "vendor-framework";
   return "vendor";
 };
 

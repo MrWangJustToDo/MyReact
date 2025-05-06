@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 
 import * as style from "./index.module.scss";
 
-const _Bar = forwardRef<HTMLDivElement>(function Bar(_, ref) {
+const BarImpl = forwardRef<HTMLDivElement>(function Bar(_, ref) {
   const [ele, setEle] = useState<HTMLDivElement>();
 
   useEffect(() => {
@@ -25,6 +25,9 @@ const _Bar = forwardRef<HTMLDivElement>(function Bar(_, ref) {
   return ele ? createPortal(<div ref={ref} className={style.loadingBar} style={{ height: `0px`, transform: `scale(0, 1)` }} />, ele as Element) : null;
 });
 
-_Bar.displayName = "_Bar";
+BarImpl.displayName = "BarImpl";
 
-export const Bar = memo(_Bar);
+export const Bar = memo(BarImpl);
+
+Bar.displayName = "Bar";
+

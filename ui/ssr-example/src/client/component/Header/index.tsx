@@ -101,7 +101,7 @@ const HeaderImpl = () => {
                   <Icon as={SiGithub} />
                   {loading ? null : (
                     <Tag variant="subtle" colorScheme="orange" marginLeft="3">
-                      <TagLeftIcon as={FaStar} color="orange.300" />
+                      <TagLeftIcon as={FaStar} color="orange.300" fill="currentcolor" />
                       <TagLabel>{data?.repository?.stargazerCount}</TagLabel>
                     </Tag>
                   )}
@@ -126,7 +126,7 @@ const HeaderImpl = () => {
                     <Icon as={SiGithub} />
                     {loading ? null : (
                       <Tag variant="subtle" colorScheme="orange" marginLeft="3">
-                        <TagLeftIcon as={FaStar} color="orange.300" />
+                        <TagLeftIcon as={FaStar} color="orange.300" fill="orange.300" />
                         <TagLabel>{data?.repository?.stargazerCount}</TagLabel>
                       </Tag>
                     )}

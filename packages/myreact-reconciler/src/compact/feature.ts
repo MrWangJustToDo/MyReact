@@ -31,7 +31,7 @@ export const Reconciler = (_config: any) => {
   const createContainer = (_container: RenderContainer) => {
     prepareRenderPlatform();
 
-    enableDebugFiled.current = false;
+    enableDebugFiled.current = __DEV__;
 
     enableScopeTreeLog.current = false;
 

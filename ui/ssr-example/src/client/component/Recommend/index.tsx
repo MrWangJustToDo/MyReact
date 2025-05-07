@@ -21,7 +21,7 @@ export const Blog = () => {
       <Link href={data?.repository?.url} target="_blank" fontWeight="500" textDecoration="underline">
         <Text as="span">Blog</Text>:
         <Badge colorScheme="orange" float="right" display="flex" alignItems="center">
-          <Icon as={VscStarFull} marginRight="1" />
+          <Icon as={VscStarFull} marginRight="1" fill="currentcolor" />
           {data?.repository?.stargazerCount}
         </Badge>
         <SkeletonText isLoaded={!loading}>
@@ -50,7 +50,7 @@ export const RStore = () => {
       <Link href={data?.repository?.url} target="_blank" fontWeight="500" textDecoration="underline">
         <Text as="span">RStore</Text>:
         <Badge colorScheme="orange" float="right" display="flex" alignItems="center">
-          <Icon as={VscStarFull} marginRight="1" />
+          <Icon as={VscStarFull} marginRight="1" fill="currentcolor" />
           {data?.repository?.stargazerCount}
         </Badge>
         <SkeletonText isLoaded={!loading}>
@@ -79,7 +79,7 @@ export const SSR = () => {
       <Link href={data?.repository?.url} target="_blank" fontWeight="500" textDecoration="underline">
         <Text as="span">SSR template</Text>:
         <Badge colorScheme="orange" float="right" display="flex" alignItems="center">
-          <Icon as={VscStarFull} marginRight="1" />
+          <Icon as={VscStarFull} marginRight="1" fill="currentcolor" />
           {data?.repository?.stargazerCount}
         </Badge>
         <SkeletonText isLoaded={!loading}>
@@ -108,7 +108,7 @@ export const GitDiffView = () => {
       <Link href={data?.repository?.url} target="_blank" fontWeight="500" textDecoration="underline">
         <Text as="span">Git-diff-view</Text>:
         <Badge colorScheme="orange" float="right" display="flex" alignItems="center">
-          <Icon as={VscStarFull} marginRight="1" />
+          <Icon as={VscStarFull} marginRight="1" fill="currentcolor" />
           {data?.repository?.stargazerCount}
         </Badge>
         <SkeletonText isLoaded={!loading}>

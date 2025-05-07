@@ -38,7 +38,7 @@ const FooterImpl = () => {
           <Link href="https://github.com/MrWangJustToDo" target="_blank" color="blue.500">
             Github
           </Link>
-          <Icon as={AiFillHeart} color="red.600" mx="0.2em" />
+          <Icon as={AiFillHeart} color="red.600" mx="0.2em" fill="currentcolor" />
           <Link href="https://github.com/MrWangJustToDo/MyReact" target="_blank" color="blue.500">
             @my-react
           </Link>

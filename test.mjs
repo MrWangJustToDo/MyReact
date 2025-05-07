@@ -8,11 +8,11 @@ import { testBorder, testCount, testJustifyContent, testStatic, testSuspense, te
 
 // testStatic();
 
-testSuspense();
+// testSuspense();
 
 // testTable();
 
-// testInput();
+testInput();
 
 // testFocusId();
 

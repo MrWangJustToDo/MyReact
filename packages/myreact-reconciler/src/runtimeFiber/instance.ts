@@ -47,6 +47,8 @@ export class MyReactFiberNode implements RenderFiber {
 
   memoizedProps: MyReactElement["props"] = emptyProps;
 
+  refCleanup?: () => void;
+
   pendingState: Record<string, unknown>;
 
   memoizedState: Record<string, unknown>;
@@ -74,7 +76,7 @@ export class MyReactFiberNode implements RenderFiber {
 
     this.pendingProps = pendingProps;
 
-    if (typeof pendingText === 'string') {
+    if (typeof pendingText === "string") {
       this.pendingText = pendingText;
     }
 

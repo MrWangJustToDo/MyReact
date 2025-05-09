@@ -18,7 +18,11 @@ export const setRef = (_fiber: MyReactFiberNode, config: any) => {
           safeCallWithCurrentFiber({
             fiber: _fiber,
             action: function safeCallSetRef() {
-              ref(config?.getPublicInstance?.(_fiber.nativeNode));
+              _fiber.refCleanup?.();
+              const refCleanUp = ref(config?.getPublicInstance?.(_fiber.nativeNode));
+              if (typeof refCleanUp === "function") {
+                _fiber.refCleanup = refCleanUp;
+              }
             },
           });
         }
@@ -34,7 +38,11 @@ export const setRef = (_fiber: MyReactFiberNode, config: any) => {
           safeCallWithCurrentFiber({
             fiber: _fiber,
             action: function safeCallSetRef() {
-              ref(config?.getPublicInstance?.(_fiber.instance));
+              _fiber.refCleanup?.();
+              const refCleanUp = ref(config?.getPublicInstance?.(_fiber.instance));
+              if (typeof refCleanUp === "function") {
+                _fiber.refCleanup = refCleanUp;
+              }
             },
           });
         }
@@ -63,7 +71,11 @@ export const unsetRef = (_fiber: MyReactFiberNode) => {
       safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallClearRef() {
-          ref(null);
+          if (_fiber.refCleanup) {
+            _fiber.refCleanup();
+          } else {
+            ref(null);
+          }
         },
       });
     }

@@ -1,6 +1,6 @@
 {
   "main.css": "/MyReact/client/main-b6469a1e22b5400d61e1.css",
-  "main.js": "/MyReact/client/main-0f23476be860f5e124d4.js",
+  "main.js": "/MyReact/client/main-1ff669c099e99cbab21e.js",
   "runtime.js": "/MyReact/client/runtime-1105bc7c3923fc0dbdda.js",
   "page-.js": "/MyReact/client/page--bd7497b34ae1fd359593.js",
   "page-404.js": "/MyReact/client/page-404-8fb6e4f1b8a06a8c35a8.js",
@@ -47,7 +47,7 @@
   "recursive-cyrillic-ext-400-normal.woff2": "/MyReact/client/recursive-cyrillic-ext-400-normal-bd74e81400bd97d268766b87c8aeb9c8.woff2",
   "manifest-deps.json": "/MyReact/client/manifest-deps.json",
   "main-css.map": "/MyReact/client/main-b6469a1e22b5400d61e1.css.map",
-  "main-js.map": "/MyReact/client/main-0f23476be860f5e124d4.js.map",
+  "main-js.map": "/MyReact/client/main-1ff669c099e99cbab21e.js.map",
   "runtime-js.map": "/MyReact/client/runtime-1105bc7c3923fc0dbdda.js.map",
   "page--js.map": "/MyReact/client/page--bd7497b34ae1fd359593.js.map",
   "page-404-js.map": "/MyReact/client/page-404-8fb6e4f1b8a06a8c35a8.js.map",

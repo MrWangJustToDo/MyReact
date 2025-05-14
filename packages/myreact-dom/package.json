@@ -5,19 +5,15 @@
   "license": "MIT",
   "version": "0.3.9",
   "main": "index.js",
-  "types": "index.d.ts",
   "unpkg": "./dist/umd/index.development.js",
   "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
     "client.js",
-    "client.d.ts",
     "server.js",
-    "server.d.ts",
     "server.node.js",
     "server.browser.js",
-    "index.js",
-    "index.d.ts"
+    "index.js"
   ],
   "repository": {
     "type": "git",

@@ -1,5 +1,6 @@
 import { readFile } from "fs/promises";
 import { spawn } from "node:child_process";
+import { readdir, rm } from "node:fs/promises";
 import { resolve } from "path";
 
 const pkgNameAlias = {
@@ -13,6 +14,18 @@ const pkgNameAlias = {
   "@my-react/react-refresh-tools": "myreact-refresh-tools",
   "@my-react/react-vite": "myreact-vite",
   "@my-react/react-rspack": "myreact-rspack",
+};
+
+const cleanTypeFile = async (pkgName: keyof typeof pkgNameAlias) => {
+  const dirPath = resolve(process.cwd(), "packages", pkgNameAlias[pkgName]);
+  const dirs = await readdir(dirPath, { withFileTypes: true });
+
+  for (const item of dirs) {
+    if (item.isFile() && item.name.endsWith(".d.ts")) {
+      const filePath = resolve(dirPath, item.name);
+      await rm(filePath, { force: true });
+    }
+  }
 };
 
 const getVersion = (pkgName: string) =>
@@ -66,6 +79,8 @@ const release = async (pkgName: keyof typeof pkgNameAlias) => {
 };
 
 const run = async () => {
+  await cleanTypeFile('@my-react/react');
+  await cleanTypeFile('@my-react/react-dom');
   await release("@my-react/react");
   await release("@my-react/react-dom");
   await release("@my-react/react-jsx");

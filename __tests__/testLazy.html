@@ -92,13 +92,13 @@
       const Bbb = ({ children }) => children;
 
       const LazyFoo = lazy(async () => {
-        await delay(60);
-        throw new Error("lll");
+        await delay(1000);
+        // throw new Error("lll");
         return { default: Foo };
       });
 
       const LazyBar = lazy(async () => {
-        await delay(100);
+        await delay(1000);
         return { default: Foo };
       });
 
@@ -150,11 +150,11 @@
 
       const container = document.getElementById("root");
       ReactDOM.render(<App />, container);
-      // ReactDOMServer.renderToString(<App />)
+      // const a = ReactDOMServer.renderToString(<App />);
 
       // lazy hydrate
-      // ReactDOM.renderToString(<App />, true).then((r) => container.innerHTML = r).then(() => ReactDOM.hydrate(<App />, container, true))
-      // container.innerHTML = ReactDOM.renderToString(<App />)
+      // ReactDOMServer.renderToString(<App />, true).then((r) => container.innerHTML = r).then(() => ReactDOM.hydrate(<App />, container, true))
+      // container.innerHTML = ReactDOMServer.renderToString(<App />)
     </script>
   </body>
 </html>

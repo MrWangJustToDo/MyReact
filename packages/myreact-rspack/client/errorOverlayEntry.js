@@ -23,8 +23,8 @@ let hasRuntimeErrors = false;
  * @returns {void}
  */
 function tryDismissErrorOverlay() {
-  __react_refresh_error_overlay__.clearCompileError();
-  __react_refresh_error_overlay__.clearRuntimeErrors(!hasRuntimeErrors);
+  __my_react_refresh_error_overlay__.clearCompileError();
+  __my_react_refresh_error_overlay__.clearRuntimeErrors(!hasRuntimeErrors);
   hasRuntimeErrors = false;
 }
 
@@ -51,7 +51,7 @@ function handleCompileErrors(errors) {
   const formattedErrors = formatWebpackErrors(errors);
 
   // Only show the first error
-  __react_refresh_error_overlay__.showCompileError(formattedErrors[0]);
+  __my_react_refresh_error_overlay__.showCompileError(formattedErrors[0]);
 }
 
 /**
@@ -83,26 +83,26 @@ if (process.env.NODE_ENV !== 'production') {
   if (typeof window !== 'undefined') {
     function setupOverlay() {
       // Only register if no other overlay have been registered
-      if (!window.__reactRefreshOverlayInjected && __react_refresh_socket__) {
+      if (!window.__my_reactRefreshOverlayInjected && __my_react_refresh_socket__) {
         // Registers handlers for compile errors with retry -
         // This is to prevent mismatching injection order causing errors to be thrown
         runWithRetry(function initSocket() {
-          __react_refresh_socket__.init(compileMessageHandler, __resourceQuery);
+          __my_react_refresh_socket__.init(compileMessageHandler, __resourceQuery);
         }, 3);
         // Registers handlers for runtime errors
         events.handleError(function handleError(error) {
           hasRuntimeErrors = true;
-          __react_refresh_error_overlay__.handleRuntimeError(error);
+          __my_react_refresh_error_overlay__.handleRuntimeError(error);
         });
         events.handleUnhandledRejection(
           function handleUnhandledPromiseRejection(error) {
             hasRuntimeErrors = true;
-            __react_refresh_error_overlay__.handleRuntimeError(error);
+            __my_react_refresh_error_overlay__.handleRuntimeError(error);
           },
         );
 
         // Mark overlay as injected to prevent double-injection
-        window.__reactRefreshOverlayInjected = true;
+        window.__my_reactRefreshOverlayInjected = true;
       }
     }
     setupOverlay();

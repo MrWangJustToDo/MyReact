@@ -1,5 +1,5 @@
-import type { IntegrationType } from './utils/getSocketIntegration';
-import type { RuleSetCondition } from '@rspack/core';
+import type { IntegrationType } from "./utils/getSocketIntegration";
+import type { RuleSetCondition } from "@rspack/core";
 
 interface OverlayOptions {
   entry: string;
@@ -24,6 +24,19 @@ export type PluginOptions = {
    * @default /node_modules/
    */
   exclude?: RuleSetCondition | null;
+  /**
+   * Can be used to exclude certain resources from being processed by
+   * the plugin by the resource query.
+   * @see https://rspack.dev/config/module#ruleresourcequery
+   *
+   * @example
+   * To exclude all resources with the `raw` query, such as
+   * `import rawTs from './ReactComponent.ts?raw';`, use the following:
+   * ```ts
+   * { resourceQuery: { not: /raw/ } }
+   * ```
+   */
+  resourceQuery?: RuleSetCondition;
   /**
    * Sets a namespace for the React Refresh runtime.
    * It is most useful when multiple instances of React Refresh is running
@@ -61,49 +74,39 @@ export interface NormalizedPluginOptions extends Required<PluginOptions> {
   overlay: false | OverlayOptions;
 }
 
-const d = <K extends keyof PluginOptions>(
-  object: PluginOptions,
-  property: K,
-  defaultValue?: PluginOptions[K],
-) => {
+const d = <K extends keyof PluginOptions>(object: PluginOptions, property: K, defaultValue?: PluginOptions[K]) => {
   // TODO: should we also add default for null?
-  if (
-    typeof object[property] === 'undefined' &&
-    typeof defaultValue !== 'undefined'
-  ) {
+  if (typeof object[property] === "undefined" && typeof defaultValue !== "undefined") {
     object[property] = defaultValue;
   }
   return object[property];
 };
 
-const normalizeOverlay = (options: PluginOptions['overlay']) => {
+const normalizeOverlay = (options: PluginOptions["overlay"]) => {
   const defaultOverlay: OverlayOptions = {
-    entry: require.resolve('../client/errorOverlayEntry.js'),
-    module: require.resolve('../client/overlay/index.js'),
-    sockIntegration: 'wds',
+    entry: require.resolve("../client/errorOverlayEntry.js"),
+    module: require.resolve("../client/overlay/index.js"),
+    sockIntegration: "wds",
   };
   if (!options) {
     return false;
   }
-  if (typeof options === 'undefined' || options === true) {
+  if (typeof options === "undefined" || options === true) {
     return defaultOverlay;
   }
   options.entry = options.entry ?? defaultOverlay.entry;
   options.module = options.module ?? defaultOverlay.module;
-  options.sockIntegration =
-    options.sockIntegration ?? defaultOverlay.sockIntegration;
+  options.sockIntegration = options.sockIntegration ?? defaultOverlay.sockIntegration;
   return options;
 };
 
-export function normalizeOptions(
-  options: PluginOptions,
-): NormalizedPluginOptions {
-  d(options, 'exclude', /node_modules/i);
-  d(options, 'include', /\.([cm]js|[jt]sx?|flow)$/i);
-  d(options, 'library');
-  d(options, 'forceEnable', false);
-  d(options, 'injectLoader', true);
-  d(options, 'injectEntry', true);
+export function normalizeOptions(options: PluginOptions): NormalizedPluginOptions {
+  d(options, "exclude", /node_modules/i);
+  d(options, "include", /\.([cm]js|[jt]sx?|flow)$/i);
+  d(options, "library");
+  d(options, "forceEnable", false);
+  d(options, "injectLoader", true);
+  d(options, "injectEntry", true);
   options.overlay = normalizeOverlay(options.overlay);
   return options as NormalizedPluginOptions;
 }

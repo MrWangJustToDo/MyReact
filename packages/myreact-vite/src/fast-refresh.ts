@@ -34,7 +34,7 @@ import MyRefreshRuntime from "__BASE__${runtimePublicPath.slice(1)}"
 MyRefreshRuntime.injectIntoGlobalHook(window);
 window.$RefreshReg$ = () => {}
 window.$RefreshSig$ = () => (type) => type
-window.__vite_plugin_react_preamble_installed__ = true
+window.__vite_plugin_my_react_preamble_installed__ = true
 `;
 
 const sharedHeader = `
@@ -47,7 +47,7 @@ const functionHeader = `let prevRefreshReg_;
 let prevRefreshSig_;
 
 if (import.meta.hot && !inWebWorker_) {
-  if (!window.__vite_plugin_react_preamble_installed__) {
+  if (!window.__vite_plugin_my_react_preamble_installed__) {
     throw new Error(
       "@vitejs/plugin-react can't detect preamble. Something is wrong. " +
       "See https://github.com/vitejs/vite-plugin-react/pull/11#discussion_r430879201"

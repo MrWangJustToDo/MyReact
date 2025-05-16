@@ -5,6 +5,7 @@ import { initialElementMap } from "@my-react-dom-shared";
 
 import { noopDispatchFiber } from "./dispatch";
 import { noopProcessFiber } from "./process";
+import { unmount } from "./unmount";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -56,8 +57,8 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
     void 0;
   }
 
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | (MyReactFiberNode | MyReactFiberNode[])[]): void {
-    void 0;
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
+    unmount(_pendingUnmount, this);
   }
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
@@ -149,8 +150,8 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
     void 0;
   }
 
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | (MyReactFiberNode | MyReactFiberNode[])[]): void {
-    void 0;
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
+    unmount(_pendingUnmount, this);
   }
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {

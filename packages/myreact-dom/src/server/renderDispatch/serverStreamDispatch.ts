@@ -6,6 +6,7 @@ import { initialElementMap } from "@my-react-dom-shared";
 import { serverDispatchFiber } from "./dispatch";
 import { generateBootstrap, generateModuleBootstrap } from "./generateBootstrap";
 import { serverProcessFiber } from "./process";
+import { unmount } from "./unmount";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -66,8 +67,8 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
     void 0;
   }
 
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | (MyReactFiberNode | MyReactFiberNode[])[]): void {
-    void 0;
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
+    unmount(_pendingUnmount, this);
   }
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
@@ -208,8 +209,8 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
     void 0;
   }
 
-  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode | MyReactFiberNode[] | (MyReactFiberNode | MyReactFiberNode[])[]): void {
-    void 0;
+  pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
+    unmount(_pendingUnmount, this);
   }
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {

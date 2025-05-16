@@ -89,30 +89,31 @@ class RefreshRspackPlugin {
           // biome-ignore lint: exists
           or: [this.options.exclude!, [...runtimePaths]].filter(Boolean),
         },
+        resourceQuery: this.options.resourceQuery,
         use: RefreshRspackPlugin.loader,
       });
     }
 
     const definedModules: Record<string, string | boolean> = {
       // For Multiple Instance Mode
-      __react_refresh_library__: JSON.stringify(
+      __my_react_refresh_library__: JSON.stringify(
         compiler.webpack.Template.toIdentifier(this.options.library || compiler.options.output.uniqueName || compiler.options.output.library)
       ),
     };
     const providedModules: Record<string, string> = {
-      __react_refresh_utils__: refreshUtilsPath,
+      __my_react_refresh_utils__: refreshUtilsPath,
     };
     if (this.options.overlay === false) {
       // Stub errorOverlay module so their calls can be erased
-      definedModules.__react_refresh_error_overlay__ = false;
-      definedModules.__react_refresh_socket__ = false;
+      definedModules.__my_react_refresh_error_overlay__ = false;
+      definedModules.__my_react_refresh_socket__ = false;
     } else {
       if (this.options.overlay.module) {
-        providedModules.__react_refresh_error_overlay__ = require.resolve(this.options.overlay.module);
+        providedModules.__my_react_refresh_error_overlay__ = require.resolve(this.options.overlay.module);
       }
 
       if (this.options.overlay.sockIntegration) {
-        providedModules.__react_refresh_socket__ = getSocketIntegration(this.options.overlay.sockIntegration);
+        providedModules.__my_react_refresh_socket__ = getSocketIntegration(this.options.overlay.sockIntegration);
       }
     }
     new compiler.webpack.DefinePlugin(definedModules).apply(compiler);

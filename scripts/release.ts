@@ -26,6 +26,10 @@ const cleanTypeFile = async (pkgName: keyof typeof pkgNameAlias) => {
       await rm(filePath, { force: true });
     }
   }
+
+  const distType = resolve(process.cwd(), "packages", pkgNameAlias[pkgName], "dist", "types");
+
+  await rm (distType, { force: true, recursive: true });
 };
 
 const getVersion = (pkgName: string) =>

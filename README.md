@@ -36,8 +36,29 @@ pnpm add -D @my-react/react-refresh @my-react/react-vite
 import react from "@my-react/react-vite";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react({
+    # remix: true;  support remix framework
+    # router: true;  support react-router >= v7
+  })],
 });
+```
+
+## start in rspack
+
+```bash
+# quick start in rspack
+pnpm add -D @my-react/react-refresh @my-react/react-rspack
+
+# rspack.config.ts
+import { rspack } from "@rspack/core";
+import RspackPlugin from "@my-react/react-rspack";
+const config = {
+  ...config,
+  plugins: [
+    ...config.plugins,
+    new RspackPlugin(),
+  ],
+}
 ```
 
 ---

@@ -14,6 +14,7 @@ const pkgNameAlias = {
   "@my-react/react-refresh-tools": "myreact-refresh-tools",
   "@my-react/react-vite": "myreact-vite",
   "@my-react/react-rspack": "myreact-rspack",
+  "@my-react/react-terminal": "myreact-terminal",
 };
 
 const cleanTypeFile = async (pkgName: keyof typeof pkgNameAlias) => {
@@ -29,7 +30,7 @@ const cleanTypeFile = async (pkgName: keyof typeof pkgNameAlias) => {
 
   const distType = resolve(process.cwd(), "packages", pkgNameAlias[pkgName], "dist", "types");
 
-  await rm (distType, { force: true, recursive: true });
+  await rm(distType, { force: true, recursive: true });
 };
 
 const getVersion = (pkgName: string) =>
@@ -83,8 +84,8 @@ const release = async (pkgName: keyof typeof pkgNameAlias) => {
 };
 
 const run = async () => {
-  await cleanTypeFile('@my-react/react');
-  await cleanTypeFile('@my-react/react-dom');
+  await cleanTypeFile("@my-react/react");
+  await cleanTypeFile("@my-react/react-dom");
   await release("@my-react/react");
   await release("@my-react/react-dom");
   await release("@my-react/react-jsx");
@@ -95,6 +96,7 @@ const run = async () => {
   await release("@my-react/react-refresh-tools");
   await release("@my-react/react-vite");
   await release("@my-react/react-rspack");
+  await release("@my-react/react-terminal");
 };
 
 run();

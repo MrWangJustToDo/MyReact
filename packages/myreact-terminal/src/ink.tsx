@@ -105,7 +105,7 @@ export default class Ink {
       };
 
       // TODO: make this configurable
-      injectIntoDevTools("http://localhost:3002", {
+      injectIntoDevTools(process.env["@my-react/devtool-socket"] || "http://localhost:3002", {
         rendererPackageName: "@my-react/react-terminal",
       });
     }

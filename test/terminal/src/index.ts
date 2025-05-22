@@ -8,3 +8,4 @@ export { test as testInput } from "./input";
 export { test as testFocusId } from "./focus-id";
 export { test as testFocus } from "./focus";
 export { test as testStderr } from "./stderr";
+export { test as testDir } from "./dir";

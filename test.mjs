@@ -1,4 +1,4 @@
-import { testBorder, testCount, testJustifyContent, testStatic, testSuspense, testTable, testInput, testFocusId, testFocus, testStderr } from "@test/react-terminal";
+import { testBorder, testCount, testJustifyContent, testStatic, testSuspense, testTable, testInput, testFocusId, testFocus, testStderr, testDir } from "@test/react-terminal";
 
 // testBorder();
 
@@ -12,10 +12,12 @@ import { testBorder, testCount, testJustifyContent, testStatic, testSuspense, te
 
 // testTable();
 
-testInput();
+// testInput();
 
 // testFocusId();
 
 // testFocus();
 
 // testStderr();
+
+testDir();

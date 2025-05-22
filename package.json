@@ -29,11 +29,13 @@
     "lint:fix": "pnpm run lint --fix",
     "prettier": "prettier --ignore-path .prettierignore --write .",
     "clean": "pnpm -p -r -c exec rm -rf dist dev .cache .next tsconfig.build.tsbuildinfo",
-    "purge": "pnpm -p -r -c exec rm -rf node_modules"
+    "clean:type": "ts-node ./scripts/cleanType.ts",
+    "purge": "pnpm -p -r -c exec rm -rf node_modules",
+    "prepare": "husky"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "pnpm build"
+      "pre-commit": "pnpm run clean:type"
     }
   },
   "devDependencies": {

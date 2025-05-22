@@ -14,7 +14,7 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithNode: MyReactFibe
 
   if (include(fiber.type, NODE_TYPE.__portal__)) return;
 
-  if (include(fiber.type, NODE_TYPE.__plain__ | NODE_TYPE.__text__ | NODE_TYPE.__comment__)) {
+  if (include(fiber.type, NODE_TYPE.__plain__ | NODE_TYPE.__text__)) {
     const maybeContainer = parentFiberWithNode as MyReactFiberContainer;
 
     const maybeFiber = parentFiberWithNode as MyReactFiberNode;

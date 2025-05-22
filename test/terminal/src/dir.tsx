@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import { Suspense, use } from "@my-react/react";
+import { Suspense, use, useEffect, useState } from "@my-react/react-reconciler/compact"; // use @my-react/react directly
 import { Box, render, Text, useStdout } from "@my-react/react-terminal";
 import { readdir, stat } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -58,32 +57,45 @@ const Dir = ({ path, indent = 0 }: { path: string; indent?: number }) => {
   const width = stdout.stdout.columns || 80;
 
   return (
-    <Box marginLeft={indent} width={width} flexDirection="column">
+    <Box width={width - indent} flexDirection="column">
       <Text color="blue" wrap="truncate">
-        {path}
+        📁 {path}
       </Text>
-      {dirs.map((item) => {
-        if (item.type === "directory") {
-          return (
-            // @ts-ignore
-            <Suspense key={item.name} fallback={<Text>Loading...</Text>}>
-              <Dir path={item.name} indent={indent + 1} />
-            </Suspense>
-          );
-        } else if (item.type === "file") {
-          return (
-            <Text key={item.name} color="green" wrap="truncate">
-              ✔ {item.name}
-            </Text>
-          );
-        } else {
-          return (
-            <Text key={item.name} color="red" wrap="truncate">
-              ✘ {item.name}
-            </Text>
-          );
-        }
-      })}
+      <Box>
+        <Box
+          height="100%"
+          borderStyle="single"
+          borderLeftColor="gray"
+          borderRight={false}
+          borderTop={false}
+          borderBottom={false}
+          borderLeft={indent !== 0}
+          width={1}
+        />
+        <Box flexDirection="column" width={width - 1 - indent}>
+          {dirs.map((item) => {
+            if (item.type === "directory") {
+              return (
+                <Suspense key={item.name} fallback={<Text>Loading...</Text>}>
+                  <Dir path={item.name} indent={indent + 1} />
+                </Suspense>
+              );
+            } else if (item.type === "file") {
+              return (
+                <Text key={item.name} color="green" wrap="truncate">
+                  📃 {item.name}
+                </Text>
+              );
+            } else {
+              return (
+                <Text key={item.name} color="red" wrap="truncate">
+                  🔗 {item.name}
+                </Text>
+              );
+            }
+          })}
+        </Box>
+      </Box>
     </Box>
   );
 };
@@ -95,7 +107,6 @@ const App = ({ path }: { path: string }) => {
 
   if (state === "directory") {
     return (
-      // @ts-ignore
       <Suspense fallback={<Text>Loading...</Text>}>
         <Dir path={relativePath} />
       </Suspense>
@@ -103,13 +114,13 @@ const App = ({ path }: { path: string }) => {
   } else if (state === "file") {
     return (
       <Text color="green" wrap="truncate">
-        ✔ {relativePath}
+        📃 {relativePath}
       </Text>
     );
   } else {
     return (
       <Text color="red" wrap="truncate">
-        ✘ {relativePath}
+        🔗 {relativePath}
       </Text>
     );
   }
@@ -118,10 +129,24 @@ const App = ({ path }: { path: string }) => {
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
   const stdout = useStdout();
 
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, []);
+
   const width = stdout.stdout.columns || 80;
 
   return (
     <>
+      <Text color="yellow">
+        current time:
+        <Text bold>{time.toLocaleTimeString()}</Text>
+      </Text>
       <Text color="cyan">
         current width:
         <Text bold>{width}</Text>
@@ -133,7 +158,6 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
 
 export const test = () =>
   render(
-    // @ts-ignore
     <Suspense fallback={<Text>Loading...</Text>}>
       <Wrapper>
         <App path="./site/graphql" />

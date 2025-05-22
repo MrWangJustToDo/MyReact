@@ -9,7 +9,7 @@ import { getInsertBeforeNodeFromSiblingAndParent, getValidParentFiberWithNode, i
 import { defaultDispatchMount } from "./dispatchMount";
 
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
-import type { MyReactElementNode } from "@my-react/react/dist/types";
+import type { MyReactElementNode } from "@my-react/react";
 import type { ListTree } from "@my-react/react-shared";
 
 const initialRef: CustomRenderDispatch["runtimeRef"] = {

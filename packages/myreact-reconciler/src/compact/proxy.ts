@@ -11,6 +11,7 @@ import {
   createRef as createRefCompact,
   forwardRef as forwardRefCompact,
   createContext as createContextCompact,
+  use as useCompact,
   useId as useIdCompact,
   useRef as useRefCompact,
   useMemo as useMemoCompact,
@@ -170,6 +171,8 @@ export const StrictMode = StrictModeCompact as unknown as typeof StrictModeType;
 export const Fragment = FragmentCompact as unknown as typeof FragmentType;
 
 export const Suspense = SuspenseCompact as unknown as typeof SuspenseType;
+
+export const use = useCompact;
 
 export interface FiberNode<T = Record<string, any>> extends MyReactFiberNode {
   stateNode: T;

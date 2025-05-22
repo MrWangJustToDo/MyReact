@@ -61,7 +61,6 @@ const Dir = ({ path, indent = 0 }: { path: string; indent?: number }) => {
     <Box marginLeft={indent} width={width} flexDirection="column">
       <Text color="blue" wrap="truncate">
         {path}
-        {width}
       </Text>
       {dirs.map((item) => {
         if (item.type === "directory") {
@@ -116,10 +115,28 @@ const App = ({ path }: { path: string }) => {
   }
 };
 
+const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  const stdout = useStdout();
+
+  const width = stdout.stdout.columns || 80;
+
+  return (
+    <>
+      <Text color="cyan">
+        current width:
+        <Text bold>{width}</Text>
+      </Text>
+      {children}
+    </>
+  );
+};
+
 export const test = () =>
   render(
     // @ts-ignore
     <Suspense fallback={<Text>Loading...</Text>}>
-      <App path="./site/graphql" />
+      <Wrapper>
+        <App path="./site/graphql" />
+      </Wrapper>
     </Suspense>
   );

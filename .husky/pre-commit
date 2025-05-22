@@ -1,0 +1,7 @@
+# 运行清理类型的脚本
+echo "Running clean:type..."
+pnpm run clean:type
+
+# 将生成的修改添加到当前提交中
+echo "Adding changes to commit..."
+git add .

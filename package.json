@@ -33,11 +33,6 @@
     "purge": "pnpm -p -r -c exec rm -rf node_modules",
     "prepare": "husky"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pnpm run clean:type"
-    }
-  },
   "devDependencies": {
     "@apollo/client": "^3.12.11",
     "@babel/runtime": "^7.22.5",

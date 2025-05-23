@@ -65,7 +65,7 @@ export const MainSection = () => {
             @my-react/react-dom [{reactDOMVersion}] (enableMockReact: <Checkbox verticalAlign="middle" isChecked={enableMockReact.current} isReadOnly />)
           </Text>
           <Flex columnGap={2} alignItems="center" flexWrap="wrap">
-            <span>Support bundler : </span>
+            <Text fontWeight="bold">Support bundler :</Text>
             <Link href="https://webpack.js.org/" target="_blank">
               <Webpack />
             </Link>
@@ -77,15 +77,15 @@ export const MainSection = () => {
             </Link>
           </Flex>
           <Flex columnGap={4} alignItems="center" flexWrap="wrap">
-            <span>Support framework :</span>
+            <Text fontWeight="bold">Support framework :</Text>
             <Link href="https://nextjs.org/" target="_blank">
-              <NextJs width={50} height={50} />
+              <NextJs width={50} height={50} fill="currentcolor" />
             </Link>
             <Link href="https://remix.run/" target="_blank">
-              <Remix width={50} height={50} />
+              <Remix width={50} height={50} fill="currentcolor" />
             </Link>
             <Link href="https://reactrouter.com/" target="_blank">
-              <ReactRouter height={40} width={40} />
+              <ReactRouter height={40} width={40} fill="currentcolor" />
             </Link>
           </Flex>
           <HStack marginTop="14" spacing="3" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "13px", xl: "14px" }}>

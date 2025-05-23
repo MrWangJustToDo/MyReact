@@ -4,9 +4,7 @@ import { lazyLoaded } from "../share";
 
 import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "./instance";
 
-let contextId = 0;
-
-const defaultObject = { [TYPEKEY]: Context, contextId: 0, displayName: "" };
+const defaultObject = { [TYPEKEY]: Context,  displayName: "" };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const defaultCompare = <P extends Record<string, unknown>>(oldProps: P, newProps: P) => isNormalEquals(oldProps, newProps);
@@ -17,7 +15,6 @@ const defaultCompare = <P extends Record<string, unknown>>(oldProps: P, newProps
 export type ContextObjectType<T, K> = {
   displayName?: string;
   [TYPEKEY]: symbol;
-  contextId: number;
   Provider: T;
   Consumer: K;
 };
@@ -28,7 +25,6 @@ export type ContextObjectType<T, K> = {
 export const createContext = <T = any>(value: T) => {
   const ContextObject: ContextObjectType<typeof ProviderObject, typeof ConsumerObject> = {
     [TYPEKEY]: Context,
-    contextId: contextId++,
     Provider: {} as typeof ProviderObject,
     Consumer: {} as typeof ConsumerObject,
   };

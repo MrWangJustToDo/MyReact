@@ -21,7 +21,13 @@ pnpm add -D @my-react/react-refresh @my-react/react-vite
 import react from "@my-react/react-vite";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react({
+    // for remix
+    // remix: true,
+
+    // for react router v7
+    // reactRouter: true,
+  })],
 });
 
 // 4. start
@@ -110,6 +116,7 @@ export const ViteSection = () => {
           <Text marginLeft={2}>Vite + @my-react</Text>
         </Flex>
         <VitePlayground />
+        {/* <RspackPlayground /> */}
       </Card>
     </Container>
   );

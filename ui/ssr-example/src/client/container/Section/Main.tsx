@@ -1,10 +1,11 @@
-import { Box, Button, Checkbox, Container, Flex, Heading, HStack, Tag, Text } from "@chakra-ui/react";
+import { Box, Button, Checkbox, Container, Flex, Heading, HStack, Link, Tag, Text } from "@chakra-ui/react";
 import { __my_react_shared__, version as reactVersion } from "@my-react/react";
 import { version as reactDOMVersion } from "@my-react/react-dom";
 import { useIntl } from "react-intl";
 import { useNavigate } from "react-router-dom";
 
 import { Section } from "@client/component";
+import { Rspack, Webpack, Vite, NextJs, Remix, ReactRouter } from "@client/component/Icons";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { mark } from "@client/utils/markdown";
 import { noBase } from "@shared";
@@ -63,6 +64,30 @@ export const MainSection = () => {
             This website is built with <Tag verticalAlign="middle">@my-react</Tag> project. <br /> Version: @my-react/react [{reactVersion}];
             @my-react/react-dom [{reactDOMVersion}] (enableMockReact: <Checkbox verticalAlign="middle" isChecked={enableMockReact.current} isReadOnly />)
           </Text>
+          <Flex columnGap={2} alignItems="center" flexWrap="wrap">
+            <span>Support bundler : </span>
+            <Link href="https://webpack.js.org/" target="_blank">
+              <Webpack />
+            </Link>
+            <Link href="https://vite.dev/" target="_blank">
+              <Vite />
+            </Link>
+            <Link href="https://rspack.dev/" target="_blank">
+              <Rspack height={40} width={40} />
+            </Link>
+          </Flex>
+          <Flex columnGap={4} alignItems="center" flexWrap="wrap">
+            <span>Support framework :</span>
+            <Link href="https://nextjs.org/" target="_blank">
+              <NextJs width={50} height={50} />
+            </Link>
+            <Link href="https://remix.run/" target="_blank">
+              <Remix width={50} height={50} />
+            </Link>
+            <Link href="https://reactrouter.com/" target="_blank">
+              <ReactRouter height={40} width={40} />
+            </Link>
+          </Flex>
           <HStack marginTop="14" spacing="3" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "13px", xl: "14px" }}>
             <Button variant="solid" fontSize="inherit" colorScheme="green" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
               View Example

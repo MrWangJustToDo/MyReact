@@ -14,6 +14,8 @@ const data = [
     "@my-react/react-refresh": "babel plugin",
     "@my-react/react-refresh-tools": "webpack plugin",
     "@my-react/react-vite": "vite plugin",
+    "@my-react/react-rspack": "rspack plugin",
+    "@my-react/react-terminal": "render",
   },
   {
     "@my-react/react (hook)": "useCallback",
@@ -228,6 +230,46 @@ export const ApiSection = () => {
             ),
           }}
           dataIndex="@my-react/react-vite"
+          bodyCellRender={{
+            Render: ({ cellData }) => {
+              return <Code>{cellData}</Code>;
+            },
+          }}
+        />
+        <Column<(typeof data)[0]>
+          headCellRender={{
+            cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
+            Render: () => (
+              <LinkBox display="flex" alignItems="center">
+                <Text as="span">@my-react/react-rspack</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-rspack" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/npm/v/%40my-react/react-rspack" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
+          }}
+          dataIndex="@my-react/react-rspack"
+          bodyCellRender={{
+            Render: ({ cellData }) => {
+              return <Code>{cellData}</Code>;
+            },
+          }}
+        />
+        <Column<(typeof data)[0]>
+          headCellRender={{
+            cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
+            Render: () => (
+              <LinkBox display="flex" alignItems="center">
+                <Text as="span">@my-react/react-terminal</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-terminal" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/npm/v/%40my-react/react-terminal" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
+          }}
+          dataIndex="@my-react/react-terminal"
           bodyCellRender={{
             Render: ({ cellData }) => {
               return <Code>{cellData}</Code>;

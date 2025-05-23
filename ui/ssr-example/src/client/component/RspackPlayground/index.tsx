@@ -1,14 +1,14 @@
 import { useColorMode } from "@chakra-ui/react";
 import { SandpackProvider, SandpackLayout, SandpackCodeEditor, SandpackPreview } from "@codesandbox/sandpack-react";
 
-import { VITE_REACT_TEMPLATE } from "./config";
+import { RSPACK_REACT_TEMPLATE } from "./config";
 
-export const VitePlayground = () => {
+export const RspackPlayground = () => {
   const { colorMode } = useColorMode();
 
   return (
     <SandpackProvider
-      files={VITE_REACT_TEMPLATE.files}
+      files={RSPACK_REACT_TEMPLATE.files}
       customSetup={{
         dependencies: {
           react: "^18.2.0",
@@ -18,13 +18,12 @@ export const VitePlayground = () => {
         },
         devDependencies: {
           "@my-react/react-refresh": "0.3.9",
-          "@my-react/react-vite": "0.0.13",
-          "@vitejs/plugin-react": "3.1.0",
-          vite: "4.1.4",
-          "esbuild-wasm": "0.17.12",
+          "@my-react/react-rspack": "0.0.3",
+          "@rspack/cli": "1.3.2",
+          "@rspack/core": "1.3.2"
         },
-        entry: VITE_REACT_TEMPLATE.files["/package.json"].code,
-        environment: VITE_REACT_TEMPLATE.environment,
+        entry: RSPACK_REACT_TEMPLATE.files["/package.json"].code,
+        environment: RSPACK_REACT_TEMPLATE.environment,
       }}
       theme={colorMode}
     >

@@ -1,4 +1,5 @@
-import { rollupBuild } from "project-tool/rollup";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { rollupBuild, rollupWatch } from "project-tool/rollup";
 
 export const externalReact = (id: string) =>
   id.endsWith("@my-react/react") ||
@@ -7,8 +8,14 @@ export const externalReact = (id: string) =>
   id.endsWith("@my-react/react-terminal") ||
   (id.includes("node_modules") && !id.includes("tslib"));
 
-const run = async () => {
+const build = async () => {
   await rollupBuild({ packageName: "terminal", packageScope: "test", external: externalReact });
-}
+};
 
-run();
+const watch = () => {
+  rollupWatch({ packageName: "terminal", packageScope: "test", external: externalReact });
+};
+
+build();
+
+// watch();

@@ -34,6 +34,8 @@ jobs:
       - name: build site
         run: |
           pnpm run build
+          pnpm run build:test
+          pnpm run commit
           pnpm run build:site
 
       - name: Deploy

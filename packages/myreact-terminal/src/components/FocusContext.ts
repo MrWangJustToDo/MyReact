@@ -1,4 +1,4 @@
-import { createContext } from "@my-react/react-reconciler/compact";
+import { createContext } from "@my-react/react-compact";
 
 export type Props = {
   readonly activeId?: string;

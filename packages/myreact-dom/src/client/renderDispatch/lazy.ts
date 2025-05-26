@@ -1,5 +1,5 @@
 import { __my_react_internal__, createElement } from "@my-react/react";
-import { devWarnWithFiber, nextWorkCommon, processLazy, WrapperByLazyScope } from "@my-react/react-reconciler";
+import { devWarnWithFiber, fiberToDispatchMap, getCurrentDispatchFromFiber, nextWorkCommon, processLazy, WrapperByLazyScope } from "@my-react/react-reconciler";
 import { isPromise, ListTree } from "@my-react/react-shared";
 
 import type { ClientDomDispatch } from "./instance";
@@ -13,6 +13,8 @@ const { currentRenderPlatform } = __my_react_internal__;
  */
 export const loadLazy = async (fiber: MyReactFiberNode, typedElementType: ReturnType<typeof lazy>) => {
   if (typedElementType._loaded) return;
+
+  const dispatch = getCurrentDispatchFromFiber(fiber);
 
   try {
     typedElementType._loading = true;
@@ -31,6 +33,8 @@ export const loadLazy = async (fiber: MyReactFiberNode, typedElementType: Return
 
     typedElementType.render = render as ReturnType<typeof lazy>["render"];
   } catch (e) {
+    fiberToDispatchMap.set(fiber, dispatch);
+    
     currentRenderPlatform.current.dispatchError?.({ fiber, error: e });
   } finally {
     typedElementType._loading = false;

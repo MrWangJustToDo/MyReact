@@ -23,7 +23,7 @@
     "dev": "ts-node ./scripts/rollupWatch.ts",
     "build": "ts-node ./scripts/rollupBuild.ts",
     "release": "ts-node ./scripts/release.ts",
-    "commit": "NODE_ENV=production node ./test.mjs",
+    "commit": "NODE_ENV=production node ./commit.mjs",
     "test": "NODE_ENV=development DEV=true node ./test.mjs",
     "test-inspect": "NODE_ENV=development DEV=true node --inspect ./test.mjs",
     "lint": "eslint --cache --ext ts,tsx .",

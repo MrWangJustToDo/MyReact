@@ -1,11 +1,16 @@
 import { __my_react_shared__, type MyReactElementNode } from "@my-react/react";
+import {
+  MyReactFiberNode,
+  CustomRenderDispatch,
+  enableFiberForLog,
+  checkIsSameType,
+  triggerUpdateOnFiber,
+  unmountContainer,
+  initialFiberNode,
+  mountSync,
+  safeCallWithSync,
+} from "@my-react/react-reconciler";
 import { include, STATE_TYPE } from "@my-react/react-shared";
-
-import { CustomRenderDispatch } from "../renderDispatch";
-import { mountSync } from "../renderMount";
-import { unmountContainer } from "../renderUnmount";
-import { initialFiberNode, MyReactFiberNode, triggerUpdateOnFiber } from "../runtimeFiber";
-import { checkIsSameType, enableFiberForLog, safeCallWithSync } from "../share";
 
 import { autoSetDevTools, delGlobalDispatch } from "./devtool";
 import { createDispatch } from "./dispatch";
@@ -13,7 +18,7 @@ import { prepareRenderPlatform } from "./platform";
 import { loadScript } from "./polyfill";
 
 import type { ReconcilerDispatch } from "./dispatch";
-import type { MyReactFiberRoot } from "../runtimeFiber";
+import type { MyReactFiberRoot } from "@my-react/react-reconciler";
 
 const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
 

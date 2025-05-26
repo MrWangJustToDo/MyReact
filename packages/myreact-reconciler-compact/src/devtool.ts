@@ -1,4 +1,4 @@
-import type { CustomRenderDispatch } from "../renderDispatch";
+import type { CustomRenderDispatch } from "@my-react/react-reconciler";
 
 export const DISPATCH_FIELD = "__@my-react/dispatch__";
 
@@ -21,7 +21,7 @@ export const autoSetDevTools = (dispatch: CustomRenderDispatch) => {
 
   if (typeof globalThis !== "undefined" && globalThis[DEV_TOOL_FIELD]) {
     try {
-      const typedRuntimeField = globalThis[DEV_TOOL_FIELD] ;
+      const typedRuntimeField = globalThis[DEV_TOOL_FIELD];
 
       typedRuntimeField?.(dispatch);
     } catch {

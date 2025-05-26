@@ -1,14 +1,8 @@
 import { __my_react_internal__, __my_react_scheduler__, __my_react_shared__ } from "@my-react/react";
+import { CustomRenderPlatform, devErrorWithFiber, enableFiberForLog, enableValidMyReactElement, processHook, processPromise, processState, triggerError } from "@my-react/react-reconciler";
 
-import { processHook } from "../processHook";
-import { processPromise } from "../processPromise";
-import { processState } from "../processState";
-import { CustomRenderPlatform } from "../renderPlatform";
-import { triggerError } from "../renderUpdate";
-import { devErrorWithFiber, enableFiberForLog, enableValidMyReactElement } from "../share";
-
-import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
+import type { MyReactFiberNode} from "@my-react/react-reconciler";
 
 const { initRenderPlatform, currentRenderPlatform } = __my_react_internal__;
 

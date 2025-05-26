@@ -5,10 +5,12 @@ import { resolve } from "path";
 
 const pkgNameAlias = {
   "@my-react/react": "myreact",
+  "@my-react/react-compact": "myreact-compact",
   "@my-react/react-dom": "myreact-dom",
   "@my-react/react-jsx": "myreact-jsx",
   "@my-react/react-reactive": "myreact-reactivity",
   "@my-react/react-reconciler": "myreact-reconciler",
+  "@my-react/react-reconciler-compact": "myreact-reconciler-compact",
   "@my-react/react-refresh": "myreact-refresh",
   "@my-react/react-shared": "myreact-shared",
   "@my-react/react-refresh-tools": "myreact-refresh-tools",

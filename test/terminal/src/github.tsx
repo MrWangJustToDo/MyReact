@@ -1,4 +1,4 @@
-import { Suspense, use } from "@my-react/react-reconciler/compact";
+import { Suspense, use, useEffect, useState } from "@my-react/react-compact";
 import { Box, render, Text } from "@my-react/react-terminal";
 
 type ResponseType = { contributions: { date: string; count: number; level: number }[]; total: Record<string, number> };
@@ -46,31 +46,47 @@ const getMouthName = (mouth: number) => {
   }
 };
 
-const getColorFromLevel = (commitsCount: number) => {
-  // Dark theme compatible, fine-grained green scale, dynamic by commitsCount
+const getColorFromLevel = (commitsCount: number, isDarkTheme: boolean = true) => {
   if (commitsCount === 0) {
-    return "#161b22"; // GitHub dark theme background
+    return isDarkTheme ? "#161b22" : "#ebedf0"; // GitHub's empty cell colors
   }
 
   // Dynamic scaling based on actual commit count
   // Use logarithmic scale for better visual distribution
   const intensity = Math.min(Math.log(commitsCount + 1) / Math.log(20), 1);
 
-  // GitHub dark theme green color progression
-  // From dark green to bright green
-  const baseR = 13; // #0d4429
-  const baseG = 68;
-  const baseB = 41;
+  if (isDarkTheme) {
+    // GitHub dark theme green color progression
+    const baseR = 13; // #0d4429
+    const baseG = 68;
+    const baseB = 41;
 
-  const maxR = 57; // #39d353
-  const maxG = 211;
-  const maxB = 83;
+    const maxR = 57; // #39d353
+    const maxG = 211;
+    const maxB = 83;
 
-  const r = Math.round(baseR + (maxR - baseR) * intensity);
-  const g = Math.round(baseG + (maxG - baseG) * intensity);
-  const b = Math.round(baseB + (maxB - baseB) * intensity);
+    const r = Math.round(baseR + (maxR - baseR) * intensity);
+    const g = Math.round(baseG + (maxG - baseG) * intensity);
+    const b = Math.round(baseB + (maxB - baseB) * intensity);
 
-  return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+    return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+  } else {
+    // GitHub light theme color progression
+    const baseR = 235; // #ebedf0 (almost white)
+    const baseG = 237;
+    const baseB = 240;
+
+    const maxR = 33; // #216e39 (dark green)
+    const maxG = 110;
+    const maxB = 57;
+
+    // Reverse the intensity for light theme (darker = more commits)
+    const r = Math.round(baseR + (maxR - baseR) * intensity);
+    const g = Math.round(baseG + (maxG - baseG) * intensity);
+    const b = Math.round(baseB + (maxB - baseB) * intensity);
+
+    return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+  }
 };
 
 const group = (data: ResponseType) => {
@@ -117,6 +133,23 @@ const Column = () => {
       <Text>Thu</Text>
       <Text>Fri</Text>
       <Text>Sat</Text>
+    </Box>
+  );
+};
+
+const Loading = () => {
+  const [s, setS] = useState(".");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setS((prev) => (prev.length < 3 ? prev + "." : "."));
+    }, 500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <Box>
+      <Text>Loading{s}</Text>
     </Box>
   );
 };
@@ -182,7 +215,7 @@ const Github = ({ user, year }: { user: string; year: string }) => {
 
 const App = () => {
   return (
-    <Suspense fallback={<Text>Loading...</Text>}>
+    <Suspense fallback={<Loading />}>
       <Github user="MrWangJustToDo" year="2023" />
       <Github user="MrWangJustToDo" year="2024" />
       <Github user="MrWangJustToDo" year="2025" />

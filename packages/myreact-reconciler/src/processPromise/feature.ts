@@ -5,7 +5,7 @@ import { defaultDeleteChildEffect, defaultDeleteCurrentEffect } from "../dispatc
 import { processState } from "../processState";
 import { type MyReactFiberNode } from "../runtimeFiber";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
-import { currentRenderDispatch } from "../share";
+import { currentRenderDispatch, fiberToDispatchMap } from "../share";
 
 import type { VisibleInstanceField } from "../runtimeGenerate";
 import type { PromiseUpdateQueue } from "@my-react/react";
@@ -71,6 +71,8 @@ export const processPromise = (fiber: MyReactFiberNode, promise: PromiseWithStat
         promise.status = "rejected";
 
         promise.reason = reason;
+
+        fiberToDispatchMap.set(fiber, renderDispatch);
 
         currentRenderPlatform.current.dispatchError?.({ fiber, error: reason });
       });

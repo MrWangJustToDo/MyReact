@@ -4,7 +4,7 @@ import { merge, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 import { processState } from "../processState";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { WrapperByLazyScope } from "../runtimeScope";
-import { currentRenderDispatch } from "../share";
+import { currentRenderDispatch, fiberToDispatchMap } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { VisibleInstanceField } from "../runtimeGenerate";
@@ -63,6 +63,8 @@ export const processLazy = (fiber: MyReactFiberNode) => {
         })
         .catch((reason) => {
           typedElementType._loading = false;
+
+          fiberToDispatchMap.set(fiber, renderDispatch);
 
           currentRenderPlatform.current?.dispatchError({ fiber, error: reason });
         });

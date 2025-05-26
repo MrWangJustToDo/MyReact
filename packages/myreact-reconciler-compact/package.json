@@ -1,9 +1,9 @@
 {
-  "name": "@my-react/react-reconciler",
-  "description": "@my-react/react-reconciler",
+  "name": "@my-react/react-reconciler-compact",
+  "description": "@my-react/react-reconciler-compact",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.10",
+  "version": "0.0.1",
   "main": "index.js",
   "types": "index.d.ts",
   "files": [
@@ -14,7 +14,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/MrWangJustToDo/MyReact",
-    "directory": "packages/myreact-reconciler"
+    "directory": "packages/myreact-reconciler-compact"
   },
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
@@ -39,7 +39,9 @@
     }
   ],
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.10"
+    "@my-react/react-reconciler": "^0.3.10",
+    "@my-react/react-shared": "^0.3.10",
+    "@types/react-reconciler": "^0.31.0"
   },
   "peerDependencies": {
     "@my-react/react": ">=0.3.10"

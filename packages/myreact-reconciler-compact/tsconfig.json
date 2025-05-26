@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "target": "ES5",
+    "esModuleInterop": true
+  },
+  "include": ["./src"],
+  "exclude": ["node_modules"]
+}

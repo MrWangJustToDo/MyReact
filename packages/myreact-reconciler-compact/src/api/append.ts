@@ -1,9 +1,9 @@
+import { NODE_TYPE } from "@my-react/react-reconciler";
 import { include, PATCH_TYPE, remove } from "@my-react/react-shared";
 
-import { NODE_TYPE } from "../../share";
 
-import type { MyReactFiberNode, MyReactFiberContainer } from "../../runtimeFiber";
 import type { ReconcilerDispatch } from "../dispatch";
+import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
 export const append = (fiber: MyReactFiberNode, parentFiberWithNode: MyReactFiberNode | null, dispatch: ReconcilerDispatch, config: any) => {
   if (!fiber) throw new Error("position error, look like a bug for @my-react");

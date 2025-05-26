@@ -1,8 +1,7 @@
+import { NODE_TYPE, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 import { PATCH_TYPE, STATE_TYPE, include, remove } from "@my-react/react-shared";
 
-import { NODE_TYPE, safeCallWithCurrentFiber } from "../../share";
-
-import type { MyReactFiberNode } from "../../runtimeFiber";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 /**
  * @internal

@@ -1,15 +1,13 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
+import { CustomRenderDispatch, NODE_TYPE, safeCall, listenerMap } from "@my-react/react-reconciler";
 import { exclude, include, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
-
-import { CustomRenderDispatch, listenerMap } from "../renderDispatch";
-import { NODE_TYPE, safeCall } from "../share";
 
 import { append, insertBefore, setRef, unsetRef } from "./api";
 import { getInsertBeforeNodeFromSiblingAndParent, getValidParentFiberWithNode, initialMap, unmountMap } from "./dispatchMap";
 import { defaultDispatchMount } from "./dispatchMount";
 
-import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
 import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactFiberRoot, MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 import type { ListTree } from "@my-react/react-shared";
 
 const initialRef: CustomRenderDispatch["runtimeRef"] = {

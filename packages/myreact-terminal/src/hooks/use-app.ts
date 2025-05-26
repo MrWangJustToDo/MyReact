@@ -1,4 +1,4 @@
-import { useContext } from '@my-react/react-reconciler/compact';
+import { useContext } from '@my-react/react-compact';
 
 import AppContext from '../components/AppContext';
 

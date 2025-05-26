@@ -62,8 +62,10 @@ const buildPackages = async () => {
   await rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact", packageScope: "packages", external: externalReact });
   await writeType("myreact");
+  await rollupBuild({ packageName: "myreact-compact", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-jsx", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-reconciler", packageScope: "packages", external: externalReact });
+  await rollupBuild({ packageName: "myreact-reconciler-compact", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external: externalReact });
   await writeType("myreact-dom");
   await rollupBuild({ packageName: "myreact-terminal", packageScope: "packages", external: externalReact });

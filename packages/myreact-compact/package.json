@@ -1,11 +1,12 @@
 {
-  "name": "@my-react/react-reconciler",
-  "description": "@my-react/react-reconciler",
+  "name": "@my-react/react-compact",
+  "description": "@my-react/react-compact",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.10",
+  "version": "0.0.1",
   "main": "index.js",
-  "types": "index.d.ts",
+  "unpkg": "./dist/umd/index.development.js",
+  "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
     "index.js",
@@ -14,14 +15,11 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/MrWangJustToDo/MyReact",
-    "directory": "packages/myreact-reconciler"
+    "directory": "packages/myreact-compact"
   },
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
-    ".": {
-      "default": "./index.js",
-      "types": "./index.d.ts"
-    },
+    ".": "./index.js",
     "./package.json": "./package.json"
   },
   "buildOptions": [
@@ -38,10 +36,14 @@
       ]
     }
   ],
-  "devDependencies": {
-    "@my-react/react-shared": "^0.3.10"
+  "keywords": [
+    "react",
+    "react like"
+  ],
+  "dependencies": {
+    "@my-react/react": "^0.3.10"
   },
-  "peerDependencies": {
-    "@my-react/react": ">=0.3.10"
+  "devDependencies": {
+    "@types/react": "^17 || ^18 || ^19"
   }
 }

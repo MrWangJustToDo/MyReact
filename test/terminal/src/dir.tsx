@@ -1,4 +1,4 @@
-import { Suspense, use, useEffect, useState } from "@my-react/react-reconciler/compact"; // use @my-react/react directly
+import { Suspense, use, useEffect, useState } from "@my-react/react-compact";
 import { Box, render, Text, useStdout } from "@my-react/react-terminal";
 import { readdir, stat } from "node:fs/promises";
 import { resolve } from "node:path";

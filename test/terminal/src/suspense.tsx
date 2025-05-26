@@ -1,4 +1,4 @@
-import { Suspense } from "@my-react/react";
+import { Suspense } from "@my-react/react-compact";
 import { render, Text } from "@my-react/react-terminal";
 
 let promise: Promise<void> | undefined;
@@ -40,8 +40,6 @@ function Fallback() {
 
 export const test = () =>
   render(
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     <Suspense fallback={<Fallback />}>
       <Example />
     </Suspense>

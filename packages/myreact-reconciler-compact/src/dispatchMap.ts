@@ -1,9 +1,8 @@
+import { NODE_TYPE } from "@my-react/react-reconciler";
 import { exclude, include, STATE_TYPE } from "@my-react/react-shared";
 
-import { NODE_TYPE } from "../share";
-
-import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
 import type { ReconcilerDispatch } from "./dispatch";
+import type { MyReactFiberNode, MyReactFiberContainer, MyReactFiberRoot } from "@my-react/react-reconciler";
 
 export const initialMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch, config: any) => {
   let parentFiberWithNode: MyReactFiberNode | null = null;

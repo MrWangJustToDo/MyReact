@@ -1,10 +1,18 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-
-import { insertionEffect, layoutEffect, effect } from "../dispatchEffect";
-import { generateFiberToMountList, beforeSyncUpdate, afterSyncUpdate, safeCallWithCurrentFiber, setLogScope, resetLogScope } from "../share";
+import {
+  insertionEffect,
+  layoutEffect,
+  effect,
+  generateFiberToMountList,
+  beforeSyncUpdate,
+  afterSyncUpdate,
+  safeCallWithCurrentFiber,
+  setLogScope,
+  resetLogScope,
+} from "@my-react/react-reconciler";
 
 import type { ReconcilerDispatch } from "./dispatch";
-import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { currentRenderPlatform } = __my_react_internal__;
 

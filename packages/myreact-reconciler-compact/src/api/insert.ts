@@ -1,9 +1,8 @@
+import { NODE_TYPE } from "@my-react/react-reconciler";
 import { PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
-import { NODE_TYPE } from "../../share";
-
-import type { MyReactFiberNode, MyReactFiberContainer } from "../../runtimeFiber";
 import type { ReconcilerDispatch } from "../dispatch";
+import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
 export const insertBefore = (
   fiber: MyReactFiberNode,

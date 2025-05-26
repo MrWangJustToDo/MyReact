@@ -1,4 +1,4 @@
-import { PureComponent } from "@my-react/react-reconciler/compact";
+import { PureComponent } from "@my-react/react-compact";
 import cliCursor from "cli-cursor";
 import { EventEmitter } from "node:events";
 import process from "node:process";

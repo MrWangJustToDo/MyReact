@@ -61,11 +61,11 @@ export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: Custom
   renderDispatch.runtimeMap.triggerCallbackMap.delete(fiber);
 
   if (Boolean(__DEV__) === false) {
-    fiber.child = null;
+    // fiber.child = null;
 
-    fiber.parent = null;
+    // fiber.parent = null;
 
-    fiber.sibling = null;
+    // fiber.sibling = null;
 
     fiber.instance = null;
 

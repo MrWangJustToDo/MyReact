@@ -136,6 +136,16 @@ importers:
         specifier: ^0.3.10
         version: link:../myreact-shared
 
+  packages/myreact-compact:
+    dependencies:
+      '@my-react/react':
+        specifier: ^0.3.10
+        version: link:../myreact
+    devDependencies:
+      '@types/react':
+        specifier: ^17 || ^18 || ^19
+        version: 18.3.18
+
   packages/myreact-dom:
     dependencies:
       '@my-react/react':
@@ -178,9 +188,19 @@ importers:
       '@my-react/react-shared':
         specifier: ^0.3.10
         version: link:../myreact-shared
-      '@types/react':
-        specifier: ^18 || ^19
-        version: 18.3.18
+
+  packages/myreact-reconciler-compact:
+    dependencies:
+      '@my-react/react':
+        specifier: '>=0.3.10'
+        version: link:../myreact
+    devDependencies:
+      '@my-react/react-reconciler':
+        specifier: ^0.3.10
+        version: link:../myreact-reconciler
+      '@my-react/react-shared':
+        specifier: ^0.3.10
+        version: link:../myreact-shared
       '@types/react-reconciler':
         specifier: ^0.31.0
         version: 0.31.0(@types/react@18.3.18)
@@ -307,9 +327,12 @@ importers:
         specifier: ^3.2.1
         version: 3.2.1
     devDependencies:
-      '@my-react/react-reconciler':
-        specifier: ^0.3.10
-        version: link:../myreact-reconciler
+      '@my-react/react-compact':
+        specifier: ^0.0.1
+        version: link:../myreact-compact
+      '@my-react/react-reconciler-compact':
+        specifier: ^0.0.1
+        version: link:../myreact-reconciler-compact
       '@my-react/react-shared':
         specifier: ^0.3.10
         version: link:../myreact-shared
@@ -515,6 +538,9 @@ importers:
       '@my-react/react':
         specifier: workspace:*
         version: link:../../packages/myreact
+      '@my-react/react-compact':
+        specifier: workspace:*
+        version: link:../../packages/myreact-compact
       '@my-react/react-terminal':
         specifier: workspace:*
         version: link:../../packages/myreact-terminal

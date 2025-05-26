@@ -60,6 +60,8 @@ export const setContextForInstance = (instance: MyReactInternalInstance, fiber: 
 export const setOwnerForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode, instanceField?: InstanceField) => {
   const field = instanceField || instanceMap.get(instance);
 
+  instance._reactInternals = fiber;
+
   // unmount instance
   if (!field) return;
 

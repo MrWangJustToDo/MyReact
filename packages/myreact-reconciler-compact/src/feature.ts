@@ -103,6 +103,8 @@ export const Reconciler = (_config: any) => {
 
     ReconcilerSet.forEach((renderDispatch) => (renderDispatch.renderPackage = rendererPackageName));
 
+    if (globalThis["__MY_REACT_DEVTOOL_INTERNAL__"]) return;
+
     // load core runtime
     // await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");
     await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");

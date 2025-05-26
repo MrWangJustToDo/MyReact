@@ -25,6 +25,7 @@
     "release": "ts-node ./scripts/release.ts",
     "commit": "NODE_ENV=production node ./commit.mjs",
     "test": "NODE_ENV=development DEV=true node ./test.mjs",
+    "test:three": "cd ./test/three-fiber && pnpm run dev",
     "test-inspect": "NODE_ENV=development DEV=true node --inspect ./test.mjs",
     "lint": "eslint --cache --ext ts,tsx .",
     "lint:fix": "pnpm run lint --fix",

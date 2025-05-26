@@ -21,15 +21,19 @@ import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/rea
 
 const { enableLegacyLifeCycle } = __my_react_shared__;
 
-Object.defineProperty(Component.prototype, "_reactInternals", {
-  get() {
-    return getInstanceOwnerFiber(this);
-  },
-  set() {
-    // do nothing
-  },
-  configurable: true,
-});
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+if (!Object.prototype.hasOwnProperty.call(Component.prototype, "_reactInternals")) {
+  Object.defineProperty(Component.prototype, "_reactInternals", {
+    get() {
+      return getInstanceOwnerFiber(this);
+    },
+    set() {
+      // do nothing
+    },
+    configurable: false,
+  });
+}
 
 const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   const Component = fiber.elementType;

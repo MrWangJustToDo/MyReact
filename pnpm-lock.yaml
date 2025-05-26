@@ -545,6 +545,73 @@ importers:
         specifier: workspace:*
         version: link:../../packages/myreact-terminal
 
+  test/three-fiber:
+    dependencies:
+      '@my-react/react':
+        specifier: workspace:*
+        version: link:../../packages/myreact
+      '@my-react/react-compact':
+        specifier: workspace:*
+        version: link:../../packages/myreact-compact
+      '@my-react/react-dom':
+        specifier: workspace:*
+        version: link:../../packages/myreact-dom
+      '@my-react/react-reconciler-compact':
+        specifier: workspace:*
+        version: link:../../packages/myreact-reconciler-compact
+      react:
+        specifier: npm:@my-react/react@*
+        version: link:../../packages/myreact
+      react-dom:
+        specifier: npm:@my-react/react-dom@*
+        version: link:../../packages/myreact-dom
+      react-use-measure:
+        specifier: ^2.1.7
+        version: 2.1.7(react-dom@packages+myreact-dom)(react@packages+myreact)
+      suspend-react:
+        specifier: ^0.1.3
+        version: 0.1.3(react@packages+myreact)
+      use-sync-external-store:
+        specifier: ^1.4.0
+        version: 1.4.0(react@packages+myreact)
+      zustand:
+        specifier: ^5.0.3
+        version: 5.0.5(@types/react@18.3.18)(immer@9.0.21)(react@packages+myreact)(use-sync-external-store@1.4.0(react@packages+myreact))
+    devDependencies:
+      '@my-react/react-refresh':
+        specifier: workspace:*
+        version: link:../../packages/myreact-refresh
+      '@my-react/react-vite':
+        specifier: workspace:*
+        version: link:../../packages/myreact-vite
+      '@types/node':
+        specifier: ^22.13.1
+        version: 22.13.1
+      '@types/react':
+        specifier: ^18.3.18
+        version: 18.3.18
+      '@types/react-dom':
+        specifier: ^18.3.5
+        version: 18.3.5(@types/react@18.3.18)
+      '@types/three':
+        specifier: ^0.156.0
+        version: 0.156.0
+      '@vitejs/plugin-react':
+        specifier: ^4.3.4
+        version: 4.3.4(vite@5.4.14(@types/node@22.13.1)(sass@1.84.0)(sugarss@4.0.1(postcss@8.5.1))(terser@5.39.0))
+      eslint:
+        specifier: ^8.57.0
+        version: 8.57.0
+      three:
+        specifier: '>=0.156'
+        version: 0.176.0
+      typescript:
+        specifier: ^5.3.3
+        version: 5.3.3
+      vite:
+        specifier: ^5.4.14
+        version: 5.4.14(@types/node@22.13.1)(sass@1.84.0)(sugarss@4.0.1(postcss@8.5.1))(terser@5.39.0)
+
   ui/csr-example:
     dependencies:
       '@loadable/component':
@@ -4930,6 +4997,12 @@ packages:
   '@types/stack-utils@2.0.3':
     resolution: {integrity: sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==}
 
+  '@types/stats.js@0.17.4':
+    resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
+
+  '@types/three@0.156.0':
+    resolution: {integrity: sha512-733bXDSRdlrxqOmQuOmfC1UBRuJ2pREPk8sWnx9MtIJEVDQMx8U0NQO5MVVaOrjzDPyLI+cFPim2X/ss9v0+LQ==}
+
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
 
@@ -4947,6 +5020,9 @@ packages:
 
   '@types/webpack-node-externals@3.0.4':
     resolution: {integrity: sha512-8Z3/edqxE3RRlOJwKSgOFxLZRt/i1qFlv/Bi308ZUKo9jh8oGngd9r8GR0ZNKW5AEJq8QNQE3b17CwghTjQ0Uw==}
+
+  '@types/webxr@0.5.22':
+    resolution: {integrity: sha512-Vr6Stjv5jPRqH690f5I5GLjVk8GSsoQSYJ2FVd/3jJF7KaqfwPi3ehfBS96mlQ2kPCwZaX6U0rG2+NGHBKkA/A==}
 
   '@types/ws@8.5.10':
     resolution: {integrity: sha512-vmQSUcfalpIq0R9q7uTo2lXs6eGIpt9wtnLdMv9LVpIjCA/+ufZRozlVoVelIYixx1ugCBKDhn89vnsEGOCx9A==}
@@ -6863,6 +6939,9 @@ packages:
       picomatch:
         optional: true
 
+  fflate@0.6.10:
+    resolution: {integrity: sha512-IQrh3lEPM93wVCEczc9SaAOvkmcoQn/G8Bo1e8ZPlY3X3bnAxWaBdvTdvM1hP62iZp0BXWDy4vTAy4fF0+Dlpg==}
+
   figures@3.2.0:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
     engines: {node: '>=8'}
@@ -8223,6 +8302,9 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
+
+  meshoptimizer@0.18.1:
+    resolution: {integrity: sha512-ZhoIoL7TNV4s5B6+rx5mC//fw8/POGyNxS/DZyCJeiZ12ScLfVwRE/GfsxwiTkMYYD5DmK2/JXnEVXqL4rF+Sw==}
 
   methods@1.1.2:
     resolution: {integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==}
@@ -9606,6 +9688,15 @@ packages:
       '@types/react':
         optional: true
 
+  react-use-measure@2.1.7:
+    resolution: {integrity: sha512-KrvcAo13I/60HpwGO5jpW7E9DfusKyLPLvuHlUyP5zqnmAPhNc6qTRjUQrdTADl0lpPpDVU2/Gg51UlOGHXbdg==}
+    peerDependencies:
+      react: '>=16.13'
+      react-dom: '>=16.13'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+
   react@18.3.1:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
     engines: {node: '>=0.10.0'}
@@ -10437,6 +10528,11 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
+  suspend-react@0.1.3:
+    resolution: {integrity: sha512-aqldKgX9aZqpoDp3e8/BZ8Dm7x1pJl+qI3ZKxDN0i/IQTWUwBx/ManmlVJ3wowqbno6c2bmiIfs+Um6LbsjJyQ==}
+    peerDependencies:
+      react: '>=17.0'
+
   svg-captcha@1.4.0:
     resolution: {integrity: sha512-/fkkhavXPE57zRRCjNqAP3txRCSncpMx3NnNZL7iEoyAtYwUjPhJxW6FQTQPG5UPEmCrbFoXS10C3YdJlW7PDg==}
     engines: {node: '>=4.x'}
@@ -10548,6 +10644,9 @@ packages:
 
   thread-stream@3.1.0:
     resolution: {integrity: sha512-OqyPZ9u96VohAyMfJykzmivOrY2wfMSf3C5TtFJVgN+Hm6aj+voFhlK+kZEIv2FBh1X6Xp3DlnCOfEQ3B2J86A==}
+
+  three@0.176.0:
+    resolution: {integrity: sha512-PWRKYWQo23ojf9oZSlRGH8K09q7nRSWx6LY/HF/UUrMdYgN9i1e2OwJYHoQjwc6HF/4lvvYLC5YC1X8UJL2ZpA==}
 
   through2@2.0.5:
     resolution: {integrity: sha512-/mrRod8xqpA+IHSLyGCQ2s8SPHiCDEeQJSep1jqLYeEUClOFG2Qsh+4FU6G9VeqpZnGW/Su8LQGc4YKni5rYSQ==}
@@ -11398,6 +11497,24 @@ packages:
       immer:
         optional: true
       react:
+        optional: true
+
+  zustand@5.0.5:
+    resolution: {integrity: sha512-mILtRfKW9xM47hqxGIxCv12gXusoY/xTSHBYApXozR0HmQv299whhBeeAcRy+KrPPybzosvJBCOmVjq6x12fCg==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
         optional: true
 
   zwitch@2.0.4:
@@ -16053,6 +16170,15 @@ snapshots:
 
   '@types/stack-utils@2.0.3': {}
 
+  '@types/stats.js@0.17.4': {}
+
+  '@types/three@0.156.0':
+    dependencies:
+      '@types/stats.js': 0.17.4
+      '@types/webxr': 0.5.22
+      fflate: 0.6.10
+      meshoptimizer: 0.18.1
+
   '@types/unist@2.0.11': {}
 
   '@types/use-sync-external-store@0.0.6': {}
@@ -16081,6 +16207,8 @@ snapshots:
       - esbuild
       - uglify-js
       - webpack-cli
+
+  '@types/webxr@0.5.22': {}
 
   '@types/ws@8.5.10':
     dependencies:
@@ -18530,6 +18658,8 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.2
 
+  fflate@0.6.10: {}
+
   figures@3.2.0:
     dependencies:
       escape-string-regexp: 1.0.5
@@ -19986,6 +20116,8 @@ snapshots:
   meros@1.2.1(@types/node@22.13.1):
     optionalDependencies:
       '@types/node': 22.13.1
+
+  meshoptimizer@0.18.1: {}
 
   methods@1.1.2: {}
 
@@ -21574,6 +21706,12 @@ snapshots:
     optionalDependencies:
       '@types/react': 18.3.18
 
+  react-use-measure@2.1.7(react-dom@packages+myreact-dom)(react@packages+myreact):
+    dependencies:
+      react: link:packages/myreact
+    optionalDependencies:
+      react-dom: link:packages/myreact-dom
+
   react@18.3.1:
     dependencies:
       loose-envify: 1.4.0
@@ -22632,6 +22770,10 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
+  suspend-react@0.1.3(react@packages+myreact):
+    dependencies:
+      react: link:packages/myreact
+
   svg-captcha@1.4.0:
     dependencies:
       opentype.js: 0.7.3
@@ -22787,6 +22929,8 @@ snapshots:
   thread-stream@3.1.0:
     dependencies:
       real-require: 0.2.0
+
+  three@0.176.0: {}
 
   through2@2.0.5:
     dependencies:
@@ -23190,6 +23334,10 @@ snapshots:
   use-sync-external-store@1.4.0(react@18.3.1):
     dependencies:
       react: 18.3.1
+
+  use-sync-external-store@1.4.0(react@packages+myreact):
+    dependencies:
+      react: link:packages/myreact
 
   util-deprecate@1.0.2: {}
 
@@ -23711,5 +23859,12 @@ snapshots:
       '@types/react': 18.3.18
       immer: 9.0.21
       react: 18.3.1
+
+  zustand@5.0.5(@types/react@18.3.18)(immer@9.0.21)(react@packages+myreact)(use-sync-external-store@1.4.0(react@packages+myreact)):
+    optionalDependencies:
+      '@types/react': 18.3.18
+      immer: 9.0.21
+      react: link:packages/myreact
+      use-sync-external-store: 1.4.0(react@packages+myreact)
 
   zwitch@2.0.4: {}

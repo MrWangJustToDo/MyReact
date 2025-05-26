@@ -550,15 +550,15 @@ importers:
       '@my-react/react':
         specifier: workspace:*
         version: link:../../packages/myreact
-      '@my-react/react-compact':
-        specifier: workspace:*
-        version: link:../../packages/myreact-compact
       '@my-react/react-dom':
         specifier: workspace:*
         version: link:../../packages/myreact-dom
       '@my-react/react-reconciler-compact':
         specifier: workspace:*
         version: link:../../packages/myreact-reconciler-compact
+      '@my-react/react-shared':
+        specifier: workspace:*
+        version: link:../../packages/myreact-shared
       react:
         specifier: npm:@my-react/react@*
         version: link:../../packages/myreact

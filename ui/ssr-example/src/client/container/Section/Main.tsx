@@ -69,9 +69,11 @@ export const MainSection = () => {
             <Link href="https://webpack.js.org/" target="_blank">
               <Webpack />
             </Link>
+            |
             <Link href="https://vite.dev/" target="_blank">
               <Vite />
             </Link>
+            |
             <Link href="https://rspack.dev/" target="_blank">
               <Rspack height={40} width={40} />
             </Link>
@@ -81,9 +83,11 @@ export const MainSection = () => {
             <Link href="https://nextjs.org/" target="_blank">
               <NextJs width={50} height={50} fill="currentcolor" />
             </Link>
+            |
             <Link href="https://remix.run/" target="_blank">
               <Remix width={50} height={50} fill="currentcolor" />
             </Link>
+            |
             <Link href="https://reactrouter.com/" target="_blank">
               <ReactRouter height={40} width={40} fill="currentcolor" />
             </Link>

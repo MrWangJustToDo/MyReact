@@ -19,11 +19,14 @@ export const append = (fiber: MyReactFiberNode, parentFiberWithNode: MyReactFibe
 
     const maybeFiber = parentFiberWithNode as MyReactFiberNode;
 
-    const parentNode = config?.getPublicInstance?.(maybeFiber?.nativeNode || maybeContainer?.containerNode);
+    // const parentNode = config?.getPublicInstance?.(maybeFiber?.nativeNode || maybeContainer?.containerNode);
+    const parentNode = maybeFiber?.nativeNode || maybeContainer?.containerNode;
 
-    const rootNode = config?.getPublicInstance?.(dispatch.rootNode);
+    // const rootNode = config?.getPublicInstance?.(dispatch.rootNode);
+    const rootNode = dispatch.rootNode;
 
-    const childNode = config?.getPublicInstance?.(fiber.nativeNode);
+    // const childNode = config?.getPublicInstance?.(fiber.nativeNode);
+    const childNode = fiber.nativeNode;
 
     if (!parentNode) {
       if (config.appendInContainer) {

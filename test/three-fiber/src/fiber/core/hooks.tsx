@@ -1,14 +1,13 @@
-import * as React from 'react'
-import { suspend, preload, clear } from 'suspend-react'
+import * as React from "react";
+import { suspend, preload, clear } from "suspend-react";
 
+import { context } from "./store";
+import { buildGraph, is, useMutableCallback, useIsomorphicLayoutEffect, isObject3D } from "./utils";
 
-import { context } from './store'
-import { buildGraph, is, useMutableCallback, useIsomorphicLayoutEffect, isObject3D } from './utils'
-
-import type { Instance, ConstructorRepresentation } from './reconciler'
-import type { RootState, RenderCallback, RootStore } from './store';
-import type { ObjectMap} from './utils';
-import type * as THREE from 'three'
+import type { Instance, ConstructorRepresentation } from "./reconciler";
+import type { RootState, RenderCallback, RootStore } from "./store";
+import type { ObjectMap } from "./utils";
+import type * as THREE from "three";
 
 /**
  * Exposes an object's {@link Instance}.
@@ -17,9 +16,9 @@ import type * as THREE from 'three'
  * **Note**: this is an escape hatch to react-internal fields. Expect this to change significantly between versions.
  */
 export function useInstanceHandle<T>(ref: React.RefObject<T>): React.RefObject<Instance<T>> {
-  const instance = React.useRef<Instance>(null!)
-  React.useImperativeHandle(instance, () => (ref.current as unknown as Instance<T>['object']).__r3f!, [ref])
-  return instance
+  const instance = React.useRef<Instance>(null!);
+  React.useImperativeHandle(instance, () => (ref.current as unknown as Instance<T>["object"]).__r3f!, [ref]);
+  return instance;
 }
 
 /**
@@ -27,9 +26,9 @@ export function useInstanceHandle<T>(ref: React.RefObject<T>): React.RefObject<I
  * @see https://docs.pmnd.rs/react-three-fiber/api/hooks#usestore
  */
 export function useStore(): RootStore {
-  const store = React.useContext(context)
-  if (!store) throw new Error('R3F: Hooks can only be used within the Canvas component!')
-  return store
+  const store = React.useContext(context);
+  if (!store) throw new Error("R3F: Hooks can only be used within the Canvas component!");
+  return store;
 }
 
 /**
@@ -38,9 +37,9 @@ export function useStore(): RootStore {
  */
 export function useThree<T = RootState>(
   selector: (state: RootState) => T = (state) => state as unknown as T,
-  equalityFn?: <T>(state: T, newState: T) => boolean,
+  equalityFn?: <T>(state: T, newState: T) => boolean
 ): T {
-  return useStore()(selector, equalityFn)
+  return useStore()(selector, equalityFn);
 }
 
 /**
@@ -49,13 +48,13 @@ export function useThree<T = RootState>(
  * @see https://docs.pmnd.rs/react-three-fiber/api/hooks#useframe
  */
 export function useFrame(callback: RenderCallback, renderPriority: number = 0): null {
-  const store = useStore()
-  const subscribe = store.getState().internal.subscribe
+  const store = useStore();
+  const subscribe = store.getState().internal.subscribe;
   // Memoize ref
-  const ref = useMutableCallback(callback)
+  const ref = useMutableCallback(callback);
   // Subscribe on mount, unsubscribe on unmount
-  useIsomorphicLayoutEffect(() => subscribe(ref, renderPriority, store), [renderPriority, subscribe, store])
-  return null
+  useIsomorphicLayoutEffect(() => subscribe(ref, renderPriority, store), [renderPriority, subscribe, store]);
+  return null;
 }
 
 /**
@@ -63,55 +62,45 @@ export function useFrame(callback: RenderCallback, renderPriority: number = 0): 
  * @see https://docs.pmnd.rs/react-three-fiber/api/hooks#usegraph
  */
 export function useGraph(object: THREE.Object3D): ObjectMap {
-  return React.useMemo(() => buildGraph(object), [object])
+  return React.useMemo(() => buildGraph(object), [object]);
 }
 
-type InputLike = string | string[] | string[][] | Readonly<string | string[] | string[][]>
-type LoaderLike = THREE.Loader<any, InputLike>
-type GLTFLike = { scene: THREE.Object3D }
+type InputLike = string | string[] | string[][] | Readonly<string | string[] | string[][]>;
+type LoaderLike = THREE.Loader<any, InputLike>;
+type GLTFLike = { scene: THREE.Object3D };
 
-type LoaderInstance<T extends LoaderLike | ConstructorRepresentation<LoaderLike>> =
-  T extends ConstructorRepresentation<LoaderLike> ? InstanceType<T> : T
+type LoaderInstance<T extends LoaderLike | ConstructorRepresentation<LoaderLike>> = T extends ConstructorRepresentation<LoaderLike> ? InstanceType<T> : T;
 
-export type LoaderResult<T extends LoaderLike | ConstructorRepresentation<LoaderLike>> = Awaited<
-  ReturnType<LoaderInstance<T>['loadAsync']>
-> extends infer R
-  ? R extends GLTFLike
-    ? R & ObjectMap
-    : R
-  : never
+export type LoaderResult<T extends LoaderLike | ConstructorRepresentation<LoaderLike>> =
+  Awaited<ReturnType<LoaderInstance<T>["loadAsync"]>> extends infer R ? (R extends GLTFLike ? R & ObjectMap : R) : never;
 
-export type Extensions<T extends LoaderLike | ConstructorRepresentation<LoaderLike>> = (
-  loader: LoaderInstance<T>,
-) => void
+export type Extensions<T extends LoaderLike | ConstructorRepresentation<LoaderLike>> = (loader: LoaderInstance<T>) => void;
 
-const memoizedLoaders = new WeakMap<ConstructorRepresentation<LoaderLike>, LoaderLike>()
+const memoizedLoaders = new WeakMap<ConstructorRepresentation<LoaderLike>, LoaderLike>();
 
-const isConstructor = <T,>(
-  value: unknown,
-): value is ConstructorRepresentation<THREE.Loader<T, string | string[] | string[][]>> =>
-  typeof value === 'function' && value?.prototype?.constructor === value
+const isConstructor = <T,>(value: unknown): value is ConstructorRepresentation<THREE.Loader<T, string | string[] | string[][]>> =>
+  typeof value === "function" && value?.prototype?.constructor === value;
 
 function loadingFn<L extends LoaderLike | ConstructorRepresentation<THREE.Loader<any>>>(
   extensions?: Extensions<L>,
-  onProgress?: (event: ProgressEvent<EventTarget>) => void,
+  onProgress?: (event: ProgressEvent<EventTarget>) => void
 ) {
   return function (Proto: L, ...input: string[]) {
-    let loader: LoaderLike
+    let loader: LoaderLike;
 
     // Construct and cache loader if constructor was passed
     if (isConstructor(Proto)) {
-      loader = memoizedLoaders.get(Proto)!
+      loader = memoizedLoaders.get(Proto)!;
       if (!loader) {
-        loader = new Proto()
-        memoizedLoaders.set(Proto, loader)
+        loader = new Proto();
+        memoizedLoaders.set(Proto, loader);
       }
     } else {
-      loader = Proto as any
+      loader = Proto as any;
     }
 
     // Apply loader extensions
-    if (extensions) extensions(loader as any)
+    if (extensions) extensions(loader as any);
 
     // Go through the urls and load them
     return Promise.all(
@@ -121,16 +110,16 @@ function loadingFn<L extends LoaderLike | ConstructorRepresentation<THREE.Loader
             loader.load(
               input,
               (data) => {
-                if (isObject3D(data?.scene)) Object.assign(data, buildGraph(data.scene))
-                res(data)
+                if (isObject3D(data?.scene)) Object.assign(data, buildGraph(data.scene));
+                res(data);
               },
               onProgress,
-              (error) => reject(new Error(`Could not load ${input}: ${(error as ErrorEvent)?.message}`)),
-            ),
-          ),
-      ),
-    )
-  }
+              (error) => reject(new Error(`Could not load ${input}: ${(error as ErrorEvent)?.message}`))
+            )
+          )
+      )
+    );
+  };
 }
 
 /**
@@ -143,13 +132,13 @@ export function useLoader<I extends InputLike, L extends LoaderLike | Constructo
   loader: L,
   input: I,
   extensions?: Extensions<L>,
-  onProgress?: (event: ProgressEvent<EventTarget>) => void,
+  onProgress?: (event: ProgressEvent<EventTarget>) => void
 ) {
   // Use suspense to load async assets
-  const keys = (Array.isArray(input) ? input : [input]) as string[]
-  const results = suspend(loadingFn(extensions, onProgress), [loader, ...keys], { equal: is.equ })
+  const keys = (Array.isArray(input) ? input : [input]) as string[];
+  const results = suspend(loadingFn(extensions, onProgress), [loader, ...keys], { equal: is.equ });
   // Return the object(s)
-  return (Array.isArray(input) ? results : results[0]) as I extends any[] ? LoaderResult<L>[] : LoaderResult<L>
+  return (Array.isArray(input) ? results : results[0]) as I extends any[] ? LoaderResult<L>[] : LoaderResult<L>;
 }
 
 /**
@@ -158,19 +147,16 @@ export function useLoader<I extends InputLike, L extends LoaderLike | Constructo
 useLoader.preload = function <I extends InputLike, L extends LoaderLike | ConstructorRepresentation<LoaderLike>>(
   loader: L,
   input: I,
-  extensions?: Extensions<L>,
+  extensions?: Extensions<L>
 ): void {
-  const keys = (Array.isArray(input) ? input : [input]) as string[]
-  return preload(loadingFn(extensions), [loader, ...keys])
-}
+  const keys = (Array.isArray(input) ? input : [input]) as string[];
+  return preload(loadingFn(extensions), [loader, ...keys]);
+};
 
 /**
  * Removes a loaded asset from cache.
  */
-useLoader.clear = function <I extends InputLike, L extends LoaderLike | ConstructorRepresentation<LoaderLike>>(
-  loader: L,
-  input: I,
-): void {
-  const keys = (Array.isArray(input) ? input : [input]) as string[]
-  return clear([loader, ...keys])
-}
+useLoader.clear = function <I extends InputLike, L extends LoaderLike | ConstructorRepresentation<LoaderLike>>(loader: L, input: I): void {
+  const keys = (Array.isArray(input) ? input : [input]) as string[];
+  return clear([loader, ...keys]);
+};

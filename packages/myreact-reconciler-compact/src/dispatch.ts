@@ -50,7 +50,8 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
 
       const props = _fiber.pendingProps;
 
-      const rootContainerInstance = config.getPublicInstance(rootNode);
+      // const rootContainerInstance = config.getPublicInstance(rootNode);
+      const rootContainerInstance = rootNode;
 
       const hostContext = this.runtimeDom.hostContextMap.get(_fiber.parent || _fiber);
 
@@ -73,13 +74,18 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
         throw new Error("current type node not supported");
       }
 
+      _fiber.memoizedProps = _fiber.pendingProps;
+
+      _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__update__);
+
       _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__create__);
     }
 
     commitUpdate(_fiber: MyReactFiberNode): void {
       if (!include(_fiber.patch, PATCH_TYPE.__update__)) return;
 
-      const node = config.getPublicInstance(_fiber.nativeNode);
+      // const node = config.getPublicInstance(_fiber.nativeNode);
+      const node = _fiber.nativeNode;
 
       const type = _fiber.elementType;
 
@@ -87,7 +93,8 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
 
       const newProps = _fiber.pendingProps;
 
-      const rootContainerInstance = config.getPublicInstance(rootNode);
+      // const rootContainerInstance = config.getPublicInstance(rootNode);
+      const rootContainerInstance = rootNode;
 
       const hostContext = this.runtimeDom.hostContextMap.get(_fiber.parent || _fiber);
 
@@ -98,10 +105,10 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
           const updatePayload = config.prepareUpdate(node, type, oldProps, newProps, rootContainerInstance, hostContext, _fiber);
 
           if (updatePayload) {
-            config.commitUpdate(node, updatePayload, type, oldProps, newProps, rootContainerInstance, hostContext, _fiber);
+            config.commitUpdate(node, updatePayload, type, oldProps, newProps, _fiber);
           }
         } else {
-          config.commitUpdate(node, type, oldProps, newProps, rootContainerInstance, hostContext, _fiber);
+          config.commitUpdate(node, type, oldProps, newProps, _fiber);
         }
       }
 
@@ -121,16 +128,19 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
 
       if (!_fiber.nativeNode) throw new Error(`append error, current render node not have a native node`);
 
-      const parentNode = config.getPublicInstance(parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode);
+      // const parentNode = config.getPublicInstance(parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode);
+      const parentNode = parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode;
 
-      const rootNode = config.getPublicInstance(this.rootNode);
+      // const rootNode = config.getPublicInstance(this.rootNode);
+      const rootNode = this.rootNode;
 
-      const currentNode = config.getPublicInstance(_fiber.nativeNode);
+      // const currentNode = config.getPublicInstance(_fiber.nativeNode);
+      const currentNode = _fiber.nativeNode;
 
       if (isRender) {
         if (!parentNode) {
-          if (config.appendInContainer) {
-            config.appendInContainer?.(rootNode, currentNode, _fiber);
+          if (config.appendChildToContainer) {
+            config.appendChildToContainer?.(rootNode, currentNode, _fiber);
           } else {
             config.appendInitialChild?.(rootNode, currentNode, _fiber);
           }
@@ -187,11 +197,14 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
 
       const mayFiberContainer = parentFiberWithNode as MyReactFiberContainer;
 
-      const parentNode = config.getPublicInstance(parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode);
+      // const parentNode = config.getPublicInstance(parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode);
+      const parentNode = parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode;
 
-      const rootNode = config.getPublicInstance(this.rootNode);
+      // const rootNode = config.getPublicInstance(this.rootNode);
+      const rootNode = this.rootNode;
 
-      const currentNode = config.getPublicInstance(_fiber.nativeNode);
+      // const currentNode = config.getPublicInstance(_fiber.nativeNode);
+      const currentNode = _fiber.nativeNode;
 
       if (!parentNode) {
         config.removeChildFromContainer?.(rootNode, currentNode, _fiber);

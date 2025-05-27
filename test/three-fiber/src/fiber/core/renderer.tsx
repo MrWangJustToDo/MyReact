@@ -504,9 +504,7 @@ function Portal({ state = {}, children, container }: PortalProps): React.JSX.Ele
     return store;
   }, [previousRoot, container]);
 
-  return (
-    <>{reconciler.createPortal(<context.Provider value={usePortalStore}>{children}</context.Provider>, usePortalStore, null)}</>
-  );
+  return <>{reconciler.createPortal(<context.Provider value={usePortalStore}>{children}</context.Provider>, usePortalStore, null)}</>;
 }
 
 /**

@@ -629,6 +629,9 @@ importers:
       '@my-react/react-reactive':
         specifier: workspace:*
         version: link:../../packages/myreact-reactivity
+      '@my-react/react-reconciler-compact':
+        specifier: workspace:*
+        version: link:../../packages/myreact-reconciler-compact
       animate.css:
         specifier: ^4.1.1
         version: 4.1.1

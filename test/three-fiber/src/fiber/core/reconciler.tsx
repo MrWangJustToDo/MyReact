@@ -644,10 +644,10 @@ export const reconciler = /* @__PURE__ */ createReconciler<
       case "pointerleave":
       case "wheel":
         return 1;
-        // return ContinuousEventPriority;
+      // return ContinuousEventPriority;
       default:
         // return DefaultEventPriority;
-        return 1
+        return 1;
     }
   },
   resetFormInstance() {},

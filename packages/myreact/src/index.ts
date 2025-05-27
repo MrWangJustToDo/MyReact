@@ -31,8 +31,6 @@ import {
   currentHookTreeNode,
   currentHookNodeIndex,
   currentComponentFiber,
-  currentRenderPlatform,
-  initRenderPlatform,
   globalLoop,
   enableDebugLog,
   enableSyncFlush,
@@ -52,6 +50,8 @@ import {
   currentScopeFiber,
   cache,
   Dispatcher,
+  fiberToDispatchMap,
+  currentScheduler,
 } from "./share";
 
 /**
@@ -114,16 +114,16 @@ const __my_react_internal__ = {
   MyReactInternalInstance,
   globalLoop,
 
-  initRenderPlatform,
   createReadonlyRef,
   Dispatcher,
 
+  fiberToDispatchMap,
+  currentScheduler,
   currentScopeFiber,
   currentRunningFiber,
   currentHookTreeNode,
   currentHookNodeIndex,
   currentComponentFiber,
-  currentRenderPlatform,
 };
 
 /**
@@ -184,9 +184,11 @@ export {
 
 export type { Action, Reducer, RenderHook, RenderHookParams, DefaultRenderHook } from "./renderHook";
 
-export type { RenderPlatform, DefaultRenderPlatform } from "./renderPlatform";
-
 export type { RenderFiber, DefaultRenderFiber } from "./renderFiber";
+
+export type { RenderScheduler, DefaultRenderScheduler } from "./renderScheduler";
+
+export type { Dispatcher } from "./share";
 
 export type {
   UpdateQueue,

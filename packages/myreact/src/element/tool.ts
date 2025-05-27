@@ -1,6 +1,6 @@
 import { TYPEKEY, Element, Consumer, ForwardRef, Memo, Lazy, Provider, Fragment, Suspense, Context } from "@my-react/react-shared";
 
-import { currentRenderPlatform, currentComponentFiber, enableOptimizeTreeLog } from "../share";
+import { currentScheduler, currentComponentFiber, enableOptimizeTreeLog } from "../share";
 
 import type { forwardRef, lazy, memo } from "./feature";
 import type {
@@ -24,7 +24,7 @@ const keysMap = {};
 const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const currentFiber = currentComponentFiber.current;
 
@@ -35,7 +35,7 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
       if (!c._store?.["validKey"]) {
         if (typeof c.key === "string") {
           if (obj[c.key]) {
-            const renderTree = renderPlatform.getFiberTree(currentFiber);
+            const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : "";
 
             if (!keysMap[renderTree]) console.warn(`[@my-react/react] array child have duplicate key ${c.key}`);
 
@@ -44,7 +44,7 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
 
           obj[c.key] = true;
         } else {
-          const renderTree = renderPlatform.getFiberTree(currentFiber);
+          const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : "";
 
           if (!keysMap[renderTree]) console.warn(`[@my-react/react] each array child must have a unique key props`);
 
@@ -64,11 +64,11 @@ const pushOptimizes = (optimize: boolean) => {
   optimizes.push(enableOptimizeTreeLog.current);
 
   enableOptimizeTreeLog.current = optimize;
-}
+};
 
 const popOptimizes = () => {
   enableOptimizeTreeLog.current = optimizes.pop() || false;
-}
+};
 
 // TODO
 /**

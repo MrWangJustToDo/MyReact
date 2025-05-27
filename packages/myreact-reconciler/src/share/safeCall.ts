@@ -5,7 +5,7 @@ import { afterSyncUpdate, beforeSyncUpdate } from "./sync";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-const { currentRunningFiber, currentRenderPlatform, currentScopeFiber } = __my_react_internal__;
+const { currentRunningFiber, currentScheduler, currentScopeFiber } = __my_react_internal__;
 
 export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
   try {
@@ -13,11 +13,11 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
   } catch (e) {
     const fiber = currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
 
-    const renderPlatform = currentRenderPlatform.current;
+    const renderScheduler = currentScheduler.current;
 
     globalError.current = globalError.current || e;
 
-    renderPlatform.dispatchError({ fiber, error: globalError.current });
+    renderScheduler.dispatchError({ fiber, error: globalError.current });
   }
 };
 
@@ -37,11 +37,11 @@ export const safeCallWithCurrentFiber = <T extends any[] = any[], K = any>(
     if (fallback) {
       return fallback();
     } else {
-      const renderPlatform = currentRenderPlatform.current;
+      const renderScheduler = currentScheduler.current;
 
       globalError.current = globalError.current || e;
 
-      renderPlatform.dispatchError({ fiber, error: globalError.current });
+      renderScheduler.dispatchError({ fiber, error: globalError.current });
     }
   } finally {
     const l = stack.pop();
@@ -67,11 +67,11 @@ export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...a
   } catch (e) {
     const fiber = currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
 
-    const renderPlatform = currentRenderPlatform.current;
+    const renderScheduler = currentScheduler.current;
 
     globalError.current = globalError.current || e;
 
-    renderPlatform.dispatchError({ fiber, error: globalError.current });
+    renderScheduler.dispatchError({ fiber, error: globalError.current });
   } finally {
     afterSyncUpdate();
   }

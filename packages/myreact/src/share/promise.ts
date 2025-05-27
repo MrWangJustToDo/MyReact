@@ -1,6 +1,6 @@
 import { UpdateQueueType } from "@my-react/react-shared";
 
-import { currentRenderPlatform } from "./env";
+import { currentScheduler } from "./env";
 
 import type { RenderFiber } from "../renderFiber";
 import type { PromiseUpdateQueue } from "../renderQueue";
@@ -15,7 +15,7 @@ export const promiseLoad = (fiber: RenderFiber, loaded: any) => {
     isSync: true,
   };
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  renderPlatform?.dispatchState(updater);
+  renderScheduler?.dispatchState(updater);
 };

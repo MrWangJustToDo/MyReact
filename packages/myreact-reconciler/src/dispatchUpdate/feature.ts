@@ -9,7 +9,7 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { ListTree } from "@my-react/react-shared";
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
@@ -71,10 +71,10 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   afterSyncUpdate();
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   // TODO before next update flow, make sure all the effect has done
-  renderPlatform.microTask(function invokeEffectListTask() {
+  renderScheduler.microTask(function invokeEffectListTask() {
     __DEV__ && enableScopeTreeLog.current && setLogScope();
 
     _list.listToFoot(function invokeEffectList(_fiber) {

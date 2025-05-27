@@ -7,10 +7,10 @@ import { updateSyncFromRoot, updateConcurrentFromRoot, updateSyncFromTrigger, up
 import { applyTriggerFiberCb } from "./trigger";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { CustomRenderPlatform } from "../renderPlatform";
 import type { MyReactFiberNode } from "../runtimeFiber";
+import type { UniqueArray } from "@my-react/react-shared";
 
-const { globalLoop, currentRenderPlatform } = __my_react_internal__;
+const { globalLoop, currentScheduler } = __my_react_internal__;
 
 const { enableConcurrentMode, enableLoopFromRoot } = __my_react_shared__;
 
@@ -114,11 +114,11 @@ export const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
     return;
   }
 
-  const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform.dispatchSet || renderPlatform.dispatchSet?.length === 1) return;
+  if (!renderScheduler.dispatchSet || renderScheduler.dispatchSet?.length === 1) return;
 
-  const allDispatch = renderPlatform.dispatchSet;
+  const allDispatch = renderScheduler.dispatchSet as UniqueArray<CustomRenderDispatch>;
 
   const hasPending = allDispatch
     .getAll()

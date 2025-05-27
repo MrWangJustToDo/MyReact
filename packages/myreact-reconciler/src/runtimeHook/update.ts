@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE, STATE_TYPE, include, isArrayEquals, isNormalEquals } from "@my-react/react-shared";
 
 import { getInstanceContextFiber, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
-import { currentRenderDispatch, safeCallWithCurrentFiber } from "../share";
+import { currentRenderDispatch, getHookTree, safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -11,12 +11,12 @@ import type { ListTreeNode } from "@my-react/react-shared";
 
 const { enableDebugLog } = __my_react_shared__;
 
-const { currentHookTreeNode, currentRenderPlatform } = __my_react_internal__;
+const { currentHookTreeNode, currentScheduler } = __my_react_internal__;
 
 export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode, isHMR?: boolean) => {
   const renderDispatch = currentRenderDispatch.current;
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
 
@@ -26,7 +26,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
 
   if (type !== currentHook?.type) {
     throw new Error(
-      renderPlatform.getHookTree(currentHookTreeNode.current.prev as ListTreeNode<MyReactHookNode>, {
+      getHookTree(currentHookTreeNode.current.prev as ListTreeNode<MyReactHookNode>, {
         lastRender: currentHook?.type,
         nextRender: type,
       })
@@ -242,7 +242,7 @@ export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams,
     currentHook.value = value;
 
     if (!Object.is(currentHook.value, currentHook.result)) {
-      currentHook.cancel = renderPlatform.yieldTask(function triggerHookUpdate() {
+      currentHook.cancel = renderScheduler.yieldTask(function triggerHookUpdate() {
         currentHook.result = currentHook.value;
 
         currentHook._update({ isForce: true });

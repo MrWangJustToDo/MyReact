@@ -6,14 +6,14 @@ import { resetLogScope, safeCall, setLogScope } from "../share";
 
 import { scheduleNext } from "./schedule";
 
-const { globalLoop, currentRenderPlatform } = __my_react_internal__;
+const { globalLoop, currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
 export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
@@ -44,7 +44,7 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
       });
   })();
 
-  renderPlatform.microTask(function callScheduleNext() {
+  renderScheduler.microTask(function callScheduleNext() {
     globalLoop.current = false;
 
     scheduleNext(renderDispatch);
@@ -54,7 +54,7 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
 export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
@@ -85,7 +85,7 @@ export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch) => {
       });
   })();
 
-  renderPlatform.microTask(function callScheduleNext() {
+  renderScheduler.microTask(function callScheduleNext() {
     globalLoop.current = false;
 
     scheduleNext(renderDispatch);
@@ -95,7 +95,7 @@ export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch) => {
 export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
@@ -104,7 +104,7 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   if (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    renderPlatform.yieldTask(function resumeUpdateConcurrentFromRoot() {
+    renderScheduler.yieldTask(function resumeUpdateConcurrentFromRoot() {
       updateConcurrentFromRoot(renderDispatch);
     });
   } else {
@@ -131,7 +131,7 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
         });
     })();
 
-    renderPlatform.microTask(function callScheduleNext() {
+    renderScheduler.microTask(function callScheduleNext() {
       // TODO! flash all effect
       globalLoop.current = false;
 
@@ -143,7 +143,7 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
 export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
@@ -152,7 +152,7 @@ export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   if (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    renderPlatform.yieldTask(function resumeUpdateConcurrentFromTrigger() {
+    renderScheduler.yieldTask(function resumeUpdateConcurrentFromTrigger() {
       updateConcurrentFromTrigger(renderDispatch);
     });
   } else {
@@ -179,7 +179,7 @@ export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch
         });
     })();
 
-    renderPlatform.microTask(function callScheduleNext() {
+    renderScheduler.microTask(function callScheduleNext() {
       // TODO! flash all effect
       globalLoop.current = false;
 

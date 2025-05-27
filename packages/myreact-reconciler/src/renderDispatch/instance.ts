@@ -2,17 +2,17 @@
 import { type createContext, type MyReactElementNode } from "@my-react/react";
 import { PATCH_TYPE, ListTree, UniqueArray, include, merge, exclude } from "@my-react/react-shared";
 
-import { defaultGetContextFiber, defaultGetContextValue } from "../dispatchContext";
+import { defaultGetContextFiber, defaultGetContextValue, defaultReadContext } from "../dispatchContext";
 import { defaultGenerateEffectMap } from "../dispatchEffect";
 import { defaultResolveErrorBoundaries } from "../dispatchErrorBoundaries";
 import { defaultDispatchFiber } from "../dispatchFiber";
 import { defaultDispatchMount } from "../dispatchMount";
 import { defaultResolveScope } from "../dispatchScope";
 import { defaultGenerateStrict } from "../dispatchStrict";
-import { defaultResolveSuspenseFiber, defaultResolveSuspenseValue } from "../dispatchSuspense";
+import { defaultReadPromise, defaultResolveSuspenseFiber, defaultResolveSuspenseValue } from "../dispatchSuspense";
 import { defaultDispatchUnmount, defaultGenerateUnmountMap } from "../dispatchUnmount";
 import { defaultDispatchUpdate } from "../dispatchUpdate";
-import { NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
+import { getFiberTree, NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
 
 import { listenerMap, RenderDispatchEvent } from "./event";
 
@@ -306,6 +306,18 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     this.runtimeFiber.nextWorkingFiber = null;
 
     this.pendingCommitFiberPatch = PATCH_TYPE.__initial__;
+  }
+
+  getFiberTree(_fiber: MyReactFiberNode): string {
+    return getFiberTree(_fiber);
+  }
+
+  readPromise(_params: Promise<unknown>): unknown {
+    return defaultReadPromise(_params);
+  }
+
+  readContext(_params: ReturnType<typeof createContext>): unknown {
+    return defaultReadContext(_params);
   }
 }
 

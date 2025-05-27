@@ -7,7 +7,7 @@ import type { UpdateQueueDev } from "../processState";
 import type { RenderHook, Action, HookUpdateQueue } from "@my-react/react";
 import type { ListTree, HOOK_TYPE } from "@my-react/react-shared";
 
-const { MyReactInternalInstance, currentRenderPlatform } = __my_react_internal__;
+const { MyReactInternalInstance, currentScheduler } = __my_react_internal__;
 
 const { enableSyncFlush } = __my_react_shared__;
 
@@ -50,9 +50,9 @@ export class MyReactHookNode extends MyReactInternalInstance implements RenderHo
       ...params,
     };
 
-    const renderPlatform = currentRenderPlatform.current;
+    const renderScheduler = currentScheduler.current;
 
-    renderPlatform?.dispatchState(updater);
+    renderScheduler?.dispatchState(updater);
   }
 }
 

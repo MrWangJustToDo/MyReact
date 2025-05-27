@@ -6,7 +6,7 @@ import { afterSyncUpdate, beforeSyncUpdate, generateFiberToMountList, resetLogSc
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
@@ -70,9 +70,9 @@ export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: 
     mountLayoutEffectList(_fiber);
     afterSyncUpdate();
 
-    const renderPlatform = currentRenderPlatform.current;
+    const renderScheduler = currentScheduler.current;
 
-    renderPlatform.microTask(function invokeEffectList() {
+    renderScheduler.microTask(function invokeEffectList() {
       __DEV__ && enableScopeTreeLog.current && setLogScope();
 
       mountEffectList(_fiber);
@@ -123,9 +123,9 @@ export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: 
 
   afterSyncUpdate();
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  renderPlatform.microTask(function invokeEffectListTask() {
+  renderScheduler.microTask(function invokeEffectListTask() {
     __DEV__ && enableScopeTreeLog.current && setLogScope();
 
     _list.listToFoot(function invokeEffectList(_fiber) {

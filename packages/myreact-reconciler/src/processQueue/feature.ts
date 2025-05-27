@@ -12,7 +12,7 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactHookNodeDev } from "../runtimeHook";
 
 const { enableDebugFiled } = __my_react_shared__;
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 export type UpdateState = {
   needUpdate: boolean;
@@ -31,7 +31,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
   if (exclude(fiber.type, NODE_TYPE.__class__)) throw new Error("[@my-react/react] current fiber is not a class component, look like a bug for @my-react");
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const allQueue = fiber.updateQueue;
 
@@ -207,7 +207,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
     }
 
     if (allQueue.length) {
-      renderPlatform.macroTask(function prepareUpdateOnFiberTask() {
+      renderScheduler.macroTask(function prepareUpdateOnFiberTask() {
         prepareUpdateOnFiber(fiber, renderDispatch, true, false);
       });
     }
@@ -422,7 +422,7 @@ export const processFunctionComponentUpdateQueue = (
     throw new Error("[@my-react/react] current fiber is not a function component, look like a bug for @my-react");
   }
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const allQueue = fiber.updateQueue;
 
@@ -649,7 +649,7 @@ export const processFunctionComponentUpdateQueue = (
     }
 
     if (allQueue.length) {
-      renderPlatform.macroTask(function prepareUpdateOnFiberTask() {
+      renderScheduler.macroTask(function prepareUpdateOnFiberTask() {
         prepareUpdateOnFiber(fiber, renderDispatch, true, false);
       });
     }

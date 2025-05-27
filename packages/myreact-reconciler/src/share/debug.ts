@@ -19,7 +19,7 @@ import type {
   lazy,
 } from "@my-react/react";
 
-const { currentRenderPlatform, currentRunningFiber, currentScopeFiber } = __my_react_internal__;
+const { currentScheduler, currentRunningFiber, currentScopeFiber } = __my_react_internal__;
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
@@ -74,7 +74,7 @@ let warnFiber: MyReactFiberNode | null = null;
 let errorFiber: MyReactFiberNode | null = null;
 
 export const devWarn = (...args) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const startWithPlain = typeof args[0] === "string" || typeof args[0] === "number" || typeof args[0] === "boolean";
 
@@ -82,7 +82,7 @@ export const devWarn = (...args) => {
 
   renderFiber && fiberWarn(renderFiber as MyReactFiberNode, ...args);
 
-  const treeLog = renderFiber ? renderPlatform.getFiberTree(renderFiber) : "";
+  const treeLog = renderFiber ? renderScheduler.getFiberTree(renderFiber) : "";
 
   if (enableFiberForLog.current && renderFiber) {
     if (startWithPlain) {
@@ -109,7 +109,7 @@ export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
 };
 
 export const devError = (...args) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const startWithPlain = typeof args[0] === "string" || typeof args[0] === "number" || typeof args[0] === "boolean";
 
@@ -117,7 +117,7 @@ export const devError = (...args) => {
 
   renderFiber && fiberError(renderFiber as MyReactFiberNode, ...args);
 
-  const treeLog = renderFiber ? renderPlatform.getFiberTree(renderFiber) : "";
+  const treeLog = renderFiber ? renderScheduler.getFiberTree(renderFiber) : "";
 
   if (enableFiberForLog.current && renderFiber) {
     if (startWithPlain) {
@@ -357,9 +357,9 @@ export const getHookTree = (
 };
 
 export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: string[]) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  const tree = renderPlatform.getFiberTree(fiber);
+  const tree = renderScheduler.getFiberTree(fiber);
 
   if (warnMap?.[tree]?.[key]) return;
 
@@ -373,9 +373,9 @@ export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ..
 };
 
 export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: string[]) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  const tree = renderPlatform.getFiberTree(fiber);
+  const tree = renderScheduler.getFiberTree(fiber);
 
   if (errorMap?.[tree]?.[key]) return;
 

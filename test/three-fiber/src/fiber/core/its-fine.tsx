@@ -56,31 +56,7 @@ export function traverseFiber<T = any>(
   }
 }
 
-// In development, React will warn about using contexts between renderers.
-// Hide the warning because its-fine fixes this issue
-// https://github.com/facebook/react/pull/12779
-function wrapContext<T>(context: React.Context<T>): React.Context<T> {
-  try {
-    return Object.defineProperties(context, {
-      _currentRenderer: {
-        get() {
-          return null;
-        },
-        set() {},
-      },
-      _currentRenderer2: {
-        get() {
-          return null;
-        },
-        set() {},
-      },
-    });
-  } catch {
-    return context;
-  }
-}
-
-const FiberContext = /* @__PURE__ */ wrapContext(/* @__PURE__ */ React.createContext<Fiber>(null!));
+const FiberContext = /* @__PURE__ */ React.createContext<Fiber>(null!);
 
 /**
  * A react-internal {@link Fiber} provider. This component binds React children to the React Fiber tree. Call its-fine hooks within this.
@@ -209,9 +185,13 @@ export function useContextMap(): ContextMap {
   let node = fiber;
   while (node) {
     const context = node.elementType;
-    if (isContext(context) && context !== FiberContext && !contextMap.has(context)) {
+    if (isContext(context)) {
       // @ts-ignore
-      contextMap.set(context, React.use(wrapContext(context)));
+      const contextProvider = context.Provider ? context : context.Context;
+      if (!contextMap.has(context) && contextProvider !== FiberContext) {
+        // @ts-ignore
+        contextMap.set(context, React.use(contextProvider));
+      }
     }
 
     node = node.return! as Fiber;
@@ -239,9 +219,11 @@ export function useContextBridge(): ContextBridge {
       Array.from(contextMap.keys()).reduce(
         (Prev, context) => (props) => {
           const Tar = context.Provider || context;
-          return <Prev>
-            <Tar {...props} value={contextMap.get(context)} />
-          </Prev>
+          return (
+            <Prev>
+              <Tar {...props} value={contextMap.get(context)} />
+            </Prev>
+          );
         },
         (props) => <FiberProvider {...props} />
       ),

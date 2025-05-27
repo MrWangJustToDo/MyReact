@@ -10,7 +10,7 @@ import { clearFiberNode } from "./clear";
 import type { MyReactFiberNode } from "./instance";
 import type { HMRUpdateQueue, MyReactComponentType } from "@my-react/react";
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, forceRefresh?: boolean) => {
   if (__DEV__) {
@@ -64,7 +64,7 @@ export function hmrRevert(this: MyReactFiberNode, cb?: () => void) {
 export function hmrUpdate(this: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) {
   if (include(this.state, STATE_TYPE.__unmount__)) return;
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const updater: HMRUpdateQueue = {
     type: UpdateQueueType.hmr,
@@ -77,5 +77,5 @@ export function hmrUpdate(this: MyReactFiberNode, state?: STATE_TYPE, cb?: () =>
     callback: cb,
   };
 
-  renderPlatform.dispatchState(updater);
+  renderScheduler.dispatchState(updater);
 }

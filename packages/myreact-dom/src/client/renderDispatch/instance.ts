@@ -1,13 +1,18 @@
 import { __my_react_internal__, __my_react_shared__, createElement } from "@my-react/react";
 import {
   CustomRenderDispatch,
+  devErrorWithFiber,
   getCurrentDispatchFromFiber,
   getCurrentDispatchFromType,
   getCurrentFibersFromType,
   hmr,
   listenerMap,
+  processHook,
+  processPromise,
+  processState,
   safeCallWithCurrentFiber,
   setRefreshHandler,
+  triggerError,
   typeToFibersMap,
   unmountFiber,
 } from "@my-react/react-reconciler";
@@ -23,13 +28,13 @@ import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, shouldPause
 import { clientDispatchFiber } from "./dispatch";
 import { clientProcessFiber } from "./process";
 
-import type { MyReactElement, MyReactElementNode, MyReactElementType } from "@my-react/react";
+import type { MyReactElement, MyReactElementNode, MyReactElementType, RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 import type { PlainElementDev } from "@my-react-dom-server/api";
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-const { currentComponentFiber } = __my_react_internal__;
+const { currentComponentFiber, currentScheduler } = __my_react_internal__;
 
 type Listeners = {
   domAppend: Set<(f: MyReactFiberNode) => void>;
@@ -234,6 +239,38 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
   patchToFiberUnmount(_fiber: MyReactFiberNode) {
     unmountElementMap(_fiber, this);
+  }
+
+  dispatchState(_params: UpdateQueue): void {
+    return processState(_params);
+  }
+
+  dispatchHook(_params: RenderHookParams): unknown {
+    return processHook(_params);
+  }
+
+  dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {
+    if (__DEV__) devErrorWithFiber(_params.fiber, _params.error);
+
+    const scheduler = currentScheduler.current;
+
+    if (_params.fiber) {
+      triggerError(_params.fiber, _params.error, function triggerErrorOnFiberCallback() {
+        scheduler.yieldTask(function dispatchErrorEvent() {
+          window.dispatchEvent(new ErrorEvent("error", { error: _params.error, message: _params.error?.message }));
+        });
+      });
+    } else {
+      scheduler.yieldTask(function dispatchErrorEvent() {
+        window.dispatchEvent(new ErrorEvent("error", { error: _params.error, message: _params.error?.message }));
+      });
+    }
+
+    return null;
+  }
+
+  dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown>; }): MyReactElementNode {
+    return processPromise(_params.fiber, _params.promise);
   }
 }
 

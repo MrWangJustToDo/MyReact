@@ -6,7 +6,7 @@ import type { ClientDomDispatch } from "./instance";
 import type { MixinMyReactFunctionComponent , lazy } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 /**
  * @internal
@@ -35,7 +35,9 @@ export const loadLazy = async (fiber: MyReactFiberNode, typedElementType: Return
   } catch (e) {
     fiberToDispatchMap.set(fiber, dispatch);
     
-    currentRenderPlatform.current.dispatchError?.({ fiber, error: e });
+    currentScheduler.current.dispatchError?.({ fiber, error: e });
+
+    fiberToDispatchMap.delete(fiber);
   } finally {
     typedElementType._loading = false;
   }

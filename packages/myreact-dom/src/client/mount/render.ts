@@ -3,19 +3,17 @@ import { checkIsSameType, CustomRenderDispatch, initialFiberNode, MyReactFiberNo
 import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
-import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { prepareDevContainer, unmountComponentAtNode } from "@my-react-dom-client/tools";
-import { autoSetDevHMR, autoSetDevTools, checkRoot, delGlobalDispatch, enableAsyncRender, startRender, wrapperFunc } from "@my-react-dom-shared";
+import { autoSetDevHMR, autoSetDevTools, checkRoot, delGlobalDispatch, enableAsyncRender, initClient, startRender, wrapperFunc } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
-import type { CustomRenderPlatform } from "@my-react/react-reconciler";
 
 export type RenderContainer = Element & {
   __fiber__: MyReactFiberNode;
   __container__: ClientDomDispatch;
 };
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __my_react_shared__;
 
@@ -55,8 +53,7 @@ export const onceLogLegacyLifeCycleMode = once(() => {
  * @internal
  */
 export const internalRender = (element: LikeJSX, container: RenderContainer, cb?: () => void) => {
-  // TODO! remove
-  prepareRenderPlatform();
+  initClient();
 
   onceLog();
 
@@ -76,9 +73,9 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
 
   const renderDispatch = new ClientDomDispatch(container, fiber, element);
 
-  const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
+  const renderScheduler = currentScheduler.current;
 
-  renderPlatform.dispatchSet.uniPush(renderDispatch);
+  renderScheduler.dispatchSet.uniPush(renderDispatch);
 
   __DEV__ && checkRoot(fiber);
 
@@ -102,7 +99,7 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
 
   renderDispatch.isClientRender = true;
 
-  autoSetDevTools(renderDispatch, renderPlatform);
+  autoSetDevTools(renderDispatch, renderScheduler);
 
   autoSetDevHMR(renderDispatch);
 
@@ -117,8 +114,6 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
 
 export const render = wrapperFunc((element: LikeJSX, _container: Partial<RenderContainer>, cb?: () => void) => {
   if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'render' can only render a '@my-react' element`);
-
-  prepareRenderPlatform();
 
   const container = _container as RenderContainer;
 

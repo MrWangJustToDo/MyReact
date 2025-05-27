@@ -1,4 +1,4 @@
-import { CustomRenderDispatch } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, processHook } from "@my-react/react-reconciler";
 
 import { append, create, update } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
@@ -7,6 +7,7 @@ import { serverDispatchFiber } from "./dispatch";
 import { serverProcessFiber } from "./process";
 import { unmount } from "./unmount";
 
+import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react/dist/types";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 /**
@@ -87,5 +88,21 @@ export class ServerDomDispatch extends CustomRenderDispatch {
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     initialElementMap(_fiber, this);
+  }
+
+  dispatchHook(_params: RenderHookParams): unknown {
+    return processHook(_params);
+  }
+
+  dispatchState(_params: UpdateQueue): void {
+    return void 0;
+  }
+
+  dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {
+    throw _params.error;
+  }
+
+  dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
+    throw new Error("Server side does not support render promise");
   }
 }

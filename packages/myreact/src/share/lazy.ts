@@ -1,6 +1,6 @@
 import { UpdateQueueType } from "@my-react/react-shared";
 
-import { currentRenderPlatform } from "./env";
+import { currentScheduler } from "./env";
 
 import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent } from "../element";
 import type { RenderFiber } from "../renderFiber";
@@ -16,7 +16,7 @@ export const lazyLoaded = (fiber: RenderFiber, loaded: null | MixinMyReactFuncti
     isSync: true,
   };
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  renderPlatform?.dispatchState(updater);
+  renderScheduler?.dispatchState(updater);
 };

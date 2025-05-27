@@ -5,6 +5,7 @@ export * from "./sync";
 export * from "./debug";
 export * from "./refresh";
 export * from "./safeCall";
+export * from "./scheduler";
 export * from "./fiberType";
 export * from "./isSameType";
 export * from "./elementType";

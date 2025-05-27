@@ -1,6 +1,7 @@
 import type { MyReactFiberNode, triggerUpdateOnFiber } from "../runtimeFiber";
+// import type { MyReactHookNode } from "../runtimeHook";
 import type { NODE_TYPE } from "../share";
-import type { createContext, MyReactElementNode, RenderPlatform } from "@my-react/react";
+import type { createContext, MyReactElementNode, RenderHookParams, UpdateQueue, Dispatcher } from "@my-react/react";
 import type { ListTree, UniqueArray } from "@my-react/react-shared";
 
 type RefKey = "typeForRef" | "typeForCreate" | "typeForUpdate" | "typeForAppend" | "typeForNativeNode";
@@ -34,7 +35,7 @@ type DefaultRenderDispatch = {
 
   rootElement: MyReactElementNode;
 
-  dispatcher: RenderPlatform["dispatcher"];
+  dispatcher: typeof Dispatcher;
 
   trigger: typeof triggerUpdateOnFiber;
 
@@ -190,6 +191,20 @@ type DefaultRenderDispatch = {
   reconcileUnmount(): void;
 
   shouldYield(): boolean;
+
+  getFiberTree(_fiber: MyReactFiberNode): string;
+
+  readPromise(_params: Promise<unknown>): unknown;
+
+  readContext(_params: ReturnType<typeof createContext>): unknown;
+
+  dispatchHook(_params: RenderHookParams): unknown;
+
+  dispatchState(_params: UpdateQueue): void;
+
+  dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode;
+
+  dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode;
 };
 
 export type RenderDispatch<T = Record<string, any>> = DefaultRenderDispatch & T;

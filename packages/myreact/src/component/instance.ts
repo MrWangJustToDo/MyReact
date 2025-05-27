@@ -1,7 +1,7 @@
 import { UpdateQueueType, isNormalEquals } from "@my-react/react-shared";
 
 import { MyReactInternalInstance } from "../internal";
-import { currentRenderPlatform, enableSyncFlush } from "../share";
+import { currentScheduler, enableSyncFlush } from "../share";
 
 import type { MyReactElementNode, createContext } from "../element";
 import type { ComponentUpdateQueue } from "../renderQueue";
@@ -94,9 +94,9 @@ export class MyReactComponent<
       isSync: enableSyncFlush.current,
     };
 
-    const renderPlatform = currentRenderPlatform.current;
+    const renderScheduler = currentScheduler.current;
 
-    renderPlatform?.dispatchState(updater);
+    renderScheduler?.dispatchState(updater);
   };
 
   forceUpdate = () => {
@@ -107,9 +107,9 @@ export class MyReactComponent<
       isSync: enableSyncFlush.current,
     };
 
-    const renderPlatform = currentRenderPlatform.current;
+    const renderScheduler = currentScheduler.current;
 
-    renderPlatform?.dispatchState(updater);
+    renderScheduler?.dispatchState(updater);
   };
 
   render(): MyReactElementNode {

@@ -3,15 +3,14 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement } from "@my-react-dom-server/api";
 import { ServerDomDispatch } from "@my-react-dom-server/renderDispatch";
-import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
-import { checkRoot, startRender, wrapperFunc } from "@my-react-dom-shared";
+import { checkRoot, initServer, startRender, wrapperFunc } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 
 export const renderToString = wrapperFunc((element: LikeJSX) => {
   // checkValidElement
   if (isValidElement(element)) {
-    prepareRenderPlatform();
+    initServer();
 
     const container = new ContainerElement();
 

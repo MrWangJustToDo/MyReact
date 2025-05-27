@@ -12,7 +12,7 @@ import type {
   ArrayMyReactElementNode,
 } from "@my-react/react";
 
-const { currentRenderPlatform, currentComponentFiber } = __my_react_internal__;
+const { currentScheduler, currentComponentFiber } = __my_react_internal__;
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
@@ -25,7 +25,7 @@ const keysMap = {};
 const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const currentFiber = currentComponentFiber.current;
 
@@ -36,7 +36,7 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
       if (!c._store?.["validKey"]) {
         if (typeof c.key === "string") {
           if (obj[c.key]) {
-            const renderTree = renderPlatform.getFiberTree(currentFiber);
+            const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : '';
 
             if (!keysMap[renderTree]) console.warn(`[@my-react/react] array child have duplicate key ${c.key}`);
 
@@ -45,7 +45,7 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
 
           obj[c.key] = true;
         } else {
-          const renderTree = renderPlatform.getFiberTree(currentFiber);
+          const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : '';
 
           if (!keysMap[renderTree]) console.warn(`[@my-react/react] each array child must have a unique key props`);
 

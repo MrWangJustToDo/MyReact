@@ -10,7 +10,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 import type { VisibleInstanceField } from "../runtimeGenerate";
 import type { LazyUpdateQueue, MixinMyReactFunctionComponent } from "@my-react/react";
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 export const processLazy = (fiber: MyReactFiberNode) => {
   const renderDispatch = currentRenderDispatch.current;
@@ -66,7 +66,9 @@ export const processLazy = (fiber: MyReactFiberNode) => {
 
           fiberToDispatchMap.set(fiber, renderDispatch);
 
-          currentRenderPlatform.current?.dispatchError({ fiber, error: reason });
+          currentScheduler.current?.dispatchError({ fiber, error: reason });
+
+          fiberToDispatchMap.delete(fiber);
         });
     } else {
       throw new Error("[@my-react/react] lazy component should be used in a suspense boundary");

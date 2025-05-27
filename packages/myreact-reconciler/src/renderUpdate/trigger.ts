@@ -14,7 +14,7 @@ import { scheduleUpdate } from "./schedule";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { ComponentUpdateQueue, MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
 
-const { globalLoop, currentRenderPlatform } = __my_react_internal__;
+const { globalLoop, currentScheduler } = __my_react_internal__;
 
 export const applyTriggerFiberCb = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
   const cbArray = renderDispatch.runtimeMap.triggerCallbackMap.get(fiber);
@@ -59,7 +59,7 @@ export const triggerRevert = (fiber: MyReactFiberNode, cb?: () => void) => {
 export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const renderDispatch = fiberToDispatchMap.get(fiber);
 
@@ -73,7 +73,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
   if (!renderDispatch.isAppMounted) {
     if (__DEV__) devWarnWithFiber(fiber, "[@my-react/react] pending, waiting for app mounted");
 
-    renderPlatform.macroTask(function scheduleUpdateBeforeMount() {
+    renderScheduler.macroTask(function scheduleUpdateBeforeMount() {
       triggerUpdate(fiber, state, cb);
     });
 
@@ -119,7 +119,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
 export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => void) => {
   const renderDispatch = fiberToDispatchMap.get(fiber);
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
 
@@ -146,7 +146,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
         isRetrigger: true,
         isImmediate: true,
         callback: function finishTriggerErrorOnFiber() {
-          typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
+          typedInstance.componentDidCatch?.(error, { componentStack: renderScheduler.getFiberTree(fiber) });
 
           renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
 
@@ -173,7 +173,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
         isRetrigger: false,
         isImmediate: false,
         callback: function finishTriggerErrorOnFiber() {
-          typedInstance.componentDidCatch?.(error, { componentStack: renderPlatform.getFiberTree(fiber) });
+          typedInstance.componentDidCatch?.(error, { componentStack: renderScheduler.getFiberTree(fiber) });
 
           renderDispatch.runtimeFiber.errorCatchFiber = errorBoundariesFiber;
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
@@ -635,6 +636,7 @@ export const reconciler = /* @__PURE__ */ createReconciler<
       case "pointerdown":
       case "pointerup":
         // return DiscreteEventPriority;
+        return 1;
       case "pointermove":
       case "pointerout":
       case "pointerover":

@@ -1,9 +1,22 @@
+
+import { Scheduler, type RenderScheduler } from "../renderScheduler";
+
 import { createReadonlyRef, createRef } from "./createRef";
 
+import type { MyReactInternalInstance } from "../internal";
 import type { RenderFiber } from "../renderFiber";
 import type { RenderHook } from "../renderHook";
-import type { RenderPlatform } from "../renderPlatform";
 import type { ListTreeNode } from "@my-react/react-shared";
+
+/**
+ * @internal
+ */
+export const fiberToDispatchMap = new Map<RenderFiber, MyReactInternalInstance>();
+
+/**
+ * @internal
+ */
+export const currentScheduler = createRef<RenderScheduler | null>(new Scheduler());
 
 /**
  * @internal
@@ -24,11 +37,6 @@ export const currentComponentFiber = createRef<RenderFiber | null>(null);
  * @internal
  */
 export const currentScopeFiber = createRef<RenderFiber | null>(null);
-
-/**
- * @internal
- */
-export const currentRenderPlatform = createRef<RenderPlatform | null>(null);
 
 /**
  * @internal

@@ -3,8 +3,7 @@ import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement } from "@my-react-dom-server/api";
 import { LatestServerStreamDispatch, type BootstrapScriptDescriptor } from "@my-react-dom-server/renderDispatch";
-import { prepareRenderPlatform } from "@my-react-dom-server/renderPlatform";
-import { checkRoot, createControlPromise, startRenderAsync, wrapperFunc } from "@my-react-dom-shared";
+import { checkRoot, createControlPromise, initServer, startRenderAsync, wrapperFunc } from "@my-react-dom-shared";
 
 type RenderToReadableStreamOptions = {
   identifierPrefix?: string;
@@ -25,7 +24,7 @@ type ReactDOMServerReadableStream = ReadableStream & {
 
 export const renderToReadableStream = wrapperFunc((element: LikeJSX, options?: RenderToReadableStreamOptions): Promise<ReactDOMServerReadableStream> => {
   if (isValidElement(element)) {
-    prepareRenderPlatform();
+    initServer();
 
     const container = new ContainerElement();
 

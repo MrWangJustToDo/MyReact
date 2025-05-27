@@ -1,6 +1,6 @@
 import { HOOK_TYPE, isPromise } from "@my-react/react-shared";
 
-import { createRef, currentRenderPlatform } from ".";
+import { createRef, currentScheduler } from ".";
 
 import type { createContext } from "../element";
 import type { Action, Reducer } from "../renderHook";
@@ -15,14 +15,14 @@ const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
  * @public
  */
 export const useStateHook = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) => T)) => void] => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useState,
     value:
       typeof initial === "function"
@@ -39,14 +39,14 @@ export const useStateHook = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t:
  * @public
  */
 export const useEffectHook = (action: () => any, deps?: any[]): void => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useEffect,
     value: action,
     reducer: defaultReducer,
@@ -58,14 +58,14 @@ export const useEffectHook = (action: () => any, deps?: any[]): void => {
  * @public
  */
 export const useLayoutEffectHook = (action: () => any, deps?: any[]): void => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useLayoutEffect,
     value: action,
     reducer: defaultReducer,
@@ -77,14 +77,14 @@ export const useLayoutEffectHook = (action: () => any, deps?: any[]): void => {
  * @public
  */
 export const useCallbackHook = <T extends (...args: any) => any = (...args: any) => any>(callback: T, deps?: any[]): T => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useCallback,
     value: callback,
     reducer: defaultReducer,
@@ -96,14 +96,14 @@ export const useCallbackHook = <T extends (...args: any) => any = (...args: any)
  * @public
  */
 export const useMemoHook = <T = any>(action: () => T, deps?: any[]): T => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useMemo,
     value: action,
     reducer: defaultReducer,
@@ -115,14 +115,14 @@ export const useMemoHook = <T = any>(action: () => T, deps?: any[]): T => {
  * @public
  */
 export const useRefHook = <T = any>(value: T): { current: T } => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useRef,
     value: createRef(value),
     reducer: defaultReducer,
@@ -134,17 +134,17 @@ export const useRefHook = <T = any>(value: T): { current: T } => {
  * @public
  */
 export const useFunc = <T = any>(Context: ReturnType<typeof createContext<T>> | Promise<T>): T => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
   if (isPromise(Context)) {
-    return renderPlatform.readPromise(Context) as T;
+    return renderScheduler.readPromise(Context) as T;
   } else {
-    return renderPlatform.readContext(Context) as T;
+    return renderScheduler.readContext(Context) as T;
   }
 };
 
@@ -152,14 +152,14 @@ export const useFunc = <T = any>(Context: ReturnType<typeof createContext<T>> | 
  * @public
  */
 export const useContextHook = <T = any>(Context: ReturnType<typeof createContext<T>>): T => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useContext,
     value: Context,
     reducer: defaultReducer,
@@ -171,14 +171,14 @@ export const useContextHook = <T = any>(Context: ReturnType<typeof createContext
  * @public
  */
 export const useReducerHook = (reducer: Reducer, initialArgs: any, init?: (...args: any) => any) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useReducer,
     value:
       typeof init === "function"
@@ -197,14 +197,14 @@ export const useReducerHook = (reducer: Reducer, initialArgs: any, init?: (...ar
  * @public
  */
 export const useImperativeHandleHook = (ref: any, createHandle: Reducer, deps: any[]) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useImperativeHandle,
     value: ref,
     reducer: createHandle,
@@ -216,14 +216,14 @@ export const useImperativeHandleHook = (ref: any, createHandle: Reducer, deps: a
  * @public
  */
 export const useDebugValueHook = (...args: any[]) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useDebugValue,
     value: args,
     reducer: defaultReducer,
@@ -235,14 +235,14 @@ export const useDebugValueHook = (...args: any[]) => {
  * @public
  */
 export const useSignalHook = <T = any>(initial: T | (() => T)) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useSignal,
     value:
       typeof initial === "function"
@@ -260,14 +260,14 @@ export const useSignalHook = <T = any>(initial: T | (() => T)) => {
  * @public
  */
 export const useDeferredValueHook = <T = any>(value: T): T => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useDeferredValue,
     value: value,
     reducer: defaultReducer,
@@ -279,14 +279,14 @@ export const useDeferredValueHook = <T = any>(value: T): T => {
  * @public
  */
 export const useIdHook = (): string => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useId,
     value: 0,
     reducer: defaultReducer,
@@ -298,14 +298,14 @@ export const useIdHook = (): string => {
  * @public
  */
 export const useInsertionEffectHook = (action: () => any, deps: any[]) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useInsertionEffect,
     value: action,
     reducer: defaultReducer,
@@ -317,14 +317,14 @@ export const useInsertionEffectHook = (action: () => any, deps: any[]) => {
  * @public
  */
 export const useSyncExternalStoreHook = (subscribe: () => any, getSnapshot: () => any, getServerSnapshot?: () => any) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useSyncExternalStore,
     value: { subscribe, getSnapshot, getServerSnapshot },
     reducer: defaultReducer,
@@ -336,14 +336,14 @@ export const useSyncExternalStoreHook = (subscribe: () => any, getSnapshot: () =
  * @public
  */
 export const useTransitionHook = (): [boolean, (cb: () => void) => void] => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  if (!renderPlatform)
+  if (!renderScheduler)
     throw new Error(
       `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
     );
 
-  return renderPlatform.dispatchHook({
+  return renderScheduler.dispatchHook({
     type: HOOK_TYPE.useTransition,
     value: null,
     reducer: defaultReducer,

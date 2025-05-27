@@ -1,25 +1,22 @@
+
 import type { createContext, MyReactElementNode } from "../element";
+import type { MyReactInternalInstance } from "../internal";
 import type { RenderFiber } from "../renderFiber";
-import type { RenderHook, RenderHookParams } from "../renderHook";
+import type { RenderHookParams } from "../renderHook";
 import type { UpdateQueue } from "../renderQueue";
-import type { Dispatcher } from "../share";
-import type { ListTreeNode } from "@my-react/react-shared";
+import type { UniqueArray } from "@my-react/react-shared";
 
 /**
  * @public
  */
-export interface DefaultRenderPlatform {
-  dispatcher: typeof Dispatcher;
+export interface DefaultRenderScheduler {
+  dispatchSet: UniqueArray<MyReactInternalInstance>;
 
   microTask(_task: () => void): void;
 
   macroTask(_task: () => void): void;
 
   yieldTask(_task: () => void): () => void;
-
-  getFiberTree(_fiber: RenderFiber): string;
-
-  getHookTree(_treeHookNode: ListTreeNode<RenderHook>, _errorType: { lastRender: RenderHook["type"]; nextRender: RenderHook["type"] }): string;
 
   dispatchHook(_params: RenderHookParams): unknown;
 
@@ -37,4 +34,4 @@ export interface DefaultRenderPlatform {
 /**
  * @public
  */
-export type RenderPlatform<T = Record<string, any>> = DefaultRenderPlatform & T;
+export type RenderScheduler<T = Record<string, any>> = DefaultRenderScheduler & T;

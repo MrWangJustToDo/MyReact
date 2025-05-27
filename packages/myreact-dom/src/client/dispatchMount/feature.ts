@@ -16,7 +16,7 @@ import { fallback } from "@my-react-dom-client/api";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
@@ -103,9 +103,9 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
     });
     afterSyncUpdate();
 
-    const renderPlatform = currentRenderPlatform.current;
+    const renderScheduler = currentScheduler.current;
 
-    renderPlatform.microTask(function invokeEffectListTask() {
+    renderScheduler.microTask(function invokeEffectListTask() {
       __DEV__ && enableScopeTreeLog.current && setLogScope();
 
       _list.listToFoot(function invokeEffectList(fiber) {

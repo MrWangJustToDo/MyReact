@@ -1,11 +1,11 @@
-import { currentRenderPlatform } from "./env";
+import { currentScheduler } from "./env";
 
 /**
  * @public
  */
 export const startTransition = (cb: () => void) => {
-  if (currentRenderPlatform.current) {
-    currentRenderPlatform.current.yieldTask(cb);
+  if (currentScheduler.current) {
+    currentScheduler.current.yieldTask(cb);
   } else {
     cb();
   }

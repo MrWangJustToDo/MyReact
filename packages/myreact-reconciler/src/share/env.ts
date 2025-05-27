@@ -1,6 +1,4 @@
-import { createRef } from "@my-react/react";
-
-import { MyWeakMap } from "./map";
+import { createRef, __my_react_internal__ } from "@my-react/react";
 
 import type { RefreshHandler } from "./refresh";
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -16,7 +14,7 @@ export const currentTriggerFiber = createRef<MyReactFiberNode | MyReactFiberNode
 
 export const currentCallingFiber = createRef<MyReactFiberNode | null>(null);
 
-export const fiberToDispatchMap = new MyWeakMap() as WeakMap<MyReactFiberNode, CustomRenderDispatch>;
+export const fiberToDispatchMap = __my_react_internal__.fiberToDispatchMap as Map<MyReactFiberNode, CustomRenderDispatch>;
 
 export const enableFiberForLog = createRef(false);
 

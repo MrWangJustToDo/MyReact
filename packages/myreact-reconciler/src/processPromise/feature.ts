@@ -5,24 +5,24 @@ import { defaultDeleteChildEffect, defaultDeleteCurrentEffect } from "../dispatc
 import { processState } from "../processState";
 import { type MyReactFiberNode } from "../runtimeFiber";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
-import { currentRenderDispatch, fiberToDispatchMap } from "../share";
+import { fiberToDispatchMap } from "../share";
 
 import type { VisibleInstanceField } from "../runtimeGenerate";
 import type { PromiseUpdateQueue } from "@my-react/react";
 
 export type PromiseWithState<T> = Promise<T> & { status?: "fulfilled" | "rejected" | "pending"; value?: T; reason?: any };
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 export const processPromise = (fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = fiberToDispatchMap.get(fiber);
 
   const visibleFiber = renderDispatch.resolveSuspenseFiber(fiber);
 
   defaultDeleteCurrentEffect(fiber, renderDispatch);
 
   if (promise.status === "rejected") {
-    currentRenderPlatform.current.dispatchError?.({ fiber, error: promise.reason });
+    currentScheduler.current.dispatchError?.({ fiber, error: promise.reason });
 
     return null;
   }
@@ -74,7 +74,9 @@ export const processPromise = (fiber: MyReactFiberNode, promise: PromiseWithStat
 
         fiberToDispatchMap.set(fiber, renderDispatch);
 
-        currentRenderPlatform.current.dispatchError?.({ fiber, error: reason });
+        currentScheduler.current.dispatchError?.({ fiber, error: reason });
+
+        fiberToDispatchMap.delete(fiber);
       });
   } else {
     throw new Error("[@my-react/react] the promise is not in a suspense tree");

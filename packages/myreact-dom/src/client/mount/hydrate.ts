@@ -2,17 +2,15 @@ import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
-import { prepareRenderPlatform } from "@my-react-dom-client/renderPlatform";
 import { prepareDevContainer, checkRehydrate, getError, clearError } from "@my-react-dom-client/tools";
-import { autoSetDevHMR, autoSetDevTools, checkRoot, enableAsyncHydrate, startRender, startRenderAsync, wrapperFunc } from "@my-react-dom-shared";
+import { autoSetDevHMR, autoSetDevTools, checkRoot, enableAsyncHydrate, initClient, startRender, startRenderAsync, wrapperFunc } from "@my-react-dom-shared";
 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogPerformanceWarn } from "./render";
 
 import type { RenderContainer } from "./render";
 import type { MyReactElement, LikeJSX } from "@my-react/react";
-import type { CustomRenderPlatform } from "@my-react/react-reconciler";
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __my_react_shared__;
 
@@ -39,9 +37,9 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
 
   const renderDispatch = new ClientDomDispatch(container, fiber, element);
 
-  const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
+  const renderScheduler = currentScheduler.current;
 
-  renderPlatform.dispatchSet.uniPush(renderDispatch);
+  renderScheduler.dispatchSet.uniPush(renderDispatch);
 
   __DEV__ && checkRoot(fiber);
 
@@ -61,7 +59,7 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
 
   renderDispatch.isHydrateRender = true;
 
-  autoSetDevTools(renderDispatch, renderPlatform);
+  autoSetDevTools(renderDispatch, renderScheduler);
 
   autoSetDevHMR(renderDispatch);
 
@@ -79,9 +77,9 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
 
   const renderDispatch = new ClientDomDispatch(container, fiber, element);
 
-  const renderPlatform = currentRenderPlatform.current as CustomRenderPlatform;
+  const renderScheduler = currentScheduler.current;
 
-  renderPlatform.dispatchSet.uniPush(renderDispatch);
+  renderScheduler.dispatchSet.uniPush(renderDispatch);
 
   __DEV__ && checkRoot(fiber);
 
@@ -101,7 +99,7 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
 
   renderDispatch.isHydrateRender = true;
 
-  autoSetDevTools(renderDispatch, renderPlatform);
+  autoSetDevTools(renderDispatch, renderScheduler);
 
   autoSetDevHMR(renderDispatch);
 
@@ -120,7 +118,7 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
 export const internalHydrate = (element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) => {
   if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'hydrate' can only render a '@my-react' element`);
 
-  prepareRenderPlatform();
+  initClient();
 
   onceLog();
 

@@ -14,7 +14,7 @@ import {
 import type { ReconcilerDispatch } from "./dispatch";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
@@ -87,9 +87,9 @@ export const defaultDispatchMount = (_fiber: MyReactFiberNode, _dispatch: Reconc
 
   afterSyncUpdate();
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
-  renderPlatform.microTask(function invokeEffectListTask() {
+  renderScheduler.microTask(function invokeEffectListTask() {
     __DEV__ && enableScopeTreeLog.current && setLogScope();
 
     _list.listToFoot(function invokeEffectList(_fiber) {

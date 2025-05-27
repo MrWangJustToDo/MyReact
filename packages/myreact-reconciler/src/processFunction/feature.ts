@@ -6,7 +6,7 @@ import { NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { forwardRef, MixinMyReactFunctionComponent, MyReactElementNode } from "@my-react/react";
 
-const { currentHookTreeNode, currentHookNodeIndex, currentRenderPlatform } = __my_react_internal__;
+const { currentHookTreeNode, currentHookNodeIndex, currentScheduler } = __my_react_internal__;
 
 export const processFunction = (fiber: MyReactFiberNode) => {
   currentHookTreeNode.current = fiber.hookList?.head;
@@ -28,7 +28,7 @@ export const processFunction = (fiber: MyReactFiberNode) => {
           re = typedElementTypeWithRef(fiber.pendingProps, fiber.ref);
         } catch (e) {
           if (isPromise(e)) {
-            re = currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
+            re = currentScheduler.current?.dispatchPromise?.({ fiber, promise: e });
           } else {
             throw e;
           }
@@ -45,7 +45,7 @@ export const processFunction = (fiber: MyReactFiberNode) => {
           re = typedElementType(fiber.pendingProps);
         } catch (e) {
           if (isPromise(e)) {
-            re = currentRenderPlatform.current?.dispatchPromise?.({ fiber, promise: e });
+            re = currentScheduler.current?.dispatchPromise?.({ fiber, promise: e });
           } else {
             throw e;
           }

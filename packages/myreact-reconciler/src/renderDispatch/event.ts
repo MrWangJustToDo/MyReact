@@ -1,5 +1,12 @@
 /* eslint-disable max-lines */
-import { __my_react_internal__, type createContext, type MyReactComponent, type MyReactElementNode, type UpdateQueue } from "@my-react/react";
+import {
+  __my_react_internal__,
+  type createContext,
+  type MyReactComponent,
+  type MyReactElementNode,
+  type UpdateQueue,
+  type RenderHookParams,
+} from "@my-react/react";
 
 import { triggerUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
 import { initInstance, initVisibleInstance } from "../runtimeGenerate";
@@ -182,6 +189,28 @@ export class RenderDispatchEvent extends MyReactInternalInstance implements Rend
       enumerable: false,
       configurable: false,
     });
+  }
+
+  getFiberTree(_fiber: MyReactFiberNode): string {
+    throw new Error("Method not implemented.");
+  }
+  readPromise(_params: Promise<unknown>): unknown {
+    throw new Error("Method not implemented.");
+  }
+  readContext(_params: ReturnType<typeof createContext>): unknown {
+    throw new Error("Method not implemented.");
+  }
+  dispatchHook(_params: RenderHookParams): unknown {
+    throw new Error("Method not implemented.");
+  }
+  dispatchState(_params: UpdateQueue): void {
+    throw new Error("Method not implemented.");
+  }
+  dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {
+    throw new Error("Method not implemented.");
+  }
+  dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
+    throw new Error("Method not implemented.");
   }
 
   trigger(_fiber: MyReactFiberNode, _state?: STATE_TYPE, cb?: () => void) {

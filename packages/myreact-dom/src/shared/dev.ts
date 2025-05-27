@@ -1,12 +1,13 @@
 import { initHMR } from "@my-react/react-reconciler";
 
-import type { CustomRenderDispatch, CustomRenderPlatform } from "@my-react/react-reconciler";
+import type { RenderScheduler } from "@my-react/react";
+import type { CustomRenderDispatch } from "@my-react/react-reconciler";
 
-type DevToolRuntime = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform, hmrRuntime: typeof initHMR) => void;
+type DevToolRuntime = (dispatch: CustomRenderDispatch, scheduler: RenderScheduler, hmrRuntime: typeof initHMR) => void;
 
 type RefreshRuntime = (dispatch: CustomRenderDispatch) => void;
 
-const pendingDevTool: Array<[dispatch: CustomRenderDispatch, platform: CustomRenderPlatform, hmrRuntime: typeof initHMR]> = [];
+const pendingDevTool: Array<[dispatch: CustomRenderDispatch, scheduler: RenderScheduler, hmrRuntime: typeof initHMR]> = [];
 
 const pendingRefresh: Array<CustomRenderDispatch> = [];
 
@@ -41,19 +42,19 @@ export const delGlobalDispatch = (dispatch: CustomRenderDispatch) => {
   }
 };
 
-export const autoSetDevTools = (dispatch: CustomRenderDispatch, platform: CustomRenderPlatform) => {
+export const autoSetDevTools = (dispatch: CustomRenderDispatch, scheduler: RenderScheduler) => {
   addGlobalDispatch(dispatch);
 
   if (typeof globalThis !== "undefined" && globalThis[DEV_TOOL_FIELD]) {
     try {
       const typedRuntimeField = globalThis[DEV_TOOL_FIELD] as DevToolRuntime;
 
-      typedRuntimeField?.(dispatch, platform, initHMR);
+      typedRuntimeField?.(dispatch, scheduler, initHMR);
     } catch {
       void 0;
     }
   } else {
-    pendingDevTool.push([dispatch, platform, initHMR]);
+    pendingDevTool.push([dispatch, scheduler, initHMR]);
   }
 };
 

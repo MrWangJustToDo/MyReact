@@ -14,10 +14,10 @@ import type { TriggerUpdateQueue } from "@my-react/react";
 
 const { enableConcurrentMode } = __my_react_shared__;
 
-const { currentRenderPlatform } = __my_react_internal__;
+const { currentScheduler } = __my_react_internal__;
 
 const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, _isImmediate: boolean, _isRetrigger: boolean) => {
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const flag = enableConcurrentMode.current;
 
@@ -62,7 +62,7 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
           updateState.callback
         );
       } else {
-        renderPlatform.microTask(function triggerSyncUpdateOnFiber() {
+        renderScheduler.microTask(function triggerSyncUpdateOnFiber() {
           triggerUpdate(
             fiber,
             updateState.isSkip ? STATE_TYPE.__skippedSync__ : updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__,
@@ -82,7 +82,7 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
           updateState.callback
         );
       } else {
-        renderPlatform.microTask(function triggerConcurrentUpdateOnFiber() {
+        renderScheduler.microTask(function triggerConcurrentUpdateOnFiber() {
           triggerUpdate(
             fiber,
             updateState.isSkip
@@ -101,12 +101,12 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
 export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, isImmediate: boolean, isRetrigger: boolean) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   if (isImmediate) {
     processUpdateOnFiber(fiber, renderDispatch, isImmediate, isRetrigger);
   } else {
-    renderPlatform.microTask(function asyncProcessUpdateOnFiber() {
+    renderScheduler.microTask(function asyncProcessUpdateOnFiber() {
       processUpdateOnFiber(fiber, renderDispatch, isImmediate, isRetrigger);
     });
   }
@@ -121,7 +121,7 @@ const SkipState = merge(STATE_TYPE.__skippedSync__, STATE_TYPE.__skippedConcurre
 export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE, callback?: () => void) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
-  const renderPlatform = currentRenderPlatform.current;
+  const renderScheduler = currentScheduler.current;
 
   const updater: TriggerUpdateQueue = {
     type: UpdateQueueType.trigger,
@@ -134,5 +134,5 @@ export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE
     callback,
   };
 
-  renderPlatform.dispatchState(updater);
+  renderScheduler.dispatchState(updater);
 };

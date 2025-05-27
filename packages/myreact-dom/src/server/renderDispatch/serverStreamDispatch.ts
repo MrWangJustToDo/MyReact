@@ -1,4 +1,4 @@
-import { CustomRenderDispatch, listenerMap, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, getFiberTree, listenerMap, processHook, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
@@ -8,6 +8,7 @@ import { generateBootstrap, generateModuleBootstrap } from "./generateBootstrap"
 import { serverProcessFiber } from "./process";
 import { unmount } from "./unmount";
 
+import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react/dist/types";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export type SimpleReadable = {
@@ -148,6 +149,23 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     initialElementMap(_fiber, this);
+  }
+
+  dispatchState(_params: UpdateQueue): void {
+    return void 0;
+  }
+
+  dispatchHook(_params: RenderHookParams): unknown {
+    return processHook(_params);
+  }
+
+  dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
+    // throw promise;
+    throw new Error("Server side does not support render promise");
+  }
+
+  dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {
+    throw _params.error;
   }
 }
 
@@ -298,5 +316,33 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     initialElementMap(_fiber, this);
+  }
+
+  dispatchState(_params: UpdateQueue): void {
+    return void 0;
+  }
+
+  dispatchHook(_params: RenderHookParams): unknown {
+    return processHook(_params);
+  }
+
+  dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
+    // throw promise;
+    throw new Error("Server side does not support render promise");
+  }
+
+  dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {
+    if (this.onError) {
+      this.onShellError?.(_params.error);
+
+      const tree = getFiberTree(_params.fiber);
+
+      this.onError(_params.error, { componentStack: tree, digest: _params.error?.message });
+
+      return null;
+    } else {
+      throw _params.error;
+    }
+
   }
 }

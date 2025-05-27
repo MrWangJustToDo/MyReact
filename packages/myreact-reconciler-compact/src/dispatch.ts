@@ -1,12 +1,22 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { CustomRenderDispatch, NODE_TYPE, safeCall, listenerMap } from "@my-react/react-reconciler";
+import {
+  CustomRenderDispatch,
+  NODE_TYPE,
+  safeCall,
+  listenerMap,
+  processState,
+  processHook,
+  devErrorWithFiber,
+  triggerError,
+  processPromise,
+} from "@my-react/react-reconciler";
 import { exclude, include, PATCH_TYPE, remove, STATE_TYPE } from "@my-react/react-shared";
 
 import { append, insertBefore, setRef, unsetRef } from "./api";
 import { getInsertBeforeNodeFromSiblingAndParent, getValidParentFiberWithNode, initialMap, unmountMap } from "./dispatchMap";
 import { defaultDispatchMount } from "./dispatchMount";
 
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { MyReactFiberRoot, MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 import type { ListTree } from "@my-react/react-shared";
 
@@ -230,6 +240,28 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
 
     patchToFiberUnmount(_fiber: MyReactFiberNode): void {
       unmountMap(_fiber, this);
+    }
+
+    dispatchState(_params: UpdateQueue): void {
+      return processState(_params);
+    }
+
+    dispatchHook(_params: RenderHookParams): unknown {
+      return processHook(_params);
+    }
+
+    dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
+      return processPromise(_params.fiber, _params.promise);
+    }
+
+    dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {
+      if (__DEV__) {
+        devErrorWithFiber(_params.fiber, _params.error);
+      }
+
+      triggerError(_params.fiber, _params.error);
+      
+      return void 0;
     }
   }
 

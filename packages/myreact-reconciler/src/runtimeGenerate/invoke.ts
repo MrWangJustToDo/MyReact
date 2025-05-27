@@ -7,7 +7,15 @@ import { processFunction } from "../processFunction";
 import { processLazy } from "../processLazy";
 import { processSuspense } from "../processSuspense";
 import { listenerMap } from "../renderDispatch";
-import { currentRenderDispatch, currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
+import {
+  currentRenderDispatch,
+  currentTriggerFiber,
+  getCurrentDispatchFromFiber,
+  NODE_TYPE,
+  onceWarnWithKeyAndFiber,
+  safeCallWithCurrentFiber,
+  setRefreshTypeMap,
+} from "../share";
 
 import { transformChildrenFiber } from "./generate";
 import { getInstanceFieldByInstance, initInstance, initVisibleInstance } from "./instance";
@@ -127,13 +135,13 @@ export const nextWorkRoot = (fiber: MyReactFiberNode) => {
 };
 
 export const runtimeNextWork = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   renderDispatch.dispatchFiber(fiber);
 };
 
 export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   safeCallWithCurrentFiber({
     fiber,

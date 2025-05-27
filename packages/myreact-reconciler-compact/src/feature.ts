@@ -15,6 +15,7 @@ import { include, STATE_TYPE } from "@my-react/react-shared";
 import { autoSetDevTools, delGlobalDispatch } from "./devtool";
 import { createDispatch } from "./dispatch";
 import { loadScript } from "./polyfill";
+import { createPortal } from "./portal";
 import { prepareScheduler } from "./scheduler";
 
 import type { ReconcilerDispatch } from "./dispatch";
@@ -133,6 +134,7 @@ export const Reconciler = (_config: any) => {
   };
 
   return {
+    createPortal,
     createContainer,
     updateContainer,
     injectIntoDevTools,

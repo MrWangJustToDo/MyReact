@@ -18,7 +18,7 @@ const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const defaultDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ReconcilerDispatch, config: any) => {
+export const ReconcilerDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ReconcilerDispatch, config: any) => {
   const _list = generateFiberToMountList(_fiber);
 
   const pendingCommitFiberArray = [];
@@ -41,11 +41,19 @@ export const defaultDispatchMount = (_fiber: MyReactFiberNode, _dispatch: Reconc
     });
   });
 
-  _list.listToFoot(function invokeAppendAndSetRefList(_fiber) {
+  _list.listToFoot(function invokeAppendList(_fiber) {
     safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallAppendAndSetRef() {
         _dispatch.commitAppend(_fiber);
+      },
+    });
+  });
+
+  _list.listToFoot(function invokeSetRefList(_fiber) {
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallUnsetRef() {
         _dispatch.commitSetRef(_fiber);
       },
     });

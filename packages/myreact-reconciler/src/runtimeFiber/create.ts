@@ -1,7 +1,7 @@
 import { PATCH_TYPE, exclude } from "@my-react/react-shared";
 
 import { listenerMap } from "../renderDispatch";
-import { currentRenderDispatch, fiberToDispatchMap, safeCallWithCurrentFiber } from "../share";
+import { currentRenderDispatch, fiberToDispatchMap, getCurrentDispatchFromFiber, safeCallWithCurrentFiber } from "../share";
 
 import { MyReactFiberNode } from "./instance";
 
@@ -17,7 +17,7 @@ export const createFiberNode = (
   },
   element: MyReactElementNode
 ) => {
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(parent);
 
   const newFiberNode = new MyReactFiberNode(element);
 

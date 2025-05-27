@@ -4,7 +4,7 @@ import { merge, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 import { processState } from "../processState";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { WrapperByLazyScope } from "../runtimeScope";
-import { currentRenderDispatch, fiberToDispatchMap } from "../share";
+import { currentRenderDispatch, fiberToDispatchMap, getCurrentDispatchFromFiber } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { VisibleInstanceField } from "../runtimeGenerate";
@@ -13,7 +13,7 @@ import type { LazyUpdateQueue, MixinMyReactFunctionComponent } from "@my-react/r
 const { currentScheduler } = __my_react_internal__;
 
 export const processLazy = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   const typedElementType = fiber.elementType as ReturnType<typeof lazy>;
 

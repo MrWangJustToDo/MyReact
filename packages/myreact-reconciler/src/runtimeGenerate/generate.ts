@@ -2,7 +2,7 @@ import { __my_react_shared__, createElement, isValidElement } from "@my-react/re
 import { Fragment, ListTree, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { createFiberNode, updateFiberNode } from "../runtimeFiber";
-import { checkIsSameType, currentRenderDispatch, NODE_TYPE } from "../share";
+import { checkIsSameType, currentRenderDispatch, getCurrentDispatchFromFiber, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactElementNode, MaybeArrayMyReactElementNode, ArrayMyReactElementChildren } from "@my-react/react";
@@ -65,7 +65,7 @@ const createFragmentWithUpdate = (newChild: ArrayMyReactElementChildren, parentF
 };
 
 const deleteIfNeed = (parentFiber: MyReactFiberNode, existingChildren: Map<string | number, ListTree<MyReactFiberNode>>) => {
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(parentFiber);
 
   if (existingChildren.size) {
     existingChildren.forEach(function forEachInvokePendingUnmountList(list) {
@@ -85,7 +85,7 @@ const getNewFiberWithUpdate = (
   prevFiberChild: MyReactFiberNode | null,
   index: number
 ): MyReactFiberNode => {
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(parentFiber);
 
   if (Array.isArray(newChild)) {
     const draftList = existingChildren.get(index);
@@ -153,7 +153,7 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
 
   const isRetrigger = include(parentFiber.state, STATE_TYPE.__retrigger__);
 
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(parentFiber);
 
   // is current is retrigger update, skip update children
   if (isRetrigger) return;

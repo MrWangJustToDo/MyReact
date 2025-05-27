@@ -14,7 +14,7 @@ import {
   setOwnerForInstance,
   unmountInstance,
 } from "../runtimeGenerate";
-import { afterSyncFlush, beforeSyncFlush, currentRenderDispatch, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber } from "../share";
+import { afterSyncFlush, beforeSyncFlush, currentRenderDispatch, getCurrentDispatchFromFiber, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
@@ -65,7 +65,7 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
 };
 
 const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   const Component = fiber.elementType;
 
@@ -113,10 +113,12 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
 const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
+
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallInstanceUpdateListener() {
-      listenerMap.get(currentRenderDispatch.current)?.instanceUpdate?.forEach((cb) => cb(typedInstance, fiber));
+      listenerMap.get(renderDispatch)?.instanceUpdate?.forEach((cb) => cb(typedInstance, fiber));
     },
   });
 
@@ -139,7 +141,7 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
 const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   const effect = getInstanceEffectState(typedInstance);
 
@@ -157,7 +159,7 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
 const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   const Component = fiber.elementType;
 
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   const typedComponent = Component as MixinMyReactClassComponent;
 
@@ -244,7 +246,7 @@ const processComponentDidUpdateOnUpdate = (
 ) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   const effect = getInstanceEffectState(typedInstance);
 

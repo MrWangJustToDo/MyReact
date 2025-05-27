@@ -1,50 +1,53 @@
-import { NODE_TYPE } from "@my-react/react-reconciler";
 import { include, PATCH_TYPE, remove } from "@my-react/react-shared";
 
+import { getValidParentFiberWithNode } from "../dispatchMap";
 
 import type { ReconcilerDispatch } from "../dispatch";
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
-export const append = (fiber: MyReactFiberNode, parentFiberWithNode: MyReactFiberNode | null, dispatch: ReconcilerDispatch, config: any) => {
-  if (!fiber) throw new Error("position error, look like a bug for @my-react");
+export const append = (_fiber: MyReactFiberNode, _dispatch: ReconcilerDispatch, _config: any) => {
+  if (!include(_fiber.patch, PATCH_TYPE.__append__)) return;
 
-  fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
+  const isRender = !_dispatch.isAppMounted;
 
-  fiber.patch = remove(fiber.patch, PATCH_TYPE.__position__);
+  const parentFiberWithNode = getValidParentFiberWithNode(_fiber, _dispatch);
 
-  if (include(fiber.type, NODE_TYPE.__portal__)) return;
+  const mayFiberContainer = parentFiberWithNode as MyReactFiberContainer;
 
-  if (include(fiber.type, NODE_TYPE.__plain__ | NODE_TYPE.__text__)) {
-    const maybeContainer = parentFiberWithNode as MyReactFiberContainer;
+  if (!_fiber.nativeNode) throw new Error(`append error, current render node not have a native node`);
 
-    const maybeFiber = parentFiberWithNode as MyReactFiberNode;
+  // const parentNode = config.getPublicInstance(parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode);
+  const parentNode = parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode;
 
-    // const parentNode = config?.getPublicInstance?.(maybeFiber?.nativeNode || maybeContainer?.containerNode);
-    const parentNode = maybeFiber?.nativeNode || maybeContainer?.containerNode;
+  // const rootNode = config.getPublicInstance(this.rootNode);
+  const rootNode = _dispatch.rootNode;
 
-    // const rootNode = config?.getPublicInstance?.(dispatch.rootNode);
-    const rootNode = dispatch.rootNode;
+  const isContainer = !parentNode || (parentNode && parentNode === mayFiberContainer?.containerNode);
 
-    // const childNode = config?.getPublicInstance?.(fiber.nativeNode);
-    const childNode = fiber.nativeNode;
+  // const currentNode = config.getPublicInstance(_fiber.nativeNode);
+  const currentNode = _fiber.nativeNode;
 
-    if (!parentNode) {
-      if (config.appendInContainer) {
-        config.appendInContainer?.(rootNode, childNode, fiber);
+  if (isRender) {
+    if (isContainer) {
+      if (_config.appendChildToContainer) {
+        _config.appendChildToContainer?.(rootNode, currentNode, _fiber);
       } else {
-        config.appendChild?.(rootNode, childNode, fiber);
+        _config.appendInitialChild?.(rootNode, currentNode, _fiber);
       }
     } else {
-      config.appendChild?.(parentNode, childNode, fiber);
+      _config.appendInitialChild?.(parentNode, currentNode, _fiber);
     }
-    return;
+  } else {
+    if (isContainer) {
+      if (_config.appendChildToContainer) {
+        _config.appendChildToContainer?.(rootNode, currentNode, _fiber);
+      } else {
+        _config.appendChild?.(rootNode, currentNode, _fiber);
+      }
+    } else {
+      _config.appendChild?.(parentNode, currentNode, _fiber);
+    }
   }
 
-  let child = fiber.child;
-
-  while (child) {
-    append(child, parentFiberWithNode, dispatch, config);
-
-    child = child.sibling;
-  }
+  _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__append__);
 };

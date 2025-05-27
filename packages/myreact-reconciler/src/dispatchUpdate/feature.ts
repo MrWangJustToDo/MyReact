@@ -49,12 +49,22 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
     }
   });
 
-  _list.listToFoot(function invokeAppendAndSetRefList(_fiber) {
+  _list.listToFoot(function invokeAppendList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallAppendAndSetRef() {
           _dispatch.commitAppend(_fiber);
+        },
+      });
+    }
+  });
+
+  _list.listToFoot(function invokeSetRefList(_fiber) {
+    if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
+      safeCallWithCurrentFiber({
+        fiber: _fiber,
+        action: function safeCallAppendAndSetRef() {
           _dispatch.commitSetRef(_fiber);
         },
       });

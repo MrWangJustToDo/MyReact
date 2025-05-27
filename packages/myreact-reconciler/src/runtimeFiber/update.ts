@@ -1,6 +1,6 @@
 import { exclude, include, isNormalEquals, merge, remove, STATE_TYPE } from "@my-react/react-shared";
 
-import { currentRenderDispatch, NODE_TYPE } from "../share";
+import { currentRenderDispatch, getCurrentDispatchFromFiber, NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactElement, MyReactElementNode, memo } from "@my-react/react";
@@ -23,7 +23,7 @@ export const updateFiberNode = (
 
   const prevRef = fiber.ref;
 
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(parent);
 
   fiber.parent = parent;
 

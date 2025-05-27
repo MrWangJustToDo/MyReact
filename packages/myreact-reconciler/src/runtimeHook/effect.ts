@@ -1,14 +1,14 @@
 import { Effect_TYPE, HOOK_TYPE, STATE_TYPE, exclude } from "@my-react/react-shared";
 
 import { getInstanceOwnerFiber, setEffectForInstance } from "../runtimeGenerate";
-import { currentRenderDispatch } from "../share";
+import { currentRenderDispatch, getCurrentDispatchFromFiber } from "../share";
 
 import type { InstanceField } from "../runtimeGenerate";
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 export const effectHookNode = (fiber: MyReactFiberNode, hookNode: MyReactHookNode, field: InstanceField) => {
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   const effect = field.effect;
 

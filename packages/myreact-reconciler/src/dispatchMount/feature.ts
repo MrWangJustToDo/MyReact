@@ -105,11 +105,19 @@ export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: 
     });
   });
 
-  _list.listToFoot(function invokeAppendAndSetRefList(_fiber) {
+  _list.listToFoot(function invokeAppendList(_fiber) {
     safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallAppendAndSetRef() {
         _dispatch.commitAppend(_fiber);
+      },
+    });
+  });
+
+  _list.listToFoot(function invokeSetRefList(_fiber) {
+    safeCallWithCurrentFiber({
+      fiber: _fiber,
+      action: function safeCallUnsetRef() {
         _dispatch.commitSetRef(_fiber);
       },
     });

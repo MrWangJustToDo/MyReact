@@ -1,18 +1,12 @@
-import { createElement } from "@my-react/react";
+import { type MyReactElementNode, createElement } from "@my-react/react";
 import { currentRenderDispatch, getCurrentDispatchFromFiber, nextWorkNormal } from "@my-react/react-reconciler";
 import { Portal } from "@my-react/react-shared";
 
-import type { MyReactElement } from "@my-react/react";
-import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
+import type { RenderContainer } from "./feature";
+import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
-const checkPortal = (element: MyReactElement) => {
-  if (!element.props["container"]) throw new Error(`[@my-react/react-dom] a portal element need a "container" props`);
-};
-
-export const createPortal = (element: MyReactElement, container: HTMLElement) => {
-  const portal = createElement(Portal, { container }, element);
-
-  if (__DEV__) checkPortal(portal);
+export const createPortal = (_element: MyReactElementNode, _container: RenderContainer) => {
+  const portal = createElement(Portal, { container: _container }, _element);
 
   return portal;
 };

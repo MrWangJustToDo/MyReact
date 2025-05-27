@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__, startTransition } from "@my
 import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
-import { currentRenderDispatch, safeCallWithCurrentFiber } from "../share";
+import { currentRenderDispatch, getCurrentDispatchFromFiber, safeCallWithCurrentFiber } from "../share";
 
 import { checkHookValid } from "./check";
 import { initHookInstance, MyReactHookNode } from "./instance";
@@ -21,7 +21,7 @@ const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
 };
 
 export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
 

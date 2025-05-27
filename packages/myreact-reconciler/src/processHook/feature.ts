@@ -4,7 +4,7 @@ import { HOOK_TYPE, ListTree, STATE_TYPE, include } from "@my-react/react-shared
 import { listenerMap } from "../renderDispatch";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { createHookNode, effectHookNode, updateHookNode } from "../runtimeHook";
-import { currentRenderDispatch, safeCall } from "../share";
+import { currentRenderDispatch, getCurrentDispatchFromFiber, safeCall } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { InstanceField } from "../runtimeGenerate";
@@ -37,7 +37,7 @@ const resolveHookValue = (hookNode: MyReactHookNode, field: InstanceField) => {
 export const processHook = ({ type, reducer, value, deps }: RenderHookParams) => {
   const fiber = currentComponentFiber.current as MyReactFiberNode;
 
-  const renderDispatch = currentRenderDispatch.current;
+  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   if (!fiber) throw new Error("[@my-react/react] can not use hook outside of component");
 

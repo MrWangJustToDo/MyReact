@@ -1,36 +1,20 @@
 /* eslint-disable import/no-unresolved */
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import reactLogo from "./assets/react.svg";
 
 import viteLogo from "/vite.svg";
 
-import "./App.css";
-import { Canvas, useFrame } from "./fiber";
+// import { Exp } from "./components/AutoDispose";
+// import { Exp } from "./components/Simple";
+// import { Exp } from "./components/ContextMenuOverride";
+import { Exp } from "./components/MultiMaterial";
+// import { Exp } from "./components/MultiRender";
+// import { Exp } from "./components/Pointcloud";
+// import { Exp } from "./components/Reparenting";
+// import { Exp } from "./components/SuspenseMaterial";
 
-function Box(props: any) {
-  // This reference gives us direct access to the THREE.Mesh object
-  const ref = useRef();
-  // Hold state for hovered and clicked events
-  const [hovered, hover] = useState(false);
-  const [clicked, click] = useState(false);
-  // Subscribe this component to the render-loop, rotate the mesh every frame
-  useFrame((state, delta) => (ref.current.rotation.x += delta));
-  // Return the view, these are regular Threejs elements expressed in JSX
-  return (
-    <mesh
-      {...props}
-      ref={ref}
-      scale={clicked ? 1.5 : 1}
-      onClick={(event) => click(!clicked)}
-      onPointerOver={(event) => (event.stopPropagation(), hover(true))}
-      onPointerOut={(event) => hover(false)}
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? "hotpink" : "orange"} />
-    </mesh>
-  );
-}
+import "./App.css";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -45,7 +29,7 @@ function App() {
           <img src={reactLogo} className="logo react" alt="React logo" />
         </a>
       </div>
-      <h1>Vite + @my-react</h1>
+      <h1>Vite + @my-react + three-fiber</h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
         <p>
@@ -53,13 +37,7 @@ function App() {
         </p>
       </div>
       <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-      <Canvas>
-        <ambientLight intensity={Math.PI / 2} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
-        <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-        <Box position={[-1.2, 0, 0]} />
-        <Box position={[1.2, 0, 0]} />
-      </Canvas>
+      <Exp />
     </>
   );
 }

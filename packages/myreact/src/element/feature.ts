@@ -1,10 +1,8 @@
 import { Consumer, Context, ForwardRef, isNormalEquals, Lazy, Memo, Provider, TYPEKEY } from "@my-react/react-shared";
 
-import { lazyLoaded } from "../share";
-
 import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "./instance";
 
-const defaultObject = { [TYPEKEY]: Context,  displayName: "" };
+const defaultObject = { [TYPEKEY]: Context, displayName: "" };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const defaultCompare = <P extends Record<string, unknown>>(oldProps: P, newProps: P) => isNormalEquals(oldProps, newProps);
@@ -138,18 +136,8 @@ export const lazy = <P extends Record<string, unknown> = any>(
     _loaded: false,
     render: null,
   };
-  return config as {
-    [TYPEKEY]: symbol;
-    loader: () => Promise<
-      { default: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> } | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>
-    >;
-    _loading: boolean;
-    _loaded: boolean;
-    render: null | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>;
-  };
+  return config as LazyType<P>;
 };
-
-lazy._updater = lazyLoaded;
 
 export type LazyType<P extends Record<string, unknown>> = {
   [TYPEKEY]: symbol;
@@ -158,5 +146,6 @@ export type LazyType<P extends Record<string, unknown>> = {
   >;
   _loading: boolean;
   _loaded: boolean;
+  _error?: unknown;
   render: null | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>;
 };

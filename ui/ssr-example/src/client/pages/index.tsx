@@ -7,7 +7,7 @@ import { NextSection } from "@client/container/Section/Next";
 import { ReconcilerSection } from "@client/container/Section/Reconciler";
 import { ViteSection } from "@client/container/Section/Vite";
 
-const ApiSection = __REACT__ && !__STREAM__ ? _ApiSection : lazy(() => import("@client/container/Section").then(({ ApiSection }) => ({ default: ApiSection })));
+const ApiSection = !__STREAM__ ? _ApiSection : lazy(() => import("@client/container/Section").then(({ ApiSection }) => ({ default: ApiSection })));
 
 const Page = () => {
   return (

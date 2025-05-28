@@ -1,5 +1,5 @@
 
-import { promiseLoad, resolveDispatcher } from "../share";
+import { resolveDispatcher } from "../share";
 
 import type { createContext } from "../element";
 import type { Reducer } from "../renderHook";
@@ -66,8 +66,6 @@ export const use = <T = any>(Context: ReturnType<typeof createContext<T>> | Prom
 
   return dispatcher.use(Context);
 };
-
-use._updater = promiseLoad;
 
 /**
  * @public

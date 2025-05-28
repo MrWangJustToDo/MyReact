@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { type createContext, type MyReactElementNode } from "@my-react/react";
+import { type createContext, type MyReactElementNode, type lazy } from "@my-react/react";
 import { PATCH_TYPE, ListTree, UniqueArray, include, merge, exclude } from "@my-react/react-shared";
 
 import { defaultGetContextFiber, defaultGetContextValue, defaultReadContext } from "../dispatchContext";
@@ -12,6 +12,8 @@ import { defaultGenerateStrict } from "../dispatchStrict";
 import { defaultReadPromise, defaultResolveSuspenseFiber, defaultResolveSuspenseValue } from "../dispatchSuspense";
 import { defaultDispatchUnmount, defaultGenerateUnmountMap } from "../dispatchUnmount";
 import { defaultDispatchUpdate } from "../dispatchUpdate";
+import { loadLazy } from "../processLazy";
+import { loadPromise, type PromiseWithState } from "../processPromise";
 import { getFiberTree, NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
 
 import { listenerMap, RenderDispatchEvent } from "./event";
@@ -33,6 +35,8 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   enableUpdate: boolean;
 
+  enableNewEntry: boolean;
+
   renderMode = "render";
 
   renderPackage?: string;
@@ -41,7 +45,7 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   pendingCommitFiberPatch: PATCH_TYPE = PATCH_TYPE.__initial__;
 
-  pendingAsyncLoadList: ListTree<MyReactFiberNode | (() => Promise<void>)> | null = null;
+  pendingAsyncLoadList: ListTree<MyReactFiberNode | Promise<any>> | null = null;
 
   pendingChangedFiberList: ListTree<MyReactFiberNode> | null = null;
 
@@ -190,7 +194,10 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     defaultDispatchFiber(this, _fiber);
   }
   processFiber(_fiber: MyReactFiberNode): Promise<void> {
-    return Promise.resolve();
+    return loadLazy(this, _fiber, _fiber.elementType as ReturnType<typeof lazy>);
+  }
+  processPromise(_promise: PromiseWithState<unknown>): Promise<void> {
+    return loadPromise(this, _promise.fiber, _promise);
   }
   commitCreate(_fiber: MyReactFiberNode): void {
     void 0;
@@ -305,7 +312,9 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
     this.runtimeFiber.nextWorkingFiber = null;
 
-    this.runtimeFiber.immediateUpdateFiber = null;
+    this.runtimeFiber.retriggerFiber = null;
+
+    this.runtimeFiber.visibleFiber = null;
 
     this.pendingCommitFiberPatch = PATCH_TYPE.__initial__;
   }

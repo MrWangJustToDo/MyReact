@@ -3,8 +3,6 @@ import { CustomRenderDispatch, getElementName } from "@my-react/react-reconciler
 import { append, create, update } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
-import { noopDispatchFiber } from "./dispatch";
-import { noopProcessFiber } from "./process";
 import { unmount } from "./unmount";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -23,7 +21,7 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
-  enableAsyncHydrate = false;
+  enableNewEntry = false;
 
   renderTime: number | null;
 
@@ -87,14 +85,6 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
     const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
     append(this, _fiber, parentFiberWithNode);
-  }
-
-  dispatchFiber(_fiber: MyReactFiberNode): void {
-    noopDispatchFiber(this, _fiber);
-  }
-
-  processFiber(_fiber: MyReactFiberNode): Promise<void> {
-    return noopProcessFiber(_fiber);
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
@@ -116,7 +106,7 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
-  enableAsyncHydrate = true;
+  enableNewEntry = true;
 
   renderTime: number | null;
 
@@ -180,14 +170,6 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
     const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
     append(this, _fiber, parentFiberWithNode);
-  }
-
-  dispatchFiber(_fiber: MyReactFiberNode): void {
-    noopDispatchFiber(this, _fiber);
-  }
-
-  processFiber(_fiber: MyReactFiberNode): Promise<void> {
-    return noopProcessFiber(_fiber);
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {

@@ -3,9 +3,7 @@ import { CustomRenderDispatch, getFiberTree, listenerMap, processHook, safeCallW
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
-import { serverDispatchFiber } from "./dispatch";
 import { generateBootstrap, generateModuleBootstrap } from "./generateBootstrap";
-import { serverProcessFiber } from "./process";
 import { unmount } from "./unmount";
 
 import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
@@ -50,7 +48,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
-  enableAsyncHydrate = false;
+  enableNewEntry = false;
 
   renderTime: number | null;
 
@@ -78,15 +76,6 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
 
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
     void 0;
-  }
-
-  dispatchFiber(_fiber: MyReactFiberNode): void {
-    serverDispatchFiber(this, _fiber);
-  }
-
-  // will never be called
-  processFiber(_fiber: MyReactFiberNode): Promise<void> {
-    return serverProcessFiber(_fiber);
   }
 
   reconcileCommit(_fiber: MyReactFiberNode): void {
@@ -192,7 +181,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
-  enableAsyncHydrate = true;
+  enableNewEntry = true;
 
   renderTime: number | null;
 
@@ -237,14 +226,6 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
 
   pendingLayoutEffect(_fiber: MyReactFiberNode, _layoutEffect: () => void): void {
     void 0;
-  }
-
-  dispatchFiber(_fiber: MyReactFiberNode): void {
-    serverDispatchFiber(this, _fiber);
-  }
-
-  processFiber(_fiber: MyReactFiberNode): Promise<void> {
-    return serverProcessFiber(_fiber);
   }
 
   reconcileCommit(_fiber: MyReactFiberNode): void {

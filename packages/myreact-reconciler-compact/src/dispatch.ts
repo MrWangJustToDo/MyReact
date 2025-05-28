@@ -36,6 +36,8 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
   class ReconcilerDispatch extends CustomRenderDispatch {
     enableUpdate = true;
 
+    enableNewEntry = true;
+
     runtimeDom = {
       hostContextMap: new WeakMap<MyReactFiberNode, any>(),
       elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),

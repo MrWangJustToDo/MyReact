@@ -4,6 +4,7 @@ import { include, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/r
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processNormalComponentUpdate } from "../processQueue";
 import { listenerMap } from "../renderDispatch";
 import { triggerUpdate } from "../renderUpdate";
+import { mountLoopAllFromScheduler } from "../runtimeMount";
 import { NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { UpdateState } from "../processQueue";
@@ -48,7 +49,14 @@ const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyRea
         renderDispatch.pendingLayoutEffect(fiber, updateState.callback, { stickyToFoot: true });
       }
 
-      renderDispatch.runtimeFiber.immediateUpdateFiber = fiber;
+      renderDispatch.runtimeFiber.retriggerFiber = fiber;
+
+      // render flow is done, here should trigger a new render flow
+      if (!renderDispatch.runtimeFiber.nextWorkingFiber) {
+        renderDispatch.runtimeFiber.nextWorkingFiber = fiber;
+
+        mountLoopAllFromScheduler(renderDispatch);
+      }
 
       return;
     }
@@ -57,7 +65,6 @@ const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyRea
       if (updateState.isImmediate) {
         triggerUpdate(
           renderDispatch,
-
           fiber,
           updateState.isSkip ? STATE_TYPE.__skippedSync__ : updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__,
           updateState.callback
@@ -66,7 +73,6 @@ const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyRea
         renderScheduler.microTask(function triggerSyncUpdateOnFiber() {
           triggerUpdate(
             renderDispatch,
-
             fiber,
             updateState.isSkip ? STATE_TYPE.__skippedSync__ : updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__,
             updateState.callback
@@ -77,7 +83,6 @@ const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyRea
       if (updateState.isImmediate) {
         triggerUpdate(
           renderDispatch,
-
           fiber,
           updateState.isSkip
             ? STATE_TYPE.__skippedConcurrent__

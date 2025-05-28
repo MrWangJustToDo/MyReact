@@ -3,8 +3,6 @@ import { CustomRenderDispatch, processHook } from "@my-react/react-reconciler";
 import { append, create, update } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
-import { serverDispatchFiber } from "./dispatch";
-import { serverProcessFiber } from "./process";
 import { unmount } from "./unmount";
 
 import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
@@ -27,7 +25,7 @@ export class ServerDomDispatch extends CustomRenderDispatch {
 
   isServerRender: boolean;
 
-  enableAsyncHydrate = false;
+  enableNewEntry: boolean;
 
   renderTime: number | null;
 
@@ -75,15 +73,6 @@ export class ServerDomDispatch extends CustomRenderDispatch {
     const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
     append(this, _fiber, parentFiberWithNode);
-  }
-
-  dispatchFiber(_fiber: MyReactFiberNode): void {
-    serverDispatchFiber(this, _fiber);
-  }
-
-  // will never be called
-  processFiber(_fiber: MyReactFiberNode): Promise<void> {
-    return serverProcessFiber(_fiber);
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {

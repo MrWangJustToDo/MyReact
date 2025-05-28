@@ -1,7 +1,13 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
-import { updateLoopConcurrentFromRoot, updateLoopConcurrentFromTrigger, updateLoopSyncFromRoot, updateLoopSyncFromTrigger } from "../runtimeUpdate";
+import {
+  processAsyncLoadListOnUpdate,
+  updateLoopConcurrentFromRoot,
+  updateLoopConcurrentFromTrigger,
+  updateLoopSyncFromRoot,
+  updateLoopSyncFromTrigger,
+} from "../runtimeUpdate";
 import { resetLogScope, safeCall, setLogScope } from "../share";
 
 import { scheduleNext } from "./schedule";
@@ -18,6 +24,8 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
   updateLoopSyncFromRoot(renderDispatch);
+
+  processAsyncLoadListOnUpdate(renderDispatch);
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
@@ -59,6 +67,8 @@ export const updateSyncFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
   updateLoopSyncFromTrigger(renderDispatch);
+
+  processAsyncLoadListOnUpdate(renderDispatch);
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
@@ -108,6 +118,8 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
       updateConcurrentFromRoot(renderDispatch);
     });
   } else {
+    processAsyncLoadListOnUpdate(renderDispatch);
+
     (function finishUpdateConcurrentFromRoot() {
       const commitList = renderDispatch.pendingCommitFiberList;
 
@@ -156,6 +168,8 @@ export const updateConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch
       updateConcurrentFromTrigger(renderDispatch);
     });
   } else {
+    processAsyncLoadListOnUpdate(renderDispatch);
+
     (function finishUpdateConcurrentFromTrigger() {
       const commitList = renderDispatch.pendingCommitFiberList;
 

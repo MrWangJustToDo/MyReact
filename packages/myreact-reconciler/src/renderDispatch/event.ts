@@ -12,6 +12,7 @@ import { triggerUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
 import { initInstance, initVisibleInstance } from "../runtimeGenerate";
 import { MyWeakMap, NODE_TYPE } from "../share";
 
+import type { PromiseWithState } from "../processPromise";
 import type { RenderDispatch } from "./interface";
 import type { UpdateState } from "../processQueue";
 import type { MyReactHookNode } from "../runtimeHook";
@@ -126,7 +127,9 @@ const getInitialFiber = (): RenderDispatch["runtimeFiber"] => ({
 
   nextWorkingFiber: null,
 
-  immediateUpdateFiber: null,
+  retriggerFiber: null,
+
+  visibleFiber: null,
 });
 
 const initialRef: RenderDispatch["runtimeRef"] = {
@@ -164,7 +167,7 @@ export class RenderDispatchEvent extends MyReactInternalInstance implements Rend
 
   isAppUnmounted: boolean;
 
-  pendingAsyncLoadList: ListTree<MyReactFiberNode | (() => Promise<void>)>;
+  pendingAsyncLoadList: ListTree<MyReactFiberNode | Promise<any>>;
 
   pendingCommitFiberList: ListTree<MyReactFiberNode>;
 
@@ -242,6 +245,10 @@ export class RenderDispatchEvent extends MyReactInternalInstance implements Rend
   dispatchFiber(_fiber: MyReactFiberNode) {}
 
   processFiber(_fiber: MyReactFiberNode): Promise<void> {
+    return Promise.resolve();
+  }
+  
+  processPromise(_promise: PromiseWithState<unknown>): Promise<void> {
     return Promise.resolve();
   }
 

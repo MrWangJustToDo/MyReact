@@ -26,7 +26,6 @@ import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount";
 import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, shouldPauseAsyncUpdate } from "@my-react-dom-shared";
 
 import { clientDispatchFiber } from "./dispatch";
-import { clientProcessFiber } from "./process";
 
 import type { MyReactElement, MyReactElementNode, MyReactElementType, RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
@@ -64,9 +63,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   hydrateTime: number | null;
 
-  enableAsyncHydrate: boolean;
-
-  enableAsyncRender: boolean;
+  enableNewEntry: boolean;
 
   constructor(
     readonly rootNode: any,
@@ -160,11 +157,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   dispatchFiber(_fiber: MyReactFiberNode): void {
     clientDispatchFiber(this, _fiber);
   }
-
-  processFiber(_fiber: MyReactFiberNode): Promise<void> {
-    return clientProcessFiber(_fiber);
-  }
-
+  
   clientCommitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(this, _fiber, !!_hydrate);
   }
@@ -314,7 +307,7 @@ if (__DEV__) {
       const rootElement = createElement(rootElementType, rootElementProps);
 
       const get = async () => {
-        if (this.enableAsyncHydrate) {
+        if (this.enableNewEntry) {
           const _re = enableScopeTreeLog.current;
 
           enableScopeTreeLog.current = false;

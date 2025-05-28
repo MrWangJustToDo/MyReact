@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
-import { mountLoopAll, processMountLoopAll } from "../runtimeMount";
+import { mountLoopAll, processAsyncLoadListOnAsyncMount, processAsyncLoadListOnSyncMount } from "../runtimeMount";
 import { resetLogScope, safeCallWithCurrentFiber, setLogScope } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -16,6 +16,8 @@ export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFi
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
   mountLoopAll(renderDispatch, fiber);
+
+  processAsyncLoadListOnSyncMount(renderDispatch);
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
@@ -57,7 +59,7 @@ export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: My
 
   mountLoopAll(renderDispatch, fiber);
 
-  await processMountLoopAll(renderDispatch, fiber);
+  await processAsyncLoadListOnAsyncMount(renderDispatch);
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 

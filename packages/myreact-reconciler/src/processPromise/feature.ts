@@ -1,24 +1,37 @@
-import { __my_react_internal__, use } from "@my-react/react";
-import { merge, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
+import { __my_react_internal__ } from "@my-react/react";
+import { ListTree } from "@my-react/react-shared";
 
-import { defaultDeleteChildEffect, defaultDeleteCurrentEffect } from "../dispatchEffect";
-import { processState } from "../processState";
+import { defaultDeleteCurrentEffect } from "../dispatchEffect";
 import { type MyReactFiberNode } from "../runtimeFiber";
-import { getInstanceFieldByInstance } from "../runtimeGenerate";
-import { fiberToDispatchMap } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { VisibleInstanceField } from "../runtimeGenerate";
-import type { PromiseUpdateQueue } from "@my-react/react";
 
-export type PromiseWithState<T> = Promise<T> & { status?: "fulfilled" | "rejected" | "pending"; value?: T; reason?: any };
+export type PromiseWithState<T> = Promise<T> & { status?: "fulfilled" | "rejected" | "pending"; value?: T; reason?: any; fiber?: MyReactFiberNode };
 
 const { currentScheduler } = __my_react_internal__;
 
-export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
-  const visibleFiber = renderDispatch.resolveSuspenseFiber(fiber);
+export const loadPromise = async (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
+  if (promise.status === "fulfilled" || promise.status === "rejected") return;
 
+  try {
+    promise.status = "pending";
+
+    const value = await promise;
+
+    promise.status = "fulfilled";
+
+    promise.value = value;
+  } catch (reason) {
+    promise.status = "rejected";
+
+    promise.reason = reason;
+  }
+};
+
+export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
   defaultDeleteCurrentEffect(renderDispatch, fiber);
+
+  promise.fiber = fiber;
 
   if (promise.status === "rejected") {
     currentScheduler.current.dispatchError?.({ fiber, error: promise.reason });
@@ -32,55 +45,24 @@ export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyRe
     }
   }
 
-  // collect all the sibling lazy component, so that we can update them all at once
+  if (!promise.status) {
+    promise.status = "pending";
 
-  if (visibleFiber) {
-    defaultDeleteChildEffect(renderDispatch, visibleFiber);
+    renderDispatch.pendingAsyncLoadList = renderDispatch.pendingAsyncLoadList || new ListTree<MyReactFiberNode | PromiseWithState<any>>();
 
-    const updateQueue: PromiseUpdateQueue = {
-      type: UpdateQueueType.promise,
-      // fiber / visibleFiber
-      trigger: visibleFiber,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      payLoad: promise,
-      isSync: true,
-      isForce: true,
-      isRetrigger: true,
-      isImmediate: true,
-    };
+    if (!renderDispatch.runtimeFiber.visibleFiber) {
+      const visibleFiber = renderDispatch.resolveSuspenseFiber(fiber);
 
-    const visibleField = getInstanceFieldByInstance(visibleFiber.instance) as VisibleInstanceField;
+      if (visibleFiber) {
+        renderDispatch.runtimeFiber.visibleFiber = visibleFiber;
 
-    visibleField.isHidden = true;
-
-    visibleFiber.state = merge(visibleFiber.state, STATE_TYPE.__create__);
-
-    processState(renderDispatch, updateQueue);
-
-    promise
-      .then((value) => {
-        promise.status = "fulfilled";
-
-        promise.value = value;
-
-        visibleField.isHidden = false;
-
-        use._updater(visibleFiber, value);
-      })
-      .catch((reason) => {
-        promise.status = "rejected";
-
-        promise.reason = reason;
-
-        fiberToDispatchMap.set(fiber, renderDispatch);
-
-        currentScheduler.current.dispatchError?.({ fiber, error: reason });
-
-        fiberToDispatchMap.delete(fiber);
-      });
-  } else {
-    throw new Error("[@my-react/react] the promise is not in a suspense tree");
+        renderDispatch.pendingAsyncLoadList.push(promise);
+      } else {
+        throw new Error("[@my-react/react] the promise is not in a suspense tree");
+      }
+    } else {
+      renderDispatch.pendingAsyncLoadList.push(promise);
+    }
   }
   return null;
 };

@@ -1,3 +1,4 @@
+import type { PromiseWithState } from "../processPromise";
 import type { MyReactFiberNode, triggerUpdateOnFiber } from "../runtimeFiber";
 // import type { MyReactHookNode } from "../runtimeHook";
 import type { NODE_TYPE } from "../share";
@@ -20,7 +21,7 @@ type RuntimeMap = {
   triggerCallbackMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 };
 
-type FiberKey = "scheduledFiber" | "errorCatchFiber" | "nextWorkingFiber" | "immediateUpdateFiber";
+type FiberKey = "scheduledFiber" | "errorCatchFiber" | "nextWorkingFiber" | "retriggerFiber" | "visibleFiber";
 
 type DefaultRenderDispatch = {
   runtimeRef: Record<RefKey, NODE_TYPE>;
@@ -45,7 +46,7 @@ type DefaultRenderDispatch = {
 
   isAppUnmounted: boolean;
 
-  pendingAsyncLoadList: ListTree<MyReactFiberNode | (() => Promise<void>)> | null;
+  pendingAsyncLoadList: ListTree<MyReactFiberNode | Promise<any>> | null;
 
   pendingCommitFiberList: ListTree<MyReactFiberNode> | null;
 
@@ -155,6 +156,8 @@ type DefaultRenderDispatch = {
   dispatchFiber(_fiber: MyReactFiberNode): void;
 
   processFiber(_fiber: MyReactFiberNode): Promise<void>;
+
+  processPromise(_promise: PromiseWithState<unknown>): Promise<void>;
 
   commitCreate(_fiber: MyReactFiberNode): void;
 

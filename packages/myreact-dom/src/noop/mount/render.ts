@@ -5,7 +5,7 @@ import { exclude } from "@my-react/react-shared";
 import { ContainerElement } from "@my-react-dom-server/api";
 import { startRender, startRenderAsync } from "@my-react-dom-shared";
 
-import { NoopLegacyRenderDispatch, NoopLatestRenderDispatch } from "../renderDispatch/noopDispatch";
+import { NoopLegacyRenderDispatch, NoopLatestRenderDispatch } from "../renderDispatch";
 
 import type { LikeJSX } from "@my-react/react";
 

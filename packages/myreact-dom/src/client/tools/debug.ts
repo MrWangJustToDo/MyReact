@@ -83,7 +83,7 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
         | LatestServerStreamDispatch;
 
       const get = async () => {
-        if (renderDispatch.enableAsyncHydrate) {
+        if (renderDispatch.enableNewEntry) {
           const _re = enableScopeTreeLog.current;
 
           enableScopeTreeLog.current = false;

@@ -1,7 +1,7 @@
 import { once } from "@my-react/react-shared";
 
 import { unmountComponentAtNode } from "@my-react-dom-client/tools";
-import { enableAsyncRender, wrapperFunc } from "@my-react-dom-shared";
+import { enableNewEntry, wrapperFunc } from "@my-react-dom-shared";
 
 import { render as originalRender } from "./render";
 
@@ -26,9 +26,9 @@ export const createRoot = wrapperFunc((container: Partial<RenderContainer>, _opt
   }
 
   const render = function createRootRender(element: LikeJSX) {
-    enableAsyncRender.current = true;
+    enableNewEntry.current = true;
     originalRender(element, container);
-    enableAsyncRender.current = false;
+    enableNewEntry.current = false;
   };
 
   const unmount = function createRootUnmount() {

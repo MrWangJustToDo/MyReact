@@ -1,21 +1,28 @@
+import { exclude, isPromise, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
+
+import { defaultDeleteChildEffect } from "../dispatchEffect";
+import { processState } from "../processState";
 import { mountToNextFiberFromRoot } from "../renderNextWork";
+import { checkIsMyReactFiberNode, triggerUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
+import { getInstanceFieldByInstance } from "../runtimeGenerate";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { MyReactFiberNode } from "../runtimeFiber";
+import type { VisibleInstanceField } from "../runtimeGenerate";
+import type { SuspenseUpdateQueue, TriggerUpdateQueue } from "@my-react/react";
 
-const mountLoopAllSync = (renderDispatch: CustomRenderDispatch) => {
+export const mountLoopAllFromScheduler = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
+    renderDispatch.runtimeFiber.retriggerFiber = null;
 
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
 
     const nextFiber = mountToNextFiberFromRoot(renderDispatch, currentFiber);
 
-    const immediateUpdateFiber = renderDispatch.runtimeFiber.immediateUpdateFiber;
+    const retriggerFiber = renderDispatch.runtimeFiber.retriggerFiber;
 
-    renderDispatch.runtimeFiber.nextWorkingFiber = immediateUpdateFiber || nextFiber;
+    renderDispatch.runtimeFiber.nextWorkingFiber = retriggerFiber || nextFiber;
 
-    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
+    renderDispatch.runtimeFiber.retriggerFiber = null;
   }
 };
 
@@ -24,10 +31,10 @@ export const mountLoopAll = (renderDispatch: CustomRenderDispatch, fiber: MyReac
 
   renderDispatch.runtimeFiber.nextWorkingFiber = fiber;
 
-  mountLoopAllSync(renderDispatch);
+  mountLoopAllFromScheduler(renderDispatch);
 };
 
-export const processMountLoopAll = async (renderDispatch: CustomRenderDispatch, _fiber: MyReactFiberNode) => {
+export const processAsyncLoadListOnAsyncMount = async (renderDispatch: CustomRenderDispatch) => {
   let loopCount = 0;
 
   while (renderDispatch.pendingAsyncLoadList?.length) {
@@ -35,12 +42,16 @@ export const processMountLoopAll = async (renderDispatch: CustomRenderDispatch, 
 
     const node = renderDispatch.pendingAsyncLoadList.shift();
 
-    if (typeof node === "object") {
+    if (checkIsMyReactFiberNode(node)) {
       await renderDispatch.processFiber(node);
 
+      node.state = remove(node.state, STATE_TYPE.__stable__);
+
+      node.state = merge(node.state, STATE_TYPE.__create__);
+
       mountLoopAll(renderDispatch, node);
-    } else {
-      await node();
+    } else if (isPromise(node)) {
+      await renderDispatch.processPromise(node);
     }
 
     const afterLength = renderDispatch.pendingAsyncLoadList.length;
@@ -50,6 +61,86 @@ export const processMountLoopAll = async (renderDispatch: CustomRenderDispatch, 
       if (loopCount > 5) {
         throw new Error("async load loop count is too much");
       }
+    }
+  }
+};
+
+export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDispatch) => {
+  if (renderDispatch.pendingAsyncLoadList?.length) {
+    const visibleFiber = renderDispatch.runtimeFiber.visibleFiber;
+
+    const asyncLoadList = renderDispatch.pendingAsyncLoadList.toArray();
+
+    renderDispatch.pendingAsyncLoadList.clear();
+
+    if (renderDispatch.enableNewEntry) {
+      Promise.all(
+        asyncLoadList.map(async (node) => {
+          if (checkIsMyReactFiberNode(node)) {
+            await renderDispatch.processFiber(node);
+
+            node.state = remove(node.state, STATE_TYPE.__stable__);
+
+            node.state = merge(node.state, STATE_TYPE.__create__);
+
+            mountLoopAll(renderDispatch, node);
+          } else if (isPromise(node)) {
+            await renderDispatch.processPromise(node);
+          }
+        })
+      ).then(() => {
+        if (visibleFiber && exclude(visibleFiber.state, STATE_TYPE.__unmount__)) {
+          const updateQueue: SuspenseUpdateQueue = {
+            type: UpdateQueueType.suspense,
+            trigger: visibleFiber,
+            payLoad: asyncLoadList,
+            isSync: true,
+            isForce: true,
+            callback: function invokeAsyncLoadListCallback() {
+              renderDispatch.runtimeFiber.visibleFiber = null;
+            },
+          };
+
+          const visibleField = getInstanceFieldByInstance(visibleFiber.instance) as VisibleInstanceField;
+
+          visibleField.isHidden = false;
+
+          processState(renderDispatch, updateQueue);
+        } else {
+          triggerUpdateOnFiber(renderDispatch.rootFiber, STATE_TYPE.__triggerSyncForce__, function invokeAsyncLoadListCallback() {
+            renderDispatch.runtimeFiber.visibleFiber = null;
+          });
+        }
+      });
+
+      if (visibleFiber) {
+        defaultDeleteChildEffect(renderDispatch, visibleFiber);
+
+        const visibleField = getInstanceFieldByInstance(visibleFiber.instance) as VisibleInstanceField;
+
+        visibleField.isHidden = true;
+
+        visibleFiber.state = merge(visibleFiber.state, STATE_TYPE.__create__);
+
+        const updateQueue: TriggerUpdateQueue = {
+          type: UpdateQueueType.trigger,
+          trigger: visibleFiber,
+          isRetrigger: true,
+          isImmediate: true,
+          isSync: true,
+          isForce: true,
+          isSkip: false,
+          callback: null,
+        };
+
+        processState(renderDispatch, updateQueue);
+      } else {
+        return null;
+      }
+    } else {
+      console.error(
+        "[@my-react/reconciler] should not process async load list on sync mount without enableNewEntry, you may use a wrong renderDispatch instance"
+      );
     }
   }
 };

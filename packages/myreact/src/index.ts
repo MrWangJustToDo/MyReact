@@ -199,10 +199,9 @@ export type {
   ComponentUpdateQueue,
   HookUpdateQueue,
   HMRUpdateQueue,
-  LazyUpdateQueue,
-  PromiseUpdateQueue,
   TriggerUpdateQueue,
   ContextUpdateQueue,
+  SuspenseUpdateQueue,
 } from "./renderQueue";
 
 export type {

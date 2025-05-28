@@ -2,7 +2,7 @@ import { mountSync, mountAsync } from "@my-react/react-reconciler";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
-import type { NoopLatestRenderDispatch, NoopLegacyRenderDispatch } from "@my-react-dom-noop/renderDispatch/noopDispatch";
+import type { NoopLatestRenderDispatch, NoopLegacyRenderDispatch } from "@my-react-dom-noop/renderDispatch/instance";
 import type { ServerDomDispatch, LegacyServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 /**

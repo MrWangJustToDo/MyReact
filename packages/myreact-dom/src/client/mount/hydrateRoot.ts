@@ -1,5 +1,5 @@
 import { unmountComponentAtNode } from "@my-react-dom-client/tools";
-import { enableAsyncHydrate, wrapperFunc } from "@my-react-dom-shared";
+import { enableNewEntry, wrapperFunc } from "@my-react-dom-shared";
 
 import { onceLogNewEntry } from "./createRoot";
 import { internalHydrate } from "./hydrate";
@@ -20,10 +20,11 @@ export const hydrateRoot = wrapperFunc((container: Partial<RenderContainer>, ele
 
   __DEV__ && onceLogNewEntry("hydrateRoot");
 
-  // TODO
-  enableAsyncHydrate.current = true;
+  enableNewEntry.current = true;
 
   internalHydrate(element, container);
+
+  enableNewEntry.current = false;
 
   return {
     render,

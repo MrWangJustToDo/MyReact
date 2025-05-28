@@ -52,7 +52,7 @@ if (window.__ENV__.isPURE_CSR) {
     loadableReady(() => createRoot(place).render(<Root store={store} />));
   } else {
     startTransition(() => {
-      loadableReady(() => (__STREAM__ || __REACT__ ? hydrateRoot(place, <Root store={store} />) : hydrate(<Root store={store} />, place)));
+      loadableReady(() => (__STREAM__ ? hydrateRoot(place, <Root store={store} />) : hydrate(<Root store={store} />, place)));
     });
   }
 }

@@ -4,7 +4,7 @@ import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareDevContainer, unmountComponentAtNode } from "@my-react-dom-client/tools";
-import { autoSetDevHMR, autoSetDevTools, checkRoot, delGlobalDispatch, enableAsyncRender, initClient, startRender, wrapperFunc } from "@my-react-dom-shared";
+import { autoSetDevHMR, autoSetDevTools, checkRoot, delGlobalDispatch, enableNewEntry, initClient, startRender, wrapperFunc } from "@my-react-dom-shared";
 
 import type { LikeJSX } from "@my-react/react";
 
@@ -93,9 +93,9 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
 
   container.__container__ = renderDispatch;
 
-  renderDispatch.enableAsyncRender = enableAsyncRender.current;
+  renderDispatch.enableNewEntry = enableNewEntry.current;
 
-  renderDispatch.renderMode = enableAsyncRender.current ? "createRoot" : "render";
+  renderDispatch.renderMode = enableNewEntry.current ? "createRoot" : "render";
 
   renderDispatch.isClientRender = true;
 

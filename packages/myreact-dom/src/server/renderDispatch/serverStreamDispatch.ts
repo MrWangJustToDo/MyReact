@@ -8,7 +8,7 @@ import { generateBootstrap, generateModuleBootstrap } from "./generateBootstrap"
 import { serverProcessFiber } from "./process";
 import { unmount } from "./unmount";
 
-import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react/dist/types";
+import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export type SimpleReadable = {
@@ -343,6 +343,5 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
     } else {
       throw _params.error;
     }
-
   }
 }

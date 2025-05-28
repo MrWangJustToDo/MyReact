@@ -11,8 +11,6 @@ import { createReconciler } from '@my-react/react-reconciler-compact';
 
 const Reconciler = createReconciler({
   // Define the reconciler configuration here
-  // For example, you can define the host config, updateQueue, etc.
-  // This is a simplified example, you can customize it as needed
 });
 
 const App = () => {

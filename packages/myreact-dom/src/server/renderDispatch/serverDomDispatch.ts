@@ -7,7 +7,7 @@ import { serverDispatchFiber } from "./dispatch";
 import { serverProcessFiber } from "./process";
 import { unmount } from "./unmount";
 
-import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react/dist/types";
+import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 /**

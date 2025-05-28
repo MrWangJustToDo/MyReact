@@ -27,6 +27,7 @@ export interface CanvasProps extends Omit<RenderProps<HTMLCanvasElement>, "size"
   eventSource?: HTMLElement | React.RefObject<HTMLElement>;
   /** The event prefix that is cast into canvas pointer x/y events, default: "offset" */
   eventPrefix?: "offset" | "client" | "page" | "layer" | "screen";
+  forwardRef?: React.Ref<HTMLCanvasElement>;
 }
 
 function CanvasImpl({
@@ -52,6 +53,7 @@ function CanvasImpl({
   scene,
   onPointerMissed,
   onCreated,
+  forwardRef,
   ...props
 }: CanvasProps) {
   // Create a known catalogue of Threejs-native elements
@@ -64,7 +66,7 @@ function CanvasImpl({
   const [containerRef, containerRect] = useMeasure({ scroll: true, debounce: { scroll: 50, resize: 0 }, ...resize });
   const canvasRef = React.useRef<HTMLCanvasElement>(null!);
   const divRef = React.useRef<HTMLDivElement>(null!);
-  React.useImperativeHandle(ref, () => canvasRef.current);
+  React.useImperativeHandle(forwardRef, () => canvasRef.current);
 
   const handlePointerMissed = useMutableCallback(onPointerMissed);
   const [block, setBlock] = React.useState<SetBlock>(false);
@@ -165,10 +167,10 @@ function CanvasImpl({
  * A DOM canvas which accepts threejs elements as children.
  * @see https://docs.pmnd.rs/react-three-fiber/api/canvas
  */
-export function Canvas(props: CanvasProps) {
+export const Canvas = React.forwardRef(function Canvas(props: CanvasProps, ref: React.Ref<HTMLCanvasElement>) {
   return (
     <FiberProvider>
-      <CanvasImpl {...props} />
+      <CanvasImpl {...props} forwardRef={ref} />
     </FiberProvider>
   );
-}
+});

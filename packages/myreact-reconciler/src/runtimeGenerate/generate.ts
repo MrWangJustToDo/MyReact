@@ -2,8 +2,9 @@ import { __my_react_shared__, createElement, isValidElement } from "@my-react/re
 import { Fragment, ListTree, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { createFiberNode, updateFiberNode } from "../runtimeFiber";
-import { checkIsSameType, currentRenderDispatch, getCurrentDispatchFromFiber, NODE_TYPE } from "../share";
+import { checkIsSameType, NODE_TYPE } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactElementNode, MaybeArrayMyReactElementNode, ArrayMyReactElementChildren } from "@my-react/react";
 
@@ -47,26 +48,36 @@ const getExistingChildren = (parentFiber: MyReactFiberNode) => {
 
 const dynamicFragmentProps = { wrap: true };
 
-const createFragmentWithInitial = (newChild: ArrayMyReactElementChildren, parentFiber: MyReactFiberNode): MyReactFiberNode => {
+const createFragmentWithInitial = (
+  renderDispatch: CustomRenderDispatch,
+  newChild: ArrayMyReactElementChildren,
+  parentFiber: MyReactFiberNode
+): MyReactFiberNode => {
   // TODO make there are not a element
   const newElement = createElement(Fragment, dynamicFragmentProps, newChild as MaybeArrayMyReactElementNode);
 
-  const newFiber = createFiberNode({ parent: parentFiber }, newElement);
+  const newFiber = createFiberNode(renderDispatch, { parent: parentFiber }, newElement);
 
   return newFiber;
 };
 
-const createFragmentWithUpdate = (newChild: ArrayMyReactElementChildren, parentFiber: MyReactFiberNode): MyReactFiberNode => {
+const createFragmentWithUpdate = (
+  renderDispatch: CustomRenderDispatch,
+  newChild: ArrayMyReactElementChildren,
+  parentFiber: MyReactFiberNode
+): MyReactFiberNode => {
   const newElement = createElement(Fragment, dynamicFragmentProps, newChild as MaybeArrayMyReactElementNode);
 
-  const newFiber = createFiberNode({ parent: parentFiber, type: "position" }, newElement);
+  const newFiber = createFiberNode(renderDispatch, { parent: parentFiber, type: "position" }, newElement);
 
   return newFiber;
 };
 
-const deleteIfNeed = (parentFiber: MyReactFiberNode, existingChildren: Map<string | number, ListTree<MyReactFiberNode>>) => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(parentFiber);
-
+const deleteIfNeed = (
+  renderDispatch: CustomRenderDispatch,
+  parentFiber: MyReactFiberNode,
+  existingChildren: Map<string | number, ListTree<MyReactFiberNode>>
+) => {
   if (existingChildren.size) {
     existingChildren.forEach(function forEachInvokePendingUnmountList(list) {
       list.listToFoot(function invokePendingUnmountList(f) {
@@ -79,14 +90,13 @@ const deleteIfNeed = (parentFiber: MyReactFiberNode, existingChildren: Map<strin
 };
 
 const getNewFiberWithUpdate = (
+  renderDispatch: CustomRenderDispatch,
   newChild: MaybeArrayMyReactElementNode,
   parentFiber: MyReactFiberNode,
   existingChildren: Map<string | number, ListTree<MyReactFiberNode>>,
   prevFiberChild: MyReactFiberNode | null,
   index: number
 ): MyReactFiberNode => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(parentFiber);
-
   if (Array.isArray(newChild)) {
     const draftList = existingChildren.get(index);
 
@@ -103,13 +113,13 @@ const getNewFiberWithUpdate = (
 
       draftFiber !== prevFiberChild && renderDispatch.generateChangedList(parentFiber);
 
-      return updateFiberNode({ fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newElement);
+      return updateFiberNode(renderDispatch, { fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newElement);
     } else {
       renderDispatch.generateChangedList(parentFiber);
 
       renderDispatch.pendingUnmount(parentFiber, draftFiber);
 
-      return createFragmentWithUpdate(newChild, parentFiber);
+      return createFragmentWithUpdate(renderDispatch, newChild, parentFiber);
     }
   }
 
@@ -128,32 +138,34 @@ const getNewFiberWithUpdate = (
   if (isSameType) {
     draftFiber !== prevFiberChild && renderDispatch.generateChangedList(parentFiber);
 
-    return updateFiberNode({ fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newChild);
+    return updateFiberNode(renderDispatch, { fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newChild);
   } else {
     draftFiber && renderDispatch.pendingUnmount(parentFiber, draftFiber);
 
     renderDispatch.generateChangedList(parentFiber);
 
-    return createFiberNode({ parent: parentFiber, type: "position" }, newChild);
+    return createFiberNode(renderDispatch, { parent: parentFiber, type: "position" }, newChild);
   }
 };
 
-const getNewFiberWithInitial = (newChild: MaybeArrayMyReactElementNode, parentFiber: MyReactFiberNode): MyReactFiberNode => {
+const getNewFiberWithInitial = (
+  renderDispatch: CustomRenderDispatch,
+  newChild: MaybeArrayMyReactElementNode,
+  parentFiber: MyReactFiberNode
+): MyReactFiberNode => {
   // wrapper array child item as a Fragment fiber node, so all of the children will be a fiber node
   // and could be add to the child list
-  if (Array.isArray(newChild)) return createFragmentWithInitial(newChild, parentFiber);
+  if (Array.isArray(newChild)) return createFragmentWithInitial(renderDispatch, newChild, parentFiber);
 
-  return createFiberNode({ parent: parentFiber }, newChild as MyReactElementNode);
+  return createFiberNode(renderDispatch, { parent: parentFiber }, newChild as MyReactElementNode);
 };
 
-export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode): void => {
+export const transformChildrenFiber = (renderDispatch: CustomRenderDispatch, parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode): void => {
   const isUpdate = exclude(parentFiber.state, STATE_TYPE.__create__);
 
   const isHMR = include(parentFiber.state, STATE_TYPE.__hmr__);
 
   const isRetrigger = include(parentFiber.state, STATE_TYPE.__retrigger__);
-
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(parentFiber);
 
   // is current is retrigger update, skip update children
   if (isRetrigger) return;
@@ -180,7 +192,7 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
       while (index < newChildren.length) {
         const newChild = newChildren[index];
 
-        const newFiber = getNewFiberWithUpdate(newChild, parentFiber, existingChildrenMap, existingChildrenArray[index] || null, index);
+        const newFiber = getNewFiberWithUpdate(renderDispatch, newChild, parentFiber, existingChildrenMap, existingChildrenArray[index] || null, index);
 
         lastFiber && (lastFiber.sibling = newFiber);
 
@@ -191,18 +203,18 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
         index++;
       }
     } else {
-      getNewFiberWithUpdate(children, parentFiber, existingChildrenMap, existingChildrenArray[0], 0);
+      getNewFiberWithUpdate(renderDispatch, children, parentFiber, existingChildrenMap, existingChildrenArray[0], 0);
 
       if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(children);
     }
 
-    deleteIfNeed(parentFiber, existingChildrenMap);
+    deleteIfNeed(renderDispatch, parentFiber, existingChildrenMap);
   } else {
     renderDispatch.generateChangedList(parentFiber);
 
     const { existingChildrenMap } = getExistingChildren(parentFiber);
 
-    deleteIfNeed(parentFiber, existingChildrenMap);
+    deleteIfNeed(renderDispatch, parentFiber, existingChildrenMap);
 
     const typedParentFiber = parentFiber as MyReactFiberNodeDev;
 
@@ -223,7 +235,7 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
       while (index < newChildren.length) {
         const newChild = newChildren[index];
 
-        const newFiber = getNewFiberWithInitial(newChild, parentFiber);
+        const newFiber = getNewFiberWithInitial(renderDispatch, newChild, parentFiber);
 
         lastFiber && (lastFiber.sibling = newFiber);
 
@@ -234,7 +246,7 @@ export const transformChildrenFiber = (parentFiber: MyReactFiberNode, children: 
         index++;
       }
     } else {
-      getNewFiberWithInitial(children, parentFiber);
+      getNewFiberWithInitial(renderDispatch, children, parentFiber);
 
       if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(children);
     }

@@ -35,9 +35,9 @@ export const renderToNodeStream = wrapperFunc((element: LikeJSX): Readable => {
 
     renderDispatch.isServerRender = true;
 
-    initialFiberNode(fiber, renderDispatch);
+    initialFiberNode(renderDispatch, fiber);
 
-    startRender(fiber, renderDispatch);
+    startRender(renderDispatch, fiber);
 
     return stream;
   } else {

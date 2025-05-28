@@ -4,7 +4,7 @@ import { exclude, include, STATE_TYPE } from "@my-react/react-shared";
 import type { ReconcilerDispatch } from "./dispatch";
 import type { MyReactFiberNode, MyReactFiberContainer, MyReactFiberRoot } from "@my-react/react-reconciler";
 
-export const initialMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch, config: any) => {
+export const initialMap = (dispatch: ReconcilerDispatch, fiber: MyReactFiberNode, config: any) => {
   let parentFiberWithNode: MyReactFiberNode | null = null;
 
   let parentFiberHostContext: any | null = null;
@@ -24,7 +24,7 @@ export const initialMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch
 
     parentFiberHostContext = dispatch.runtimeDom.hostContextMap.get(parentFiberWithNode);
 
-    if (checkFiberWithNativeNode(fiber, dispatch)) {
+    if (checkFiberWithNativeNode(dispatch, fiber)) {
       hostContext = config.getChildHostContext(parentFiberHostContext, fiber.elementType, dispatch.rootNode, fiber);
     } else {
       hostContext = parentFiberHostContext;
@@ -40,7 +40,7 @@ export const initialMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch
   dispatch.runtimeDom.hostContextMap.set(fiber, hostContext);
 };
 
-export const unmountMap = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch) => {
+export const unmountMap = (dispatch: ReconcilerDispatch, fiber: MyReactFiberNode) => {
   dispatch.runtimeDom.hostContextMap.delete(fiber);
 
   dispatch.runtimeDom.elementMap.delete(fiber);
@@ -63,7 +63,7 @@ export const getFiberWithNativeNode = (
   return null;
 };
 
-export const getValidParentFiberWithNode = (_fiber: MyReactFiberNode, _dispatch: ReconcilerDispatch) => {
+export const getValidParentFiberWithNode = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode) => {
   let parentFiberWithNode = _dispatch.runtimeDom.elementMap.get(_fiber);
 
   if (!parentFiberWithNode || include(parentFiberWithNode.state, STATE_TYPE.__unmount__)) {
@@ -113,7 +113,7 @@ export const getInsertBeforeNodeFromSiblingAndParent = (fiber: MyReactFiberNode 
   return getInsertBeforeNodeFromSiblingAndParent(fiber.parent, parentFiber) as MyReactFiberNode | null;
 };
 
-const checkFiberWithNativeNode = (fiber: MyReactFiberNode, dispatch: ReconcilerDispatch): boolean => {
+const checkFiberWithNativeNode = (dispatch: ReconcilerDispatch, fiber: MyReactFiberNode): boolean => {
   const maybeContainer = fiber as MyReactFiberContainer;
 
   const maybeRoot = fiber as MyReactFiberRoot;

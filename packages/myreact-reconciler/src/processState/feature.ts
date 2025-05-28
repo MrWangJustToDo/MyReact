@@ -5,15 +5,9 @@ import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
 import { listenerMap } from "../renderDispatch";
 import { prepareUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
-import {
-  enableLogForCurrentFlowIsRunning,
-  getCurrentDispatchFromFiber,
-  getElementName,
-  onceWarnWithKeyAndFiber,
-  safeCallWithCurrentFiber,
-  syncFlush,
-} from "../share";
+import { enableLogForCurrentFlowIsRunning, getElementName, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, syncFlush } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { MyReactComponent, MyReactInternalInstance, RenderFiber, UpdateQueue } from "@my-react/react";
 
@@ -38,7 +32,7 @@ let lastRenderComponentTimeStep: number | null = null;
 
 let renderCount = 0;
 
-export const processState = (_params: UpdateQueue) => {
+export const processState = (renderDispatch: CustomRenderDispatch, _params: UpdateQueue) => {
   if (__DEV__ && enableDebugFiled.current) {
     const typedUpdateQueue = _params as UpdateQueueDev;
 
@@ -48,8 +42,6 @@ export const processState = (_params: UpdateQueue) => {
   }
 
   const ownerFiber = getInstanceOwnerFiber(_params.trigger as MyReactInternalInstance);
-
-  const renderDispatch = getCurrentDispatchFromFiber(ownerFiber);
 
   if (!renderDispatch) return;
 
@@ -134,7 +126,7 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate, isRetrigger);
+    prepareUpdateOnFiber(renderDispatch, ownerFiber, isImmediate, isRetrigger);
   } else if (_params.type === UpdateQueueType.hook) {
     if (!ownerFiber || include(ownerFiber?.state, STATE_TYPE.__unmount__)) return;
 
@@ -192,7 +184,7 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate, isRetrigger);
+    prepareUpdateOnFiber(renderDispatch, ownerFiber, isImmediate, isRetrigger);
   } else {
     const ownerFiber = _params.trigger as MyReactFiberNode;
 
@@ -202,6 +194,6 @@ export const processState = (_params: UpdateQueue) => {
 
     ownerFiber.updateQueue.push(_params);
 
-    prepareUpdateOnFiber(ownerFiber, renderDispatch, isImmediate, isRetrigger);
+    prepareUpdateOnFiber(renderDispatch, ownerFiber, isImmediate, isRetrigger);
   }
 };

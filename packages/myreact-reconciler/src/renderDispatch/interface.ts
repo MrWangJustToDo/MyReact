@@ -20,7 +20,7 @@ type RuntimeMap = {
   triggerCallbackMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 };
 
-type FiberKey = "scheduledFiber" | "errorCatchFiber" | "nextWorkingFiber";
+type FiberKey = "scheduledFiber" | "errorCatchFiber" | "nextWorkingFiber" | "immediateUpdateFiber";
 
 type DefaultRenderDispatch = {
   runtimeRef: Record<RefKey, NODE_TYPE>;
@@ -45,9 +45,9 @@ type DefaultRenderDispatch = {
 
   isAppUnmounted: boolean;
 
-  pendingCommitFiberList: ListTree<MyReactFiberNode> | null;
+  pendingAsyncLoadList: ListTree<MyReactFiberNode | (() => Promise<void>)> | null;
 
-  pendingAsyncLoadFiberList: ListTree<MyReactFiberNode> | null;
+  pendingCommitFiberList: ListTree<MyReactFiberNode> | null;
 
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode>;
 

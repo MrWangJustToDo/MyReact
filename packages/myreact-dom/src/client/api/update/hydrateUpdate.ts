@@ -21,7 +21,7 @@ const domStyleHydrate = (fiber: MyReactFiberNode, _key: string, value: Record<st
   Object.keys(value).forEach((styleName) => hydrateStyle(fiber, node, styleName, value[styleName] as string | number | null | undefined));
 };
 
-const domEventHydrate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, key: string) => {
+const domEventHydrate = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, key: string) => {
   const node = fiber.nativeNode;
 
   addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
@@ -32,11 +32,11 @@ const domInnerHTMLHydrate = hydrateInnerHtml;
 /**
  * @internal
  */
-export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
+export const hydrateUpdate = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) => {
   const node = fiber.nativeNode as DomElement | DomNode;
 
   if (node) {
-    const parentFiberWithSVG = getValidParentFiberWithSVG(fiber, renderDispatch);
+    const parentFiberWithSVG = getValidParentFiberWithSVG(renderDispatch, fiber);
 
     const isSVG = !!parentFiberWithSVG;
 
@@ -47,7 +47,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
 
       Object.keys(props).forEach(function hydrateUpdateProps(key) {
         if (isEvent(key)) {
-          domEventHydrate(fiber, renderDispatch, key);
+          domEventHydrate(renderDispatch, fiber, key);
         } else if (isStyle(key)) {
           domStyleHydrate(fiber, key, (props[key] as Record<string, unknown>) || {});
         } else if (isProperty(key)) {
@@ -60,7 +60,7 @@ export const hydrateUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDom
       });
 
       if (enableEventSystem.current && enableControlComponent.current && controlElementTag[fiber.elementType as string]) {
-        mountControl(fiber, renderDispatch);
+        mountControl(renderDispatch, fiber);
         if (fiber.elementType === "select") {
           requestAnimationFrame(() => initSelect(fiber));
         }

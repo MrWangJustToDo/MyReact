@@ -2,6 +2,6 @@ import { nextWorkNormal, type MyReactFiberNode } from "@my-react/react-reconcile
 
 import type { ClientDomDispatch } from "./instance";
 
-export const nextWorkCommon = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
-  nextWorkNormal(_fiber);
+export const nextWorkCommon = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode) => {
+  nextWorkNormal(_dispatch, _fiber);
 };

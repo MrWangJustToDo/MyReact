@@ -2,12 +2,13 @@ import { __my_react_internal__, __my_react_shared__, startTransition } from "@my
 import { HOOK_TYPE } from "@my-react/react-shared";
 
 import { initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
-import { currentRenderDispatch, getCurrentDispatchFromFiber, safeCallWithCurrentFiber } from "../share";
+import { safeCallWithCurrentFiber } from "../share";
 
 import { checkHookValid } from "./check";
 import { initHookInstance, MyReactHookNode } from "./instance";
 import { MyReactSignal } from "./signal";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactHookNodeDev } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { Action, Reducer, RenderHookParams } from "@my-react/react";
@@ -20,8 +21,7 @@ const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;
 };
 
-export const createHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
+export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
 
   const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
 

@@ -44,23 +44,23 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
     runtimeRef = initialRef;
 
     dispatchFiber(_fiber: MyReactFiberNode): void {
-      ReconcilerDispatchFiber(_fiber);
+      ReconcilerDispatchFiber(this, _fiber);
     }
 
     commitCreate(_fiber: MyReactFiberNode): void {
-      create(_fiber, this, config);
+      create(this, _fiber, config);
     }
 
     commitUpdate(_fiber: MyReactFiberNode): void {
-      update(_fiber, this, config);
+      update(this, _fiber, config);
     }
 
     commitAppend(_fiber: MyReactFiberNode): void {
-      append(_fiber, this, config);
+      append(this, _fiber, config);
     }
 
     commitPosition(_fiber: MyReactFiberNode): void {
-      position(_fiber, this, config);
+      position(this, _fiber, config);
     }
 
     commitSetRef(_fiber: MyReactFiberNode): void {
@@ -72,7 +72,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
     }
 
     commitClear(_fiber: MyReactFiberNode): void {
-      remove(_fiber, this, config);
+      remove(this, _fiber, config);
     }
 
     reconcileCommit(_fiber: MyReactFiberNode): void {
@@ -88,7 +88,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
         listenerMap.get(instance).beforeCommit.forEach((cb) => cb());
       });
 
-      ReconcilerDispatchMount(_fiber, this, config);
+      ReconcilerDispatchMount(this, _fiber, config);
 
       safeCall(function safeCallAfterCommitListener() {
         listenerMap.get(instance).afterCommit.forEach((cb) => cb());
@@ -110,23 +110,23 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
     }
 
     patchToFiberInitial(_fiber: MyReactFiberNode): void {
-      initialMap(_fiber, this, config);
+      initialMap(this, _fiber, config);
     }
 
     patchToFiberUnmount(_fiber: MyReactFiberNode): void {
-      unmountMap(_fiber, this);
+      unmountMap(this, _fiber);
     }
 
     dispatchState(_params: UpdateQueue): void {
-      return processState(_params);
+      return processState(this, _params);
     }
 
     dispatchHook(_params: RenderHookParams): unknown {
-      return processHook(_params);
+      return processHook(this, _params);
     }
 
     dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
-      return processPromise(_params.fiber, _params.promise);
+      return processPromise(this, _params.fiber, _params.promise);
     }
 
     dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {
@@ -134,7 +134,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
         devErrorWithFiber(_params.fiber, _params.error);
       }
 
-      triggerError(_params.fiber, _params.error);
+      triggerError(this, _params.fiber, _params.error);
 
       return void 0;
     }

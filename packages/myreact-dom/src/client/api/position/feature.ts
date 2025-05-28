@@ -12,11 +12,11 @@ import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 /**
  * @internal
  */
-export const position = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
+export const position = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__position__)) {
     const rootFiber = renderDispatch.rootFiber;
 
-    const parentFiberWithNode = getValidParentFiberWithNode(fiber, renderDispatch);
+    const parentFiberWithNode = getValidParentFiberWithNode(renderDispatch, fiber);
 
     const beforeFiberWithDom = getInsertBeforeDomFromSiblingAndParent(fiber, parentFiberWithNode || rootFiber);
 

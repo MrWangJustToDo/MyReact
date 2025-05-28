@@ -100,9 +100,9 @@ export const Reconciler = (_config: any) => {
 
     autoSetDevTools(_renderDispatch);
 
-    initialFiberNode(_fiber, _renderDispatch);
+    initialFiberNode(_renderDispatch, _fiber);
 
-    mountSync(_fiber, _renderDispatch);
+    mountSync(_renderDispatch, _fiber);
 
     _renderDispatch.isAppMounted = true;
   };

@@ -46,7 +46,7 @@ export class ServerDomDispatch extends CustomRenderDispatch {
   }
 
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
-    unmount(_pendingUnmount, this);
+    unmount(this, _pendingUnmount);
   }
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
@@ -58,7 +58,7 @@ export class ServerDomDispatch extends CustomRenderDispatch {
   }
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
-    create(_fiber, this);
+    create(this, _fiber);
 
     return true;
   }
@@ -74,11 +74,11 @@ export class ServerDomDispatch extends CustomRenderDispatch {
   commitAppend(_fiber: MyReactFiberNode): void {
     const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
-    append(_fiber, parentFiberWithNode, this);
+    append(this, _fiber, parentFiberWithNode);
   }
 
   dispatchFiber(_fiber: MyReactFiberNode): void {
-    serverDispatchFiber(_fiber, this);
+    serverDispatchFiber(this, _fiber);
   }
 
   // will never be called
@@ -87,11 +87,11 @@ export class ServerDomDispatch extends CustomRenderDispatch {
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
-    initialElementMap(_fiber, this);
+    initialElementMap(this, _fiber);
   }
 
   dispatchHook(_params: RenderHookParams): unknown {
-    return processHook(_params);
+    return processHook(this, _params);
   }
 
   dispatchState(_params: UpdateQueue): void {

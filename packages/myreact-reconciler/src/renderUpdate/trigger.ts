@@ -7,16 +7,16 @@ import { syncFiberStateToComponent } from "../processQueue";
 import { processState } from "../processState";
 import { unmountContainer } from "../renderUnmount";
 import { type MyReactFiberNode } from "../runtimeFiber";
-import { NODE_TYPE, currentTriggerFiber, devErrorWithFiber, devWarnWithFiber, fiberToDispatchMap, globalError } from "../share";
+import { NODE_TYPE, currentTriggerFiber, devErrorWithFiber, devWarnWithFiber } from "../share";
 
 import { scheduleUpdate } from "./schedule";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { ComponentUpdateQueue, MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
 
-const { globalLoop, currentScheduler } = __my_react_internal__;
+const { globalLoop, currentScheduler, currentError } = __my_react_internal__;
 
-export const applyTriggerFiberCb = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const applyTriggerFiberCb = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const cbArray = renderDispatch.runtimeMap.triggerCallbackMap.get(fiber);
 
   if (include(fiber.type, NODE_TYPE.__class__)) {
@@ -36,11 +36,9 @@ export const applyTriggerFiberCb = (fiber: MyReactFiberNode, renderDispatch: Cus
  * only used for dev HMR
  * only invoke on the errorCatchFiber
  */
-export const triggerRevert = (fiber: MyReactFiberNode, cb?: () => void) => {
+export const triggerRevert = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, cb?: () => void) => {
   if (__DEV__) {
     if (!isErrorBoundariesComponent(fiber)) return;
-
-    const renderDispatch = fiberToDispatchMap.get(fiber);
 
     const instance = fiber.instance as MyReactComponent;
 
@@ -56,12 +54,10 @@ export const triggerRevert = (fiber: MyReactFiberNode, cb?: () => void) => {
   }
 };
 
-export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) => {
+export const triggerUpdate = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const renderScheduler = currentScheduler.current;
-
-  const renderDispatch = fiberToDispatchMap.get(fiber);
 
   if (!renderDispatch || !renderDispatch.enableUpdate) return;
 
@@ -74,7 +70,7 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
     if (__DEV__) devWarnWithFiber(fiber, "[@my-react/react] pending, waiting for app mounted");
 
     renderScheduler.macroTask(function scheduleUpdateBeforeMount() {
-      triggerUpdate(fiber, state, cb);
+      triggerUpdate(renderDispatch, fiber, state, cb);
     });
 
     return;
@@ -116,15 +112,13 @@ export const triggerUpdate = (fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: 
 // TODO: error flow
 // currently only work render flow
 // commit flow not work as expected
-export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => void) => {
-  const renderDispatch = fiberToDispatchMap.get(fiber);
-
+export const triggerError = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, error: Error, cb?: () => void) => {
   const renderScheduler = currentScheduler.current;
 
   const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
 
   if (errorBoundariesFiber) {
-    defaultDeleteChildEffect(fiber, renderDispatch);
+    defaultDeleteChildEffect(renderDispatch, fiber);
 
     const typedComponent = errorBoundariesFiber.elementType as MixinMyReactClassComponent;
 
@@ -152,7 +146,7 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
           cb?.();
 
-          globalError.current = null;
+          currentError.current = null;
         },
       };
 
@@ -160,9 +154,9 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
       errorBoundariesFiber.state = merge(errorBoundariesFiber.state, STATE_TYPE.__triggerSyncForce__);
 
-      processState(updateQueue);
+      processState(renderDispatch, updateQueue);
 
-      syncFiberStateToComponent(errorBoundariesFiber, renderDispatch);
+      syncFiberStateToComponent(renderDispatch, errorBoundariesFiber);
     } else {
       const updateQueue: ComponentUpdateQueue = {
         type: UpdateQueueType.component,
@@ -179,11 +173,11 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
 
           cb?.();
 
-          globalError.current = null;
+          currentError.current = null;
         },
       };
 
-      processState(updateQueue);
+      processState(renderDispatch, updateQueue);
     }
   } else {
     if (renderDispatch.isAppCrashed) return;
@@ -212,14 +206,12 @@ export const triggerError = (fiber: MyReactFiberNode, error: Error, cb?: () => v
   }
 };
 
-export const triggerUnmount = (fiber: MyReactFiberNode, cb?: () => void) => {
-  const renderDispatch = fiberToDispatchMap.get(fiber);
-
+export const triggerUnmount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, cb?: () => void) => {
   if (renderDispatch.isAppUnmounted) {
     throw new Error(`[@my-react/react] can not unmount a node when current app has been unmounted`);
   }
 
-  triggerUpdate(fiber, STATE_TYPE.__skippedSync__, function finishTriggerUnmountOnFiber() {
+  triggerUpdate(renderDispatch, fiber, STATE_TYPE.__skippedSync__, function finishTriggerUnmountOnFiber() {
     renderDispatch.reconcileUnmount();
 
     cb?.();

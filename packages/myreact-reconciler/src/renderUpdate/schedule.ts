@@ -26,7 +26,7 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
 
     if (__DEV__) currentTriggerFiber.current = allLive.length > 1 ? allLive : allLive[0];
 
-    allLive.forEach((fiber) => applyTriggerFiberCb(fiber, renderDispatch));
+    allLive.forEach((fiber) => applyTriggerFiberCb(renderDispatch, fiber));
 
     if (
       !enableConcurrentMode.current ||
@@ -61,7 +61,7 @@ const scheduleUpdateFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   }
 
   if (nextWorkFiber) {
-    applyTriggerFiberCb(nextWorkFiber, renderDispatch);
+    applyTriggerFiberCb(renderDispatch, nextWorkFiber);
 
     if (include(nextWorkFiber.state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__)) {
       renderDispatch.runtimeFiber.scheduledFiber = nextWorkFiber;

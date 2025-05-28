@@ -29,7 +29,7 @@ type PipeableStream = {
 export const renderToPipeableStream = wrapperFunc((element: LikeJSX, options?: RenderToPipeableStreamOptions): PipeableStream => {
   if (isValidElement(element)) {
     initServer();
-    
+
     const temp = [];
     (temp as any).destroy = () => {
       void 0;
@@ -67,9 +67,9 @@ export const renderToPipeableStream = wrapperFunc((element: LikeJSX, options?: R
 
     renderDispatch.isServerRender = true;
 
-    initialFiberNode(fiber, renderDispatch);
+    initialFiberNode(renderDispatch, fiber);
 
-    startRenderAsync(fiber, renderDispatch);
+    startRenderAsync(renderDispatch, fiber);
 
     return {
       pipe: stream.pipe.bind(stream),

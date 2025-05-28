@@ -28,7 +28,7 @@ export const defaultGenerateEffectMap = (
   map.set(fiber, list);
 };
 
-export const defaultInvokeEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const defaultInvokeEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__effect__)) {
     const effectMap = renderDispatch.runtimeMap.effectMap;
 
@@ -51,7 +51,7 @@ export const defaultInvokeEffect = (fiber: MyReactFiberNode, renderDispatch: Cus
   }
 };
 
-export const defaultInvokeLayoutEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const defaultInvokeLayoutEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__layoutEffect__)) {
     const layoutEffectMap = renderDispatch.runtimeMap.layoutEffectMap;
 
@@ -74,7 +74,7 @@ export const defaultInvokeLayoutEffect = (fiber: MyReactFiberNode, renderDispatc
   }
 };
 
-export const defaultInvokeInsertionEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const defaultInvokeInsertionEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__insertionEffect__)) {
     const insertionEffectMap = renderDispatch.runtimeMap.insertionEffectMap;
 
@@ -97,7 +97,7 @@ export const defaultInvokeInsertionEffect = (fiber: MyReactFiberNode, renderDisp
   }
 };
 
-export const defaultDeleteCurrentEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const defaultDeleteCurrentEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__insertionEffect__)) {
     const insertionEffectMap = renderDispatch.runtimeMap.insertionEffectMap;
 
@@ -123,17 +123,17 @@ export const defaultDeleteCurrentEffect = (fiber: MyReactFiberNode, renderDispat
   }
 };
 
-export const defaultDeleteChildEffect = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const defaultDeleteChildEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   let child = fiber.child;
 
-  while(child) {
-    defaultDeleteCurrentEffect(child, renderDispatch);
+  while (child) {
+    defaultDeleteCurrentEffect(renderDispatch, child);
 
-    defaultDeleteChildEffect(child, renderDispatch);
+    defaultDeleteChildEffect(renderDispatch, child);
 
     child = child.sibling;
   }
-}
+};
 
 export const effect = defaultInvokeEffect;
 

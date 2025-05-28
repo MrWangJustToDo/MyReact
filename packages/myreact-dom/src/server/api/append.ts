@@ -6,7 +6,7 @@ import type { CustomRenderDispatch, MyReactFiberContainer, MyReactFiberNode } fr
 /**
  * @internal
  */
-export const append = (fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const append = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, parentFiberWithDom: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__append__)) {
     const mayFiberContainer = parentFiberWithDom as MyReactFiberContainer;
 

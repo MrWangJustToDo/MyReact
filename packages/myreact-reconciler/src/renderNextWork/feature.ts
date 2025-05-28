@@ -3,14 +3,14 @@ import { STATE_TYPE, include, remove } from "@my-react/react-shared";
 
 import { runtimeNextWork, runtimeNextWorkDev } from "../runtimeGenerate";
 import { triggerFiberUpdateListener } from "../runtimeUpdate";
-import { currentRenderDispatch, devErrorWithFiber } from "../share";
+import { devErrorWithFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { currentRunningFiber } = __my_react_internal__;
 
-export const mountToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const mountToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
@@ -32,19 +32,15 @@ export const mountToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispatch
   ) {
     fiber.state = remove(fiber.state, STATE_TYPE.__retrigger__);
 
-    currentRenderDispatch.current = renderDispatch;
-
     currentRunningFiber.current = fiber;
 
     if (__DEV__) {
-      runtimeNextWorkDev(fiber);
+      runtimeNextWorkDev(renderDispatch, fiber);
     } else {
-      runtimeNextWork(fiber);
+      runtimeNextWork(renderDispatch, fiber);
     }
 
     currentRunningFiber.current = null;
-
-    currentRenderDispatch.current = null;
   }
 
   if (!include(fiber.state, STATE_TYPE.__retrigger__)) {
@@ -70,7 +66,7 @@ export const mountToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispatch
   return null;
 };
 
-export const performToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const performToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
@@ -92,19 +88,15 @@ export const performToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispat
   ) {
     fiber.state = remove(fiber.state, STATE_TYPE.__retrigger__);
 
-    currentRenderDispatch.current = renderDispatch;
-
     currentRunningFiber.current = fiber;
 
     if (__DEV__) {
-      runtimeNextWorkDev(fiber);
+      runtimeNextWorkDev(renderDispatch, fiber);
     } else {
-      runtimeNextWork(fiber);
+      runtimeNextWork(renderDispatch, fiber);
     }
 
     currentRunningFiber.current = null;
-
-    currentRenderDispatch.current = null;
 
     triggerFiberUpdateListener(renderDispatch, fiber);
   }
@@ -132,7 +124,7 @@ export const performToNextFiberFromRoot = (fiber: MyReactFiberNode, renderDispat
   return null;
 };
 
-export const performToNextFiberFromTrigger = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const performToNextFiberFromTrigger = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
@@ -154,19 +146,15 @@ export const performToNextFiberFromTrigger = (fiber: MyReactFiberNode, renderDis
   ) {
     fiber.state = remove(fiber.state, STATE_TYPE.__retrigger__);
 
-    currentRenderDispatch.current = renderDispatch;
-
     currentRunningFiber.current = fiber;
 
     if (__DEV__) {
-      runtimeNextWorkDev(fiber);
+      runtimeNextWorkDev(renderDispatch, fiber);
     } else {
-      runtimeNextWork(fiber);
+      runtimeNextWork(renderDispatch, fiber);
     }
 
     currentRunningFiber.current = null;
-
-    currentRenderDispatch.current = null;
 
     triggerFiberUpdateListener(renderDispatch, fiber);
 

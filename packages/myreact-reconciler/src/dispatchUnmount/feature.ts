@@ -19,12 +19,12 @@ export const defaultDispatchUnmount = (renderDispatch: CustomRenderDispatch) => 
 
   const rootFiber = renderDispatch.rootFiber;
 
-  unmountFiber(rootFiber);
+  unmountFiber(renderDispatch, rootFiber);
 
   clearContainer(renderDispatch);
 };
 
-export const defaultInvokeUnmountList = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const defaultInvokeUnmountList = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__unmount__)) {
     const unmountMap = renderDispatch.runtimeMap.unmountMap;
 
@@ -36,7 +36,7 @@ export const defaultInvokeUnmountList = (fiber: MyReactFiberNode, renderDispatch
       safeCallWithCurrentFiber({
         fiber,
         action: function safeCallUnmountList() {
-          unmountList(allUnmount, renderDispatch);
+          unmountList(renderDispatch, allUnmount);
         },
       });
 

@@ -63,9 +63,9 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
 
   autoSetDevHMR(renderDispatch);
 
-  initialFiberNode(fiber, renderDispatch);
+  initialFiberNode(renderDispatch, fiber);
 
-  startRender(fiber, renderDispatch, true);
+  startRender(renderDispatch, fiber, true);
 
   throwHydrateError(renderDispatch);
 
@@ -103,9 +103,9 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
 
   autoSetDevHMR(renderDispatch);
 
-  initialFiberNode(fiber, renderDispatch);
+  initialFiberNode(renderDispatch, fiber);
 
-  await startRenderAsync(fiber, renderDispatch, true);
+  await startRenderAsync(renderDispatch, fiber, true);
 
   throwHydrateError(renderDispatch);
 

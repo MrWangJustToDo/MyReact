@@ -13,14 +13,14 @@ const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispatch: CustomRenderDispatch) => {
+export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: ListTree<MyReactFiberNode>) => {
   // TODO maybe need call `insertionEffect` in another function
   beforeSyncUpdate();
 
   _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
-      defaultInvokeUnmountList(_fiber, _dispatch);
-      insertionEffect(_fiber, _dispatch);
+      defaultInvokeUnmountList(_dispatch, _fiber);
+      insertionEffect(_dispatch, _fiber);
     }
   });
 
@@ -75,7 +75,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
   _list.listToFoot(function invokeLayoutEffectList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
-      layoutEffect(_fiber, _dispatch);
+      layoutEffect(_dispatch, _fiber);
     }
   });
 
@@ -89,7 +89,7 @@ export const defaultDispatchUpdate = (_list: ListTree<MyReactFiberNode>, _dispat
 
     _list.listToFoot(function invokeEffectList(_fiber) {
       if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
-        effect(_fiber, _dispatch);
+        effect(_dispatch, _fiber);
       }
     });
 

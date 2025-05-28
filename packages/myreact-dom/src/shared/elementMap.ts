@@ -10,7 +10,7 @@ import type { ServerDomDispatch, LegacyServerStreamDispatch } from "@my-react-do
  * @internal
  * TODO
  */
-export const initialElementMap = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch) => {
+export const initialElementMap = (_dispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch, _fiber: MyReactFiberNode) => {
   let parentFiberWithNode: MyReactFiberNode | null = null;
 
   let parentFiberWithSVG: MyReactFiberNode | null = null;
@@ -43,7 +43,7 @@ export const initialElementMap = (_fiber: MyReactFiberNode, _dispatch: ClientDom
 /**
  * @internal
  */
-export const unmountElementMap = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
+export const unmountElementMap = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode) => {
   _dispatch.runtimeDom.svgMap.delete(_fiber);
   _dispatch.runtimeDom.elementMap.delete(_fiber);
 };
@@ -51,7 +51,7 @@ export const unmountElementMap = (_fiber: MyReactFiberNode, _dispatch: ClientDom
 /**
  * @internal
  */
-export const getValidParentFiberWithNode = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
+export const getValidParentFiberWithNode = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode) => {
   let parentFiberWithNode = _dispatch.runtimeDom.elementMap.get(_fiber);
 
   if (!parentFiberWithNode || include(parentFiberWithNode.state, STATE_TYPE.__unmount__)) {
@@ -66,7 +66,7 @@ export const getValidParentFiberWithNode = (_fiber: MyReactFiberNode, _dispatch:
 /**
  * @internal
  */
-export const getValidParentFiberWithSVG = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
+export const getValidParentFiberWithSVG = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode) => {
   let parentFiberWithSVG = _dispatch.runtimeDom.svgMap.get(_fiber);
 
   if (!parentFiberWithSVG || include(parentFiberWithSVG.state, STATE_TYPE.__unmount__)) {

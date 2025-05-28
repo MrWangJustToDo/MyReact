@@ -4,7 +4,6 @@ import { include, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/r
 import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processNormalComponentUpdate } from "../processQueue";
 import { listenerMap } from "../renderDispatch";
 import { triggerUpdate } from "../renderUpdate";
-import { setImmediateNextFiber } from "../runtimeUpdate";
 import { NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { UpdateState } from "../processQueue";
@@ -16,7 +15,7 @@ const { enableConcurrentMode } = __my_react_shared__;
 
 const { currentScheduler } = __my_react_internal__;
 
-const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, _isImmediate: boolean, _isRetrigger: boolean) => {
+const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, _isImmediate: boolean, _isRetrigger: boolean) => {
   const renderScheduler = currentScheduler.current;
 
   const flag = enableConcurrentMode.current;
@@ -24,9 +23,9 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
   let updateState: UpdateState | null = null;
 
   if (include(fiber.type, NODE_TYPE.__class__)) {
-    updateState = processClassComponentUpdateQueue(fiber, renderDispatch, flag);
+    updateState = processClassComponentUpdateQueue(renderDispatch, fiber, flag);
   } else if (include(fiber.type, NODE_TYPE.__function__)) {
-    updateState = processFunctionComponentUpdateQueue(fiber, renderDispatch, flag);
+    updateState = processFunctionComponentUpdateQueue(renderDispatch, fiber, flag);
   } else {
     updateState = processNormalComponentUpdate(fiber);
   }
@@ -49,7 +48,7 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
         renderDispatch.pendingLayoutEffect(fiber, updateState.callback, { stickyToFoot: true });
       }
 
-      setImmediateNextFiber(fiber);
+      renderDispatch.runtimeFiber.immediateUpdateFiber = fiber;
 
       return;
     }
@@ -57,6 +56,8 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
     if (updateState.isSync) {
       if (updateState.isImmediate) {
         triggerUpdate(
+          renderDispatch,
+
           fiber,
           updateState.isSkip ? STATE_TYPE.__skippedSync__ : updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__,
           updateState.callback
@@ -64,6 +65,8 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
       } else {
         renderScheduler.microTask(function triggerSyncUpdateOnFiber() {
           triggerUpdate(
+            renderDispatch,
+
             fiber,
             updateState.isSkip ? STATE_TYPE.__skippedSync__ : updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__,
             updateState.callback
@@ -73,6 +76,8 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
     } else {
       if (updateState.isImmediate) {
         triggerUpdate(
+          renderDispatch,
+
           fiber,
           updateState.isSkip
             ? STATE_TYPE.__skippedConcurrent__
@@ -84,6 +89,8 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
       } else {
         renderScheduler.microTask(function triggerConcurrentUpdateOnFiber() {
           triggerUpdate(
+            renderDispatch,
+
             fiber,
             updateState.isSkip
               ? STATE_TYPE.__skippedConcurrent__
@@ -98,16 +105,16 @@ const processUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRen
   }
 };
 
-export const prepareUpdateOnFiber = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, isImmediate: boolean, isRetrigger: boolean) => {
+export const prepareUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, isImmediate: boolean, isRetrigger: boolean) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const renderScheduler = currentScheduler.current;
 
   if (isImmediate) {
-    processUpdateOnFiber(fiber, renderDispatch, isImmediate, isRetrigger);
+    processUpdateOnFiber(renderDispatch, fiber, isImmediate, isRetrigger);
   } else {
     renderScheduler.microTask(function asyncProcessUpdateOnFiber() {
-      processUpdateOnFiber(fiber, renderDispatch, isImmediate, isRetrigger);
+      processUpdateOnFiber(renderDispatch, fiber, isImmediate, isRetrigger);
     });
   }
 };

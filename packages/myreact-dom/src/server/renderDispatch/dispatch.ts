@@ -15,20 +15,20 @@ import { nextWorkLazy } from "./lazy";
 import type { ServerDomDispatch } from "./serverDomDispatch";
 import type { LatestServerStreamDispatch, LegacyServerStreamDispatch } from "./serverStreamDispatch";
 
-export const serverDispatchFiber = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatch | LegacyServerStreamDispatch | LatestServerStreamDispatch) => {
+export const serverDispatchFiber = (renderDispatch: ServerDomDispatch | LegacyServerStreamDispatch | LatestServerStreamDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.type, NODE_TYPE.__root__)) {
-    nextWorkRoot(fiber);
+    nextWorkRoot(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
-    nextWorkComponent(fiber);
+    nextWorkComponent(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__consumer__)) {
-    nextWorkConsumer(fiber);
+    nextWorkConsumer(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__lazy__)) {
-    nextWorkLazy(fiber, renderDispatch);
+    nextWorkLazy(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__suspense__)) {
-    nextWorkSuspense(fiber);
+    nextWorkSuspense(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__provider__ | NODE_TYPE.__context__)) {
-    nextWorkProvider(fiber);
+    nextWorkProvider(renderDispatch, fiber);
   } else {
-    nextWorkCommon(fiber, renderDispatch);
+    nextWorkCommon(renderDispatch, fiber);
   }
 };

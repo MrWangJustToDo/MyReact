@@ -4,7 +4,7 @@ import { include, PATCH_TYPE, remove } from "@my-react/react-shared";
 import type { ReconcilerDispatch } from "../dispatch";
 import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 
-export const create = (_fiber: MyReactFiberNode, _dispatch: ReconcilerDispatch, _config: any) => {
+export const create = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, _config: any) => {
   if (!include(_fiber.patch, PATCH_TYPE.__create__)) return;
 
   const type = _fiber.elementType;

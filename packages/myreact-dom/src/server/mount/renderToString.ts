@@ -22,9 +22,9 @@ export const renderToString = wrapperFunc((element: LikeJSX) => {
 
     renderDispatch.isServerRender = true;
 
-    initialFiberNode(fiber, renderDispatch);
+    initialFiberNode(renderDispatch, fiber);
 
-    startRender(fiber, renderDispatch);
+    startRender(renderDispatch, fiber);
 
     return container.toString();
   } else {

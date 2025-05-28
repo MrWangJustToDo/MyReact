@@ -26,11 +26,11 @@ import type { ClientDomDispatch, MyReactFiberNodeClientDev } from "@my-react-dom
 /**
  * @internal
  */
-export const create = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, hydrate: boolean): boolean => {
+export const create = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, hydrate: boolean): boolean => {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
-    const parentFiberWithNode = getValidParentFiberWithNode(fiber, renderDispatch);
+    const parentFiberWithNode = getValidParentFiberWithNode(renderDispatch, fiber);
 
-    const parentFiberWithSVG = getValidParentFiberWithSVG(fiber, renderDispatch);
+    const parentFiberWithSVG = getValidParentFiberWithSVG(renderDispatch, fiber);
 
     const cIsSVG = isSVGTag[fiber.elementType as string];
 

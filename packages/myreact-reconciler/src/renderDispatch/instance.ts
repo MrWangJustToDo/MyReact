@@ -41,9 +41,9 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   pendingCommitFiberPatch: PATCH_TYPE = PATCH_TYPE.__initial__;
 
-  pendingChangedFiberList: ListTree<MyReactFiberNode> | null = null;
+  pendingAsyncLoadList: ListTree<MyReactFiberNode | (() => Promise<void>)> | null = null;
 
-  pendingAsyncLoadFiberList: ListTree<MyReactFiberNode> | null = null;
+  pendingChangedFiberList: ListTree<MyReactFiberNode> | null = null;
 
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
 
@@ -187,7 +187,7 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     void 0;
   }
   dispatchFiber(_fiber: MyReactFiberNode) {
-    defaultDispatchFiber(_fiber);
+    defaultDispatchFiber(this, _fiber);
   }
   processFiber(_fiber: MyReactFiberNode): Promise<void> {
     return Promise.resolve();
@@ -229,7 +229,7 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     return defaultResolveErrorBoundaries(_fiber);
   }
   resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): MyReactFiberNode | null {
-    return defaultGetContextFiber(_fiber, this, _contextObject);
+    return defaultGetContextFiber(_fiber, _contextObject);
   }
   resolveContextValue(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return defaultGetContextValue(_fiber, _contextObject);
@@ -245,7 +245,7 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
       listenerMap.get(instance).beforeCommit.forEach((cb) => cb());
     });
 
-    defaultDispatchMount(_fiber, this);
+    defaultDispatchMount(this, _fiber);
 
     safeCall(function safeCallAfterCommitListener() {
       listenerMap.get(instance).afterCommit.forEach((cb) => cb());
@@ -266,7 +266,7 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
       listenerMap.get(instance).beforeUpdate.forEach((cb) => cb());
     });
 
-    defaultDispatchUpdate(_list, this);
+    defaultDispatchUpdate(this, _list);
 
     safeCall(function safeCallAfterUpdateListener() {
       listenerMap.get(instance).afterUpdate.forEach((cb) => cb());
@@ -304,6 +304,8 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     this.runtimeFiber.scheduledFiber = null;
 
     this.runtimeFiber.nextWorkingFiber = null;
+
+    this.runtimeFiber.immediateUpdateFiber = null;
 
     this.pendingCommitFiberPatch = PATCH_TYPE.__initial__;
   }

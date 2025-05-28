@@ -27,7 +27,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
         const element = createElement(nextType, { ...fiber.pendingProps, key: fiber.key ?? undefined, ref: fiber.ref ?? undefined });
 
         fiber._installElement(element);
-        
+
         fiber.type = nodeType;
       },
     });
@@ -35,7 +35,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
     setRefreshTypeMap(fiber);
 
     if (forceRefresh) {
-      clearFiberNode(fiber, renderDispatch);
+      clearFiberNode(renderDispatch, fiber);
 
       fiber.state = merge(STATE_TYPE.__create__, STATE_TYPE.__hmr__);
     } else {
@@ -58,7 +58,9 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
 export function hmrRevert(this: MyReactFiberNode, cb?: () => void) {
   if (include(this.state, STATE_TYPE.__unmount__)) return;
 
-  triggerRevert(this, cb);
+  const renderDispatch = getCurrentDispatchFromFiber(this);
+
+  triggerRevert(renderDispatch, this, cb);
 }
 
 export function hmrUpdate(this: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) {

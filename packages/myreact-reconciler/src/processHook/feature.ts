@@ -4,8 +4,9 @@ import { HOOK_TYPE, ListTree, STATE_TYPE, include } from "@my-react/react-shared
 import { listenerMap } from "../renderDispatch";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { createHookNode, effectHookNode, updateHookNode } from "../runtimeHook";
-import { currentRenderDispatch, getCurrentDispatchFromFiber, safeCall } from "../share";
+import { safeCall } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { InstanceField } from "../runtimeGenerate";
 import type { HookInstanceField, MyReactHookNode } from "../runtimeHook";
@@ -34,10 +35,8 @@ const resolveHookValue = (hookNode: MyReactHookNode, field: InstanceField) => {
   }
 };
 
-export const processHook = ({ type, reducer, value, deps }: RenderHookParams) => {
+export const processHook = (renderDispatch: CustomRenderDispatch, { type, reducer, value, deps }: RenderHookParams) => {
   const fiber = currentComponentFiber.current as MyReactFiberNode;
-
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   if (!fiber) throw new Error("[@my-react/react] can not use hook outside of component");
 
@@ -49,14 +48,14 @@ export const processHook = ({ type, reducer, value, deps }: RenderHookParams) =>
 
   // initial
   if (include(fiber.state, STATE_TYPE.__create__)) {
-    currentHook = createHookNode({ type, reducer, value, deps }, fiber);
+    currentHook = createHookNode(renderDispatch, { type, reducer, value, deps }, fiber);
 
     safeCall(function safeCallHookInitialListener() {
       listenerMap.get(renderDispatch)?.hookInitial?.forEach((cb) => cb(currentHook, fiber));
     });
   } else {
     // update
-    currentHook = updateHookNode({ type, reducer, value, deps }, fiber, __DEV__ && Boolean(include(fiber.state, STATE_TYPE.__hmr__)));
+    currentHook = updateHookNode(renderDispatch, { type, reducer, value, deps }, fiber, __DEV__ && Boolean(include(fiber.state, STATE_TYPE.__hmr__)));
 
     safeCall(function safeCallHookUpdateListener() {
       listenerMap.get(renderDispatch)?.hookUpdate?.forEach((cb) => cb(currentHook, fiber));
@@ -67,7 +66,7 @@ export const processHook = ({ type, reducer, value, deps }: RenderHookParams) =>
 
   const field = getInstanceFieldByInstance(currentHook);
 
-  effectHookNode(fiber, currentHook, field);
+  effectHookNode(renderDispatch, fiber, currentHook, field);
 
   return resolveHookValue(currentHook, field);
 };

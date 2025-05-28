@@ -158,7 +158,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   patchToCommitSetRef?: (_fiber: MyReactFiberNode) => void;
 
   dispatchFiber(_fiber: MyReactFiberNode): void {
-    clientDispatchFiber(_fiber, this);
+    clientDispatchFiber(this, _fiber);
   }
 
   processFiber(_fiber: MyReactFiberNode): Promise<void> {
@@ -166,25 +166,25 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
 
   clientCommitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
-    return create(_fiber, this, !!_hydrate);
+    return create(this, _fiber, !!_hydrate);
   }
   commitCreate(_fiber: MyReactFiberNode): void {
     this.clientCommitCreate(_fiber);
   }
   clientCommitUpdate(_fiber: MyReactFiberNode, _hydrate?: boolean): void {
-    update(_fiber, this, !!_hydrate);
+    update(this, _fiber, !!_hydrate);
   }
   commitUpdate(_fiber: MyReactFiberNode): void {
     this.clientCommitUpdate(_fiber);
   }
   commitAppend(_fiber: MyReactFiberNode): void {
-    append(_fiber, this);
+    append(this, _fiber);
   }
   commitPosition(_fiber: MyReactFiberNode): void {
-    position(_fiber, this);
+    position(this, _fiber);
   }
   commitSetRef(_fiber: MyReactFiberNode): void {
-    setRef(_fiber, this);
+    setRef(this, _fiber);
   }
   commitUnsetRef(_fiber: MyReactFiberNode): void {
     unsetRef(_fiber);
@@ -210,7 +210,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
       },
     });
 
-    clientDispatchMount(_fiber, this, this.isHydrateRender);
+    clientDispatchMount(this, _fiber, this.isHydrateRender);
 
     safeCallWithCurrentFiber({
       fiber: _fiber,
@@ -230,23 +230,23 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     return shouldPauseAsyncUpdate();
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
-    initialElementMap(_fiber, this);
+    initialElementMap(this, _fiber);
 
-    patchDOMField(_fiber, this);
+    patchDOMField(this, _fiber);
   }
   patchToFiberUpdate(_fiber: MyReactFiberNode) {
-    patchDOMField(_fiber, this);
+    patchDOMField(this, _fiber);
   }
   patchToFiberUnmount(_fiber: MyReactFiberNode) {
-    unmountElementMap(_fiber, this);
+    unmountElementMap(this, _fiber);
   }
 
   dispatchState(_params: UpdateQueue): void {
-    return processState(_params);
+    return processState(this, _params);
   }
 
   dispatchHook(_params: RenderHookParams): unknown {
-    return processHook(_params);
+    return processHook(this, _params);
   }
 
   dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {
@@ -255,7 +255,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     const scheduler = currentScheduler.current;
 
     if (_params.fiber) {
-      triggerError(_params.fiber, _params.error, function triggerErrorOnFiberCallback() {
+      triggerError(this, _params.fiber, _params.error, function triggerErrorOnFiberCallback() {
         scheduler.yieldTask(function dispatchErrorEvent() {
           window.dispatchEvent(new ErrorEvent("error", { error: _params.error, message: _params.error?.message }));
         });
@@ -269,8 +269,8 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     return null;
   }
 
-  dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown>; }): MyReactElementNode {
-    return processPromise(_params.fiber, _params.promise);
+  dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
+    return processPromise(this, _params.fiber, _params.promise);
   }
 }
 
@@ -340,7 +340,7 @@ if (__DEV__) {
       const re = get();
 
       re.then((res) => (parse(res), res)).then((res) => {
-        unmountFiber(res.__container__.rootFiber);
+        unmountFiber(this, res.__container__.rootFiber);
         res.__container__.isAppMounted = false;
         res.__container__.isAppUnmounted = true;
       });

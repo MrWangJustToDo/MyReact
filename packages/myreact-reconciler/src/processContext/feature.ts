@@ -3,17 +3,16 @@ import { include, isNormalEquals, STATE_TYPE } from "@my-react/react-shared";
 
 import { prepareUpdateAllDependence, prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
 import { getInstanceContextFiber, initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
-import { currentRenderDispatch, getCurrentDispatchFromFiber, safeCallWithCurrentFiber } from "../share";
+import { safeCallWithCurrentFiber } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { createContext, MyReactFunctionComponent } from "@my-react/react";
 
 const { currentComponentFiber, MyReactInternalInstance } = __my_react_internal__;
 const { enableLoopFromRoot } = __my_react_shared__;
 
-export const processProvider = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
-
+export const processProvider = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (renderDispatch.isAppMounted) {
     const prevProps = fiber.memoizedProps.value;
 
@@ -31,9 +30,7 @@ export const processProvider = (fiber: MyReactFiberNode) => {
   }
 };
 
-export const processConsumer = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
-
+export const processConsumer = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
 
   const isUpdate = !!fiber.instance;

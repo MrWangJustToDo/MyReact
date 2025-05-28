@@ -9,13 +9,13 @@ import type { ServerDomDispatch, LegacyServerStreamDispatch } from "@my-react-do
  * @internal
  */
 export const startRender = (
-  fiber: MyReactFiberNode,
   renderDispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch | NoopLegacyRenderDispatch,
+  fiber: MyReactFiberNode,
   hydrate = false
 ) => {
   const startTime = Date.now();
 
-  mountSync(fiber, renderDispatch);
+  mountSync(renderDispatch, fiber);
 
   const endTime = Date.now();
 
@@ -32,13 +32,13 @@ export const startRender = (
  * @internal
  */
 export const startRenderAsync = async (
-  fiber: MyReactFiberNode,
   renderDispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch | NoopLatestRenderDispatch,
+  fiber: MyReactFiberNode,
   hydrate = false
 ) => {
   const startTime = Date.now();
 
-  await mountAsync(fiber, renderDispatch);
+  await mountAsync(renderDispatch, fiber);
 
   const endTime = Date.now();
 

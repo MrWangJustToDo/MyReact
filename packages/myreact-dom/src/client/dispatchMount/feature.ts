@@ -28,7 +28,7 @@ export const getPreviousHydratedNode = () => currentHydratedNode;
 /**
  * @internal
  */
-export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch, _hydrate?: boolean) => {
+export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode, _hydrate?: boolean) => {
   const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean): boolean => {
     const _result = safeCallWithCurrentFiber({
       fiber: _fiber,
@@ -89,7 +89,7 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
 
     beforeSyncUpdate();
     _list.listToFoot(function invokeInsertionEffectList(fiber) {
-      insertionEffect(fiber, _dispatch);
+      insertionEffect(_dispatch, fiber);
     });
     afterSyncUpdate();
 
@@ -99,7 +99,7 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
 
     beforeSyncUpdate();
     _list.listToFoot(function invokeLayoutEffectList(fiber) {
-      layoutEffect(fiber, _dispatch);
+      layoutEffect(_dispatch, fiber);
     });
     afterSyncUpdate();
 
@@ -109,7 +109,7 @@ export const clientDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ClientD
       __DEV__ && enableScopeTreeLog.current && setLogScope();
 
       _list.listToFoot(function invokeEffectList(fiber) {
-        effect(fiber, _dispatch);
+        effect(_dispatch, fiber);
       });
 
       __DEV__ && enableScopeTreeLog.current && resetLogScope();

@@ -2,8 +2,8 @@ import { generateFiberToUnmountList, unmountList } from "@my-react/react-reconci
 
 import type { CustomRenderDispatch, MyReactFiberNode } from "@my-react/react-reconciler";
 
-export const unmount = (_pending: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
+export const unmount = (_dispatch: CustomRenderDispatch, _pending: MyReactFiberNode) => {
   const list = generateFiberToUnmountList(_pending);
 
-  unmountList(list, _dispatch);
+  unmountList(_dispatch, list);
 };

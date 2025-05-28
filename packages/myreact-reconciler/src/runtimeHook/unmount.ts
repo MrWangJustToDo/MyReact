@@ -5,7 +5,7 @@ import { safeCallWithCurrentFiber } from "../share";
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-export const hookListUnmount = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const hookListUnmount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   fiber.hookList?.listToFoot?.(function invokeHookUnmount(hookNode) {
     safeCallWithCurrentFiber({
       fiber,

@@ -10,12 +10,12 @@ const { globalLoop } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const mountSync = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   globalLoop.current = true;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  mountLoopAll(fiber, renderDispatch);
+  mountLoopAll(renderDispatch, fiber);
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
@@ -50,14 +50,14 @@ export const mountSync = (fiber: MyReactFiberNode, renderDispatch: CustomRenderD
   globalLoop.current = false;
 };
 
-export const mountAsync = async (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   globalLoop.current = true;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  mountLoopAll(fiber, renderDispatch);
+  mountLoopAll(renderDispatch, fiber);
 
-  await processMountLoopAll(fiber, renderDispatch);
+  await processMountLoopAll(renderDispatch, fiber);
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 

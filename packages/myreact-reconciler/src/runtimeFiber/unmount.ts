@@ -11,12 +11,12 @@ import type { MyReactFiberNodeDev } from "./interface";
 
 const { enableDebugFiled } = __my_react_shared__;
 
-export const unmountFiberNode = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const unmountFiberNode = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
-  hookListUnmount(fiber, renderDispatch);
+  hookListUnmount(renderDispatch, fiber);
 
-  processClassComponentUnmount(fiber, renderDispatch);
+  processClassComponentUnmount(renderDispatch, fiber);
 
   safeCallWithCurrentFiber({
     fiber,

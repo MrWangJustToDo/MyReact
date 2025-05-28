@@ -4,14 +4,14 @@ import { resolveLazyElementLatest, resolveLazyElementLegacy } from "@my-react-do
 
 import type { NoopLegacyRenderDispatch, NoopLatestRenderDispatch } from "./noopDispatch";
 
-export const nextWorkLazy = (_fiber: MyReactFiberNode, _dispatch: NoopLegacyRenderDispatch | NoopLatestRenderDispatch) => {
+export const nextWorkLazy = (_dispatch: NoopLegacyRenderDispatch | NoopLatestRenderDispatch, _fiber: MyReactFiberNode) => {
   if (_dispatch.enableAsyncHydrate) {
-    const children = resolveLazyElementLatest(_fiber, _dispatch);
+    const children = resolveLazyElementLatest(_dispatch, _fiber);
 
-    nextWorkCommon(_fiber, children);
+    nextWorkCommon(_dispatch, _fiber, children);
   } else {
-    const children = resolveLazyElementLegacy(_fiber, _dispatch);
+    const children = resolveLazyElementLegacy(_dispatch, _fiber);
 
-    nextWorkCommon(_fiber, children);
+    nextWorkCommon(_dispatch, _fiber, children);
   }
 };

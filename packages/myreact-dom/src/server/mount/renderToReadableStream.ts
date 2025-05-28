@@ -48,7 +48,7 @@ export const renderToReadableStream = wrapperFunc((element: LikeJSX, options?: R
 
     let canceled = false;
 
-    initialFiberNode(fiber, renderDispatch);
+    initialFiberNode(renderDispatch, fiber);
 
     return new Promise<ReactDOMServerReadableStream>((resolve, reject) => {
       const { promise, resolve: _resolve, reject: _reject } = createControlPromise();
@@ -88,7 +88,7 @@ export const renderToReadableStream = wrapperFunc((element: LikeJSX, options?: R
 
           renderDispatch.onShellError = onShellError;
 
-          startRenderAsync(fiber, renderDispatch);
+          startRenderAsync(renderDispatch, fiber);
         },
         cancel: () => {
           canceled = true;

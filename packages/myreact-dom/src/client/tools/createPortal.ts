@@ -1,9 +1,9 @@
 import { createElement } from "@my-react/react";
-import { currentRenderDispatch, getCurrentDispatchFromFiber, nextWorkNormal } from "@my-react/react-reconciler";
+import { nextWorkNormal } from "@my-react/react-reconciler";
 import { Portal } from "@my-react/react-shared";
 
 import type { MyReactElement } from "@my-react/react";
-import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
+import type { CustomRenderDispatch, MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 
 const checkPortal = (element: MyReactElement) => {
   if (!element.props["container"]) throw new Error(`[@my-react/react-dom] a portal element need a "container" props`);
@@ -17,12 +17,10 @@ export const createPortal = (element: MyReactElement, container: HTMLElement) =>
   return portal;
 };
 
-export const nextWorkPortal = (fiber: MyReactFiberNode) => {
+export const nextWorkPortal = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const typedFiber = fiber as MyReactFiberContainer;
 
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
-
-  nextWorkNormal(fiber);
+  nextWorkNormal(renderDispatch, fiber);
 
   if (typedFiber.containerNode !== fiber.pendingProps["container"]) {
     renderDispatch.pendingCreate(fiber);

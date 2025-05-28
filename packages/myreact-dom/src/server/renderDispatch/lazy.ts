@@ -10,7 +10,7 @@ import type { MyReactFiberNode, CustomRenderDispatch, VisibleInstanceField } fro
 /**
  * @internal
  */
-export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
+export const resolveLazyElementLegacy = (_dispatch: CustomRenderDispatch, _fiber: MyReactFiberNode) => {
   const visibleFiber = _dispatch.resolveSuspenseFiber(_fiber) || _dispatch.rootFiber;
 
   const updateQueue: LazyUpdateQueue = {
@@ -31,7 +31,7 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cu
 
   visibleFiber.state = merge(visibleFiber.state, STATE_TYPE.__create__);
 
-  processState(updateQueue);
+  processState(_dispatch, updateQueue);
 
   return null;
 };
@@ -39,26 +39,26 @@ export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: Cu
 /**
  * @internal
  */
-export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
+export const resolveLazyElementLatest = (_dispatch: CustomRenderDispatch, _fiber: MyReactFiberNode) => {
   const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
 
   if (typedElementType._loaded) return WrapperByLazyScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
 
-  _dispatch.pendingAsyncLoadFiberList = _dispatch.pendingAsyncLoadFiberList || new ListTree<MyReactFiberNode>();
+  _dispatch.pendingAsyncLoadList = _dispatch.pendingAsyncLoadList || new ListTree<MyReactFiberNode>();
 
-  _dispatch.pendingAsyncLoadFiberList.push(_fiber);
+  _dispatch.pendingAsyncLoadList.push(_fiber);
 
   return null;
 };
 
-export const nextWorkLazy = (fiber: MyReactFiberNode, renderDispatch: ServerDomDispatch | LegacyServerStreamDispatch | LatestServerStreamDispatch) => {
+export const nextWorkLazy = (renderDispatch: ServerDomDispatch | LegacyServerStreamDispatch | LatestServerStreamDispatch, fiber: MyReactFiberNode) => {
   if (renderDispatch.enableAsyncHydrate) {
-    const children = resolveLazyElementLatest(fiber, renderDispatch);
+    const children = resolveLazyElementLatest(renderDispatch, fiber);
 
-    nextWorkCommon(fiber, children);
+    nextWorkCommon(renderDispatch, fiber, children);
   } else {
-    const children = resolveLazyElementLegacy(fiber, renderDispatch);
+    const children = resolveLazyElementLegacy(renderDispatch, fiber);
 
-    nextWorkCommon(fiber, children);
+    nextWorkCommon(renderDispatch, fiber, children);
   }
 };

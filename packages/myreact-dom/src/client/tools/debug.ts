@@ -48,17 +48,17 @@ export const setError = (renderDispatch: CustomRenderDispatch, error: { value: a
   const temp = errorMap.get(renderDispatch) || [];
 
   temp.push(error);
-  
+
   errorMap.set(renderDispatch, temp);
 };
 
 export const getError = (renderDispatch: CustomRenderDispatch) => {
   return errorMap.get(renderDispatch);
-}
+};
 
 export const clearError = (renderDispatch: CustomRenderDispatch) => {
   errorMap.delete(renderDispatch);
-}
+};
 
 /**
  * @internal
@@ -109,7 +109,7 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
       const re = get();
 
       re.then((res) => (parse(res), res)).then((res) => {
-        unmountFiber(res.__container__.rootFiber);
+        unmountFiber(renderDispatch, res.__container__.rootFiber);
         res.__container__.isAppMounted = false;
         res.__container__.isAppUnmounted = true;
       });
@@ -134,7 +134,7 @@ export const checkRehydrate = (container: Partial<RenderContainer>) => {
 /**
  * @internal
  */
-export const patchDOMField = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const patchDOMField = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if ((enableDOMField.current || __DEV__) && include(fiber.type, renderDispatch.runtimeRef.typeForNativeNode)) {
     renderDispatch.pendingLayoutEffect(fiber, function pathDOMFieldOnFiber() {
       debugWithNode(fiber);

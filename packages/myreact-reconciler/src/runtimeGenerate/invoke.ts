@@ -7,19 +7,12 @@ import { processFunction } from "../processFunction";
 import { processLazy } from "../processLazy";
 import { processSuspense } from "../processSuspense";
 import { listenerMap } from "../renderDispatch";
-import {
-  currentRenderDispatch,
-  currentTriggerFiber,
-  getCurrentDispatchFromFiber,
-  NODE_TYPE,
-  onceWarnWithKeyAndFiber,
-  safeCallWithCurrentFiber,
-  setRefreshTypeMap,
-} from "../share";
+import { currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
 import { getInstanceFieldByInstance, initInstance, initVisibleInstance } from "./instance";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { VisibleInstanceField } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MaybeArrayMyReactElementNode } from "@my-react/react";
@@ -28,7 +21,7 @@ const { currentComponentFiber, MyReactInternalInstance } = __my_react_internal__
 
 const { enablePerformanceLog, enableDebugFiled } = __my_react_shared__;
 
-export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
+export const nextWorkCommon = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
   if (__DEV__ && isPromise(children)) {
     console.error(`[@my-react/react] render function should not return a promise, please check your code`);
   }
@@ -40,12 +33,12 @@ export const nextWorkCommon = (fiber: MyReactFiberNode, children: MaybeArrayMyRe
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallTransformChildrenFiber() {
-      transformChildrenFiber(fiber, children);
+      transformChildrenFiber(renderDispatch, fiber, children);
     },
   });
 };
 
-export const nextWorkNormal = (fiber: MyReactFiberNode) => {
+export const nextWorkNormal = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (
     "children" in fiber.pendingProps ||
     "children" in fiber.memoizedProps ||
@@ -54,69 +47,69 @@ export const nextWorkNormal = (fiber: MyReactFiberNode) => {
   ) {
     const { children } = fiber.pendingProps;
 
-    nextWorkCommon(fiber, children);
+    nextWorkCommon(renderDispatch, fiber, children);
   }
 };
 
-export const nextWorkClassComponent = (fiber: MyReactFiberNode) => {
+export const nextWorkClassComponent = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (!fiber.instance) {
-    const children = processClassComponentMount(fiber);
+    const children = processClassComponentMount(renderDispatch, fiber);
 
-    nextWorkCommon(fiber, children);
+    nextWorkCommon(renderDispatch, fiber, children);
   } else {
-    const { updated, children } = processClassComponentUpdate(fiber);
+    const { updated, children } = processClassComponentUpdate(renderDispatch, fiber);
 
-    if (updated) nextWorkCommon(fiber, children);
+    if (updated) nextWorkCommon(renderDispatch, fiber, children);
   }
 };
 
-export const nextWorkFunctionComponent = (fiber: MyReactFiberNode) => {
+export const nextWorkFunctionComponent = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const children = processFunction(fiber);
 
-  nextWorkCommon(fiber, children);
+  nextWorkCommon(renderDispatch, fiber, children);
 };
 
-export const nextWorkComponent = (fiber: MyReactFiberNode) => {
+export const nextWorkComponent = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.type, NODE_TYPE.__function__)) {
     currentComponentFiber.current = fiber;
 
-    nextWorkFunctionComponent(fiber);
+    nextWorkFunctionComponent(renderDispatch, fiber);
 
     currentComponentFiber.current = null;
   } else {
     currentComponentFiber.current = fiber;
 
-    nextWorkClassComponent(fiber);
+    nextWorkClassComponent(renderDispatch, fiber);
 
     currentComponentFiber.current = null;
   }
 };
 
-export const nextWorkLazy = (fiber: MyReactFiberNode) => {
-  const children = processLazy(fiber);
+export const nextWorkLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  const children = processLazy(renderDispatch, fiber);
 
-  nextWorkCommon(fiber, children);
+  nextWorkCommon(renderDispatch, fiber, children);
 };
 
-export const nextWorkSuspense = (fiber: MyReactFiberNode) => {
+export const nextWorkSuspense = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const children = processSuspense(fiber);
 
-  nextWorkCommon(fiber, children);
+  nextWorkCommon(renderDispatch, fiber, children);
 };
 
-export const nextWorkProvider = (fiber: MyReactFiberNode) => {
-  processProvider(fiber);
+export const nextWorkProvider = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  processProvider(renderDispatch, fiber);
 
-  nextWorkNormal(fiber);
+  nextWorkNormal(renderDispatch, fiber);
 };
 
-export const nextWorkConsumer = (fiber: MyReactFiberNode) => {
-  const children = processConsumer(fiber);
+export const nextWorkConsumer = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  const children = processConsumer(renderDispatch, fiber);
 
-  nextWorkCommon(fiber, children);
+  nextWorkCommon(renderDispatch, fiber, children);
 };
 
-export const nextWorkRoot = (fiber: MyReactFiberNode) => {
+export const nextWorkRoot = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const isUpdate = !!fiber.instance;
 
   fiber.instance = fiber.instance || new MyReactInternalInstance();
@@ -128,21 +121,17 @@ export const nextWorkRoot = (fiber: MyReactFiberNode) => {
   const instanceField = getInstanceFieldByInstance(fiber.instance) as VisibleInstanceField;
 
   if (instanceField.isHidden) {
-    nextWorkCommon(fiber, null);
+    nextWorkCommon(renderDispatch, fiber, null);
   } else {
-    nextWorkNormal(fiber);
+    nextWorkNormal(renderDispatch, fiber);
   }
 };
 
-export const runtimeNextWork = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
-
+export const runtimeNextWork = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   renderDispatch.dispatchFiber(fiber);
 };
 
-export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
-
+export const runtimeNextWorkDev = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberRunListener() {
@@ -156,7 +145,7 @@ export const runtimeNextWorkDev = (fiber: MyReactFiberNode) => {
 
   const start = Date.now();
 
-  runtimeNextWork(fiber);
+  runtimeNextWork(renderDispatch, fiber);
 
   const end = Date.now();
 

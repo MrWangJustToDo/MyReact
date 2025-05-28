@@ -5,12 +5,12 @@ import { getValidParentFiberWithNode } from "../dispatchMap";
 import type { ReconcilerDispatch } from "../dispatch";
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
-export const append = (_fiber: MyReactFiberNode, _dispatch: ReconcilerDispatch, _config: any) => {
+export const append = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, _config: any) => {
   if (!include(_fiber.patch, PATCH_TYPE.__append__)) return;
 
   const isRender = !_dispatch.isAppMounted;
 
-  const parentFiberWithNode = getValidParentFiberWithNode(_fiber, _dispatch);
+  const parentFiberWithNode = getValidParentFiberWithNode(_dispatch, _fiber);
 
   const mayFiberContainer = parentFiberWithNode as MyReactFiberContainer;
 

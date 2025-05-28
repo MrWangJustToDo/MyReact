@@ -21,11 +21,7 @@ export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextOb
   }
 };
 
-export const defaultGetContextFiber = (
-  fiber: MyReactFiberNode,
-  renderDispatch: CustomRenderDispatch,
-  ContextObject?: ReturnType<typeof createContext> | null
-) => {
+export const defaultGetContextFiber = (fiber: MyReactFiberNode, ContextObject?: ReturnType<typeof createContext> | null) => {
   if (fiber?.parent && ContextObject) {
     let parent = fiber.parent;
     while (parent) {
@@ -66,7 +62,7 @@ export const defaultReadContext = (Context: ReturnType<typeof createContext>) =>
     throw new Error('current environment is not support "readContext"');
   }
 
-  const contextFiber = defaultGetContextFiber(fiber as MyReactFiberNode, null, Context);
+  const contextFiber = defaultGetContextFiber(fiber as MyReactFiberNode, Context);
 
   return defaultGetContextValue(contextFiber, Context);
 };

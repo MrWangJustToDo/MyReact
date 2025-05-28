@@ -92,17 +92,20 @@
       const Bbb = ({ children }) => children;
 
       const LazyFoo = lazy(async () => {
+        console.log("lazy foo");
         await delay(1000);
         // throw new Error("lll");
         return { default: Foo };
       });
 
       const LazyBar = lazy(async () => {
+        console.log("lazy bar");
         await delay(1000);
         return { default: Foo };
       });
 
       const LazyBgg = lazy(async () => {
+        console.log("lazy bgg");
         await delay(1000);
         return {
           default: () => (
@@ -140,6 +143,7 @@
                     <LazyFoo />
                     <LazyFoo t={time} />
                     <LazyFoo t={x} />
+                    <LazyBar />
                   </Bbb>
                 </Bbb>
               </div>

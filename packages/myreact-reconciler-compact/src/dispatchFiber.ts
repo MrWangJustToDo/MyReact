@@ -12,25 +12,26 @@ import { include } from "@my-react/react-shared";
 
 import { nextWorkPortal } from "./portal";
 
+import type { ReconcilerDispatch } from "./dispatch";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-export const ReconcilerDispatchFiber = (fiber: MyReactFiberNode) => {
+export const ReconcilerDispatchFiber = (renderDispatch: ReconcilerDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.type, NODE_TYPE.__root__)) {
     // TODO
-    nextWorkRoot(fiber);
+    nextWorkRoot(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
-    nextWorkComponent(fiber);
+    nextWorkComponent(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__portal__)) {
-    nextWorkPortal(fiber);
+    nextWorkPortal(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__lazy__)) {
-    nextWorkLazy(fiber);
+    nextWorkLazy(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__suspense__)) {
-    nextWorkSuspense(fiber);
+    nextWorkSuspense(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__consumer__)) {
-    nextWorkConsumer(fiber);
+    nextWorkConsumer(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__provider__ | NODE_TYPE.__context__)) {
-    nextWorkProvider(fiber);
+    nextWorkProvider(renderDispatch, fiber);
   } else {
-    nextWorkNormal(fiber);
+    nextWorkNormal(renderDispatch, fiber);
   }
 };

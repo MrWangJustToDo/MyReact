@@ -4,8 +4,6 @@ import { safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-let nextWorkFiber: MyReactFiberNode | null = null;
-
 export enum updateTypeEnum {
   syncFromRoot,
   syncFromTrigger,
@@ -15,11 +13,17 @@ export enum updateTypeEnum {
 
 export const mountLoopAllSync = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    nextWorkFiber = null;
+    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
+
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
-    const nextFiber = mountToNextFiberFromRoot(currentFiber, renderDispatch);
-    renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber || nextFiber;
-    nextWorkFiber = null;
+
+    const nextFiber = mountToNextFiberFromRoot(renderDispatch, currentFiber);
+
+    const immediateUpdateFiber = renderDispatch.runtimeFiber.immediateUpdateFiber;
+
+    renderDispatch.runtimeFiber.nextWorkingFiber = immediateUpdateFiber || nextFiber;
+
+    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
   }
 };
 
@@ -41,47 +45,65 @@ export const triggerFiberUpdateListener = (renderDispatch: CustomRenderDispatch,
 
 export const updateLoopSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    nextWorkFiber = null;
+    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
+
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
-    const nextFiber = performToNextFiberFromRoot(currentFiber, renderDispatch);
-    renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber || nextFiber;
-    nextWorkFiber = null;
+
+    const nextFiber = performToNextFiberFromRoot(renderDispatch, currentFiber);
+
+    const immediateUpdateFiber = renderDispatch.runtimeFiber.immediateUpdateFiber;
+
+    renderDispatch.runtimeFiber.nextWorkingFiber = immediateUpdateFiber || nextFiber;
+
+    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
   }
 };
 
 export const updateLoopSyncFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    nextWorkFiber = null;
+    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
+
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
-    const nextFiber = performToNextFiberFromTrigger(currentFiber, renderDispatch);
-    renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber || nextFiber;
-    nextWorkFiber = null;
+
+    const nextFiber = performToNextFiberFromTrigger(renderDispatch, currentFiber);
+
+    const immediateUpdateFiber = renderDispatch.runtimeFiber.immediateUpdateFiber;
+
+    renderDispatch.runtimeFiber.nextWorkingFiber = immediateUpdateFiber || nextFiber;
+
+    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
   }
 };
 
 export const updateLoopConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber && !renderDispatch.shouldYield()) {
-    nextWorkFiber = null;
+    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
+
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
-    const nextFiber = performToNextFiberFromRoot(currentFiber, renderDispatch);
-    renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber || nextFiber;
-    nextWorkFiber = null;
+
+    const nextFiber = performToNextFiberFromRoot(renderDispatch, currentFiber);
+
+    const immediateUpdateFiber = renderDispatch.runtimeFiber.immediateUpdateFiber;
+
+    renderDispatch.runtimeFiber.nextWorkingFiber = immediateUpdateFiber || nextFiber;
+
+    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
   }
 };
 
 export const updateLoopConcurrentFromTrigger = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber && !renderDispatch.shouldYield()) {
-    nextWorkFiber = null;
-    const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
-    const nextFiber = performToNextFiberFromTrigger(currentFiber, renderDispatch);
-    renderDispatch.runtimeFiber.nextWorkingFiber = nextWorkFiber || nextFiber;
-    nextWorkFiber = null;
-  }
-};
+    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
 
-export const setImmediateNextFiber = (fiber: MyReactFiberNode) => {
-  if (!nextWorkFiber) {
-    nextWorkFiber = fiber;
+    const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
+
+    const nextFiber = performToNextFiberFromTrigger(renderDispatch, currentFiber);
+
+    const immediateUpdateFiber = renderDispatch.runtimeFiber.immediateUpdateFiber;
+
+    renderDispatch.runtimeFiber.nextWorkingFiber = immediateUpdateFiber || nextFiber;
+
+    renderDispatch.runtimeFiber.immediateUpdateFiber = null;
   }
 };
 
@@ -102,22 +124,26 @@ const getNextLoop = (type: updateTypeEnum) => {
 export const processUpdateLoopAll = async (renderDispatch: CustomRenderDispatch, type: updateTypeEnum) => {
   let loopCount = 0;
 
-  while (renderDispatch.pendingAsyncLoadFiberList?.length) {
-    const beforeLength = renderDispatch.pendingAsyncLoadFiberList.length;
+  while (renderDispatch.pendingAsyncLoadList?.length) {
+    const beforeLength = renderDispatch.pendingAsyncLoadList.length;
 
-    const node = renderDispatch.pendingAsyncLoadFiberList.shift();
+    const node = renderDispatch.pendingAsyncLoadList.shift();
 
-    await renderDispatch.processFiber(node);
+    if (typeof node === "object") {
+      await renderDispatch.processFiber(node);
 
-    renderDispatch.runtimeFiber.nextWorkingFiber = node;
+      renderDispatch.runtimeFiber.nextWorkingFiber = node;
 
-    const nextLoop = getNextLoop(type);
+      const nextLoop = getNextLoop(type);
 
-    nextLoop(renderDispatch);
+      nextLoop(renderDispatch);
+    } else {
+      await node();
+    }
 
-    const afterLength = renderDispatch.pendingAsyncLoadFiberList.length;
+    const afterLength = renderDispatch.pendingAsyncLoadList.length;
 
-    if (beforeLength === afterLength) {
+    if (beforeLength <= afterLength) {
       loopCount++;
       if (loopCount > 5) {
         throw new Error("async load loop count is too much");

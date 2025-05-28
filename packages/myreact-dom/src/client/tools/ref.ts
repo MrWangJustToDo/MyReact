@@ -9,7 +9,7 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 /**
  * @internal
  */
-export const setRef = (_fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
+export const setRef = (renderDispatch: ClientDomDispatch, _fiber: MyReactFiberNode) => {
   if (include(_fiber.patch, PATCH_TYPE.__ref__)) {
     if (include(_fiber.type, NODE_TYPE.__plain__)) {
       if (_fiber.nativeNode) {

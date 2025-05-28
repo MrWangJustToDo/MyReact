@@ -3,7 +3,7 @@ import { devWarnWithFiber, fiberToDispatchMap, getCurrentDispatchFromFiber, next
 import { isPromise, ListTree } from "@my-react/react-shared";
 
 import type { ClientDomDispatch } from "./instance";
-import type { MixinMyReactFunctionComponent , lazy } from "@my-react/react";
+import type { MixinMyReactFunctionComponent, lazy } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { currentScheduler } = __my_react_internal__;
@@ -34,7 +34,7 @@ export const loadLazy = async (fiber: MyReactFiberNode, typedElementType: Return
     typedElementType.render = render as ReturnType<typeof lazy>["render"];
   } catch (e) {
     fiberToDispatchMap.set(fiber, dispatch);
-    
+
     currentScheduler.current.dispatchError?.({ fiber, error: e });
 
     fiberToDispatchMap.delete(fiber);
@@ -46,41 +46,41 @@ export const loadLazy = async (fiber: MyReactFiberNode, typedElementType: Return
 /**
  * @internal
  */
-export const resolveLazyElementLegacy = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
-  return processLazy(_fiber);
+export const resolveLazyElementLegacy = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode) => {
+  return processLazy(_dispatch, _fiber);
 };
 
 /**
  * @internal
  */
-export const resolveLazyElementLatest = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
+export const resolveLazyElementLatest = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode) => {
   if (_dispatch.isHydrateRender) {
     const typedElementType = _fiber.elementType as ReturnType<typeof lazy>;
     if (typedElementType._loaded === true) {
       return WrapperByLazyScope(createElement(typedElementType.render as MixinMyReactFunctionComponent, _fiber.pendingProps));
     } else {
-      _dispatch.pendingAsyncLoadFiberList = _dispatch.pendingAsyncLoadFiberList || new ListTree<MyReactFiberNode>();
+      _dispatch.pendingAsyncLoadList = _dispatch.pendingAsyncLoadList || new ListTree<MyReactFiberNode>();
 
-      _dispatch.pendingAsyncLoadFiberList.push(_fiber);
+      _dispatch.pendingAsyncLoadList.push(_fiber);
 
       return null;
     }
   } else {
-    return processLazy(_fiber);
+    return processLazy(_dispatch, _fiber);
   }
 };
 
 /**
  * @internal
  */
-export const nextWorkLazy = (_fiber: MyReactFiberNode, _dispatch: ClientDomDispatch) => {
+export const nextWorkLazy = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode) => {
   if (_dispatch.enableAsyncHydrate) {
-    const children = resolveLazyElementLatest(_fiber, _dispatch);
+    const children = resolveLazyElementLatest(_dispatch, _fiber);
 
-    nextWorkCommon(_fiber, children);
+    nextWorkCommon(_dispatch, _fiber, children);
   } else {
-    const children = resolveLazyElementLegacy(_fiber, _dispatch);
+    const children = resolveLazyElementLegacy(_dispatch, _fiber);
 
-    nextWorkCommon(_fiber, children);
+    nextWorkCommon(_dispatch, _fiber, children);
   }
 };

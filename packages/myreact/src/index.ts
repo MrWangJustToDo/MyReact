@@ -31,6 +31,8 @@ import {
   currentHookTreeNode,
   currentHookNodeIndex,
   currentComponentFiber,
+  currentCallingFiber,
+  currentError,
   globalLoop,
   enableDebugLog,
   enableSyncFlush,
@@ -121,9 +123,11 @@ const __my_react_internal__ = {
   currentScheduler,
   currentScopeFiber,
   currentRunningFiber,
+  currentCallingFiber,
   currentHookTreeNode,
   currentHookNodeIndex,
   currentComponentFiber,
+  currentError,
 };
 
 /**

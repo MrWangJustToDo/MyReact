@@ -4,13 +4,13 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client";
 import type { DomElement } from "@my-react-dom-shared";
 
-export const mountControl = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
+export const mountControl = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) => {
   if (hasControlledProps(fiber)) {
     addEventListener(fiber, renderDispatch.runtimeMap.eventMap, fiber.nativeNode as DomElement, "onChange");
   }
 };
 
-export const updateControl = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
+export const updateControl = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) => {
   if (__DEV__) updateControlElement(fiber);
   if (!fiber.pendingProps["onChange"] && !fiber.memoizedProps["onChange"]) {
     if (hasControlledProps(fiber)) {

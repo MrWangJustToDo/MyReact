@@ -16,6 +16,16 @@ export const fiberToDispatchMap = new Map<RenderFiber, MyReactInternalInstance>(
 /**
  * @internal
  */
+export const currentCallingFiber: RenderFiber[] = [];
+
+/**
+ * @internal
+ */
+export const currentError = createRef<Error | null>(null);
+
+/**
+ * @internal
+ */
 export const currentScheduler = createRef<RenderScheduler | null>(new Scheduler());
 
 /**

@@ -18,7 +18,7 @@ const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const ReconcilerDispatchMount = (_fiber: MyReactFiberNode, _dispatch: ReconcilerDispatch, config: any) => {
+export const ReconcilerDispatchMount = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, config: any) => {
   const _list = generateFiberToMountList(_fiber);
 
   const pendingCommitFiberArray = [];
@@ -26,7 +26,7 @@ export const ReconcilerDispatchMount = (_fiber: MyReactFiberNode, _dispatch: Rec
   beforeSyncUpdate();
 
   _list.listToFoot(function invokeInsertionEffectList(_fiber) {
-    insertionEffect(_fiber, _dispatch);
+    insertionEffect(_dispatch, _fiber);
   });
 
   afterSyncUpdate();
@@ -90,7 +90,7 @@ export const ReconcilerDispatchMount = (_fiber: MyReactFiberNode, _dispatch: Rec
   beforeSyncUpdate();
 
   _list.listToFoot(function invokeLayoutEffectList(_fiber) {
-    layoutEffect(_fiber, _dispatch);
+    layoutEffect(_dispatch, _fiber);
   });
 
   afterSyncUpdate();
@@ -101,7 +101,7 @@ export const ReconcilerDispatchMount = (_fiber: MyReactFiberNode, _dispatch: Rec
     __DEV__ && enableScopeTreeLog.current && setLogScope();
 
     _list.listToFoot(function invokeEffectList(_fiber) {
-      effect(_fiber, _dispatch);
+      effect(_dispatch, _fiber);
     });
 
     __DEV__ && enableScopeTreeLog.current && resetLogScope();

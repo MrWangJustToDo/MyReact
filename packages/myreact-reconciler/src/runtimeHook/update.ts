@@ -2,8 +2,9 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE, STATE_TYPE, include, isArrayEquals, isNormalEquals } from "@my-react/react-shared";
 
 import { getInstanceContextFiber, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
-import { currentRenderDispatch, getCurrentDispatchFromFiber, getHookTree, safeCallWithCurrentFiber } from "../share";
+import { getHookTree, safeCallWithCurrentFiber } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { RenderHookParams } from "@my-react/react";
@@ -13,9 +14,12 @@ const { enableDebugLog } = __my_react_shared__;
 
 const { currentHookTreeNode, currentScheduler } = __my_react_internal__;
 
-export const updateHookNode = ({ type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode, isHMR?: boolean) => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
-
+export const updateHookNode = (
+  renderDispatch: CustomRenderDispatch,
+  { type, value, reducer, deps }: RenderHookParams,
+  fiber: MyReactFiberNode,
+  isHMR?: boolean
+) => {
   const renderScheduler = currentScheduler.current;
 
   const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;

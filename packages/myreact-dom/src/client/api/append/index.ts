@@ -9,9 +9,9 @@ import type { DomElement, DomNode } from "@my-react-dom-shared";
 /**
  * @internal
  */
-export const append = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch) => {
+export const append = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__append__)) {
-    const parentFiberWithNode = getValidParentFiberWithNode(fiber, renderDispatch);
+    const parentFiberWithNode = getValidParentFiberWithNode(renderDispatch, fiber);
 
     const maybeContainer = parentFiberWithNode as MyReactFiberContainer;
 

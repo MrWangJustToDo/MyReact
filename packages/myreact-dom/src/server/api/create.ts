@@ -13,7 +13,7 @@ import type { ServerDomDispatch, LegacyServerStreamDispatch } from "@my-react-do
 /**
  * @internal
  */
-export const create = (fiber: MyReactFiberNode, _renderDispatch: ServerDomDispatch) => {
+export const create = (_renderDispatch: ServerDomDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     if (include(fiber.type, NODE_TYPE.__text__)) {
       fiber.nativeNode = new TextElement(escapeHtml(fiber.elementType.toString()));
@@ -68,7 +68,7 @@ export const create = (fiber: MyReactFiberNode, _renderDispatch: ServerDomDispat
 /**
  * @internal
  */
-export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch: LegacyServerStreamDispatch) => {
+export const createStartTagWithStream = (renderDispatch: LegacyServerStreamDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const stream = renderDispatch.stream;
 
@@ -141,7 +141,7 @@ export const createStartTagWithStream = (fiber: MyReactFiberNode, renderDispatch
 /**
  * @internal
  */
-export const createCloseTagWithStream = (fiber: MyReactFiberNode, renderDispatch: LegacyServerStreamDispatch) => {
+export const createCloseTagWithStream = (renderDispatch: LegacyServerStreamDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const stream = renderDispatch.stream;
     if (include(fiber.type, NODE_TYPE.__plain__)) {

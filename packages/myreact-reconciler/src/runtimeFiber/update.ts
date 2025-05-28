@@ -1,11 +1,13 @@
 import { exclude, include, isNormalEquals, merge, remove, STATE_TYPE } from "@my-react/react-shared";
 
-import { currentRenderDispatch, getCurrentDispatchFromFiber, NODE_TYPE } from "../share";
+import { NODE_TYPE } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactElement, MyReactElementNode, memo } from "@my-react/react";
 
 export const updateFiberNode = (
+  renderDispatch: CustomRenderDispatch,
   {
     fiber,
     parent,
@@ -22,8 +24,6 @@ export const updateFiberNode = (
   const prevProps = fiber.memoizedProps;
 
   const prevRef = fiber.ref;
-
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(parent);
 
   fiber.parent = parent;
 

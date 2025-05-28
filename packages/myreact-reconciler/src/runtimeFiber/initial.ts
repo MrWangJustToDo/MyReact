@@ -6,7 +6,7 @@ import { fiberToDispatchMap, safeCallWithCurrentFiber } from "../share";
 import type { MyReactFiberNode } from "./instance";
 
 // no need to resolve map for this fiber, this code only used for fiberRoot init
-export const initialFiberNode = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch) => {
+export const initialFiberNode = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   fiberToDispatchMap.set(fiber, renderDispatch);
 
   renderDispatch.pendingCreate(fiber);

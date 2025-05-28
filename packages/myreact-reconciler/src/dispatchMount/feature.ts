@@ -10,11 +10,11 @@ const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
+export const defaultDispatchMountLegacy = (_dispatch: CustomRenderDispatch, _fiber: MyReactFiberNode) => {
   const mountInsertionEffectList = (_fiber: MyReactFiberNode) => {
     if (_fiber.child) mountInsertionEffectList(_fiber.child);
 
-    insertionEffect(_fiber, _dispatch);
+    insertionEffect(_dispatch, _fiber);
 
     if (_fiber.sibling) mountInsertionEffectList(_fiber.sibling);
   };
@@ -46,7 +46,7 @@ export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: 
   const mountLayoutEffectList = (_fiber: MyReactFiberNode) => {
     if (_fiber.child) mountLayoutEffectList(_fiber.child);
 
-    layoutEffect(_fiber, _dispatch);
+    layoutEffect(_dispatch, _fiber);
 
     if (_fiber.sibling) mountLayoutEffectList(_fiber.sibling);
   };
@@ -54,7 +54,7 @@ export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: 
   const mountEffectList = (_fiber: MyReactFiberNode) => {
     if (_fiber.child) mountEffectList(_fiber.child);
 
-    effect(_fiber, _dispatch);
+    effect(_dispatch, _fiber);
 
     if (_fiber.sibling) mountEffectList(_fiber.sibling);
   };
@@ -84,13 +84,13 @@ export const defaultDispatchMountLegacy = (_fiber: MyReactFiberNode, _dispatch: 
   mountLoop(_fiber);
 };
 
-export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: CustomRenderDispatch) => {
+export const defaultDispatchMountLatest = (_dispatch: CustomRenderDispatch, _fiber: MyReactFiberNode) => {
   const _list = generateFiberToMountList(_fiber);
 
   beforeSyncUpdate();
 
   _list.listToFoot(function invokeInsertionEffectList(_fiber) {
-    insertionEffect(_fiber, _dispatch);
+    insertionEffect(_dispatch, _fiber);
   });
 
   afterSyncUpdate();
@@ -126,7 +126,7 @@ export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: 
   beforeSyncUpdate();
 
   _list.listToFoot(function invokeLayoutEffectList(_fiber) {
-    layoutEffect(_fiber, _dispatch);
+    layoutEffect(_dispatch, _fiber);
   });
 
   afterSyncUpdate();
@@ -137,7 +137,7 @@ export const defaultDispatchMountLatest = (_fiber: MyReactFiberNode, _dispatch: 
     __DEV__ && enableScopeTreeLog.current && setLogScope();
 
     _list.listToFoot(function invokeEffectList(_fiber) {
-      effect(_fiber, _dispatch);
+      effect(_dispatch, _fiber);
     });
 
     __DEV__ && enableScopeTreeLog.current && resetLogScope();

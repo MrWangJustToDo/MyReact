@@ -3,7 +3,7 @@ import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
 
 import { listenerMap } from "../renderDispatch";
 
-import { currentCallingFiber, enableFiberForLog } from "./env";
+import { enableFiberForLog } from "./env";
 import { NODE_TYPE } from "./fiberType";
 import { getCurrentDispatchFromFiber } from "./refresh";
 import { safeCallWithCurrentFiber } from "./safeCall";
@@ -19,7 +19,7 @@ import type {
   lazy,
 } from "@my-react/react";
 
-const { currentScheduler, currentRunningFiber, currentScopeFiber } = __my_react_internal__;
+const { currentScheduler, currentRunningFiber, currentScopeFiber, currentCallingFiber } = __my_react_internal__;
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
@@ -78,7 +78,7 @@ export const devWarn = (...args) => {
 
   const startWithPlain = typeof args[0] === "string" || typeof args[0] === "number" || typeof args[0] === "boolean";
 
-  const renderFiber = warnFiber || currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
+  const renderFiber = warnFiber || currentCallingFiber?.[currentCallingFiber?.length - 1] || currentScopeFiber.current || currentRunningFiber.current;
 
   renderFiber && fiberWarn(renderFiber as MyReactFiberNode, ...args);
 
@@ -113,7 +113,7 @@ export const devError = (...args) => {
 
   const startWithPlain = typeof args[0] === "string" || typeof args[0] === "number" || typeof args[0] === "boolean";
 
-  const renderFiber = errorFiber || currentCallingFiber.current || currentScopeFiber.current || currentRunningFiber.current;
+  const renderFiber = errorFiber || currentCallingFiber?.[currentCallingFiber?.length - 1] || currentScopeFiber.current || currentRunningFiber.current;
 
   renderFiber && fiberError(renderFiber as MyReactFiberNode, ...args);
 

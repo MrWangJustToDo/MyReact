@@ -58,7 +58,7 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
   }
 
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
-    unmount(_pendingUnmount, this);
+    unmount(this, _pendingUnmount);
   }
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
@@ -70,7 +70,7 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
   }
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
-    create(_fiber, this);
+    create(this, _fiber);
 
     return true;
   }
@@ -86,11 +86,11 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
   commitAppend(_fiber: MyReactFiberNode): void {
     const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
-    append(_fiber, parentFiberWithNode, this);
+    append(this, _fiber, parentFiberWithNode);
   }
 
   dispatchFiber(_fiber: MyReactFiberNode): void {
-    noopDispatchFiber(_fiber, this);
+    noopDispatchFiber(this, _fiber);
   }
 
   processFiber(_fiber: MyReactFiberNode): Promise<void> {
@@ -98,7 +98,7 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
-    initialElementMap(_fiber, this);
+    initialElementMap(this, _fiber);
   }
 }
 
@@ -151,7 +151,7 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
   }
 
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
-    unmount(_pendingUnmount, this);
+    unmount(this, _pendingUnmount);
   }
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
@@ -163,7 +163,7 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
   }
 
   commitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
-    create(_fiber, this);
+    create(this, _fiber);
 
     return true;
   }
@@ -179,11 +179,11 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
   commitAppend(_fiber: MyReactFiberNode): void {
     const parentFiberWithNode = this.runtimeDom.elementMap.get(_fiber);
 
-    append(_fiber, parentFiberWithNode, this);
+    append(this, _fiber, parentFiberWithNode);
   }
 
   dispatchFiber(_fiber: MyReactFiberNode): void {
-    noopDispatchFiber(_fiber, this);
+    noopDispatchFiber(this, _fiber);
   }
 
   processFiber(_fiber: MyReactFiberNode): Promise<void> {
@@ -191,6 +191,6 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
-    initialElementMap(_fiber, this);
+    initialElementMap(this, _fiber);
   }
 }

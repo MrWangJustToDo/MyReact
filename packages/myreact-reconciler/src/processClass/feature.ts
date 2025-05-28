@@ -14,7 +14,7 @@ import {
   setOwnerForInstance,
   unmountInstance,
 } from "../runtimeGenerate";
-import { afterSyncFlush, beforeSyncFlush, currentRenderDispatch, getCurrentDispatchFromFiber, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber } from "../share";
+import { afterSyncFlush, beforeSyncFlush, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
@@ -64,9 +64,7 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
   }
 };
 
-const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
-
+const processComponentInstanceOnMount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const Component = fiber.elementType;
 
   const typedComponent = Component as MixinMyReactClassComponent;
@@ -110,10 +108,8 @@ const processComponentInstanceOnMount = (fiber: MyReactFiberNode) => {
   fiber.pendingState = instance.state;
 };
 
-const processComponentFiberOnUpdate = (fiber: MyReactFiberNode) => {
+const processComponentFiberOnUpdate = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
-
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   safeCallWithCurrentFiber({
     fiber,
@@ -138,10 +134,8 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
   return children;
 };
 
-const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
+const processComponentDidMountOnMount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
-
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   const effect = getInstanceEffectState(typedInstance);
 
@@ -156,10 +150,8 @@ const processComponentDidMountOnMount = (fiber: MyReactFiberNode) => {
   }
 };
 
-const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
+const processComponentContextOnUpdate = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const Component = fiber.elementType;
-
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   const typedComponent = Component as MixinMyReactClassComponent;
 
@@ -185,10 +177,10 @@ const processComponentContextOnUpdate = (fiber: MyReactFiberNode) => {
   }
 };
 
-const processComponentPropsAndContextOnActive = (fiber: MyReactFiberNode) => {
+const processComponentPropsAndContextOnActive = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const props = Object.assign({}, fiber.pendingProps);
 
-  const context = processComponentContextOnUpdate(fiber);
+  const context = processComponentContextOnUpdate(renderDispatch, fiber);
 
   const typedInstance = fiber.instance as MyReactComponent;
 
@@ -233,6 +225,7 @@ const processComponentGetSnapshotOnUpdate = (fiber: MyReactFiberNode, { baseStat
 };
 
 const processComponentDidUpdateOnUpdate = (
+  renderDispatch: CustomRenderDispatch,
   fiber: MyReactFiberNode,
   {
     baseState,
@@ -245,8 +238,6 @@ const processComponentDidUpdateOnUpdate = (
   }
 ) => {
   const typedInstance = fiber.instance as MyReactComponent;
-
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
 
   const effect = getInstanceEffectState(typedInstance);
 
@@ -394,47 +385,47 @@ const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextSt
   }
 };
 
-export const processClassComponentMount = (fiber: MyReactFiberNode) => {
-  processComponentInstanceOnMount(fiber);
+export const processClassComponentMount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  processComponentInstanceOnMount(renderDispatch, fiber);
 
   processComponentStateFromProps(fiber);
 
   // legacy lifeCycle
   if (enableLegacyLifeCycle.current) {
     beforeSyncFlush();
-    processComponentWillMountOnMount(fiber) && syncFlushComponentQueue(fiber);
+    processComponentWillMountOnMount(fiber) && syncFlushComponentQueue(renderDispatch, fiber);
     afterSyncFlush();
   }
 
   const children = processComponentRenderOnMountAndUpdate(fiber);
 
-  processComponentDidMountOnMount(fiber);
+  processComponentDidMountOnMount(renderDispatch, fiber);
 
   return children;
 };
 
 // TODO
-export const processClassComponentActive = (fiber: MyReactFiberNode) => {
-  processComponentFiberOnUpdate(fiber);
+export const processClassComponentActive = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  processComponentFiberOnUpdate(renderDispatch, fiber);
 
-  processComponentPropsAndContextOnActive(fiber);
+  processComponentPropsAndContextOnActive(renderDispatch, fiber);
 
   const children = processComponentRenderOnMountAndUpdate(fiber);
 
-  processComponentDidMountOnMount(fiber);
+  processComponentDidMountOnMount(renderDispatch, fiber);
 
   return children;
 };
 
 // TODO
-const classComponentUpdateImpl = (fiber: MyReactFiberNode) => {
-  processComponentFiberOnUpdate(fiber);
+const classComponentUpdateImpl = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  processComponentFiberOnUpdate(renderDispatch, fiber);
 
   processComponentStateFromProps(fiber);
 
   if (enableLegacyLifeCycle.current) {
     beforeSyncFlush();
-    processComponentWillReceiveProps(fiber) && syncFlushComponentQueue(fiber);
+    processComponentWillReceiveProps(fiber) && syncFlushComponentQueue(renderDispatch, fiber);
     afterSyncFlush();
   }
 
@@ -449,7 +440,7 @@ const classComponentUpdateImpl = (fiber: MyReactFiberNode) => {
 
   const nextProps = Object.assign({}, fiber.pendingProps);
 
-  const nextContext = processComponentContextOnUpdate(fiber);
+  const nextContext = processComponentContextOnUpdate(renderDispatch, fiber);
 
   let shouldUpdate = Boolean(include(fiber.state, STATE_TYPE.__triggerSyncForce__ | STATE_TYPE.__triggerConcurrentForce__));
 
@@ -476,7 +467,7 @@ const classComponentUpdateImpl = (fiber: MyReactFiberNode) => {
 
     const snapshot = processComponentGetSnapshotOnUpdate(fiber, { baseState, baseProps });
 
-    processComponentDidUpdateOnUpdate(fiber, {
+    processComponentDidUpdateOnUpdate(renderDispatch, fiber, {
       snapshot,
       baseProps,
       baseState,
@@ -495,21 +486,21 @@ export const syncComponentStateToFiber = (fiber: MyReactFiberNode) => {
   fiber.pendingState = Object.assign({}, typedInstance.state);
 };
 
-export const processClassComponentUpdate = (fiber: MyReactFiberNode) => {
-  const res = classComponentUpdateImpl(fiber);
+export const processClassComponentUpdate = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  const res = classComponentUpdateImpl(renderDispatch, fiber);
 
   syncComponentStateToFiber(fiber);
 
   return res;
 };
 
-export const processClassComponentUnmount = (fiber: MyReactFiberNode, _renderDispatch: CustomRenderDispatch) => {
+export const processClassComponentUnmount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallInstanceUnmountListener() {
-      listenerMap.get(_renderDispatch)?.instanceUnmount?.forEach((cb) => cb(typedInstance, fiber));
+      listenerMap.get(renderDispatch)?.instanceUnmount?.forEach((cb) => cb(typedInstance, fiber));
     },
   });
 

@@ -3,32 +3,30 @@ import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 import { defaultInvokeUnmountList } from "../dispatchUnmount";
 // import { triggerUnmount } from "../renderUpdate";
 import { unmountFiberNode } from "../runtimeFiber";
-import { currentTriggerFiber, fiberToDispatchMap, generateFiberToUnmountList } from "../share";
+import { currentTriggerFiber, generateFiberToUnmountList } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { ListTree } from "@my-react/react-shared";
 
-export const unmountList = (list: ListTree<MyReactFiberNode>, renderDispatch: CustomRenderDispatch) => {
+export const unmountList = (renderDispatch: CustomRenderDispatch, list: ListTree<MyReactFiberNode>) => {
   // will happen when app crash
   list.listToFoot(function invokeUnmountPendingList(f) {
-    defaultInvokeUnmountList(f, renderDispatch);
+    defaultInvokeUnmountList(renderDispatch, f);
   });
 
   list.listToFoot(function invokeFiberUnmountList(f) {
-    unmountFiberNode(f, renderDispatch);
+    unmountFiberNode(renderDispatch, f);
   });
 };
 
 // unmount current fiber
-export const unmountFiber = (fiber: MyReactFiberNode) => {
+export const unmountFiber = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
-
-  const renderDispatch = fiberToDispatchMap.get(fiber);
 
   const list = generateFiberToUnmountList(fiber);
 
-  unmountList(list, renderDispatch);
+  unmountList(renderDispatch, list);
 };
 
 // unmount current container with safe
@@ -41,11 +39,11 @@ export const unmountContainer = (renderDispatch: CustomRenderDispatch, cb?: () =
 };
 
 export const clearContainer = (renderDispatch: CustomRenderDispatch) => {
-  renderDispatch.pendingCommitFiberList?.clear();
-  renderDispatch.pendingChangedFiberList?.clear();
   renderDispatch.pendingCommitFiberPatch = PATCH_TYPE.__initial__;
   renderDispatch.pendingUpdateFiberArray?.clear();
-  renderDispatch.pendingAsyncLoadFiberList?.clear();
+  renderDispatch.pendingAsyncLoadList?.clear();
+  renderDispatch.pendingCommitFiberList?.clear();
+  renderDispatch.pendingChangedFiberList?.clear();
   renderDispatch.resetUpdateFlowRuntimeFiber();
   renderDispatch.isAppMounted = false;
   renderDispatch.isAppUnmounted = true;

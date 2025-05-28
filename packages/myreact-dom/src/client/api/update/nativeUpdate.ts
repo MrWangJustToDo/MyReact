@@ -27,7 +27,7 @@ const isFalse = (v: any) => v === null || v === undefined;
 /**
  * @internal
  */
-export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, isMount: boolean) => {
+export const nativeUpdate = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, isMount: boolean) => {
   if (!fiber.nativeNode) throw new Error("[@my-react/react-dom] update error, dom not exist");
 
   const node = fiber.nativeNode as DomElement | DomNode;
@@ -74,12 +74,12 @@ export const nativeUpdate = (fiber: MyReactFiberNode, renderDispatch: ClientDomD
 
     if (enableEventSystem.current && enableControlComponent.current && controlElementTag[fiber.elementType as string]) {
       if (isMount) {
-        mountControl(fiber, renderDispatch);
+        mountControl(renderDispatch, fiber);
         if (fiber.elementType === "select") {
           requestAnimationFrame(() => initSelect(fiber));
         }
       } else {
-        updateControl(fiber, renderDispatch);
+        updateControl(renderDispatch, fiber);
         if (fiber.elementType === "select") {
           requestAnimationFrame(() => updateSelect(fiber));
         }

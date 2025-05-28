@@ -69,7 +69,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
   }
 
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
-    unmount(_pendingUnmount, this);
+    unmount(this, _pendingUnmount);
   }
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
@@ -81,7 +81,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
   }
 
   dispatchFiber(_fiber: MyReactFiberNode): void {
-    serverDispatchFiber(_fiber, this);
+    serverDispatchFiber(this, _fiber);
   }
 
   // will never be called
@@ -97,7 +97,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
       safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallCreateStartTagWithStream() {
-          createStartTagWithStream(_fiber, instance);
+          createStartTagWithStream(instance, _fiber);
         },
       });
 
@@ -106,7 +106,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
       safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallCreateCloseTagWithStream() {
-          createCloseTagWithStream(_fiber, instance);
+          createCloseTagWithStream(instance, _fiber);
         },
       });
 
@@ -148,7 +148,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
-    initialElementMap(_fiber, this);
+    initialElementMap(this, _fiber);
   }
 
   dispatchState(_params: UpdateQueue): void {
@@ -156,7 +156,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
   }
 
   dispatchHook(_params: RenderHookParams): unknown {
-    return processHook(_params);
+    return processHook(this, _params);
   }
 
   dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
@@ -228,7 +228,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
   }
 
   pendingUnmount(_fiber: MyReactFiberNode, _pendingUnmount: MyReactFiberNode): void {
-    unmount(_pendingUnmount, this);
+    unmount(this, _pendingUnmount);
   }
 
   pendingEffect(_fiber: MyReactFiberNode, _effect: () => void): void {
@@ -240,7 +240,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
   }
 
   dispatchFiber(_fiber: MyReactFiberNode): void {
-    serverDispatchFiber(_fiber, this);
+    serverDispatchFiber(this, _fiber);
   }
 
   processFiber(_fiber: MyReactFiberNode): Promise<void> {
@@ -255,7 +255,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
       safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallCreateStartTagWithStream() {
-          createStartTagWithStream(_fiber, instance);
+          createStartTagWithStream(instance, _fiber);
         },
       });
 
@@ -264,7 +264,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
       safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallCreateCloseTagWithStream() {
-          createCloseTagWithStream(_fiber, instance);
+          createCloseTagWithStream(instance, _fiber);
         },
       });
 
@@ -315,7 +315,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
   }
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
-    initialElementMap(_fiber, this);
+    initialElementMap(this, _fiber);
   }
 
   dispatchState(_params: UpdateQueue): void {
@@ -323,7 +323,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
   }
 
   dispatchHook(_params: RenderHookParams): unknown {
-    return processHook(_params);
+    return processHook(this, _params);
   }
 
   dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {

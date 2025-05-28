@@ -12,14 +12,14 @@ import { nativeUpdate } from "./nativeUpdate";
 /**
  * @internal
  */
-export const update = (fiber: MyReactFiberNode, renderDispatch: ClientDomDispatch, hydrate: boolean) => {
+export const update = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, hydrate: boolean) => {
   if (include(fiber.patch, PATCH_TYPE.__update__)) {
     if (__DEV__) validDomProps(fiber);
 
     if (hydrate) {
-      hydrateUpdate(fiber, renderDispatch);
+      hydrateUpdate(renderDispatch, fiber);
     } else {
-      nativeUpdate(fiber, renderDispatch, fiber.memoizedProps === emptyProps);
+      nativeUpdate(renderDispatch, fiber, fiber.memoizedProps === emptyProps);
     }
 
     if (__DEV__) {

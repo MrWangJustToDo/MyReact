@@ -125,6 +125,8 @@ const getInitialFiber = (): RenderDispatch["runtimeFiber"] => ({
   errorCatchFiber: null,
 
   nextWorkingFiber: null,
+
+  immediateUpdateFiber: null,
 });
 
 const initialRef: RenderDispatch["runtimeRef"] = {
@@ -162,9 +164,9 @@ export class RenderDispatchEvent extends MyReactInternalInstance implements Rend
 
   isAppUnmounted: boolean;
 
-  pendingCommitFiberList: ListTree<MyReactFiberNode>;
+  pendingAsyncLoadList: ListTree<MyReactFiberNode | (() => Promise<void>)>;
 
-  pendingAsyncLoadFiberList: ListTree<MyReactFiberNode>;
+  pendingCommitFiberList: ListTree<MyReactFiberNode>;
 
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode>;
 

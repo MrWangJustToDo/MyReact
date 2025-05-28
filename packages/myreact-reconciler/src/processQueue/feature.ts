@@ -5,7 +5,7 @@ import { HOOK_TYPE, ListTree, STATE_TYPE, UpdateQueueType, exclude, include } fr
 import { syncComponentStateToFiber } from "../processClass";
 import { prepareUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
-import { enableDebugUpdateQueue, getCurrentDispatchFromFiber, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
+import { enableDebugUpdateQueue, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { UpdateQueueDev } from "../processState";
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -26,7 +26,7 @@ export type UpdateState = {
 };
 
 // TODO 整合
-export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, enableTaskPriority?: boolean): UpdateState => {
+export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, enableTaskPriority?: boolean): UpdateState => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (exclude(fiber.type, NODE_TYPE.__class__)) throw new Error("[@my-react/react] current fiber is not a class component, look like a bug for @my-react");
@@ -208,7 +208,7 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 
     if (allQueue.length) {
       renderScheduler.macroTask(function prepareUpdateOnFiberTask() {
-        prepareUpdateOnFiber(fiber, renderDispatch, true, false);
+        prepareUpdateOnFiber(renderDispatch, fiber, true, false);
       });
     }
 
@@ -412,8 +412,8 @@ export const processClassComponentUpdateQueue = (fiber: MyReactFiberNode, render
 };
 
 export const processFunctionComponentUpdateQueue = (
-  fiber: MyReactFiberNode,
   renderDispatch: CustomRenderDispatch,
+  fiber: MyReactFiberNode,
   enableTaskPriority?: boolean
 ): UpdateState => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
@@ -650,7 +650,7 @@ export const processFunctionComponentUpdateQueue = (
 
     if (allQueue.length) {
       renderScheduler.macroTask(function prepareUpdateOnFiberTask() {
-        prepareUpdateOnFiber(fiber, renderDispatch, true, false);
+        prepareUpdateOnFiber(renderDispatch, fiber, true, false);
       });
     }
 
@@ -1131,7 +1131,7 @@ export const processNormalComponentUpdate = (fiber: MyReactFiberNode): UpdateSta
 /**
  * @deprecated
  */
-export const syncFiberStateToComponent = (fiber: MyReactFiberNode, renderDispatch: CustomRenderDispatch, callback?: () => void) => {
+export const syncFiberStateToComponent = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, callback?: () => void) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
   const typedPendingState = fiber.pendingState;
@@ -1144,12 +1144,10 @@ export const syncFiberStateToComponent = (fiber: MyReactFiberNode, renderDispatc
 /**
  * @deprecated
  */
-export const syncFlushComponentQueue = (fiber: MyReactFiberNode) => {
-  const renderDispatch = getCurrentDispatchFromFiber(fiber);
+export const syncFlushComponentQueue = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  const { needUpdate, callback } = processClassComponentUpdateQueue(renderDispatch, fiber);
 
-  const { needUpdate, callback } = processClassComponentUpdateQueue(fiber, renderDispatch);
-
-  needUpdate && syncFiberStateToComponent(fiber, renderDispatch, callback);
+  needUpdate && syncFiberStateToComponent(renderDispatch, fiber, callback);
 
   syncComponentStateToFiber(fiber);
 };

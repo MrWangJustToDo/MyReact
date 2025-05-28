@@ -1,13 +1,15 @@
 import { PATCH_TYPE, exclude } from "@my-react/react-shared";
 
 import { listenerMap } from "../renderDispatch";
-import { currentRenderDispatch, fiberToDispatchMap, getCurrentDispatchFromFiber, safeCallWithCurrentFiber } from "../share";
+import { fiberToDispatchMap, safeCallWithCurrentFiber } from "../share";
 
 import { MyReactFiberNode } from "./instance";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactElementNode } from "@my-react/react";
 
 export const createFiberNode = (
+  renderDispatch: CustomRenderDispatch,
   {
     parent,
     type = "append",
@@ -17,8 +19,6 @@ export const createFiberNode = (
   },
   element: MyReactElementNode
 ) => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(parent);
-
   const newFiberNode = new MyReactFiberNode(element);
 
   fiberToDispatchMap.set(newFiberNode, renderDispatch);

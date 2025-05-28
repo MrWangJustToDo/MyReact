@@ -6,7 +6,7 @@ import { getInsertBeforeNodeFromSiblingAndParent, getValidParentFiberWithNode } 
 import type { ReconcilerDispatch } from "../dispatch";
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
-const append = (fiber: MyReactFiberNode, parentFiberWithNode: MyReactFiberNode | null, dispatch: ReconcilerDispatch, config: any) => {
+const append = (dispatch: ReconcilerDispatch, config: any, fiber: MyReactFiberNode, parentFiberWithNode: MyReactFiberNode | null) => {
   if (!fiber) throw new Error("position error, look like a bug for @my-react");
 
   fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
@@ -46,18 +46,18 @@ const append = (fiber: MyReactFiberNode, parentFiberWithNode: MyReactFiberNode |
   let child = fiber.child;
 
   while (child) {
-    append(child, parentFiberWithNode, dispatch, config);
+    append(dispatch, config, child, parentFiberWithNode);
 
     child = child.sibling;
   }
 };
 
 const insertBefore = (
+  dispatch: ReconcilerDispatch,
+  config: any,
   fiber: MyReactFiberNode,
   beforeFiberWithNode: MyReactFiberNode,
-  parentFiberWithNode: MyReactFiberNode | null,
-  dispatch: ReconcilerDispatch,
-  config: any
+  parentFiberWithNode: MyReactFiberNode | null
 ) => {
   if (!fiber) throw new Error("position error, look like a bug for @my-react");
 
@@ -107,25 +107,25 @@ const insertBefore = (
   let child = fiber.child;
 
   while (child) {
-    insertBefore(child, beforeFiberWithNode, parentFiberWithNode, dispatch, config);
+    insertBefore(dispatch, config, child, beforeFiberWithNode, parentFiberWithNode);
 
     child = child.sibling;
   }
 };
 
-export const position = (_fiber: MyReactFiberNode, _dispatch: ReconcilerDispatch, _config: any) => {
+export const position = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, _config: any) => {
   if (!include(_fiber.patch, PATCH_TYPE.__position__)) return;
 
   const rootFiber = _dispatch.rootFiber;
 
-  const parentFiberWithNode = getValidParentFiberWithNode(_fiber, _dispatch);
+  const parentFiberWithNode = getValidParentFiberWithNode(_dispatch, _fiber);
 
   const beforeFiberWithNode = getInsertBeforeNodeFromSiblingAndParent(_fiber, parentFiberWithNode || rootFiber);
 
   if (beforeFiberWithNode && exclude(beforeFiberWithNode.patch, PATCH_TYPE.__append__ | PATCH_TYPE.__position__)) {
-    insertBefore(_fiber, beforeFiberWithNode, parentFiberWithNode, _dispatch, _config);
+    insertBefore(_dispatch, _config, _fiber, beforeFiberWithNode, parentFiberWithNode);
   } else {
-    append(_fiber, parentFiberWithNode, _dispatch, _config);
+    append(_dispatch, _config, _fiber, parentFiberWithNode);
   }
 
   _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__position__);

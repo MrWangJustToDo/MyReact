@@ -4,17 +4,16 @@ import { merge, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 import { processState } from "../processState";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { WrapperByLazyScope } from "../runtimeScope";
-import { currentRenderDispatch, fiberToDispatchMap, getCurrentDispatchFromFiber } from "../share";
+import { fiberToDispatchMap } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { VisibleInstanceField } from "../runtimeGenerate";
 import type { LazyUpdateQueue, MixinMyReactFunctionComponent } from "@my-react/react";
 
 const { currentScheduler } = __my_react_internal__;
 
-export const processLazy = (fiber: MyReactFiberNode) => {
-  const renderDispatch = currentRenderDispatch.current || getCurrentDispatchFromFiber(fiber);
-
+export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const typedElementType = fiber.elementType as ReturnType<typeof lazy>;
 
   if (typedElementType._loaded === true) {
@@ -22,9 +21,9 @@ export const processLazy = (fiber: MyReactFiberNode) => {
 
     return WrapperByLazyScope(createElement(render as MixinMyReactFunctionComponent, fiber.pendingProps));
   } else if (typedElementType._loading === false) {
-    const visibleFiber = renderDispatch.resolveSuspenseFiber(fiber);
-
     typedElementType._loading = true;
+
+    const visibleFiber = renderDispatch.resolveSuspenseFiber(fiber);
 
     if (visibleFiber) {
       const updateQueue: LazyUpdateQueue = {
@@ -39,13 +38,15 @@ export const processLazy = (fiber: MyReactFiberNode) => {
         isImmediate: true,
       };
 
+      // collect all the sibling lazy component, so that we can update them all at once
+
       const visibleField = getInstanceFieldByInstance(visibleFiber.instance) as VisibleInstanceField;
 
       visibleField.isHidden = true;
 
       visibleFiber.state = merge(visibleFiber.state, STATE_TYPE.__create__);
 
-      processState(updateQueue);
+      processState(renderDispatch, updateQueue);
 
       Promise.resolve(typedElementType.loader())
         .then((loaded) => {

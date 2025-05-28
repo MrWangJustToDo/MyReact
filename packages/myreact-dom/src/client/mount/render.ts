@@ -103,9 +103,9 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
 
   autoSetDevHMR(renderDispatch);
 
-  initialFiberNode(fiber, renderDispatch);
+  initialFiberNode(renderDispatch, fiber);
 
-  startRender(fiber, renderDispatch);
+  startRender(renderDispatch, fiber);
 
   delete renderDispatch.isClientRender;
 

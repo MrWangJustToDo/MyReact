@@ -7,6 +7,7 @@ import { type MyReactFiberNode } from "../runtimeFiber";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { fiberToDispatchMap } from "../share";
 
+import type { CustomRenderDispatch } from "../renderDispatch";
 import type { VisibleInstanceField } from "../runtimeGenerate";
 import type { PromiseUpdateQueue } from "@my-react/react";
 
@@ -14,12 +15,10 @@ export type PromiseWithState<T> = Promise<T> & { status?: "fulfilled" | "rejecte
 
 const { currentScheduler } = __my_react_internal__;
 
-export const processPromise = (fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
-  const renderDispatch = fiberToDispatchMap.get(fiber);
-
+export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
   const visibleFiber = renderDispatch.resolveSuspenseFiber(fiber);
 
-  defaultDeleteCurrentEffect(fiber, renderDispatch);
+  defaultDeleteCurrentEffect(renderDispatch, fiber);
 
   if (promise.status === "rejected") {
     currentScheduler.current.dispatchError?.({ fiber, error: promise.reason });
@@ -33,8 +32,10 @@ export const processPromise = (fiber: MyReactFiberNode, promise: PromiseWithStat
     }
   }
 
+  // collect all the sibling lazy component, so that we can update them all at once
+
   if (visibleFiber) {
-    defaultDeleteChildEffect(visibleFiber, renderDispatch);
+    defaultDeleteChildEffect(renderDispatch, visibleFiber);
 
     const updateQueue: PromiseUpdateQueue = {
       type: UpdateQueueType.promise,
@@ -55,7 +56,7 @@ export const processPromise = (fiber: MyReactFiberNode, promise: PromiseWithStat
 
     visibleFiber.state = merge(visibleFiber.state, STATE_TYPE.__create__);
 
-    processState(updateQueue);
+    processState(renderDispatch, updateQueue);
 
     promise
       .then((value) => {

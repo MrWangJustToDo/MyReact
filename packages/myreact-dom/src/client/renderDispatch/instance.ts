@@ -51,6 +51,8 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   enableUpdate = true;
 
+  enableAsyncLoad = true;
+
   renderPackage = "@my-react/react-dom";
 
   isHydrateRender: boolean;

@@ -73,7 +73,7 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
 
     renderDispatch.pendingAsyncLoadList.clear();
 
-    if (renderDispatch.enableNewEntry) {
+    if (renderDispatch.enableAsyncLoad) {
       Promise.all(
         asyncLoadList.map(async (node) => {
           if (checkIsMyReactFiberNode(node)) {
@@ -139,7 +139,7 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
       }
     } else {
       console.error(
-        "[@my-react/reconciler] should not process async load list on sync mount without enableNewEntry, you may use a wrong renderDispatch instance"
+        "[@my-react/reconciler] should not process async load list on sync mount without enableAsyncLoad, you may use a wrong renderDispatch instance"
       );
     }
   }

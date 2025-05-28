@@ -15,6 +15,8 @@ export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
 
   enableUpdate = false;
 
+  enableAsyncLoad = true;
+
   isHydrateRender: boolean;
 
   isClientRender: boolean;
@@ -99,6 +101,8 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
   };
 
   enableUpdate = false;
+
+  enableAsyncLoad = true;
 
   isHydrateRender: boolean;
 

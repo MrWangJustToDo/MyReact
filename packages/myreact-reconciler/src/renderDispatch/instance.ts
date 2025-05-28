@@ -37,6 +37,8 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   enableNewEntry: boolean;
 
+  enableAsyncLoad: boolean;
+
   renderMode = "render";
 
   renderPackage?: string;

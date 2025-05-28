@@ -1,5 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
+import { include, STATE_TYPE } from "@my-react/react-shared";
 
+import { getFiberTree as getFiberTreeImpl } from "./debug";
 import { getCurrentDispatchFromFiber } from "./refresh";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -13,6 +15,8 @@ const dispatchHook = (params: RenderHookParams) => {
   if (!fiber) {
     throw new Error("No current running fiber found for dispatching hook.");
   }
+
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const dispatch = getCurrentDispatchFromFiber(fiber);
 
@@ -32,6 +36,8 @@ const dispatchState = (_params: UpdateQueue) => {
     throw new Error("No fiber found for dispatching state.");
   }
 
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+
   const dispatch = getCurrentDispatchFromFiber(fiber);
 
   if (!dispatch) {
@@ -47,6 +53,8 @@ const dispatchError = (_params: { fiber?: MyReactFiberNode; error?: Error }) => 
   if (!fiber) {
     throw new Error("No fiber found for dispatching error.");
   }
+
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const dispatch = getCurrentDispatchFromFiber(fiber);
 
@@ -64,6 +72,8 @@ const dispatchPromise = (_params: { fiber?: MyReactFiberNode; promise?: Promise<
     throw new Error("No fiber found for dispatching promise.");
   }
 
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+
   const dispatch = getCurrentDispatchFromFiber(fiber);
 
   if (!dispatch) {
@@ -79,6 +89,8 @@ const readContext = (_params: ReturnType<typeof createContext>): unknown => {
   if (!fiber) {
     throw new Error("No current running fiber found for reading context.");
   }
+
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const dispatch = getCurrentDispatchFromFiber(fiber);
 
@@ -96,6 +108,8 @@ const readPromise = (_params: Promise<unknown>): unknown => {
     throw new Error("No current running fiber found for reading promise.");
   }
 
+  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+
   const dispatch = getCurrentDispatchFromFiber(fiber);
 
   if (!dispatch) {
@@ -108,11 +122,11 @@ const readPromise = (_params: Promise<unknown>): unknown => {
 const getFiberTree = (fiber: MyReactFiberNode): string => {
   const dispatch = getCurrentDispatchFromFiber(fiber);
 
-  if (!dispatch) {
-    throw new Error("No dispatch found for the current running fiber.");
+  if (dispatch) {
+    return dispatch.getFiberTree(fiber);
+  } else {
+    return getFiberTreeImpl(fiber);
   }
-
-  return dispatch.getFiberTree(fiber);
 };
 
 export const initScheduler = () => {

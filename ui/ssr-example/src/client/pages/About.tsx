@@ -55,8 +55,6 @@ export default function About() {
     }
   }, [navigate]);
 
-  return <div>123</div>
-
   return (
     <Container maxWidth={CONTAINER_WIDTH} position="relative" height={`calc(100vh - ${height}px)`}>
       <Table

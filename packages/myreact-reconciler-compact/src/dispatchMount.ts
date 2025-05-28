@@ -44,7 +44,7 @@ export const ReconcilerDispatchMount = (_fiber: MyReactFiberNode, _dispatch: Rec
   _list.listToFoot(function invokeAppendList(_fiber) {
     safeCallWithCurrentFiber({
       fiber: _fiber,
-      action: function safeCallAppendAndSetRef() {
+      action: function safeCallAppendList() {
         _dispatch.commitAppend(_fiber);
       },
     });
@@ -53,7 +53,7 @@ export const ReconcilerDispatchMount = (_fiber: MyReactFiberNode, _dispatch: Rec
   _list.listToFoot(function invokeSetRefList(_fiber) {
     safeCallWithCurrentFiber({
       fiber: _fiber,
-      action: function safeCallUnsetRef() {
+      action: function safeCallSetRefList() {
         _dispatch.commitSetRef(_fiber);
       },
     });

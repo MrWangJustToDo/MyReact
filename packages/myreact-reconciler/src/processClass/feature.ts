@@ -12,7 +12,6 @@ import {
   setContextForInstance,
   setEffectForInstance,
   setOwnerForInstance,
-  unmountInstance,
 } from "../runtimeGenerate";
 import { afterSyncFlush, beforeSyncFlush, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber } from "../share";
 
@@ -510,6 +509,4 @@ export const processClassComponentUnmount = (renderDispatch: CustomRenderDispatc
       typedInstance?.componentWillUnmount?.();
     },
   });
-
-  unmountInstance(typedInstance);
 };

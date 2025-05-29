@@ -6,6 +6,7 @@ import {
   type MyReactElementNode,
   type UpdateQueue,
   type RenderHookParams,
+  type MyReactInternalInstance,
 } from "@my-react/react";
 
 import { triggerUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
@@ -18,7 +19,7 @@ import type { UpdateState } from "../processQueue";
 import type { MyReactHookNode } from "../runtimeHook";
 import type { ListTree, STATE_TYPE, UniqueArray } from "@my-react/react-shared";
 
-const { Dispatcher, MyReactInternalInstance } = __my_react_internal__;
+const { Dispatcher, MyReactInternalInstance: MyReactInternalInstanceClass, dispatchToListenerMap } = __my_react_internal__;
 
 type Listeners = {
   fiberInitial: Set<(fiber: MyReactFiberNode) => void>;
@@ -144,9 +145,9 @@ const initialRef: RenderDispatch["runtimeRef"] = {
   typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
 };
 
-export const listenerMap = new Map<RenderDispatch, Listeners>();
+export const listenerMap = dispatchToListenerMap as Map<MyReactInternalInstance, Listeners>;
 
-export class RenderDispatchEvent extends MyReactInternalInstance implements RenderDispatch {
+export class RenderDispatchEvent extends MyReactInternalInstanceClass implements RenderDispatch {
   runtimeMap: RenderDispatch["runtimeMap"];
 
   runtimeRef: RenderDispatch["runtimeRef"];
@@ -247,7 +248,7 @@ export class RenderDispatchEvent extends MyReactInternalInstance implements Rend
   processFiber(_fiber: MyReactFiberNode): Promise<void> {
     return Promise.resolve();
   }
-  
+
   processPromise(_promise: PromiseWithState<unknown>): Promise<void> {
     return Promise.resolve();
   }

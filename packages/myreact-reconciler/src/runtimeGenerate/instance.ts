@@ -1,13 +1,14 @@
 import { __my_react_internal__, type MyReactInternalInstance } from "@my-react/react";
 import { Effect_TYPE } from "@my-react/react-shared";
 
-import type { MyReactFiberNode } from "../runtimeFiber";
+import { checkIsMyReactFiberNode, type MyReactFiberNode } from "../runtimeFiber";
 
-const { MyReactInternalInstance: MyReactInternalInstanceClass } = __my_react_internal__;
+const { MyReactInternalInstance: MyReactInternalInstanceClass, instanceToInitialFieldMap } = __my_react_internal__;
 
 export type InstanceField = {
   _context: MyReactFiberNode | null;
   _owner: MyReactFiberNode | null;
+  _subscribe: Set<MyReactFiberNode> | null;
   effect: Effect_TYPE;
 };
 
@@ -16,7 +17,7 @@ export type VisibleInstanceField = InstanceField & {
 };
 
 // support private instance field
-const instanceMap = new Map<MyReactInternalInstance, InstanceField>();
+const instanceMap = instanceToInitialFieldMap as Map<MyReactInternalInstance, InstanceField | VisibleInstanceField>;
 
 export const initInstance = (instance: MyReactInternalInstance) => {
   const exist = instanceMap.get(instance);
@@ -24,8 +25,9 @@ export const initInstance = (instance: MyReactInternalInstance) => {
   if (exist) return exist;
 
   const field: InstanceField = {
-    _context: null,
     _owner: null,
+    _context: null,
+    _subscribe: null,
     effect: Effect_TYPE.__initial__,
   };
 
@@ -44,6 +46,17 @@ export const initVisibleInstance = (instance: MyReactInternalInstance) => {
   typedField.isHidden = false;
 };
 
+export const setOwnerForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode, instanceField?: InstanceField) => {
+  const field = instanceField || instanceMap.get(instance);
+
+  instance._reactInternals = fiber;
+
+  // unmount instance
+  if (!field) return;
+
+  field._owner = fiber;
+};
+
 export const setContextForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode | null, instanceField?: InstanceField) => {
   const field = instanceField || instanceMap.get(instance);
 
@@ -57,15 +70,21 @@ export const setContextForInstance = (instance: MyReactInternalInstance, fiber: 
   field._context?._addDependence(instance);
 };
 
-export const setOwnerForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode, instanceField?: InstanceField) => {
+export const setSubscribeForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode | null, instanceField?: InstanceField) => {
   const field = instanceField || instanceMap.get(instance);
-
-  instance._reactInternals = fiber;
 
   // unmount instance
   if (!field) return;
 
-  field._owner = fiber;
+  if (!field._subscribe) {
+    field._subscribe = new Set();
+  }
+
+  if (fiber) {
+    field._subscribe.add(fiber);
+
+    fiber._addDependence(instance);
+  }
 };
 
 export const setEffectForInstance = (instance: MyReactInternalInstance, effect: Effect_TYPE, instanceField?: InstanceField) => {
@@ -77,7 +96,9 @@ export const setEffectForInstance = (instance: MyReactInternalInstance, effect: 
   field.effect = effect;
 };
 
-export const unmountInstance = (instance: MyReactInternalInstance) => {
+export const unmountInstance = (instance: MyReactInternalInstance | null) => {
+  if (!instance || !instance.isMyReactInstance) return;
+
   const field = instanceMap.get(instance);
 
   if (!field) return;
@@ -89,6 +110,10 @@ export const unmountInstance = (instance: MyReactInternalInstance) => {
   field._owner = null;
 
   field._context = null;
+
+  field._subscribe?.forEach?.((fiber) => {
+    fiber?._delDependence?.(instance);
+  });
 
   instanceMap.delete(instance);
 };
@@ -108,12 +133,10 @@ export const getInstanceOwnerFiber = (instance: MyReactInternalInstance | MyReac
 
     return field?._owner;
   } else {
-    const typedFiber = instance as { isMyReactFiberNode?: boolean };
-    if (typedFiber.isMyReactFiberNode) {
-      return typedFiber as MyReactFiberNode;
-    } else {
-      throw new Error("instance is not a MyReactInternalInstance or MyReactFiberNode");
+    if (checkIsMyReactFiberNode(instance)) {
+      return instance;
     }
+    throw new Error("instance is not a MyReactInternalInstance or MyReactFiberNode");
   }
 };
 

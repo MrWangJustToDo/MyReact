@@ -53,6 +53,8 @@ import {
   cache,
   Dispatcher,
   fiberToDispatchMap,
+  dispatchToListenerMap,
+  instanceToInitialFieldMap,
   currentScheduler,
 } from "./share";
 
@@ -120,6 +122,9 @@ const __my_react_internal__ = {
   Dispatcher,
 
   fiberToDispatchMap,
+  dispatchToListenerMap,
+  instanceToInitialFieldMap,
+
   currentScheduler,
   currentScopeFiber,
   currentRunningFiber,

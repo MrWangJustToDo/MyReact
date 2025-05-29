@@ -8,10 +8,22 @@ import type { RenderFiber } from "../renderFiber";
 import type { RenderHook } from "../renderHook";
 import type { ListTreeNode } from "@my-react/react-shared";
 
+// TODO gc
+
 /**
  * @internal
  */
 export const fiberToDispatchMap = new Map<RenderFiber, MyReactInternalInstance>();
+
+/**
+ * @internal
+ */
+export const instanceToInitialFieldMap = new Map<MyReactInternalInstance, any>();
+
+/**
+ * @internal
+ */
+export const dispatchToListenerMap = new Map<MyReactInternalInstance, any>();
 
 /**
  * @internal

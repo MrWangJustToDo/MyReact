@@ -1,3 +1,4 @@
+import { Flex } from "@chakra-ui/react";
 import { use } from "@my-react/react";
 import { Suspense, useMemo } from "react";
 
@@ -22,7 +23,13 @@ export const ThreeFiberExample = ({ name }: { name: string }) => {
   }, [name]);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <Flex width="full" height="full" justifyContent="center" alignItems="center">
+          Loading...
+        </Flex>
+      }
+    >
       <Com />
     </Suspense>
   );

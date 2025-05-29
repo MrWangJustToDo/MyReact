@@ -17,7 +17,7 @@ export const processSuspense = (fiber: MyReactFiberNode) => {
 
   !isUpdate && initVisibleInstance(fiber.instance);
 
-  setOwnerForInstance(fiber.instance, fiber);
+  !isUpdate && setOwnerForInstance(fiber.instance, fiber);
 
   const instanceField = getInstanceFieldByInstance(fiber.instance) as VisibleInstanceField;
 

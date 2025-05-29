@@ -6,7 +6,7 @@ import { delGlobalDispatch, log } from "@my-react-dom-shared";
 
 import type { RenderContainer } from "@my-react-dom-client/mount";
 
-const { currentScheduler } = __my_react_internal__;
+const { currentScheduler, dispatchToListenerMap } = __my_react_internal__;
 
 export const unmountComponentAtNode = (container: RenderContainer) => {
   const renderDispatch = container.__container__;
@@ -24,6 +24,8 @@ export const unmountComponentAtNode = (container: RenderContainer) => {
 
   unmountContainer(renderDispatch, function afterUnmountContainer() {
     renderScheduler.dispatchSet?.uniDelete?.(renderDispatch);
+
+    dispatchToListenerMap.delete(renderDispatch);
 
     delete container.__container__;
   });

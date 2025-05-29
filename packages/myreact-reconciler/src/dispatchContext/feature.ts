@@ -3,7 +3,7 @@ import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-rea
 
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { triggerUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
-import { getInstanceOwnerFiber } from "../runtimeGenerate";
+import { getInstanceOwnerFiber, initInstance, setOwnerForInstance, setSubscribeForInstance } from "../runtimeGenerate";
 import { enableDebugUpdateQueue, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { UpdateState } from "../processQueue";
@@ -11,7 +11,7 @@ import type { createContext, UpdateQueue } from "@my-react/react";
 
 const { enableDebugFiled } = __my_react_shared__;
 
-const { currentRunningFiber } = __my_react_internal__;
+const { currentRunningFiber, MyReactInternalInstance } = __my_react_internal__;
 
 export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextObject?: ReturnType<typeof createContext> | null) => {
   if (fiber) {
@@ -62,7 +62,17 @@ export const defaultReadContext = (Context: ReturnType<typeof createContext>) =>
     throw new Error('current environment is not support "readContext"');
   }
 
+  const isUpdate = !!fiber.instance;
+
+  fiber.instance = fiber.instance || new MyReactInternalInstance();
+
+  !isUpdate && initInstance(fiber.instance);
+
+  !isUpdate && setOwnerForInstance(fiber.instance, fiber as MyReactFiberNode);
+
   const contextFiber = defaultGetContextFiber(fiber as MyReactFiberNode, Context);
+
+  setSubscribeForInstance(fiber.instance, contextFiber);
 
   return defaultGetContextValue(contextFiber, Context);
 };

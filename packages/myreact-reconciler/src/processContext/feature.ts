@@ -39,7 +39,7 @@ export const processConsumer = (renderDispatch: CustomRenderDispatch, fiber: MyR
 
   !isUpdate && initInstance(fiber.instance);
 
-  setOwnerForInstance(fiber.instance, fiber);
+  !isUpdate && setOwnerForInstance(fiber.instance, fiber);
 
   const Context = typedElementType.Context as ReturnType<typeof createContext>;
 
@@ -59,8 +59,6 @@ export const processConsumer = (renderDispatch: CustomRenderDispatch, fiber: MyR
     setContextForInstance(fiber.instance, providerFiber);
   } else {
     const context = renderDispatch.resolveContextValue(contextFiber, Context);
-
-    setContextForInstance(fiber.instance, contextFiber);
 
     finalContext = context;
   }

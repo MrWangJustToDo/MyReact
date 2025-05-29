@@ -10,7 +10,7 @@ import { listenerMap } from "../renderDispatch";
 import { currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
-import { getInstanceFieldByInstance, initInstance, initVisibleInstance } from "./instance";
+import { getInstanceFieldByInstance, initInstance, initVisibleInstance, setOwnerForInstance } from "./instance";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { VisibleInstanceField } from "./instance";
@@ -117,6 +117,8 @@ export const nextWorkRoot = (renderDispatch: CustomRenderDispatch, fiber: MyReac
   !isUpdate && initInstance(fiber.instance);
 
   !isUpdate && initVisibleInstance(fiber.instance);
+
+  !isUpdate && setOwnerForInstance(fiber.instance, fiber);
 
   const instanceField = getInstanceFieldByInstance(fiber.instance) as VisibleInstanceField;
 

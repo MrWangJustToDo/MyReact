@@ -1,3 +1,3 @@
-## copy from ink
+## copy from react-three-fiber
 
-SEE https://github.com/vadimdemedes/ink
+SEE https://github.com/pmndrs/react-three-fiber

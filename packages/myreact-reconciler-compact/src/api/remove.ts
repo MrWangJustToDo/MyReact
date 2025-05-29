@@ -12,10 +12,10 @@ export const remove = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
 
   const parentFiberWithNode = getValidParentFiberWithNode(_dispatch, _fiber);
 
-  const mayFiberContainer = parentFiberWithNode as MyReactFiberContainer;
+  const maybeContainer = parentFiberWithNode as MyReactFiberContainer;
 
   // const parentNode = config.getPublicInstance(parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode);
-  const parentNode = parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode;
+  const parentNode = parentFiberWithNode?.nativeNode || maybeContainer?.containerNode;
 
   // const rootNode = config.getPublicInstance(this.rootNode);
   const rootNode = _dispatch.rootNode;
@@ -23,7 +23,9 @@ export const remove = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
   // const currentNode = config.getPublicInstance(_fiber.nativeNode);
   const currentNode = _fiber.nativeNode;
 
-  if (!parentNode || parentNode === rootNode) {
+  const isContainer = !parentNode || (parentNode && parentNode === maybeContainer?.containerNode);
+
+  if (isContainer) {
     _config.removeChildFromContainer?.(rootNode, currentNode, _fiber);
   } else {
     _config.removeChild?.(parentNode, currentNode, _fiber);

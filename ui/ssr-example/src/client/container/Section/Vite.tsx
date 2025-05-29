@@ -58,7 +58,7 @@ export const ViteSection = () => {
             Quick start in <Tag fontSize="inherit">Vite</Tag>
           </Heading>
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
-            This project is only a experimental project.
+            This project is a experimental project.
           </Text>
           <Spacer marginTop="4" />
           <Tooltip

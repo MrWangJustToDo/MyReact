@@ -1,5 +1,5 @@
-import { createContext } from "@my-react/react-compact";
 import process from "node:process";
+import { createContext } from "react";
 
 
 export type Props = {

@@ -146,6 +146,8 @@ const Children = {
   forEach,
 };
 
+const isMyReact = true;
+
 export {
   Component,
   PureComponent,
@@ -189,6 +191,8 @@ export {
   __my_react_shared__,
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
   version,
+  
+  isMyReact,
 };
 
 export type { Action, Reducer, RenderHook, RenderHookParams, DefaultRenderHook } from "./renderHook";

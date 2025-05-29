@@ -1,4 +1,4 @@
-import { useEffect, useContext, useMemo } from "@my-react/react-compact";
+import { useEffect, useContext, useMemo } from "react";
 
 import FocusContext from "../components/FocusContext";
 

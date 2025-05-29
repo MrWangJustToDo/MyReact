@@ -1,4 +1,4 @@
-import { Suspense } from "@my-react/react-compact";
+import { Suspense } from "@my-react/react";
 import { render, Text } from "@my-react/react-terminal";
 
 let promise: Promise<void> | undefined;

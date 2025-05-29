@@ -1,4 +1,4 @@
-import { createContext } from "@my-react/react-compact";
+import { createContext } from "react";
 
 export type Props = {
   /**

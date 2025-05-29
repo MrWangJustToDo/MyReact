@@ -1,7 +1,7 @@
-import { PureComponent } from "@my-react/react-compact";
 import cliCursor from "cli-cursor";
 import { EventEmitter } from "node:events";
 import process from "node:process";
+import { PureComponent } from "react";
 
 import AppContext from "./AppContext";
 import ErrorOverview from "./ErrorOverview";

@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useMemo } from "@my-react/react-compact";
+import { useState, useLayoutEffect, useMemo } from "react";
 
 import { type Styles } from "../styles";
 

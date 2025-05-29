@@ -41,9 +41,6 @@ importers:
       '@my-react/react':
         specifier: workspace:*
         version: link:packages/myreact
-      '@my-react/react-compact':
-        specifier: workspace:*
-        version: link:packages/myreact-compact
       '@my-react/react-dom':
         specifier: workspace:*
         version: link:packages/myreact-dom
@@ -147,16 +144,6 @@ importers:
       '@my-react/react-shared':
         specifier: ^0.3.10
         version: link:../myreact-shared
-
-  packages/myreact-compact:
-    dependencies:
-      '@my-react/react':
-        specifier: ^0.3.10
-        version: link:../myreact
-    devDependencies:
-      '@types/react':
-        specifier: ^17 || ^18 || ^19
-        version: 18.3.18
 
   packages/myreact-dom:
     dependencies:
@@ -569,9 +556,6 @@ importers:
       '@my-react/react':
         specifier: workspace:*
         version: link:../../packages/myreact
-      '@my-react/react-compact':
-        specifier: workspace:*
-        version: link:../../packages/myreact-compact
       '@my-react/react-terminal':
         specifier: workspace:*
         version: link:../../packages/myreact-terminal

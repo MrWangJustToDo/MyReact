@@ -1,6 +1,6 @@
-import { createContext } from "@my-react/react-compact";
 import { EventEmitter } from "node:events";
 import process from "node:process";
+import { createContext } from "react";
 
 
 export type Props = {

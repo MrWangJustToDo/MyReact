@@ -14,6 +14,7 @@ import { include, STATE_TYPE } from "@my-react/react-shared";
 
 import { autoSetDevTools, delGlobalDispatch } from "./devtool";
 import { createDispatch } from "./dispatch";
+import { autoSetDevHMR } from "./hmr";
 import { loadScript } from "./polyfill";
 import { createPortal } from "./portal";
 import { prepareScheduler } from "./scheduler";
@@ -99,6 +100,8 @@ export const Reconciler = (_config: any) => {
     _container.__container__ = _renderDispatch;
 
     autoSetDevTools(_renderDispatch);
+
+    autoSetDevHMR(_renderDispatch);
 
     initialFiberNode(_renderDispatch, _fiber);
 

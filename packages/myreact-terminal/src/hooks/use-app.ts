@@ -1,4 +1,4 @@
-import { useContext } from '@my-react/react-compact';
+import { useContext } from 'react';
 
 import AppContext from '../components/AppContext';
 

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
+import { __my_react_internal__ } from "@my-react/react";
 import {
   CustomRenderDispatch,
   NODE_TYPE,
@@ -9,6 +10,12 @@ import {
   devErrorWithFiber,
   triggerError,
   processPromise,
+  getCurrentDispatchFromFiber,
+  getCurrentDispatchFromType,
+  getCurrentFibersFromType,
+  hmr,
+  setRefreshHandler,
+  typeToFibersMap,
 } from "@my-react/react-reconciler";
 
 import { append, create, position, remove, setRef, unsetRef, update } from "./api";
@@ -17,8 +24,10 @@ import { initialMap, unmountMap } from "./dispatchMap";
 import { ReconcilerDispatchMount } from "./dispatchMount";
 
 import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
-import type { MyReactFiberRoot, MyReactFiberNode } from "@my-react/react-reconciler";
+import type { MyReactFiberRoot, MyReactFiberNode, HMR } from "@my-react/react-reconciler";
 import type { ListTree } from "@my-react/react-shared";
+
+const { currentComponentFiber } = __my_react_internal__;
 
 const initialRef: CustomRenderDispatch["runtimeRef"] = {
   typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,
@@ -140,6 +149,27 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
 
       return void 0;
     }
+  }
+
+  if (__DEV__) {
+    Object.defineProperty(ReconcilerDispatch.prototype, "__dev_hmr_runtime__", {
+      value: {
+        hmr,
+        typeToFibersMap,
+        setRefreshHandler,
+        currentComponentFiber,
+        getCurrentFibersFromType,
+        getCurrentDispatchFromType,
+        getCurrentDispatchFromFiber,
+      } as HMR,
+    });
+
+    Object.defineProperty(ReconcilerDispatch.prototype, "__dev_hmr_remount__", {
+      value: function hmrRemount(this: MyReactFiberNode, cb?: () => void) {
+        console.log("not implement yet");
+        cb?.();
+      },
+    });
   }
 
   return new ReconcilerDispatch(rootNode, rootFiber, rootElement);

@@ -47,7 +47,6 @@
     "@graphql-codegen/typescript-operations": "^4.4.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@my-react/react": "workspace:*",
-    "@my-react/react-compact": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "@my-react/react-jsx": "workspace:*",
     "@my-react/react-reactive": "workspace:*",

@@ -76,7 +76,7 @@ let errorFiber: MyReactFiberNode | null = null;
 export const devWarn = (...args) => {
   const renderScheduler = currentScheduler.current;
 
-  const startWithPlain = typeof args[0] === "string" || typeof args[0] === "number" || typeof args[0] === "boolean";
+  const startWithPlain = typeof args[0] === "string";
 
   const renderFiber = warnFiber || currentCallingFiber?.[currentCallingFiber?.length - 1] || currentScopeFiber.current || currentRunningFiber.current;
 
@@ -111,7 +111,7 @@ export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
 export const devError = (...args) => {
   const renderScheduler = currentScheduler.current;
 
-  const startWithPlain = typeof args[0] === "string" || typeof args[0] === "number" || typeof args[0] === "boolean";
+  const startWithPlain = typeof args[0] === "string";
 
   const renderFiber = errorFiber || currentCallingFiber?.[currentCallingFiber?.length - 1] || currentScopeFiber.current || currentRunningFiber.current;
 

@@ -5,7 +5,6 @@ import { resolve } from "path";
 
 const pkgNameAlias = {
   "@my-react/react": "myreact",
-  "@my-react/react-compact": "myreact-compact",
   "@my-react/react-dom": "myreact-dom",
   "@my-react/react-jsx": "myreact-jsx",
   "@my-react/react-reactive": "myreact-reactivity",

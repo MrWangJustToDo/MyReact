@@ -36,7 +36,7 @@ export const ThreeFiberSection = () => {
             Three.js with <Tag fontSize="inherit">@my-react</Tag>
           </Heading>
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
-            This project is only a experimental project.
+            This project is a experimental project.
           </Text>
           <Spacer marginTop="4" />
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">

@@ -482,12 +482,6 @@ const setupRefresh = (dispatch: RefreshCustomRenderDispatch) => {
     return;
   }
 
-  if (hmrRuntime.size > 0 && !hmrRuntime.has(hmr)) {
-    console.warn(
-      `[@my-react/react-refresh] find multiple HMR runtime in current environment, look like you are using multiple version of @my-react for current page, it may cause some problem!`
-    );
-  }
-
   hmrRuntime.add(hmr);
 
   hmr.setRefreshHandler(resolveFamily);

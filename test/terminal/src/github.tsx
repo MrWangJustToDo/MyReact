@@ -1,4 +1,4 @@
-import { Suspense, use, useEffect, useState } from "@my-react/react-compact";
+import { Suspense, use, useEffect, useState } from "@my-react/react";
 import { Box, render, Text } from "@my-react/react-terminal";
 
 type ResponseType = { contributions: { date: string; count: number; level: number }[]; total: Record<string, number> };

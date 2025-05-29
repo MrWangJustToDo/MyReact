@@ -1,4 +1,4 @@
-import { forwardRef } from "@my-react/react-compact";
+import { forwardRef } from "react";
 import { type Except } from "type-fest";
 
 import { type DOMElement } from "../dom";

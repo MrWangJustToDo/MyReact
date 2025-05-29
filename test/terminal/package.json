@@ -31,7 +31,6 @@
   ],
   "dependencies": {
     "@my-react/react": "workspace:*",
-    "@my-react/react-compact": "workspace:*",
     "@my-react/react-terminal": "workspace:*"
   }
 }

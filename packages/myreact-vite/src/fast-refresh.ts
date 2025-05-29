@@ -4,7 +4,7 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 
-if (!RefreshRuntime.version || !compareVersion(RefreshRuntime.version, "0.3.1")) {
+if (!RefreshRuntime.version || !compareVersion(RefreshRuntime.version, "0.3.9")) {
   console.error(
     `[@my-react/react-refresh-tools] current RefreshRuntime version not match for the package required, please reinstall "@my-react/react-refresh" to fix this issue`
   );

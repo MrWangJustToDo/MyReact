@@ -59,24 +59,29 @@ export const externalReact = (id: string) =>
   id.endsWith("@my-react/react-terminal") ||
   (id.includes("node_modules") && !id.includes("tslib"));
 
-export const externalThreeFiber = (id: string) =>
-  id.endsWith("@my-react/react") || id.includes("@my-react/react-refresh") || (id.includes("node_modules") && id.includes("three"));
-
 const buildPackages = async () => {
   await rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact", packageScope: "packages", external: externalReact });
   await writeType("myreact");
-  await rollupBuild({ packageName: "myreact-compact", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-jsx", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-reconciler", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-reconciler-compact", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external: externalReact });
   await writeType("myreact-dom");
-  await rollupBuild({ packageName: "myreact-terminal", packageScope: "packages", external: externalReact });
+  await rollupBuild({
+    packageName: "myreact-terminal",
+    packageScope: "packages",
+    external: externalReact,
+    plugins: {
+      singleOther({ defaultPlugins }) {
+        return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+      },
+    },
+  });
   await rollupBuild({
     packageName: "myreact-three-fiber",
     packageScope: "packages",
-    external: externalThreeFiber,
+    external: externalReact,
     plugins: {
       singleOther({ defaultPlugins }) {
         return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];

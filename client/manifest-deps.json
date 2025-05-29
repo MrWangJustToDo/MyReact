@@ -11,12 +11,6 @@
     ],
     "static": true
   },
-  "./Tldraw": {
-    "path": [
-      "page-Tldraw.js"
-    ],
-    "static": true
-  },
   "./404": {
     "path": [
       "page-404.js"
@@ -31,7 +25,19 @@
   },
   "./": {
     "path": [
-      "page-.js"
+      "page-.js",
+      "488-js",
+      "529-js",
+      "626-js",
+      "222-js",
+      "392-js",
+      "417-js",
+      "538-js",
+      "635-js",
+      "669-js",
+      "802-js",
+      "933-js",
+      "938-js"
     ],
     "static": true
   }

@@ -20,7 +20,6 @@ const map = {
   "/": "@my-react",
   "/blog": "blog",
   "/about": "config",
-  "/tldraw": "tldraw",
   "/excalidraw": "excalidraw",
 };
 
@@ -88,9 +87,6 @@ const HeaderImpl = () => {
                 <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Excalidraw" : `/${__BASENAME__}/Excalidraw`)}>
                   Excalidraw
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Tldraw" : `/${__BASENAME__}/Tldraw`)}>
-                  Tldraw
-                </Button>
                 {!__REACT__ && __DEVELOPMENT__ && (
                   <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/About" : `/${__BASENAME__}/About`)}>
                     About
@@ -142,9 +138,6 @@ const HeaderImpl = () => {
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Excalidraw" : `/${__BASENAME__}/Excalidraw`)}>
                   Excalidraw
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/Tldraw" : `/${__BASENAME__}/Tldraw`)}>
-                  Tldraw
                 </Button>
                 {!__REACT__ && __DEVELOPMENT__ && (
                   <Button variant="ghost" size="sm" onClick={() => navigate(noBase ? "/About" : `/${__BASENAME__}/About`)}>

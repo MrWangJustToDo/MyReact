@@ -10,5 +10,5 @@ export { _roots, createRoot, unmountComponentAtNode, createPortal } from "./rend
 export type { Subscription, Dpr, Size, Viewport, RenderCallback, Frameloop, Performance, Renderer, XRManager, RootState, RootStore } from "./store";
 export { context } from "./store";
 export * from "./its-fine";
-export type { ObjectMap, Camera, Disposable } from "./utils";
+export type { ObjectMap, Camera, Disposable, Overwrite, Mutable } from "./utils";
 export { applyProps, getRootState, dispose, buildGraph } from "./utils";

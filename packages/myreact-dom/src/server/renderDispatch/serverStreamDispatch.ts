@@ -1,4 +1,4 @@
-import { CustomRenderDispatch, getFiberTree, listenerMap, processHook, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, getFiberTree, listenerMap, processHook, processPromise, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
@@ -308,8 +308,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
   }
 
   dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
-    // throw promise;
-    throw new Error("Server side does not support render promise");
+    return processPromise(this, _params.fiber, _params.promise);
   }
 
   dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {

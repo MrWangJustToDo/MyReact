@@ -7,6 +7,7 @@ module.exports = {
   plugins: ["eslint-plugin-react-compiler"],
   rules: {
     "react-compiler/react-compiler": "error",
+    "react/no-unknown-property": "off"
   },
   parserOptions: {
     ecmaFeatures: {

@@ -218,7 +218,7 @@ export function useContextBridge(): ContextBridge {
     () =>
       Array.from(contextMap.keys()).reduce(
         (Prev, context) => (props) => {
-          const Tar = context.Provider || context;
+          const Tar = (context.Provider || context) as any;
           return (
             <Prev>
               <Tar {...props} value={contextMap.get(context)} />

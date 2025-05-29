@@ -1,3 +1,4 @@
+import alias from "@rollup/plugin-alias";
 import { spawnSync } from "child_process";
 import { writeFile } from "fs/promises";
 import { resolve } from "path";
@@ -58,6 +59,9 @@ export const externalReact = (id: string) =>
   id.endsWith("@my-react/react-terminal") ||
   (id.includes("node_modules") && !id.includes("tslib"));
 
+export const externalThreeFiber = (id: string) =>
+  id.endsWith("@my-react/react") || id.includes("@my-react/react-refresh") || (id.includes("node_modules") && id.includes("three"));
+
 const buildPackages = async () => {
   await rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact", packageScope: "packages", external: externalReact });
@@ -69,6 +73,16 @@ const buildPackages = async () => {
   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external: externalReact });
   await writeType("myreact-dom");
   await rollupBuild({ packageName: "myreact-terminal", packageScope: "packages", external: externalReact });
+  await rollupBuild({
+    packageName: "myreact-three-fiber",
+    packageScope: "packages",
+    external: externalThreeFiber,
+    plugins: {
+      singleOther({ defaultPlugins }) {
+        return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+      },
+    },
+  });
   await rollupBuild({ packageName: "myreact-reactivity", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-vite", packageScope: "packages", external: externalReact });

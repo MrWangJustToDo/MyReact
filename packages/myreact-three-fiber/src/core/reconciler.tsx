@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable max-lines */
@@ -12,6 +13,7 @@ import * as React from "react";
 // } from "react-reconciler/constants";
 // import { unstable_IdlePriority as idlePriority, unstable_scheduleCallback as scheduleCallback } from "scheduler";
 
+
 import { removeInteractivity, type EventHandlers } from "./events";
 import { diffProps, applyProps, invalidateInstance, attach, detach, prepare, isObject3D, findInitialRoot } from "./utils";
 
@@ -19,6 +21,7 @@ import type { Fiber } from "./its-fine";
 import type { RootStore } from "./store";
 import type { IsAllOptional } from "./utils";
 import type { ThreeElement } from "../three-types";
+import type ReactReconciler from "react-reconciler";
 import type * as THREE from "three";
 
 // TODO: upstream to DefinitelyTyped for React 19
@@ -44,7 +47,7 @@ function createReconciler<
   TransitionStatus,
 >(
   config: Omit<
-    Reconciler.HostConfig<
+    ReactReconciler.HostConfig<
       Type,
       Props,
       Container,
@@ -66,7 +69,7 @@ function createReconciler<
      *
      * The `internalHandle` data structure is meant to be opaque. If you bend the rules and rely on its internal fields, be aware that it may change significantly between versions. You're taking on additional maintenance risk by reading from it, and giving up all guarantees if you write something to it.
      */
-    commitUpdate?(instance: Instance, type: Type, prevProps: Props, nextProps: Props, internalHandle: Reconciler.OpaqueHandle): void;
+    commitUpdate?(instance: Instance, type: Type, prevProps: Props, nextProps: Props, internalHandle: ReactReconciler.OpaqueHandle): void;
 
     // Undocumented
     // https://github.com/facebook/react/pull/26722
@@ -114,7 +117,7 @@ function createReconciler<
      */
     waitForCommitToBeReady(): ((initiateCommit: Function) => Function) | null;
   }
-): Reconciler.Reconciler<Container, Instance, TextInstance, SuspenseInstance, PublicInstance> {
+): ReactReconciler.Reconciler<Container, Instance, TextInstance, SuspenseInstance, PublicInstance> {
   const reconciler = Reconciler(config as any);
 
   reconciler.injectIntoDevTools({
@@ -129,7 +132,7 @@ function createReconciler<
 const NoEventPriority = 0;
 
 export interface Root {
-  fiber: Reconciler.FiberRoot;
+  fiber: ReactReconciler.FiberRoot;
   store: RootStore;
 }
 
@@ -311,6 +314,7 @@ function handleContainerEffects(parent: Instance, child: Instance, beforeChild?:
         child.object.parent = parent.object;
         parent.object.children.splice(childIndex, 0, child.object);
         child.object.dispatchEvent({ type: "added" });
+        // @ts-ignore
         parent.object.dispatchEvent({ type: "childadded", child: child.object });
       }
     } else {
@@ -582,11 +586,13 @@ export const reconciler = /* @__PURE__ */ createReconciler<
     }
 
     // Flush reconstructed siblings when we hit the last updated child in a sequence
+    // @ts-ignore
     const isTailSibling = fiber.sibling === null || (fiber.flags & Update) === NoFlags;
     if (isTailSibling) swapInstances();
   },
   finalizeInitialChildren: () => false,
   commitMount() {},
+  // @ts-ignore
   getPublicInstance: (instance) => instance?.object!,
   prepareForCommit: () => null,
   preparePortalMount: (container) => prepare(container.getState().scene, container, "", {}),

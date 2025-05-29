@@ -52,6 +52,11 @@ export const getConfig = () => {
           "@client": resolve(process.cwd(), "src", "client"),
           "@shared": resolve(process.cwd(), "src", "shared"),
         },
+        fallback: {
+          https: false,
+          http: false,
+          vm: false,
+        },
       };
 
       const arrayEntry = isDEV && !isReact ? { __refresh__: require.resolve("@my-react/react-refresh-tools/runtime") } : {};

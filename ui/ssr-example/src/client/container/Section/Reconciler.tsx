@@ -56,7 +56,7 @@ export const ReconcilerSection = () => {
           </Flex>
           <Divider marginY="4" />
           <Text>
-            Ink example：<Code>pnpm run build:test && pnpm run test</Code>
+            Ink example：<Code>pnpm run prepare:terminal && pnpm run test:terminal</Code>
             <br />
             <br />
             React Three Fiber example：<Code>pnpm run test:three</Code>

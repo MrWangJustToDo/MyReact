@@ -10,7 +10,9 @@
   "files": [
     "dist",
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "jsx-runtime.js",
+    "jsx-dev-runtime.js"
   ],
   "repository": {
     "type": "git",

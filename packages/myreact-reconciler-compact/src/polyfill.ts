@@ -20,30 +20,34 @@ export const loadScript = (url: string) => {
     });
   } else if (typeof process !== "undefined" && typeof require === "function") {
     return new Promise<void>((resolve, reject) => {
-      const http = require("http");
-      const https = require("https");
-      const vm = require("vm");
+      const loadPkg = async () => {
+        const http = await import("http");
+        const https = await import("https");
+        const vm = await import("vm");
 
-      const protocol = url.startsWith("https") ? https : http;
+        const protocol = url.startsWith("https") ? https : http;
 
-      protocol
-        .get(url, (res: any) => {
-          let data = "";
-          res.on("data", (chunk: any) => {
-            data += chunk;
+        protocol
+          .get(url, (res: any) => {
+            let data = "";
+            res.on("data", (chunk: any) => {
+              data += chunk;
+            });
+            res.on("end", () => {
+              try {
+                vm.runInThisContext(data);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            });
+          })
+          .on("error", (error: Error) => {
+            reject(error);
           });
-          res.on("end", () => {
-            try {
-              vm.runInThisContext(data);
-              resolve();
-            } catch (error) {
-              reject(error);
-            }
-          });
-        })
-        .on("error", (error: Error) => {
-          reject(error);
-        });
+      };
+
+      loadPkg();
     });
   }
 };

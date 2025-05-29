@@ -52,13 +52,13 @@ export const ViteSection = () => {
 
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
-      <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
+      <Flex justifyContent="space-around" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
         <Box alignSelf="flex-start" marginRight={{ base: "1%", md: "2%", lg: "3%", "2xl": "4%" }} maxWidth={{ base: "100%", md: "42%" }}>
           <Heading as="h1" fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} marginTop="6">
             Quick start in <Tag fontSize="inherit">Vite</Tag>
           </Heading>
           <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
-            This project is only a experimental project, not recommend use in the production environment.
+            This project is only a experimental project.
           </Text>
           <Spacer marginTop="4" />
           <Tooltip
@@ -82,6 +82,8 @@ export const ViteSection = () => {
             className="typo"
             overflow={{ base: "hidden", lg: "auto" }}
             border="1px solid"
+            maxWidth={{ md: "55vw" }}
+            minWidth={{ md: "40vw" }}
             borderColor="cardBorderColor"
             marginTop={{ base: "10%", md: "0" }}
             marginBottom={{ base: "6%" }}

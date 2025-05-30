@@ -44,7 +44,7 @@ export const ThreeFiberSection = () => {
           </Text>
           <Divider marginY="4" />
           <Text fontWeight="bold">All Example:</Text>
-          <HStack spacing="3" marginTop="2" flexWrap="wrap" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "13px", xl: "14px" }}>
+          <HStack spacing="3" marginTop="2" flexWrap="wrap" fontSize={{ md: "12px", lg: "13px", xl: "14px" }}>
             {AllExampleList.map((item) => (
               <Button key={item} colorScheme="green" size="sm" onClick={() => setName(item)} isActive={name === item}>
                 {item.replace(".tsx", "")}
@@ -80,7 +80,7 @@ export const ThreeFiberSection = () => {
               theme={colorScheme}
             >
               <SandpackLayout style={{ border: "none" }}>
-                <SandpackCodeEditor showReadOnly={false} readOnly style={{ height: "450px" }} />
+                <SandpackCodeEditor showReadOnly={false} readOnly style={{ height: "350px" }} />
                 {/* <Box borderLeft="1px" borderColor="cardBorderColor" width={{ base: "100%", md: "50%" }}>
                   {__CLIENT__ && isMounted && <ThreeFiberExample name={name} />}
                 </Box> */}

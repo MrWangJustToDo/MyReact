@@ -4,7 +4,7 @@ const React = require("react");
 
 if (!React.isMyReact) {
   throw new Error(
-    "@my-react/react-dom requires React to be set as '@my-react/react'. Please ensure you have set the alias correctly in your bundler configuration."
+    "@my-react/react-dom requires 'React' to be set as '@my-react/react'. Please ensure you have set the alias correctly in your bundler configuration."
   );
 }
 

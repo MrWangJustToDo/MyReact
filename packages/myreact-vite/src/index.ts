@@ -253,9 +253,6 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
     config: (userConfig) => ({
       build: silenceUseClientWarning(userConfig),
       optimizeDeps: {
-        // We can't add `react-dom` because the dependency is `react-dom/client`
-        // for React 18 while it's `react-dom` for React 17. We'd need to detect
-        // what React version the user has installed.
         include: [
           "react",
           "react-dom",

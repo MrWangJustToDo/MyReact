@@ -30,7 +30,7 @@ export default exports
 `;
 
 export const preambleCode = `
-import MyRefreshRuntime from "__BASE__${runtimePublicPath.slice(1)}"
+import MyRefreshRuntime from "__BASE__${runtimePublicPath.slice(1)}";
 MyRefreshRuntime.injectIntoGlobalHook(window);
 window.$RefreshReg$ = () => {}
 window.$RefreshSig$ = () => (type) => type

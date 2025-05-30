@@ -17,6 +17,7 @@ const AllExampleList = [
   "MultiMaterial.tsx",
   "MultiRender.tsx",
   "Pointcloud.tsx",
+  "Reparenting.tsx"
 ];
 
 export const ThreeFiberSection = () => {

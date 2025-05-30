@@ -98,6 +98,7 @@ const run = async () => {
   await release("@my-react/react-vite");
   await release("@my-react/react-rspack");
   await release("@my-react/react-terminal");
+  await release("@my-react/react-reconciler-compact");
 };
 
 run();

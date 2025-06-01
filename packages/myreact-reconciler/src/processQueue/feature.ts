@@ -18,7 +18,6 @@ export type UpdateState = {
   needUpdate: boolean;
   nodes?: Array<UpdateQueue | UpdateQueueDev | UpdateQueue["trigger"]>;
   isSync: boolean;
-  isSkip: boolean;
   isForce: boolean;
   isImmediate?: boolean;
   isRetrigger?: boolean;
@@ -42,8 +41,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
   const needUpdate = true;
 
   let isSync = false;
-
-  let isSkip = true;
 
   let isForce = false;
 
@@ -94,8 +91,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
 
         isSync = isSync || updater.isSync;
 
-        isSkip = isSkip && updater.isSkip;
-
         isForce = isForce || updater.isForce;
 
         isImmediate = isImmediate || updater.isImmediate;
@@ -122,14 +117,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
           }
         }
       } else if (updater.isSync) {
-        if (updater.type !== UpdateQueueType.hmr && updater.type !== UpdateQueueType.trigger && updater.type !== UpdateQueueType.suspense) {
-          if (__DEV__) {
-            console.error("[@my-react/react] current update not valid, look like a bug for @my-react", node);
-          } else {
-            console.error("[@my-react/react] current update not valid, look like a bug for @my-react");
-          }
-        }
-
         allQueue.delete(node);
 
         if (__DEV__) {
@@ -137,8 +124,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
         }
 
         isSync = isSync || updater.isSync;
-
-        isSkip = isSkip && updater.isSkip;
 
         isForce = isForce || updater.isForce;
 
@@ -187,7 +172,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
         needUpdate,
         nodes: processedNodes,
         isSync,
-        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -197,7 +181,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
       return {
         needUpdate,
         isSync,
-        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -233,8 +216,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
 
         isSync = isSync || updater.isSync;
 
-        isSkip = isSkip && updater.isSkip;
-
         isForce = isForce || updater.isForce;
 
         isImmediate = isImmediate || updater.isImmediate;
@@ -261,14 +242,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
           }
         }
       } else {
-        if (updater.type !== UpdateQueueType.hmr && updater.type !== UpdateQueueType.trigger && updater.type !== UpdateQueueType.suspense) {
-          if (__DEV__) {
-            console.error("[@my-react/react] current update not valid, look like a bug for @my-react", node);
-          } else {
-            console.error("[@my-react/react] current update not valid, look like a bug for @my-react");
-          }
-        }
-
         allQueue.delete(node);
 
         if (__DEV__) {
@@ -276,8 +249,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
         }
 
         isSync = isSync || updater.isSync;
-
-        isSkip = isSkip && updater.isSkip;
 
         isForce = isForce || updater.isForce;
 
@@ -319,7 +290,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
         needUpdate,
         nodes: processedNodes,
         isSync,
-        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -329,7 +299,6 @@ export const processClassComponentUpdateQueue = (renderDispatch: CustomRenderDis
       return {
         needUpdate,
         isSync,
-        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -361,8 +330,6 @@ export const processFunctionComponentUpdateQueue = (
   let needUpdate = false;
 
   let isSync = false;
-
-  let isSkip = true;
 
   let isForce = false;
 
@@ -420,8 +387,6 @@ export const processFunctionComponentUpdateQueue = (
 
         isSync = isSync || updater.isSync;
 
-        isSkip = isSkip && updater.isSkip;
-
         isForce = isForce || updater.isForce;
 
         isImmediate = isImmediate || updater.isImmediate;
@@ -452,14 +417,6 @@ export const processFunctionComponentUpdateQueue = (
           }
         }
       } else if (updater.isSync) {
-        if (updater.type !== UpdateQueueType.hmr && updater.type !== UpdateQueueType.trigger && updater.type !== UpdateQueueType.suspense) {
-          if (__DEV__) {
-            console.error("[@my-react/react] current update not valid, look like a bug for @my-react", node);
-          } else {
-            console.error("[@my-react/react] current update not valid, look like a bug for @my-react");
-          }
-        }
-
         allQueue.delete(node);
 
         if (__DEV__) {
@@ -469,8 +426,6 @@ export const processFunctionComponentUpdateQueue = (
         const { payLoad } = updater;
 
         isSync = isSync || updater.isSync;
-
-        isSkip = isSkip && updater.isSkip;
 
         isForce = isForce || updater.isForce;
 
@@ -519,7 +474,6 @@ export const processFunctionComponentUpdateQueue = (
         needUpdate,
         nodes: processedNodes,
         isSync,
-        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -529,7 +483,6 @@ export const processFunctionComponentUpdateQueue = (
       return {
         needUpdate,
         isSync,
-        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -582,8 +535,6 @@ export const processFunctionComponentUpdateQueue = (
 
         isSync = isSync || updater.isSync;
 
-        isSkip = isSkip && updater.isSkip;
-
         isForce = isForce || updater.isForce;
 
         isImmediate = isImmediate || updater.isImmediate;
@@ -614,14 +565,6 @@ export const processFunctionComponentUpdateQueue = (
           }
         }
       } else {
-        if (updater.type !== UpdateQueueType.hmr && updater.type !== UpdateQueueType.trigger && updater.type !== UpdateQueueType.suspense) {
-          if (__DEV__) {
-            console.error("[@my-react/react] current update not valid, look like a bug for @my-react", node);
-          } else {
-            console.error("[@my-react/react] current update not valid, look like a bug for @my-react");
-          }
-        }
-
         allQueue.delete(node);
 
         if (__DEV__) {
@@ -631,8 +574,6 @@ export const processFunctionComponentUpdateQueue = (
         const { payLoad } = updater;
 
         isSync = isSync || updater.isSync;
-
-        isSkip = isSkip && updater.isSkip;
 
         isForce = isForce || updater.isForce;
 
@@ -675,7 +616,6 @@ export const processFunctionComponentUpdateQueue = (
         needUpdate,
         nodes: processedNodes,
         isSync,
-        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -685,7 +625,6 @@ export const processFunctionComponentUpdateQueue = (
       return {
         needUpdate,
         isSync,
-        isSkip,
         isForce,
         isImmediate,
         isRetrigger,
@@ -708,8 +647,6 @@ export const processNormalComponentUpdate = (fiber: MyReactFiberNode): UpdateSta
 
   let isSync = false;
 
-  let isSkip = true;
-
   let isForce = false;
 
   let isImmediate = false;
@@ -725,14 +662,6 @@ export const processNormalComponentUpdate = (fiber: MyReactFiberNode): UpdateSta
 
     const nextNode = node.next;
 
-    if (updater.type === UpdateQueueType.hook || updater.type === UpdateQueueType.component) {
-      if (__DEV__) {
-        console.error("[@my-react/react] current update not valid, look like a bug for @my-react", node);
-      } else {
-        console.error("[@my-react/react] current update not valid, look like a bug for @my-react");
-      }
-    }
-
     allQueue.delete(node);
 
     if (__DEV__) {
@@ -742,8 +671,6 @@ export const processNormalComponentUpdate = (fiber: MyReactFiberNode): UpdateSta
     const { payLoad } = updater;
 
     isSync = isSync || updater.isSync;
-
-    isSkip = isSkip && updater.isSkip;
 
     isForce = isForce || updater.isForce;
 
@@ -783,7 +710,6 @@ export const processNormalComponentUpdate = (fiber: MyReactFiberNode): UpdateSta
       needUpdate,
       nodes: processedNodes,
       isSync,
-      isSkip,
       isForce,
       isImmediate,
       isRetrigger,
@@ -793,7 +719,6 @@ export const processNormalComponentUpdate = (fiber: MyReactFiberNode): UpdateSta
     return {
       needUpdate,
       isSync,
-      isSkip,
       isForce,
       isImmediate,
       isRetrigger,

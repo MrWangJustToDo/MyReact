@@ -73,7 +73,6 @@ export function hmrUpdate(this: MyReactFiberNode, state?: STATE_TYPE, cb?: () =>
     trigger: this,
     isSync: true,
     isForce: false,
-    isSkip: include(state, STATE_TYPE.__skippedSync__ | STATE_TYPE.__skippedConcurrent__),
     isImmediate: true,
     isRetrigger: false,
     callback: cb,

@@ -1,17 +1,17 @@
 import { __my_react_internal__, createElement } from "@my-react/react";
-import { isPromise, ListTree } from "@my-react/react-shared";
+import { isPromise, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
+import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { WrapperByLazyScope } from "../runtimeScope";
-import { devWarnWithFiber } from "../share";
 
-import type { PromiseWithState } from "../processPromise";
+import type { SuspenseInstanceField } from "../processSuspense";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { MixinMyReactFunctionComponent, lazy } from "@my-react/react";
+import type { LazyUpdateQueue, MixinMyReactFunctionComponent, lazy } from "@my-react/react";
 
 const { currentScheduler } = __my_react_internal__;
 
-export const loadLazy = async (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, typedElementType: ReturnType<typeof lazy>) => {
+export const loadLazy = async (renderDispatch: CustomRenderDispatch, typedElementType: ReturnType<typeof lazy>) => {
   if (typedElementType._loaded) return;
 
   try {
@@ -20,10 +20,10 @@ export const loadLazy = async (renderDispatch: CustomRenderDispatch, fiber: MyRe
     const loadedPromise = typedElementType.loader();
 
     if (__DEV__ && !isPromise(loadedPromise)) {
-      devWarnWithFiber(fiber, `@my-react lazy() must return a promise`);
+      console.warn("[@my-react/react] lazy() must return a promise, but got", loadedPromise);
     }
 
-    const loaded = await loadedPromise;
+    const loaded = await Promise.resolve(loadedPromise);
 
     const render = typeof loaded === "object" && (typeof loaded?.default === "function" || typeof loaded?.default === "object") ? loaded.default : loaded;
 
@@ -50,25 +50,45 @@ export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReact
     const render = typedElementType.render as ReturnType<typeof lazy>["render"];
 
     return WrapperByLazyScope(createElement(render as MixinMyReactFunctionComponent, fiber.pendingProps));
-  } else if (typedElementType._loading === false) {
-    typedElementType._loading = true;
-
-    renderDispatch.pendingAsyncLoadList = renderDispatch.pendingAsyncLoadList || new ListTree<MyReactFiberNode | PromiseWithState<any>>();
-
-    if (!renderDispatch.runtimeFiber.visibleFiber) {
-      const visibleFiber = renderDispatch.resolveSuspenseFiber(fiber);
-
-      if (visibleFiber) {
-        renderDispatch.runtimeFiber.visibleFiber = visibleFiber;
-
-        renderDispatch.pendingAsyncLoadList.push(fiber);
-      } else {
-        throw new Error("[@my-react/react] lazy component should be used in a suspense boundary");
-      }
-    } else {
-      renderDispatch.pendingAsyncLoadList.push(fiber);
-    }
   }
 
-  return null;
+  typedElementType._list = typedElementType._list || new Set();
+
+  typedElementType._list.add(fiber);
+
+  const suspenseFiber = renderDispatch.resolveSuspenseFiber(fiber);
+
+  if (suspenseFiber) {
+    const suspenseField = getInstanceFieldByInstance(suspenseFiber.instance) as SuspenseInstanceField;
+
+    suspenseField.asyncLoadList.uniPush(typedElementType);
+
+    renderDispatch.pendingSuspenseFiberArray.uniPush(suspenseFiber);
+
+    return null;
+  } else {
+    if (typedElementType._loading) return null;
+
+    typedElementType._loading = true;
+
+    const renderScheduler = currentScheduler.current;
+
+    renderDispatch.processLazy(typedElementType).then(() => {
+      fiber.state = STATE_TYPE.__triggerSync__;
+
+      typedElementType._list.delete(fiber);
+
+      const updater: LazyUpdateQueue = {
+        type: UpdateQueueType.lazy,
+        trigger: fiber,
+        isSync: true,
+        isForce: true,
+        payLoad: typedElementType,
+      };
+
+      renderScheduler.dispatchState(updater);
+    });
+
+    return null;
+  }
 };

@@ -3,6 +3,8 @@ import { __my_react_internal__ } from "@my-react/react";
 import { getInstanceFieldByInstance, initInstance, initVisibleInstance, setOwnerForInstance } from "../runtimeGenerate";
 import { WrapperBySuspenseScope } from "../runtimeScope";
 
+import { initSuspenseInstance } from "./instance";
+
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { VisibleInstanceField } from "../runtimeGenerate";
 
@@ -16,6 +18,8 @@ export const processSuspense = (fiber: MyReactFiberNode) => {
   !isUpdate && initInstance(fiber.instance);
 
   !isUpdate && initVisibleInstance(fiber.instance);
+
+  !isUpdate && initSuspenseInstance(fiber.instance);
 
   !isUpdate && setOwnerForInstance(fiber.instance, fiber);
 

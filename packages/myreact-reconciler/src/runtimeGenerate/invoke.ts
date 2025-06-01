@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE, exclude, include, isPromise } from "@my-react/react-shared";
 
-import { processClassComponentMount, processClassComponentUpdate } from "../processClass";
+import { getClassInstanceFieldByInstance, processClassComponentMount, processClassComponentUpdate } from "../processClass";
 import { processConsumer, processProvider } from "../processContext";
 import { processFunction } from "../processFunction";
 import { processLazy } from "../processLazy";
@@ -15,7 +15,7 @@ import { getInstanceFieldByInstance, initInstance, initVisibleInstance, setOwner
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { VisibleInstanceField } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MaybeArrayMyReactElementNode } from "@my-react/react";
+import type { MaybeArrayMyReactElementNode, MyReactComponent } from "@my-react/react";
 
 const { currentComponentFiber, MyReactInternalInstance } = __my_react_internal__;
 
@@ -57,6 +57,10 @@ export const nextWorkClassComponent = (renderDispatch: CustomRenderDispatch, fib
 
     nextWorkCommon(renderDispatch, fiber, children);
   } else {
+    const field = getClassInstanceFieldByInstance(fiber.instance as MyReactComponent);
+
+    if (!field.isMounted) return;
+
     const { updated, children } = processClassComponentUpdate(renderDispatch, fiber);
 
     if (updated) nextWorkCommon(renderDispatch, fiber, children);

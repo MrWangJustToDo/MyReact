@@ -1,4 +1,4 @@
-import { include } from "@my-react/react-shared";
+import { exclude, include, STATE_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
@@ -7,9 +7,9 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactElementNode } from "@my-react/react";
 
 export const defaultReadPromise = (_promise: PromiseWithState<unknown>) => {
-  if (_promise.status === 'fulfilled') {
+  if (_promise.status === "fulfilled") {
     return _promise.value;
-  } else if (_promise.status === 'rejected') {
+  } else if (_promise.status === "rejected") {
     throw _promise.reason;
   } else {
     throw _promise;
@@ -40,4 +40,13 @@ export const defaultResolveSuspenseFiber = (fiber: MyReactFiberNode): MyReactFib
   }
 
   return null;
-}
+};
+
+export const defaultResolveAliveSuspenseFiber = (fiber: MyReactFiberNode): MyReactFiberNode => {
+  while (fiber) {
+    if (include(fiber.type, NODE_TYPE.__suspense__) && exclude(fiber.state, STATE_TYPE.__unmount__)) {
+      return fiber;
+    }
+    fiber = fiber.parent;
+  }
+};

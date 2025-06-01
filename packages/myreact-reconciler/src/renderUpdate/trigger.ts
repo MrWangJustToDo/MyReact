@@ -162,7 +162,7 @@ export const triggerError = (renderDispatch: CustomRenderDispatch, fiber: MyReac
         type: UpdateQueueType.component,
         trigger: typedInstance,
         payLoad: payloadState,
-        isSync: false,
+        isSync: true,
         isForce: true,
         isRetrigger: false,
         isImmediate: false,
@@ -204,18 +204,4 @@ export const triggerError = (renderDispatch: CustomRenderDispatch, fiber: MyReac
       throw error;
     }
   }
-};
-
-export const triggerUnmount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, cb?: () => void) => {
-  if (renderDispatch.isAppUnmounted) {
-    throw new Error(`[@my-react/react] can not unmount a node when current app has been unmounted`);
-  }
-
-  triggerUpdate(renderDispatch, fiber, STATE_TYPE.__skippedSync__, function finishTriggerUnmountOnFiber() {
-    renderDispatch.reconcileUnmount();
-
-    cb?.();
-
-    if (__DEV__) currentTriggerFiber.current = null;
-  });
 };

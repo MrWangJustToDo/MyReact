@@ -30,6 +30,8 @@
 
       p = new Promise((r) => {
         setTimeout(r, time);
+      }).then(() => {
+        console.log('resolved')
       });
 
       return p;

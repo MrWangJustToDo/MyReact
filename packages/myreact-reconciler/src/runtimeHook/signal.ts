@@ -37,7 +37,7 @@ export class MyReactSignal<T = any> {
 
       allDeps.forEach((f) => exclude(f.state, STATE_TYPE.__unmount__) && (f.state = STATE_TYPE.__triggerConcurrent__));
 
-      triggerUpdateOnFiber(this._renderDispatch.rootFiber, STATE_TYPE.__skippedSync__);
+      triggerUpdateOnFiber(this._renderDispatch.rootFiber, STATE_TYPE.__triggerConcurrent__);
     }
   };
 }

@@ -7,6 +7,7 @@ import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import {
   getInstanceContextFiber,
   getInstanceEffectState,
+  getInstanceFieldByInstance,
   getInstanceOwnerFiber,
   initInstance,
   setContextForInstance,
@@ -15,6 +16,9 @@ import {
 } from "../runtimeGenerate";
 import { afterSyncFlush, beforeSyncFlush, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber } from "../share";
 
+import { initClassInstance, mountClassInstance } from "./instance";
+
+import type { ClassInstanceField } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
 
@@ -100,6 +104,8 @@ const processComponentInstanceOnMount = (renderDispatch: CustomRenderDispatch, f
 
   initInstance(instance);
 
+  initClassInstance(instance);
+
   setOwnerForInstance(instance, fiber);
 
   setContextForInstance(instance, providerFiber);
@@ -138,13 +144,15 @@ const processComponentDidMountOnMount = (renderDispatch: CustomRenderDispatch, f
 
   const effect = getInstanceEffectState(typedInstance);
 
-  if (typedInstance.componentDidMount && exclude(effect, Effect_TYPE.__effect__)) {
+  if (exclude(effect, Effect_TYPE.__effect__)) {
     setEffectForInstance(typedInstance, Effect_TYPE.__effect__);
 
     renderDispatch.pendingLayoutEffect(fiber, function invokeComponentDidMountOnInstance() {
       setEffectForInstance(typedInstance, Effect_TYPE.__initial__);
 
       typedInstance.componentDidMount?.();
+
+      mountClassInstance(typedInstance);
     });
   }
 };
@@ -496,6 +504,10 @@ export const processClassComponentUpdate = (renderDispatch: CustomRenderDispatch
 export const processClassComponentUnmount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const typedInstance = fiber.instance as MyReactComponent;
 
+  if (!typedInstance) return;
+
+  const classField = getInstanceFieldByInstance(typedInstance) as ClassInstanceField;
+
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallInstanceUnmountListener() {
@@ -506,7 +518,9 @@ export const processClassComponentUnmount = (renderDispatch: CustomRenderDispatc
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallComponentWillUnmountOnInstance() {
-      typedInstance?.componentWillUnmount?.();
+      if (classField.isMounted) {
+        typedInstance?.componentWillUnmount?.();
+      }
     },
   });
 };

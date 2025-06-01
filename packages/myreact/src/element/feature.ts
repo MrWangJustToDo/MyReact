@@ -1,5 +1,6 @@
 import { Consumer, Context, ForwardRef, isNormalEquals, Lazy, Memo, Provider, TYPEKEY } from "@my-react/react-shared";
 
+import type { RenderFiber } from "../renderFiber";
 import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "./instance";
 
 const defaultObject = { [TYPEKEY]: Context, displayName: "" };
@@ -147,5 +148,6 @@ export type LazyType<P extends Record<string, unknown>> = {
   _loading: boolean;
   _loaded: boolean;
   _error?: unknown;
+  _list?: Set<RenderFiber>;
   render: null | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>;
 };

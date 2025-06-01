@@ -39,7 +39,6 @@ import {
   enableHMRForDev,
   enableDebugFiled,
   enableDoubleRender,
-  enableLoopFromRoot,
   enableScopeTreeLog,
   enableOptimizeTreeLog,
   enableConcurrentMode,
@@ -94,7 +93,6 @@ const __my_react_shared__ = {
   enableHMRForDev,
   enableDebugFiled,
   enableScopeTreeLog,
-  enableLoopFromRoot,
   enableDoubleRender,
   enableConcurrentMode,
   enableLegacyLifeCycle,
@@ -191,7 +189,6 @@ export {
   __my_react_shared__,
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
   version,
-  
   isMyReact,
 };
 
@@ -211,6 +208,8 @@ export type {
   TriggerUpdateQueue,
   ContextUpdateQueue,
   SuspenseUpdateQueue,
+  LazyUpdateQueue,
+  PromiseUpdateQueue,
 } from "./renderQueue";
 
 export type {

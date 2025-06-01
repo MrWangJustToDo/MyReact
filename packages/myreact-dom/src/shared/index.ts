@@ -3,7 +3,6 @@ export * from "./dom";
 export * from "./dev";
 export * from "./log";
 export * from './init';
-export * from "./head";
 export * from "./tools";
 export * from "./render";
 export * from "./promise";

@@ -1,7 +1,7 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 import { include, isNormalEquals, STATE_TYPE } from "@my-react/react-shared";
 
-import { prepareUpdateAllDependence, prepareUpdateAllDependenceFromRoot } from "../dispatchContext";
+import { prepareUpdateAllDependence } from "../dispatchContext";
 import { getInstanceContextFiber, initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
 import { safeCallWithCurrentFiber } from "../share";
 
@@ -10,7 +10,6 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 import type { createContext, MyReactFunctionComponent } from "@my-react/react";
 
 const { currentComponentFiber, MyReactInternalInstance } = __my_react_internal__;
-const { enableLoopFromRoot } = __my_react_shared__;
 
 export const processProvider = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   if (renderDispatch.isAppMounted) {
@@ -19,13 +18,7 @@ export const processProvider = (renderDispatch: CustomRenderDispatch, fiber: MyR
     const nextProps = fiber.pendingProps.value;
 
     if (!isNormalEquals(prevProps as Record<string, unknown>, nextProps as Record<string, unknown>)) {
-      if (enableLoopFromRoot.current) {
-        prepareUpdateAllDependence(renderDispatch, fiber, prevProps, nextProps);
-      } else {
-        renderDispatch.pendingLayoutEffect(fiber, function invokePrepareUpdateAllDependenceFromRoot() {
-          prepareUpdateAllDependenceFromRoot(renderDispatch, fiber, prevProps, nextProps);
-        });
-      }
+      prepareUpdateAllDependence(renderDispatch, fiber, prevProps, nextProps);
     }
   }
 };

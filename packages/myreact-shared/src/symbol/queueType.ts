@@ -5,5 +5,6 @@ export enum UpdateQueueType {
   hmr = 4,
   trigger = 5,
   suspense = 6,
-  
+  lazy = 7,
+  promise = 8,
 }

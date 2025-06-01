@@ -1,16 +1,25 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { ListTree } from "@my-react/react-shared";
+import { STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { defaultDeleteCurrentEffect } from "../dispatchEffect";
-import { type MyReactFiberNode } from "../runtimeFiber";
+import { getInstanceFieldByInstance } from "../runtimeGenerate";
 
+import type { SuspenseInstanceField } from "../processSuspense";
 import type { CustomRenderDispatch } from "../renderDispatch";
+import type { MyReactFiberNode } from "../runtimeFiber";
+import type { PromiseUpdateQueue } from "@my-react/react";
 
-export type PromiseWithState<T> = Promise<T> & { status?: "fulfilled" | "rejected" | "pending"; value?: T; reason?: any; fiber?: MyReactFiberNode };
+export type PromiseWithState<T> = Promise<T> & {
+  status?: "fulfilled" | "rejected" | "pending";
+  value?: T;
+  reason?: any;
+  _loading?: boolean;
+  _list?: Set<MyReactFiberNode>;
+};
 
 const { currentScheduler } = __my_react_internal__;
 
-export const loadPromise = async (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
+export const loadPromise = async (renderDispatch: CustomRenderDispatch, promise: PromiseWithState<unknown>) => {
   if (promise.status === "fulfilled" || promise.status === "rejected") return;
 
   try {
@@ -31,8 +40,6 @@ export const loadPromise = async (renderDispatch: CustomRenderDispatch, fiber: M
 export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
   defaultDeleteCurrentEffect(renderDispatch, fiber);
 
-  promise.fiber = fiber;
-
   if (promise.status === "rejected") {
     currentScheduler.current.dispatchError?.({ fiber, error: promise.reason });
 
@@ -45,24 +52,47 @@ export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyRe
     }
   }
 
-  if (!promise.status) {
+  promise._list = promise._list || new Set();
+
+  promise._list.add(fiber);
+
+  const suspenseFiber = renderDispatch.resolveSuspenseFiber(fiber);
+
+  if (suspenseFiber) {
+    const suspenseField = getInstanceFieldByInstance(suspenseFiber.instance) as SuspenseInstanceField;
+
+    suspenseField.asyncLoadList.uniPush(promise);
+
+    renderDispatch.pendingSuspenseFiberArray.uniPush(suspenseFiber);
+
+    return null;
+  } else {
+    if (promise._loading) return null;
+
+    promise._loading = true;
+
     promise.status = "pending";
 
-    renderDispatch.pendingAsyncLoadList = renderDispatch.pendingAsyncLoadList || new ListTree<MyReactFiberNode | PromiseWithState<any>>();
+    const renderScheduler = currentScheduler.current;
 
-    if (!renderDispatch.runtimeFiber.visibleFiber) {
-      const visibleFiber = renderDispatch.resolveSuspenseFiber(fiber);
+    renderDispatch.processPromise(promise).then(() => {
+      fiber.state = STATE_TYPE.__triggerSync__;
 
-      if (visibleFiber) {
-        renderDispatch.runtimeFiber.visibleFiber = visibleFiber;
+      promise._list.delete(fiber);
 
-        renderDispatch.pendingAsyncLoadList.push(promise);
-      } else {
-        throw new Error("[@my-react/react] the promise is not in a suspense tree");
-      }
-    } else {
-      renderDispatch.pendingAsyncLoadList.push(promise);
-    }
+      promise._loading = false;
+
+      const updater: PromiseUpdateQueue = {
+        type: UpdateQueueType.promise,
+        trigger: fiber,
+        isSync: true,
+        isForce: true,
+        payLoad: promise,
+      };
+
+      renderScheduler.dispatchState(updater);
+    });
+
+    return null;
   }
-  return null;
 };

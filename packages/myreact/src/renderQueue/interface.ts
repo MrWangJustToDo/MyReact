@@ -11,7 +11,6 @@ export type ComponentUpdateQueue<State = Record<string, unknown>, Props = Record
   trigger: MyReactComponent;
   isForce?: boolean;
   isSync?: boolean;
-  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Partial<State> | ((state: State, props: Props) => Partial<State>);
@@ -26,7 +25,6 @@ export type HookUpdateQueue = {
   trigger: RenderHook;
   isForce?: boolean;
   isSync?: boolean;
-  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Action;
@@ -42,7 +40,6 @@ export type ContextUpdateQueue = {
   trigger: RenderFiber;
   isForce?: boolean;
   isSync?: boolean;
-  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Record<string, unknown>;
@@ -57,7 +54,6 @@ export type SuspenseUpdateQueue = {
   trigger: RenderFiber;
   isForce?: boolean;
   isSync?: boolean;
-  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Array<any>;
@@ -72,7 +68,6 @@ export type HMRUpdateQueue = {
   trigger: RenderFiber;
   isForce?: boolean;
   isSync?: boolean;
-  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Record<string, unknown>;
@@ -87,10 +82,37 @@ export type TriggerUpdateQueue = {
   trigger: RenderFiber;
   isForce?: boolean;
   isSync?: boolean;
-  isSkip?: boolean;
   isRetrigger?: boolean;
   isImmediate?: boolean;
   payLoad?: Record<string, unknown>;
+  callback?: () => void;
+};
+
+/**
+ * @public
+ */
+export type LazyUpdateQueue = {
+  type: UpdateQueueType.lazy;
+  trigger: RenderFiber;
+  isForce?: boolean;
+  isSync?: boolean;
+  isRetrigger?: boolean;
+  isImmediate?: boolean;
+  payLoad?: any;
+  callback?: () => void;
+};
+
+/**
+ * @public
+ */
+export type PromiseUpdateQueue = {
+  type: UpdateQueueType.promise;
+  trigger: RenderFiber;
+  isForce?: boolean;
+  isSync?: boolean;
+  isRetrigger?: boolean;
+  isImmediate?: boolean;
+  payLoad?: any;
   callback?: () => void;
 };
 
@@ -104,5 +126,7 @@ export type UpdateQueue<T = Record<string, any>> = (
   | HMRUpdateQueue
   | TriggerUpdateQueue
   | SuspenseUpdateQueue
+  | LazyUpdateQueue
+  | PromiseUpdateQueue
 ) &
   T;

@@ -47,11 +47,11 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   pendingCommitFiberPatch: PATCH_TYPE = PATCH_TYPE.__initial__;
 
-  pendingAsyncLoadList: ListTree<MyReactFiberNode | Promise<any>> | null = null;
-
   pendingChangedFiberList: ListTree<MyReactFiberNode> | null = null;
 
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
+
+  pendingSuspenseFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
 
   performanceLogTimeLimit: number;
 
@@ -195,11 +195,11 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
   dispatchFiber(_fiber: MyReactFiberNode) {
     defaultDispatchFiber(this, _fiber);
   }
-  processFiber(_fiber: MyReactFiberNode): Promise<void> {
-    return loadLazy(this, _fiber, _fiber.elementType as ReturnType<typeof lazy>);
+  processLazy(_elementType: ReturnType<typeof lazy>): Promise<void> {
+    return loadLazy(this, _elementType);
   }
   processPromise(_promise: PromiseWithState<unknown>): Promise<void> {
-    return loadPromise(this, _promise.fiber, _promise);
+    return loadPromise(this, _promise);
   }
   commitCreate(_fiber: MyReactFiberNode): void {
     void 0;
@@ -315,8 +315,6 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     this.runtimeFiber.nextWorkingFiber = null;
 
     this.runtimeFiber.retriggerFiber = null;
-
-    this.runtimeFiber.visibleFiber = null;
 
     this.pendingCommitFiberPatch = PATCH_TYPE.__initial__;
   }

@@ -70,11 +70,6 @@ export const currentHookTreeNode = createRef<ListTreeNode<RenderHook> | null>(nu
  */
 export const currentHookNodeIndex = createRef<number>(0);
 
-/**
- * @internal
- */
-export const enableLoopFromRoot = createReadonlyRef(true);
-
 // ==== feature ==== //
 /**
  * @internal

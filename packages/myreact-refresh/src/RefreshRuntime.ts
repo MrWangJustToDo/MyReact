@@ -393,10 +393,7 @@ export const performReactRefresh = () => {
       } else {
         const rootFiber = container.rootFiber;
 
-        (rootFiber as MyReactFiberNodeDev).__dev_hmr_update__?.(
-          hasRootUpdate ? STATE_TYPE.__triggerSync__ : STATE_TYPE.__skippedSync__,
-          updateDone.bind(null, currentId)
-        );
+        (rootFiber as MyReactFiberNodeDev).__dev_hmr_update__?.(STATE_TYPE.__triggerSync__, updateDone.bind(null, currentId));
       }
       setRefreshRuntimeFieldForDev(container);
     });

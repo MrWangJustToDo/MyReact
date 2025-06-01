@@ -1,7 +1,6 @@
 import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { defaultInvokeUnmountList } from "../dispatchUnmount";
-// import { triggerUnmount } from "../renderUpdate";
 import { unmountFiberNode } from "../runtimeFiber";
 import { currentTriggerFiber, generateFiberToUnmountList } from "../share";
 
@@ -41,7 +40,7 @@ export const unmountContainer = (renderDispatch: CustomRenderDispatch, cb?: () =
 export const clearContainer = (renderDispatch: CustomRenderDispatch) => {
   renderDispatch.pendingCommitFiberPatch = PATCH_TYPE.__initial__;
   renderDispatch.pendingUpdateFiberArray?.clear();
-  renderDispatch.pendingAsyncLoadList?.clear();
+  renderDispatch.pendingSuspenseFiberArray?.clear();
   renderDispatch.pendingCommitFiberList?.clear();
   renderDispatch.pendingChangedFiberList?.clear();
   renderDispatch.resetUpdateFlowRuntimeFiber();

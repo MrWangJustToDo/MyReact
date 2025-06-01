@@ -20,7 +20,7 @@ export type UpdateQueueDev = UpdateQueue<{
   _debugRunTime: number;
 }>;
 
-const { currentComponentFiber, currentRunningFiber, currentScopeFiber } = __my_react_internal__;
+const { currentComponentFiber, currentRunningFiber } = __my_react_internal__;
 
 const { enableDebugFiled } = __my_react_shared__;
 
@@ -45,16 +45,12 @@ export const processState = (renderDispatch: CustomRenderDispatch, _params: Upda
 
   if (!renderDispatch) return;
 
-  _params.isSkip = !!_params.isSkip;
+  _params.isRetrigger = currentRunningFiber.current === ownerFiber || !!_params.isRetrigger;
 
   _params.isImmediate =
     typeof _params.isImmediate === "boolean"
       ? _params.isImmediate
-      : renderDispatch.isAppMounted
-        ? !currentScopeFiber.current || !!currentRunningFiber.current
-        : false;
-
-  _params.isRetrigger = currentRunningFiber.current === ownerFiber || !!_params.isRetrigger;
+      : _params.isRetrigger || (renderDispatch.isAppMounted ? !!currentRunningFiber.current : false);
 
   safeCallWithCurrentFiber({
     fiber: ownerFiber,

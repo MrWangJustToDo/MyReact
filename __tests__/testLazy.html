@@ -94,7 +94,7 @@
       const LazyFoo = lazy(async () => {
         console.log("lazy foo");
         await delay(1000);
-        throw new Error("lll");
+        // throw new Error("lll");
         return { default: Foo };
       });
 

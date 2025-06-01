@@ -46,6 +46,7 @@
 
         useLayoutEffect(() => {
           console.warn("useLayoutEffect", s);
+          // setS(s + 1);
 
           return () => {
             console.warn("useLayoutEffect return", s);
@@ -54,6 +55,7 @@
 
         useEffect(() => {
           console.warn("useEffect", s);
+          // setS(s + 1);
 
           return () => {
             console.warn("useEffect return", s);

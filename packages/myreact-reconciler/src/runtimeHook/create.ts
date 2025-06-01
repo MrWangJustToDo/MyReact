@@ -22,7 +22,6 @@ const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
 };
 
 export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
-
   const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
 
   const currentHookIndex = currentHookNodeIndex.current;
@@ -185,14 +184,14 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
         const loadingCallback = (cb: () => void) => {
           startTransition(() => {
             hookNode.result[0] = true;
-            hookNode._update({ isForce: true, callback: cb });
+            hookNode._update({ isForce: true, isSync: true, callback: cb });
           });
         };
 
         const loadedCallback = () => {
           startTransition(() => {
             hookNode.result[0] = false;
-            hookNode._update({ isForce: true });
+            hookNode._update({ isForce: true, isSync: true });
           });
         };
 

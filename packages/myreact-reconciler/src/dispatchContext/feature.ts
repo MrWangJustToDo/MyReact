@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
-import { triggerUpdateOnFiber, type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
+import { type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
 import { getInstanceOwnerFiber, initInstance, setOwnerForInstance, setSubscribeForInstance } from "../runtimeGenerate";
 import { enableDebugUpdateQueue, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
@@ -128,7 +128,6 @@ export const prepareUpdateAllDependence = (
     needUpdate: true,
     nodes: processedNodes,
     isSync: true,
-    isSkip: false,
     isForce: true,
     isImmediate: true,
     isRetrigger: true,
@@ -137,7 +136,6 @@ export const prepareUpdateAllDependence = (
   const proUpdater: UpdateState = {
     needUpdate: true,
     isSync: true,
-    isSkip: false,
     isForce: true,
     isImmediate: true,
     isRetrigger: true,
@@ -149,87 +147,4 @@ export const prepareUpdateAllDependence = (
       listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, __DEV__ ? devUpdater : proUpdater));
     },
   });
-};
-
-export const prepareUpdateAllDependenceFromRoot = (
-  renderDispatch: CustomRenderDispatch,
-  fiber: MyReactFiberNode,
-  beforeValue: Record<string, unknown>,
-  afterValue: Record<string, unknown>
-) => {
-  const consumerList = new Set(fiber?.dependence || []);
-
-  const now = Date.now();
-
-  const updater: UpdateQueue = {
-    type: UpdateQueueType.context,
-    trigger: fiber,
-    payLoad: afterValue,
-    isSync: true,
-    isForce: true,
-    isImmediate: true,
-    isRetrigger: false,
-    _debugBeforeValue: beforeValue,
-    _debugAfterValue: afterValue,
-    _debugCreateTime: now,
-    _debugRunTime: now,
-    _debugType: UpdateQueueType[UpdateQueueType.context],
-  };
-
-  consumerList.forEach(function prepareUpdateSingleConsumer(i) {
-    const owner = getInstanceOwnerFiber(i);
-    if (owner && exclude(owner.state, STATE_TYPE.__unmount__)) {
-      const typedFiber = owner as MyReactFiberNodeDev;
-      typedFiber.state = STATE_TYPE.__triggerSyncForce__;
-    }
-  });
-
-  const root = renderDispatch.rootFiber as MyReactFiberNodeDev;
-
-  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
-    root._debugUpdateQueue = root._debugUpdateQueue || new ListTree();
-    root._debugUpdateQueue.push(updater);
-  }
-
-  renderDispatch.pendingUpdateFiberArray.clear();
-
-  triggerUpdateOnFiber(root, STATE_TYPE.__skippedSync__);
-};
-
-export const prepareUpdateAllDependenceFromProvider = (fiber: MyReactFiberNode, beforeValue: Record<string, unknown>, afterValue: Record<string, unknown>) => {
-  const consumerList = new Set(fiber?.dependence || []);
-
-  const now = Date.now();
-
-  const updater: UpdateQueue = {
-    type: UpdateQueueType.context,
-    trigger: fiber,
-    payLoad: afterValue,
-    isSync: true,
-    isForce: true,
-    isImmediate: true,
-    isRetrigger: true,
-    _debugBeforeValue: beforeValue,
-    _debugAfterValue: afterValue,
-    _debugCreateTime: now,
-    _debugRunTime: now,
-    _debugType: UpdateQueueType[UpdateQueueType.context],
-  };
-
-  consumerList.forEach(function prepareUpdateSingleConsumer(i) {
-    const owner = getInstanceOwnerFiber(i);
-    if (owner && exclude(owner.state, STATE_TYPE.__unmount__)) {
-      const typedFiber = owner as MyReactFiberNodeDev;
-      typedFiber.state = STATE_TYPE.__triggerSyncForce__;
-    }
-  });
-
-  const typedFiber = fiber as MyReactFiberNodeDev;
-
-  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
-    typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
-    typedFiber._debugUpdateQueue.push(updater);
-  }
-
-  triggerUpdateOnFiber(typedFiber, STATE_TYPE.__skippedSync__);
 };

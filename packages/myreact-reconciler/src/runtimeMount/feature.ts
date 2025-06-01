@@ -1,14 +1,16 @@
-import { exclude, isPromise, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
+import { __my_react_internal__, type SuspenseUpdateQueue } from "@my-react/react";
+import { isPromise, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { defaultDeleteChildEffect } from "../dispatchEffect";
-import { processState } from "../processState";
+import { defaultResolveAliveSuspenseFiber } from "../dispatchSuspense";
 import { mountToNextFiberFromRoot } from "../renderNextWork";
-import { checkIsMyReactFiberNode, triggerUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
 
+import type { SuspenseInstanceField } from "../processSuspense";
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { VisibleInstanceField } from "../runtimeGenerate";
-import type { SuspenseUpdateQueue, TriggerUpdateQueue } from "@my-react/react";
+import type { MyReactFiberNode } from "../runtimeFiber";
+
+const { currentScheduler } = __my_react_internal__;
 
 export const mountLoopAllFromScheduler = (renderDispatch: CustomRenderDispatch) => {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
@@ -35,110 +37,115 @@ export const mountLoopAll = (renderDispatch: CustomRenderDispatch, fiber: MyReac
 };
 
 export const processAsyncLoadListOnAsyncMount = async (renderDispatch: CustomRenderDispatch) => {
-  let loopCount = 0;
+  while (renderDispatch.pendingSuspenseFiberArray.length) {
+    const node = renderDispatch.pendingSuspenseFiberArray.uniShift();
 
-  while (renderDispatch.pendingAsyncLoadList?.length) {
-    const beforeLength = renderDispatch.pendingAsyncLoadList.length;
+    const suspenseField = getInstanceFieldByInstance(node.instance) as SuspenseInstanceField;
 
-    const node = renderDispatch.pendingAsyncLoadList.shift();
+    renderDispatch.pendingSuspenseFiberArray.clear();
 
-    if (checkIsMyReactFiberNode(node)) {
-      await renderDispatch.processFiber(node);
+    await Promise.all(
+      suspenseField.asyncLoadList.getAll().map(async (item) => {
+        if (isPromise(item)) {
+          await renderDispatch.processPromise(item);
+        } else {
+          await renderDispatch.processLazy(item);
+        }
 
-      node.state = remove(node.state, STATE_TYPE.__stable__);
+        item._list.forEach((node: MyReactFiberNode) => {
+          node.state = remove(node.state, STATE_TYPE.__stable__);
 
-      node.state = merge(node.state, STATE_TYPE.__create__);
+          node.state = merge(node.state, STATE_TYPE.__create__);
 
-      mountLoopAll(renderDispatch, node);
-    } else if (isPromise(node)) {
-      await renderDispatch.processPromise(node);
-    }
+          mountLoopAll(renderDispatch, node);
+        });
 
-    const afterLength = renderDispatch.pendingAsyncLoadList.length;
+        item._list.clear();
 
-    if (beforeLength <= afterLength) {
-      loopCount++;
-      if (loopCount > 5) {
-        throw new Error("async load loop count is too much");
-      }
-    }
+        suspenseField.asyncLoadList.uniDelete(item);
+      })
+    );
+  }
+
+  if (renderDispatch.pendingSuspenseFiberArray.length) {
+    // If there are still pending async loads, we need to continue processing them
+    await processAsyncLoadListOnAsyncMount(renderDispatch);
   }
 };
 
 export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDispatch) => {
-  if (renderDispatch.pendingAsyncLoadList?.length) {
-    const visibleFiber = renderDispatch.runtimeFiber.visibleFiber;
-
-    const asyncLoadList = renderDispatch.pendingAsyncLoadList.toArray();
-
-    renderDispatch.pendingAsyncLoadList.clear();
+  if (renderDispatch.pendingSuspenseFiberArray?.length) {
+    const allPendingSuspenseFiberArray = renderDispatch.pendingSuspenseFiberArray.getAll();
 
     if (renderDispatch.enableAsyncLoad) {
-      Promise.all(
-        asyncLoadList.map(async (node) => {
-          if (checkIsMyReactFiberNode(node)) {
-            await renderDispatch.processFiber(node);
+      const allField: SuspenseInstanceField[] = [];
 
-            node.state = remove(node.state, STATE_TYPE.__stable__);
+      allPendingSuspenseFiberArray.forEach((node) => {
+        defaultDeleteChildEffect(renderDispatch, node);
 
-            node.state = merge(node.state, STATE_TYPE.__create__);
+        const field = getInstanceFieldByInstance(node.instance) as SuspenseInstanceField;
 
-            mountLoopAll(renderDispatch, node);
-          } else if (isPromise(node)) {
-            await renderDispatch.processPromise(node);
+        const allPendingLoadArray = field.asyncLoadList.getAll().filter((item) => {
+          if (isPromise(item)) {
+            return typeof item.status !== "string";
+          } else {
+            return !item._loading && !item._loaded && !item._error;
           }
-        })
-      ).then(() => {
-        if (visibleFiber && exclude(visibleFiber.state, STATE_TYPE.__unmount__)) {
-          const updateQueue: SuspenseUpdateQueue = {
-            type: UpdateQueueType.suspense,
-            trigger: visibleFiber,
-            payLoad: asyncLoadList,
-            isSync: true,
-            isForce: true,
-            callback: function invokeAsyncLoadListCallback() {
-              renderDispatch.runtimeFiber.visibleFiber = null;
-            },
-          };
+        });
 
-          const visibleField = getInstanceFieldByInstance(visibleFiber.instance) as VisibleInstanceField;
+        if (allPendingLoadArray.length) {
+          Promise.all(
+            allPendingLoadArray.map(async (item) => {
+              if (isPromise(item)) {
+                await renderDispatch.processPromise(item);
+              } else {
+                await renderDispatch.processLazy(item);
+              }
 
-          visibleField.isHidden = false;
+              item._list?.clear();
 
-          processState(renderDispatch, updateQueue);
-        } else {
-          triggerUpdateOnFiber(renderDispatch.rootFiber, STATE_TYPE.__triggerSyncForce__, function invokeAsyncLoadListCallback() {
-            renderDispatch.runtimeFiber.visibleFiber = null;
+              field.asyncLoadList.uniDelete(item);
+            })
+          ).then(() => {
+            const aliveNode = defaultResolveAliveSuspenseFiber(node);
+
+            aliveNode.state = STATE_TYPE.__triggerSyncForce__;
+
+            const renderScheduler = currentScheduler.current;
+
+            const updater: SuspenseUpdateQueue = {
+              type: UpdateQueueType.suspense,
+              trigger: aliveNode,
+              isSync: true,
+              isForce: true,
+              payLoad: allPendingLoadArray,
+            };
+
+            renderScheduler.dispatchState(updater);
           });
         }
+
+        node.state = STATE_TYPE.__create__;
+
+        field.isHidden = true;
+
+        allField.push(field);
       });
 
-      if (visibleFiber) {
-        defaultDeleteChildEffect(renderDispatch, visibleFiber);
+      const root = renderDispatch.rootFiber;
 
-        const visibleField = getInstanceFieldByInstance(visibleFiber.instance) as VisibleInstanceField;
+      root.state = remove(root.state, STATE_TYPE.__stable__);
 
-        visibleField.isHidden = true;
+      root.state = merge(root.state, STATE_TYPE.__retrigger__);
 
-        visibleFiber.state = merge(visibleFiber.state, STATE_TYPE.__create__);
+      // TODO use hide tree to improve
+      mountLoopAll(renderDispatch, root);
 
-        const updateQueue: TriggerUpdateQueue = {
-          type: UpdateQueueType.trigger,
-          trigger: visibleFiber,
-          isRetrigger: true,
-          isImmediate: true,
-          isSync: true,
-          isForce: true,
-          isSkip: false,
-          callback: null,
-        };
+      allField.forEach((field) => (field.isHidden = false));
 
-        processState(renderDispatch, updateQueue);
-      } else {
-        return null;
-      }
+      renderDispatch.pendingSuspenseFiberArray.clear();
     } else {
-      console.error(
+      throw new Error(
         "[@my-react/reconciler] should not process async load list on sync mount without enableAsyncLoad, you may use a wrong renderDispatch instance"
       );
     }

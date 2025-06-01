@@ -63,20 +63,10 @@ const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyRea
 
     if (updateState.isSync) {
       if (updateState.isImmediate) {
-        triggerUpdate(
-          renderDispatch,
-          fiber,
-          updateState.isSkip ? STATE_TYPE.__skippedSync__ : updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__,
-          updateState.callback
-        );
+        triggerUpdate(renderDispatch, fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);
       } else {
         renderScheduler.microTask(function triggerSyncUpdateOnFiber() {
-          triggerUpdate(
-            renderDispatch,
-            fiber,
-            updateState.isSkip ? STATE_TYPE.__skippedSync__ : updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__,
-            updateState.callback
-          );
+          triggerUpdate(renderDispatch, fiber, updateState.isForce ? STATE_TYPE.__triggerSyncForce__ : STATE_TYPE.__triggerSync__, updateState.callback);
         });
       }
     } else {
@@ -84,24 +74,15 @@ const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyRea
         triggerUpdate(
           renderDispatch,
           fiber,
-          updateState.isSkip
-            ? STATE_TYPE.__skippedConcurrent__
-            : updateState.isForce
-              ? STATE_TYPE.__triggerConcurrentForce__
-              : STATE_TYPE.__triggerConcurrent__,
+          updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__,
           updateState.callback
         );
       } else {
         renderScheduler.microTask(function triggerConcurrentUpdateOnFiber() {
           triggerUpdate(
             renderDispatch,
-
             fiber,
-            updateState.isSkip
-              ? STATE_TYPE.__skippedConcurrent__
-              : updateState.isForce
-                ? STATE_TYPE.__triggerConcurrentForce__
-                : STATE_TYPE.__triggerConcurrent__,
+            updateState.isForce ? STATE_TYPE.__triggerConcurrentForce__ : STATE_TYPE.__triggerConcurrent__,
             updateState.callback
           );
         });
@@ -124,11 +105,9 @@ export const prepareUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber
   }
 };
 
-const SyncState = merge(STATE_TYPE.__triggerSyncForce__, merge(STATE_TYPE.__skippedSync__, STATE_TYPE.__triggerSync__));
+const SyncState = merge(STATE_TYPE.__triggerSyncForce__, STATE_TYPE.__triggerSync__);
 
 const ForceState = merge(STATE_TYPE.__triggerSyncForce__, STATE_TYPE.__triggerConcurrentForce__);
-
-const SkipState = merge(STATE_TYPE.__skippedSync__, STATE_TYPE.__skippedConcurrent__);
 
 export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE, callback?: () => void) => {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
@@ -140,9 +119,6 @@ export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE
     trigger: fiber,
     isSync: include(state, SyncState),
     isForce: include(state, ForceState),
-    isSkip: include(state, SkipState),
-    isImmediate: true,
-    isRetrigger: false,
     callback,
   };
 

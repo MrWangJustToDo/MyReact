@@ -1,6 +1,7 @@
 /* eslint-disable max-lines */
 import {
   __my_react_internal__,
+  type lazy,
   type createContext,
   type MyReactComponent,
   type MyReactElementNode,
@@ -129,8 +130,6 @@ const getInitialFiber = (): RenderDispatch["runtimeFiber"] => ({
   nextWorkingFiber: null,
 
   retriggerFiber: null,
-
-  visibleFiber: null,
 });
 
 const initialRef: RenderDispatch["runtimeRef"] = {
@@ -168,11 +167,11 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
 
   isAppUnmounted: boolean;
 
-  pendingAsyncLoadList: ListTree<MyReactFiberNode | Promise<any>>;
-
   pendingCommitFiberList: ListTree<MyReactFiberNode>;
 
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode>;
+
+  pendingSuspenseFiberArray: UniqueArray<MyReactFiberNode>;
 
   constructor() {
     super();
@@ -245,7 +244,7 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
 
   dispatchFiber(_fiber: MyReactFiberNode) {}
 
-  processFiber(_fiber: MyReactFiberNode): Promise<void> {
+  processLazy(_elementType: ReturnType<typeof lazy>): Promise<void> {
     return Promise.resolve();
   }
 

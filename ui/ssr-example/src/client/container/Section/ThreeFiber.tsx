@@ -17,7 +17,7 @@ const AllExampleList = [
   "MultiMaterial.tsx",
   "MultiRender.tsx",
   "Pointcloud.tsx",
-  "Reparenting.tsx"
+  "Reparenting.tsx",
 ];
 
 export const ThreeFiberSection = () => {
@@ -80,11 +80,8 @@ export const ThreeFiberSection = () => {
               }}
               theme={colorScheme}
             >
-              <SandpackLayout style={{ border: "none" }}>
-                <SandpackCodeEditor showReadOnly={false} readOnly style={{ height: "350px" }} />
-                {/* <Box borderLeft="1px" borderColor="cardBorderColor" width={{ base: "100%", md: "50%" }}>
-                  {__CLIENT__ && isMounted && <ThreeFiberExample name={name} />}
-                </Box> */}
+              <SandpackLayout>
+                <SandpackCodeEditor readOnly style={{ height: "380px" }} />
               </SandpackLayout>
             </SandpackProvider>
           </Box>

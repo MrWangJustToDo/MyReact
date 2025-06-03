@@ -416,3 +416,11 @@ blockquote {
   color: var(--hljs-color);
   font-style: initial;
 }
+
+.sp-stack {
+  transform: scale(1);
+}
+
+.sp-read-only {
+  position: fixed;
+}

@@ -133,7 +133,7 @@ export const NextSection = () => {
               theme={colorScheme}
             >
               <SandpackLayout style={{ border: "none" }}>
-                <SandpackCodeEditor showReadOnly={false} readOnly style={{ height: "320px" }} />
+                <SandpackCodeEditor readOnly style={{ height: "320px" }} />
               </SandpackLayout>
             </SandpackProvider>
           </Box>

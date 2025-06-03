@@ -1,4 +1,5 @@
 import { ClientDomDispatch } from "@my-react/react-dom";
+import BabelType from '@babel/core';
 
 declare global {
   const __CLIENT__: boolean;
@@ -40,6 +41,8 @@ declare global {
     __MY_REACT_DEVTOOL_IFRAME__?: ((origin: string, token?: string) => void) & { close: () => void };
 
     ["__@my-react/dispatch__"]: ClientDomDispatch[];
+
+    Babel: typeof BabelType
   }
 
   namespace NodeJS {

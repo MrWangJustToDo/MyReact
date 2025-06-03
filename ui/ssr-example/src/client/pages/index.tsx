@@ -23,15 +23,15 @@ const Page = () => {
         </ScrollSection>
 
         <ScrollSection>
-          <ThreeFiberSection />
-        </ScrollSection>
-
-        <ScrollSection>
           <NextSection />
         </ScrollSection>
 
         <ScrollSection>
           <ViteSection />
+        </ScrollSection>
+
+        <ScrollSection>
+          <ThreeFiberSection />
         </ScrollSection>
 
         <ScrollSection>

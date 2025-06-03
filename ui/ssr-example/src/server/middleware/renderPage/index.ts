@@ -1,7 +1,7 @@
 import { getIsAnimateRouter, getIsMiddleware, getIsStaticGenerate } from "@shared";
 
 import { composeRender } from "./compose";
-import { generateGlobalEnv, initLang, initStore, loadAsset, loadLang, loadStore } from "./middleware";
+import { generateGlobalEnv, initLang, initStore, initHeader, loadAsset, loadLang, loadStore } from "./middleware";
 import { webpackRender } from "./render/webpackRender";
 
 export const renderSSR = composeRender(
@@ -14,6 +14,7 @@ export const renderSSR = composeRender(
     isANIMATE_ROUTER: getIsAnimateRouter(),
     PUBLIC_API_HOST: __DEVELOPMENT__ ? process.env.PUBLIC_DEV_API_HOST : process.env.PUBLIC_PROD_API_HOST,
   }),
+  initHeader,
   initLang,
   initStore,
   loadStore,
@@ -35,6 +36,7 @@ export const renderCSR = composeRender(
     PUBLIC_API_HOST: __DEVELOPMENT__ ? process.env.PUBLIC_DEV_API_HOST : process.env.PUBLIC_PROD_API_HOST,
   }),
   initLang,
+  initHeader,
   initStore,
   loadStore,
   loadLang,
@@ -54,6 +56,7 @@ export const renderP_CSR = composeRender(
     isANIMATE_ROUTER: getIsAnimateRouter(),
     PUBLIC_API_HOST: __DEVELOPMENT__ ? process.env.PUBLIC_DEV_API_HOST : process.env.PUBLIC_PROD_API_HOST,
   }),
+  initHeader,
   initLang,
   loadAsset
 )(async (args) => {
@@ -73,6 +76,7 @@ export const renderStreamSSR = composeRender(
     PUBLIC_API_HOST: __DEVELOPMENT__ ? process.env.PUBLIC_DEV_API_HOST : process.env.PUBLIC_PROD_API_HOST,
   }),
   initLang,
+  initHeader,
   initStore,
   loadStore,
   loadLang,

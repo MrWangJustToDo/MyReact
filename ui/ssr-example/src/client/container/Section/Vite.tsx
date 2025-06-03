@@ -106,7 +106,7 @@ export const ViteSection = () => {
               theme={colorScheme}
             >
               <SandpackLayout style={{ border: "none" }}>
-                <SandpackCodeEditor showReadOnly={false} readOnly style={{ height: "360px" }} />
+                <SandpackCodeEditor readOnly style={{ height: "360px" }} />
               </SandpackLayout>
             </SandpackProvider>
           </Box>

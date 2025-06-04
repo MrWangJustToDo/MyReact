@@ -66,7 +66,7 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
   }
 
   if (hookNode.type === HOOK_TYPE.useId) {
-    hookNode.result = `«-${currentHookIndex}-${renderDispatch.uniqueIdCount++}-»`;
+    hookNode.result = `_-${currentHookIndex}-${renderDispatch.uniqueIdCount++}-_`;
     hookNode.cancel = () => renderDispatch.uniqueIdCount--;
   }
 

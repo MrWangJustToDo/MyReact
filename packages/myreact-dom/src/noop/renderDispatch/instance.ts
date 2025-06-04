@@ -1,10 +1,11 @@
-import { CustomRenderDispatch, getElementName } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, getElementName, processHook, processPromise, processState } from "@my-react/react-reconciler";
 
 import { append, create, update } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
 
 import { unmount } from "./unmount";
 
+import type { UpdateQueue, RenderHookParams } from "@my-react/react";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export class NoopLegacyRenderDispatch extends CustomRenderDispatch {
@@ -178,5 +179,22 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
 
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     initialElementMap(this, _fiber);
+  }
+
+  dispatchState(_params: UpdateQueue): void {
+    return processState(this, _params);
+  }
+
+  dispatchHook(_params: RenderHookParams): unknown {
+    return processHook(this, _params);
+  }
+
+  dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }) {
+    throw _params.error || new Error("An error occurred during rendering.");
+    return null;
+  }
+
+  dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }) {
+    return processPromise(this, _params.fiber, _params.promise);
   }
 }

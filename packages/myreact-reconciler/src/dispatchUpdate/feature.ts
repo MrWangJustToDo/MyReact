@@ -20,6 +20,11 @@ export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: Li
   _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       defaultInvokeUnmountList(_dispatch, _fiber);
+    }
+  });
+
+  _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
+    if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       insertionEffect(_dispatch, _fiber);
     }
   });

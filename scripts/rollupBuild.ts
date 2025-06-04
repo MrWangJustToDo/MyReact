@@ -59,6 +59,9 @@ export const externalReact = (id: string) =>
   id.endsWith("@my-react/react-terminal") ||
   (id.includes("node_modules") && !id.includes("tslib"));
 
+export const externalReactLib = (id: string) =>
+  externalReact(id) || id.includes("@my-react/react-jsx") || id.includes("@my-react/react/jsx-runtime") || id.includes("@my-react/react/jsx-dev-runtime");
+
 const buildPackages = async () => {
   await rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact", packageScope: "packages", external: externalReact });
@@ -71,7 +74,7 @@ const buildPackages = async () => {
   await rollupBuild({
     packageName: "myreact-terminal",
     packageScope: "packages",
-    external: externalReact,
+    external: externalReactLib,
     plugins: {
       singleOther({ defaultPlugins }) {
         return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
@@ -81,7 +84,7 @@ const buildPackages = async () => {
   await rollupBuild({
     packageName: "myreact-three-fiber",
     packageScope: "packages",
-    external: externalReact,
+    external: externalReactLib,
     plugins: {
       singleOther({ defaultPlugins }) {
         return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];

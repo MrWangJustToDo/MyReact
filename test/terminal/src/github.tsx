@@ -5,7 +5,7 @@ type ResponseType = { contributions: { date: string; count: number; level: numbe
 
 const map = new Map<string, Promise<ResponseType>>();
 
-const fetchWithCache = (user: string, year: string): Promise<ResponseType> => {
+const fetchWithCache = (user: string, year: string | number): Promise<ResponseType> => {
   const cacheKey = `github-${user}-${year}`;
   if (map.has(cacheKey)) {
     return map.get(cacheKey);
@@ -154,7 +154,7 @@ const Loading = () => {
   );
 };
 
-const Github = ({ user, year }: { user: string; year: string }) => {
+const Github = ({ user, year }: { user: string; year: string | number }) => {
   const res = use(fetchWithCache(user, year)) as ResponseType;
 
   const { contributions: data, headerWidth } = group(res);
@@ -216,9 +216,7 @@ const Github = ({ user, year }: { user: string; year: string }) => {
 const App = () => {
   return (
     <Suspense fallback={<Loading />}>
-      <Github user="MrWangJustToDo" year="2023" />
-      <Github user="MrWangJustToDo" year="2024" />
-      <Github user="MrWangJustToDo" year="2025" />
+      <Github user="MrWangJustToDo" year={2025} />
     </Suspense>
   );
 };

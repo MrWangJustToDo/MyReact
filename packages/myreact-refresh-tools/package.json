@@ -1,6 +1,6 @@
 {
   "name": "@my-react/react-refresh-tools",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "An experimental package providing utilities for @my-react Refresh.",
   "files": [
     "dist",
@@ -59,7 +59,7 @@
     }
   ],
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.11"
+    "@my-react/react-shared": "^0.3.12"
   },
   "peerDependenciesMeta": {
     "webpack": {
@@ -67,7 +67,7 @@
     }
   },
   "peerDependencies": {
-    "@my-react/react-refresh": ">=0.3.11",
+    "@my-react/react-refresh": ">=0.3.12",
     "webpack": "^4 || ^5"
   }
 }

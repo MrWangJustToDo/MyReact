@@ -1,4 +1,4 @@
-import { __my_react_internal__, type SuspenseUpdateQueue } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, type SuspenseUpdateQueue } from "@my-react/react";
 import { isPromise, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { defaultDeleteChildEffect } from "../dispatchEffect";
@@ -10,6 +10,7 @@ import type { SuspenseInstanceField } from "../processSuspense";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
+const { enableSuspenseRoot } = __my_react_shared__;
 const { currentScheduler } = __my_react_internal__;
 
 export const mountLoopAllFromScheduler = (renderDispatch: CustomRenderDispatch) => {
@@ -44,15 +45,21 @@ export const processAsyncLoadListOnAsyncMount = async (renderDispatch: CustomRen
 
     renderDispatch.pendingSuspenseFiberArray.clear();
 
+    const list = suspenseField.asyncLoadList.getAll();
+
     await Promise.all(
-      suspenseField.asyncLoadList.getAll().map(async (item) => {
+      list.map(async (item) => {
         if (isPromise(item)) {
           await renderDispatch.processPromise(item);
         } else {
           await renderDispatch.processLazy(item);
         }
 
-        item._list.forEach((node: MyReactFiberNode) => {
+        const set = new Set(item._list);
+
+        item._list.clear();
+
+        set.forEach((node: MyReactFiberNode) => {
           node.state = remove(node.state, STATE_TYPE.__stable__);
 
           node.state = merge(node.state, STATE_TYPE.__create__);
@@ -60,16 +67,43 @@ export const processAsyncLoadListOnAsyncMount = async (renderDispatch: CustomRen
           mountLoopAll(renderDispatch, node);
         });
 
-        item._list.clear();
-
         suspenseField.asyncLoadList.uniDelete(item);
       })
     );
   }
 
-  if (renderDispatch.pendingSuspenseFiberArray.length) {
-    // If there are still pending async loads, we need to continue processing them
-    await processAsyncLoadListOnAsyncMount(renderDispatch);
+  if (enableSuspenseRoot.current) {
+    const suspenseField = getInstanceFieldByInstance(renderDispatch) as SuspenseInstanceField;
+
+    const list = suspenseField.asyncLoadList.getAll();
+
+    if (list.length === 0) return;
+
+    await Promise.all(
+      list.map(async (item) => {
+        if (isPromise(item)) {
+          await renderDispatch.processPromise(item);
+        } else {
+          await renderDispatch.processLazy(item);
+        }
+
+        const set = new Set(item._list);
+
+        item._list.clear();
+
+        set.forEach((node: MyReactFiberNode) => {
+          node.state = remove(node.state, STATE_TYPE.__stable__);
+
+          node.state = merge(node.state, STATE_TYPE.__create__);
+
+          mountLoopAll(renderDispatch, node);
+        });
+
+        suspenseField.asyncLoadList.uniDelete(item);
+      })
+    );
+
+    processAsyncLoadListOnAsyncMount(renderDispatch);
   }
 };
 
@@ -150,4 +184,76 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
       );
     }
   }
+
+  // TODO update flow
+  // if (enableSuspenseRoot.current) {
+  //   const suspenseField = getInstanceFieldByInstance(renderDispatch) as SuspenseInstanceField;
+
+  //   const list = suspenseField.asyncLoadList.getAll();
+
+  //   if (list.length === 0) return;
+
+  //   if (renderDispatch.enableAsyncLoad) {
+  //     defaultDeleteCurrentEffect(renderDispatch, renderDispatch.rootFiber);
+
+  //     defaultDeleteChildEffect(renderDispatch, renderDispatch.rootFiber);
+
+  //     const allPendingLoadArray = list.filter((item) => {
+  //       if (isPromise(item)) {
+  //         return typeof item.status !== "string";
+  //       } else {
+  //         return !item._loading && !item._loaded && !item._error;
+  //       }
+  //     });
+
+  //     if (allPendingLoadArray.length) {
+  //       Promise.all(
+  //         allPendingLoadArray.map(async (item) => {
+  //           if (isPromise(item)) {
+  //             await renderDispatch.processPromise(item);
+  //           } else {
+  //             await renderDispatch.processLazy(item);
+  //           }
+
+  //           item._list?.clear();
+
+  //           suspenseField.asyncLoadList.uniDelete(item);
+  //         })
+  //       ).then(() => {
+  //         const aliveNode = defaultResolveAliveSuspenseFiber(node);
+
+  //         aliveNode.state = STATE_TYPE.__triggerSyncForce__;
+
+  //         const renderScheduler = currentScheduler.current;
+
+  //         const updater: SuspenseUpdateQueue = {
+  //           type: UpdateQueueType.suspense,
+  //           trigger: aliveNode,
+  //           isSync: true,
+  //           isForce: true,
+  //           payLoad: allPendingLoadArray,
+  //         };
+
+  //         renderScheduler.dispatchState(updater);
+  //       });
+  //     }
+
+  //     suspenseField.isHidden = true;
+
+  //     const root = renderDispatch.rootFiber;
+
+  //     root.state = remove(root.state, STATE_TYPE.__stable__);
+
+  //     root.state = merge(root.state, STATE_TYPE.__retrigger__);
+
+  //     // TODO use hide tree to improve
+  //     mountLoopAll(renderDispatch, root);
+
+  //     suspenseField.isHidden = false;
+  //   } else {
+  //     throw new Error(
+  //       "[@my-react/reconciler] should not process async load list on sync mount without enableAsyncLoad, you may use a wrong renderDispatch instance"
+  //     );
+  //   }
+  // }
 };

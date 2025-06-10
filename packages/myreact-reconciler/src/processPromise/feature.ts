@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { defaultDeleteCurrentEffect } from "../dispatchEffect";
@@ -11,12 +11,13 @@ import type { PromiseUpdateQueue } from "@my-react/react";
 
 export type PromiseWithState<T> = Promise<T> & {
   status?: "fulfilled" | "rejected" | "pending";
-  value?: T;
-  reason?: any;
+  _value?: T;
+  _reason?: any;
   _loading?: boolean;
   _list?: Set<MyReactFiberNode>;
 };
 
+const { enableSuspenseRoot } = __my_react_shared__;
 const { currentScheduler } = __my_react_internal__;
 
 export const loadPromise = async (renderDispatch: CustomRenderDispatch, promise: PromiseWithState<unknown>) => {
@@ -25,15 +26,15 @@ export const loadPromise = async (renderDispatch: CustomRenderDispatch, promise:
   try {
     promise.status = "pending";
 
-    const value = await promise;
+    const value = await Promise.resolve(promise);
 
     promise.status = "fulfilled";
 
-    promise.value = value;
+    promise._value = value;
   } catch (reason) {
     promise.status = "rejected";
 
-    promise.reason = reason;
+    promise._reason = reason;
   }
 };
 
@@ -41,7 +42,7 @@ export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyRe
   defaultDeleteCurrentEffect(renderDispatch, fiber);
 
   if (promise.status === "rejected") {
-    currentScheduler.current.dispatchError?.({ fiber, error: promise.reason });
+    currentScheduler.current.dispatchError?.({ fiber, error: promise._reason });
 
     return null;
   }
@@ -67,6 +68,15 @@ export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyRe
 
     return null;
   } else {
+    // TODO update flow
+    if (enableSuspenseRoot.current && !renderDispatch.isAppMounted) {
+      const suspenseField = getInstanceFieldByInstance(renderDispatch) as SuspenseInstanceField;
+
+      suspenseField.asyncLoadList.uniPush(promise);
+
+      return null;
+    }
+
     if (promise._loading) return null;
 
     promise._loading = true;

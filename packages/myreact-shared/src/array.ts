@@ -47,6 +47,6 @@ export class UniqueArray<T> {
   }
 
   getAll() {
-    return this.arr;
+    return Array.from(this.arr);
   }
 }

@@ -1,4 +1,4 @@
-import { __my_react_internal__, createElement } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, createElement } from "@my-react/react";
 import { isPromise, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
@@ -9,6 +9,7 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { LazyUpdateQueue, MixinMyReactFunctionComponent, lazy } from "@my-react/react";
 
+const { enableSuspenseRoot } = __my_react_shared__;
 const { currentScheduler } = __my_react_internal__;
 
 export const loadLazy = async (renderDispatch: CustomRenderDispatch, typedElementType: ReturnType<typeof lazy>) => {
@@ -67,6 +68,14 @@ export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReact
 
     return null;
   } else {
+    // TODO  update flow
+    if (enableSuspenseRoot.current && !renderDispatch.isAppMounted) {
+      const suspenseField = getInstanceFieldByInstance(renderDispatch) as SuspenseInstanceField;
+
+      suspenseField.asyncLoadList.uniPush(typedElementType);
+
+      return null;
+    }
     if (typedElementType._loading) return null;
 
     typedElementType._loading = true;

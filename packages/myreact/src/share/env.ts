@@ -136,3 +136,8 @@ export const enableDebugFiled = createRef(true);
  * @internal
  */
 export const enableMockReact = createReadonlyRef(true);
+
+/**
+ * @internal
+ */
+export const enableSuspenseRoot = createRef(true);

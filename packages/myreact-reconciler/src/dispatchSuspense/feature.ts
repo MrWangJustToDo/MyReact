@@ -6,11 +6,12 @@ import type { PromiseWithState } from "../processPromise";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactElementNode } from "@my-react/react";
 
+// TODO use Symbol to avoid conflict
 export const defaultReadPromise = (_promise: PromiseWithState<unknown>) => {
   if (_promise.status === "fulfilled") {
-    return _promise.value;
+    return _promise._value;
   } else if (_promise.status === "rejected") {
-    throw _promise.reason;
+    throw _promise._reason;
   } else {
     throw _promise;
   }

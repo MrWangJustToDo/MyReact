@@ -10,6 +10,7 @@ import {
   type MyReactInternalInstance,
 } from "@my-react/react";
 
+import { initSuspenseInstance } from "../processSuspense";
 import { triggerUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
 import { initInstance, initVisibleInstance } from "../runtimeGenerate";
 import { MyWeakMap, NODE_TYPE } from "../share";
@@ -187,6 +188,8 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     initInstance(this);
 
     initVisibleInstance(this);
+
+    initSuspenseInstance(this);
 
     Object.defineProperty(this, "dispatcher", {
       value: Dispatcher,

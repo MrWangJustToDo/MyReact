@@ -3,6 +3,7 @@ import { STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { defaultDeleteCurrentEffect } from "../dispatchEffect";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
+import { devWarnWithFiber } from "../share";
 
 import type { SuspenseInstanceField } from "../processSuspense";
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -76,6 +77,8 @@ export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyRe
 
       return null;
     }
+
+    devWarnWithFiber(fiber, "[@my-react/react] promise must be used inside a Suspense component, otherwise it will not work as expected");
 
     if (promise._loading) return null;
 

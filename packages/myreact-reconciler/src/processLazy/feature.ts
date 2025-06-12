@@ -3,6 +3,7 @@ import { isPromise, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { WrapperByLazyScope } from "../runtimeScope";
+import { devWarnWithFiber } from "../share";
 
 import type { SuspenseInstanceField } from "../processSuspense";
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -76,6 +77,9 @@ export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReact
 
       return null;
     }
+
+    devWarnWithFiber(fiber, "[@my-react/react] lazy() must be used inside a Suspense component, otherwise it will not work as expected");
+
     if (typedElementType._loading) return null;
 
     typedElementType._loading = true;
@@ -83,7 +87,7 @@ export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReact
     const renderScheduler = currentScheduler.current;
 
     renderDispatch.processLazy(typedElementType).then(() => {
-      fiber.state = STATE_TYPE.__triggerSync__;
+      fiber.state = STATE_TYPE.__create__;
 
       typedElementType._list.delete(fiber);
 

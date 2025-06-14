@@ -195,6 +195,8 @@ type DefaultRenderDispatch = {
 
   shouldYield(): boolean;
 
+  resetYield(): void;
+
   getFiberTree(_fiber: MyReactFiberNode): string;
 
   readPromise(_params: Promise<unknown>): unknown;

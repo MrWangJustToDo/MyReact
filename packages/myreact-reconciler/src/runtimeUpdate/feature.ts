@@ -1,3 +1,5 @@
+import { include, STATE_TYPE } from "@my-react/react-shared";
+
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { performToNextFiberFromRoot } from "../renderNextWork";
 import { processAsyncLoadListOnSyncMount } from "../runtimeMount";
@@ -45,10 +47,14 @@ export const updateLoopSyncFromRoot = (renderDispatch: CustomRenderDispatch) => 
 };
 
 export const updateLoopConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) => {
+  let hasSync = false;
+
   while (renderDispatch.runtimeFiber.nextWorkingFiber && !renderDispatch.shouldYield()) {
     renderDispatch.runtimeFiber.retriggerFiber = null;
 
     const currentFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
+
+    hasSync = hasSync || include(currentFiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__);
 
     const nextFiber = performToNextFiberFromRoot(renderDispatch, currentFiber);
 
@@ -58,6 +64,8 @@ export const updateLoopConcurrentFromRoot = (renderDispatch: CustomRenderDispatc
 
     renderDispatch.runtimeFiber.retriggerFiber = null;
   }
+
+  return hasSync;
 };
 
 export const processAsyncLoadListOnUpdate = processAsyncLoadListOnSyncMount;

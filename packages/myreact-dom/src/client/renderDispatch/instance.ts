@@ -23,7 +23,7 @@ import { clientDispatchMount } from "@my-react-dom-client/dispatchMount";
 import { render } from "@my-react-dom-client/mount";
 import { parse, patchDOMField, setRef, unsetRef } from "@my-react-dom-client/tools";
 import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount";
-import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, shouldPauseAsyncUpdate } from "@my-react-dom-shared";
+import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, shouldPauseAsyncUpdate, resetPause } from "@my-react-dom-shared";
 
 import { clientDispatchFiber } from "./dispatch";
 
@@ -223,6 +223,9 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   }
   shouldYield(): boolean {
     return shouldPauseAsyncUpdate();
+  }
+  resetYield(): void {
+    resetPause();
   }
   patchToFiberInitial(_fiber: MyReactFiberNode) {
     initialElementMap(this, _fiber);

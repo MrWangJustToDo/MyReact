@@ -307,6 +307,10 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return false;
   }
 
+  resetYield(): void {
+    void 0;
+  }
+
   onFiberInitial(cb: (_fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).fiberInitial;
 

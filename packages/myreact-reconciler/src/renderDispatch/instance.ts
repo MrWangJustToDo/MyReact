@@ -309,6 +309,9 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
   shouldYield(): boolean {
     return false;
   }
+  resetYield(): void {
+    void 0;
+  }
   resetUpdateFlowRuntimeFiber(): void {
     this.runtimeFiber.scheduledFiber = null;
 

@@ -102,6 +102,17 @@ export const triggerUpdate = (renderDispatch: CustomRenderDispatch, fiber: MyRea
     map.set(fiber, exist);
   }
 
+  // if (globalLoop.current) {
+  //   const nextFiber = renderDispatch.runtimeFiber.nextWorkingFiber;
+
+  //   if (!nextFiber) return;
+
+  //   if (nextFiber.state !== STATE_TYPE.__stable__) {
+  //     nextFiber.state = merge(nextFiber.state, state);
+  //   }
+
+  //   return;
+  // }
   if (globalLoop.current) return;
 
   globalLoop.current = true;

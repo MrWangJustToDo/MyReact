@@ -37,7 +37,7 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
           if (obj[c.key]) {
             const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : "";
 
-            if (!keysMap[renderTree]) console.warn(`[@my-react/react] array child have duplicate key ${c.key}`);
+            if (!keysMap[renderTree]) console.warn(`[@my-react/react] array child have duplicate key '${c.key}'`);
 
             keysMap[renderTree] = true;
           }

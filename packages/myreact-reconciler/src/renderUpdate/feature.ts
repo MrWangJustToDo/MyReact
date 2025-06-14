@@ -1,4 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { include, STATE_TYPE } from "@my-react/react-shared";
 
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { processAsyncLoadListOnUpdate, updateLoopConcurrentFromRoot, updateLoopSyncFromRoot } from "../runtimeUpdate";
@@ -60,14 +61,24 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  updateLoopConcurrentFromRoot(renderDispatch);
+  const hasSync = updateLoopConcurrentFromRoot(renderDispatch);
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   if (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    renderScheduler.yieldTask(function resumeUpdateConcurrentFromRoot() {
-      updateConcurrentFromRoot(renderDispatch);
-    });
+    const checkCurrentIsSync = () =>
+      hasSync || include(renderDispatch.runtimeFiber.nextWorkingFiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__);
+    if (checkCurrentIsSync()) {
+      updateSyncFromRoot(renderDispatch);
+    } else {
+      renderScheduler.yieldTask(function resumeUpdateConcurrentFromRoot() {
+        if (checkCurrentIsSync()) {
+          updateSyncFromRoot(renderDispatch);
+        } else {
+          updateConcurrentFromRoot(renderDispatch);
+        }
+      });
+    }
   } else {
     processAsyncLoadListOnUpdate(renderDispatch);
 

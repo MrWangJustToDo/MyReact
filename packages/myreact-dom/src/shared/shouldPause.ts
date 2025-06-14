@@ -14,3 +14,7 @@ export const shouldPauseAsyncUpdate = () => {
     return result;
   }
 };
+
+export const resetPause = () => {
+  asyncUpdateTimeStep.current = Date.now();
+}

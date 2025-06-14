@@ -30,6 +30,8 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
     if (!enableConcurrentMode.current || allLive.some((f) => include(f.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__))) {
       updateSyncFromRoot(renderDispatch);
     } else {
+      renderDispatch.resetYield();
+      
       updateConcurrentFromRoot(renderDispatch);
     }
   } else {

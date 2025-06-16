@@ -87,7 +87,7 @@ export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReact
     const renderScheduler = currentScheduler.current;
 
     renderDispatch.processLazy(typedElementType).then(() => {
-      fiber.state = STATE_TYPE.__create__;
+      fiber.state = STATE_TYPE.__recreate__;
 
       typedElementType._list.delete(fiber);
 

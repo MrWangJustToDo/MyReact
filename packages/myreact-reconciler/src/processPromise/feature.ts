@@ -89,7 +89,7 @@ export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyRe
     const renderScheduler = currentScheduler.current;
 
     renderDispatch.processPromise(promise).then(() => {
-      fiber.state = STATE_TYPE.__create__;
+      fiber.state = STATE_TYPE.__recreate__;
 
       promise._list.delete(fiber);
 

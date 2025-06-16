@@ -47,7 +47,7 @@ export const processHook = (renderDispatch: CustomRenderDispatch, { type, reduce
   let currentHook: MyReactHookNode | null = null;
 
   // initial
-  if (include(fiber.state, STATE_TYPE.__create__)) {
+  if (include(fiber.state, STATE_TYPE.__create__ | STATE_TYPE.__recreate__)) {
     currentHook = createHookNode(renderDispatch, { type, reducer, value, deps }, fiber);
 
     safeCall(function safeCallHookInitialListener() {

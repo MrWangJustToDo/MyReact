@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__, type SuspenseUpdateQueue } from "@my-react/react";
 import { isPromise, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
-import { defaultDeleteChildEffect } from "../dispatchEffect";
+import { defaultDeleteChildEffect, defaultDeleteCurrentEffect } from "../dispatchEffect";
 import { defaultResolveAliveSuspenseFiber } from "../dispatchSuspense";
 import { mountToNextFiberFromRoot } from "../renderNextWork";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
@@ -186,74 +186,78 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
   }
 
   // TODO update flow
-  // if (enableSuspenseRoot.current) {
-  //   const suspenseField = getInstanceFieldByInstance(renderDispatch) as SuspenseInstanceField;
+  if (enableSuspenseRoot.current) {
+    const suspenseField = getInstanceFieldByInstance(renderDispatch) as SuspenseInstanceField;
 
-  //   const list = suspenseField.asyncLoadList.getAll();
+    const list = suspenseField.asyncLoadList.getAll();
 
-  //   if (list.length === 0) return;
+    if (list.length === 0) return;
 
-  //   if (renderDispatch.enableAsyncLoad) {
-  //     defaultDeleteCurrentEffect(renderDispatch, renderDispatch.rootFiber);
+    if (renderDispatch.enableAsyncLoad) {
+      // defaultDeleteCurrentEffect(renderDispatch, renderDispatch.rootFiber);
 
-  //     defaultDeleteChildEffect(renderDispatch, renderDispatch.rootFiber);
+      // defaultDeleteChildEffect(renderDispatch, renderDispatch.rootFiber);
 
-  //     const allPendingLoadArray = list.filter((item) => {
-  //       if (isPromise(item)) {
-  //         return typeof item.status !== "string";
-  //       } else {
-  //         return !item._loading && !item._loaded && !item._error;
-  //       }
-  //     });
+      const allPendingLoadArray = list.filter((item) => {
+        if (isPromise(item)) {
+          return typeof item.status !== "string";
+        } else {
+          return !item._loading && !item._loaded && !item._error;
+        }
+      });
 
-  //     if (allPendingLoadArray.length) {
-  //       Promise.all(
-  //         allPendingLoadArray.map(async (item) => {
-  //           if (isPromise(item)) {
-  //             await renderDispatch.processPromise(item);
-  //           } else {
-  //             await renderDispatch.processLazy(item);
-  //           }
+      if (allPendingLoadArray.length) {
+        allPendingLoadArray.forEach((item) => item._list?.forEach((node: MyReactFiberNode) => defaultDeleteCurrentEffect(renderDispatch, node)));
 
-  //           item._list?.clear();
+        Promise.all(
+          allPendingLoadArray.map(async (item) => {
+            if (isPromise(item)) {
+              await renderDispatch.processPromise(item);
+            } else {
+              await renderDispatch.processLazy(item);
+            }
 
-  //           suspenseField.asyncLoadList.uniDelete(item);
-  //         })
-  //       ).then(() => {
-  //         const aliveNode = defaultResolveAliveSuspenseFiber(node);
+            const allFiber = new Set(item._list);
 
-  //         aliveNode.state = STATE_TYPE.__triggerSyncForce__;
+            item._list?.clear();
 
-  //         const renderScheduler = currentScheduler.current;
+            allFiber.forEach((node: MyReactFiberNode) => {
+              node.state = STATE_TYPE.__recreate__;
 
-  //         const updater: SuspenseUpdateQueue = {
-  //           type: UpdateQueueType.suspense,
-  //           trigger: aliveNode,
-  //           isSync: true,
-  //           isForce: true,
-  //           payLoad: allPendingLoadArray,
-  //         };
+              const renderScheduler = currentScheduler.current;
 
-  //         renderScheduler.dispatchState(updater);
-  //       });
-  //     }
+              const updater: SuspenseUpdateQueue = {
+                type: UpdateQueueType.suspense,
+                trigger: node,
+                isSync: true,
+                isForce: true,
+                payLoad: [item],
+              };
 
-  //     suspenseField.isHidden = true;
+              renderScheduler.dispatchState(updater);
+            });
 
-  //     const root = renderDispatch.rootFiber;
+            suspenseField.asyncLoadList.uniDelete(item);
+          })
+        );
+      }
 
-  //     root.state = remove(root.state, STATE_TYPE.__stable__);
+      // suspenseField.isHidden = true;
 
-  //     root.state = merge(root.state, STATE_TYPE.__retrigger__);
+      // const root = renderDispatch.rootFiber;
 
-  //     // TODO use hide tree to improve
-  //     mountLoopAll(renderDispatch, root);
+      // root.state = remove(root.state, STATE_TYPE.__stable__);
 
-  //     suspenseField.isHidden = false;
-  //   } else {
-  //     throw new Error(
-  //       "[@my-react/reconciler] should not process async load list on sync mount without enableAsyncLoad, you may use a wrong renderDispatch instance"
-  //     );
-  //   }
-  // }
+      // root.state = merge(root.state, STATE_TYPE.__retrigger__);
+
+      // // TODO use hide tree to improve
+      // mountLoopAll(renderDispatch, root);
+
+      // suspenseField.isHidden = false;
+    } else {
+      throw new Error(
+        "[@my-react/reconciler] should not process async load list on sync mount without enableAsyncLoad, you may use a wrong renderDispatch instance"
+      );
+    }
+  }
 };

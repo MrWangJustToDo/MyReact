@@ -27,7 +27,8 @@ export const mountToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, f
         STATE_TYPE.__triggerConcurrent__ |
         STATE_TYPE.__triggerConcurrentForce__ |
         STATE_TYPE.__retrigger__ |
-        STATE_TYPE.__reschedule__
+        STATE_TYPE.__reschedule__ |
+        STATE_TYPE.__recreate__
     )
   ) {
     fiber.state = remove(fiber.state, STATE_TYPE.__retrigger__);
@@ -83,7 +84,8 @@ export const performToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch,
         STATE_TYPE.__triggerConcurrent__ |
         STATE_TYPE.__triggerConcurrentForce__ |
         STATE_TYPE.__retrigger__ |
-        STATE_TYPE.__reschedule__
+        STATE_TYPE.__reschedule__ |
+        STATE_TYPE.__recreate__
     )
   ) {
     fiber.state = remove(fiber.state, STATE_TYPE.__retrigger__);

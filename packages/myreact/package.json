@@ -3,7 +3,7 @@
   "description": "@my-react/react",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "main": "index.js",
   "unpkg": "./dist/umd/index.development.js",
   "jsdelivr": "./dist/umd/index.development.js",
@@ -49,9 +49,9 @@
     "react like"
   ],
   "dependencies": {
-    "@my-react/react-jsx": "^0.3.13"
+    "@my-react/react-jsx": "^0.3.14"
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.13"
+    "@my-react/react-shared": "^0.3.14"
   }
 }

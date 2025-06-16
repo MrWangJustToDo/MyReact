@@ -3,7 +3,7 @@
   "description": "@my-react/react-jsx",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "main": "index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
@@ -38,9 +38,9 @@
     ]
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.13"
+    "@my-react/react-shared": "^0.3.14"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.13"
+    "@my-react/react": ">=0.3.14"
   }
 }

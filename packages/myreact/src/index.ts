@@ -15,6 +15,7 @@ import {
   useContext,
   useCallback,
   useDebugValue,
+  useOptimistic,
   useTransition,
   useLayoutEffect,
   useDeferredValue,
@@ -56,6 +57,7 @@ import {
   dispatchToListenerMap,
   instanceToInitialFieldMap,
   currentScheduler,
+  captureOwnerStack,
 } from "./share";
 
 /**
@@ -179,6 +181,7 @@ export {
   useContext,
   useCallback,
   useDebugValue,
+  useOptimistic,
   useTransition,
   useLayoutEffect,
   useDeferredValue,
@@ -186,6 +189,7 @@ export {
   useImperativeHandle,
   useSyncExternalStore,
   Children,
+  captureOwnerStack,
   __my_react_scheduler__,
   __my_react_internal__,
   __my_react_shared__,

@@ -350,3 +350,22 @@ export const useTransitionHook = (): [boolean, (cb: () => void) => void] => {
     deps: defaultDeps,
   }) as [boolean, (cb: () => void) => void];
 };
+
+/**
+ * @public
+ */
+export const useOptimisticHook = <S, A>(passthrough: S, reducer?: (p: S, c: A) => S): [S, (p: A) => void] => {
+  const renderScheduler = currentScheduler.current;
+
+  if (!renderScheduler)
+    throw new Error(
+      `[@my-react/react] current hook statement have been invoke in a invalid environment, you may: \n 1. using hook in a wrong way \n 2. current environment have multiple "@my-react/react" package \n 3. current environment not have a valid "Platform" package`
+    );
+
+  return renderScheduler.dispatchHook({
+    type: HOOK_TYPE.useOptimistic,
+    value: { value: passthrough, reducer },
+    reducer: defaultReducer,
+    deps: defaultDeps,
+  }) as [S, (p: A) => void];
+};

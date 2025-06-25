@@ -25,32 +25,12 @@ export const checkHookValid = (hookNode: MyReactHookNode) => {
       throw new Error(`[@my-react/react] ${HOOK_TYPE[hookNode.type]} initial error`);
     }
   }
-};
 
-export const isValidInternalHookName = (name: string) => {
-  switch (name) {
-    case HOOK_TYPE[HOOK_TYPE.useId]:
-    case HOOK_TYPE[HOOK_TYPE.useRef]:
-    case HOOK_TYPE[HOOK_TYPE.useMemo]:
-    case HOOK_TYPE[HOOK_TYPE.useState]:
-    case HOOK_TYPE[HOOK_TYPE.useSignal]:
-    case HOOK_TYPE[HOOK_TYPE.useEffect]:
-    case HOOK_TYPE[HOOK_TYPE.useContext]:
-    case HOOK_TYPE[HOOK_TYPE.useReducer]:
-    case HOOK_TYPE[HOOK_TYPE.useCallback]:
-    case HOOK_TYPE[HOOK_TYPE.useTransition]:
-    case HOOK_TYPE[HOOK_TYPE.useDebugValue]:
-    case HOOK_TYPE[HOOK_TYPE.useLayoutEffect]:
-    case HOOK_TYPE[HOOK_TYPE.useDeferredValue]:
-    case HOOK_TYPE[HOOK_TYPE.useInsertionEffect]:
-    case HOOK_TYPE[HOOK_TYPE.useImperativeHandle]:
-    case HOOK_TYPE[HOOK_TYPE.useSyncExternalStore]:
-      return true;
-    default:
-      return false;
+  if (hookNode.type === HOOK_TYPE.useOptimistic) {
+    const value = hookNode.value;
+
+    if (value.reducer && typeof value.reducer !== 'function') {
+      throw new Error(`[@my-react/react] ${HOOK_TYPE[hookNode.type]} initial error`)
+    }
   }
-};
-
-export const isValidHookName = (name?: string) => {
-  return name?.startsWith("use");
 };

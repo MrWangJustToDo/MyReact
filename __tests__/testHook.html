@@ -33,7 +33,7 @@
     <div id="root"></div>
 
     <script type="text/babel" async>
-      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext } = React;
+      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, useOptimistic } = React;
 
       const useCounter = (init = 1) => {
         const [count, setCount] = useState(init);
@@ -125,14 +125,17 @@
           []
         );
 
+        const [v, ] = useOptimistic(val);
+
         console.log(val);
 
-        val % 2 === 0 ? useState() : useRef();
+        // val % 2 === 0 ? useState() : useRef();
 
         return (
           <div>
             <Counter initialCount={val} />
             {val % 2 === 0 ? <TFb /> : <TFoo />}
+            {v};
             <button onClick={add}>add</button>
           </div>
         );

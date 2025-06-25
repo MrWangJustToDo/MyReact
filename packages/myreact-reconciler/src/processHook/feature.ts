@@ -25,10 +25,12 @@ const resolveHookValue = (hookNode: MyReactHookNode, field: InstanceField) => {
       case HOOK_TYPE.useMemo:
       case HOOK_TYPE.useContext:
       case HOOK_TYPE.useCallback:
-      case HOOK_TYPE.useTransition:
       case HOOK_TYPE.useDeferredValue:
       case HOOK_TYPE.useSyncExternalStore:
         return hookNode.result;
+      case HOOK_TYPE.useOptimistic:
+      case HOOK_TYPE.useTransition:
+        return [hookNode.result.value, hookNode.result.start]
       case HOOK_TYPE.useSignal:
         return [hookNode.result.getValue, hookNode.result.setValue];
     }

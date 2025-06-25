@@ -21,6 +21,8 @@ const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
   return typeof action === "function" ? action(state) : action;
 };
 
+const defaultOptimisticReducer = (state: any) => state;
+
 export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
   const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
 
@@ -66,7 +68,7 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
   }
 
   if (hookNode.type === HOOK_TYPE.useId) {
-    hookNode.result = `_-${currentHookIndex}-${renderDispatch.uniqueIdCount++}-_`;
+    hookNode.result = `«-${currentHookIndex}-${renderDispatch.uniqueIdCount++}-»`;
     hookNode.cancel = () => renderDispatch.uniqueIdCount--;
   }
 
@@ -177,21 +179,18 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
   }
 
   if (hookNode.type === HOOK_TYPE.useTransition) {
-    hookNode.result = [
-      false,
-      // TODO
-      function startTransitionByHook(cb: () => void) {
+    hookNode.result = {
+      value: false,
+      start: function startTransitionByHook(cb: () => void) {
         const loadingCallback = (cb: () => void) => {
           startTransition(() => {
-            hookNode.result[0] = true;
-            hookNode._update({ isForce: true, isSync: true, callback: cb });
+            hookNode._update({ isForce: true, isSync: true, callback: cb, payLoad: (last) => ({ value: true, start: last.start }) });
           });
         };
 
         const loadedCallback = () => {
           startTransition(() => {
-            hookNode.result[0] = false;
-            hookNode._update({ isForce: true, isSync: true });
+            hookNode._update({ isForce: true, isSync: true, payLoad: (last) => ({ value: false, start: last.start }) });
           });
         };
 
@@ -204,7 +203,24 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
 
         loadingCallback(taskCallback);
       },
-    ];
+    };
+  }
+
+  if (hookNode.type === HOOK_TYPE.useOptimistic) {
+    hookNode.result = {
+      value: value.value,
+      start: function startOptimisticByHook(newValue) {
+        const mergeFunc = hookNode.value.reducer || defaultOptimisticReducer;
+
+        const nextValue = mergeFunc(newValue, hookNode.result.value.value);
+
+        const payloadRef = { current: (last) => ({ value: nextValue, start: last.start }) };
+
+        hookNode._update({ isForce: true, isSync: true, payLoad: (last) => payloadRef.current(last) });
+
+        hookNode.cancel = () => payloadRef.current = (last) => last;
+      },
+    };
   }
 
   const typedHook = hookNode as MyReactHookNodeDev;

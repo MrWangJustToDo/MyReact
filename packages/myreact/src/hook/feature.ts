@@ -1,4 +1,3 @@
-
 import { resolveDispatcher } from "../share";
 
 import type { createContext } from "../element";
@@ -156,4 +155,13 @@ export const useTransition = (): [boolean, (cb: () => void) => void] => {
   const dispatcher = resolveDispatcher();
 
   return dispatcher.useTransition();
+};
+
+/**
+ * @public
+ */
+export const useOptimistic = <S, A>(passthrough: S, reducer?: (p: S, c: A) => S): [S, (p: A) => void] => {
+  const dispatcher = resolveDispatcher();
+
+  return dispatcher.useOptimistic(passthrough, reducer);
 };

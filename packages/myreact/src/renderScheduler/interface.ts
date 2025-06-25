@@ -1,4 +1,3 @@
-
 import type { createContext, MyReactElementNode } from "../element";
 import type { MyReactInternalInstance } from "../internal";
 import type { RenderFiber } from "../renderFiber";
@@ -18,11 +17,13 @@ export interface DefaultRenderScheduler {
 
   yieldTask(_task: () => void): () => void;
 
-  dispatchHook(_params: RenderHookParams): unknown;
+  getFiberTree(_fiber: RenderFiber): string;
 
   readContext(_params: ReturnType<typeof createContext>): unknown;
 
   readPromise(_params: Promise<unknown>): unknown;
+
+  dispatchHook(_params: RenderHookParams): unknown;
 
   dispatchState(_params: UpdateQueue): void;
 

@@ -247,12 +247,21 @@ export const updateHookNode = (
 
     if (!Object.is(currentHook.value, currentHook.result)) {
       currentHook.cancel = renderScheduler.yieldTask(function triggerHookUpdate() {
-        currentHook.result = currentHook.value;
-
-        currentHook._update({ isForce: true });
+        currentHook._update({ isForce: true, payLoad: () => currentHook.value });
 
         currentHook.cancel = null;
       });
+    }
+  }
+
+  if (currentHook.type === HOOK_TYPE.useOptimistic) {
+    currentHook.cancel?.();
+
+    currentHook.value = value;
+
+    if (!Object.is(currentHook.result.value, value.value)) {
+      currentHook.result.value = value.value;
+      // currentHook._update({ isForce: true, payLoad: (last) => ({ value: value.value, start: last.start }) });
     }
   }
 

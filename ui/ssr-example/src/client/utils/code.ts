@@ -331,55 +331,71 @@ export const Exp = function App() {
   );
 };
 `,
-  "Pointcloud.tsx": `import { Canvas, createPortal } from "@my-react/react-three-fiber";
-import { useCallback, useEffect, useReducer, useState } from "react";
-
-
-import type * as THREE from "three";
-
-function Icosahedron() {
-  const [active, setActive] = useState(false);
-  const handleClick = useCallback(() => setActive((state) => !state), []);
-  return (
-    <mesh scale={active ? [2, 2, 2] : [1, 1, 1]} onClick={handleClick}>
-      <icosahedronGeometry args={[1, 0]} />
-      <meshNormalMaterial />
-    </mesh>
-  );
-}
-
-function RenderToPortal({ targets }: { targets: THREE.Group[] }) {
-  const [target, toggle] = useReducer((state) => (state + 1) % targets.length, 0);
-
-  useEffect(() => {
-    const interval = setInterval(toggle, 1000);
-    return () => clearInterval(interval);
-  }, [targets]);
-
-  return <>{createPortal(<Icosahedron />, targets[target])}</>;
-}
-
-export const Exp = function Group() {
-  const [ref1, set1] = useState<THREE.Group>(null!);
-  const [ref2, set2] = useState<THREE.Group>(null!);
-
-  console.log("rendering Group", ref1, ref2);
-
-  return (
-    <Canvas onCreated={() => console.log("onCreated")}>
-      <group>
-        <group ref={set1 as any} position={[-2, 0, 0]} />
-        <mesh position={[0, 0, 0]}>
-          <sphereGeometry args={[0.5, 16, 16]} />
-          <meshNormalMaterial />
-        </mesh>
-        <group ref={set2 as any} position={[2, 0, 0]} />
-        {ref1 && ref2 && <RenderToPortal targets={[ref1, ref2]} />}
-      </group>
-    </Canvas>
-  );
-};
-`,
+  "Pointcloud.tsx": `import { Canvas, extend } from "@my-react/react-three-fiber";
+  import { useCallback, useMemo, useRef } from "react";
+  import * as THREE from "three";
+  
+  import type { ThreeEvent } from "@my-react/react-three-fiber";
+  
+  class DotMaterialImpl extends THREE.ShaderMaterial {
+    constructor() {
+      super({
+        transparent: true,
+        uniforms: { size: { value: 15 }, scale: { value: 1 } },
+        vertexShader: THREE.ShaderLib.points.vertexShader,
+        fragmentShader: \`
+        varying vec3 vColor;
+        void main() {
+          gl_FragColor = vec4(vColor, step(length(gl_PointCoord.xy - vec2(0.5)), 0.5));
+        }\`,
+      });
+    }
+  }
+  
+  const DotMaterial = extend(DotMaterialImpl);
+  
+  const white = new THREE.Color("white");
+  const hotpink = new THREE.Color("hotpink");
+  
+  function Particles({ pointCount }: { pointCount: number }) {
+    const [positions, colors] = useMemo(() => {
+      const positions = [...new Array(pointCount * 3)].map(() => 5 - Math.random() * 10);
+      const colors = [...new Array(pointCount)].flatMap(() => hotpink.toArray());
+      return [new Float32Array(positions), new Float32Array(colors)];
+    }, [pointCount]);
+  
+    const points = useRef<THREE.Points>(null!);
+  
+    const hover = useCallback((e: ThreeEvent<PointerEvent>) => {
+      e.stopPropagation();
+      white.toArray(points.current.geometry.attributes.color.array, e.index! * 3);
+      points.current.geometry.attributes.color.needsUpdate = true;
+    }, []);
+  
+    const unhover = useCallback((e: ThreeEvent<PointerEvent>) => {
+      hotpink.toArray(points.current.geometry.attributes.color.array, e.index! * 3);
+      points.current.geometry.attributes.color.needsUpdate = true;
+    }, []);
+  
+    return (
+      <points ref={points} onPointerOver={hover} onPointerOut={unhover}>
+        <bufferGeometry>
+          <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+          <bufferAttribute attach="attributes-color" args={[colors, 3]} />
+        </bufferGeometry>
+        <DotMaterial vertexColors depthWrite={false} />
+      </points>
+    );
+  }
+  
+  export const Exp = function App() {
+    return (
+      <Canvas orthographic camera={{ zoom: 40, position: [0, 0, 100] }} raycaster={{ params: { Points: { threshold: 0.2 } } as any }}>
+        <Particles pointCount={1000} />
+      </Canvas>
+    );
+  };
+  `,
   "Reparenting.tsx": `import { Canvas, createPortal } from "@my-react/react-three-fiber";
 import { useCallback, useEffect, useReducer, useState } from "react";
 

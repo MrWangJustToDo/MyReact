@@ -141,7 +141,7 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
               field.asyncLoadList.uniDelete(item);
             })
           ).then(() => {
-            const aliveNode = defaultResolveAliveSuspenseFiber(node);
+            const aliveNode = defaultResolveAliveSuspenseFiber(node) || renderDispatch.rootFiber;
 
             aliveNode.state = STATE_TYPE.__triggerSyncForce__;
 

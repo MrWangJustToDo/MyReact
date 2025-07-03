@@ -6,13 +6,13 @@ import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 
 // import { Exp } from "./components/AutoDispose";
-import { Exp } from "./components/Simple";
+// import { Exp } from "./components/Simple";
 // import { Exp } from "./components/ContextMenuOverride";
 // import { Exp } from "./components/MultiMaterial";
 // import { Exp } from "./components/MultiRender";
 // import { Exp } from "./components/Pointcloud";
 // import { Exp } from "./components/Reparenting";
-// import { Exp } from "./components/SuspenseMaterial";
+import { Exp } from "./components/SuspenseMaterial";
 
 import "./App.css";
 

@@ -161,7 +161,7 @@ const getNewFiberWithInitial = (
 };
 
 export const transformChildrenFiber = (renderDispatch: CustomRenderDispatch, parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode): void => {
-  const isUpdate = exclude(parentFiber.state, STATE_TYPE.__create__) && renderDispatch.isAppMounted;
+  const isUpdate = exclude(parentFiber.state, STATE_TYPE.__create__);
 
   const isHMR = include(parentFiber.state, STATE_TYPE.__hmr__);
 

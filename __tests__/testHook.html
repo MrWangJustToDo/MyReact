@@ -125,7 +125,7 @@
           []
         );
 
-        const [v, ] = useOptimistic(val);
+        const [v] = useOptimistic(val);
 
         console.log(val);
 
@@ -135,8 +135,7 @@
           <div>
             <Counter initialCount={val} />
             {val % 2 === 0 ? <TFb /> : <TFoo />}
-            {v};
-            <button onClick={add}>add</button>
+            {v};<button onClick={add}>add</button>
           </div>
         );
       }

@@ -67,27 +67,27 @@ function Ediotr() {
           code.setValue(cacheValue);
         } else {
           axiosPost("/api/file/", { requestPath: path })
-          .then((data) => {
-            promiseNext(500, () => {
-              loadItem.css("height", 0);
+            .then((data) => {
+              promiseNext(500, () => {
+                loadItem.css("height", 0);
+              })
+                .then(() =>
+                  promiseNext(100, () => {
+                    loadItem.children("div").remove();
+                  })
+                )
+                .then(() =>
+                  promiseNext(420, () => {
+                    loadItem.remove();
+                  })
+                )
+                .then(() => {
+                  code.setValue(data.toString());
+                });
             })
-              .then(() =>
-                promiseNext(100, () => {
-                  loadItem.children("div").remove();
-                })
-              )
-              .then(() =>
-                promiseNext(420, () => {
-                  loadItem.remove();
-                })
-              )
-              .then(() => {
-                code.setValue(data.toString());
-              });
-          })
-          .catch((e) => {
-            code.setValue(e.toString());
-          });
+            .catch((e) => {
+              code.setValue(e.toString());
+            });
         }
       }
     }

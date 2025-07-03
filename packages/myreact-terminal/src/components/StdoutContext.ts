@@ -1,7 +1,6 @@
 import process from "node:process";
 import { createContext } from "react";
 
-
 export type Props = {
   /**
    * Stdout stream passed to `render()` in `options.stdout` or `process.stdout` by default.

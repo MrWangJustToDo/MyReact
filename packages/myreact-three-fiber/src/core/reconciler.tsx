@@ -13,7 +13,6 @@ import * as React from "react";
 // } from "react-reconciler/constants";
 // import { unstable_IdlePriority as idlePriority, unstable_scheduleCallback as scheduleCallback } from "scheduler";
 
-
 import { removeInteractivity, type EventHandlers } from "./events";
 import { diffProps, applyProps, invalidateInstance, attach, detach, prepare, isObject3D, findInitialRoot } from "./utils";
 

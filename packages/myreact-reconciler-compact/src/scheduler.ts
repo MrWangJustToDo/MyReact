@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { enableFiberForLog, enableValidMyReactElement, initScheduler } from "@my-react/react-reconciler";
 
-const { enableDebugFiled, enableScopeTreeLog, /* enableConcurrentMode */ } = __my_react_shared__;
+const { enableDebugFiled, enableScopeTreeLog /* enableConcurrentMode */ } = __my_react_shared__;
 
 /**
  * @internal

@@ -1,7 +1,6 @@
 import { Canvas, createPortal } from "@my-react/react-three-fiber";
 import { useCallback, useEffect, useReducer, useState } from "react";
 
-
 import type * as THREE from "three";
 
 function Icosahedron() {

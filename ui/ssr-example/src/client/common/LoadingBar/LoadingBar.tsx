@@ -30,4 +30,3 @@ BarImpl.displayName = "BarImpl";
 export const Bar = memo(BarImpl);
 
 Bar.displayName = "Bar";
-

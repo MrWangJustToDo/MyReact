@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { devWarnWithFiber, devErrorWithFiber, onceWarnWithKeyAndFiber, onceErrorWithKeyAndFiber } from "@my-react/react-reconciler";
 
-import type { MyReactFiberNode} from "@my-react/react-reconciler";
+import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 const { enableOptimizeTreeLog } = __my_react_shared__;
 

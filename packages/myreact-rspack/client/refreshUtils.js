@@ -9,7 +9,7 @@
  */
 
 /* global __webpack_require__ */
-var Refresh = require('@my-react/react-refresh/runtime');
+var Refresh = require("@my-react/react-refresh/runtime");
 
 /**
  * Extracts exports from a webpack module object.
@@ -17,7 +17,7 @@ var Refresh = require('@my-react/react-refresh/runtime');
  * @returns {*} An exports object from the module.
  */
 function getModuleExports(moduleId) {
-  if (typeof moduleId === 'undefined') {
+  if (typeof moduleId === "undefined") {
     // `moduleId` is unavailable, which indicates that this module is not in the cache,
     // which means we won't be able to capture any exports,
     // and thus they cannot be refreshed safely.
@@ -26,18 +26,16 @@ function getModuleExports(moduleId) {
   }
 
   var maybeModule = __webpack_require__.c[moduleId];
-  if (typeof maybeModule === 'undefined') {
+  if (typeof maybeModule === "undefined") {
     // `moduleId` is available but the module in cache is unavailable,
     // which indicates the module is somehow corrupted (e.g. broken Webpacak `module` globals).
     // We will warn the user (as this is likely a mistake) and assume they cannot be refreshed.
-    console.warn(
-      '[React Refresh] Failed to get exports for module: ' + moduleId + '.',
-    );
+    console.warn("[React Refresh] Failed to get exports for module: " + moduleId + ".");
     return {};
   }
 
   var exportsOrPromise = maybeModule.exports;
-  if (typeof Promise !== 'undefined' && exportsOrPromise instanceof Promise) {
+  if (typeof Promise !== "undefined" && exportsOrPromise instanceof Promise) {
     return exportsOrPromise.then(function (exports) {
       return exports;
     });
@@ -57,13 +55,13 @@ function getReactRefreshBoundarySignature(moduleExports) {
   var signature = [];
   signature.push(Refresh.getFamilyByType(moduleExports));
 
-  if (moduleExports == null || typeof moduleExports !== 'object') {
+  if (moduleExports == null || typeof moduleExports !== "object") {
     // Exit if we can't iterate over exports.
     return signature;
   }
 
   for (var key in moduleExports) {
-    if (key === '__esModule') {
+    if (key === "__esModule") {
       continue;
     }
 
@@ -91,7 +89,7 @@ function createDebounceUpdate() {
    * @returns {void}
    */
   function enqueueUpdate(callback) {
-    if (typeof refreshTimeout === 'undefined') {
+    if (typeof refreshTimeout === "undefined") {
       refreshTimeout = setTimeout(function () {
         refreshTimeout = undefined;
         Refresh.performReactRefresh();
@@ -114,11 +112,7 @@ function isReactRefreshBoundary(moduleExports) {
   if (Refresh.isLikelyComponentType(moduleExports)) {
     return true;
   }
-  if (
-    moduleExports === undefined ||
-    moduleExports === null ||
-    typeof moduleExports !== 'object'
-  ) {
+  if (moduleExports === undefined || moduleExports === null || typeof moduleExports !== "object") {
     // Exit if we can't iterate over exports.
     return false;
   }
@@ -129,7 +123,7 @@ function isReactRefreshBoundary(moduleExports) {
     hasExports = true;
 
     // This is the ES Module indicator flag
-    if (key === '__esModule') {
+    if (key === "__esModule") {
       continue;
     }
 
@@ -157,27 +151,23 @@ function isReactRefreshBoundary(moduleExports) {
 function registerExportsForReactRefresh(moduleExports, moduleId) {
   if (Refresh.isLikelyComponentType(moduleExports)) {
     // Register module.exports if it is likely a component
-    Refresh.register(moduleExports, moduleId + ' %exports%');
+    Refresh.register(moduleExports, moduleId + " %exports%");
   }
 
-  if (
-    moduleExports === undefined ||
-    moduleExports === null ||
-    typeof moduleExports !== 'object'
-  ) {
+  if (moduleExports === undefined || moduleExports === null || typeof moduleExports !== "object") {
     // Exit if we can't iterate over the exports.
     return;
   }
 
   for (var key in moduleExports) {
     // Skip registering the ES Module indicator
-    if (key === '__esModule') {
+    if (key === "__esModule") {
       continue;
     }
 
     var exportValue = moduleExports[key];
     if (Refresh.isLikelyComponentType(exportValue)) {
-      var typeID = moduleId + ' %exports% ' + key;
+      var typeID = moduleId + " %exports% " + key;
       Refresh.register(exportValue, typeID);
     }
   }
@@ -209,13 +199,7 @@ function shouldInvalidateReactRefreshBoundary(prevExports, nextExports) {
 }
 
 var enqueueUpdate = createDebounceUpdate();
-function executeRuntime(
-  moduleExports,
-  moduleId,
-  webpackHot,
-  refreshOverlay,
-  isTest,
-) {
+function executeRuntime(moduleExports, moduleId, webpackHot, refreshOverlay, isTest) {
   registerExportsForReactRefresh(moduleExports, moduleId);
 
   if (webpackHot) {
@@ -236,7 +220,7 @@ function executeRuntime(
         function hotDisposeCallback(data) {
           // We have to mutate the data object to get data registered and cached
           data.prevExports = moduleExports;
-        },
+        }
       );
       webpackHot.accept(
         /**
@@ -245,25 +229,22 @@ function executeRuntime(
          * @returns {void}
          */
         function hotErrorHandler(error) {
-          if (typeof refreshOverlay !== 'undefined' && refreshOverlay) {
+          if (typeof refreshOverlay !== "undefined" && refreshOverlay) {
             refreshOverlay.handleRuntimeError(error);
           }
 
-          if (typeof isTest !== 'undefined' && isTest) {
+          if (typeof isTest !== "undefined" && isTest) {
             if (window.onHotAcceptError) {
               window.onHotAcceptError(error.message);
             }
           }
 
           __webpack_require__.c[moduleId].hot.accept(hotErrorHandler);
-        },
+        }
       );
 
       if (isHotUpdate) {
-        if (
-          isReactRefreshBoundary(prevExports) &&
-          shouldInvalidateReactRefreshBoundary(prevExports, moduleExports)
-        ) {
+        if (isReactRefreshBoundary(prevExports) && shouldInvalidateReactRefreshBoundary(prevExports, moduleExports)) {
           webpackHot.invalidate();
         } else {
           enqueueUpdate(
@@ -272,15 +253,15 @@ function executeRuntime(
              * @returns {void}
              */
             function updateCallback() {
-              if (typeof refreshOverlay !== 'undefined' && refreshOverlay) {
+              if (typeof refreshOverlay !== "undefined" && refreshOverlay) {
                 refreshOverlay.clearRuntimeErrors();
               }
-            },
+            }
           );
         }
       }
     } else {
-      if (isHotUpdate && typeof prevExports !== 'undefined') {
+      if (isHotUpdate && typeof prevExports !== "undefined") {
         webpackHot.invalidate();
       }
     }

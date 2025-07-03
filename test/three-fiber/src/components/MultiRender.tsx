@@ -1,7 +1,6 @@
 import { useFrame, Canvas } from "@my-react/react-three-fiber";
 import { useEffect, useRef, useState } from "react";
 
-
 import type * as THREE from "three";
 
 const CanvasStyle = {

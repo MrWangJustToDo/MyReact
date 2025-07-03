@@ -2,7 +2,6 @@ import { Canvas } from "@my-react/react-three-fiber";
 import { Suspense, useReducer } from "react";
 import { suspend } from "suspend-react";
 
-
 function SlowMaterial({ arg = 0 }) {
   suspend(() => new Promise((res) => setTimeout(res, 1000)), [arg]);
   return <meshStandardMaterial name="main" color="salmon" toneMapped={false} />;

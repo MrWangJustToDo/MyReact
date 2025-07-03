@@ -81,7 +81,15 @@ export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeF
       nodeType = merge(nodeType, NODE_TYPE.__null__);
     } else {
       // text element
-      return { key: null, ref: null, nodeType: NODE_TYPE.__text__, elementType: String(element), pendingProps: emptyProps, finalElement: element, pendingText: String(element) };
+      return {
+        key: null,
+        ref: null,
+        nodeType: NODE_TYPE.__text__,
+        elementType: String(element),
+        pendingProps: emptyProps,
+        finalElement: element,
+        pendingText: String(element),
+      };
     }
   }
 

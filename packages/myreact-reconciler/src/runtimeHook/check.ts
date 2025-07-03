@@ -29,8 +29,8 @@ export const checkHookValid = (hookNode: MyReactHookNode) => {
   if (hookNode.type === HOOK_TYPE.useOptimistic) {
     const value = hookNode.value;
 
-    if (value.reducer && typeof value.reducer !== 'function') {
-      throw new Error(`[@my-react/react] ${HOOK_TYPE[hookNode.type]} initial error`)
+    if (value.reducer && typeof value.reducer !== "function") {
+      throw new Error(`[@my-react/react] ${HOOK_TYPE[hookNode.type]} initial error`);
     }
   }
 };

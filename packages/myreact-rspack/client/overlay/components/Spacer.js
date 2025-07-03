@@ -11,7 +11,7 @@
  * @returns {void}
  */
 function Spacer(document, root, props) {
-  const spacer = document.createElement('div');
+  const spacer = document.createElement("div");
   spacer.style.paddingBottom = props.space;
   root.appendChild(spacer);
 }

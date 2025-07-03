@@ -7,11 +7,11 @@
  * Copyright (c) 2019 Michael Mok
  * https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/0b960573797bf38926937994c481e4fec9ed8aa6/LICENSE
  */
-import getSocketUrlParts from './utils/getSocketUrlParts';
-import getUrlFromParts from './utils/getUrlFromParts';
-import getWDSMetadata from './utils/getWDSMetadata';
+import getSocketUrlParts from "./utils/getSocketUrlParts";
+import getUrlFromParts from "./utils/getUrlFromParts";
+import getWDSMetadata from "./utils/getWDSMetadata";
 
-import type { SocketClient } from './utils/getWDSMetadata';
+import type { SocketClient } from "./utils/getWDSMetadata";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -24,14 +24,11 @@ declare global {
  * @param resourceQuery Webpack's `__resourceQuery` string.
  * @returns
  */
-export function init(
-  messageHandler: (...args: unknown[]) => void,
-  resourceQuery: string,
-) {
-  if (typeof __webpack_dev_server_client__ !== 'undefined') {
+export function init(messageHandler: (...args: unknown[]) => void, resourceQuery: string) {
+  if (typeof __webpack_dev_server_client__ !== "undefined") {
     let SocketClient: SocketClient;
 
-    if ('default' in __webpack_dev_server_client__) {
+    if ("default" in __webpack_dev_server_client__) {
       SocketClient = __webpack_dev_server_client__.default;
     } else {
       SocketClient = __webpack_dev_server_client__;

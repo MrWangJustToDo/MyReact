@@ -16,7 +16,6 @@ export const initClassInstance = (instance: MyReactComponent) => {
   typedField.isMounted = false;
 };
 
-
 export const mountClassInstance = (instance: MyReactComponent) => {
   const field = getInstanceFieldByInstance(instance);
 
@@ -25,7 +24,7 @@ export const mountClassInstance = (instance: MyReactComponent) => {
   const typedField = field as ClassInstanceField;
 
   typedField.isMounted = true;
-}
+};
 
 export const getClassInstanceFieldByInstance = (instance: MyReactComponent) => {
   const field = getInstanceFieldByInstance(instance);
@@ -33,4 +32,4 @@ export const getClassInstanceFieldByInstance = (instance: MyReactComponent) => {
   if (!field) throw new Error(`[@my-react/react] can not find instance field for component, look like a bug for @my-react`);
 
   return field as ClassInstanceField;
-}
+};

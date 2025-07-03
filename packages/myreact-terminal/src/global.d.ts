@@ -6,7 +6,7 @@ import { type Styles } from "./styles";
 declare global {
   const __DEV__: boolean;
   const __VERSION__: string;
-	
+
   namespace JSX {
     interface IntrinsicElements {
       "ink-box": Ink.Box;

@@ -1,107 +1,107 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/server.development.js"></script>
-</head>
+  <body>
+    <div id="root"></div>
 
-<body>
-  <div id="root"></div>
+    <script type="text/babel">
+      const { Component, useEffect } = React;
 
-  <script type="text/babel">
-    const { Component, useEffect } = React;
+      class WrapperErrorCatch extends Component {
+        state = {
+          stack: "",
+          error: "",
+          hasError: false,
+        };
 
-    class WrapperErrorCatch extends Component {
-      state = {
-        stack: "",
-        error: "",
-        hasError: false,
+        static getDerivedStateFromError() {
+          return { hasError: true };
+        }
+
+        componentDidCatch(error, info) {
+          console.log(error, info);
+          this.setState({
+            error: error.message,
+            stack: info.componentStack,
+          });
+        }
+
+        render() {
+          console.log(this, "xxxxxxxxxxxx", this.state.hasError);
+          if (this.state.hasError)
+            return (
+              <pre>
+                <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
+                {this.state.stack}
+              </pre>
+            );
+          return this.props.children;
+        }
+      }
+
+      const Bar = () => {
+        useEffect(() => {
+          console.log("mounted Bar");
+        }, []);
+
+        console.log(foo);
+
+        return <div onClick={() => console.log(foo)}>123456</div>;
       };
 
-      static getDerivedStateFromError() {
-        return { hasError: true };
-      }
+      const Foo = () => {
+        useEffect(() => {
+          console.log("mounted foo");
+        }, []);
 
-      componentDidCatch(error, info) {
-        console.log(error, info);
-        this.setState({
-          error: error.message,
-          stack: info.componentStack,
-        });
-      }
+        return (
+          <div id="foo">
+            <WrapperErrorCatch>
+              <Bar />
+            </WrapperErrorCatch>
+          </div>
+        );
+      };
 
-      render() {
-        console.log(this, "xxxxxxxxxxxx", this.state.hasError);
-        if (this.state.hasError)
-          return (
-            <pre>
-              <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
-              {this.state.stack}
-            </pre>
-          );
-        return this.props.children;
-      }
-    }
+      const BBB = () => {
+        useEffect(() => {
+          console.log("mounted BBB");
+        }, []);
 
-    const Bar = () => {
-      useEffect(() => {
-        console.log("mounted Bar");
-      }, [])
+        return <Foo />;
+      };
 
-      console.log(foo);
+      const Baz = () => {
+        useEffect(() => {
+          console.log("mounted Baz");
+        }, []);
 
-      return <div onClick={() => console.log(foo)}>123456</div>;
-    };
+        return (
+          <div id="baz">
+            <BBB />
+          </div>
+        );
+      };
 
-    const Foo = () => {
-      useEffect(() => {
-        console.log("mounted foo");
-      }, []);
+      const App = () => {
+        return <Baz />;
+      };
 
-      return (
-        <div id="foo">
-          <WrapperErrorCatch>
-            <Bar />
-          </WrapperErrorCatch>
-        </div>
-      );
-    };
+      ReactDOM.render(<App />, root);
 
-    const BBB = () => {
-      useEffect(() => {
-        console.log("mounted BBB");
-      }, []);
-
-      return <Foo />;
-    };
-
-    const Baz = () => {
-      useEffect(() => {
-        console.log("mounted Baz");
-      }, []);
-
-      return <div id="baz">
-        <BBB />
-      </div>
-    };
-
-    const App = () => {
-      return <Baz />;
-    };
-
-    ReactDOM.render(<App />, root);
-
-    // ReactDOMServer.renderToString(<App />);
-  </script>
-</body>
-
+      // ReactDOMServer.renderToString(<App />);
+    </script>
+  </body>
 </html>

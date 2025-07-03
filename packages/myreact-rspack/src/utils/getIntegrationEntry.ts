@@ -1,4 +1,4 @@
-import type { IntegrationType } from './getSocketIntegration';
+import type { IntegrationType } from "./getSocketIntegration";
 
 /**
  * Gets entry point of a supported socket integration.
@@ -8,8 +8,8 @@ import type { IntegrationType } from './getSocketIntegration';
 export function getIntegrationEntry(integrationType: IntegrationType) {
   let resolvedEntry: string | undefined;
   switch (integrationType) {
-    case 'whm': {
-      resolvedEntry = 'webpack-hot-middleware/client';
+    case "whm": {
+      resolvedEntry = "webpack-hot-middleware/client";
       break;
     }
   }

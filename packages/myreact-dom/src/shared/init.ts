@@ -25,4 +25,4 @@ export const initClient = () => {
   enableScopeTreeLog.current = true;
 
   initScheduler();
-}
+};

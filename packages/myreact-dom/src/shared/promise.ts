@@ -6,4 +6,4 @@ export const createControlPromise = <T = void>() => {
     reject = rej;
   });
   return { promise, resolve: resolve!, reject: reject! };
-}
+};

@@ -218,7 +218,7 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
 
         hookNode._update({ isForce: true, isSync: true, payLoad: (last) => payloadRef.current(last) });
 
-        hookNode.cancel = () => payloadRef.current = (last) => last;
+        hookNode.cancel = () => (payloadRef.current = (last) => last);
       },
     };
   }

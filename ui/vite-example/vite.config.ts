@@ -20,7 +20,7 @@ export default defineConfig({
         "react-router-dom",
         "react-router-dom/server",
         "framer-motion",
-        "react-compiler-runtime"
+        "react-compiler-runtime",
       ],
     },
     noExternal: [
@@ -34,7 +34,7 @@ export default defineConfig({
       "react-router-dom",
       "react-router-dom/server",
       "framer-motion",
-      "react-compiler-runtime"
+      "react-compiler-runtime",
     ],
   },
   plugins: [

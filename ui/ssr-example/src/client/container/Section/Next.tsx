@@ -109,7 +109,7 @@ export const NextSection = () => {
             className="typo"
             overflow={{ base: "hidden", lg: "auto" }}
             border="1px solid"
-            maxWidth={{md: '55vw'}}
+            maxWidth={{ md: "55vw" }}
             minWidth={{ md: "40vw" }}
             borderColor="cardBorderColor"
             marginTop={{ base: "10%", md: "0" }}

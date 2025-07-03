@@ -36,7 +36,7 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
       if (!c._store?.["validKey"]) {
         if (typeof c.key === "string") {
           if (obj[c.key]) {
-            const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : '';
+            const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : "";
 
             if (!keysMap[renderTree]) console.warn(`[@my-react/react] array child have duplicate key '${c.key}'`);
 
@@ -45,7 +45,7 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
 
           obj[c.key] = true;
         } else {
-          const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : '';
+          const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : "";
 
           if (!keysMap[renderTree]) console.warn(`[@my-react/react] each array child must have a unique key props`);
 
@@ -59,18 +59,17 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
   }
 };
 
-
 const optimizes: boolean[] = [];
 
 const pushOptimizes = (optimize: boolean) => {
   optimizes.push(enableOptimizeTreeLog.current);
 
   enableOptimizeTreeLog.current = optimize;
-}
+};
 
 const popOptimizes = () => {
   enableOptimizeTreeLog.current = optimizes.pop() || false;
-}
+};
 
 /**
  * @internal

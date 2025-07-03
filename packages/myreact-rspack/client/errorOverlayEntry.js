@@ -8,9 +8,9 @@
  * Copyright (c) 2019 Michael Mok
  * https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/0b960573797bf38926937994c481e4fec9ed8aa6/LICENSE
  */
-const events = require('./utils/errorEventHandlers.js');
-const formatWebpackErrors = require('./utils/formatWebpackErrors.js');
-const runWithRetry = require('./utils/retry.js');
+const events = require("./utils/errorEventHandlers.js");
+const formatWebpackErrors = require("./utils/formatWebpackErrors.js");
+const runWithRetry = require("./utils/retry.js");
 
 // Setup error states
 let isHotReload = false;
@@ -62,14 +62,14 @@ function handleCompileErrors(errors) {
  */
 function compileMessageHandler(message) {
   switch (message.type) {
-    case 'ok':
-    case 'still-ok':
-    case 'warnings': {
+    case "ok":
+    case "still-ok":
+    case "warnings": {
       // TODO: Implement handling for warnings
       handleCompileSuccess();
       break;
     }
-    case 'errors': {
+    case "errors": {
       handleCompileErrors(message.data);
       break;
     }
@@ -79,8 +79,8 @@ function compileMessageHandler(message) {
   }
 }
 
-if (process.env.NODE_ENV !== 'production') {
-  if (typeof window !== 'undefined') {
+if (process.env.NODE_ENV !== "production") {
+  if (typeof window !== "undefined") {
     function setupOverlay() {
       // Only register if no other overlay have been registered
       if (!window.__my_reactRefreshOverlayInjected && __my_react_refresh_socket__) {
@@ -94,12 +94,10 @@ if (process.env.NODE_ENV !== 'production') {
           hasRuntimeErrors = true;
           __my_react_refresh_error_overlay__.handleRuntimeError(error);
         });
-        events.handleUnhandledRejection(
-          function handleUnhandledPromiseRejection(error) {
-            hasRuntimeErrors = true;
-            __my_react_refresh_error_overlay__.handleRuntimeError(error);
-          },
-        );
+        events.handleUnhandledRejection(function handleUnhandledPromiseRejection(error) {
+          hasRuntimeErrors = true;
+          __my_react_refresh_error_overlay__.handleRuntimeError(error);
+        });
 
         // Mark overlay as injected to prevent double-injection
         window.__my_reactRefreshOverlayInjected = true;

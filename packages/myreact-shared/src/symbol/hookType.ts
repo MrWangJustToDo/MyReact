@@ -15,6 +15,6 @@ export enum HOOK_TYPE {
   useInsertionEffect = 13,
   useImperativeHandle = 14,
   useSyncExternalStore = 15,
-  
+
   useOptimistic = 16,
 }

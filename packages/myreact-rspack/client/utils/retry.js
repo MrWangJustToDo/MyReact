@@ -2,7 +2,7 @@ function runWithRetry(callback, maxRetries) {
   function executeWithRetryAndTimeout(currentCount) {
     try {
       if (currentCount > maxRetries - 1) {
-        console.warn('[React Refresh] Failed to set up the socket connection.');
+        console.warn("[React Refresh] Failed to set up the socket connection.");
         return;
       }
 
@@ -12,7 +12,7 @@ function runWithRetry(callback, maxRetries) {
         function () {
           executeWithRetryAndTimeout(currentCount + 1);
         },
-        Math.pow(10, currentCount),
+        Math.pow(10, currentCount)
       );
     }
   }

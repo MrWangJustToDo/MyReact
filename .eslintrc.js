@@ -8,5 +8,5 @@ module.exports = {
   ignorePatterns: ["dist", "dev", "lib", "__tests__", "bundle", "ui/vite-example"],
   rules: {
     "@typescript-eslint/no-unused-expressions": "off",
-  }
+  },
 };

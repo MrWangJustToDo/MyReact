@@ -8,10 +8,10 @@
  * https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/0b960573797bf38926937994c481e4fec9ed8aa6/LICENSE
  */
 
-var RefreshRuntime = require('@my-react/react-refresh/runtime');
+var RefreshRuntime = require("@my-react/react-refresh/runtime");
 var safeThis = (function () {
   // copied from core-js-pure/features/global-this
-  'use strict';
+  "use strict";
 
   var check = function (it) {
     return it && it.Math == Math && it;
@@ -20,29 +20,26 @@ var safeThis = (function () {
   // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
   // eslint-disable-next-line es/no-global-this -- safe
   return (
-    check(typeof globalThis == 'object' && globalThis) ||
-    check(typeof window == 'object' && window) ||
+    check(typeof globalThis == "object" && globalThis) ||
+    check(typeof window == "object" && window) ||
     // eslint-disable-next-line no-restricted-globals -- safe
-    check(typeof self == 'object' && self) ||
-    check(typeof __webpack_require__.g == 'object' && __webpack_require__.g) ||
+    check(typeof self == "object" && self) ||
+    check(typeof __webpack_require__.g == "object" && __webpack_require__.g) ||
     // eslint-disable-next-line no-new-func -- fallback
     (function () {
       return this;
     })() ||
     this ||
-    Function('return this')()
+    Function("return this")()
   );
 })();
 
-if (process.env.NODE_ENV !== 'production') {
-  if (typeof safeThis !== 'undefined') {
-    var $RefreshInjected$ = '__my_reactRefreshInjected';
+if (process.env.NODE_ENV !== "production") {
+  if (typeof safeThis !== "undefined") {
+    var $RefreshInjected$ = "__my_reactRefreshInjected";
     // Namespace the injected flag (if necessary) for monorepo compatibility
-    if (
-      typeof __my_react_refresh_library__ !== 'undefined' &&
-      __my_react_refresh_library__
-    ) {
-      $RefreshInjected$ += '_' + __my_react_refresh_library__;
+    if (typeof __my_react_refresh_library__ !== "undefined" && __my_react_refresh_library__) {
+      $RefreshInjected$ += "_" + __my_react_refresh_library__;
     }
 
     // Only inject the runtime if it hasn't been injected

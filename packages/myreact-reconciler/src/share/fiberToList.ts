@@ -7,9 +7,9 @@ export const generateFiberToMountList = (fiber: MyReactFiberNode) => {
 
   const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
     if (include(fiber.state, STATE_TYPE.__unmount__)) return null;
-  
+
     if (fiber.child) return fiber.child;
-  
+
     while (fiber && fiber !== root) {
       listTree.push(fiber);
 
@@ -23,11 +23,11 @@ export const generateFiberToMountList = (fiber: MyReactFiberNode) => {
     }
 
     return null;
-  }
+  };
 
   let f = fiber;
 
-  while(f) {
+  while (f) {
     f = getNext(f, fiber);
   }
 

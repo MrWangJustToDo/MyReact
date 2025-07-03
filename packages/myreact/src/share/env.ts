@@ -1,4 +1,3 @@
-
 import { Scheduler, type RenderScheduler } from "../renderScheduler";
 
 import { createReadonlyRef, createRef } from "./createRef";

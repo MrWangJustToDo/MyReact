@@ -12,7 +12,7 @@ export const InternalSection = ({ children }: { children: ReactNode }) => {
   const { scrollYProgress } = useScroll({ target: ref, axis: "y", offset: ["-0.5", "0.5"] });
 
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.65, 1], [0.3, 1, 1, 0.5]);
-  
+
   const y = useTransform(scrollYProgress, [0, 0.3, 0.65, 1], [100, 0, 0, -120]);
 
   return <motion.div style={{ opacity, y }}>{children}</motion.div>;

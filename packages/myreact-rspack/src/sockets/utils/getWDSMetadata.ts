@@ -21,24 +21,17 @@ export interface SocketClient {
 
 export default function getWDSMetadata(SocketClient: SocketClient): WDSMetaObj {
   let enforceWs = false;
-  if (
-    typeof SocketClient.name !== 'undefined' &&
-    SocketClient.name !== null &&
-    SocketClient.name.toLowerCase().includes('websocket')
-  ) {
+  if (typeof SocketClient.name !== "undefined" && SocketClient.name !== null && SocketClient.name.toLowerCase().includes("websocket")) {
     enforceWs = true;
   }
 
   let version: number;
   // WDS versions <=3.5.0
-  if (!('onMessage' in SocketClient.prototype)) {
+  if (!("onMessage" in SocketClient.prototype)) {
     version = 3;
   } else {
     // WDS versions >=3.5.0 <4
-    if (
-      'getClientPath' in SocketClient ||
-      Object.getPrototypeOf(SocketClient).name === 'BaseClient'
-    ) {
+    if ("getClientPath" in SocketClient || Object.getPrototypeOf(SocketClient).name === "BaseClient") {
       version = 3;
     } else {
       version = 4;

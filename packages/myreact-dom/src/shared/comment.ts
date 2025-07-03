@@ -11,9 +11,9 @@ export const commentE = " ] ";
 /**
  * @internal
  */
-export const commentS_ = '$';
+export const commentS_ = "$";
 
 /**
  * @internal
  */
-export const commentE_ = '/$';
+export const commentE_ = "/$";

@@ -1,115 +1,117 @@
 <!doctype html>
 <html lang="zh_cn">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>测试react框架</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-  <style>
-    .red {
-      color: red;
-      font-size: 20px;
-    }
-
-    .box {
-      width: 100px;
-      height: 100px;
-      border: 1px solid red;
-      border-radius: 3px;
-    }
-
-    .green {
-      color: green;
-    }
-
-    #root {
-      margin: 50px;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="root"></div>
-
-  <script type="text/babel" async>
-    const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, Component } = React;
-
-    const getObj = (i) => {
-      if (i === 0) {
-        return { a: Math.random(), b: Math.random(), c: Math.random() };
-      } else {
-        return { a: getObj(i - 1), b: getObj(i - 1), c: getObj(i - 1) };
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
       }
-    }
 
-    const useTime = () => {
-      const [time, setTime] = useState();
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
 
-      useEffect(() => {
-        const id = setInterval(() => {
-          setTime(new Date().toLocaleTimeString());
-        }, 1000);
+      .green {
+        color: green;
+      }
 
-        return () => clearInterval(id);
-      }, []);
+      #root {
+        margin: 50px;
+      }
+    </style>
+  </head>
 
-      return time;
-    }
+  <body>
+    <div id="root"></div>
 
-    const genCom = () => ({ children, t }) => {
-      return <div data-time={t} style={{ padding: '2px' }}>{children}</div>
-    }
+    <script type="text/babel" async>
+      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, Component } = React;
 
-    const A = genCom();
+      const getObj = (i) => {
+        if (i === 0) {
+          return { a: Math.random(), b: Math.random(), c: Math.random() };
+        } else {
+          return { a: getObj(i - 1), b: getObj(i - 1), c: getObj(i - 1) };
+        }
+      };
 
-    A.displayName = 'A';
+      const useTime = () => {
+        const [time, setTime] = useState();
 
-    const B = genCom();
+        useEffect(() => {
+          const id = setInterval(() => {
+            setTime(new Date().toLocaleTimeString());
+          }, 1000);
 
-    B.displayName = 'B';
+          return () => clearInterval(id);
+        }, []);
 
-    const C = genCom();
+        return time;
+      };
 
-    C.displayName = 'C';
+      const genCom =
+        () =>
+        ({ children, t }) => {
+          return (
+            <div data-time={t} style={{ padding: "2px" }}>
+              {children}
+            </div>
+          );
+        };
 
-    const D = genCom();
+      const A = genCom();
 
-    D.displayName = 'D';
+      A.displayName = "A";
 
-    const E = () => {
-      return <div style={{ width: '100px', height: '100px' }}>EEEE</div>
-    }
+      const B = genCom();
 
+      B.displayName = "B";
 
-    // 测试 devtool
-    const App = () => {
+      const C = genCom();
 
-      const t = useTime();
+      C.displayName = "C";
 
-      return (
-        <div style={{ padding: '2px' }}>
-          <A t={t}>
-            <B t={t}>
-              <C t={t}>
-                <D t={t}>
-                  <E />
-                </D>
-              </C>
-            </B>
-          </A>
-          {t}
-        </div>
-      );
-    };
+      const D = genCom();
 
-    const container = document.getElementById("root");
-    ReactDOM.render(<App />, container);
-  </script>
-</body>
+      D.displayName = "D";
 
+      const E = () => {
+        return <div style={{ width: "100px", height: "100px" }}>EEEE</div>;
+      };
+
+      // 测试 devtool
+      const App = () => {
+        const t = useTime();
+
+        return (
+          <div style={{ padding: "2px" }}>
+            <A t={t}>
+              <B t={t}>
+                <C t={t}>
+                  <D t={t}>
+                    <E />
+                  </D>
+                </C>
+              </B>
+            </A>
+            {t}
+          </div>
+        );
+      };
+
+      const container = document.getElementById("root");
+      ReactDOM.render(<App />, container);
+    </script>
+  </body>
 </html>

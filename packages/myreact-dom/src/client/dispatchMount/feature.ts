@@ -109,7 +109,7 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
     _list.listToFoot(function invokeLayoutEffectList(fiber) {
       layoutEffect(_dispatch, fiber);
     });
-    
+
     afterSyncUpdate();
 
     const renderScheduler = currentScheduler.current;

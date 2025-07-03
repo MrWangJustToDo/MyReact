@@ -159,7 +159,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
   dispatchFiber(_fiber: MyReactFiberNode): void {
     clientDispatchFiber(this, _fiber);
   }
-  
+
   clientCommitCreate(_fiber: MyReactFiberNode, _hydrate?: boolean): boolean {
     return create(this, _fiber, !!_hydrate);
   }

@@ -32,7 +32,7 @@ export const generateRender = () => async (_req: Request, res: Response) => {
     const refreshScriptPath = obj["__refresh__.js"];
 
     if (refreshScriptPath) {
-      refreshElements.push(<script data-refresh="@my-react/react-refresh" src={refreshScriptPath}></script>)
+      refreshElements.push(<script data-refresh="@my-react/react-refresh" src={refreshScriptPath}></script>);
     }
   }
 

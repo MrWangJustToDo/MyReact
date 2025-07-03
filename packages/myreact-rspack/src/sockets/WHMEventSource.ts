@@ -13,16 +13,13 @@
  *
  * [Ref](https://github.com/webpack-contrib/webpack-hot-middleware/blob/cb29abb9dde435a1ac8e9b19f82d7d36b1093198/client.js#L152)
  */
-const singletonKey = '__webpack_hot_middleware_reporter__';
+const singletonKey = "__webpack_hot_middleware_reporter__";
 
 interface WHMClient {
   cleanProblemsCache: () => void;
   problems: () => boolean;
   success: () => void;
-  useCustomOverlay: (customOverlay: {
-    showProblems: (type: string, data: string[]) => void;
-    clear: () => void;
-  }) => void;
+  useCustomOverlay: (customOverlay: { showProblems: (type: string, data: string[]) => void; clear: () => void }) => void;
 }
 
 declare global {
@@ -44,7 +41,7 @@ export function init(messageHandler: (...args: unknown[]) => void) {
       messageHandler({ type, data });
     },
     clear() {
-      messageHandler({ type: 'ok' });
+      messageHandler({ type: "ok" });
     },
   });
 }

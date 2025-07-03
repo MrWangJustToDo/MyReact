@@ -20,7 +20,7 @@ export const RspackPlayground = () => {
           "@my-react/react-refresh": "0.3.9",
           "@my-react/react-rspack": "0.0.3",
           "@rspack/cli": "1.3.2",
-          "@rspack/core": "1.3.2"
+          "@rspack/core": "1.3.2",
         },
         entry: RSPACK_REACT_TEMPLATE.files["/package.json"].code,
         environment: RSPACK_REACT_TEMPLATE.environment,

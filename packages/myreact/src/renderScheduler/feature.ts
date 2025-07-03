@@ -21,7 +21,7 @@ export class Scheduler implements RenderScheduler {
   }
   getFiberTree(_fiber: RenderFiber): string {
     throw new Error("Method not implemented.");
-  } 
+  }
   readContext(_params: ReturnType<typeof createContext>): unknown {
     throw new Error("Method not implemented.");
   }

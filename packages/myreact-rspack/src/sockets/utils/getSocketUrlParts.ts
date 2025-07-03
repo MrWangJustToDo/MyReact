@@ -1,6 +1,6 @@
-import getCurrentScriptSource from './getCurrentScriptSource';
+import getCurrentScriptSource from "./getCurrentScriptSource";
 
-import type { WDSMetaObj } from './getWDSMetadata';
+import type { WDSMetaObj } from "./getWDSMetadata";
 
 export interface SocketUrlParts {
   auth?: string;
@@ -17,10 +17,7 @@ interface ParsedQuery {
   sockProtocol?: string;
 }
 
-export default function getSocketUrlParts(
-  resourceQuery?: string,
-  metadata: WDSMetaObj = {},
-): SocketUrlParts {
+export default function getSocketUrlParts(resourceQuery?: string, metadata: WDSMetaObj = {}): SocketUrlParts {
   const urlParts: SocketUrlParts = {} as SocketUrlParts;
 
   // If the resource query is available,
@@ -67,7 +64,7 @@ export default function getSocketUrlParts(
     }
 
     // `file://` URLs has `'null'` origin
-    if (url.origin !== 'null') {
+    if (url.origin !== "null") {
       urlParts.hostname = url.hostname;
     }
 
@@ -78,27 +75,20 @@ export default function getSocketUrlParts(
   if (!urlParts.pathname) {
     if (metadata.version === 4) {
       // This is hard-coded in WDS v4
-      urlParts.pathname = '/ws';
+      urlParts.pathname = "/ws";
     } else {
       // This is hard-coded in WDS v3
-      urlParts.pathname = '/sockjs-node';
+      urlParts.pathname = "/sockjs-node";
     }
   }
 
   // Check for IPv4 and IPv6 host addresses that correspond to any/empty.
   // This is important because `hostname` can be empty for some hosts,
   // such as 'about:blank' or 'file://' URLs.
-  const isEmptyHostname =
-    urlParts.hostname === '0.0.0.0' ||
-    urlParts.hostname === '[::]' ||
-    !urlParts.hostname;
+  const isEmptyHostname = urlParts.hostname === "0.0.0.0" || urlParts.hostname === "[::]" || !urlParts.hostname;
   // We only re-assign the hostname if it is empty,
   // and if we are using HTTP/HTTPS protocols.
-  if (
-    isEmptyHostname &&
-    window.location.hostname &&
-    window.location.protocol.indexOf('http') === 0
-  ) {
+  if (isEmptyHostname && window.location.hostname && window.location.protocol.indexOf("http") === 0) {
     urlParts.hostname = window.location.hostname;
   }
 
@@ -106,11 +96,7 @@ export default function getSocketUrlParts(
   // or if `hostname` is available and is empty,
   // since otherwise we risk creating an invalid URL.
   // We also do this when 'https' is used as it mandates the use of secure sockets.
-  if (
-    !urlParts.protocol ||
-    (urlParts.hostname &&
-      (isEmptyHostname || window.location.protocol === 'https:'))
-  ) {
+  if (!urlParts.protocol || (urlParts.hostname && (isEmptyHostname || window.location.protocol === "https:"))) {
     urlParts.protocol = window.location.protocol;
   }
 
@@ -122,11 +108,11 @@ export default function getSocketUrlParts(
   if (!urlParts.hostname || !urlParts.pathname) {
     throw new Error(
       [
-        '[React Refresh] Failed to get an URL for the socket connection.',
+        "[React Refresh] Failed to get an URL for the socket connection.",
         "This usually means that the current executed script doesn't have a `src` attribute set.",
-        'You should either specify the socket path parameters under the `devServer` key in your Rspack config, or use the `overlay` option.',
-        'https://www.rspack.dev/guide/tech/react#fast-refresh',
-      ].join('\n'),
+        "You should either specify the socket path parameters under the `devServer` key in your Rspack config, or use the `overlay` option.",
+        "https://www.rspack.dev/guide/tech/react#fast-refresh",
+      ].join("\n")
     );
   }
 

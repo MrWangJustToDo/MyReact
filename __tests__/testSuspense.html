@@ -1,151 +1,153 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <!-- <script src="../bundle/react.18.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Document</title>
-  <script src="../bundle/babel.min.js"></script>
-  <!-- <script src="../bundle/react.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.development.js"></script> -->
-  <!-- <script src="../bundle/react.18.development.js"></script> -->
-  <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
-  <script src="../packages/myreact/dist/umd/index.development.js"></script>
-  <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
-</head>
+  <body>
+    <div id="root"></div>
 
-<body>
-  <div id="root"></div>
+    <script type="text/babel">
+      const { Component, Suspense, lazy } = React;
 
-  <script type="text/babel">
-    const { Component, Suspense, lazy } = React;
+      let p = null;
 
-    let p = null;
+      const delay = (time) => {
+        console.log("delay");
 
-    const delay = (time) => {
-      console.log('delay');
+        if (p) return p;
 
-      if (p) return p;
-
-      p = new Promise((r) => {
-        setTimeout(r, time);
-      }).then(() => {
-        console.log('resolved')
-      });
-
-      return p;
-    };
-
-    function use(promise) {
-      if (promise.status === 'fulfilled') {
-        return promise.value;
-      } else if (promise.status === 'rejected') {
-        throw promise.reason;
-      } else if (promise.status === 'pending') {
-        throw promise;
-      } else {
-        promise.status = 'pending';
-        promise.then(
-          (result) => {
-            promise.status = 'fulfilled';
-            promise.value = result;
-          },
-          (reason) => {
-            promise.status = 'rejected';
-            promise.reason = reason;
-          }
-        );
-        throw promise;
-      }
-    }
-
-    let promise;
-    let state;
-    let value;
-
-    const read = () => {
-      console.log('read');
-      if (!promise) {
-        promise = new Promise((resolve) => {
-          setTimeout(resolve, 5000);
+        p = new Promise((r) => {
+          setTimeout(r, time);
+        }).then(() => {
+          console.log("resolved");
         });
 
-        state = "pending";
+        return p;
+      };
 
-        (async () => {
-          await promise;
-          state = "done";
-          value = "Hello World";
-        })();
+      function use(promise) {
+        if (promise.status === "fulfilled") {
+          return promise.value;
+        } else if (promise.status === "rejected") {
+          throw promise.reason;
+        } else if (promise.status === "pending") {
+          throw promise;
+        } else {
+          promise.status = "pending";
+          promise.then(
+            (result) => {
+              promise.status = "fulfilled";
+              promise.value = result;
+            },
+            (reason) => {
+              promise.status = "rejected";
+              promise.reason = reason;
+            }
+          );
+          throw promise;
+        }
       }
 
-      if (state === "pending") {
-        throw promise;
-      }
+      let promise;
+      let state;
+      let value;
 
-      if (state === "done") {
-        return value;
-      }
-    };
+      const read = () => {
+        console.log("read");
+        if (!promise) {
+          promise = new Promise((resolve) => {
+            setTimeout(resolve, 5000);
+          });
 
-    // class WrapperErrorCatch extends Component {
-    //   state = {
-    //     stack: "",
-    //     error: "",
-    //     hasError: false,
-    //   };
+          state = "pending";
 
-    //   static getDerivedStateFromError() {
-    //     return { hasError: true };
-    //   }
+          (async () => {
+            await promise;
+            state = "done";
+            value = "Hello World";
+          })();
+        }
 
-    //   componentDidCatch(error, info) {
-    //     console.log(error, info, "xxxxxxxxxxxx");
-    //     this.setState({
-    //       error: error?.message,
-    //       stack: info.componentStack,
-    //     });
-    //   }
+        if (state === "pending") {
+          throw promise;
+        }
 
-    //   render() {
-    //     console.log(this, "xxxxxxxxxxxx");
-    //     if (this.state.hasError)
-    //       return (
-    //         <pre>
-    //           <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
-    //           {this.state.stack}
-    //         </pre>
-    //       );
-    //     return this.props.children;
-    //   }
-    // }
+        if (state === "done") {
+          return value;
+        }
+      };
 
-    const Bar = () => {
-      read();
-      use(delay(2000));
-      // throw delay(2000)
+      // class WrapperErrorCatch extends Component {
+      //   state = {
+      //     stack: "",
+      //     error: "",
+      //     hasError: false,
+      //   };
 
-      return <div>bar</div>;
-    };
+      //   static getDerivedStateFromError() {
+      //     return { hasError: true };
+      //   }
 
-    const Baz = ({ children }) => {
-      return <div>Baz start -- <Bar /> -- <span>Baz end</span> </div>;
-    };
+      //   componentDidCatch(error, info) {
+      //     console.log(error, info, "xxxxxxxxxxxx");
+      //     this.setState({
+      //       error: error?.message,
+      //       stack: info.componentStack,
+      //     });
+      //   }
 
-    const App = () => {
-      return (
-        // <WrapperErrorCatch>
-        <div>
+      //   render() {
+      //     console.log(this, "xxxxxxxxxxxx");
+      //     if (this.state.hasError)
+      //       return (
+      //         <pre>
+      //           <p style={{ color: "red", whiteSpace: "pre-wrap" }}>{this.state.error}</p>
+      //           {this.state.stack}
+      //         </pre>
+      //       );
+      //     return this.props.children;
+      //   }
+      // }
+
+      const Bar = () => {
+        read();
+        use(delay(2000));
+        // throw delay(2000)
+
+        return <div>bar</div>;
+      };
+
+      const Baz = ({ children }) => {
+        return (
+          <div>
+            Baz start -- <Bar /> -- <span>Baz end</span>{" "}
+          </div>
+        );
+      };
+
+      const App = () => {
+        return (
+          // <WrapperErrorCatch>
+          <div>
             <Baz />
-        </div>
-        // </WrapperErrorCatch>
-      );
-    };
+          </div>
+          // </WrapperErrorCatch>
+        );
+      };
 
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
-    // ReactDOM.render(<App />, document.getElementById("root"));
-  </script>
-</body>
-
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+      // ReactDOM.render(<App />, document.getElementById("root"));
+    </script>
+  </body>
 </html>

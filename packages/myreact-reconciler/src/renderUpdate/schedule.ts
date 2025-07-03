@@ -31,7 +31,7 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
       updateSyncFromRoot(renderDispatch);
     } else {
       renderDispatch.resetYield();
-      
+
       updateConcurrentFromRoot(renderDispatch);
     }
   } else {

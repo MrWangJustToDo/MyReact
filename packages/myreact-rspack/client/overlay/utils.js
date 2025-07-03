@@ -42,7 +42,7 @@ function formatFilename(filename) {
   // Strip everything before the first directory for source files
   const sourceMatch = /\/.*?([^./]+[/|\\].*)$/.exec(filename);
   if (sourceMatch && sourceMatch[1]) {
-    return sourceMatch[1].replace(/\?$/, '');
+    return sourceMatch[1].replace(/\?$/, "");
   }
 
   // Unknown filename type, use it as is
@@ -57,10 +57,7 @@ function formatFilename(filename) {
  */
 function removeAllChildren(element, skip) {
   /** @type {Node[]} */
-  const childList = Array.prototype.slice.call(
-    element.childNodes,
-    typeof skip !== 'undefined' ? skip : 0,
-  );
+  const childList = Array.prototype.slice.call(element.childNodes, typeof skip !== "undefined" ? skip : 0);
 
   for (let i = 0; i < childList.length; i += 1) {
     element.removeChild(childList[i]);

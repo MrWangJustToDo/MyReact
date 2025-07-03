@@ -30,7 +30,7 @@ const resolveHookValue = (hookNode: MyReactHookNode, field: InstanceField) => {
         return hookNode.result;
       case HOOK_TYPE.useOptimistic:
       case HOOK_TYPE.useTransition:
-        return [hookNode.result.value, hookNode.result.start]
+        return [hookNode.result.value, hookNode.result.start];
       case HOOK_TYPE.useSignal:
         return [hookNode.result.getValue, hookNode.result.setValue];
     }

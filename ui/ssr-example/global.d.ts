@@ -1,5 +1,5 @@
 import { ClientDomDispatch } from "@my-react/react-dom";
-import BabelType from '@babel/core';
+import BabelType from "@babel/core";
 
 declare global {
   const __CLIENT__: boolean;
@@ -42,7 +42,7 @@ declare global {
 
     ["__@my-react/dispatch__"]: ClientDomDispatch[];
 
-    Babel: typeof BabelType
+    Babel: typeof BabelType;
   }
 
   namespace NodeJS {

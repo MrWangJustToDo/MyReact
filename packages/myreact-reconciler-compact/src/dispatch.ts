@@ -127,7 +127,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
       });
 
       ReconcilerDispatchUpdate(this, _list, config);
-      
+
       safeCall(function safeCallAfterUpdateListener() {
         listenerMap.get(instance).afterUpdate.forEach((cb) => cb());
       });

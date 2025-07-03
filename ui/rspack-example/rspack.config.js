@@ -1,14 +1,14 @@
-const { rspack } = require('@rspack/core');
-const RspackPlugin = require('@my-react/react-rspack');
+const { rspack } = require("@rspack/core");
+const RspackPlugin = require("@my-react/react-rspack");
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === "production";
 
 /** @type {import('@rspack/cli').Configuration} */
 const config = {
-  entry: { main: './src/index.tsx' },
-  devtool: 'source-map',
+  entry: { main: "./src/index.tsx" },
+  devtool: "source-map",
   resolve: {
-    extensions: ['...', '.ts', '.tsx', '.jsx'],
+    extensions: ["...", ".ts", ".tsx", ".jsx"],
   },
   experiments: {
     css: true,
@@ -18,17 +18,17 @@ const config = {
       {
         test: /\.tsx$/,
         use: {
-          loader: 'builtin:swc-loader',
+          loader: "builtin:swc-loader",
           options: {
             sourceMap: true,
             jsc: {
               parser: {
-                syntax: 'typescript',
+                syntax: "typescript",
                 tsx: true,
               },
               transform: {
                 react: {
-                  runtime: 'automatic',
+                  runtime: "automatic",
                   development: !isProduction,
                   refresh: !isProduction,
                 },
@@ -40,7 +40,7 @@ const config = {
     ],
   },
   plugins: [
-    new rspack.HtmlRspackPlugin({ template: './index.html' }),
+    new rspack.HtmlRspackPlugin({ template: "./index.html" }),
     // always enable module alias for react packages
     new RspackPlugin(),
   ].filter(Boolean),

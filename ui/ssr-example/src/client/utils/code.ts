@@ -444,5 +444,5 @@ export const Exp = function Group() {
     </Canvas>
   );
 };
-`
+`,
 };

@@ -7,12 +7,12 @@
  * Copyright (c) 2019 Michael Mok
  * https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/0b960573797bf38926937994c481e4fec9ed8aa6/LICENSE
  */
-const RuntimeErrorFooter = require('./components/RuntimeErrorFooter.js');
-const RuntimeErrorHeader = require('./components/RuntimeErrorHeader.js');
-const CompileErrorContainer = require('./containers/CompileErrorContainer.js');
-const RuntimeErrorContainer = require('./containers/RuntimeErrorContainer.js');
-const theme = require('./theme.js');
-const utils = require('./utils.js');
+const RuntimeErrorFooter = require("./components/RuntimeErrorFooter.js");
+const RuntimeErrorHeader = require("./components/RuntimeErrorHeader.js");
+const CompileErrorContainer = require("./containers/CompileErrorContainer.js");
+const RuntimeErrorContainer = require("./containers/RuntimeErrorContainer.js");
+const theme = require("./theme.js");
+const utils = require("./utils.js");
 
 /**
  * @callback RenderFn
@@ -46,7 +46,7 @@ let scheduledRenderFn = null;
  * The latest error message from Webpack compilation.
  * @type {string}
  */
-let currentCompileErrorMessage = '';
+let currentCompileErrorMessage = "";
 /**
  * Index of the error currently shown by the overlay.
  * @type {number}
@@ -77,22 +77,22 @@ let currentMode = null;
  * @returns {HTMLIFrameElement}
  */
 function IframeRoot(document, root, props) {
-  const iframe = document.createElement('iframe');
-  iframe.id = 'react-refresh-overlay';
-  iframe.src = 'about:blank';
+  const iframe = document.createElement("iframe");
+  iframe.id = "react-refresh-overlay";
+  iframe.src = "about:blank";
 
-  iframe.style.border = 'none';
-  iframe.style.height = '100%';
-  iframe.style.left = '0';
-  iframe.style.minHeight = '100vh';
-  iframe.style.minHeight = '-webkit-fill-available';
-  iframe.style.position = 'fixed';
-  iframe.style.top = '0';
-  iframe.style.width = '100vw';
-  iframe.style.zIndex = '2147483647';
-  iframe.addEventListener('load', function onLoad() {
+  iframe.style.border = "none";
+  iframe.style.height = "100%";
+  iframe.style.left = "0";
+  iframe.style.minHeight = "100vh";
+  iframe.style.minHeight = "-webkit-fill-available";
+  iframe.style.position = "fixed";
+  iframe.style.top = "0";
+  iframe.style.width = "100vw";
+  iframe.style.zIndex = "2147483647";
+  iframe.addEventListener("load", function onLoad() {
     // Reset margin of iframe body
-    iframe.contentDocument.body.style.margin = '0';
+    iframe.contentDocument.body.style.margin = "0";
     props.onIframeLoad();
   });
 
@@ -108,35 +108,35 @@ function IframeRoot(document, root, props) {
  * @returns {HTMLDivElement}
  */
 function OverlayRoot(document, root) {
-  const div = document.createElement('div');
-  div.id = 'react-refresh-overlay-error';
+  const div = document.createElement("div");
+  div.id = "react-refresh-overlay-error";
 
   // Style the contents container
-  div.style.backgroundColor = '#' + theme.grey;
-  div.style.boxSizing = 'border-box';
-  div.style.color = '#' + theme.white;
+  div.style.backgroundColor = "#" + theme.grey;
+  div.style.boxSizing = "border-box";
+  div.style.color = "#" + theme.white;
   div.style.fontFamily = [
-    '-apple-system',
-    'BlinkMacSystemFont',
+    "-apple-system",
+    "BlinkMacSystemFont",
     '"Segoe UI"',
     '"Helvetica Neue"',
-    'Helvetica',
-    'Arial',
-    'sans-serif',
+    "Helvetica",
+    "Arial",
+    "sans-serif",
     '"Apple Color Emoji"',
     '"Segoe UI Emoji"',
-    'Segoe UI Symbol',
-  ].join(', ');
-  div.style.fontSize = '0.875rem';
-  div.style.height = '100%';
-  div.style.lineHeight = '1.3';
-  div.style.overflow = 'auto';
-  div.style.padding = '1rem 1.5rem 0';
-  div.style.paddingTop = 'max(1rem, env(safe-area-inset-top))';
-  div.style.paddingRight = 'max(1.5rem, env(safe-area-inset-right))';
-  div.style.paddingBottom = 'env(safe-area-inset-bottom)';
-  div.style.paddingLeft = 'max(1.5rem, env(safe-area-inset-left))';
-  div.style.width = '100vw';
+    "Segoe UI Symbol",
+  ].join(", ");
+  div.style.fontSize = "0.875rem";
+  div.style.height = "100%";
+  div.style.lineHeight = "1.3";
+  div.style.overflow = "auto";
+  div.style.padding = "1rem 1.5rem 0";
+  div.style.paddingTop = "max(1rem, env(safe-area-inset-top))";
+  div.style.paddingRight = "max(1.5rem, env(safe-area-inset-right))";
+  div.style.paddingBottom = "env(safe-area-inset-bottom)";
+  div.style.paddingLeft = "max(1.5rem, env(safe-area-inset-left))";
+  div.style.width = "100vw";
 
   root.appendChild(div);
   return div;
@@ -187,20 +187,20 @@ function render() {
   ensureRootExists(function () {
     const currentFocus = rootDocument.activeElement;
     let currentFocusId;
-    if (currentFocus.localName === 'button' && currentFocus.id) {
+    if (currentFocus.localName === "button" && currentFocus.id) {
       currentFocusId = currentFocus.id;
     }
 
     utils.removeAllChildren(root);
 
     if (currentCompileErrorMessage) {
-      currentMode = 'compileError';
+      currentMode = "compileError";
 
       CompileErrorContainer(rootDocument, root, {
         errorMessage: currentCompileErrorMessage,
       });
     } else if (currentRuntimeErrors.length) {
-      currentMode = 'runtimeError';
+      currentMode = "runtimeError";
 
       RuntimeErrorHeader(rootDocument, root, {
         currentErrorIndex: currentRuntimeErrorIndex,
@@ -251,11 +251,11 @@ function cleanup() {
  * @returns {void}
  */
 function clearCompileError() {
-  if (!root || currentMode !== 'compileError') {
+  if (!root || currentMode !== "compileError") {
     return;
   }
 
-  currentCompileErrorMessage = '';
+  currentCompileErrorMessage = "";
   currentMode = null;
   cleanup();
 }
@@ -266,14 +266,14 @@ function clearCompileError() {
  * @returns {void}
  */
 function clearRuntimeErrors(dismissOverlay) {
-  if (!root || currentMode !== 'runtimeError') {
+  if (!root || currentMode !== "runtimeError") {
     return;
   }
 
   currentRuntimeErrorIndex = 0;
   currentRuntimeErrors = [];
 
-  if (typeof dismissOverlay === 'undefined' || dismissOverlay) {
+  if (typeof dismissOverlay === "undefined" || dismissOverlay) {
     currentMode = null;
     cleanup();
   }
@@ -323,10 +323,7 @@ const debouncedShowRuntimeErrors = utils.debounce(showRuntimeErrors, 30);
  * @returns {boolean} If the error is a Webpack compilation error.
  */
 function isWebpackCompileError(error) {
-  return (
-    /Module [A-z ]+\(from/.test(error.message) ||
-    /Cannot find module/.test(error.message)
-  );
+  return /Module [A-z ]+\(from/.test(error.message) || /Cannot find module/.test(error.message);
 }
 
 /**
@@ -336,11 +333,7 @@ function isWebpackCompileError(error) {
  * @returns {void}
  */
 function handleRuntimeError(error) {
-  if (
-    error &&
-    !isWebpackCompileError(error) &&
-    currentRuntimeErrors.indexOf(error) === -1
-  ) {
+  if (error && !isWebpackCompileError(error) && currentRuntimeErrors.indexOf(error) === -1) {
     currentRuntimeErrors = currentRuntimeErrors.concat(error);
   }
   debouncedShowRuntimeErrors(currentRuntimeErrors);

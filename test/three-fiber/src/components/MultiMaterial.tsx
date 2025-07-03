@@ -2,8 +2,7 @@ import { Canvas } from "@my-react/react-three-fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
-import type { ThreeElements} from "@my-react/react-three-fiber";
-
+import type { ThreeElements } from "@my-react/react-three-fiber";
 
 const redMaterial = new THREE.MeshBasicMaterial({ color: "aquamarine", toneMapped: false });
 

@@ -99,4 +99,4 @@ export const render = (reactElement, domElement, callback) => {
 
   // update the root Container
   return ReactReconcilerInst.updateContainer(reactElement, domElement, null, callback);
-}
+};

@@ -9,6 +9,7 @@ import {
   safeCallWithCurrentFiber,
   setLogScope,
   resetLogScope,
+  defaultInvokeUnmountList,
 } from "@my-react/react-reconciler";
 
 import type { ReconcilerDispatch } from "./dispatch";
@@ -24,6 +25,10 @@ export const ReconcilerDispatchMount = (_dispatch: ReconcilerDispatch, _fiber: M
   const pendingCommitFiberArray = [];
 
   beforeSyncUpdate();
+
+  _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
+    defaultInvokeUnmountList(_dispatch, _fiber);
+  });
 
   _list.listToFoot(function invokeInsertionEffectList(_fiber) {
     insertionEffect(_dispatch, _fiber);

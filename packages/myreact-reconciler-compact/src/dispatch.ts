@@ -22,6 +22,7 @@ import { append, create, position, remove, setRef, unsetRef, update } from "./ap
 import { ReconcilerDispatchFiber } from "./dispatchFiber";
 import { initialMap, unmountMap } from "./dispatchMap";
 import { ReconcilerDispatchMount } from "./dispatchMount";
+import { ReconcilerDispatchUpdate } from "./dispatchUpdate";
 
 import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { MyReactFiberRoot, MyReactFiberNode, HMR } from "@my-react/react-reconciler";
@@ -115,7 +116,25 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
     reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
       config.prepareForCommit?.(rootNode);
 
-      super.reconcileUpdate(_list);
+      const instance = this;
+
+      safeCall(function safeCallBeforeUpdate() {
+        instance.beforeUpdate?.();
+      });
+
+      safeCall(function safeCallBeforeUpdateListener() {
+        listenerMap.get(instance).beforeUpdate.forEach((cb) => cb());
+      });
+
+      ReconcilerDispatchUpdate(this, _list, config);
+      
+      safeCall(function safeCallAfterUpdateListener() {
+        listenerMap.get(instance).afterUpdate.forEach((cb) => cb());
+      });
+
+      safeCall(function safeCallAfterUpdate() {
+        instance.afterUpdate?.();
+      });
 
       config.resetAfterCommit?.(rootNode);
     }

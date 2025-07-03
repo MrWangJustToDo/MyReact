@@ -26,8 +26,6 @@ export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFi
 
     renderDispatch.reconcileCommit(fiber);
 
-    const commitList = renderDispatch.pendingCommitFiberList;
-
     const changedList = renderDispatch.pendingChangedFiberList;
 
     renderDispatch.resetUpdateFlowRuntimeFiber();
@@ -35,8 +33,6 @@ export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFi
     renderDispatch.pendingCommitFiberList = null;
 
     renderDispatch.pendingChangedFiberList = null;
-
-    commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
     __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
@@ -68,8 +64,6 @@ export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: My
 
     renderDispatch.reconcileCommit(fiber);
 
-    const commitList = renderDispatch.pendingCommitFiberList;
-
     const changedList = renderDispatch.pendingChangedFiberList;
 
     renderDispatch.resetUpdateFlowRuntimeFiber();
@@ -77,8 +71,6 @@ export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: My
     renderDispatch.pendingCommitFiberList = null;
 
     renderDispatch.pendingChangedFiberList = null;
-
-    commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
     __DEV__ && enableScopeTreeLog.current && setLogScope();
 

@@ -1,7 +1,14 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { include, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
-import { processClassComponentUpdateQueue, processFunctionComponentUpdateQueue, processNormalComponentUpdate } from "../processQueue";
+import {
+  processClassComponentUpdateQueueLatest,
+  processClassComponentUpdateQueueLegacy,
+  processFunctionComponentUpdateQueueLatest,
+  processFunctionComponentUpdateQueueLegacy,
+  processNormalComponentUpdateLatest,
+  processNormalComponentUpdateLegacy,
+} from "../processQueue";
 import { listenerMap } from "../renderDispatch";
 import { triggerUpdate } from "../renderUpdate";
 import { mountLoopAllFromScheduler } from "../runtimeMount";
@@ -24,11 +31,13 @@ const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyRea
   let updateState: UpdateState | null = null;
 
   if (include(fiber.type, NODE_TYPE.__class__)) {
-    updateState = processClassComponentUpdateQueue(renderDispatch, fiber, flag);
+    updateState = flag ? processClassComponentUpdateQueueLatest(renderDispatch, fiber, flag) : processClassComponentUpdateQueueLegacy(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__function__)) {
-    updateState = processFunctionComponentUpdateQueue(renderDispatch, fiber, flag);
+    updateState = flag
+      ? processFunctionComponentUpdateQueueLatest(renderDispatch, fiber, flag)
+      : processFunctionComponentUpdateQueueLegacy(renderDispatch, fiber);
   } else {
-    updateState = processNormalComponentUpdate(fiber);
+    updateState = flag ? processNormalComponentUpdateLatest(renderDispatch, fiber) : processNormalComponentUpdateLegacy(renderDispatch, fiber);
   }
 
   if (updateState?.needUpdate) {

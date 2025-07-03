@@ -2,6 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import {
   afterSyncUpdate,
   beforeSyncUpdate,
+  defaultInvokeUnmountList,
   effect,
   generateFiberToMountList,
   insertionEffect,
@@ -88,9 +89,15 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
     const _list = generateFiberToMountList(_fiber);
 
     beforeSyncUpdate();
+
+    _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
+      defaultInvokeUnmountList(_dispatch, _fiber);
+    });
+
     _list.listToFoot(function invokeInsertionEffectList(fiber) {
       insertionEffect(_dispatch, fiber);
     });
+
     afterSyncUpdate();
 
     mountCommit(_fiber, _hydrate);
@@ -98,9 +105,11 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
     currentHydratedNode = null;
 
     beforeSyncUpdate();
+
     _list.listToFoot(function invokeLayoutEffectList(fiber) {
       layoutEffect(_dispatch, fiber);
     });
+    
     afterSyncUpdate();
 
     const renderScheduler = currentScheduler.current;

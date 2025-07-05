@@ -9,7 +9,7 @@ type Result = {
 };
 
 const renderer = (node: DOMElement): Result => {
-  if (node.yogaNode) {
+  if (!node.isUnmount && node.yogaNode) {
     const output = new Output({
       width: node.yogaNode.getComputedWidth(),
       height: node.yogaNode.getComputedHeight(),
@@ -19,7 +19,7 @@ const renderer = (node: DOMElement): Result => {
 
     let staticOutput;
 
-    if (node.staticNode?.yogaNode) {
+    if (node.staticNode && !node.staticNode.isUnmount && node.staticNode?.yogaNode) {
       staticOutput = new Output({
         width: node.staticNode.yogaNode.getComputedWidth(),
         height: node.staticNode.yogaNode.getComputedHeight(),

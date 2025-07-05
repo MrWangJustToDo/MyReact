@@ -31,11 +31,14 @@ export type DOMElement = {
   onComputeLayout?: () => void;
   onRender?: () => void;
   onImmediateRender?: () => void;
+  // mark current node is unmount, see reconciler.ts 195
+  isUnmount?: boolean;
 } & InkNode;
 
 export type TextNode = {
   nodeName: TextName;
   nodeValue: string;
+  isUnmount?: boolean;
 } & InkNode;
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -116,6 +119,8 @@ export const removeChildNode = (node: DOMElement, removeNode: DOMNode): void => 
   if (removeNode.yogaNode) {
     removeNode.parentNode?.yogaNode?.removeChild(removeNode.yogaNode);
   }
+
+  removeNode.isUnmount = true;
 
   removeNode.parentNode = undefined;
 

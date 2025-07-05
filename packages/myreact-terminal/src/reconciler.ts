@@ -192,6 +192,7 @@ export const Reconciler = createReconciler<
       // Save reference to <Static> node to skip traversal of entire
       // node tree to find it
       rootNode.staticNode = node;
+      // if the staticNode is removed, but current reference is still there
     }
 
     return false;

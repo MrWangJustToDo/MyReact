@@ -48,7 +48,7 @@ if (window.__ENV__.isPURE_CSR) {
   const { loadCurrentLang } = require("@shared");
   loadCurrentLang(store.dispatch, window.__ENV__.LANG as "en" | "ar").then(() => loadableReady(() => createRoot(place).render(<Root store={store} />)));
 } else {
-  if (!window.__ENV__.isSSR || (window.__ENV__.isDEVELOPMENT && window.__ENV__.isMIDDLEWARE)) {
+  if (!window.__ENV__.isSSR) {
     loadableReady(() => createRoot(place).render(<Root store={store} />));
   } else {
     startTransition(() => {

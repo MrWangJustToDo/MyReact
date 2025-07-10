@@ -1087,8 +1087,8 @@ importers:
         specifier: ^6.27.0
         version: 6.27.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       reactivity-store:
-        specifier: ^0.3.10
-        version: 0.3.10(react@18.3.1)
+        specifier: ^0.3.11
+        version: 0.3.11(react@18.3.1)
       redux:
         specifier: ^5.0.1
         version: 5.0.1
@@ -8998,8 +8998,8 @@ packages:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
     engines: {node: '>=0.10.0'}
 
-  reactivity-store@0.3.10:
-    resolution: {integrity: sha512-j6QzsOrN1R2n/abR2P3qZ0tmde8FQnNOEGH4kJVh1NQ3RNbkmZAwkkx2wLb4c+As/ooc+3fkSe4OiKOZ4bEerA==}
+  reactivity-store@0.3.11:
+    resolution: {integrity: sha512-s21jwqVm1yJg4Gv1P/I09UVbnODJvK7JQiK6bNDBtZGgDqCF3m8hhMMkruWzA0B2uEGd9zNP2cWuE6opF50wqg==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -20150,7 +20150,7 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
 
-  reactivity-store@0.3.10(react@18.3.1):
+  reactivity-store@0.3.11(react@18.3.1):
     dependencies:
       '@vue/reactivity': 3.5.16
       '@vue/shared': 3.5.16

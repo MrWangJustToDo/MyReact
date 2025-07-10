@@ -4,7 +4,7 @@ import {
   beforeSyncUpdate,
   defaultInvokeUnmountList,
   effect,
-  generateFiberToMountList,
+  generateFiberToListWithAction,
   insertionEffect,
   layoutEffect,
   resetLogScope,
@@ -86,11 +86,9 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
   };
 
   const startMountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
-    const _list = generateFiberToMountList(_fiber);
-
     beforeSyncUpdate();
 
-    _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
+    const _list = generateFiberToListWithAction(_fiber, function invokeUnmountPendingList(_fiber) {
       defaultInvokeUnmountList(_dispatch, _fiber);
     });
 

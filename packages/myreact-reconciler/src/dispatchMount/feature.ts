@@ -2,7 +2,14 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
 import { defaultInvokeUnmountList } from "../dispatchUnmount";
-import { afterSyncUpdate, beforeSyncUpdate, generateFiberToMountList, resetLogScope, safeCallWithCurrentFiber, setLogScope } from "../share";
+import {
+  afterSyncUpdate,
+  beforeSyncUpdate,
+  generateFiberToListWithAction,
+  resetLogScope,
+  safeCallWithCurrentFiber,
+  setLogScope,
+} from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -11,12 +18,11 @@ const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
+// TODO improve
 export const defaultDispatchMountLatest = (_dispatch: CustomRenderDispatch, _fiber: MyReactFiberNode) => {
-  const _list = generateFiberToMountList(_fiber);
-
   beforeSyncUpdate();
 
-  _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
+  const _list = generateFiberToListWithAction(_fiber, function invokeUnmountPendingList(_fiber) {
     defaultInvokeUnmountList(_dispatch, _fiber);
   });
 

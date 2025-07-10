@@ -3,13 +3,13 @@ import {
   insertionEffect,
   layoutEffect,
   effect,
-  generateFiberToMountList,
   beforeSyncUpdate,
   afterSyncUpdate,
   safeCallWithCurrentFiber,
   setLogScope,
   resetLogScope,
   defaultInvokeUnmountList,
+  generateFiberToListWithAction,
 } from "@my-react/react-reconciler";
 
 import type { ReconcilerDispatch } from "./dispatch";
@@ -20,13 +20,11 @@ const { currentScheduler } = __my_react_internal__;
 const { enableScopeTreeLog } = __my_react_shared__;
 
 export const ReconcilerDispatchMount = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, config: any) => {
-  const _list = generateFiberToMountList(_fiber);
-
   const pendingCommitFiberArray = [];
 
   beforeSyncUpdate();
 
-  _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
+  const _list = generateFiberToListWithAction(_fiber, function invokeUnmountPendingList(_fiber) {
     defaultInvokeUnmountList(_dispatch, _fiber);
   });
 

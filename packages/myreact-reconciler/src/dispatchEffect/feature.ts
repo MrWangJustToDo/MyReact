@@ -11,7 +11,13 @@ export const defaultGenerateEffectMap = (
   map: WeakMap<MyReactFiberNode, ListTree<() => void>>,
   option?: { stickyToHead?: boolean; stickyToFoot?: boolean }
 ) => {
-  const list = map.get(fiber) || new ListTree();
+  let list = map.get(fiber);
+
+  if (!list) {
+    list = new ListTree<() => void>();
+    
+    map.set(fiber, list);
+  }
 
   if (option) {
     if (option.stickyToHead) {
@@ -24,8 +30,6 @@ export const defaultGenerateEffectMap = (
   } else {
     list.push(effect);
   }
-
-  map.set(fiber, list);
 };
 
 export const defaultInvokeEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {

@@ -1,17 +1,21 @@
 import { PATCH_TYPE, ListTree, include, remove } from "@my-react/react-shared";
 
-import { clearContainer, unmountFiber, unmountList } from "../renderUnmount";
-import { generateFiberToUnmountList, safeCallWithCurrentFiber } from "../share";
+import { clearContainer, unmountFiber } from "../renderUnmount";
+import { safeCallWithCurrentFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 export const defaultGenerateUnmountMap = (fiber: MyReactFiberNode, unmount: MyReactFiberNode, map: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>) => {
-  const list = map.get(fiber) || new ListTree();
+  let list = map.get(fiber);
 
-  const newList = generateFiberToUnmountList(unmount);
+  if (!list) {
+    list = new ListTree<MyReactFiberNode>();
 
-  map.set(fiber, list.concat(newList));
+    map.set(fiber, list);
+  }
+
+  list.push(unmount);
 };
 
 export const defaultDispatchUnmount = (renderDispatch: CustomRenderDispatch) => {
@@ -32,13 +36,16 @@ export const defaultInvokeUnmountList = (renderDispatch: CustomRenderDispatch, f
 
     unmountMap.delete(fiber);
 
-    if (allUnmount && allUnmount.length)
-      safeCallWithCurrentFiber({
-        fiber,
-        action: function safeCallUnmountList() {
-          unmountList(renderDispatch, allUnmount);
-        },
+    if (allUnmount && allUnmount.length) {
+      allUnmount.listToFoot(function invokeUnmountFromCurrent(unmount) {
+        safeCallWithCurrentFiber({
+          fiber: unmount,
+          action: function safeCallUnmountFromCurrent() {
+            unmountFiber(renderDispatch, unmount);
+          },
+        });
       });
+    }
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__unmount__);
   }

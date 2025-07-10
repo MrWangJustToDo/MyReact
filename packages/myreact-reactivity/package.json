@@ -3,7 +3,7 @@
   "description": "@my-react/react-reactive",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.15",
+  "version": "0.3.16",
   "main": "index.js",
   "types": "index.d.ts",
   "unpkg": "./dist/umd/index.development.js",
@@ -48,9 +48,9 @@
     ]
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.15"
+    "@my-react/react-shared": "^0.3.16"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.15"
+    "@my-react/react": ">=0.3.16"
   }
 }

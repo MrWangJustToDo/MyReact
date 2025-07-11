@@ -77,9 +77,7 @@ export const processClassComponentUpdateQueueLatest = (
 
         allQueue.delete(node);
 
-        if (__DEV__) {
-          processedNodes.push(updater);
-        }
+        processedNodes.push(updater);
 
         const { payLoad } = updater;
 
@@ -123,9 +121,7 @@ export const processClassComponentUpdateQueueLatest = (
       } else if (updater.isSync) {
         allQueue.delete(node);
 
-        if (__DEV__) {
-          processedNodes.push(updater);
-        }
+        processedNodes.push(updater);
 
         isSync = isSync || updater.isSync;
 
@@ -171,26 +167,15 @@ export const processClassComponentUpdateQueueLatest = (
         }
       : void 0;
 
-    if (__DEV__) {
-      return {
-        needUpdate,
-        nodes: processedNodes,
-        isSync,
-        isForce,
-        isImmediate,
-        isRetrigger,
-        callback: invokeCallbackArray,
-      };
-    } else {
-      return {
-        needUpdate,
-        isSync,
-        isForce,
-        isImmediate,
-        isRetrigger,
-        callback: invokeCallbackArray,
-      };
-    }
+    return {
+      needUpdate,
+      nodes: processedNodes,
+      isSync,
+      isForce,
+      isImmediate,
+      isRetrigger,
+      callback: invokeCallbackArray,
+    };
   } else {
     while (node) {
       const updater = node.value;
@@ -202,9 +187,7 @@ export const processClassComponentUpdateQueueLatest = (
 
         allQueue.delete(node);
 
-        if (__DEV__) {
-          processedNodes.push(updater);
-        }
+        processedNodes.push(updater);
 
         const { payLoad } = updater;
 
@@ -248,9 +231,7 @@ export const processClassComponentUpdateQueueLatest = (
       } else {
         allQueue.delete(node);
 
-        if (__DEV__) {
-          processedNodes.push(updater);
-        }
+        processedNodes.push(updater);
 
         isSync = isSync || updater.isSync;
 
@@ -289,26 +270,15 @@ export const processClassComponentUpdateQueueLatest = (
         }
       : void 0;
 
-    if (__DEV__) {
-      return {
-        needUpdate,
-        nodes: processedNodes,
-        isSync,
-        isForce,
-        isImmediate,
-        isRetrigger,
-        callback: invokeCallbackArray,
-      };
-    } else {
-      return {
-        needUpdate,
-        isSync,
-        isForce,
-        isImmediate,
-        isRetrigger,
-        callback: invokeCallbackArray,
-      };
-    }
+    return {
+      needUpdate,
+      nodes: processedNodes,
+      isSync,
+      isForce,
+      isImmediate,
+      isRetrigger,
+      callback: invokeCallbackArray,
+    };
   }
 };
 
@@ -355,9 +325,7 @@ export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRen
 
       allQueue.delete(node);
 
-      if (__DEV__) {
-        processedNodes.push(updater);
-      }
+      processedNodes.push(updater);
 
       const { payLoad } = updater;
 
@@ -401,9 +369,7 @@ export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRen
     } else {
       allQueue.delete(node);
 
-      if (__DEV__) {
-        processedNodes.push(updater);
-      }
+      processedNodes.push(updater);
 
       isSync = isSync || updater.isSync;
 
@@ -447,26 +413,15 @@ export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRen
       }
     : void 0;
 
-  if (__DEV__) {
-    return {
-      needUpdate,
-      nodes: processedNodes,
-      isSync,
-      isForce,
-      isImmediate,
-      isRetrigger,
-      callback: invokeCallbackArray,
-    };
-  } else {
-    return {
-      needUpdate,
-      isSync,
-      isForce,
-      isImmediate,
-      isRetrigger,
-      callback: invokeCallbackArray,
-    };
-  }
+  return {
+    needUpdate,
+    nodes: processedNodes,
+    isSync,
+    isForce,
+    isImmediate,
+    isRetrigger,
+    callback: invokeCallbackArray,
+  };
 };
 
 export const processFunctionComponentUpdateQueueLatest = (
@@ -515,9 +470,7 @@ export const processFunctionComponentUpdateQueueLatest = (
 
         allQueue.delete(node);
 
-        if (__DEV__) {
-          processedNodes.push(updater);
-        }
+        processedNodes.push(updater);
 
         const { trigger, payLoad, reducer } = updater;
 
@@ -580,9 +533,7 @@ export const processFunctionComponentUpdateQueueLatest = (
       } else if (updater.isSync) {
         allQueue.delete(node);
 
-        if (__DEV__) {
-          processedNodes.push(updater);
-        }
+        processedNodes.push(updater);
 
         const { payLoad } = updater;
 
@@ -630,26 +581,15 @@ export const processFunctionComponentUpdateQueueLatest = (
         }
       : void 0;
 
-    if (__DEV__) {
-      return {
-        needUpdate,
-        nodes: processedNodes,
-        isSync,
-        isForce,
-        isImmediate,
-        isRetrigger,
-        callback: invokeCallbackArray,
-      };
-    } else {
-      return {
-        needUpdate,
-        isSync,
-        isForce,
-        isImmediate,
-        isRetrigger,
-        callback: invokeCallbackArray,
-      };
-    }
+    return {
+      needUpdate,
+      nodes: processedNodes,
+      isSync,
+      isForce,
+      isImmediate,
+      isRetrigger,
+      callback: invokeCallbackArray,
+    };
   } else {
     while (node) {
       const updater = node.value;
@@ -663,9 +603,7 @@ export const processFunctionComponentUpdateQueueLatest = (
 
         allQueue.delete(node);
 
-        if (__DEV__) {
-          processedNodes.push(updater);
-        }
+        processedNodes.push(updater);
 
         const { trigger, payLoad, reducer } = updater;
 
@@ -728,9 +666,7 @@ export const processFunctionComponentUpdateQueueLatest = (
       } else {
         allQueue.delete(node);
 
-        if (__DEV__) {
-          processedNodes.push(updater);
-        }
+        processedNodes.push(updater);
 
         const { payLoad } = updater;
 
@@ -772,26 +708,15 @@ export const processFunctionComponentUpdateQueueLatest = (
         }
       : void 0;
 
-    if (__DEV__) {
-      return {
-        needUpdate,
-        nodes: processedNodes,
-        isSync,
-        isForce,
-        isImmediate,
-        isRetrigger,
-        callback: invokeCallbackArray,
-      };
-    } else {
-      return {
-        needUpdate,
-        isSync,
-        isForce,
-        isImmediate,
-        isRetrigger,
-        callback: invokeCallbackArray,
-      };
-    }
+    return {
+      needUpdate,
+      nodes: processedNodes,
+      isSync,
+      isForce,
+      isImmediate,
+      isRetrigger,
+      callback: invokeCallbackArray,
+    };
   }
 };
 
@@ -834,9 +759,7 @@ export const processFunctionComponentUpdateQueueLegacy = (renderDispatch: Custom
 
       allQueue.delete(node);
 
-      if (__DEV__) {
-        processedNodes.push(updater);
-      }
+      processedNodes.push(updater);
 
       const { trigger, payLoad, reducer } = updater;
 
@@ -899,9 +822,7 @@ export const processFunctionComponentUpdateQueueLegacy = (renderDispatch: Custom
     } else {
       allQueue.delete(node);
 
-      if (__DEV__) {
-        processedNodes.push(updater);
-      }
+      processedNodes.push(updater);
 
       const { payLoad } = updater;
 
@@ -947,26 +868,15 @@ export const processFunctionComponentUpdateQueueLegacy = (renderDispatch: Custom
       }
     : void 0;
 
-  if (__DEV__) {
-    return {
-      needUpdate,
-      nodes: processedNodes,
-      isSync,
-      isForce,
-      isImmediate,
-      isRetrigger,
-      callback: invokeCallbackArray,
-    };
-  } else {
-    return {
-      needUpdate,
-      isSync,
-      isForce,
-      isImmediate,
-      isRetrigger,
-      callback: invokeCallbackArray,
-    };
-  }
+  return {
+    needUpdate,
+    nodes: processedNodes,
+    isSync,
+    isForce,
+    isImmediate,
+    isRetrigger,
+    callback: invokeCallbackArray,
+  };
 };
 
 export const processNormalComponentUpdateLatest = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode): UpdateState => {
@@ -999,9 +909,7 @@ export const processNormalComponentUpdateLatest = (renderDispatch: CustomRenderD
 
     allQueue.delete(node);
 
-    if (__DEV__) {
-      processedNodes.push(updater);
-    }
+    processedNodes.push(updater);
 
     const { payLoad } = updater;
 
@@ -1040,26 +948,15 @@ export const processNormalComponentUpdateLatest = (renderDispatch: CustomRenderD
       }
     : void 0;
 
-  if (__DEV__) {
-    return {
-      needUpdate,
-      nodes: processedNodes,
-      isSync,
-      isForce,
-      isImmediate,
-      isRetrigger,
-      callback: invokeCallbackArray,
-    };
-  } else {
-    return {
-      needUpdate,
-      isSync,
-      isForce,
-      isImmediate,
-      isRetrigger,
-      callback: invokeCallbackArray,
-    };
-  }
+  return {
+    needUpdate,
+    nodes: processedNodes,
+    isSync,
+    isForce,
+    isImmediate,
+    isRetrigger,
+    callback: invokeCallbackArray,
+  };
 };
 
 export const processNormalComponentUpdateLegacy = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode): UpdateState => {
@@ -1092,9 +989,7 @@ export const processNormalComponentUpdateLegacy = (renderDispatch: CustomRenderD
 
     allQueue.delete(node);
 
-    if (__DEV__) {
-      processedNodes.push(updater);
-    }
+    processedNodes.push(updater);
 
     const { payLoad } = updater;
 
@@ -1137,26 +1032,15 @@ export const processNormalComponentUpdateLegacy = (renderDispatch: CustomRenderD
       }
     : void 0;
 
-  if (__DEV__) {
-    return {
-      needUpdate,
-      nodes: processedNodes,
-      isSync,
-      isForce,
-      isImmediate,
-      isRetrigger,
-      callback: invokeCallbackArray,
-    };
-  } else {
-    return {
-      needUpdate,
-      isSync,
-      isForce,
-      isImmediate,
-      isRetrigger,
-      callback: invokeCallbackArray,
-    };
-  }
+  return {
+    needUpdate,
+    nodes: processedNodes,
+    isSync,
+    isForce,
+    isImmediate,
+    isRetrigger,
+    callback: invokeCallbackArray,
+  };
 };
 
 /**

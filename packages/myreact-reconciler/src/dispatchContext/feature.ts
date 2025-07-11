@@ -97,44 +97,37 @@ export const prepareUpdateAllDependence = (
 
   const processedNodes: Array<UpdateQueue> = [];
 
-  if (__DEV__ && enableDebugFiled.current) {
-    typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
-
-    const now = Date.now();
-
-    const updater: UpdateQueue = {
-      type: UpdateQueueType.context,
-      trigger: fiber,
-      payLoad: afterValue,
-      isSync: true,
-      isForce: true,
-      isImmediate: true,
-      isRetrigger: true,
-      _debugBeforeValue: beforeValue,
-      _debugAfterValue: afterValue,
-      _debugCreateTime: now,
-      _debugRunTime: now,
-      _debugType: UpdateQueueType[UpdateQueueType.context],
-    };
-
-    processedNodes.push(updater);
-
-    if (enableDebugUpdateQueue.current) {
-      typedFiber._debugUpdateQueue.push(updater);
-    }
-  }
-
-  const devUpdater: UpdateState = {
-    needUpdate: true,
-    nodes: processedNodes,
+  const updater: UpdateQueue = {
+    type: UpdateQueueType.context,
+    trigger: fiber,
+    payLoad: afterValue,
     isSync: true,
     isForce: true,
     isImmediate: true,
     isRetrigger: true,
   };
 
-  const proUpdater: UpdateState = {
+  if (__DEV__ && enableDebugFiled.current) {
+    const now = Date.now();
+
+    updater._debugBeforeValue = beforeValue;
+    updater._debugAfterValue = afterValue;
+    updater._debugCreateTime = now;
+    updater._debugRunTime = now;
+    updater._debugType = UpdateQueueType[UpdateQueueType.context];
+
+    if (enableDebugUpdateQueue.current) {
+      typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+
+      typedFiber._debugUpdateQueue.push(updater);
+    }
+  }
+
+  processedNodes.push(updater);
+
+  const updateState: UpdateState = {
     needUpdate: true,
+    nodes: processedNodes,
     isSync: true,
     isForce: true,
     isImmediate: true,
@@ -144,7 +137,7 @@ export const prepareUpdateAllDependence = (
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberTriggerListener() {
-      listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, __DEV__ ? devUpdater : proUpdater));
+      listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, updateState));
     },
   });
 };

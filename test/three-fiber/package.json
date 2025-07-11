@@ -18,14 +18,11 @@
   "devDependencies": {
     "@my-react/react-refresh": "workspace:*",
     "@my-react/react-vite": "workspace:*",
-    "@types/node": "^22.13.1",
     "@types/three": "^0.156.0",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^4.6.0",
     "eslint": "^8.57.0",
     "three": ">=0.156",
     "typescript": "^5.3.3",
-    "vite": "^5.4.14"
+    "vite": "^5.4.19"
   }
 }

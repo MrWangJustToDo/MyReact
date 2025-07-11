@@ -24,15 +24,12 @@
   "devDependencies": {
     "@my-react/react-refresh": "workspace:*",
     "@my-react/react-vite": "workspace:*",
-    "@types/node": "^22.13.1",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^4.6.0",
     "babel-plugin-react-compiler": "19.1.0-rc.2",
     "eslint": "^8.57.0",
     "react-compiler-runtime": "19.1.0-rc.2",
     "serve-static": "^1.16.2",
     "typescript": "^5.3.3",
-    "vite": "^5.4.14"
+    "vite": "^5.4.19"
   }
 }

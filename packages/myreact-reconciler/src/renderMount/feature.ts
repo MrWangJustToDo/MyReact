@@ -67,7 +67,7 @@ function finishMountAsync(renderDispatch: CustomRenderDispatch, fiber: MyReactFi
 
   renderDispatch.pendingChangedFiberList = null;
 
-  __DEV__ && enableScopeTreeLog.current && setLogScope();
+  __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   changedList?.length &&
     safeCallWithCurrentFiber({
@@ -89,7 +89,7 @@ export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: My
 
   await processAsyncLoadListOnAsyncMount(renderDispatch);
 
-  __DEV__ && enableScopeTreeLog.current && setLogScope();
+  __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   finishMountAsync(renderDispatch, fiber);
 

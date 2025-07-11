@@ -1,11 +1,11 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { STATE_TYPE, include, remove } from "@my-react/react-shared";
 
+import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { runtimeNextWork, runtimeNextWorkDev } from "../runtimeGenerate";
 import { triggerFiberUpdateListener } from "../runtimeUpdate";
-import { devErrorWithFiber } from "../share";
+import { devErrorWithFiber, safeCallWithCurrentFiber } from "../share";
 
-import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { currentRunningFiber } = __my_react_internal__;
@@ -58,6 +58,17 @@ export const mountToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, f
     renderDispatch.generateCommitList(nextFiber);
 
     if (nextFiber.sibling) return nextFiber.sibling;
+
+    // current nextFiber is all done, back to parent
+
+    if (__DEV__) {
+      safeCallWithCurrentFiber({
+        fiber: nextFiber,
+        action: function safeCallAfterFiberDone() {
+          listenerMap.get(renderDispatch)?.afterFiberDone?.forEach((cb) => cb(nextFiber));
+        },
+      });
+    }
 
     nextFiber = nextFiber.parent;
   }
@@ -117,6 +128,15 @@ export const performToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch,
     renderDispatch.generateCommitList(nextFiber);
 
     if (nextFiber.sibling) return nextFiber.sibling;
+
+    if (__DEV__) {
+      safeCallWithCurrentFiber({
+        fiber: nextFiber,
+        action: function safeCallAfterFiberDone() {
+          listenerMap.get(renderDispatch)?.afterFiberDone?.forEach((cb) => cb(nextFiber));
+        },
+      });
+    }
 
     nextFiber = nextFiber.parent;
   }

@@ -10,7 +10,33 @@ const { globalLoop } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
+function finishMountSync(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
+
+  renderDispatch.reconcileCommit(fiber);
+
+  const changedList = renderDispatch.pendingChangedFiberList;
+
+  renderDispatch.resetUpdateFlowRuntimeFiber();
+
+  renderDispatch.pendingCommitFiberList = null;
+
+  renderDispatch.pendingChangedFiberList = null;
+
+  __DEV__ && enableScopeTreeLog.current && resetLogScope();
+
+  changedList?.length &&
+    safeCallWithCurrentFiber({
+      fiber,
+      action: function safeCallFiberHasChangeListener() {
+        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+      },
+    });
+}
+
 export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  __DEV__ && listenerMap.get(renderDispatch)?.beforeDispatchRender?.forEach((cb) => cb(renderDispatch));
+
   globalLoop.current = true;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
@@ -21,34 +47,40 @@ export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFi
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
-  (function finishMount() {
-    __DEV__ && enableScopeTreeLog.current && setLogScope();
+  finishMountSync(renderDispatch, fiber);
 
-    renderDispatch.reconcileCommit(fiber);
-
-    const changedList = renderDispatch.pendingChangedFiberList;
-
-    renderDispatch.resetUpdateFlowRuntimeFiber();
-
-    renderDispatch.pendingCommitFiberList = null;
-
-    renderDispatch.pendingChangedFiberList = null;
-
-    __DEV__ && enableScopeTreeLog.current && resetLogScope();
-
-    changedList?.length &&
-      safeCallWithCurrentFiber({
-        fiber,
-        action: function safeCallFiberHasChangeListener() {
-          listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
-        },
-      });
-  })();
+  __DEV__ && listenerMap.get(renderDispatch)?.afterDispatchRender.forEach((cb) => cb(renderDispatch));
 
   globalLoop.current = false;
 };
 
+function finishMountAsync(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
+
+  renderDispatch.reconcileCommit(fiber);
+
+  const changedList = renderDispatch.pendingChangedFiberList;
+
+  renderDispatch.resetUpdateFlowRuntimeFiber();
+
+  renderDispatch.pendingCommitFiberList = null;
+
+  renderDispatch.pendingChangedFiberList = null;
+
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
+
+  changedList?.length &&
+    safeCallWithCurrentFiber({
+      fiber,
+      action: function safeCallFiberHasChangeListener() {
+        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+      },
+    });
+}
+
 export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  __DEV__ && listenerMap.get(renderDispatch)?.beforeDispatchRender?.forEach((cb) => cb(renderDispatch));
+
   globalLoop.current = true;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
@@ -59,29 +91,9 @@ export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: My
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  (function finishMount() {
-    __DEV__ && enableScopeTreeLog.current && setLogScope();
+  finishMountAsync(renderDispatch, fiber);
 
-    renderDispatch.reconcileCommit(fiber);
-
-    const changedList = renderDispatch.pendingChangedFiberList;
-
-    renderDispatch.resetUpdateFlowRuntimeFiber();
-
-    renderDispatch.pendingCommitFiberList = null;
-
-    renderDispatch.pendingChangedFiberList = null;
-
-    __DEV__ && enableScopeTreeLog.current && setLogScope();
-
-    changedList?.length &&
-      safeCallWithCurrentFiber({
-        fiber,
-        action: function safeCallFiberHasChangeListener() {
-          listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
-        },
-      });
-  })();
+  __DEV__ && listenerMap.get(renderDispatch)?.afterDispatchRender.forEach((cb) => cb(renderDispatch));
 
   globalLoop.current = false;
 };

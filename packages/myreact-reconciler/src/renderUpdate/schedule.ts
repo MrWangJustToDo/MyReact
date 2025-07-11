@@ -1,12 +1,12 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { exclude, STATE_TYPE, include } from "@my-react/react-shared";
 
+import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { currentTriggerFiber } from "../share";
 
 import { updateSyncFromRoot, updateConcurrentFromRoot } from "./feature";
 import { applyTriggerFiberCb } from "./trigger";
 
-import type { CustomRenderDispatch } from "../renderDispatch";
 import type { UniqueArray } from "@my-react/react-shared";
 
 const { globalLoop, currentScheduler } = __my_react_internal__;
@@ -28,9 +28,17 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
     allLive.forEach((fiber) => applyTriggerFiberCb(renderDispatch, fiber));
 
     if (!enableConcurrentMode.current || allLive.some((f) => include(f.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__))) {
+      if (__DEV__) {
+        listenerMap.get(renderDispatch)?.beforeDispatchUpdate?.forEach((cb) => cb(renderDispatch, allLive));
+      }
+
       updateSyncFromRoot(renderDispatch);
     } else {
       renderDispatch.resetYield();
+
+      if (__DEV__) {
+        listenerMap.get(renderDispatch)?.beforeDispatchUpdate?.forEach((cb) => cb(renderDispatch, allLive));
+      }
 
       updateConcurrentFromRoot(renderDispatch);
     }
@@ -38,6 +46,24 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
     if (__DEV__) currentTriggerFiber.current = null;
 
     scheduleNext(renderDispatch);
+  }
+};
+
+const scheduleOther = (renderDispatch: CustomRenderDispatch) => {
+  const renderScheduler = currentScheduler.current;
+
+  if (!renderScheduler.dispatchSet || renderScheduler.dispatchSet?.length === 1) return;
+
+  const allDispatch = renderScheduler.dispatchSet as UniqueArray<CustomRenderDispatch>;
+
+  const hasPending = allDispatch
+    .getAll()
+    .find((d) => d !== renderDispatch && d.isAppMounted && d.enableUpdate && !d.isAppCrashed && !d.isAppUnmounted && d.pendingUpdateFiberArray.length);
+
+  if (hasPending) {
+    scheduleUpdate(hasPending);
+  } else {
+    globalLoop.current = false;
   }
 };
 
@@ -66,7 +92,7 @@ export const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
 
 export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   if (renderDispatch.isAppUnmounted) {
-    scheduleNext(renderDispatch);
+    scheduleOther(renderDispatch);
     return;
   }
 

@@ -251,13 +251,13 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     });
 
     safeCall(function safeCallBeforeCommitListener() {
-      listenerMap.get(instance).beforeCommit.forEach((cb) => cb());
+      listenerMap.get(instance).beforeCommitMount.forEach((cb) => cb());
     });
 
     defaultDispatchMount(this, _fiber);
 
     safeCall(function safeCallAfterCommitListener() {
-      listenerMap.get(instance).afterCommit.forEach((cb) => cb());
+      listenerMap.get(instance).afterCommitMount.forEach((cb) => cb());
     });
 
     safeCall(function safeCallAfterCommit() {
@@ -272,13 +272,13 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     });
 
     safeCall(function safeCallBeforeUpdateListener() {
-      listenerMap.get(instance).beforeUpdate.forEach((cb) => cb());
+      listenerMap.get(instance).beforeCommitUpdate.forEach((cb) => cb());
     });
 
     defaultDispatchUpdate(this, _list);
 
     safeCall(function safeCallAfterUpdateListener() {
-      listenerMap.get(instance).afterUpdate.forEach((cb) => cb());
+      listenerMap.get(instance).afterCommitUpdate.forEach((cb) => cb());
     });
 
     safeCall(function safeCallAfterUpdate() {
@@ -293,13 +293,13 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     });
 
     safeCall(function safeCallBeforeUnmountListener() {
-      listenerMap.get(instance).beforeUnmount.forEach((cb) => cb());
+      listenerMap.get(instance).beforeCommitUnmount.forEach((cb) => cb());
     });
 
     defaultDispatchUnmount(this);
 
     safeCall(function safeCallAfterUnmountListener() {
-      listenerMap.get(instance).afterUnmount.forEach((cb) => cb());
+      listenerMap.get(instance).afterCommitUnmount.forEach((cb) => cb());
     });
 
     safeCall(function safeCallAfterUnmount() {

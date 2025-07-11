@@ -11,6 +11,31 @@ const { globalLoop, currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
+function finishUpdateSyncFromRoot(renderDispatch: CustomRenderDispatch) {
+  const commitList = renderDispatch.pendingCommitFiberList;
+
+  const changedList = renderDispatch.pendingChangedFiberList;
+
+  renderDispatch.resetUpdateFlowRuntimeFiber();
+
+  renderDispatch.pendingCommitFiberList = null;
+
+  renderDispatch.pendingChangedFiberList = null;
+
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
+
+  commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+  __DEV__ && enableScopeTreeLog.current && resetLogScope();
+
+  __DEV__ && listenerMap.get(renderDispatch)?.afterDispatchUpdate?.forEach((cb) => cb(renderDispatch));
+
+  changedList?.length &&
+    safeCall(function safeCallFiberHasChangeListener() {
+      listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+    });
+}
+
 export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
 
@@ -24,28 +49,7 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
-  (function finishUpdateSyncFromRoot() {
-    const commitList = renderDispatch.pendingCommitFiberList;
-
-    const changedList = renderDispatch.pendingChangedFiberList;
-
-    renderDispatch.resetUpdateFlowRuntimeFiber();
-
-    renderDispatch.pendingCommitFiberList = null;
-
-    renderDispatch.pendingChangedFiberList = null;
-
-    __DEV__ && enableScopeTreeLog.current && setLogScope();
-
-    commitList?.length && renderDispatch.reconcileUpdate(commitList);
-
-    __DEV__ && enableScopeTreeLog.current && resetLogScope();
-
-    changedList?.length &&
-      safeCall(function safeCallFiberHasChangeListener() {
-        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
-      });
-  })();
+  finishUpdateSyncFromRoot(renderDispatch);
 
   renderScheduler.microTask(function callScheduleNext() {
     globalLoop.current = false;
@@ -53,6 +57,71 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
     scheduleNext(renderDispatch);
   });
 };
+
+function finishUpdateConcurrentFromRoot(renderDispatch: CustomRenderDispatch) {
+  const commitList = renderDispatch.pendingCommitFiberList;
+
+  const changedList = renderDispatch.pendingChangedFiberList;
+
+  renderDispatch.resetUpdateFlowRuntimeFiber();
+
+  renderDispatch.pendingCommitFiberList = null;
+
+  renderDispatch.pendingChangedFiberList = null;
+
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
+
+  commitList?.length && renderDispatch.reconcileUpdate(commitList);
+
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
+
+  __DEV__ && listenerMap.get(renderDispatch)?.afterDispatchUpdate?.forEach((cb) => cb(renderDispatch));
+
+  changedList?.length &&
+    safeCall(function safeCallFiberHasChangeListener() {
+      listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+    });
+}
+
+function checkNextFiberIsSync(renderDispatch: CustomRenderDispatch) {
+  return include(renderDispatch.runtimeFiber.nextWorkingFiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__);
+  // include(renderDispatch.runtimeFiber.nextWorkingFiber.state, STATE_TYPE.__retrigger__)
+}
+
+function updateConCurrentNextFrame(renderDispatch: CustomRenderDispatch) {
+  const renderScheduler = currentScheduler.current;
+
+  __DEV__ && enableScopeTreeLog.current && setLogScope();
+
+  const hasSync = updateLoopConcurrentFromRoot(renderDispatch);
+
+  __DEV__ && enableScopeTreeLog.current && resetLogScope();
+
+  if (renderDispatch.runtimeFiber.nextWorkingFiber) {
+    if (hasSync || checkNextFiberIsSync(renderDispatch)) {
+      updateSyncFromRoot(renderDispatch);
+    } else {
+      renderScheduler.yieldTask(function resumeUpdateConcurrentFromRoot() {
+        if (hasSync || checkNextFiberIsSync(renderDispatch)) {
+          updateSyncFromRoot(renderDispatch);
+        } else {
+          updateConCurrentNextFrame(renderDispatch);
+        }
+      });
+    }
+  } else {
+    processAsyncLoadListOnUpdate(renderDispatch);
+
+    finishUpdateConcurrentFromRoot(renderDispatch);
+
+    renderScheduler.microTask(function callScheduleNext() {
+      // TODO! flash all effect
+      globalLoop.current = false;
+
+      scheduleNext(renderDispatch);
+    });
+  }
+}
 
 export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) => {
   globalLoop.current = true;
@@ -66,44 +135,21 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   if (renderDispatch.runtimeFiber.nextWorkingFiber) {
-    const checkCurrentIsSync = () =>
-      hasSync || include(renderDispatch.runtimeFiber.nextWorkingFiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__);
-    if (checkCurrentIsSync()) {
+    if (hasSync || checkNextFiberIsSync(renderDispatch)) {
       updateSyncFromRoot(renderDispatch);
     } else {
       renderScheduler.yieldTask(function resumeUpdateConcurrentFromRoot() {
-        if (checkCurrentIsSync()) {
+        if (hasSync || checkNextFiberIsSync(renderDispatch)) {
           updateSyncFromRoot(renderDispatch);
         } else {
-          updateConcurrentFromRoot(renderDispatch);
+          updateConCurrentNextFrame(renderDispatch);
         }
       });
     }
   } else {
     processAsyncLoadListOnUpdate(renderDispatch);
 
-    (function finishUpdateConcurrentFromRoot() {
-      const commitList = renderDispatch.pendingCommitFiberList;
-
-      const changedList = renderDispatch.pendingChangedFiberList;
-
-      renderDispatch.resetUpdateFlowRuntimeFiber();
-
-      renderDispatch.pendingCommitFiberList = null;
-
-      renderDispatch.pendingChangedFiberList = null;
-
-      __DEV__ && enableScopeTreeLog.current && setLogScope();
-
-      commitList?.length && renderDispatch.reconcileUpdate(commitList);
-
-      __DEV__ && enableScopeTreeLog.current && setLogScope();
-
-      changedList?.length &&
-        safeCall(function safeCallFiberHasChangeListener() {
-          listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
-        });
-    })();
+    finishUpdateConcurrentFromRoot(renderDispatch);
 
     renderScheduler.microTask(function callScheduleNext() {
       // TODO! flash all effect

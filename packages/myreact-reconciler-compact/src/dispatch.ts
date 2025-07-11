@@ -97,13 +97,13 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
       });
 
       safeCall(function safeCallBeforeCommitListener() {
-        listenerMap.get(instance).beforeCommit.forEach((cb) => cb());
+        listenerMap.get(instance).beforeCommitMount.forEach((cb) => cb());
       });
 
       ReconcilerDispatchMount(this, _fiber, config);
 
       safeCall(function safeCallAfterCommitListener() {
-        listenerMap.get(instance).afterCommit.forEach((cb) => cb());
+        listenerMap.get(instance).afterCommitMount.forEach((cb) => cb());
       });
 
       safeCall(function safeCallAfterCommit() {
@@ -123,13 +123,13 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
       });
 
       safeCall(function safeCallBeforeUpdateListener() {
-        listenerMap.get(instance).beforeUpdate.forEach((cb) => cb());
+        listenerMap.get(instance).beforeCommitUpdate.forEach((cb) => cb());
       });
 
       ReconcilerDispatchUpdate(this, _list, config);
 
       safeCall(function safeCallAfterUpdateListener() {
-        listenerMap.get(instance).afterUpdate.forEach((cb) => cb());
+        listenerMap.get(instance).afterCommitUpdate.forEach((cb) => cb());
       });
 
       safeCall(function safeCallAfterUpdate() {

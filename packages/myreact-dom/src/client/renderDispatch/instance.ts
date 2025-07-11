@@ -201,7 +201,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallBeforeCommitListener() {
-        listenerMap.get(instance)?.beforeCommit?.forEach((cb) => cb());
+        listenerMap.get(instance)?.beforeCommitMount?.forEach((cb) => cb());
       },
     });
 
@@ -210,7 +210,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallAfterCommitListener() {
-        listenerMap.get(instance)?.afterCommit?.forEach((cb) => cb());
+        listenerMap.get(instance)?.afterCommitMount?.forEach((cb) => cb());
       },
     });
 

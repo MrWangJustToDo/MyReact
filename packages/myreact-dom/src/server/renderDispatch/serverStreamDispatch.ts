@@ -112,7 +112,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
     safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallBeforeCommitListener() {
-        listenerMap.get(instance)?.beforeCommit?.forEach((l) => l());
+        listenerMap.get(instance)?.beforeCommitMount?.forEach((l) => l());
       },
     });
 
@@ -123,7 +123,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
         safeCallWithCurrentFiber({
           fiber: _fiber,
           action: function safeCallAfterCommitListener() {
-            listenerMap.get(instance)?.afterCommit?.forEach((l) => l());
+            listenerMap.get(instance)?.afterCommitMount?.forEach((l) => l());
           },
         });
 
@@ -262,7 +262,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
     safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallBeforeCommitListener() {
-        listenerMap.get(instance)?.beforeCommit?.forEach((l) => l());
+        listenerMap.get(instance)?.beforeCommitMount?.forEach((l) => l());
       },
     });
 
@@ -282,7 +282,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
         safeCallWithCurrentFiber({
           fiber: _fiber,
           action: function safeCallAfterCommitListener() {
-            listenerMap.get(instance)?.afterCommit?.forEach((l) => l());
+            listenerMap.get(instance)?.afterCommitMount?.forEach((l) => l());
           },
         });
 

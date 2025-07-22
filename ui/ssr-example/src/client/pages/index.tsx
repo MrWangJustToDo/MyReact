@@ -30,9 +30,11 @@ const Page = () => {
           <ViteSection />
         </ScrollSection>
 
-        <ScrollSection>
-          <ThreeFiberSection />
-        </ScrollSection>
+        {!__REACT__ && (
+          <ScrollSection>
+            <ThreeFiberSection />
+          </ScrollSection>
+        )}
 
         <ScrollSection>
           <DevToolSection />

@@ -40,6 +40,6 @@
     "three": ">=0.156"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.16"
+    "@my-react/react": ">=0.3.17"
   }
 }

@@ -159,7 +159,8 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
           });
         }
 
-        node.state = STATE_TYPE.__create__;
+        // fix hmr 
+        node.state = STATE_TYPE.__reschedule__;
 
         field.isHidden = true;
 

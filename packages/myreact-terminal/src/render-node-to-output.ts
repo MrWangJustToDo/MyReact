@@ -4,6 +4,7 @@ import Yoga from "yoga-layout";
 
 import { type DOMElement } from "./dom";
 import getMaxWidth from "./get-max-width";
+import renderBackground from "./render-background";
 import renderBorder from "./render-border";
 import squashTextNodes from "./squash-text-nodes";
 import wrapText from "./wrap-text";
@@ -89,6 +90,7 @@ const renderNodeToOutput = (
     let clipped = false;
 
     if (node.nodeName === "ink-box") {
+      renderBackground(x, y, node, output);
       renderBorder(x, y, node, output);
 
       const clipHorizontally = node.style.overflowX === "hidden" || node.style.overflow === "hidden";

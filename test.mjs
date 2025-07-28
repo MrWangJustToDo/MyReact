@@ -13,7 +13,7 @@ import {
   testGithub,
 } from "@test/react-terminal";
 
-// testBorder();
+testBorder();
 
 // testCount();
 
@@ -35,4 +35,4 @@ import {
 
 // testDir();
 
-testGithub();
+// testGithub();

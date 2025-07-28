@@ -1,9 +1,11 @@
 import chalk, { type ForegroundColorName } from "chalk";
-import { type ReactNode } from "react";
+import { type ReactNode, useContext } from "react";
 import { type LiteralUnion } from "type-fest";
 
 import colorize from "../colorize";
 import { type Styles } from "../styles";
+
+import { backgroundContext } from "./BackgroundContext";
 
 export type Props = {
   /**
@@ -71,6 +73,8 @@ export default function Text({
   wrap = "wrap",
   children,
 }: Props) {
+  const inheritedBackgroundColor = useContext(backgroundContext);
+
   if (children === undefined || children === null) {
     return null;
   }
@@ -84,8 +88,10 @@ export default function Text({
       children = colorize(children, color, "foreground");
     }
 
-    if (backgroundColor) {
-      children = colorize(children, backgroundColor, "background");
+    const effectiveBackgroundColor = backgroundColor ?? inheritedBackgroundColor;
+    
+    if (effectiveBackgroundColor) {
+      children = colorize(children, effectiveBackgroundColor, "background");
     }
 
     if (bold) {

@@ -2,7 +2,7 @@ import { render, Box, Text } from "@my-react/react-terminal";
 
 function Borders() {
   return (
-    <Box flexDirection="column" padding={2}>
+    <Box flexDirection="column" backgroundColor="cyan" padding={2}>
       <Box>
         <Box borderStyle="single" marginRight={2}>
           <Text>single</Text>

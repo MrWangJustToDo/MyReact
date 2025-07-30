@@ -12,7 +12,7 @@ import type { MyReactElement, LikeJSX } from "@my-react/react";
 
 const { currentScheduler } = __my_react_internal__;
 
-const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __my_react_shared__;
+const { enableLegacyLifeCycle, enablePerformanceLog } = __my_react_shared__;
 
 const throwHydrateError = (renderDispatch: ClientDomDispatch) => {
   const errorArray = getError(renderDispatch);
@@ -55,6 +55,8 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
 
   renderDispatch.enableNewEntry = false;
 
+  renderDispatch.enableConcurrentMode = false;
+
   renderDispatch.renderMode = "hydrate";
 
   renderDispatch.isHydrateRender = true;
@@ -95,6 +97,8 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
 
   renderDispatch.enableNewEntry = true;
 
+  renderDispatch.enableConcurrentMode = true;
+
   renderDispatch.renderMode = "hydrateRoot";
 
   renderDispatch.isHydrateRender = true;
@@ -126,7 +130,7 @@ export const internalHydrate = (element: LikeJSX, container: Partial<RenderConta
     onceLogLegacyLifeCycleMode();
   }
 
-  if (__DEV__ && enableConcurrentMode.current) {
+  if (__DEV__ && enableNewEntry.current) {
     onceLogConcurrentMode();
   }
 

@@ -15,7 +15,7 @@ export type RenderContainer = Element & {
 
 const { currentScheduler } = __my_react_internal__;
 
-const { enableLegacyLifeCycle, enableConcurrentMode, enablePerformanceLog } = __my_react_shared__;
+const { enableLegacyLifeCycle, enablePerformanceLog } = __my_react_shared__;
 
 /**
  * @internal
@@ -61,7 +61,7 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
     onceLogLegacyLifeCycleMode();
   }
 
-  if (__DEV__ && enableConcurrentMode.current) {
+  if (__DEV__ && enableNewEntry.current) {
     onceLogConcurrentMode();
   }
 
@@ -94,6 +94,8 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
   container.__container__ = renderDispatch;
 
   renderDispatch.enableNewEntry = enableNewEntry.current;
+
+  renderDispatch.enableConcurrentMode = enableNewEntry.current;
 
   renderDispatch.renderMode = enableNewEntry.current ? "createRoot" : "render";
 

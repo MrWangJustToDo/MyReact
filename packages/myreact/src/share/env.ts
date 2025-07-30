@@ -88,11 +88,6 @@ export const enableHMRForDev = createReadonlyRef(true);
 /**
  * @internal
  */
-export const enableConcurrentMode = createRef(true);
-
-/**
- * @internal
- */
 export const enableOptimizeTreeLog = createRef(true);
 
 /**

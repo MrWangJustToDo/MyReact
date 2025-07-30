@@ -39,6 +39,8 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   enableAsyncLoad: boolean;
 
+  enableConcurrentMode: boolean;
+
   renderMode = "render";
 
   renderPackage?: string;

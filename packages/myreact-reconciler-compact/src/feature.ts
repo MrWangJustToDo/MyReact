@@ -27,6 +27,7 @@ const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
 const { currentScheduler } = __my_react_internal__;
 
 export type RenderContainer = Record<string, any> & {
+  __flag__: number;
   __fiber__: MyReactFiberNode;
   __container__: ReconcilerDispatch;
 };
@@ -37,8 +38,16 @@ export const Reconciler = (_config: any) => {
 
   const ReconcilerSet = new Set<CustomRenderDispatch>();
 
-  const createContainer = (_container: RenderContainer) => {
+  const createContainer = (_container: RenderContainer, flag: number) => {
     prepareScheduler();
+
+    if (flag === 0) {
+      // legacy mode
+      _container.__flag__ = 0;
+    } else {
+      // concurrent mode
+      _container.__flag__ = 1;
+    }
 
     enableDebugFiled.current = __DEV__;
 
@@ -85,7 +94,7 @@ export const Reconciler = (_config: any) => {
     }
     const _fiber = new MyReactFiberNode(_element) as MyReactFiberRoot;
 
-    const _renderDispatch = createDispatch(_container, _fiber, _element, _config);
+    const _renderDispatch = createDispatch(_container, _fiber, _element, _config, _container.__flag__);
 
     _cb && _renderDispatch.pendingEffect(_fiber, _cb);
 

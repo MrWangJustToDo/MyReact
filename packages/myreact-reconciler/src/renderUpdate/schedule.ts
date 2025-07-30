@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 import { exclude, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
@@ -10,8 +10,6 @@ import { applyTriggerFiberCb } from "./trigger";
 import type { UniqueArray } from "@my-react/react-shared";
 
 const { globalLoop, currentScheduler } = __my_react_internal__;
-
-const { enableConcurrentMode } = __my_react_shared__;
 
 const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
   const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
@@ -27,7 +25,7 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
 
     allLive.forEach((fiber) => applyTriggerFiberCb(renderDispatch, fiber));
 
-    if (!enableConcurrentMode.current || allLive.some((f) => include(f.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__))) {
+    if (!renderDispatch.enableConcurrentMode || allLive.some((f) => include(f.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__))) {
       if (__DEV__) {
         listenerMap.get(renderDispatch)?.beforeDispatchUpdate?.forEach((cb) => cb(renderDispatch, allLive));
       }

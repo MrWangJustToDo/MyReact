@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react";
 import { include, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import {
@@ -19,14 +19,12 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "./instance";
 import type { TriggerUpdateQueue } from "@my-react/react";
 
-const { enableConcurrentMode } = __my_react_shared__;
-
 const { currentScheduler } = __my_react_internal__;
 
 const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, _isImmediate: boolean, _isRetrigger: boolean) => {
   const renderScheduler = currentScheduler.current;
 
-  const flag = enableConcurrentMode.current;
+  const flag = renderDispatch.enableConcurrentMode;
 
   let updateState: UpdateState | null = null;
 

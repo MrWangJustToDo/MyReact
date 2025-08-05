@@ -1,6 +1,6 @@
 import { Box, Code, Container, Divider, Flex, Heading, Link, Tag, Text } from "@chakra-ui/react";
 
-import { Section } from "@client/component";
+import { Section } from "@client/component/Section";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { mark } from "@client/utils/markdown";
 

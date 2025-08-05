@@ -2,8 +2,8 @@ import { Box, Button, Container, Flex, Heading, HStack, Spacer, Tag, useColorMod
 import { SandpackCodeEditor, SandpackProvider, SandpackLayout } from "@codesandbox/sandpack-react";
 import { useState } from "react";
 
-import { Section } from "@client/component";
 import { Card } from "@client/component/Card";
+import { Section } from "@client/component/Section";
 import { ThreeFiberExample } from "@client/component/ThreeFiber";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { useIsMounted } from "@client/hooks";

@@ -1,6 +1,6 @@
 import { lazy } from "react";
 
-import { ScrollContent, ScrollControl, ScrollControlTool, ScrollSection, ScrollToTop } from "@client/component";
+import { ScrollContent, ScrollControl, ScrollControlTool, ScrollSection, ScrollToTop } from "@client/component/ScrollControl";
 import { DevToolSection, MainSection } from "@client/container/Section";
 import { ApiSection as _ApiSection } from "@client/container/Section/Api";
 import { NextSection } from "@client/container/Section/Next";

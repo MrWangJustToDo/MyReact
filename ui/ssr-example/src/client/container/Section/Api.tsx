@@ -1,6 +1,6 @@
 import { Code, Container, Heading, Img, LinkBox, LinkOverlay, Spacer, Text } from "@chakra-ui/react";
 
-import { Table } from "@client/component";
+import { Table } from "@client/component/Table";
 import { CONTAINER_WIDTH } from "@client/config/container";
 
 const { Column } = Table;

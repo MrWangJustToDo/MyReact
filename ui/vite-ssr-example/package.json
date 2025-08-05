@@ -15,7 +15,7 @@
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "express": "^4.21.2",
-    "framer-motion": "^12.6.5",
+    "framer-motion": "^12.23.12",
     "react": "npm:@my-react/react@*",
     "react-dom": "npm:@my-react/react-dom@*",
     "react-router": "^6.27.0",

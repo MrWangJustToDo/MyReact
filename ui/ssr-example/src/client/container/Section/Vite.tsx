@@ -4,8 +4,8 @@ import { ChevronsRightIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 
-import { Section } from "@client/component";
 import { Card } from "@client/component/Card";
+import { Section } from "@client/component/Section";
 import { VitePlayground } from "@client/component/VitePlayground";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { useIsMounted } from "@client/hooks";

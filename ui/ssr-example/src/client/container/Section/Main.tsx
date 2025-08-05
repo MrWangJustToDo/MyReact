@@ -1,16 +1,13 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { Box, Button, Checkbox, Container, Flex, Heading, HStack, Link, Tag, Text } from "@chakra-ui/react";
-import { __my_react_shared__, version as reactVersion } from "@my-react/react";
-import { version as reactDOMVersion } from "@my-react/react-dom";
 import { useIntl } from "react-intl";
 import { useNavigate } from "react-router-dom";
 
-import { Section } from "@client/component";
 import { Rspack, Webpack, Vite, NextJs, Remix, ReactRouter } from "@client/component/Icons";
+import { Section } from "@client/component/Section";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { mark } from "@client/utils/markdown";
 import { noBase } from "@shared";
-
-const { enableMockReact } = __my_react_shared__;
 
 const tsxMd = `
 \`\`\`tsx
@@ -47,6 +44,12 @@ const renderBody = mark.render(tsxMd);
 
 export const MainSection = () => {
   const navigate = useNavigate();
+
+  const reactVersion = __REACT__ ? "--" : require("@my-react/react").version;
+
+  const enableMockReact = __REACT__ ? "--" : require("@my-react/react").__my_react_shared__.enableMockReact;
+
+  const reactDOMVersion = __REACT__ ? "--" : require("@my-react/react-dom").version;
 
   const { formatMessage } = useIntl();
 

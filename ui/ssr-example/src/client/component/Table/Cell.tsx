@@ -8,7 +8,7 @@ const WrapperCom = ({ Render, ...props }) => {
   return <>{Render(props)}</>;
 };
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 const CellRender = <T extends {}>({ Render, CustomRender, dataIndex, rowIndex, colIndex, rowData, cellProps, ...restProps }: BodyCellRender<T>) => {
   if (typeof CustomRender === "function") {
     if (dataIndex) {

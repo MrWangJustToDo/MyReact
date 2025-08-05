@@ -117,6 +117,7 @@ export const getConfig = () => {
         },
       };
     },
+    // BUNDLE_CHECK: true,
   });
 
   return multiConfig;

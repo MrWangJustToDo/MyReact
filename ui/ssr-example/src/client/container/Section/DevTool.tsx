@@ -1,7 +1,7 @@
 import { Box, Container, Flex, Heading, Tag, Text, Spacer, HStack, Tooltip, Button, useColorModeValue, Card, Image } from "@chakra-ui/react";
 import { SandpackProvider, SandpackLayout, SandpackCodeEditor } from "@codesandbox/sandpack-react";
 
-import { Section } from "@client/component";
+import { Section } from "@client/component/Section";
 import { CONTAINER_WIDTH } from "@client/config/container";
 
 const code = `// 1. clone the @my-react devtool repo

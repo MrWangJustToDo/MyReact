@@ -71,7 +71,7 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
 
           const parentFiber = getValidParentFiberWithNode(_dispatch, _fiber);
 
-          pendingFinalizeInitialChildrenFiberSet.add(parentFiber);
+          parentFiber && pendingFinalizeInitialChildrenFiberSet.add(parentFiber);
         },
       });
     }
@@ -86,7 +86,7 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
 
           const parentFiber = getValidParentFiberWithNode(_dispatch, _fiber);
 
-          pendingFinalizeInitialChildrenFiberSet.add(parentFiber);
+          parentFiber && pendingFinalizeInitialChildrenFiberSet.add(parentFiber);
         },
       });
     }

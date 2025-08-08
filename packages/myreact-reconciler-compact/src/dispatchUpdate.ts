@@ -12,6 +12,8 @@ import {
 } from "@my-react/react-reconciler";
 import { exclude, STATE_TYPE } from "@my-react/react-shared";
 
+import { getValidParentFiberWithNode } from "./dispatchMap";
+
 import type { ReconcilerDispatch } from "./dispatch";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ListTree } from "@my-react/react-shared";
@@ -37,7 +39,7 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
 
   afterSyncUpdate();
 
-  const pendingCreateFiberArray = [];
+  const pendingFinalizeInitialChildrenFiberSet = new Set<MyReactFiberNode>();
   const pendingCommitFiberArray = [];
 
   _list.listToFoot(function invokeCreateAndUpdateList(_fiber) {
@@ -55,7 +57,7 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
       const afterHasNode = _fiber.nativeNode;
 
       if (!beforeHasNode && afterHasNode) {
-        pendingCreateFiberArray.push(_fiber);
+        pendingFinalizeInitialChildrenFiberSet.add(_fiber);
       }
     }
   });
@@ -66,6 +68,10 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
         fiber: _fiber,
         action: function safeCallPosition() {
           _dispatch.commitPosition(_fiber);
+
+          const parentFiber = getValidParentFiberWithNode(_dispatch, _fiber);
+
+          pendingFinalizeInitialChildrenFiberSet.add(parentFiber);
         },
       });
     }
@@ -77,6 +83,10 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
         fiber: _fiber,
         action: function safeCallAppendList() {
           _dispatch.commitAppend(_fiber);
+
+          const parentFiber = getValidParentFiberWithNode(_dispatch, _fiber);
+
+          pendingFinalizeInitialChildrenFiberSet.add(parentFiber);
         },
       });
     }
@@ -93,7 +103,7 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
     }
   });
 
-  pendingCreateFiberArray.forEach(function invokeFinalizeInitialChildren(_fiber) {
+  pendingFinalizeInitialChildrenFiberSet.forEach(function invokeFinalizeInitialChildren(_fiber) {
     if (_fiber.nativeNode) {
       const node = config.getPublicInstance(_fiber.nativeNode);
 

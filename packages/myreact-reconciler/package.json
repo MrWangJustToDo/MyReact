@@ -3,7 +3,7 @@
   "description": "@my-react/react-reconciler",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.17",
+  "version": "0.3.18",
   "main": "index.js",
   "types": "index.d.ts",
   "files": [
@@ -39,9 +39,9 @@
     }
   ],
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.17"
+    "@my-react/react-shared": "^0.3.18"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.17"
+    "@my-react/react": ">=0.3.18"
   }
 }

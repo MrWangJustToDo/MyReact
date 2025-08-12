@@ -85,8 +85,8 @@ const config = {
 
 ## Development
 
-- [node@18.x](https://nodejs.org/en)
-- [pnpm@8.x](https://pnpm.io/installation)
+- [node@20.x](https://nodejs.org/en)
+- [pnpm@9.x](https://pnpm.io/installation)
 
 ```bash
 clone this project
@@ -97,7 +97,7 @@ pnpm gen:gql
 
 pnpm build
 
-pnpm dev:ssr / dev:csr / dev:next / dev:vite
+pnpm dev:ssr / dev:csr / dev:next / dev:vite / dev:remix / dev:rspack
 ```
 
 ---
@@ -125,7 +125,10 @@ pnpm dev:ssr / dev:csr / dev:next / dev:vite
 
 ## DevTool
 
-- [MyReact DevTool (wip)](https://github.com/MrWangJustToDo/myreact-devtools)
+- [MyReact DevTool (beta)](https://github.com/MrWangJustToDo/myreact-devtools)
+
+![DevTool](https://raw.githubusercontent.com/MrWangJustToDo/myreact-devtools/main/light.png)
+![DevTool](https://raw.githubusercontent.com/MrWangJustToDo/myreact-devtools/main/dark.png)
 
 ## License
 

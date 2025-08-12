@@ -3,7 +3,7 @@
   "description": "@my-react/react-terminal",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "main": "index.mjs",
   "types": "./index.d.ts",
   "type": "module",
@@ -59,6 +59,6 @@
     "@types/stack-utils": "^2.0.3"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.17"
+    "@my-react/react": ">=0.3.18"
   }
 }

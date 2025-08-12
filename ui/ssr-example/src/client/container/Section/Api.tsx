@@ -24,6 +24,7 @@ const data = [
     "@my-react/react-reactive": "reactive",
     "@my-react/react-refresh": "refresh runtime",
     "@my-react/react-refresh-tools": "next.js plugin",
+    "@my-react/react-terminal": "<Box />",
   },
   {
     "@my-react/react (hook)": "useMemo",
@@ -31,14 +32,28 @@ const data = [
     "@my-react/react-dom": "renderToString",
     "@my-react/react-reactive": "ref",
     "@my-react/react-refresh-tools": "webpack loader",
+    "@my-react/react-terminal": "<Text />",
   },
-  { "@my-react/react (hook)": "useReducer", "@my-react/react": "Children", "@my-react/react-dom": "findDOMNode", "@my-react/react-reactive": "computed" },
-  { "@my-react/react (hook)": "useRef", "@my-react/react": "forwardRef", "@my-react/react-dom": "createPortal", "@my-react/react-reactive": "watch" },
+  {
+    "@my-react/react (hook)": "useReducer",
+    "@my-react/react": "Children",
+    "@my-react/react-dom": "findDOMNode",
+    "@my-react/react-reactive": "computed",
+    "@my-react/react-terminal": "<Static />",
+  },
+  {
+    "@my-react/react (hook)": "useRef",
+    "@my-react/react": "forwardRef",
+    "@my-react/react-dom": "createPortal",
+    "@my-react/react-reactive": "watch",
+    "@my-react/react-terminal": "<Transform />",
+  },
   {
     "@my-react/react (hook)": "useEffect",
     "@my-react/react": "lazy",
     "@my-react/react-dom": "unmountComponentAtNode",
     "@my-react/react-reactive": "onBeforeMount",
+    "@my-react/react-terminal": "<NewLine />",
   },
   {
     "@my-react/react (hook)": "useLayoutEffect",

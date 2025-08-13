@@ -51,7 +51,8 @@ const dispatchError = (_params: { fiber?: MyReactFiberNode; error?: Error }) => 
   const fiber = _params.fiber || (currentRunningFiber.current as MyReactFiberNode);
 
   if (!fiber) {
-    throw new Error("No fiber found for dispatching error.");
+    // a normal error
+    throw _params.error;
   }
 
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;

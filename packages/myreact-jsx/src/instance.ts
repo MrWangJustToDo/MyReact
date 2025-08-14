@@ -127,6 +127,10 @@ export const jsxDEV = (
     }
   }
 
+  if (Object.prototype.hasOwnProperty.call(config, "key")) {
+    console.warn(`[@my-react/react] A props object containing a "key" prop is being spread into JSX. This is not recommended and may cause unexpected behavior. Instead, use the "key" prop directly on the JSX element.`);
+  }
+
   checkValidElement(element);
 
   return element;

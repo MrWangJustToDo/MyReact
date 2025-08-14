@@ -69,7 +69,9 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
 
     if (_fiber.nativeNode) {
       // current child have loop done, so it is safe to fallback here
-      fallback(currentHydratedNode?.nextSibling);
+      if (_fiber.sibling) {
+        fallback(currentHydratedNode?.nextSibling);
+      }
 
       currentHydratedNode = _fiber.nativeNode as ChildNode;
     }

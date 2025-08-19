@@ -1,8 +1,8 @@
-import { Canvas, extend } from "@my-react/react-three-fiber";
+import { Canvas, extend } from "@react-three/fiber";
 import { useCallback, useMemo, useRef } from "react";
 import * as THREE from "three";
 
-import type { ThreeEvent } from "@my-react/react-three-fiber";
+import type { ThreeEvent } from "@react-three/fiber";
 
 class DotMaterialImpl extends THREE.ShaderMaterial {
   constructor() {

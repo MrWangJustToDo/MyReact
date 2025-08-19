@@ -1,4 +1,4 @@
-import { Canvas } from "@my-react/react-three-fiber";
+import { Canvas } from "@react-three/fiber";
 import { Suspense, useReducer } from "react";
 import { suspend } from "suspend-react";
 

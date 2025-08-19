@@ -1,4 +1,4 @@
-import { Canvas } from "@my-react/react-three-fiber";
+import { Canvas } from "@react-three/fiber";
 import { useState } from "react";
 
 export const Exp = function Exp() {

@@ -8,9 +8,8 @@
     "build": "vite build"
   },
   "dependencies": {
-    "@my-react/react": "workspace:*",
-    "@my-react/react-dom": "workspace:*",
-    "@my-react/react-three-fiber": "workspace:*",
+    "@react-three/drei": "^10.7.3",
+    "@react-three/fiber": "npm:@my-react/react-three-fiber@*",
     "react": "npm:@my-react/react@*",
     "react-dom": "npm:@my-react/react-dom@*",
     "suspend-react": "^0.1.3"

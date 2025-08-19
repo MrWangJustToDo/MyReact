@@ -98,9 +98,11 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
         action: function safeCallGetSnapshot() {
           return renderDispatch.isAppMounted
             ? storeApi.getSnapshot.call(null)
-            : storeApi.getServerSnapshot
-              ? storeApi.getServerSnapshot?.call(null)
-              : storeApi.getSnapshot.call(null);
+            // SEE https://github.com/facebook/react/blob/main/packages/use-sync-external-store/src/useSyncExternalStoreShimClient.js#L33
+            // : storeApi.getServerSnapshot
+              // ? storeApi.getServerSnapshot?.call(null)
+              // : storeApi.getSnapshot.call(null);
+            : storeApi.getSnapshot.call(null);
         },
       });
 

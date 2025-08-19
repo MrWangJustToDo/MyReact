@@ -1,7 +1,7 @@
-import { Canvas, useFrame } from "@my-react/react-three-fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { useRef, useState } from "react";
 
-import type { ThreeElements } from "@my-react/react-three-fiber";
+import type { ThreeElements } from "@react-three/fiber";
 import type * as THREE from "three";
 
 type BoxProps = ThreeElements["object3D"] & {

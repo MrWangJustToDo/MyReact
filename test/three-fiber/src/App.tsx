@@ -12,6 +12,7 @@ import viteLogo from "/vite.svg";
 // import { Exp } from "./components/MultiRender";
 // import { Exp } from "./components/Pointcloud";
 // import { Exp } from "./components/Reparenting";
+import {BallCanvas} from "./components/Hyper/Ball";
 import { Exp } from "./components/SuspenseMaterial";
 
 import "./App.css";
@@ -37,7 +38,8 @@ function App() {
         </p>
       </div>
       <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
-      <Exp />
+      {/* <Exp /> */}
+      <BallCanvas icon="https://raw.githubusercontent.com/MrWangJustToDo/git-diff-view/aa2e918498270f737d28e7531eab08fa3f1b8831/4.png" />
     </>
   );
 }

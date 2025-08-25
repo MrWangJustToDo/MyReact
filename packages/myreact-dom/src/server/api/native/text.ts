@@ -10,7 +10,7 @@ export class TextElement {
   parentElement: PlainElement | null = null;
 
   constructor(content: string) {
-    this.content = content === "" ? " " : content;
+    this.content = content;
   }
 
   toString() {

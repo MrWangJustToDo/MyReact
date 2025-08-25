@@ -115,9 +115,9 @@ const getNewFiberWithUpdate = (
 
       return updateFiberNode(renderDispatch, { fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newElement);
     } else {
-      renderDispatch.generateChangedList(parentFiber);
+      draftFiber && renderDispatch.generateChangedList(parentFiber);
 
-      renderDispatch.pendingUnmount(parentFiber, draftFiber);
+      draftFiber && renderDispatch.pendingUnmount(parentFiber, draftFiber);
 
       return createFragmentWithUpdate(renderDispatch, newChild, parentFiber);
     }
@@ -142,7 +142,7 @@ const getNewFiberWithUpdate = (
   } else {
     draftFiber && renderDispatch.pendingUnmount(parentFiber, draftFiber);
 
-    renderDispatch.generateChangedList(parentFiber);
+    draftFiber && renderDispatch.generateChangedList(parentFiber);
 
     return createFiberNode(renderDispatch, { parent: parentFiber, type: "position" }, newChild);
   }

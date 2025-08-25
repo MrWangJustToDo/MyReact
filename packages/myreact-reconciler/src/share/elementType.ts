@@ -77,7 +77,7 @@ export const getTypeFromElementNode = (element: MyReactElementNode): ReturnTypeF
         devWarn(`[@my-react/react] invalid object element type "${JSON.stringify(element)}"`);
       }
       nodeType = merge(nodeType, NODE_TYPE.__empty__);
-    } else if (element === null || element === undefined || typeof element === "boolean" || typeof element === "function") {
+    } else if (element === null || element === undefined || typeof element === "boolean" || typeof element === "function" || element === "") {
       nodeType = merge(nodeType, NODE_TYPE.__null__);
     } else {
       // text element
@@ -211,7 +211,7 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
       default:
         throw new Error(`[@my-react/react] invalid symbol element type "${elementType?.toString()}"`);
     }
-  } else if (typeof elementType === "string") {
+  } else if (typeof elementType === "string" && elementType !== "") {
     nodeType = merge(nodeType, NODE_TYPE.__plain__);
   } else {
     if (__DEV__) {

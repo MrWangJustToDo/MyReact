@@ -1,6 +1,7 @@
 import codeExcerpt, { type CodeExcerpt } from "code-excerpt";
 import * as fs from "node:fs";
 import { cwd } from "node:process";
+import React from "react";
 import StackUtils from "stack-utils";
 
 import Box from "./Box";
@@ -67,6 +68,7 @@ export default function ErrorOverview({ error }: Props) {
                   dimColor={line !== origin.line}
                   backgroundColor={line === origin.line ? "red" : undefined}
                   color={line === origin.line ? "white" : undefined}
+                  aria-label={line === origin.line ? `Line ${line}, error` : `Line ${line}`}
                 >
                   {String(line).padStart(lineWidth, " ")}:
                 </Text>
@@ -95,6 +97,7 @@ export default function ErrorOverview({ error }: Props) {
                     <Text dimColor>- </Text>
                     <Text dimColor bold>
                       {line}
+                      \t{" "}
                     </Text>
                   </Box>
                 );
@@ -106,7 +109,7 @@ export default function ErrorOverview({ error }: Props) {
                   <Text dimColor bold>
                     {parsedLine.function}
                   </Text>
-                  <Text dimColor color="gray">
+                  <Text dimColor color="gray" aria-label={`at ${cleanupPath(parsedLine.file) ?? ""} line ${parsedLine.line} column ${parsedLine.column}`}>
                     {" "}
                     ({cleanupPath(parsedLine.file) ?? ""}:{parsedLine.line}:{parsedLine.column})
                   </Text>

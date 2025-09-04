@@ -1,7 +1,7 @@
 import cliCursor from "cli-cursor";
 import { EventEmitter } from "node:events";
 import process from "node:process";
-import { PureComponent } from "react";
+import React, { PureComponent, type ReactNode } from "react";
 
 import AppContext from "./AppContext";
 import ErrorOverview from "./ErrorOverview";
@@ -9,8 +9,6 @@ import FocusContext from "./FocusContext";
 import StderrContext from "./StderrContext";
 import StdinContext from "./StdinContext";
 import StdoutContext from "./StdoutContext";
-
-import type { ReactNode } from "react";
 
 const tab = "\t";
 const shiftTab = "\u001B[Z";

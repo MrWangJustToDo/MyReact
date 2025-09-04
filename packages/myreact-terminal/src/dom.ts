@@ -25,20 +25,50 @@ export type DOMElement = {
   childNodes: DOMNode[];
   internal_transform?: OutputTransformer;
 
+  internal_accessibility?: {
+    role?:
+      | "button"
+      | "checkbox"
+      | "combobox"
+      | "list"
+      | "listbox"
+      | "listitem"
+      | "menu"
+      | "menuitem"
+      | "option"
+      | "progressbar"
+      | "radio"
+      | "radiogroup"
+      | "tab"
+      | "tablist"
+      | "table"
+      | "textbox"
+      | "timer"
+      | "toolbar";
+    state?: {
+      busy?: boolean;
+      checked?: boolean;
+      disabled?: boolean;
+      expanded?: boolean;
+      multiline?: boolean;
+      multiselectable?: boolean;
+      readonly?: boolean;
+      required?: boolean;
+      selected?: boolean;
+    };
+  };
+
   // Internal properties
   isStaticDirty?: boolean;
   staticNode?: DOMElement;
   onComputeLayout?: () => void;
   onRender?: () => void;
   onImmediateRender?: () => void;
-  // mark current node is unmount, see reconciler.ts 195
-  isUnmount?: boolean;
 } & InkNode;
 
 export type TextNode = {
   nodeName: TextName;
   nodeValue: string;
-  isUnmount?: boolean;
 } & InkNode;
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -61,6 +91,7 @@ export const createNode = (nodeName: ElementNames): DOMElement => {
     childNodes: [],
     parentNode: undefined,
     yogaNode: nodeName === "ink-virtual-text" ? undefined : Yoga.Node.create(),
+    internal_accessibility: {},
   };
 
   if (nodeName === "ink-text") {
@@ -120,8 +151,6 @@ export const removeChildNode = (node: DOMElement, removeNode: DOMNode): void => 
     removeNode.parentNode?.yogaNode?.removeChild(removeNode.yogaNode);
   }
 
-  removeNode.isUnmount = true;
-
   removeNode.parentNode = undefined;
 
   const index = node.childNodes.indexOf(removeNode);
@@ -135,6 +164,11 @@ export const removeChildNode = (node: DOMElement, removeNode: DOMNode): void => 
 };
 
 export const setAttribute = (node: DOMElement, key: string, value: DOMNodeAttribute): void => {
+  if (key === "internal_accessibility") {
+    node.internal_accessibility = value as DOMElement["internal_accessibility"];
+    return;
+  }
+
   node.attributes[key] = value;
 };
 

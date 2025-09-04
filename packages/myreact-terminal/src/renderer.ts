@@ -1,6 +1,6 @@
 import { type DOMElement } from "./dom";
 import Output from "./output";
-import renderNodeToOutput from "./render-node-to-output";
+import renderNodeToOutput, { renderNodeToScreenReaderOutput } from "./render-node-to-output";
 
 type Result = {
   output: string;
@@ -8,18 +8,42 @@ type Result = {
   staticOutput: string;
 };
 
-const renderer = (node: DOMElement): Result => {
-  if (!node.isUnmount && node.yogaNode) {
+const renderer = (node: DOMElement, isScreenReaderEnabled: boolean): Result => {
+  if (node.yogaNode) {
+    if (isScreenReaderEnabled) {
+      const output = renderNodeToScreenReaderOutput(node, {
+        skipStaticElements: true,
+      });
+
+      const outputHeight = output === "" ? 0 : output.split("\n").length;
+
+      let staticOutput = "";
+
+      if (node.staticNode) {
+        staticOutput = renderNodeToScreenReaderOutput(node.staticNode, {
+          skipStaticElements: false,
+        });
+      }
+
+      return {
+        output,
+        outputHeight,
+        staticOutput: staticOutput ? `${staticOutput}\n` : "",
+      };
+    }
+
     const output = new Output({
       width: node.yogaNode.getComputedWidth(),
       height: node.yogaNode.getComputedHeight(),
     });
 
-    renderNodeToOutput(node, output, { skipStaticElements: true });
+    renderNodeToOutput(node, output, {
+      skipStaticElements: true,
+    });
 
     let staticOutput;
 
-    if (node.staticNode && !node.staticNode.isUnmount && node.staticNode?.yogaNode) {
+    if (node.staticNode?.yogaNode) {
       staticOutput = new Output({
         width: node.staticNode.yogaNode.getComputedWidth(),
         height: node.staticNode.yogaNode.getComputedHeight(),

@@ -23,6 +23,7 @@ export { default as useStdout } from "./hooks/use-stdout";
 export { default as useStderr } from "./hooks/use-stderr";
 export { default as useFocus } from "./hooks/use-focus";
 export { default as useFocusManager } from "./hooks/use-focus-manager";
+export { default as useIsScreenReaderEnabled } from "./hooks/use-is-screen-reader-enabled";
 export { default as measureElement } from "./measure-element";
 export type { DOMElement } from "./dom";
 

@@ -6,7 +6,9 @@ import { type Styles } from "./styles";
 declare global {
   const __DEV__: boolean;
   const __VERSION__: string;
+}
 
+declare module "react" {
   namespace JSX {
     interface IntrinsicElements {
       "ink-box": Ink.Box;
@@ -22,6 +24,7 @@ declare namespace Ink {
     key?: Key;
     ref?: LegacyRef<DOMElement>;
     style?: Except<Styles, "textWrap">;
+    internal_accessibility?: DOMElement["internal_accessibility"];
   };
 
   type Text = {
@@ -30,5 +33,6 @@ declare namespace Ink {
     style?: Styles;
 
     internal_transform?: (children: string, index: number) => string;
+    internal_accessibility?: DOMElement["internal_accessibility"];
   };
 }

@@ -73,5 +73,7 @@ export const initHookInstance = (hookNode: MyReactHookNode) => {
 
   const typedField = field as HookInstanceField;
 
-  typedField.dispatch = (action: Action) => hookNode._update({ payLoad: action, isForce: false, isSync: enableSyncFlush.current });
+  typedField.dispatch = function dispatchAction(action: Action) {
+    hookNode._update({ payLoad: action, isForce: false, isSync: enableSyncFlush.current });
+  };
 };

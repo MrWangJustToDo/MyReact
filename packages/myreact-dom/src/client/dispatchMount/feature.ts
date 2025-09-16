@@ -1,9 +1,11 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import {
+  addEffectCallback,
   afterSyncUpdate,
   beforeSyncUpdate,
   defaultInvokeUnmountList,
   effect,
+  flushEffectCallback,
   generateFiberToListWithAction,
   insertionEffect,
   layoutEffect,
@@ -112,9 +114,7 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
 
     afterSyncUpdate();
 
-    const renderScheduler = currentScheduler.current;
-
-    renderScheduler.microTask(function invokeEffectListTask() {
+    function invokeEffectListTask() {
       __DEV__ && enableScopeTreeLog.current && setLogScope();
 
       _list.listToFoot(function invokeEffectList(fiber) {
@@ -122,6 +122,14 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
       });
 
       __DEV__ && enableScopeTreeLog.current && resetLogScope();
+    }
+
+    addEffectCallback(invokeEffectListTask);
+
+    const renderScheduler = currentScheduler.current;
+
+    renderScheduler.macroTask(function flushEffect() {
+      flushEffectCallback();
     });
   };
 

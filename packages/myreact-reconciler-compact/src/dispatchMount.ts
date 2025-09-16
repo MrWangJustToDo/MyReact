@@ -10,6 +10,8 @@ import {
   resetLogScope,
   defaultInvokeUnmountList,
   generateFiberToListWithAction,
+  addEffectCallback,
+  flushEffectCallback,
 } from "@my-react/react-reconciler";
 
 import type { ReconcilerDispatch } from "./dispatch";
@@ -98,9 +100,7 @@ export const ReconcilerDispatchMount = (_dispatch: ReconcilerDispatch, _fiber: M
 
   afterSyncUpdate();
 
-  const renderScheduler = currentScheduler.current;
-
-  renderScheduler.microTask(function invokeEffectListTask() {
+  function invokeEffectListTask() {
     __DEV__ && enableScopeTreeLog.current && setLogScope();
 
     _list.listToFoot(function invokeEffectList(_fiber) {
@@ -108,5 +108,13 @@ export const ReconcilerDispatchMount = (_dispatch: ReconcilerDispatch, _fiber: M
     });
 
     __DEV__ && enableScopeTreeLog.current && resetLogScope();
+  }
+
+  addEffectCallback(invokeEffectListTask);
+
+  const renderScheduler = currentScheduler.current;
+
+  renderScheduler.macroTask(function flushEffect() {
+    flushEffectCallback();
   });
 };

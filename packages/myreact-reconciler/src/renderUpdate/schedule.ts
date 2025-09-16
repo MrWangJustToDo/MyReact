@@ -1,6 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { exclude, STATE_TYPE, include } from "@my-react/react-shared";
 
+import { flushEffectCallback } from "../dispatchEffect";
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { currentTriggerFiber } from "../share";
 
@@ -12,6 +13,8 @@ import type { UniqueArray } from "@my-react/react-shared";
 const { globalLoop, currentScheduler } = __my_react_internal__;
 
 const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
+  flushEffectCallback();
+
   const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
 
   renderDispatch.pendingUpdateFiberArray.clear();

@@ -1,15 +1,8 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
+import { addEffectCallback, effect, flushEffectCallback, insertionEffect, layoutEffect } from "../dispatchEffect";
 import { defaultInvokeUnmountList } from "../dispatchUnmount";
-import {
-  afterSyncUpdate,
-  beforeSyncUpdate,
-  generateFiberToListWithAction,
-  resetLogScope,
-  safeCallWithCurrentFiber,
-  setLogScope,
-} from "../share";
+import { afterSyncUpdate, beforeSyncUpdate, generateFiberToListWithAction, resetLogScope, safeCallWithCurrentFiber, setLogScope } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -68,9 +61,7 @@ export const defaultDispatchMountLatest = (_dispatch: CustomRenderDispatch, _fib
 
   afterSyncUpdate();
 
-  const renderScheduler = currentScheduler.current;
-
-  renderScheduler.microTask(function invokeEffectListTask() {
+  function invokeEffectListTask() {
     __DEV__ && enableScopeTreeLog.current && setLogScope();
 
     _list.listToFoot(function invokeEffectList(_fiber) {
@@ -78,6 +69,14 @@ export const defaultDispatchMountLatest = (_dispatch: CustomRenderDispatch, _fib
     });
 
     __DEV__ && enableScopeTreeLog.current && resetLogScope();
+  }
+
+  addEffectCallback(invokeEffectListTask);
+
+  const renderScheduler = currentScheduler.current;
+
+  renderScheduler.macroTask(function flushEffect() {
+    flushEffectCallback();
   });
 };
 

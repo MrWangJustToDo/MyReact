@@ -88,7 +88,7 @@ function checkNextFiberIsSync(renderDispatch: CustomRenderDispatch) {
   // include(renderDispatch.runtimeFiber.nextWorkingFiber.state, STATE_TYPE.__retrigger__)
 }
 
-function updateConCurrentNextFrame(renderDispatch: CustomRenderDispatch) {
+function updateConcurrentNextFrame(renderDispatch: CustomRenderDispatch) {
   const renderScheduler = currentScheduler.current;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
@@ -105,7 +105,7 @@ function updateConCurrentNextFrame(renderDispatch: CustomRenderDispatch) {
         if (hasSync || checkNextFiberIsSync(renderDispatch)) {
           updateSyncFromRoot(renderDispatch);
         } else {
-          updateConCurrentNextFrame(renderDispatch);
+          updateConcurrentNextFrame(renderDispatch);
         }
       });
     }
@@ -114,8 +114,7 @@ function updateConCurrentNextFrame(renderDispatch: CustomRenderDispatch) {
 
     finishUpdateConcurrentFromRoot(renderDispatch);
 
-    renderScheduler.microTask(function callScheduleNext() {
-      // TODO! flash all effect
+    renderScheduler.macroTask(function callScheduleNext() {
       globalLoop.current = false;
 
       scheduleNext(renderDispatch);
@@ -142,7 +141,7 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
         if (hasSync || checkNextFiberIsSync(renderDispatch)) {
           updateSyncFromRoot(renderDispatch);
         } else {
-          updateConCurrentNextFrame(renderDispatch);
+          updateConcurrentNextFrame(renderDispatch);
         }
       });
     }
@@ -151,8 +150,7 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
 
     finishUpdateConcurrentFromRoot(renderDispatch);
 
-    renderScheduler.microTask(function callScheduleNext() {
-      // TODO! flash all effect
+    renderScheduler.macroTask(function callScheduleNext() {
       globalLoop.current = false;
 
       scheduleNext(renderDispatch);

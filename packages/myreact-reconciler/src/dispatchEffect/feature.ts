@@ -15,7 +15,7 @@ export const defaultGenerateEffectMap = (
 
   if (!list) {
     list = new ListTree<() => void>();
-    
+
     map.set(fiber, list);
   }
 
@@ -137,6 +137,19 @@ export const defaultDeleteChildEffect = (renderDispatch: CustomRenderDispatch, f
 
     child = child.sibling;
   }
+};
+
+const effectCallbackList = new ListTree<() => void>();
+
+export const addEffectCallback = (cb: () => void) => {
+  effectCallbackList.push(cb);
+};
+
+export const flushEffectCallback = () => {
+  effectCallbackList.listToFoot((cb) => {
+    cb();
+  });
+  effectCallbackList.clear();
 };
 
 export const effect = defaultInvokeEffect;

@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { STATE_TYPE, exclude } from "@my-react/react-shared";
 
-import { effect, insertionEffect, layoutEffect } from "../dispatchEffect";
+import { addEffectCallback, effect, flushEffectCallback, insertionEffect, layoutEffect } from "../dispatchEffect";
 import { defaultInvokeUnmountList } from "../dispatchUnmount";
 import { afterSyncUpdate, beforeSyncUpdate, resetLogScope, safeCallWithCurrentFiber, setLogScope } from "../share";
 
@@ -86,10 +86,7 @@ export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: Li
 
   afterSyncUpdate();
 
-  const renderScheduler = currentScheduler.current;
-
-  // TODO before next update flow, make sure all the effect has done
-  renderScheduler.microTask(function invokeEffectListTask() {
+  function invokeEffectListTask() {
     __DEV__ && enableScopeTreeLog.current && setLogScope();
 
     _list.listToFoot(function invokeEffectList(_fiber) {
@@ -99,5 +96,13 @@ export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: Li
     });
 
     __DEV__ && enableScopeTreeLog.current && resetLogScope();
+  }
+
+  addEffectCallback(invokeEffectListTask);
+
+  const renderScheduler = currentScheduler.current;
+
+  renderScheduler.macroTask(function flushEffect() {
+    flushEffectCallback();
   });
 };

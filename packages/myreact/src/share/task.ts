@@ -36,12 +36,12 @@ const set = new Set<() => void>();
 
 let pending = false;
 
-function flashMacroTask() {
+function flushMacroTask() {
   if (pending) return;
 
   pending = true;
 
-  setTimeout(function invokeMacroTask() {
+  function invokeMacroTask() {
     const allTask = new Set(set);
 
     set.clear();
@@ -49,11 +49,28 @@ function flashMacroTask() {
     allTask.forEach((f) => f());
 
     pending = false;
-  });
+
+    if (set.size) {
+      flushMacroTask();
+    }
+  }
+
+  if (typeof setImmediate === "function") {
+    setImmediate(invokeMacroTask);
+  } else if (typeof MessageChannel === "function") {
+    const { port1, port2 } = new MessageChannel();
+
+    port1.onmessage = invokeMacroTask;
+
+    port2.postMessage("");
+    return;
+  } else {
+    setTimeout(invokeMacroTask);
+  }
 }
 
 export const macroTask = (task: () => void) => {
   set.add(task);
 
-  flashMacroTask();
+  flushMacroTask();
 };

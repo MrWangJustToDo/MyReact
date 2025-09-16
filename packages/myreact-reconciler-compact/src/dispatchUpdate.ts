@@ -9,6 +9,8 @@ import {
   setLogScope,
   resetLogScope,
   defaultInvokeUnmountList,
+  addEffectCallback,
+  flushEffectCallback,
 } from "@my-react/react-reconciler";
 import { exclude, STATE_TYPE } from "@my-react/react-shared";
 
@@ -141,10 +143,7 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
 
   afterSyncUpdate();
 
-  const renderScheduler = currentScheduler.current;
-
-  // TODO before next update flow, make sure all the effect has done
-  renderScheduler.microTask(function invokeEffectListTask() {
+  function invokeEffectListTask() {
     __DEV__ && enableScopeTreeLog.current && setLogScope();
 
     _list.listToFoot(function invokeEffectList(_fiber) {
@@ -154,5 +153,13 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
     });
 
     __DEV__ && enableScopeTreeLog.current && resetLogScope();
+  }
+
+  addEffectCallback(invokeEffectListTask);
+
+  const renderScheduler = currentScheduler.current;
+
+  renderScheduler.macroTask(function flushEffect() {
+    flushEffectCallback();
   });
 };

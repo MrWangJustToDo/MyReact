@@ -297,7 +297,7 @@ export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRen
 
   const needUpdate = true;
 
-  let isSync = false;
+  let isSync = true;
 
   let isForce = false;
 
@@ -737,7 +737,7 @@ export const processFunctionComponentUpdateQueueLegacy = (renderDispatch: Custom
 
   let needUpdate = false;
 
-  let isSync = false;
+  let isSync = true;
 
   let isForce = false;
 
@@ -972,7 +972,7 @@ export const processNormalComponentUpdateLegacy = (renderDispatch: CustomRenderD
 
   const needUpdate = true;
 
-  let isSync = false;
+  let isSync = true;
 
   let isForce = false;
 

@@ -159,7 +159,13 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
 
   const renderScheduler = currentScheduler.current;
 
-  renderScheduler.macroTask(function flushEffect() {
-    flushEffectCallback();
-  });
+  if (_dispatch.enableConcurrentMode) {
+    renderScheduler.macroTask(function flushEffect() {
+      flushEffectCallback();
+    });
+  } else {
+    renderScheduler.microTask(function flushEffect() {
+      flushEffectCallback();
+    });
+  }
 };

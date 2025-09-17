@@ -114,13 +114,7 @@ export const ReconcilerDispatchMount = (_dispatch: ReconcilerDispatch, _fiber: M
 
   const renderScheduler = currentScheduler.current;
 
-  if (_dispatch.enableConcurrentMode) {
-    renderScheduler.macroTask(function flushEffect() {
-      flushEffectCallback();
-    });
-  } else {
-    renderScheduler.microTask(function flushEffect() {
-      flushEffectCallback();
-    });
-  }
+  renderScheduler.macroTask(function flushEffect() {
+    flushEffectCallback();
+  });
 };

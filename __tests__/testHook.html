@@ -7,10 +7,12 @@
     <script src="../bundle/babel.min.js"></script>
     <!-- <script src="../bundle/react.development.js"></script> -->
     <!-- <script src="../bundle/react-dom.development.js"></script> -->
-    <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
-    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../bundle/react.18.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
     <script src="../packages/myreact/dist/umd/index.development.js"></script>
     <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
     <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
     <style>
       .red {
@@ -140,8 +142,43 @@
         );
       }
 
+      const B = () => {
+        useEffect(() => {
+          console.log("B mount");
+          return () => console.log("B unmount");
+        });
+
+        requestAnimationFrame(() => {
+          console.log("B raf");
+        });
+
+        return <div className="box green" ref={(r) => console.log('B ref', r)}>B</div>;
+      }
+
+      const A = () => {
+        const [c, setC] = useState(1);
+
+        useEffect(() => {
+          console.log("A mount");
+
+          if (c < 5) {
+            setC(i => i + 1);
+          }
+
+          return () => console.log("A unmount");
+        }, [c]);
+
+        requestAnimationFrame(() => {
+          console.log("A raf");
+        });
+
+        return <div className="red" ref={(r) => console.log('a ref', r)}>A <B /></div>;
+      }
+
       const container = document.getElementById("root");
-      ReactDOM.render(<App />, container);
+      // ReactDOM.render(<A />, container);
+
+      ReactDOM.createRoot(container).render(<A />);
     </script>
   </body>
 </html>

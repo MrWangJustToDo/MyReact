@@ -49,6 +49,8 @@ export class MyReactFiberNode implements RenderFiber {
 
   refCleanup?: () => void;
 
+  refPrevious?: MyReactElement["ref"];
+
   pendingState: Record<string, unknown>;
 
   memoizedState: Record<string, unknown>;

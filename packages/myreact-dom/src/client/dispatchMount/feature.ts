@@ -128,15 +128,9 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
 
     const renderScheduler = currentScheduler.current;
 
-    if (_dispatch.enableConcurrentMode) {
-      renderScheduler.macroTask(function flushEffect() {
-        flushEffectCallback();
-      });
-    } else {
-      renderScheduler.microTask(function flushEffect() {
-        flushEffectCallback();
-      });
-    }
+    renderScheduler.macroTask(function flushEffect() {
+      flushEffectCallback();
+    });
   };
 
   return startMountCommit(_fiber, _hydrate);

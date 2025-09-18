@@ -110,6 +110,8 @@ export const Reconciler = createReconciler<
     if (typeof rootNode.onRender === "function") {
       rootNode.onRender();
     }
+    // react will switch rootNode, so every time resetAfterCommit called, we need to clean the staticNode
+    rootNode.staticNode = null;
   },
   getChildHostContext(parentHostContext, type) {
     const previousIsInsideText = parentHostContext.isInsideText;
@@ -262,6 +264,7 @@ export const Reconciler = createReconciler<
     setTextNodeValue(node, newText);
   },
   removeChild(node, removeNode) {
+    
     removeChildNode(node, removeNode);
     cleanupYogaNode(removeNode.yogaNode);
   },

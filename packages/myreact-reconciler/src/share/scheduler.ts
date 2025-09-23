@@ -55,7 +55,7 @@ const dispatchError = (_params: { fiber?: MyReactFiberNode; error?: Error }) => 
     throw _params.error;
   }
 
-  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+  // if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const dispatch = getCurrentDispatchFromFiber(fiber);
 
@@ -73,7 +73,7 @@ const dispatchPromise = (_params: { fiber?: MyReactFiberNode; promise?: Promise<
     throw new Error("No fiber found for dispatching promise.");
   }
 
-  if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+  // if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const dispatch = getCurrentDispatchFromFiber(fiber);
 

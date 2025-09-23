@@ -88,23 +88,26 @@ export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyRe
 
     const renderScheduler = currentScheduler.current;
 
-    renderDispatch.processPromise(promise).then(() => {
-      fiber.state = STATE_TYPE.__recreate__;
+    renderDispatch
+      .processPromise(promise)
+      .then(() => {
+        fiber.state = STATE_TYPE.__recreate__;
 
-      promise._list.delete(fiber);
+        promise._list.delete(fiber);
 
-      promise._loading = false;
+        promise._loading = false;
 
-      const updater: PromiseUpdateQueue = {
-        type: UpdateQueueType.promise,
-        trigger: fiber,
-        isSync: true,
-        isForce: true,
-        payLoad: promise,
-      };
+        const updater: PromiseUpdateQueue = {
+          type: UpdateQueueType.promise,
+          trigger: fiber,
+          isSync: true,
+          isForce: true,
+          payLoad: promise,
+        };
 
-      renderScheduler.dispatchState(updater);
-    });
+        renderScheduler.dispatchState(updater);
+      })
+      .catch((e) => renderScheduler.dispatchError({ fiber, error: e }));
 
     return null;
   }

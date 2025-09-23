@@ -12,7 +12,7 @@ import { currentRefreshHandler, fiberToDispatchMap } from "./env";
 import { NODE_TYPE } from "./fiberType";
 import { MyWeakMap } from "./map";
 
-import type { MyReactFiberNode } from "../runtimeFiber";
+import type { MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
 
 export type RefreshHandler = (type: MyReactElementType) => { current: MyReactElementType };
 
@@ -64,7 +64,20 @@ export const getCurrentDispatchFromType = (type: MixinMyReactClassComponent | Mi
 };
 
 export const getCurrentDispatchFromFiber = (fiber: MyReactFiberNode) => {
-  return fiberToDispatchMap.get(fiber);
+  const dispatch = fiberToDispatchMap.get(fiber);
+
+  if (dispatch) return dispatch;
+
+  let parent = fiber.parent;
+  while (parent) {
+    const typedFiberRoot = parent as MyReactFiberRoot;
+
+    if (typedFiberRoot.renderDispatch) {
+      return typedFiberRoot.renderDispatch;
+    }
+
+    parent = parent.parent;
+  }
 };
 
 export const getElementFromRefreshIfExist = (element: MyReactElement) => {

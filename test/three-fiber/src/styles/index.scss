@@ -1,0 +1,146 @@
+// Thanks to Kevin Han for the code for tutorial keys
+// https://codepen.io/kevinydhan/full/OJVYBaq
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #e5e7eb;
+  font-family: Arial, Helvetica, sans-serif;
+  overscroll-behavior: none;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  text-wrap: balance;
+}
+
+#root,
+#__next {
+  isolation: isolate;
+}
+
+.canvas-wrapper {
+  width: 100vw;
+  height: 100dvh;
+  user-select: none;
+
+  .mobile-tutorial {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: rgba(255, 255, 255, 0.58);
+    border-radius: 16px;
+    backdrop-filter: blur(12.7px);
+    -webkit-backdrop-filter: blur(12.7px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 10px;
+    width: 90%;
+  }
+
+  .tutorial-keys {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+    font-weight: 1000;
+    span {
+      $outline: #cccccc;
+      font-family: sans-serif;
+      font-size: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding-bottom: 3px;
+      width: 48px;
+      height: 45px;
+      border-radius: 5px;
+      background-color: #fff;
+      color: #444;
+      border-top: 1px solid $outline;
+      box-shadow: 0px 3px 0px 2px $outline;
+    }
+
+    section {
+      $cell-length: 56px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      place-items: center;
+      grid-gap: 1px;
+      width: calc(#{$cell-length} * 3);
+      height: calc(#{$cell-length} * 2);
+    }
+
+    section > span:nth-child(1) {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    section > span:nth-child(2) {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    section > span:nth-child(3) {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    section > span:nth-child(4) {
+      grid-column: 3;
+      grid-row: 2;
+    }
+  }
+}

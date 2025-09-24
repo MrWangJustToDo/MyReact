@@ -1,5 +1,5 @@
 import { __my_react_internal__ } from "@my-react/react";
-import { include, isPromise } from "@my-react/react-shared";
+import { include, isPromise, STATE_TYPE } from "@my-react/react-shared";
 
 import { NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
@@ -7,6 +7,13 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 import type { forwardRef, MixinMyReactFunctionComponent, MyReactElementNode } from "@my-react/react";
 
 const { currentHookTreeNode, currentHookNodeIndex, currentScheduler } = __my_react_internal__;
+
+const triggerState =
+  STATE_TYPE.__triggerSync__ |
+  STATE_TYPE.__triggerSyncForce__ |
+  STATE_TYPE.__triggerConcurrent__ |
+  STATE_TYPE.__triggerConcurrentForce__ |
+  STATE_TYPE.__retrigger__;
 
 export const processFunction = (fiber: MyReactFiberNode) => {
   currentHookTreeNode.current = fiber.hookList?.head;
@@ -28,7 +35,12 @@ export const processFunction = (fiber: MyReactFiberNode) => {
           re = typedElementTypeWithRef(fiber.pendingProps, fiber.ref);
         } catch (e) {
           if (isPromise(e)) {
-            re = currentScheduler.current?.dispatchPromise?.({ fiber, promise: e });
+            const currentIsTrigger = include(fiber.state, triggerState);
+            if (currentIsTrigger) {
+              fiber.state = STATE_TYPE.__suspense__;
+            } else {
+              re = currentScheduler.current?.dispatchPromise?.({ fiber, promise: e });
+            }
           } else {
             throw e;
           }
@@ -45,7 +57,12 @@ export const processFunction = (fiber: MyReactFiberNode) => {
           re = typedElementType(fiber.pendingProps);
         } catch (e) {
           if (isPromise(e)) {
-            re = currentScheduler.current?.dispatchPromise?.({ fiber, promise: e });
+            const currentIsTrigger = include(fiber.state, triggerState);
+            if (currentIsTrigger) {
+              fiber.state = STATE_TYPE.__suspense__;
+            } else {
+              re = currentScheduler.current?.dispatchPromise?.({ fiber, promise: e });
+            }
           } else {
             throw e;
           }

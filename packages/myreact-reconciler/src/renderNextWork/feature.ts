@@ -44,7 +44,9 @@ export const mountToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, f
     currentRunningFiber.current = null;
   }
 
-  if (!include(fiber.state, STATE_TYPE.__retrigger__)) {
+  if (include(fiber.state, STATE_TYPE.__suspense__)) {
+    fiber.state = STATE_TYPE.__recreate__;
+  } else if (!include(fiber.state, STATE_TYPE.__retrigger__)) {
     fiber.state = STATE_TYPE.__stable__;
   } else {
     fiber.state = STATE_TYPE.__triggerSync__;
@@ -114,7 +116,9 @@ export const performToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch,
     triggerFiberUpdateListener(renderDispatch, fiber);
   }
 
-  if (!include(fiber.state, STATE_TYPE.__retrigger__)) {
+  if (include(fiber.state, STATE_TYPE.__suspense__)) {
+    fiber.state = STATE_TYPE.__recreate__;
+  } else if (!include(fiber.state, STATE_TYPE.__retrigger__)) {
     fiber.state = STATE_TYPE.__stable__;
   } else {
     fiber.state = STATE_TYPE.__triggerSync__;

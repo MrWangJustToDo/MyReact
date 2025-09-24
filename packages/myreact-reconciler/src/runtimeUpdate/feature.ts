@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__, type SuspenseUpdateQueue } from "@my-react/react";
 import { include, isPromise, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
-import { defaultDeleteChildEffect, defaultDeleteCurrentEffect } from "../dispatchEffect";
+import { defaultDeleteChildEffect } from "../dispatchEffect";
 import { defaultResolveAliveSuspenseFiber } from "../dispatchSuspense";
 import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
 import { performToNextFiberFromRoot } from "../renderNextWork";
@@ -164,66 +164,7 @@ export const processAsyncLoadListOnUpdate = (renderDispatch: CustomRenderDispatc
     if (list.length === 0) return;
 
     if (renderDispatch.enableAsyncLoad) {
-      // defaultDeleteCurrentEffect(renderDispatch, renderDispatch.rootFiber);
-
-      // defaultDeleteChildEffect(renderDispatch, renderDispatch.rootFiber);
-
-      const allPendingLoadArray = list.filter((item) => {
-        if (isPromise(item)) {
-          return typeof item.status !== "string";
-        } else {
-          return !item._loading && !item._loaded && !item._error;
-        }
-      });
-
-      if (allPendingLoadArray.length) {
-        allPendingLoadArray.forEach((item) => item._list?.forEach((node: MyReactFiberNode) => defaultDeleteCurrentEffect(renderDispatch, node)));
-
-        Promise.all(
-          allPendingLoadArray.map(async (item) => {
-            if (isPromise(item)) {
-              await renderDispatch.processPromise(item);
-            } else {
-              await renderDispatch.processLazy(item);
-            }
-
-            const allFiber = new Set(item._list);
-
-            item._list?.clear();
-
-            allFiber.forEach((node: MyReactFiberNode) => {
-              node.state = STATE_TYPE.__recreate__;
-
-              const renderScheduler = currentScheduler.current;
-
-              const updater: SuspenseUpdateQueue = {
-                type: UpdateQueueType.suspense,
-                trigger: node,
-                isSync: true,
-                isForce: true,
-                payLoad: [item],
-              };
-
-              renderScheduler.dispatchState(updater);
-            });
-
-            suspenseField.asyncLoadList.uniDelete(item);
-          })
-        );
-      }
-
-      // suspenseField.isHidden = true;
-
-      // const root = renderDispatch.rootFiber;
-
-      // root.state = remove(root.state, STATE_TYPE.__stable__);
-
-      // root.state = merge(root.state, STATE_TYPE.__retrigger__);
-
-      // // TODO use hide tree to improve
-      // mountLoopAll(renderDispatch, root);
-
-      // suspenseField.isHidden = false;
+      throw new Error("[@my-react/reconciler] not implemented yet");
     } else {
       throw new Error(
         "[@my-react/reconciler] should not process async load list on sync mount without enableAsyncLoad, you may use a wrong renderDispatch instance"

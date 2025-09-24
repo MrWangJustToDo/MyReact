@@ -1,6 +1,7 @@
 import { __my_react_internal__, __my_react_shared__, startTransition } from "@my-react/react";
-import { HOOK_TYPE } from "@my-react/react-shared";
+import { HOOK_TYPE, include, STATE_TYPE } from "@my-react/react-shared";
 
+import { defaultDeleteChildEffect, defaultDeleteCurrentEffect } from "../dispatchEffect";
 import { initInstance, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
 import { safeCallWithCurrentFiber } from "../share";
 
@@ -28,8 +29,18 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
 
   const currentHookIndex = currentHookNodeIndex.current;
 
+  const currentIsReCreate = include(fiber.state, STATE_TYPE.__recreate__);
+
   if (currentHook) {
-    throw new Error(`[@my-react/react] should not have a hookList for current node, this is a bug for @my-react`);
+    if (currentIsReCreate) {
+      if (currentHookIndex === 0) {
+        defaultDeleteChildEffect(renderDispatch, fiber);
+        defaultDeleteCurrentEffect(renderDispatch, fiber);
+        fiber.hookList.clear();
+      }
+    } else {
+      throw new Error(`[@my-react/react] should not have a hookList for current node, this is a bug for @my-react`);
+    }
   }
 
   const hookNode = new MyReactHookNode(type, value, reducer || defaultReducer, deps);
@@ -67,6 +78,11 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
     hookNode.result = hookNode.value;
   }
 
+  // cache ref state from recreate
+  if (hookNode.type === HOOK_TYPE.useRef && currentHook && currentHook.type === HOOK_TYPE.useRef) {
+    hookNode.result = currentHook.result;
+  }
+
   if (hookNode.type === HOOK_TYPE.useId) {
     hookNode.result = `«-${currentHookIndex}-${renderDispatch.uniqueIdCount++}-»`;
     hookNode.cancel = () => renderDispatch.uniqueIdCount--;
@@ -98,11 +114,11 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
         action: function safeCallGetSnapshot() {
           return renderDispatch.isAppMounted
             ? storeApi.getSnapshot.call(null)
-            // SEE https://github.com/facebook/react/blob/main/packages/use-sync-external-store/src/useSyncExternalStoreShimClient.js#L33
-            // : storeApi.getServerSnapshot
+            : // SEE https://github.com/facebook/react/blob/main/packages/use-sync-external-store/src/useSyncExternalStoreShimClient.js#L33
+              // : storeApi.getServerSnapshot
               // ? storeApi.getServerSnapshot?.call(null)
               // : storeApi.getSnapshot.call(null);
-            : storeApi.getSnapshot.call(null);
+              storeApi.getSnapshot.call(null);
         },
       });
 
@@ -238,6 +254,8 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
 
     typedHook._debugIndex = currentHookIndex;
   }
+
+  currentHookTreeNode.current = currentHookTreeNode.current?.next;
 
   return hookNode;
 };

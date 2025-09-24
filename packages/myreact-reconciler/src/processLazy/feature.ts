@@ -69,7 +69,7 @@ export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReact
 
     return null;
   } else {
-    // TODO  update flow
+    // TODO update flow
     if (enableSuspenseRoot.current && !renderDispatch.isAppMounted) {
       const suspenseField = getInstanceFieldByInstance(renderDispatch) as SuspenseInstanceField;
 

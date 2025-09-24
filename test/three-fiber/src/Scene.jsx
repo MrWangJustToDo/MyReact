@@ -16,7 +16,7 @@ const Scene = () => {
       <InfiniteSnowGround />
 
       {/* <Stats /> */}
-      <OrbitControls makeDefault enableDamping={false} enableRotate={false} enableZoom={false} enablePan={false} />
+      <OrbitControls makeDefault enableDamping={false} enableRotate={false} enableZoom={true} enablePan={false} />
 
       <FrameLimiter />
     </Canvas>

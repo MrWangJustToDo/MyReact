@@ -12,4 +12,5 @@ export enum STATE_TYPE {
   __retrigger__ = 1 << 9,
   __reschedule__ = 1 << 10,
   __recreate__ = 1 << 11,
+  __suspense__ = 1 << 12,
 }

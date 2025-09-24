@@ -185,7 +185,6 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
     }
   }
 
-  // TODO update flow
   if (enableSuspenseRoot.current) {
     const suspenseField = getInstanceFieldByInstance(renderDispatch) as SuspenseInstanceField;
 
@@ -194,10 +193,6 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
     if (list.length === 0) return;
 
     if (renderDispatch.enableAsyncLoad) {
-      // defaultDeleteCurrentEffect(renderDispatch, renderDispatch.rootFiber);
-
-      // defaultDeleteChildEffect(renderDispatch, renderDispatch.rootFiber);
-
       const allPendingLoadArray = list.filter((item) => {
         if (isPromise(item)) {
           return typeof item.status !== "string";
@@ -241,19 +236,6 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
           })
         );
       }
-
-      // suspenseField.isHidden = true;
-
-      // const root = renderDispatch.rootFiber;
-
-      // root.state = remove(root.state, STATE_TYPE.__stable__);
-
-      // root.state = merge(root.state, STATE_TYPE.__retrigger__);
-
-      // // TODO use hide tree to improve
-      // mountLoopAll(renderDispatch, root);
-
-      // suspenseField.isHidden = false;
     } else {
       throw new Error(
         "[@my-react/reconciler] should not process async load list on sync mount without enableAsyncLoad, you may use a wrong renderDispatch instance"

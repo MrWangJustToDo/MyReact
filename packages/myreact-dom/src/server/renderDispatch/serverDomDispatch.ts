@@ -94,4 +94,8 @@ export class ServerDomDispatch extends CustomRenderDispatch {
   dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
     throw new Error("Server side does not support render promise");
   }
+
+  dispatchSuspensePromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
+    throw new Error(`unsupported dispatchSuspensePromise in server side render`);
+  }
 }

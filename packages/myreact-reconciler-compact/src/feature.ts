@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__, type MyReactElementNode } f
 import {
   MyReactFiberNode,
   CustomRenderDispatch,
-  // enableFiberForLog,
+  enableFiberForLog,
   checkIsSameType,
   triggerUpdateOnFiber,
   unmountContainer,
@@ -53,7 +53,7 @@ export const Reconciler = (_config: any) => {
 
     enableScopeTreeLog.current = false;
 
-    // enableFiberForLog.current = false;
+    enableFiberForLog.current = false;
 
     return _container;
   };

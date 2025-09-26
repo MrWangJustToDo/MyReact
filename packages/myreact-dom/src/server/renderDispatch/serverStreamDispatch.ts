@@ -1,4 +1,11 @@
-import { CustomRenderDispatch, getFiberTree, listenerMap, processHook, processPromise, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
+import {
+  CustomRenderDispatch,
+  getFiberTree,
+  listenerMap,
+  processHook,
+  processPromise,
+  safeCallWithCurrentFiber,
+} from "@my-react/react-reconciler";
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
@@ -309,6 +316,10 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
 
   dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
     return processPromise(this, _params.fiber, _params.promise);
+  }
+
+  dispatchSuspensePromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
+    throw new Error(`unsupported dispatchSuspensePromise in server side render`);
   }
 
   dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {

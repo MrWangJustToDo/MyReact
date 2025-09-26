@@ -230,6 +230,9 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
   dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
     throw new Error("Method not implemented.");
   }
+  dispatchSuspensePromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
+    throw new Error("Method not implemented.");
+  }
 
   trigger(_fiber: MyReactFiberNode, _state?: STATE_TYPE, cb?: () => void) {
     return triggerUpdateOnFiber(_fiber, _state, cb);

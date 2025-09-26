@@ -112,3 +112,56 @@ export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyRe
     return null;
   }
 };
+
+export const processSuspensePromise = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
+  defaultDeleteCurrentEffect(renderDispatch, fiber);
+
+  fiber.state = STATE_TYPE.__suspense__;
+
+  if (promise.status === "rejected") {
+    currentScheduler.current.dispatchError?.({ fiber, error: promise._reason });
+
+    return null;
+  }
+
+  if (promise.status === "fulfilled") {
+    if (__DEV__) {
+      console.warn("[@my-react/react] throw a promise what has already fulfilled, this is not a valid usage");
+    }
+  }
+
+  promise._list = promise._list || new Set();
+
+  promise._list.add(fiber);
+
+  if (promise._loading) return null;
+
+  promise._loading = true;
+
+  promise.status = "pending";
+
+  const renderScheduler = currentScheduler.current;
+
+  renderDispatch
+    .processPromise(promise)
+    .then(() => {
+      fiber.state = STATE_TYPE.__recreate__;
+
+      promise._list.delete(fiber);
+
+      promise._loading = false;
+
+      const updater: PromiseUpdateQueue = {
+        type: UpdateQueueType.promise,
+        trigger: fiber,
+        isSync: true,
+        isForce: true,
+        payLoad: promise,
+      };
+
+      renderScheduler.dispatchState(updater);
+    })
+    .catch((e) => renderScheduler.dispatchError({ fiber, error: e }));
+
+  return null;
+};

@@ -16,6 +16,7 @@ import {
   hmr,
   setRefreshHandler,
   typeToFibersMap,
+  processSuspensePromise,
 } from "@my-react/react-reconciler";
 
 import { append, create, position, remove, setRef, unsetRef, update } from "./api";
@@ -157,6 +158,10 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
 
     dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
       return processPromise(this, _params.fiber, _params.promise);
+    }
+
+    dispatchSuspensePromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown>; }): MyReactElementNode {
+      return processSuspensePromise(this, _params.fiber, _params.promise);
     }
 
     dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode {

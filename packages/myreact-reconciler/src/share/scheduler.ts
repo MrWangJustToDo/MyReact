@@ -84,6 +84,24 @@ const dispatchPromise = (_params: { fiber?: MyReactFiberNode; promise?: Promise<
   return dispatch.dispatchPromise(_params);
 };
 
+const dispatchSuspensePromise = (_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }) => {
+  const fiber = _params.fiber || (currentRunningFiber.current as MyReactFiberNode);
+
+  if (!fiber) {
+    throw new Error("No fiber found for dispatching suspense promise.");
+  }
+
+  // if (include(fiber.state, STATE_TYPE.__unmount__)) return;
+
+  const dispatch = getCurrentDispatchFromFiber(fiber);
+
+  if (!dispatch) {
+    throw new Error("No dispatch found for the current running fiber.");
+  }
+
+  return dispatch.dispatchSuspensePromise(_params);
+};
+
 const readContext = (_params: ReturnType<typeof createContext>): unknown => {
   const fiber = currentRunningFiber.current as MyReactFiberNode;
 
@@ -146,4 +164,6 @@ export const initScheduler = () => {
   scheduler.dispatchError = dispatchError;
 
   scheduler.dispatchPromise = dispatchPromise;
+
+  scheduler.dispatchSuspensePromise = dispatchSuspensePromise;
 };

@@ -1,4 +1,4 @@
-import { CustomRenderDispatch, getElementName, processHook, processPromise, processState } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, getElementName, processHook, processPromise, processState, processSuspensePromise } from "@my-react/react-reconciler";
 
 import { append, create, update } from "@my-react-dom-server/api";
 import { initialElementMap } from "@my-react-dom-shared";
@@ -196,5 +196,9 @@ export class NoopLatestRenderDispatch extends CustomRenderDispatch {
 
   dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }) {
     return processPromise(this, _params.fiber, _params.promise);
+  }
+
+  dispatchSuspensePromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }) {
+    return processSuspensePromise(this, _params.fiber, _params.promise);
   }
 }

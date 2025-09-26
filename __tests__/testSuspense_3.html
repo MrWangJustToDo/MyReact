@@ -37,6 +37,10 @@
           console.log("effect", active);
         }, [active]);
 
+        useEffect(() => {
+          console.log("f change", f);
+        }, [f])
+
         console.log(f);
 
         if (f) throw f;

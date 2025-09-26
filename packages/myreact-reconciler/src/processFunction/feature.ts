@@ -37,7 +37,7 @@ export const processFunction = (fiber: MyReactFiberNode) => {
           if (isPromise(e)) {
             const currentIsTrigger = include(fiber.state, triggerState);
             if (currentIsTrigger) {
-              fiber.state = STATE_TYPE.__suspense__;
+              re = currentScheduler.current?.dispatchSuspensePromise?.({ fiber, promise: e });
             } else {
               re = currentScheduler.current?.dispatchPromise?.({ fiber, promise: e });
             }
@@ -59,7 +59,7 @@ export const processFunction = (fiber: MyReactFiberNode) => {
           if (isPromise(e)) {
             const currentIsTrigger = include(fiber.state, triggerState);
             if (currentIsTrigger) {
-              fiber.state = STATE_TYPE.__suspense__;
+              re = currentScheduler.current?.dispatchSuspensePromise?.({ fiber, promise: e });
             } else {
               re = currentScheduler.current?.dispatchPromise?.({ fiber, promise: e });
             }

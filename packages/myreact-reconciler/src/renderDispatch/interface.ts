@@ -210,6 +210,8 @@ type DefaultRenderDispatch = {
   dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }): MyReactElementNode;
 
   dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode;
+
+  dispatchSuspensePromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode;
 };
 
 export type RenderDispatch<T = Record<string, any>> = DefaultRenderDispatch & T;

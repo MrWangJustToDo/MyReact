@@ -10,6 +10,7 @@ import {
   processHook,
   processPromise,
   processState,
+  processSuspensePromise,
   safeCallWithCurrentFiber,
   setRefreshHandler,
   triggerError,
@@ -269,6 +270,10 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
     return processPromise(this, _params.fiber, _params.promise);
+  }
+
+  dispatchSuspensePromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
+    return processSuspensePromise(this, _params.fiber, _params.promise);
   }
 }
 

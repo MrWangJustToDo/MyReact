@@ -40,6 +40,9 @@ export class Scheduler implements RenderScheduler {
   dispatchPromise(_params: { fiber?: RenderFiber; promise?: Promise<unknown> }): MyReactElementNode {
     throw new Error("Method not implemented.");
   }
+  dispatchSuspensePromise(_params: { fiber?: RenderFiber; promise?: Promise<unknown> }): MyReactElementNode {
+    throw new Error("Method not implemented.");
+  }
 
   dispatchSet = new UniqueArray<MyReactInternalInstance>();
 }

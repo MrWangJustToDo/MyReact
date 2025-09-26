@@ -30,6 +30,8 @@ export interface DefaultRenderScheduler {
   dispatchError(_params: { fiber?: RenderFiber; error?: Error }): MyReactElementNode;
 
   dispatchPromise(_params: { fiber?: RenderFiber; promise?: Promise<unknown> }): MyReactElementNode;
+
+  dispatchSuspensePromise(_params: { fiber?: RenderFiber; promise?: Promise<unknown> }): MyReactElementNode;
 }
 
 /**

@@ -27,7 +27,7 @@ function addSocketEntry(sockIntegration: IntegrationType, compiler: Compiler) {
 
 const PLUGIN_NAME = "RefreshRspackPlugin";
 
-class RefreshRspackPlugin {
+class ReactRefreshRspackPlugin {
   options: NormalizedPluginOptions;
 
   static deprecated_runtimePaths = runtimePaths;
@@ -83,6 +83,7 @@ class RefreshRspackPlugin {
 
     if (this.options.injectLoader) {
       compiler.options.module.rules.unshift({
+        test: this.options.test,
         // biome-ignore lint: exists
         include: this.options.include!,
         exclude: {
@@ -95,30 +96,32 @@ class RefreshRspackPlugin {
           // we shoudn't inject react refresh for asset module
           not: ["url"],
         },
-        use: RefreshRspackPlugin.loader,
+        use: ReactRefreshRspackPlugin.loader,
       });
     }
 
     const definedModules: Record<string, string | boolean> = {
       // For Multiple Instance Mode
-      __my_react_refresh_library__: JSON.stringify(
+      // For Multiple Instance Mode
+      __react_refresh_library__: JSON.stringify(
         compiler.webpack.Template.toIdentifier(this.options.library || compiler.options.output.uniqueName || compiler.options.output.library)
       ),
+      __reload_on_runtime_errors__: this.options.reloadOnRuntimeErrors,
     };
     const providedModules: Record<string, string> = {
-      __my_react_refresh_utils__: refreshUtilsPath,
+      __react_refresh_utils__: refreshUtilsPath,
     };
     if (this.options.overlay === false) {
       // Stub errorOverlay module so their calls can be erased
-      definedModules.__my_react_refresh_error_overlay__ = false;
-      definedModules.__my_react_refresh_socket__ = false;
+      definedModules.__react_refresh_error_overlay__ = false;
+      definedModules.__react_refresh_socket__ = false;
     } else {
       if (this.options.overlay.module) {
-        providedModules.__my_react_refresh_error_overlay__ = require.resolve(this.options.overlay.module);
+        providedModules.__react_refresh_error_overlay__ = require.resolve(this.options.overlay.module);
       }
 
       if (this.options.overlay.sockIntegration) {
-        providedModules.__my_react_refresh_socket__ = getSocketIntegration(this.options.overlay.sockIntegration);
+        providedModules.__react_refresh_socket__ = getSocketIntegration(this.options.overlay.sockIntegration);
       }
     }
     new compiler.webpack.DefinePlugin(definedModules).apply(compiler);
@@ -145,5 +148,5 @@ class RefreshRspackPlugin {
   }
 }
 
-// @ts-expect-error output module.exports
-export = RefreshRspackPlugin;
+export { ReactRefreshRspackPlugin };
+export default ReactRefreshRspackPlugin;

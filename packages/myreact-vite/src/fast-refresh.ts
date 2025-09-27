@@ -12,6 +12,10 @@ if (!RefreshRuntime.version || !compareVersion(RefreshRuntime.version, "0.3.9"))
 
 export const runtimePublicPath = "/@my-react-refresh";
 
+const reactCompRE = /extends\s+(?:React\.)?(?:Pure)?Component/;
+
+const refreshContentRE = /\$RefreshReg\$\(/;
+
 const _require = createRequire(import.meta.url);
 
 const reactRefreshDir = path.dirname(_require.resolve("@my-react/react-refresh/package.json"));
@@ -32,45 +36,32 @@ export default exports
 export const preambleCode = `
 import MyRefreshRuntime from "__BASE__${runtimePublicPath.slice(1)}";
 MyRefreshRuntime.injectIntoGlobalHook(window);
-window.$RefreshReg$ = () => {}
-window.$RefreshSig$ = () => (type) => type
-window.__vite_plugin_my_react_preamble_installed__ = true
-window.__vite_plugin_react_preamble_installed__ = true
+window.$RefreshReg$ = () => {};
+window.$RefreshSig$ = () => (type) => type;
+window.__vite_plugin_my_react_preamble_installed__ = true;
+window.__vite_plugin_react_preamble_installed__ = true;
 `;
 
-const sharedHeader = `
-import MyRefreshRuntime from "${runtimePublicPath}";
+export const getPreambleCode = (base: string): string => preambleCode.replace("__BASE__", base);
 
-const inWebWorker_ = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
-`.replace(/\n+/g, "");
+export function addRefreshWrapper(code: string, pluginName: string, id: string, reactRefreshHost = ""): string | undefined {
+  const hasRefresh = refreshContentRE.test(code);
+  const onlyReactComp = !hasRefresh && reactCompRE.test(code);
 
-const functionHeader = `let prevRefreshReg_;
-let prevRefreshSig_;
+  if (!hasRefresh && !onlyReactComp) return undefined;
 
-if (import.meta.hot && !inWebWorker_) {
-  if (!window.__vite_plugin_my_react_preamble_installed__) {
+  let newCode = code;
+  newCode += `
+
+import MyRefreshRuntime from "${reactRefreshHost}${runtimePublicPath}";
+const _inWebWorker = typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope;
+if (import.meta.hot && !_inWebWorker) {
+  if (!window.$RefreshReg$) {
     throw new Error(
-      "@vitejs/plugin-react can't detect preamble. Something is wrong. " +
-      "See https://github.com/vitejs/vite-plugin-react/pull/11#discussion_r430879201"
+      "${pluginName} can't detect preamble. Something is wrong."
     );
   }
 
-  prevRefreshReg_ = window.$RefreshReg$;
-  prevRefreshSig_ = window.$RefreshSig$;
-  window.$RefreshReg$ = (type, id) => {
-    MyRefreshRuntime.register(type, __SOURCE__ + " " + id)
-  };
-  window.$RefreshSig$ = MyRefreshRuntime.createSignatureFunctionForTransform;
-}`.replace(/\n+/g, "");
-
-const functionFooter = `
-if (import.meta.hot && !inWebWorker_) {
-  window.$RefreshReg$ = prevRefreshReg_;
-  window.$RefreshSig$ = prevRefreshSig_;
-}`;
-
-const sharedFooter = (id: string) => `
-if (import.meta.hot && !inWebWorker_) {
   MyRefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
     MyRefreshRuntime.registerExportsForReactRefresh(${JSON.stringify(id)}, currentExports);
     import.meta.hot.accept((nextExports) => {
@@ -79,12 +70,14 @@ if (import.meta.hot && !inWebWorker_) {
       if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
     });
   });
-}`;
-
-export function addRefreshWrapper(code: string, id: string): string {
-  return sharedHeader + functionHeader.replace("__SOURCE__", JSON.stringify(id)) + code + functionFooter + sharedFooter(id);
 }
+`;
 
-export function addClassComponentRefreshWrapper(code: string, id: string): string {
-  return sharedHeader + code + sharedFooter(id);
+  if (hasRefresh) {
+    newCode += `function $RefreshReg$(type, id) { return MyRefreshRuntime.register(type, ${JSON.stringify(id)} + ' ' + id) }
+function $RefreshSig$() { return MyRefreshRuntime.createSignatureFunctionForTransform(); }
+`;
+  }
+
+  return newCode;
 }

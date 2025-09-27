@@ -13,15 +13,26 @@ interface OverlayOptions {
 
 export type PluginOptions = {
   /**
-   * Include files to be processed by the plugin.
-   * The value is the same as the `rule.test` option in Rspack.
+   * Specifies which files should be processed by the React Refresh loader.
+   * This option is passed to the `builtin:react-refresh-loader` as the `rule.test` condition.
+   * Works identically to Rspack's `rule.test` option.
+   * @see https://rspack.dev/config/module#ruletest
+   */
+  test?: RuleSetCondition;
+  /**
+   * Explicitly includes files to be processed by the React Refresh loader.
+   * This option is passed to the `builtin:react-refresh-loader` as the `rule.include` condition.
+   * Use this to limit processing to specific directories or file patterns.
+   * Works identically to Rspack's `rule.include` option.
    * @default /\.([cm]js|[jt]sx?|flow)$/i
+   * @see https://rspack.dev/config/module#ruleinclude
    */
   include?: RuleSetCondition | null;
   /**
    * Exclude files from being processed by the plugin.
    * The value is the same as the `rule.exclude` option in Rspack.
    * @default /node_modules/
+   * @see https://rspack.dev/config/module#ruleexclude
    */
   exclude?: RuleSetCondition | null;
   /**
@@ -68,6 +79,11 @@ export type PluginOptions = {
    * @default true
    */
   injectEntry?: boolean;
+  /**
+   * Whether to reload the page on runtime errors. E.g: undefined module factory
+   * @default false
+   */
+  reloadOnRuntimeErrors?: boolean;
 };
 
 export interface NormalizedPluginOptions extends Required<PluginOptions> {
@@ -107,6 +123,7 @@ export function normalizeOptions(options: PluginOptions): NormalizedPluginOption
   d(options, "forceEnable", false);
   d(options, "injectLoader", true);
   d(options, "injectEntry", true);
+  d(options, "reloadOnRuntimeErrors", false);
   options.overlay = normalizeOverlay(options.overlay);
   return options as NormalizedPluginOptions;
 }

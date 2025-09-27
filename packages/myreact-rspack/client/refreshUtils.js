@@ -229,6 +229,12 @@ function executeRuntime(moduleExports, moduleId, webpackHot, refreshOverlay, isT
          * @returns {void}
          */
         function hotErrorHandler(error) {
+          console.error(error);
+          if (__reload_on_runtime_errors__ && isUnrecoverableRuntimeError(error)) {
+            location.reload();
+            return;
+          }
+
           if (typeof refreshOverlay !== "undefined" && refreshOverlay) {
             refreshOverlay.handleRuntimeError(error);
           }
@@ -266,6 +272,10 @@ function executeRuntime(moduleExports, moduleId, webpackHot, refreshOverlay, isT
       }
     }
   }
+}
+
+function isUnrecoverableRuntimeError(error) {
+  return error.message.startsWith("RuntimeError: factory is undefined");
 }
 
 module.exports = Object.freeze({

@@ -1,14 +1,18 @@
-// eslint-disable-next-line import/no-duplicates
+/* eslint-disable max-lines */
+/* eslint-disable import/no-duplicates */
+import { exactRegex, makeIdFiltersToMatchWithQuery } from "@rolldown/pluginutils";
 import { createFilter } from "vite";
+import * as vite from "vite";
 
-import { addClassComponentRefreshWrapper, addRefreshWrapper, preambleCode, runtimeCode, runtimePublicPath } from "./fast-refresh";
+import { addRefreshWrapper, getPreambleCode, preambleCode, runtimeCode, runtimePublicPath } from "./fast-refresh";
+import { silenceUseClientWarning } from "./warning";
 
 import type * as babelCore from "@babel/core";
-import type { BuildOptions, Plugin, PluginOption, ResolvedConfig, UserConfig } from "vite";
+import type { ParserOptions, TransformOptions } from "@babel/core";
+import type { Plugin, ResolvedConfig } from "vite";
 
 // lazy load babel since it's not used during build if plugins are not used
 let babel: typeof babelCore | undefined;
-
 async function loadBabel() {
   if (!babel) {
     babel = await import("@babel/core");
@@ -34,6 +38,14 @@ export interface Options {
    * Babel configuration applied in both dev and prod.
    */
   babel?: BabelOptions | ((id: string, options: { ssr?: boolean }) => BabelOptions);
+  /**
+   * React Fast Refresh runtime URL prefix.
+   * Useful in a module federation context to enable HMR by specifying
+   * the host application URL in the Vite config of a remote application.
+   * @example
+   * reactRefreshHost: 'http://localhost:3000'
+   */
+  reactRefreshHost?: string;
 
   /**
    * default false for remix & react-router >= 7
@@ -51,7 +63,7 @@ export interface Options {
   reactRouter?: boolean;
 }
 
-export type BabelOptions = Omit<babelCore.TransformOptions, "ast" | "filename" | "root" | "sourceFileName" | "sourceMaps" | "inputSourceMap">;
+export type BabelOptions = Omit<TransformOptions, "ast" | "filename" | "root" | "sourceFileName" | "sourceMaps" | "inputSourceMap">;
 
 /**
  * The object type used by the `options` passed to plugins with
@@ -61,8 +73,8 @@ export interface ReactBabelOptions extends BabelOptions {
   plugins: Extract<BabelOptions["plugins"], any[]>;
   presets: Extract<BabelOptions["presets"], any[]>;
   overrides: Extract<BabelOptions["overrides"], any[]>;
-  parserOpts: babelCore.ParserOptions & {
-    plugins: Extract<babelCore.ParserOptions["plugins"], any[]>;
+  parserOpts: ParserOptions & {
+    plugins: Extract<ParserOptions["plugins"], any[]>;
   };
 }
 
@@ -77,21 +89,27 @@ export type ViteReactPluginApi = {
   reactBabel?: ReactBabelHook;
 };
 
-const reactCompRE = /extends\s+(?:React\.)?(?:Pure)?Component/;
-const refreshContentRE = /\$Refresh(?:Reg|Sig)\$\(/;
 const defaultIncludeRE = /\.[tj]sx?$/;
+const defaultExcludeRE = /\/node_modules\//;
 const tsRE = /\.tsx?$/;
+const compilerAnnotationRE = /['"]use memo['"]/;
 
-export default function viteReact(opts: Options = {}): PluginOption[] {
-  // Provide default values for Rollup compat.
-  let devBase = "/";
-  const filter = createFilter(opts.include ?? defaultIncludeRE, opts.exclude);
+export default function viteReact(opts: Options = {}): Plugin[] {
+  const include = opts.include ?? defaultIncludeRE;
+  const exclude = opts.exclude ?? defaultExcludeRE;
+  const filter = createFilter(include, exclude);
+
   const jsxImportSource = opts.jsxImportSource ?? "react";
   const jsxImportRuntime = `${jsxImportSource}/jsx-runtime`;
   const jsxImportDevRuntime = `${jsxImportSource}/jsx-dev-runtime`;
+
+  const isRolldownVite = "rolldownVersion" in vite;
+  let runningInVite = false;
   let isProduction = true;
   let projectRoot = process.cwd();
-  let skipFastRefresh = false;
+  let skipFastRefresh = true;
+  let base: string;
+  let isFullBundle = false;
   let runPluginOverrides: ((options: ReactBabelOptions, context: ReactBabelHookContext) => void) | undefined;
   let staticBabelOptions: ReactBabelOptions | undefined;
 
@@ -106,7 +124,41 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
   const viteBabel: Plugin = {
     name: "vite:my-react-babel",
     enforce: "pre",
-    config() {
+    config(_userConfig, { command }) {
+      if ("rolldownVersion" in vite) {
+        if (opts.jsxRuntime === "classic") {
+          return {
+            oxc: {
+              jsx: {
+                runtime: "classic",
+                refresh: command === "serve",
+                // disable __self and __source injection even in dev
+                // as this plugin injects them by babel and oxc will throw
+                // if development is enabled and those properties are already present
+                development: false,
+              },
+              jsxRefreshInclude: makeIdFiltersToMatchWithQuery(include),
+              jsxRefreshExclude: makeIdFiltersToMatchWithQuery(exclude),
+            },
+          };
+        } else {
+          return {
+            oxc: {
+              jsx: {
+                runtime: "automatic",
+                importSource: opts.jsxImportSource,
+                refresh: command === "serve",
+              },
+              jsxRefreshInclude: makeIdFiltersToMatchWithQuery(include),
+              jsxRefreshExclude: makeIdFiltersToMatchWithQuery(exclude),
+            },
+            optimizeDeps: {
+              rollupOptions: { transform: { jsx: { runtime: "automatic" } } },
+            },
+          };
+        }
+      }
+
       if (opts.jsxRuntime === "classic") {
         return {
           esbuild: {
@@ -117,21 +169,23 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
         return {
           esbuild: {
             jsx: "automatic",
-            jsxImportSource: opts.jsxImportSource ?? jsxImportSource,
+            // keep undefined by default so that vite's esbuild transform can prioritize jsxImportSource from tsconfig
+            jsxImportSource: opts.jsxImportSource,
           },
-          optimizeDeps: { esbuildOptions: { jsx: "automatic" }, include: ["@my-react/react/jsx-runtime", "@my-react/react/jsx-dev-runtime"] },
+          optimizeDeps: { esbuildOptions: { jsx: "automatic" } },
         };
       }
     },
     configResolved(config) {
-      devBase = config.base;
+      runningInVite = true;
+      base = config.base;
+      // @ts-expect-error only available in newer rolldown-vite
+      if (config.experimental.fullBundleMode) {
+        isFullBundle = true;
+      }
       projectRoot = config.root;
       isProduction = config.isProduction;
       skipFastRefresh = isProduction || config.command === "build" || config.server.hmr === false;
-
-      if ("jsxPure" in opts) {
-        config.logger.warnOnce("[@vitejs/plugin-react] jsxPure was removed. You can configure esbuild.jsxSideEffects directly.");
-      }
 
       const hooks: ReactBabelHook[] = config.plugins.map((plugin) => plugin.api?.reactBabel).filter(defined);
 
@@ -144,108 +198,151 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
         // we only create static option in this case and re-create them
         // each time otherwise
         staticBabelOptions = createBabelOptions(opts.babel);
-      }
-    },
-    async transform(code, id, options) {
-      if (id.includes("/node_modules/")) return;
 
-      const [filepath] = id.split("?");
-
-      if (!filter(filepath)) return;
-
-      const ssr = options?.ssr === true;
-
-      const babelOptions = (() => {
-        if (staticBabelOptions) return staticBabelOptions;
-
-        const newBabelOptions = createBabelOptions(typeof opts.babel === "function" ? opts.babel(id, { ssr }) : opts.babel);
-
-        runPluginOverrides?.(newBabelOptions, { id, ssr });
-
-        return newBabelOptions;
-      })();
-
-      const plugins = [...babelOptions.plugins];
-
-      const isJSX = filepath.endsWith("x");
-
-      const useFastRefresh =
-        !skipFastRefresh &&
-        !ssr &&
-        (isJSX || (opts.jsxRuntime === "classic" ? importReactRE.test(code) : code.includes(jsxImportDevRuntime) || code.includes(jsxImportRuntime)));
-
-      if (useFastRefresh) {
-        plugins.push([await loadPlugin("@my-react/react-refresh/babel"), { skipEnvCheck: true }]);
-      }
-
-      if (opts.jsxRuntime === "classic" && isJSX) {
-        if (!isProduction) {
-          // These development plugins are only needed for the classic runtime.
-          plugins.push(await loadPlugin("@babel/plugin-transform-react-jsx-self"), await loadPlugin("@babel/plugin-transform-react-jsx-source"));
+        if (
+          (isRolldownVite || skipFastRefresh) &&
+          canSkipBabel(staticBabelOptions.plugins, staticBabelOptions) &&
+          (opts.jsxRuntime === "classic" ? isProduction : true)
+        ) {
+          delete viteBabel.transform;
         }
       }
-
-      // Avoid parsing if no special transformation is needed
-      if (!plugins.length && !babelOptions.presets.length && !babelOptions.configFile && !babelOptions.babelrc) {
-        return;
+    },
+    options(options) {
+      if (!runningInVite) {
+        options.jsx = {
+          mode: opts.jsxRuntime,
+          importSource: opts.jsxImportSource,
+        };
+        return options;
       }
-
-      const parserPlugins = [...babelOptions.parserOpts.plugins];
-
-      if (!filepath.endsWith(".ts")) {
-        parserPlugins.push("jsx");
-      }
-
-      if (tsRE.test(filepath)) {
-        parserPlugins.push("typescript");
-      }
-
-      const babel = await loadBabel();
-
-      const result = await babel.transformAsync(code, {
-        ...babelOptions,
-        root: projectRoot,
-        filename: id,
-        sourceFileName: filepath,
-        // Required for esbuild.jsxDev to provide correct line numbers
-        // This creates issues the react compiler because the re-order is too important
-        // People should use @babel/plugin-transform-react-jsx-development to get back good line numbers
-        retainLines: getReactCompilerPlugin(plugins) != null ? false : !isProduction && isJSX && opts.jsxRuntime !== "classic",
-        parserOpts: {
-          ...babelOptions.parserOpts,
-          sourceType: "module",
-          allowAwaitOutsideFunction: true,
-          plugins: parserPlugins,
+    },
+    transform: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      filter: {
+        id: {
+          include: makeIdFiltersToMatchWithQuery(include),
+          exclude: makeIdFiltersToMatchWithQuery(exclude),
         },
-        generatorOpts: {
-          ...babelOptions.generatorOpts,
-          // import attributes parsing available without plugin since 7.26
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          importAttributesKeyword: "with",
-          decoratorsBeforeExport: true,
-        },
-        plugins,
-        sourceMaps: true,
-      });
+      },
+      async handler(code, id, options) {
+        const [filepath] = id.split("?");
+        if (!filter(filepath)) return;
 
-      if (result) {
-        let code = result.code!;
+        const ssr = options?.ssr === true;
+        const babelOptions = (() => {
+          if (staticBabelOptions) return staticBabelOptions;
+          const newBabelOptions = createBabelOptions(typeof opts.babel === "function" ? opts.babel(id, { ssr }) : opts.babel);
+          runPluginOverrides?.(newBabelOptions, { id, ssr });
+          return newBabelOptions;
+        })();
+        const plugins = [...babelOptions.plugins];
+
+        // remove react-compiler plugin on non client environment
+        let reactCompilerPlugin = getReactCompilerPlugin(plugins);
+        if (reactCompilerPlugin && ssr) {
+          plugins.splice(plugins.indexOf(reactCompilerPlugin), 1);
+          reactCompilerPlugin = undefined;
+        }
+
+        // filter by "use memo" when react-compiler { compilationMode: "annotation" }
+        // https://react.dev/learn/react-compiler/incremental-adoption#annotation-mode-configuration
+        if (Array.isArray(reactCompilerPlugin) && reactCompilerPlugin[1]?.compilationMode === "annotation" && !compilerAnnotationRE.test(code)) {
+          plugins.splice(plugins.indexOf(reactCompilerPlugin), 1);
+          reactCompilerPlugin = undefined;
+        }
+
+        const isJSX = filepath.endsWith("x");
+        const useFastRefresh =
+          !(isRolldownVite || skipFastRefresh) &&
+          !ssr &&
+          (isJSX || (opts.jsxRuntime === "classic" ? importReactRE.test(code) : code.includes(jsxImportDevRuntime) || code.includes(jsxImportRuntime)));
         if (useFastRefresh) {
-          if (refreshContentRE.test(code)) {
-            code = addRefreshWrapper(code, id);
-          } else if (reactCompRE.test(code)) {
-            code = addClassComponentRefreshWrapper(code, id);
+          plugins.push([await loadPlugin("@my-react/react-refresh/babel"), { skipEnvCheck: true }]);
+        }
+
+        if (opts.jsxRuntime === "classic" && isJSX) {
+          if (!isProduction) {
+            // These development plugins are only needed for the classic runtime.
+            plugins.push(await loadPlugin("@babel/plugin-transform-react-jsx-self"), await loadPlugin("@babel/plugin-transform-react-jsx-source"));
           }
         }
-        return { code, map: result.map };
-      }
+
+        // Avoid parsing if no special transformation is needed
+        if (canSkipBabel(plugins, babelOptions)) {
+          return;
+        }
+
+        const parserPlugins = [...babelOptions.parserOpts.plugins];
+
+        if (!filepath.endsWith(".ts")) {
+          parserPlugins.push("jsx");
+        }
+
+        if (tsRE.test(filepath)) {
+          parserPlugins.push("typescript");
+        }
+
+        const babel = await loadBabel();
+        const result = await babel.transformAsync(code, {
+          ...babelOptions,
+          root: projectRoot,
+          filename: id,
+          sourceFileName: filepath,
+          // Required for esbuild.jsxDev to provide correct line numbers
+          // This creates issues the react compiler because the re-order is too important
+          // People should use @babel/plugin-transform-react-jsx-development to get back good line numbers
+          retainLines: reactCompilerPlugin ? false : !isProduction && isJSX && opts.jsxRuntime !== "classic",
+          parserOpts: {
+            ...babelOptions.parserOpts,
+            sourceType: "module",
+            allowAwaitOutsideFunction: true,
+            plugins: parserPlugins,
+          },
+          generatorOpts: {
+            ...babelOptions.generatorOpts,
+            // import attributes parsing available without plugin since 7.26
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            importAttributesKeyword: "with",
+            decoratorsBeforeExport: true,
+          },
+          plugins,
+          sourceMaps: true,
+        });
+
+        if (result) {
+          if (!useFastRefresh) {
+            return { code: result.code!, map: result.map };
+          }
+          const code = addRefreshWrapper(result.code!, "@vitejs/plugin-react", id, opts.reactRefreshHost);
+          return { code: code ?? result.code!, map: result.map };
+        }
+      },
     },
   };
+
+  const dependencies = [
+    "react",
+    "react-dom",
+    jsxImportRuntime,
+    jsxImportDevRuntime,
+    "@my-react/react",
+    "@my-react/react/jsx-runtime",
+    "@my-react/react/jsx-dev-runtime",
+    "@my-react/react-dom",
+    "@my-react/react-dom/client",
+    "@my-react/react-dom/server",
+  ];
 
   const staticBabelPlugins = typeof opts.babel === "object" ? (opts.babel?.plugins ?? []) : [];
 
   const reactCompilerPlugin = getReactCompilerPlugin(staticBabelPlugins);
+
+  if (reactCompilerPlugin) {
+    dependencies.push("react-compiler-runtime");
+  }
 
   const viteReactRefresh: Plugin = {
     name: "vite:my-react-refresh",
@@ -253,20 +350,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
     config: (userConfig) => ({
       build: silenceUseClientWarning(userConfig),
       optimizeDeps: {
-        include: [
-          "react",
-          "react-dom",
-          jsxImportRuntime,
-          jsxImportDevRuntime,
-          "@my-react/react",
-          "@my-react/react/jsx-runtime",
-          "@my-react/react/jsx-dev-runtime",
-          "@my-react/react-dom",
-          "@my-react/react-dom/client",
-          "@my-react/react-dom/server",
-          // no build in compiler module
-          reactCompilerPlugin ? "react-compiler-runtime" : undefined,
-        ].filter(Boolean) as string[],
+        include: dependencies,
       },
       resolve: {
         alias:
@@ -279,23 +363,33 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
         dedupe: ["react", "react-dom", "@my-react/react", "@my-react/react-dom"],
       },
     }),
-    resolveId(id) {
-      if (id === runtimePublicPath) {
-        return id;
-      }
+    resolveId: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      filter: { id: exactRegex(runtimePublicPath) },
+      handler(id) {
+        if (id === runtimePublicPath) {
+          return id;
+        }
+      },
     },
-    load(id) {
-      if (id === runtimePublicPath) {
-        return runtimeCode;
-      }
+    load: {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      filter: { id: exactRegex(runtimePublicPath) },
+      handler(id) {
+        if (id === runtimePublicPath) {
+          return runtimeCode;
+        }
+      },
     },
     transformIndexHtml() {
-      if (!skipFastRefresh)
+      if (!skipFastRefresh && !isFullBundle)
         return [
           {
             tag: "script",
             attrs: { type: "module" },
-            children: preambleCode.replace(`__BASE__`, devBase),
+            children: getPreambleCode(base),
           },
         ];
     },
@@ -308,7 +402,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
       // see https://github.com/remix-run/remix/blob/bff2d58bdd22fe305f3e7ca8ddad03c5940f4e90/packages/remix-dev/vite/plugin.ts#L1685
       // inject HMR runtime for remix
       if (id === "\0virtual:remix/inject-hmr-runtime") {
-        return `${preambleCode.replace(`__BASE__`, devBase)}`;
+        return getPreambleCode(base);
       }
     },
   };
@@ -328,7 +422,7 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
     transform(code, id) {
       // see https://github.com/remix-run/react-router/blob/20afd82a683f175150dd05095aa677686665fbc8/packages/react-router-dev/vite/plugin.ts#L1457
       if (id === "\0virtual:react-router/inject-hmr-runtime") {
-        return `${preambleCode.replace(`__BASE__`, devBase)}`;
+        return getPreambleCode(base);
       }
     },
   };
@@ -350,29 +444,25 @@ export default function viteReact(opts: Options = {}): PluginOption[] {
     opts.remix ? viteRemixRefreshRuntime : null,
     opts.reactRouter ? viteReactRouterRefresh : null,
     opts.reactRouter ? viteReactRouterRefreshRuntime : null,
-  ].filter(Boolean);
+  ].filter(Boolean) as Plugin[];
 }
 
 viteReact.preambleCode = preambleCode;
 
-const silenceUseClientWarning = (userConfig: UserConfig): BuildOptions => ({
-  rollupOptions: {
-    onwarn(warning, defaultHandler) {
-      if (warning.code === "MODULE_LEVEL_DIRECTIVE" && warning.message.includes("use client")) {
-        return;
-      }
-      // https://github.com/vitejs/vite/issues/15012
-      if (warning.code === "SOURCEMAP_ERROR" && warning.message.includes("resolve original location") && warning.pos === 0) {
-        return;
-      }
-      if (userConfig.build?.rollupOptions?.onwarn) {
-        userConfig.build.rollupOptions.onwarn(warning, defaultHandler);
-      } else {
-        defaultHandler(warning);
-      }
-    },
-  },
+// Compat for require
+function viteReactForCjs(this: unknown, options: Options): Plugin[] {
+  return viteReact.call(this, options);
+}
+
+Object.assign(viteReactForCjs, {
+  default: viteReactForCjs,
 });
+
+export { viteReactForCjs };
+
+function canSkipBabel(plugins: ReactBabelOptions["plugins"], babelOptions: ReactBabelOptions) {
+  return !(plugins.length || babelOptions.presets.length || babelOptions.configFile || babelOptions.babelrc);
+}
 
 const loadedPlugin = new Map<string, any>();
 

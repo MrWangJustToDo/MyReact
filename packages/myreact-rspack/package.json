@@ -15,8 +15,8 @@
   "types": "index.d.ts",
   "exports": {
     ".": {
-      "types": "./index.d.ts",
-      "default": "./index.js"
+      "require": "./exports/index.cjs",
+      "default": "./exports/index.mjs"
     },
     "./react-refresh": "./react-refresh.js",
     "./react-refresh-entry": "./react-refresh-entry.js",

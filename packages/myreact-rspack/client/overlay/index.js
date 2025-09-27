@@ -240,7 +240,12 @@ function render() {
  */
 function cleanup() {
   // Clean up and reset all internal state.
-  document.body.removeChild(iframeRoot);
+  try {
+    document.body.removeChild(iframeRoot);
+  } catch (e) {
+    // In case user render react app directly to body， will trigger `NotFoundError` when recovery from an Error
+    // https://developer.mozilla.org/en-US/docs/Web/API/Node/removeChild#exceptions
+  }
   scheduledRenderFn = null;
   root = null;
   iframeRoot = null;

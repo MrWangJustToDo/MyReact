@@ -36,10 +36,10 @@ var safeThis = (function () {
 
 if (process.env.NODE_ENV !== "production") {
   if (typeof safeThis !== "undefined") {
-    var $RefreshInjected$ = "__my_reactRefreshInjected";
+    var $RefreshInjected$ = "__reactRefreshInjected";
     // Namespace the injected flag (if necessary) for monorepo compatibility
-    if (typeof __my_react_refresh_library__ !== "undefined" && __my_react_refresh_library__) {
-      $RefreshInjected$ += "_" + __my_react_refresh_library__;
+    if (typeof __react_refresh_library__ !== "undefined" && __react_refresh_library__) {
+      $RefreshInjected$ += "_" + __react_refresh_library__;
     }
 
     // Only inject the runtime if it hasn't been injected

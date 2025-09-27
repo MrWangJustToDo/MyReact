@@ -6,7 +6,15 @@ const RefreshRuntime = require("@my-react/react-refresh/runtime");
 function refresh(moduleId, webpackHot) {
   const currentExports = RefreshUtils.getModuleExports(moduleId);
   const fn = (exports) => {
-    RefreshUtils.executeRuntime(exports, moduleId, webpackHot);
+    var errorOverlay;
+    if (typeof __react_refresh_error_overlay__ !== "undefined") {
+      errorOverlay = __react_refresh_error_overlay__;
+    }
+    var testMode;
+    if (typeof __react_refresh_test__ !== "undefined") {
+      testMode = __react_refresh_test__;
+    }
+    RefreshUtils.executeRuntime(exports, moduleId, webpackHot, errorOverlay, testMode);
   };
   if (typeof Promise !== "undefined" && currentExports instanceof Promise) {
     currentExports.then(fn);

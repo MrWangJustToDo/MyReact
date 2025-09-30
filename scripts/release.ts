@@ -16,6 +16,7 @@ const pkgNameAlias = {
   "@my-react/react-vite": "myreact-vite",
   "@my-react/react-rspack": "myreact-rspack",
   "@my-react/react-terminal": "myreact-terminal",
+  "@my-react/react-three-fiber": "myreact-three-fiber",
 };
 
 const cleanTypeFile = async (pkgName: keyof typeof pkgNameAlias) => {
@@ -97,8 +98,9 @@ const run = async () => {
   await release("@my-react/react-refresh-tools");
   await release("@my-react/react-vite");
   await release("@my-react/react-rspack");
-  await release("@my-react/react-terminal");
   await release("@my-react/react-reconciler-compact");
+  await release("@my-react/react-terminal");
+  await release("@my-react/react-three-fiber");
 };
 
 run();

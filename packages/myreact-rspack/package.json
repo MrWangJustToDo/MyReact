@@ -5,6 +5,7 @@
   "files": [
     "dist",
     "client",
+    "exports",
     "index.js",
     "overlay.js",
     "react-refresh.js",

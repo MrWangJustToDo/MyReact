@@ -156,7 +156,7 @@ export const processClassComponentUpdateQueueLatest = (
     }
 
     if (allQueue.length) {
-      renderScheduler.macroTask(function prepareUpdateOnFiberTask() {
+      renderScheduler.microTask(function prepareUpdateOnFiberTask() {
         prepareUpdateOnFiber(renderDispatch, fiber, true, false);
       });
     }
@@ -570,7 +570,7 @@ export const processFunctionComponentUpdateQueueLatest = (
     }
 
     if (allQueue.length) {
-      renderScheduler.macroTask(function prepareUpdateOnFiberTask() {
+      renderScheduler.microTask(function prepareUpdateOnFiberTask() {
         prepareUpdateOnFiber(renderDispatch, fiber, true, false);
       });
     }

@@ -114,7 +114,7 @@ function updateConcurrentNextFrame(renderDispatch: CustomRenderDispatch) {
 
     finishUpdateConcurrentFromRoot(renderDispatch);
 
-    renderScheduler.macroTask(function callScheduleNext() {
+    renderScheduler.microTask(function callScheduleNext() {
       globalLoop.current = false;
 
       scheduleNext(renderDispatch);
@@ -150,7 +150,7 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
 
     finishUpdateConcurrentFromRoot(renderDispatch);
 
-    renderScheduler.macroTask(function callScheduleNext() {
+    renderScheduler.microTask(function callScheduleNext() {
       globalLoop.current = false;
 
       scheduleNext(renderDispatch);

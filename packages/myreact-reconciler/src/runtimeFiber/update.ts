@@ -80,7 +80,6 @@ export const updateFiberNode = (
   }
 
   if (prevRef !== nextRef) {
-    fiber.refPrevious = prevRef;
     renderDispatch.pendingRef(fiber);
   }
 

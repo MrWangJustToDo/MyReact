@@ -12,18 +12,18 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 export const setRef = (renderDispatch: ClientDomDispatch, _fiber: MyReactFiberNode) => {
   if (include(_fiber.patch, PATCH_TYPE.__ref__)) {
     const cleanUp = () => {
-      const refPrevious = _fiber.refPrevious;
-      safeCallWithCurrentFiber({
-        fiber: _fiber,
-        action: function safeCallRefPrevious() {
-          if (typeof refPrevious === "object" && refPrevious !== null) {
-            refPrevious.current = null;
-          } else if (typeof refPrevious === "function") {
-            refPrevious?.(null);
-          }
-        },
-      });
-      _fiber.refPrevious = undefined;
+      // const refPrevious = _fiber.refPrevious;
+      // safeCallWithCurrentFiber({
+      //   fiber: _fiber,
+      //   action: function safeCallRefPrevious() {
+      //     if (typeof refPrevious === "object" && refPrevious !== null) {
+      //       refPrevious.current = null;
+      //     } else if (typeof refPrevious === "function") {
+      //       refPrevious?.(null);
+      //     }
+      //   },
+      // });
+      // _fiber.refPrevious = undefined;
       const refCleanup = _fiber.refCleanup;
       safeCallWithCurrentFiber({
         fiber: _fiber,

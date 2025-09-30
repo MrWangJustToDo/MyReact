@@ -4,6 +4,7 @@
   "description": "make @my-react work for vite",
   "files": [
     "dist",
+    "static",
     "index.js"
   ],
   "license": "MIT",

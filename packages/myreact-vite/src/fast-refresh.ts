@@ -26,10 +26,28 @@ const runtimeFilePath = path.join(reactRefreshDir, "dist/cjs/RefreshRuntime.deve
 
 const refreshUtilsPath = path.join(vitePluginDir, "dist/cjs/refreshUtils.development.js");
 
+const refreshUtilsRemixPath = path.join(vitePluginDir, "static/refreshUtils.remix.js");
+
+const refreshUtilsRouterPath = path.join(vitePluginDir, "static/refreshUtils.router.js");
+
 export const runtimeCode = `
 const exports = {}
 ${fs.readFileSync(runtimeFilePath, "utf-8")}
 ${fs.readFileSync(refreshUtilsPath, "utf-8")}
+export default exports
+`;
+
+export const remixRuntimeCode = `
+const exports = {}
+${fs.readFileSync(runtimeFilePath, "utf-8")}
+${fs.readFileSync(refreshUtilsRemixPath, "utf-8")}
+export default exports
+`;
+
+export const routerRuntimeCode = `
+const exports = {}
+${fs.readFileSync(runtimeFilePath, "utf-8")}
+${fs.readFileSync(refreshUtilsRouterPath, "utf-8")}
 export default exports
 `;
 

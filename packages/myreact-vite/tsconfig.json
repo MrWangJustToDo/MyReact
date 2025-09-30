@@ -8,6 +8,6 @@
     "noUnusedLocals": true,
     "esModuleInterop": true
   },
-  "include": ["./src"],
+  "include": ["./src", "static/refreshUtils.remix.js", "static/refreshUtils.router.js"],
   "exclude": ["node_modules"]
 }

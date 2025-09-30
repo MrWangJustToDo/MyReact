@@ -4,7 +4,7 @@ import { exactRegex, makeIdFiltersToMatchWithQuery } from "@rolldown/pluginutils
 import { createFilter } from "vite";
 import * as vite from "vite";
 
-import { addRefreshWrapper, getPreambleCode, preambleCode, runtimeCode, runtimePublicPath } from "./fast-refresh";
+import { addRefreshWrapper, getPreambleCode, preambleCode, runtimeCode, remixRuntimeCode, routerRuntimeCode, runtimePublicPath } from "./fast-refresh";
 import { silenceUseClientWarning } from "./warning";
 
 import type * as babelCore from "@babel/core";
@@ -411,7 +411,7 @@ export default function viteReact(opts: Options = {}): Plugin[] {
     enforce: "post",
     transform(code, id) {
       if (id === "\0virtual:remix/hmr-runtime") {
-        return runtimeCode;
+        return remixRuntimeCode;
       }
     },
   };
@@ -432,7 +432,7 @@ export default function viteReact(opts: Options = {}): Plugin[] {
     enforce: "post",
     transform(code, id) {
       if (id === "\0virtual:react-router/hmr-runtime") {
-        return runtimeCode;
+        return routerRuntimeCode;
       }
     },
   };

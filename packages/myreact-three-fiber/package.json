@@ -3,7 +3,7 @@
   "description": "@my-react/react-three-fiber",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.mjs",
   "types": "./index.d.ts",
   "type": "module",
@@ -40,6 +40,6 @@
     "three": ">=0.156"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.18"
+    "@my-react/react": ">=0.3.19"
   }
 }

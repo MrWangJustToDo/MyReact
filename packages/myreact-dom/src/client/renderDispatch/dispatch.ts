@@ -1,4 +1,5 @@
 import {
+  nextWorkActivity,
   nextWorkComponent,
   nextWorkConsumer,
   nextWorkLazy,
@@ -30,6 +31,8 @@ export const clientDispatchFiber = (renderDispatch: ClientDomDispatch, fiber: My
     nextWorkSuspense(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__provider__ | NODE_TYPE.__context__)) {
     nextWorkProvider(renderDispatch, fiber);
+  } else if (include(fiber.type, NODE_TYPE.__activity__)) {
+    nextWorkActivity(renderDispatch, fiber);
   } else {
     nextWorkNormal(renderDispatch, fiber);
   }

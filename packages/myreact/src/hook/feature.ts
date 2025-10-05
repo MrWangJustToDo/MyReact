@@ -165,3 +165,13 @@ export const useOptimistic = <S, A>(passthrough: S, reducer?: (p: S, c: A) => S)
 
   return dispatcher.useOptimistic(passthrough, reducer);
 };
+
+/**
+ * @public
+ */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export const useEffectEventHook = <T extends Function>(cb: T) => {
+  const dispatcher = resolveDispatcher();
+
+  return dispatcher.useEffectEvent(cb);
+};

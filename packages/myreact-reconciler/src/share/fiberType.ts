@@ -22,4 +22,5 @@ export enum NODE_TYPE {
   __context__ = 1 << 19,
   __scopeLazy__ = 1 << 20,
   __scopeSuspense__ = 1 << 21,
+  __activity__ = 1 << 22,
 }

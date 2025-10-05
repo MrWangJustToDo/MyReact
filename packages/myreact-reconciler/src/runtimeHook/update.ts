@@ -265,6 +265,16 @@ export const updateHookNode = (
     }
   }
 
+  if (currentHook.type === HOOK_TYPE.useEffectEvent) {
+    if (typeof value !== "function") {
+      throw new Error(`[@my-react/react] useEffectEvent should be a function`);
+    }
+
+    currentHook.value = value;
+
+    currentHook.result = value;
+  }
+
   if (currentHook.type === HOOK_TYPE.useDebugValue) {
     if (!isArrayEquals(currentHook.value, value)) {
       currentHook.value = value;

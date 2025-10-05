@@ -18,6 +18,7 @@ import {
   useSignalHook,
   useFunc,
   useOptimisticHook,
+  useEffectEventHook,
 } from "./hook";
 
 const Dispatch = {
@@ -40,6 +41,7 @@ const Dispatch = {
   useSyncExternalStore: useSyncExternalStoreHook,
   useTransition: useTransitionHook,
   useOptimistic: useOptimisticHook,
+  useEffectEvent: useEffectEventHook,
 };
 
 export const Dispatcher = createRef({

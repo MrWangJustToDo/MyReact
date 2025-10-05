@@ -34,4 +34,6 @@ export const Comment = Symbol.for("react.comment");
 
 export const Offscreen = Symbol.for("react.offscreen");
 
+export const Activity = Symbol.for("react.activity");
+
 export const Profiler = Symbol.for("react.profiler");

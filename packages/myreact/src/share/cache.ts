@@ -2,3 +2,5 @@
 export const cache = <T extends Function>(fn: T) => {
   return fn();
 };
+
+export const cacheSignal = () => null;

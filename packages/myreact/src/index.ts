@@ -1,4 +1,4 @@
-import { Strict as StrictMode, Fragment, Suspense, Profiler } from "@my-react/react-shared";
+import { Strict as StrictMode, Fragment, Suspense, Profiler, Activity } from "@my-react/react-shared";
 
 import { count, forEach, map, only, toArray } from "./children";
 import { MyReactComponent, MyReactPureComponent } from "./component";
@@ -50,7 +50,9 @@ import {
   macroTask,
   microTask,
   currentScopeFiber,
+  act,
   cache,
+  cacheSignal,
   Dispatcher,
   fiberToDispatchMap,
   dispatchToListenerMap,
@@ -159,6 +161,7 @@ export {
   lazy,
   memo,
   cache,
+  cacheSignal,
   createRef,
   forwardRef,
   createContext,
@@ -167,6 +170,7 @@ export {
   Fragment,
   Suspense,
   StrictMode,
+  Activity,
   // hook
   use,
   useId,
@@ -194,6 +198,7 @@ export {
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
   version,
   isMyReact,
+  act,
 };
 
 export type { Action, Reducer, RenderHook, RenderHookParams, DefaultRenderHook } from "./renderHook";

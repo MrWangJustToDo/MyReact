@@ -1,6 +1,15 @@
 import { include } from "@my-react/react-shared";
 
-import { nextWorkComponent, nextWorkConsumer, nextWorkLazy, nextWorkNormal, nextWorkProvider, nextWorkRoot, nextWorkSuspense } from "../runtimeGenerate";
+import {
+  nextWorkActivity,
+  nextWorkComponent,
+  nextWorkConsumer,
+  nextWorkLazy,
+  nextWorkNormal,
+  nextWorkProvider,
+  nextWorkRoot,
+  nextWorkSuspense,
+} from "../runtimeGenerate";
 import { NODE_TYPE } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
@@ -20,6 +29,8 @@ export const defaultDispatchFiber = (renderDispatch: CustomRenderDispatch, fiber
     nextWorkConsumer(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__provider__ | NODE_TYPE.__context__)) {
     nextWorkProvider(renderDispatch, fiber);
+  } else if (include(fiber.type, NODE_TYPE.__activity__)) {
+    nextWorkActivity(renderDispatch, fiber);
   } else {
     nextWorkNormal(renderDispatch, fiber);
   }

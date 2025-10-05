@@ -7,6 +7,7 @@ import {
   nextWorkConsumer,
   nextWorkProvider,
   nextWorkNormal,
+  nextWorkActivity,
 } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
@@ -31,6 +32,8 @@ export const ReconcilerDispatchFiber = (renderDispatch: ReconcilerDispatch, fibe
     nextWorkConsumer(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__provider__ | NODE_TYPE.__context__)) {
     nextWorkProvider(renderDispatch, fiber);
+  } else if (include(fiber.type, NODE_TYPE.__activity__)) {
+    nextWorkActivity(renderDispatch, fiber);
   } else {
     nextWorkNormal(renderDispatch, fiber);
   }

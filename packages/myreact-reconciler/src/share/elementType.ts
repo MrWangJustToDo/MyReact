@@ -18,6 +18,7 @@ import {
   ScopeLazy,
   ScopeSuspense,
   Root,
+  Activity,
 } from "@my-react/react-shared";
 
 import { devWarn } from "./debug";
@@ -207,6 +208,9 @@ export const getTypeFromElement = (element: MyReactElement): ReturnTypeFromEleme
         break;
       case Profiler:
         nodeType = merge(nodeType, NODE_TYPE.__profiler__);
+        break;
+      case Activity:
+        nodeType = merge(nodeType, NODE_TYPE.__activity__);
         break;
       default:
         throw new Error(`[@my-react/react] invalid symbol element type "${elementType?.toString()}"`);

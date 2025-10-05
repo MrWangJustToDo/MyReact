@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { TYPEKEY, Element, Consumer, ForwardRef, Fragment, Lazy, Memo, Provider, Suspense, Context } from "@my-react/react-shared";
+import { TYPEKEY, Element, Consumer, ForwardRef, Fragment, Lazy, Memo, Provider, Suspense, Context, Activity } from "@my-react/react-shared";
 
 import type {
   MyReactElementNode,
@@ -212,6 +212,16 @@ export const checkValidElement = (element: MyReactElementNode) => {
             throw new Error(
               `[@my-react/react] invalid argument for lazy(loader), the loader expect a function, but got a element class ${CurrentTypedRawType.loader}`
             );
+          }
+        }
+        // check Activity
+        else if (typedRawType[TYPEKEY] === Activity) {
+          const props = element.props;
+
+          for (const key in props) {
+            if (key !== "key" && key !== "children" && key !== "mode" && !key.startsWith("_")) {
+              console.warn(`[@my-react/react] <Activity /> element only support 'key' / 'mode' / 'children' props, but got ${key}`);
+            }
           }
         }
         // check invalid object element

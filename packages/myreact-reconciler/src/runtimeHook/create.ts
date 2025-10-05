@@ -74,7 +74,12 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
     hookNode.hasEffect = true;
   }
 
-  if (hookNode.type === HOOK_TYPE.useRef || hookNode.type === HOOK_TYPE.useCallback || hookNode.type === HOOK_TYPE.useDeferredValue) {
+  if (
+    hookNode.type === HOOK_TYPE.useRef ||
+    hookNode.type === HOOK_TYPE.useCallback ||
+    hookNode.type === HOOK_TYPE.useDeferredValue ||
+    hookNode.type === HOOK_TYPE.useEffectEvent
+  ) {
     hookNode.result = hookNode.value;
   }
 

@@ -1,6 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE, exclude, include, isPromise } from "@my-react/react-shared";
 
+import { processActivity } from "../processActivity";
 import { getClassInstanceFieldByInstance, processClassComponentMount, processClassComponentUpdate } from "../processClass";
 import { processConsumer, processProvider } from "../processContext";
 import { processFunction } from "../processFunction";
@@ -112,6 +113,12 @@ export const nextWorkConsumer = (renderDispatch: CustomRenderDispatch, fiber: My
 
   nextWorkCommon(renderDispatch, fiber, children);
 };
+
+export const nextWorkActivity = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+  const children = processActivity(fiber);
+
+  nextWorkCommon(renderDispatch, fiber, children);
+}
 
 export const nextWorkRoot = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const isUpdate = !!fiber.instance;

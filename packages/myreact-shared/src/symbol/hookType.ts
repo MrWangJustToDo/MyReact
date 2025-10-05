@@ -17,4 +17,5 @@ export enum HOOK_TYPE {
   useSyncExternalStore = 15,
 
   useOptimistic = 16,
+  useEffectEvent = 17,
 }

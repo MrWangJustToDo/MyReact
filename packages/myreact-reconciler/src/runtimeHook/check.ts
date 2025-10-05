@@ -33,4 +33,10 @@ export const checkHookValid = (hookNode: MyReactHookNode) => {
       throw new Error(`[@my-react/react] ${HOOK_TYPE[hookNode.type]} initial error`);
     }
   }
+
+  if (hookNode.type === HOOK_TYPE.useEffectEvent) {
+    if (typeof hookNode.value !== "function") {
+      throw new Error(`[@my-react/react] ${HOOK_TYPE[hookNode.type]} initial error`);
+    }
+  }
 };

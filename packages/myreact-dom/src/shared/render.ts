@@ -3,7 +3,7 @@ import { mountSync, mountAsync } from "@my-react/react-reconciler";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { NoopLatestRenderDispatch, NoopLegacyRenderDispatch } from "@my-react-dom-noop/renderDispatch/instance";
-import type { ServerDomDispatch, LegacyServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
+import type { ServerDomDispatch, LegacyServerStreamDispatch, LatestServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 
 /**
  * @internal
@@ -32,7 +32,7 @@ export const startRender = (
  * @internal
  */
 export const startRenderAsync = async (
-  renderDispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch | NoopLatestRenderDispatch,
+  renderDispatch: ClientDomDispatch | ServerDomDispatch | LatestServerStreamDispatch | NoopLatestRenderDispatch,
   fiber: MyReactFiberNode,
   hydrate = false
 ) => {

@@ -4,7 +4,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 export const processActivity = (fiber: MyReactFiberNode) => {
   const props = fiber.pendingProps;
 
-  if (props.mode) return props.children;
+  if (props.mode === "visible") return props.children;
 
   return null;
-}
+};

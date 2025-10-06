@@ -222,6 +222,10 @@ export const checkValidElement = (element: MyReactElementNode) => {
             if (key !== "key" && key !== "children" && key !== "mode" && !key.startsWith("_")) {
               console.warn(`[@my-react/react] <Activity /> element only support 'key' / 'mode' / 'children' props, but got ${key}`);
             }
+
+            if (key === "mode" && props[key] !== "visible" && props[key] !== "hidden") {
+              console.warn(`[@my-react/react] <Activity /> element 'mode' props only support 'visible' / 'hidden', but got ${props[key]}`);
+            }
           }
         }
         // check invalid object element

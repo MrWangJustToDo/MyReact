@@ -5,6 +5,8 @@ export * from "./log";
 export * from "./init";
 export * from "./tools";
 export * from "./render";
+export * from "./preload";
+export * from "./preinit";
 export * from "./promise";
 export * from "./version";
 export * from "./comment";

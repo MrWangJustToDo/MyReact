@@ -1,7 +1,7 @@
 import { __my_react_shared__ } from "@my-react/react";
 import { safeCall, safeCallWithSync } from "@my-react/react-reconciler";
 
-import { checkMyReactVersion, checkReconcilerVersion, preconnect, prefetchDNS } from "../shared";
+import { checkMyReactVersion, checkReconcilerVersion, preconnect, prefetchDNS, preinit, preinitModule, preload, preloadModule } from "../shared";
 
 import { render, hydrate, hydrateRoot, createRoot } from "./mount";
 import { findDOMNode, createPortal, unmountComponentAtNode /* initGlobalHMR */, __my_react_dom_shared__, __my_react_dom_internal__ } from "./tools";
@@ -25,6 +25,10 @@ const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {};
 export {
   render,
   hydrate,
+  preinit,
+  preinitModule,
+  preload,
+  preloadModule,
   preconnect,
   prefetchDNS,
   createRoot,

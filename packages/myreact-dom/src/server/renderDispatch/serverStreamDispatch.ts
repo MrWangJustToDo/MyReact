@@ -1,7 +1,17 @@
 import { CustomRenderDispatch, getFiberTree, listenerMap, processHook, processPromise, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
-import { clearPreConnects, clearPrefetchDNS, getPreConnects, getPrefetchDNS, initialElementMap } from "@my-react-dom-shared";
+import {
+  clearPreConnects,
+  clearPrefetchDNS,
+  clearPreInits,
+  clearPreloads,
+  getPreConnects,
+  getPrefetchDNS,
+  getPreInits,
+  getPreloads,
+  initialElementMap,
+} from "@my-react-dom-shared";
 
 import { generateBootstrap, generateModuleBootstrap } from "./generateBootstrap";
 import { unmount } from "./unmount";
@@ -134,6 +144,8 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
           },
         });
 
+        clearPreInits();
+        clearPreloads();
         clearPreConnects();
         clearPrefetchDNS();
       });
@@ -272,6 +284,10 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
     let generatedScript = getPreConnects() || "";
 
     generatedScript += getPrefetchDNS() || "";
+
+    generatedScript += getPreInits() || "";
+
+    generatedScript += getPreloads() || "";
 
     generatedScript += (this.bootstrapModules || []).map(generateModuleBootstrap).join("");
 

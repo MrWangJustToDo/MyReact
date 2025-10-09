@@ -32,7 +32,7 @@ export type RenderContainer = Record<string, any> & {
   __container__: ReconcilerDispatch;
 };
 
-// react-reconciler compact implementation
+// react-reconciler compat implementation
 export const Reconciler = (_config: any) => {
   let rendererPackageName = "@my-react";
 

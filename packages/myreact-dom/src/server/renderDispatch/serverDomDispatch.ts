@@ -1,7 +1,7 @@
 import { CustomRenderDispatch, processHook } from "@my-react/react-reconciler";
 
 import { append, create, update } from "@my-react-dom-server/api";
-import { clearPreConnects, clearPrefetchDNS, initialElementMap } from "@my-react-dom-shared";
+import { clearPreConnects, clearPrefetchDNS, clearPreInits, clearPreloads, initialElementMap } from "@my-react-dom-shared";
 
 import { unmount } from "./unmount";
 
@@ -81,6 +81,8 @@ export class ServerDomDispatch extends CustomRenderDispatch {
 
   reconcileCommit(_fiber: MyReactFiberNode): void {
     super.reconcileCommit(_fiber);
+    clearPreInits();
+    clearPreloads();
     clearPreConnects();
     clearPrefetchDNS();
   }

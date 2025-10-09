@@ -1,6 +1,6 @@
 import { __my_react_shared__ } from "@my-react/react";
 
-import { checkMyReactVersion, checkReconcilerVersion, preconnect, prefetchDNS } from "../shared";
+import { checkMyReactVersion, checkReconcilerVersion, preconnect, prefetchDNS, preinit, preinitModule, preload, preloadModule } from "../shared";
 
 import { renderToString, renderToNodeStream, renderToStaticMarkup, renderToStaticNodeStream, renderToPipeableStream, renderToReadableStream } from "./mount";
 
@@ -15,6 +15,10 @@ checkReconcilerVersion();
 checkMyReactVersion();
 
 export {
+  preinit,
+  preinitModule,
+  preload,
+  preloadModule,
   preconnect,
   prefetchDNS,
   renderToString,

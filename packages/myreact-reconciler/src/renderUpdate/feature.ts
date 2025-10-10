@@ -24,7 +24,7 @@ function finishUpdateSyncFromRoot(renderDispatch: CustomRenderDispatch) {
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  commitList?.length && renderDispatch.reconcileUpdate(commitList);
+  commitList?.length && renderDispatch.reconcileUpdate(commitList, true);
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 

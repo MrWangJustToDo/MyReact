@@ -13,7 +13,7 @@ const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: ListTree<MyReactFiberNode>) => {
+export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: ListTree<MyReactFiberNode>, sync?: boolean) => {
   // TODO maybe need call `insertionEffect` in another function
   beforeSyncUpdate();
 
@@ -102,7 +102,7 @@ export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: Li
 
   const renderScheduler = currentScheduler.current;
 
-  if (_dispatch.enableConcurrentMode) {
+  if (_dispatch.enableConcurrentMode && !sync) {
     renderScheduler.macroTask(function flushEffect() {
       flushEffectCallback();
     });

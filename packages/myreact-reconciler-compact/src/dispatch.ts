@@ -114,7 +114,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
       config.resetAfterCommit?.(rootNode);
     }
 
-    reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
+    reconcileUpdate(_list: ListTree<MyReactFiberNode>, sync?: boolean): void {
       config.prepareForCommit?.(rootNode);
 
       const instance = this;
@@ -127,7 +127,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
         listenerMap.get(instance).beforeCommitUpdate.forEach((cb) => cb());
       });
 
-      ReconcilerDispatchUpdate(this, _list, config);
+      ReconcilerDispatchUpdate(this, _list, config, sync);
 
       safeCall(function safeCallAfterUpdateListener() {
         listenerMap.get(instance).afterCommitUpdate.forEach((cb) => cb());
@@ -160,7 +160,7 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
       return processPromise(this, _params.fiber, _params.promise);
     }
 
-    dispatchSuspensePromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown>; }): MyReactElementNode {
+    dispatchSuspensePromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }): MyReactElementNode {
       return processSuspensePromise(this, _params.fiber, _params.promise);
     }
 

@@ -266,7 +266,7 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
       instance.afterCommit?.();
     });
   }
-  reconcileUpdate(_list: ListTree<MyReactFiberNode>): void {
+  reconcileUpdate(_list: ListTree<MyReactFiberNode>, sync?: boolean): void {
     const instance = this;
 
     safeCall(function safeCallBeforeUpdate() {
@@ -277,7 +277,7 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
       listenerMap.get(instance).beforeCommitUpdate.forEach((cb) => cb());
     });
 
-    defaultDispatchUpdate(this, _list);
+    defaultDispatchUpdate(this, _list, sync);
 
     safeCall(function safeCallAfterUpdateListener() {
       listenerMap.get(instance).afterCommitUpdate.forEach((cb) => cb());

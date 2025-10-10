@@ -24,7 +24,7 @@ const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: ListTree<MyReactFiberNode>, config: any) => {
+export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: ListTree<MyReactFiberNode>, config: any, sync?: boolean) => {
   beforeSyncUpdate();
 
   _list.listToFoot(function invokeUnmountPendingAndInsertionEffectList(_fiber) {
@@ -159,7 +159,7 @@ export const ReconcilerDispatchUpdate = (_dispatch: ReconcilerDispatch, _list: L
 
   const renderScheduler = currentScheduler.current;
 
-  if (_dispatch.enableConcurrentMode) {
+  if (_dispatch.enableConcurrentMode && !sync) {
     renderScheduler.macroTask(function flushEffect() {
       flushEffectCallback();
     });

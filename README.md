@@ -70,6 +70,7 @@ const config = {
 | [`@my-react/react`](packages/myreact)                             | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)                             |
 | [`@my-react/react-dom`](packages/myreact-dom)                     | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-dom)](https://www.npmjs.com/package/@my-react/react-dom)                     |
 | [`@my-react/react-terminal`](packages/myreact-terminal)           | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-terminal)](https://www.npmjs.com/package/@my-react/react-terminal)           |
+| [`@my-react/react-three-fiber`](packages/myreact-three-fiber)     | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-three-fiber)](https://www.npmjs.com/package/@my-react/react-three-fiber)     |
 | **refresh**                                                       |                                                                                                                                              |
 | [`@my-react/react-refresh`](packages/myreact-refresh)             | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh)](https://www.npmjs.com/package/@my-react/react-refresh)             |
 | [`@my-react/react-refresh-tools`](packages/myreact-refresh-tools) | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh-tools)](https://www.npmjs.com/package/@my-react/react-refresh-tools) |

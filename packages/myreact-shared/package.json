@@ -3,7 +3,7 @@
   "description": "@my-react/react-shared",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.19",
+  "version": "0.3.20",
   "main": "index.js",
   "types": "index.d.ts",
   "files": [

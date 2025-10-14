@@ -1,4 +1,4 @@
-import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { type CustomRenderDispatch } from "../renderDispatch";
 import { unmountInstance } from "../runtimeGenerate";
 import { safeCallWithCurrentFiber } from "../share";
 
@@ -10,7 +10,7 @@ export const hookListUnmount = (renderDispatch: CustomRenderDispatch, fiber: MyR
     safeCallWithCurrentFiber({
       fiber,
       action: function safeCallHookUnmountListener() {
-        listenerMap.get(renderDispatch)?.hookUnmount?.forEach((cb) => cb(hookNode as MyReactHookNode, fiber));
+        renderDispatch.callOnHookUnmount(hookNode as MyReactHookNode, fiber);
       },
     });
 

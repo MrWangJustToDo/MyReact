@@ -1,8 +1,8 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
-import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { type CustomRenderDispatch } from "../renderDispatch";
 import { mountLoopAll, processAsyncLoadListOnAsyncMount, processAsyncLoadListOnSyncMount } from "../runtimeMount";
-import { resetLogScope, safeCallWithCurrentFiber, setLogScope } from "../share";
+import { resetLogScope, safeCall, safeCallWithCurrentFiber, setLogScope } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 
@@ -29,13 +29,16 @@ function finishMountSync(renderDispatch: CustomRenderDispatch, fiber: MyReactFib
     safeCallWithCurrentFiber({
       fiber,
       action: function safeCallFiberHasChangeListener() {
-        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+        renderDispatch.callOnFiberChange(changedList);
       },
     });
 }
 
 export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
-  __DEV__ && listenerMap.get(renderDispatch)?.beforeDispatchRender?.forEach((cb) => cb(renderDispatch));
+  __DEV__ &&
+    safeCall(function safeCallBeforeDispatchRender() {
+      renderDispatch.callOnBeforeDispatchRender(renderDispatch, fiber);
+    });
 
   globalLoop.current = true;
 
@@ -49,7 +52,10 @@ export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFi
 
   finishMountSync(renderDispatch, fiber);
 
-  __DEV__ && listenerMap.get(renderDispatch)?.afterDispatchRender.forEach((cb) => cb(renderDispatch));
+  __DEV__ &&
+    safeCall(function safeCallAfterDispatchRender() {
+      renderDispatch.callOnAfterDispatchRender(renderDispatch);
+    });
 
   globalLoop.current = false;
 };
@@ -73,13 +79,16 @@ function finishMountAsync(renderDispatch: CustomRenderDispatch, fiber: MyReactFi
     safeCallWithCurrentFiber({
       fiber,
       action: function safeCallFiberHasChangeListener() {
-        listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+        renderDispatch.callOnFiberChange(changedList);
       },
     });
 }
 
 export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
-  __DEV__ && listenerMap.get(renderDispatch)?.beforeDispatchRender?.forEach((cb) => cb(renderDispatch));
+  __DEV__ &&
+    safeCall(function safeCallBeforeDispatchRender() {
+      renderDispatch.callOnBeforeDispatchRender(renderDispatch, fiber);
+    });
 
   globalLoop.current = true;
 
@@ -93,7 +102,10 @@ export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: My
 
   finishMountAsync(renderDispatch, fiber);
 
-  __DEV__ && listenerMap.get(renderDispatch)?.afterDispatchRender.forEach((cb) => cb(renderDispatch));
+  __DEV__ &&
+    safeCall(function safeCallAfterDispatchRender() {
+      renderDispatch.callOnAfterDispatchRender(renderDispatch);
+    });
 
   globalLoop.current = false;
 };

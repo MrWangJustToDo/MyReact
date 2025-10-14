@@ -16,7 +16,7 @@ import { loadLazy } from "../processLazy";
 import { loadPromise, type PromiseWithState } from "../processPromise";
 import { getFiberTree, NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
 
-import { listenerMap, RenderDispatchEvent } from "./event";
+import { RenderDispatchEvent } from "./event";
 
 import type { RenderDispatch } from "./interface";
 import type { MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";
@@ -253,13 +253,13 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     });
 
     safeCall(function safeCallBeforeCommitListener() {
-      listenerMap.get(instance).beforeCommitMount.forEach((cb) => cb());
+      instance.callOnBeforeCommitMount(instance);
     });
 
     defaultDispatchMount(this, _fiber);
 
     safeCall(function safeCallAfterCommitListener() {
-      listenerMap.get(instance).afterCommitMount.forEach((cb) => cb());
+      instance.callOnAfterCommitMount(instance);
     });
 
     safeCall(function safeCallAfterCommit() {
@@ -274,13 +274,13 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     });
 
     safeCall(function safeCallBeforeUpdateListener() {
-      listenerMap.get(instance).beforeCommitUpdate.forEach((cb) => cb());
+      instance.callOnBeforeCommitUpdate(instance);
     });
 
     defaultDispatchUpdate(this, _list, sync);
 
     safeCall(function safeCallAfterUpdateListener() {
-      listenerMap.get(instance).afterCommitUpdate.forEach((cb) => cb());
+      instance.callOnAfterCommitUpdate(instance);
     });
 
     safeCall(function safeCallAfterUpdate() {
@@ -295,13 +295,13 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
     });
 
     safeCall(function safeCallBeforeUnmountListener() {
-      listenerMap.get(instance).beforeCommitUnmount.forEach((cb) => cb());
+      instance.callOnBeforeCommitUnmount(instance);
     });
 
     defaultDispatchUnmount(this);
 
     safeCall(function safeCallAfterUnmountListener() {
-      listenerMap.get(instance).afterCommitUnmount.forEach((cb) => cb());
+      instance.callOnAfterCommitUnmount(instance);
     });
 
     safeCall(function safeCallAfterUnmount() {

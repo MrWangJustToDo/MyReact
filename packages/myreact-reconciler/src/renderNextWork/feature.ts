@@ -1,7 +1,7 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { STATE_TYPE, include, remove } from "@my-react/react-shared";
 
-import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { type CustomRenderDispatch } from "../renderDispatch";
 import { runtimeNextWork, runtimeNextWorkDev } from "../runtimeGenerate";
 import { triggerFiberUpdateListener } from "../runtimeUpdate";
 import { devErrorWithFiber, safeCallWithCurrentFiber } from "../share";
@@ -67,7 +67,7 @@ export const mountToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, f
       safeCallWithCurrentFiber({
         fiber: nextFiber,
         action: function safeCallAfterFiberDone() {
-          listenerMap.get(renderDispatch)?.afterFiberDone?.forEach((cb) => cb(nextFiber));
+          renderDispatch.callOnAfterFiberDone(nextFiber);
         },
       });
     }
@@ -137,7 +137,7 @@ export const performToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch,
       safeCallWithCurrentFiber({
         fiber: nextFiber,
         action: function safeCallAfterFiberDone() {
-          listenerMap.get(renderDispatch)?.afterFiberDone?.forEach((cb) => cb(nextFiber));
+          renderDispatch.callOnAfterFiberDone(nextFiber);
         },
       });
     }

@@ -3,7 +3,7 @@ import { __my_react_shared__, Component } from "@my-react/react";
 import { Effect_TYPE, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { syncFlushComponentQueue } from "../processQueue";
-import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { type CustomRenderDispatch } from "../renderDispatch";
 import {
   getInstanceContextFiber,
   getInstanceEffectState,
@@ -90,7 +90,7 @@ const processComponentInstanceOnMount = (renderDispatch: CustomRenderDispatch, f
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallInstanceInitialListener() {
-      listenerMap.get(renderDispatch)?.instanceInitial?.forEach((cb) => cb(instance, fiber));
+      renderDispatch.callOnInstanceInitial(instance, fiber);
     },
   });
 
@@ -119,7 +119,7 @@ const processComponentFiberOnUpdate = (renderDispatch: CustomRenderDispatch, fib
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallInstanceUpdateListener() {
-      listenerMap.get(renderDispatch)?.instanceUpdate?.forEach((cb) => cb(typedInstance, fiber));
+      renderDispatch.callOnInstanceUpdate(typedInstance, fiber);
     },
   });
 
@@ -511,7 +511,7 @@ export const processClassComponentUnmount = (renderDispatch: CustomRenderDispatc
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallInstanceUnmountListener() {
-      listenerMap.get(renderDispatch)?.instanceUnmount?.forEach((cb) => cb(typedInstance, fiber));
+      renderDispatch.callOnInstanceUnmount(typedInstance, fiber);
     },
   });
 

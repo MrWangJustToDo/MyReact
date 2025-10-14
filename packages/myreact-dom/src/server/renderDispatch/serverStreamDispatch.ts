@@ -1,4 +1,4 @@
-import { CustomRenderDispatch, getFiberTree, listenerMap, processHook, processPromise, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
+import { CustomRenderDispatch, getFiberTree, processHook, processPromise, safeCallWithCurrentFiber } from "@my-react/react-reconciler";
 
 import { createCloseTagWithStream, createStartTagWithStream } from "@my-react-dom-server/api";
 import {
@@ -122,7 +122,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
     safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallBeforeCommitListener() {
-        listenerMap.get(instance)?.beforeCommitMount?.forEach((l) => l());
+        instance.callOnBeforeCommitMount(instance);
       },
     });
 
@@ -133,7 +133,7 @@ export class LegacyServerStreamDispatch extends CustomRenderDispatch {
         safeCallWithCurrentFiber({
           fiber: _fiber,
           action: function safeCallAfterCommitListener() {
-            listenerMap.get(instance)?.afterCommitMount?.forEach((l) => l());
+            instance.callOnAfterCommitMount(instance);
           },
         });
 
@@ -277,7 +277,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
     safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallBeforeCommitListener() {
-        listenerMap.get(instance)?.beforeCommitMount?.forEach((l) => l());
+        instance.callOnBeforeCommitMount(instance);
       },
     });
 
@@ -305,7 +305,7 @@ export class LatestServerStreamDispatch extends CustomRenderDispatch {
         safeCallWithCurrentFiber({
           fiber: _fiber,
           action: function safeCallAfterCommitListener() {
-            listenerMap.get(instance)?.afterCommitMount?.forEach((l) => l());
+            instance.callOnAfterCommitMount(instance);
           },
         });
 

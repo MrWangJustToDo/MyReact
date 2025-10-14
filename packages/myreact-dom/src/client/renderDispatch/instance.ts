@@ -6,7 +6,6 @@ import {
   getCurrentDispatchFromType,
   getCurrentFibersFromType,
   hmr,
-  listenerMap,
   processHook,
   processPromise,
   processState,
@@ -202,7 +201,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallBeforeCommitListener() {
-        listenerMap.get(instance)?.beforeCommitMount?.forEach((cb) => cb());
+        instance.callOnBeforeCommitMount(instance);
       },
     });
 
@@ -211,7 +210,7 @@ export class ClientDomDispatch extends CustomRenderDispatch {
     safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallAfterCommitListener() {
-        listenerMap.get(instance)?.afterCommitMount?.forEach((cb) => cb());
+        instance.callOnAfterCommitMount(instance);
       },
     });
 

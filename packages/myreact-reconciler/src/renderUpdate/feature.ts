@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { include, STATE_TYPE } from "@my-react/react-shared";
 
-import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { type CustomRenderDispatch } from "../renderDispatch";
 import { processAsyncLoadListOnUpdate, updateLoopConcurrentFromRoot, updateLoopSyncFromRoot } from "../runtimeUpdate";
 import { resetLogScope, safeCall, setLogScope } from "../share";
 
@@ -28,11 +28,14 @@ function finishUpdateSyncFromRoot(renderDispatch: CustomRenderDispatch) {
 
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
-  __DEV__ && listenerMap.get(renderDispatch)?.afterDispatchUpdate?.forEach((cb) => cb(renderDispatch));
+  __DEV__ &&
+    safeCall(function safeCallAfterDispatchUpdate() {
+      renderDispatch.callOnAfterDispatchUpdate(renderDispatch);
+    });
 
   changedList?.length &&
     safeCall(function safeCallFiberHasChangeListener() {
-      listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+      renderDispatch.callOnFiberChange(changedList);
     });
 }
 
@@ -75,11 +78,14 @@ function finishUpdateConcurrentFromRoot(renderDispatch: CustomRenderDispatch) {
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
-  __DEV__ && listenerMap.get(renderDispatch)?.afterDispatchUpdate?.forEach((cb) => cb(renderDispatch));
+  __DEV__ &&
+    safeCall(function safeCallAfterDispatchUpdate() {
+      renderDispatch.callOnAfterDispatchUpdate(renderDispatch);
+    });
 
   changedList?.length &&
     safeCall(function safeCallFiberHasChangeListener() {
-      listenerMap.get(renderDispatch)?.fiberHasChange?.forEach((cb) => cb(changedList));
+      renderDispatch.callOnFiberChange(changedList);
     });
 }
 

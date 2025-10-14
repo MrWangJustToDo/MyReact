@@ -1,8 +1,6 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
 
-import { listenerMap } from "../renderDispatch";
-
 import { enableFiberForLog } from "./env";
 import { NODE_TYPE } from "./fiberType";
 import { getCurrentDispatchFromFiber } from "./refresh";
@@ -38,12 +36,8 @@ const fiberWarn = (fiber: MyReactFiberNode, ...args) => {
 
   safeCallWithCurrentFiber({
     fiber,
-    action: function safeCallFiberWarnListener() {
-      try {
-        listenerMap.get(renderDispatch)?.fiberWarn?.forEach((listener) => listener(fiber, ...args));
-      } catch {
-        void 0;
-      }
+    action: () => {
+      renderDispatch.callOnFiberWarn(fiber, ...args);
     },
   });
 };
@@ -53,12 +47,8 @@ const fiberError = (fiber: MyReactFiberNode, ...args) => {
 
   safeCallWithCurrentFiber({
     fiber,
-    action: function safeCallFiberErrorListener() {
-      try {
-        listenerMap.get(renderDispatch)?.fiberError?.forEach((listener) => listener(fiber, ...args));
-      } catch {
-        void 0;
-      }
+    action: () => {
+      renderDispatch.callOnFiberError(fiber, ...args);
     },
   });
 };

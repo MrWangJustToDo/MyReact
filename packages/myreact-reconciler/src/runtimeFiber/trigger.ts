@@ -9,7 +9,6 @@ import {
   processNormalComponentUpdateLatest,
   processNormalComponentUpdateLegacy,
 } from "../processQueue";
-import { listenerMap } from "../renderDispatch";
 import { triggerUpdate } from "../renderUpdate";
 import { mountLoopAllFromScheduler } from "../runtimeMount";
 import { NODE_TYPE, safeCallWithCurrentFiber } from "../share";
@@ -42,7 +41,7 @@ const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyRea
     safeCallWithCurrentFiber({
       fiber,
       action: function safeCallFiberTriggerListener() {
-        listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, updateState));
+        renderDispatch.callOnFiberTrigger(fiber, updateState);
       },
     });
 

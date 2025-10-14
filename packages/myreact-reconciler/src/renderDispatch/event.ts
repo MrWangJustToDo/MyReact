@@ -34,7 +34,7 @@ type Listeners = {
   fiberWarn?: Set<(fiber: MyReactFiberNode, ...args: any) => void>;
   fiberError?: Set<(fiber: MyReactFiberNode, ...args: any) => void>;
   fiberHasChange: Set<(list: ListTree<MyReactFiberNode>) => void>;
-  performanceWarn?: Set<(fiber: MyReactFiberNode) => void>;
+  performanceWarn?: Set<(fiber: MyReactFiberNode, renderTime: number) => void>;
   beforeFiberRun?: Set<(fiber: MyReactFiberNode) => void>;
   afterFiberRun?: Set<(fiber: MyReactFiberNode) => void>;
   afterFiberDone?: Set<(fiber: MyReactFiberNode) => void>;
@@ -49,17 +49,17 @@ type Listeners = {
   hookState: Set<(hook: MyReactHookNode, fiber: MyReactFiberNode, updater: UpdateQueue) => void>;
   hookUnmount: Set<(hook: MyReactHookNode, fiber: MyReactFiberNode) => void>;
 
-  beforeDispatchRender?: Set<(renderDispatch: CustomRenderDispatch) => void>;
+  beforeDispatchRender?: Set<(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => void>;
   afterDispatchRender?: Set<(renderDispatch: CustomRenderDispatch) => void>;
   beforeDispatchUpdate?: Set<(renderDispatch: CustomRenderDispatch, list: Array<MyReactFiberNode>) => void>;
   afterDispatchUpdate?: Set<(renderDispatch: CustomRenderDispatch) => void>;
 
-  beforeCommitMount: Set<() => void>;
-  afterCommitMount: Set<() => void>;
-  beforeCommitUpdate: Set<() => void>;
-  afterCommitUpdate: Set<() => void>;
-  beforeCommitUnmount: Set<() => void>;
-  afterCommitUnmount: Set<() => void>;
+  beforeCommitMount: Set<(renderDispatch: CustomRenderDispatch) => void>;
+  afterCommitMount: Set<(renderDispatch: CustomRenderDispatch) => void>;
+  beforeCommitUpdate: Set<(renderDispatch: CustomRenderDispatch) => void>;
+  afterCommitUpdate: Set<(renderDispatch: CustomRenderDispatch) => void>;
+  beforeCommitUnmount: Set<(renderDispatch: CustomRenderDispatch) => void>;
+  afterCommitUnmount: Set<(renderDispatch: CustomRenderDispatch) => void>;
 };
 
 const getInitialListeners = (): Listeners => {
@@ -155,7 +155,7 @@ const initialRef: RenderDispatch["runtimeRef"] = {
   typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__ | NODE_TYPE.__comment__,
 };
 
-export const listenerMap = dispatchToListenerMap as Map<MyReactInternalInstance, Listeners>;
+const listenerMap = dispatchToListenerMap as Map<MyReactInternalInstance, Listeners>;
 
 export class RenderDispatchEvent extends MyReactInternalInstanceClass implements RenderDispatch {
   runtimeMap: RenderDispatch["runtimeMap"];
@@ -344,12 +344,36 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
+  callOnFiberInitial(_fiber: MyReactFiberNode) {
+    const set = listenerMap.get(this).fiberInitial;
+
+    set?.forEach?.((cb) => cb(_fiber));
+  }
+
   onFiberUpdate(cb: (_fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).fiberUpdate;
 
     set.add(cb);
 
     return () => set.delete(cb);
+  }
+
+  onceFiberUpdate(cb: (_fiber: MyReactFiberNode) => void) {
+    const set = listenerMap.get(this).fiberUpdate;
+
+    const onceCb = (_fiber: MyReactFiberNode) => {
+      cb(_fiber);
+
+      set.delete(onceCb);
+    };
+
+    set.add(onceCb);
+  }
+
+  callOnFiberUpdate(_fiber: MyReactFiberNode) {
+    const set = listenerMap.get(this).fiberUpdate;
+
+    set?.forEach?.((cb) => cb(_fiber));
   }
 
   onFiberChange(cb: (_list: ListTree<MyReactFiberNode>) => void) {
@@ -372,16 +396,10 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
-  onceFiberUpdate(cb: (_fiber: MyReactFiberNode) => void) {
-    const set = listenerMap.get(this).fiberUpdate;
+  callOnFiberChange(_list: ListTree<MyReactFiberNode>) {
+    const set = listenerMap.get(this).fiberHasChange;
 
-    const onceCb = (_fiber: MyReactFiberNode) => {
-      cb(_fiber);
-
-      set.delete(onceCb);
-    };
-
-    set.add(onceCb);
+    set?.forEach?.((cb) => cb(_list));
   }
 
   onFiberUnmount(cb: (_fiber: MyReactFiberNode) => void) {
@@ -404,6 +422,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
+  callOnFiberUnmount(_fiber: MyReactFiberNode) {
+    const set = listenerMap.get(this).fiberUnmount;
+
+    set?.forEach?.((cb) => cb(_fiber));
+  }
+
   onFiberState(cb: (_fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
     const set = listenerMap.get(this).fiberState;
 
@@ -422,6 +446,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     };
 
     set.add(onceCb);
+  }
+
+  callOnFiberState(_fiber: MyReactFiberNode, _updater: UpdateQueue) {
+    const set = listenerMap.get(this).fiberState;
+
+    set?.forEach?.((cb) => cb(_fiber, _updater));
   }
 
   onFiberTrigger(cb: (_fiber: MyReactFiberNode, _state: UpdateState) => void) {
@@ -444,6 +474,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
+  callOnFiberTrigger(_fiber: MyReactFiberNode, _state: UpdateState) {
+    const set = listenerMap.get(this).fiberTrigger;
+
+    set?.forEach?.((cb) => cb(_fiber, _state));
+  }
+
   onFiberHMR(cb: (_fiber: MyReactFiberNode, _forceRefresh?: boolean) => void) {
     const set = listenerMap.get(this).fiberHMR;
 
@@ -462,6 +498,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     };
 
     set?.add?.(onceCb);
+  }
+
+  callOnFiberHMR(_fiber: MyReactFiberNode, _forceRefresh?: boolean) {
+    const set = listenerMap.get(this).fiberHMR;
+
+    set?.forEach?.((cb) => cb(_fiber, _forceRefresh));
   }
 
   onFiberWarn(cb: (_fiber: MyReactFiberNode, ...args: any) => void) {
@@ -484,6 +526,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set?.add?.(onceCb);
   }
 
+  callOnFiberWarn(_fiber: MyReactFiberNode, ...args: any) {
+    const set = listenerMap.get(this).fiberWarn;
+
+    set?.forEach?.((cb) => cb(_fiber, ...args));
+  }
+
   onFiberError(cb: (_fiber: MyReactFiberNode, ...args: any) => void) {
     const set = listenerMap.get(this).fiberError;
 
@@ -504,7 +552,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set?.add?.(onceCb);
   }
 
-  onPerformanceWarn(cb: (_fiber: MyReactFiberNode) => void) {
+  callOnFiberError(_fiber: MyReactFiberNode, ...args: any) {
+    const set = listenerMap.get(this).fiberError;
+
+    set?.forEach?.((cb) => cb(_fiber, ...args));
+  }
+
+  onPerformanceWarn(cb: (_fiber: MyReactFiberNode, _renderTime: number) => void) {
     const set = listenerMap.get(this).performanceWarn;
 
     set?.add?.(cb);
@@ -512,16 +566,22 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set?.delete?.(cb);
   }
 
-  oncePerformanceWarn(cb: (_fiber: MyReactFiberNode) => void) {
+  oncePerformanceWarn(cb: (_fiber: MyReactFiberNode, _renderTime: number) => void) {
     const set = listenerMap.get(this).performanceWarn;
 
-    const onceCb = (_fiber: MyReactFiberNode) => {
-      cb(_fiber);
+    const onceCb = (_fiber: MyReactFiberNode, _renderTime: number) => {
+      cb(_fiber, _renderTime);
 
       set?.delete?.(onceCb);
     };
 
     set?.add?.(onceCb);
+  }
+
+  callOnPerformanceWarn(_fiber: MyReactFiberNode, _renderTime: number) {
+    const set = listenerMap.get(this).performanceWarn;
+
+    set?.forEach?.((cb) => cb(_fiber, _renderTime));
   }
 
   onBeforeFiberRun(cb: (_fiber: MyReactFiberNode) => void) {
@@ -544,6 +604,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set?.add?.(onceCb);
   }
 
+  callOnBeforeFiberRun(_fiber: MyReactFiberNode) {
+    const set = listenerMap.get(this).beforeFiberRun;
+
+    set?.forEach?.((cb) => cb(_fiber));
+  }
+
   onAfterFiberRun(cb: (_fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).afterFiberRun;
 
@@ -562,6 +628,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     };
 
     set?.add?.(onceCb);
+  }
+
+  callOnAfterFiberRun(_fiber: MyReactFiberNode) {
+    const set = listenerMap.get(this).afterFiberRun;
+
+    set?.forEach?.((cb) => cb(_fiber));
   }
 
   onAfterFiberDone(cb: (_fiber: MyReactFiberNode) => void) {
@@ -584,7 +656,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set?.add?.(onceCb);
   }
 
-  onBeforeDispatchRender(cb: (renderDispatch: CustomRenderDispatch) => void) {
+  callOnAfterFiberDone(_fiber: MyReactFiberNode) {
+    const set = listenerMap.get(this).afterFiberDone;
+
+    set?.forEach?.((cb) => cb(_fiber));
+  }
+
+  onBeforeDispatchRender(cb: (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).beforeDispatchRender;
 
     set?.add?.(cb);
@@ -592,8 +670,34 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set?.delete?.(cb);
   }
 
-  onceBeforeDispatchRender(cb: (renderDispatch: CustomRenderDispatch) => void) {
+  onceBeforeDispatchRender(cb: (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).beforeDispatchRender;
+
+    const onceCb = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+      cb(renderDispatch, fiber);
+
+      set?.delete?.(onceCb);
+    };
+
+    set?.add?.(onceCb);
+  }
+
+  callOnBeforeDispatchRender(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
+    const set = listenerMap.get(this).beforeDispatchRender;
+
+    set?.forEach?.((cb) => cb(renderDispatch, fiber));
+  }
+
+  onAfterDispatchRender(cb: (renderDispatch: CustomRenderDispatch) => void) {
+    const set = listenerMap.get(this).afterDispatchRender;
+
+    set?.add?.(cb);
+
+    return () => set?.delete?.(cb);
+  }
+
+  onceAfterDispatchRender(cb: (renderDispatch: CustomRenderDispatch) => void) {
+    const set = listenerMap.get(this).afterDispatchRender;
 
     const onceCb = (renderDispatch: CustomRenderDispatch) => {
       cb(renderDispatch);
@@ -602,6 +706,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     };
 
     set?.add?.(onceCb);
+  }
+
+  callOnAfterDispatchRender(renderDispatch: CustomRenderDispatch) {
+    const set = listenerMap.get(this).afterDispatchRender;
+
+    set?.forEach?.((cb) => cb(renderDispatch));
   }
 
   onBeforeDispatchUpdate(cb: (renderDispatch: CustomRenderDispatch, list: Array<MyReactFiberNode>) => void) {
@@ -624,6 +734,38 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set?.add?.(onceCb);
   }
 
+  callOnBeforeDispatchUpdate(renderDispatch: CustomRenderDispatch, list: Array<MyReactFiberNode>) {
+    const set = listenerMap.get(this).beforeDispatchUpdate;
+
+    set?.forEach?.((cb) => cb(renderDispatch, list));
+  }
+
+  onAfterDispatchUpdate(cb: (renderDispatch: CustomRenderDispatch) => void) {
+    const set = listenerMap.get(this).afterDispatchUpdate;
+
+    set?.add?.(cb);
+
+    return () => set?.delete?.(cb);
+  }
+
+  onceAfterDispatchUpdate(cb: (renderDispatch: CustomRenderDispatch) => void) {
+    const set = listenerMap.get(this).afterDispatchUpdate;
+
+    const onceCb = (renderDispatch: CustomRenderDispatch) => {
+      cb(renderDispatch);
+
+      set?.delete?.(onceCb);
+    };
+
+    set?.add?.(onceCb);
+  }
+
+  callOnAfterDispatchUpdate(renderDispatch: CustomRenderDispatch) {
+    const set = listenerMap.get(this).afterDispatchUpdate;
+
+    set?.forEach?.((cb) => cb(renderDispatch));
+  }
+
   onInstanceInitial(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).instanceInitial;
 
@@ -642,6 +784,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     };
 
     set.add(onceCb);
+  }
+
+  callOnInstanceInitial(_instance: MyReactComponent, _fiber: MyReactFiberNode) {
+    const set = listenerMap.get(this).instanceInitial;
+
+    set?.forEach?.((cb) => cb(_instance, _fiber));
   }
 
   onInstanceUpdate(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode) => void) {
@@ -664,6 +812,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
+  callOnInstanceUpdate(_instance: MyReactComponent, _fiber: MyReactFiberNode) {
+    const set = listenerMap.get(this).instanceUpdate;
+
+    set?.forEach?.((cb) => cb(_instance, _fiber));
+  }
+
   onInstanceState(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
     const set = listenerMap.get(this).instanceState;
 
@@ -682,6 +836,12 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     };
 
     set.add(onceCb);
+  }
+
+  callOnInstanceState(_instance: MyReactComponent, _fiber: MyReactFiberNode, _updater: UpdateQueue) {
+    const set = listenerMap.get(this).instanceState;
+
+    set?.forEach?.((cb) => cb(_instance, _fiber, _updater));
   }
 
   onInstanceUnmount(cb: (_instance: MyReactComponent, _fiber: MyReactFiberNode) => void) {
@@ -704,7 +864,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
-  onHookInitial(cb: (_hook: MyReactHookNode) => void) {
+  callOnInstanceUnmount(_instance: MyReactComponent, _fiber: MyReactFiberNode) {
+    const set = listenerMap.get(this).instanceUnmount;
+
+    set?.forEach?.((cb) => cb(_instance, _fiber));
+  }
+
+  onHookInitial(cb: (_hook: MyReactHookNode, _fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).hookInitial;
 
     set.add(cb);
@@ -712,11 +878,11 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set.delete(cb);
   }
 
-  onceHookInitial(cb: (_hook: MyReactHookNode) => void) {
+  onceHookInitial(cb: (_hook: MyReactHookNode, _fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).hookInitial;
 
-    const onceCb = (_hook: MyReactHookNode) => {
-      cb(_hook);
+    const onceCb = (_hook: MyReactHookNode, _fiber: MyReactFiberNode) => {
+      cb(_hook, _fiber);
 
       set.delete(onceCb);
     };
@@ -724,7 +890,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
-  onHookUpdate(cb: (_hook: MyReactHookNode) => void) {
+  callOnHookInitial(_hook: MyReactHookNode, _fiber?: MyReactFiberNode) {
+    const set = listenerMap.get(this).hookInitial;
+
+    set?.forEach?.((cb) => cb(_hook, _fiber));
+  }
+
+  onHookUpdate(cb: (_hook: MyReactHookNode, _fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).hookUpdate;
 
     set.add(cb);
@@ -732,11 +904,11 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set.delete(cb);
   }
 
-  onceHookUpdate(cb: (_hook: MyReactHookNode) => void) {
+  onceHookUpdate(cb: (_hook: MyReactHookNode, _fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).hookUpdate;
 
-    const onceCb = (_hook: MyReactHookNode) => {
-      cb(_hook);
+    const onceCb = (_hook: MyReactHookNode, _fiber: MyReactFiberNode) => {
+      cb(_hook, _fiber);
 
       set.delete(onceCb);
     };
@@ -744,7 +916,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
-  onHookUnmount(cb: (_hook: MyReactHookNode) => void) {
+  callOnHookUpdate(_hook: MyReactHookNode, _fiber?: MyReactFiberNode) {
+    const set = listenerMap.get(this).hookUpdate;
+
+    set?.forEach?.((cb) => cb(_hook, _fiber));
+  }
+
+  onHookUnmount(cb: (_hook: MyReactHookNode, _fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).hookUnmount;
 
     set.add(cb);
@@ -752,16 +930,22 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set.delete(cb);
   }
 
-  onceHookUnmount(cb: (_hook: MyReactHookNode) => void) {
+  onceHookUnmount(cb: (_hook: MyReactHookNode, _fiber: MyReactFiberNode) => void) {
     const set = listenerMap.get(this).hookUnmount;
 
-    const onceCb = (_hook: MyReactHookNode) => {
-      cb(_hook);
+    const onceCb = (_hook: MyReactHookNode, _fiber: MyReactFiberNode) => {
+      cb(_hook, _fiber);
 
       set.delete(onceCb);
     };
 
     set.add(onceCb);
+  }
+
+  callOnHookUnmount(_hook: MyReactHookNode, _fiber?: MyReactFiberNode) {
+    const set = listenerMap.get(this).hookUnmount;
+
+    set?.forEach?.((cb) => cb(_hook, _fiber));
   }
 
   onHookState(cb: (_hook: MyReactHookNode, _fiber: MyReactFiberNode, _updater: UpdateQueue) => void) {
@@ -784,7 +968,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
-  onBeforeCommitMount(cb: () => void) {
+  callOnHookState(_hook: MyReactHookNode, _fiber: MyReactFiberNode, _updater: UpdateQueue) {
+    const set = listenerMap.get(this).hookState;
+
+    set?.forEach?.((cb) => cb(_hook, _fiber, _updater));
+  }
+
+  onBeforeCommitMount(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).beforeCommitMount;
 
     set.add(cb);
@@ -792,11 +982,11 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set.delete(cb);
   }
 
-  onceBeforeCommitMount(cb: () => void) {
+  onceBeforeCommitMount(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).beforeCommitMount;
 
-    const onceCb = () => {
-      cb();
+    const onceCb = (renderDispatch: CustomRenderDispatch) => {
+      cb(renderDispatch);
 
       set.delete(onceCb);
     };
@@ -804,7 +994,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
-  onAfterCommitMount(cb: () => void) {
+  callOnBeforeCommitMount(renderDispatch: CustomRenderDispatch) {
+    const set = listenerMap.get(this).beforeCommitMount;
+
+    set?.forEach?.((cb) => cb(renderDispatch));
+  }
+
+  onAfterCommitMount(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).afterCommitMount;
 
     set.add(cb);
@@ -812,11 +1008,11 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set.delete(cb);
   }
 
-  onceAfterCommitMount(cb: () => void) {
+  onceAfterCommitMount(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).afterCommitMount;
 
-    const onceCb = () => {
-      cb();
+    const onceCb = (renderDispatch: CustomRenderDispatch) => {
+      cb(renderDispatch);
 
       set.delete(onceCb);
     };
@@ -824,7 +1020,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
-  onBeforeCommitUpdate(cb: () => void) {
+  callOnAfterCommitMount(renderDispatch: CustomRenderDispatch) {
+    const set = listenerMap.get(this).afterCommitMount;
+
+    set?.forEach?.((cb) => cb(renderDispatch));
+  }
+
+  onBeforeCommitUpdate(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).beforeCommitUpdate;
 
     set.add(cb);
@@ -832,11 +1034,11 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set.delete(cb);
   }
 
-  onceBeforeCommitUpdate(cb: () => void) {
+  onceBeforeCommitUpdate(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).beforeCommitUpdate;
 
-    const onceCb = () => {
-      cb();
+    const onceCb = (renderDispatch: CustomRenderDispatch) => {
+      cb(renderDispatch);
 
       set.delete(onceCb);
     };
@@ -844,7 +1046,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
-  onAfterCommitUpdate(cb: () => void) {
+  callOnBeforeCommitUpdate(renderDispatch: CustomRenderDispatch) {
+    const set = listenerMap.get(this).beforeCommitUpdate;
+
+    set?.forEach?.((cb) => cb(renderDispatch));
+  }
+
+  onAfterCommitUpdate(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).afterCommitUpdate;
 
     set.add(cb);
@@ -852,11 +1060,11 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set.delete(cb);
   }
 
-  onceAfterCommitUpdate(cb: () => void) {
+  onceAfterCommitUpdate(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).afterCommitUpdate;
 
-    const onceCb = () => {
-      cb();
+    const onceCb = (renderDispatch: CustomRenderDispatch) => {
+      cb(renderDispatch);
 
       set.delete(onceCb);
     };
@@ -864,7 +1072,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
-  onBeforeCommitUnmount(cb: () => void) {
+  callOnAfterCommitUpdate(renderDispatch: CustomRenderDispatch) {
+    const set = listenerMap.get(this).afterCommitUpdate;
+
+    set?.forEach?.((cb) => cb(renderDispatch));
+  }
+
+  onBeforeCommitUnmount(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).beforeCommitUnmount;
 
     set.add(cb);
@@ -872,11 +1086,11 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set.delete(cb);
   }
 
-  onceBeforeCommitUnmount(cb: () => void) {
+  onceBeforeCommitUnmount(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).beforeCommitUnmount;
 
-    const onceCb = () => {
-      cb();
+    const onceCb = (renderDispatch: CustomRenderDispatch) => {
+      cb(renderDispatch);
 
       set.delete(onceCb);
     };
@@ -884,7 +1098,13 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     set.add(onceCb);
   }
 
-  onAfterCommitUnmount(cb: () => void) {
+  callOnBeforeCommitUnmount(renderDispatch: CustomRenderDispatch) {
+    const set = listenerMap.get(this).beforeCommitUnmount;
+
+    set?.forEach?.((cb) => cb(renderDispatch));
+  }
+
+  onAfterCommitUnmount(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).afterCommitUnmount;
 
     set.add(cb);
@@ -892,15 +1112,21 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
     return () => set.delete(cb);
   }
 
-  onceAfterCommitUnmount(cb: () => void) {
+  onceAfterCommitUnmount(cb: (renderDispatch: CustomRenderDispatch) => void) {
     const set = listenerMap.get(this).afterCommitUnmount;
 
-    const onceCb = () => {
-      cb();
+    const onceCb = (renderDispatch: CustomRenderDispatch) => {
+      cb(renderDispatch);
 
       set.delete(onceCb);
     };
 
     set.add(onceCb);
+  }
+
+  callOnAfterCommitUnmount(renderDispatch: CustomRenderDispatch) {
+    const set = listenerMap.get(this).afterCommitUnmount;
+
+    set?.forEach?.((cb) => cb(renderDispatch));
   }
 }

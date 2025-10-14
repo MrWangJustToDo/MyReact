@@ -2,8 +2,8 @@ import { __my_react_internal__ } from "@my-react/react";
 import { exclude, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { flushEffectCallback } from "../dispatchEffect";
-import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
-import { currentTriggerFiber } from "../share";
+import { type CustomRenderDispatch } from "../renderDispatch";
+import { currentTriggerFiber, safeCall } from "../share";
 
 import { updateSyncFromRoot, updateConcurrentFromRoot } from "./feature";
 import { applyTriggerFiberCb } from "./trigger";
@@ -30,7 +30,9 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
 
     if (!renderDispatch.enableConcurrentMode || allLive.some((f) => include(f.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__))) {
       if (__DEV__) {
-        listenerMap.get(renderDispatch)?.beforeDispatchUpdate?.forEach((cb) => cb(renderDispatch, allLive));
+        safeCall(function safeCallBeforeDispatchUpdate() {
+          renderDispatch.callOnBeforeDispatchUpdate(renderDispatch, allLive);
+        });
       }
 
       updateSyncFromRoot(renderDispatch);
@@ -38,7 +40,9 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
       renderDispatch.resetYield();
 
       if (__DEV__) {
-        listenerMap.get(renderDispatch)?.beforeDispatchUpdate?.forEach((cb) => cb(renderDispatch, allLive));
+        safeCall(function safeCallBeforeDispatchUpdate() {
+          renderDispatch.callOnBeforeDispatchUpdate(renderDispatch, allLive);
+        });
       }
 
       updateConcurrentFromRoot(renderDispatch);

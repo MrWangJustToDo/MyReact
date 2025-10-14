@@ -1,7 +1,6 @@
 import { __my_react_internal__, createElement } from "@my-react/react";
 import { STATE_TYPE, UpdateQueueType, include, merge } from "@my-react/react-shared";
 
-import { listenerMap } from "../renderDispatch";
 import { triggerRevert } from "../renderUpdate";
 import { getCurrentDispatchFromFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
@@ -45,7 +44,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
     safeCallWithCurrentFiber({
       fiber,
       action: function safeCallFiberHMRListener() {
-        listenerMap.get(renderDispatch)?.fiberHMR?.forEach((cb) => cb(fiber, forceRefresh));
+        renderDispatch.callOnFiberHMR(fiber, forceRefresh);
       },
     });
 

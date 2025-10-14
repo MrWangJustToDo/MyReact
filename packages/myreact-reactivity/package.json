@@ -47,8 +47,8 @@
       }
     ]
   },
-  "devDependencies": {
-    "@my-react/react-shared": "^0.3.19"
+  "dependencies": {
+    "reactivity-store": "^0.3.11"
   },
   "peerDependencies": {
     "@my-react/react": ">=0.3.19"

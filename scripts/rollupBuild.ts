@@ -91,7 +91,25 @@ const buildPackages = async () => {
       },
     },
   });
-  await rollupBuild({ packageName: "myreact-reactivity", packageScope: "packages", external: externalReact });
+  await rollupBuild({
+    packageName: "myreact-reactivity",
+    packageScope: "packages",
+    external: externalReact,
+    plugins: {
+      multipleDevUMD({ defaultPlugins }) {
+        return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+      },
+      multipleProdUMD({ defaultPlugins }) {
+        return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+      },
+      multipleDevOther({ defaultPlugins }) {
+        return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+      },
+      multipleProdOther({ defaultPlugins }) {
+        return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+      },
+    },
+  });
   await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-vite", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-refresh-tools", packageScope: "packages", external: externalReact });

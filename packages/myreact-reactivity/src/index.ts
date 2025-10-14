@@ -1,7 +1,10 @@
-export * from "./api";
+/* eslint-disable import/export */
+import { createStoreWithComponent } from "reactivity-store";
 
-export { createReactive, onBeforeMount, onBeforeUnmount, onBeforeUpdate, onMounted, onUnmounted, onUpdated } from "./reactive";
+const createReactive = createStoreWithComponent;
 
 const version = __VERSION__;
 
-export { version };
+export * from "reactivity-store";
+
+export { version, createReactive };

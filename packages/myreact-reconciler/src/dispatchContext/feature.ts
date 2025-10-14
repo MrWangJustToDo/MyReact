@@ -1,7 +1,7 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
-import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { type CustomRenderDispatch } from "../renderDispatch";
 import { type MyReactFiberNode, type MyReactFiberNodeDev } from "../runtimeFiber";
 import { getInstanceOwnerFiber, initInstance, setOwnerForInstance, setSubscribeForInstance } from "../runtimeGenerate";
 import { enableDebugUpdateQueue, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
@@ -137,7 +137,7 @@ export const prepareUpdateAllDependence = (
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberTriggerListener() {
-      listenerMap.get(renderDispatch)?.fiberTrigger?.forEach((cb) => cb(fiber, updateState));
+      renderDispatch.callOnFiberTrigger(fiber, updateState);
     },
   });
 };

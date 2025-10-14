@@ -14,22 +14,22 @@
   "dependencies": {
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
-    "express": "^4.21.2",
-    "framer-motion": "^12.23.12",
+    "express": "catalog:",
+    "framer-motion": "^12.23.24",
     "react": "npm:@my-react/react@*",
     "react-dom": "npm:@my-react/react-dom@*",
-    "react-router": "^6.27.0",
-    "react-router-dom": "^6.27.0"
+    "react-router": "catalog:",
+    "react-router-dom": "catalog:"
   },
   "devDependencies": {
     "@my-react/react-refresh": "workspace:*",
     "@my-react/react-vite": "workspace:*",
-    "@vitejs/plugin-react": "^4.6.0",
-    "babel-plugin-react-compiler": "19.1.0-rc.3",
-    "eslint": "^8.57.0",
-    "react-compiler-runtime": "19.1.0-rc.3",
+    "@vitejs/plugin-react": "catalog:",
+    "babel-plugin-react-compiler": "catalog:",
+    "eslint": "catalog:",
+    "react-compiler-runtime": "catalog:",
     "serve-static": "^1.16.2",
-    "typescript": "^5.3.3",
-    "vite": "^5.4.19"
+    "typescript": "catalog:",
+    "vite": "catalog:"
   }
 }

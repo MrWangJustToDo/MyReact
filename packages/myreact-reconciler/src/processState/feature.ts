@@ -2,7 +2,6 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
-import { listenerMap } from "../renderDispatch";
 import { prepareUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";
 import { getInstanceOwnerFiber } from "../runtimeGenerate";
 import { enableLogForCurrentFlowIsRunning, getElementName, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, syncFlush } from "../share";
@@ -55,7 +54,7 @@ export const processState = (renderDispatch: CustomRenderDispatch, _params: Upda
   safeCallWithCurrentFiber({
     fiber: ownerFiber,
     action: function safeCallFiberStateListener() {
-      listenerMap.get(renderDispatch)?.fiberState?.forEach((cb) => cb(ownerFiber, _params));
+      renderDispatch.callOnFiberState(ownerFiber, _params);
     },
   });
 
@@ -114,7 +113,7 @@ export const processState = (renderDispatch: CustomRenderDispatch, _params: Upda
     safeCallWithCurrentFiber({
       fiber: ownerFiber,
       action: function safeCallInstanceStateListener() {
-        listenerMap.get(renderDispatch)?.instanceState?.forEach((cb) => cb(trigger, ownerFiber, _params));
+        renderDispatch.callOnInstanceState(trigger, ownerFiber, _params);
       },
     });
 
@@ -172,7 +171,7 @@ export const processState = (renderDispatch: CustomRenderDispatch, _params: Upda
     safeCallWithCurrentFiber({
       fiber: ownerFiber,
       action: function safeCallHookStateListener() {
-        listenerMap.get(renderDispatch)?.hookState?.forEach((cb) => cb(trigger, ownerFiber, _params));
+        renderDispatch.callOnHookState(trigger, ownerFiber, _params);
       },
     });
 

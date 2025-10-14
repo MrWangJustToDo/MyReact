@@ -4,7 +4,6 @@ import {
   CustomRenderDispatch,
   NODE_TYPE,
   safeCall,
-  listenerMap,
   processState,
   processHook,
   devErrorWithFiber,
@@ -98,13 +97,13 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
       });
 
       safeCall(function safeCallBeforeCommitListener() {
-        listenerMap.get(instance).beforeCommitMount.forEach((cb) => cb());
+        instance.callOnBeforeCommitMount(instance);
       });
 
       ReconcilerDispatchMount(this, _fiber, config);
 
       safeCall(function safeCallAfterCommitListener() {
-        listenerMap.get(instance).afterCommitMount.forEach((cb) => cb());
+        instance.callOnAfterCommitMount(instance);
       });
 
       safeCall(function safeCallAfterCommit() {
@@ -124,13 +123,13 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
       });
 
       safeCall(function safeCallBeforeUpdateListener() {
-        listenerMap.get(instance).beforeCommitUpdate.forEach((cb) => cb());
+        instance.callOnBeforeCommitUpdate(instance);
       });
 
       ReconcilerDispatchUpdate(this, _list, config, sync);
 
       safeCall(function safeCallAfterUpdateListener() {
-        listenerMap.get(instance).afterCommitUpdate.forEach((cb) => cb());
+        instance.callOnAfterCommitUpdate(instance);
       });
 
       safeCall(function safeCallAfterUpdate() {

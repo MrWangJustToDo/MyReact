@@ -2,7 +2,7 @@ import { __my_react_shared__ } from "@my-react/react";
 import { PATCH_TYPE, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { processClassComponentUnmount } from "../processClass";
-import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { type CustomRenderDispatch } from "../renderDispatch";
 import { unmountInstance } from "../runtimeGenerate";
 import { hookListUnmount } from "../runtimeHook";
 import { fiberToDispatchMap, safeCallWithCurrentFiber } from "../share";
@@ -45,7 +45,7 @@ export const unmountFiberNode = (renderDispatch: CustomRenderDispatch, fiber: My
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberUnmountListener() {
-      listenerMap.get(renderDispatch)?.fiberUnmount?.forEach((listener) => listener(fiber));
+      renderDispatch.callOnFiberUnmount(fiber);
     },
   });
 

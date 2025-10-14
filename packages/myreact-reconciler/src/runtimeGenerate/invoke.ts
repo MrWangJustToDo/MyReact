@@ -7,7 +7,6 @@ import { processConsumer, processProvider } from "../processContext";
 import { processFunction } from "../processFunction";
 import { processLazy } from "../processLazy";
 import { processSuspense } from "../processSuspense";
-import { listenerMap } from "../renderDispatch";
 import { currentTriggerFiber, NODE_TYPE, onceWarnWithKeyAndFiber, safeCallWithCurrentFiber, setRefreshTypeMap } from "../share";
 
 import { transformChildrenFiber } from "./generate";
@@ -118,7 +117,7 @@ export const nextWorkActivity = (renderDispatch: CustomRenderDispatch, fiber: My
   const children = processActivity(fiber);
 
   nextWorkCommon(renderDispatch, fiber, children);
-}
+};
 
 export const nextWorkRoot = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
   const isUpdate = !!fiber.instance;
@@ -148,7 +147,7 @@ export const runtimeNextWorkDev = (renderDispatch: CustomRenderDispatch, fiber: 
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberRunListener() {
-      listenerMap.get(renderDispatch)?.beforeFiberRun?.forEach((cb) => cb(fiber));
+      renderDispatch.callOnBeforeFiberRun(fiber);
     },
   });
 
@@ -174,7 +173,7 @@ export const runtimeNextWorkDev = (renderDispatch: CustomRenderDispatch, fiber: 
     safeCallWithCurrentFiber({
       fiber,
       action: function safeCallPerformanceWarnListener() {
-        listenerMap.get(renderDispatch)?.performanceWarn?.forEach((cb) => cb(fiber));
+        renderDispatch.callOnPerformanceWarn(fiber, renderTime);
       },
     });
   }
@@ -210,7 +209,7 @@ export const runtimeNextWorkDev = (renderDispatch: CustomRenderDispatch, fiber: 
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberRunListener() {
-      listenerMap.get(renderDispatch)?.afterFiberRun?.forEach((cb) => cb(fiber));
+      renderDispatch.callOnAfterFiberRun(fiber);
     },
   });
 };

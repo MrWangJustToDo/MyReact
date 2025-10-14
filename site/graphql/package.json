@@ -40,17 +40,17 @@
     "project-tool": "https://github.com/MrWangJustToDo/project-tool.git"
   },
   "peerDependencies": {
-    "@apollo/client": "^3.13.8",
-    "@graphql-codegen/add": "^5.0.3",
-    "@graphql-codegen/cli": "^5.0.3",
-    "@graphql-codegen/import-types-preset": "^3.0.0",
-    "@graphql-codegen/near-operation-file-preset": "^3.1.0",
-    "@graphql-codegen/typed-document-node": "^5.1.2",
-    "@graphql-codegen/typescript": "^4.1.6",
-    "@graphql-codegen/typescript-operations": "^4.6.1",
-    "@graphql-typed-document-node/core": "^3.2.0",
-    "graphql": "^16.11.0",
-    "lodash": "^4.17.21",
-    "react": "^18.3.1"
+    "@apollo/client": "catalog:",
+    "@graphql-codegen/add": "catalog:",
+    "@graphql-codegen/cli": "catalog:",
+    "@graphql-codegen/import-types-preset": "catalog:",
+    "@graphql-codegen/near-operation-file-preset": "catalog:",
+    "@graphql-codegen/typed-document-node": "catalog:",
+    "@graphql-codegen/typescript": "catalog:",
+    "@graphql-codegen/typescript-operations": "catalog:",
+    "@graphql-typed-document-node/core": "catalog:",
+    "graphql": "catalog:",
+    "lodash": "catalog:",
+    "react": "catalog:"
   }
 }

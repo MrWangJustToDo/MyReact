@@ -3,7 +3,7 @@ import { include, isPromise, merge, remove, STATE_TYPE, UpdateQueueType } from "
 
 import { defaultDeleteChildEffect } from "../dispatchEffect";
 import { defaultResolveAliveSuspenseFiber } from "../dispatchSuspense";
-import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { type CustomRenderDispatch } from "../renderDispatch";
 import { performToNextFiberFromRoot } from "../renderNextWork";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { mountLoopAll } from "../runtimeMount";
@@ -33,7 +33,7 @@ export const triggerFiberUpdateListener = (renderDispatch: CustomRenderDispatch,
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberUpdateListener() {
-      listenerMap.get(renderDispatch)?.fiberUpdate?.forEach((listener) => listener(fiber));
+      renderDispatch.callOnFiberUpdate(fiber);
     },
   });
 };

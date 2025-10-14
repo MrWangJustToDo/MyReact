@@ -1,7 +1,6 @@
 import { __my_react_internal__ } from "@my-react/react";
 import { HOOK_TYPE, ListTree, STATE_TYPE, include } from "@my-react/react-shared";
 
-import { listenerMap } from "../renderDispatch";
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
 import { createHookNode, effectHookNode, updateHookNode } from "../runtimeHook";
 import { safeCall } from "../share";
@@ -54,14 +53,14 @@ export const processHook = (renderDispatch: CustomRenderDispatch, { type, reduce
     currentHook = createHookNode(renderDispatch, { type, reducer, value, deps }, fiber);
 
     safeCall(function safeCallHookInitialListener() {
-      listenerMap.get(renderDispatch)?.hookInitial?.forEach((cb) => cb(currentHook, fiber));
+      renderDispatch.callOnHookInitial(currentHook, fiber);
     });
   } else {
     // update
     currentHook = updateHookNode(renderDispatch, { type, reducer, value, deps }, fiber, __DEV__ && Boolean(include(fiber.state, STATE_TYPE.__hmr__)));
 
     safeCall(function safeCallHookUpdateListener() {
-      listenerMap.get(renderDispatch)?.hookUpdate?.forEach((cb) => cb(currentHook, fiber));
+      renderDispatch.callOnHookUpdate(currentHook, fiber);
     });
   }
 

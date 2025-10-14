@@ -1,6 +1,6 @@
 import { PATCH_TYPE, exclude } from "@my-react/react-shared";
 
-import { listenerMap, type CustomRenderDispatch } from "../renderDispatch";
+import { type CustomRenderDispatch } from "../renderDispatch";
 import { fiberToDispatchMap, safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactFiberNode } from "./instance";
@@ -27,7 +27,7 @@ export const initialFiberNode = (renderDispatch: CustomRenderDispatch, fiber: My
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberInitialListener() {
-      listenerMap.get(renderDispatch)?.fiberInitial?.forEach((listener) => listener(fiber));
+      renderDispatch.callOnFiberInitial(fiber);
     },
   });
 

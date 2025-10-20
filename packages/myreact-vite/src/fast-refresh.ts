@@ -12,6 +12,8 @@ if (!RefreshRuntime.version || !compareVersion(RefreshRuntime.version, "0.3.9"))
 
 export const runtimePublicPath = "/@my-react-refresh";
 
+const reactRuntimePublicPath = "/@react-refresh";
+
 const reactCompRE = /extends\s+(?:React\.)?(?:Pure)?Component/;
 
 const refreshContentRE = /\$RefreshReg\$\(/;
@@ -67,6 +69,26 @@ export function addRefreshWrapper(code: string, pluginName: string, id: string, 
   const onlyReactComp = !hasRefresh && reactCompRE.test(code);
 
   if (!hasRefresh && !onlyReactComp) return undefined;
+
+  // for react-plugin >= 4
+  const reactESMRefreshCode = `import * as RefreshRuntime from "${reactRefreshHost}${reactRuntimePublicPath}"`;
+  // for react-plugin <= 3;
+  const reactCJSRefreshCode = `import RefreshRuntime from "${reactRuntimePublicPath}"`;
+
+  const hasReactRefresh = code.includes(reactESMRefreshCode) || code.includes(reactCJSRefreshCode);
+
+  if (hasReactRefresh) {
+    const refreshHeader = `import RefreshRuntime from "${reactRefreshHost}${runtimePublicPath}"`;
+    let index = code.lastIndexOf(reactESMRefreshCode);
+    if (index !== -1) {
+      code = code.slice(0, index) + refreshHeader + code.slice(index + reactESMRefreshCode.length);
+    }
+    index = code.lastIndexOf(reactCJSRefreshCode);
+    if (index !== -1) {
+      code = code.slice(0, index) + refreshHeader + code.slice(index + reactCJSRefreshCode.length);
+    }
+    return code;
+  }
 
   let newCode = code;
   newCode += `

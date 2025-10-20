@@ -193,6 +193,10 @@ export const getFamilyByType = (type: MyReactComponentType) => {
   return allFamiliesByType.get(type);
 };
 
+export const getSignatureByType = (type: MyReactComponentType) => {
+  return allSignaturesByType.get(type);
+};
+
 export const setSignature = (type: MyReactComponentType, key: string, forceReset: boolean, getCustomHooks: Signature["getCustomHooks"]) => {
   if (!type) return;
 
@@ -458,6 +462,7 @@ const setRefreshRuntimeFieldForDev = (container: RefreshCustomRenderDispatch) =>
       setSignature,
       getFamilyByID,
       getFamilyByType,
+      getSignatureByType,
       performReactRefresh,
       isLikelyComponentType,
       collectCustomHooksForSignature,

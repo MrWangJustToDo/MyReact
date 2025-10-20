@@ -1,5 +1,5 @@
-import react from "@my-react/react-vite";
-// import react from '@vitejs/plugin-react';
+import _react from "@my-react/react-vite";
+// import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 // !SEE https://github.com/vitejs/vite/issues/12738
@@ -38,7 +38,7 @@ export default defineConfig({
     ],
   },
   plugins: [
-    react({
+    _react({
       babel: {
         plugins: [
           [
@@ -50,5 +50,6 @@ export default defineConfig({
         ],
       },
     }),
+    // react(),
   ],
 });

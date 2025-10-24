@@ -1,4 +1,4 @@
-import { PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
+import { include, PATCH_TYPE, STATE_TYPE } from "@my-react/react-shared";
 
 import { type CustomRenderDispatch } from "../renderDispatch";
 import { getFiberTreeWithFiber, getTypeFromElementNode, NODE_TYPE } from "../share";
@@ -28,6 +28,8 @@ export class MyReactFiberNode implements RenderFiber {
   nativeNode: Record<string, any>;
 
   elementType: MyReactElementType | null;
+
+  elementRawType: MyReactElementType | null;
 
   hookList: ListTree<RenderHook> | null;
 
@@ -73,6 +75,10 @@ export class MyReactFiberNode implements RenderFiber {
     this.type = nodeType;
 
     this.elementType = elementType;
+
+    if (include(nodeType, NODE_TYPE.__function__)) {
+      this.elementRawType = (element as MyReactElement)?.type;
+    }
 
     this.pendingProps = pendingProps;
 

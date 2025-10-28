@@ -9,8 +9,8 @@ export const theme: Partial<ChakraTheme> = extendTheme({
   styles,
   semanticTokens,
   fonts: {
-    heading: "Josefin Sans",
-    body: "Josefin Sans",
-    mono: "Josefin Sans",
+    heading: "Open Sans Variable",
+    body: "Open Sans Variable",
+    mono: "Open Sans Variable",
   },
 });

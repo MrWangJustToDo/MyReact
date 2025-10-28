@@ -21,8 +21,10 @@ const { enableLegacyLifeCycle, enablePerformanceLog } = __my_react_shared__;
  * @internal
  */
 export const onceLog = once(() => {
+  if (window?.__MY_REACT_DEVTOOL_RUNTIME__ || window?.["__@my-react/react-devtool-inject__"]) return;
+
   console.log(
-    `current site using %c@my-react%c to render, version: '${__VERSION__}'. see https://github.com/MrWangJustToDo/MyReact`,
+    `detector %c@my-react ${__VERSION__}%c on this page. see https://github.com/MrWangJustToDo/MyReact`,
     "color: white;background-color: rgba(10, 190, 235, 0.8); border-radius: 2px; padding: 2px 5px",
     ""
   );

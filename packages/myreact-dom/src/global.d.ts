@@ -11,7 +11,8 @@ declare global {
   }
 
   interface Window {
-    __highlight__: boolean;
+    __MY_REACT_DEVTOOL_RUNTIME__: any;
+    ["__@my-react/react-devtool-inject__"]: any;
   }
 }
 

@@ -31,6 +31,8 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   version = __VERSION__;
 
+  id = Math.random().toString(16).slice(2);
+
   mode = __DEV__ ? "development" : "production";
 
   enableUpdate: boolean;

@@ -63,6 +63,21 @@ export const mountToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, f
 
     // current nextFiber is all done, back to parent
 
+    if (__DEV__ && nextFiber.parent) {
+      safeCallWithCurrentFiber({
+        fiber: nextFiber.parent,
+        action: function safeCallAfterFiberDone() {
+          renderDispatch.callOnAfterFiberDone(nextFiber.parent);
+        },
+      });
+    }
+
+    nextFiber = nextFiber.parent;
+  }
+
+  if (nextFiber === renderDispatch.runtimeFiber.scheduledFiber) {
+    renderDispatch.generateCommitList(nextFiber);
+
     if (__DEV__) {
       safeCallWithCurrentFiber({
         fiber: nextFiber,
@@ -71,11 +86,7 @@ export const mountToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, f
         },
       });
     }
-
-    nextFiber = nextFiber.parent;
   }
-
-  if (nextFiber === renderDispatch.runtimeFiber.scheduledFiber) renderDispatch.generateCommitList(nextFiber);
 
   return null;
 };
@@ -133,6 +144,21 @@ export const performToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch,
 
     if (nextFiber.sibling) return nextFiber.sibling;
 
+    if (__DEV__ && nextFiber.parent) {
+      safeCallWithCurrentFiber({
+        fiber: nextFiber.parent,
+        action: function safeCallAfterFiberDone() {
+          renderDispatch.callOnAfterFiberDone(nextFiber.parent);
+        },
+      });
+    }
+
+    nextFiber = nextFiber.parent;
+  }
+
+  if (nextFiber === renderDispatch.runtimeFiber.scheduledFiber) {
+    renderDispatch.generateCommitList(nextFiber);
+
     if (__DEV__) {
       safeCallWithCurrentFiber({
         fiber: nextFiber,
@@ -141,11 +167,7 @@ export const performToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch,
         },
       });
     }
-
-    nextFiber = nextFiber.parent;
   }
-
-  if (nextFiber === renderDispatch.runtimeFiber.scheduledFiber) renderDispatch.generateCommitList(nextFiber);
 
   return null;
 };

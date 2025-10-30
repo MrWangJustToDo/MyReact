@@ -75,6 +75,8 @@ const getInitialListeners = (): Listeners => {
         afterFiberDone: new Set(),
         beforeDispatchRender: new Set(),
         afterDispatchRender: new Set(),
+        beforeDispatchUpdate: new Set(),
+        afterDispatchUpdate: new Set(),
         fiberWarn: new Set(),
         fiberError: new Set(),
         fiberState: new Set(),

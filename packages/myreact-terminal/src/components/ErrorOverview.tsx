@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import codeExcerpt, { type CodeExcerpt } from "code-excerpt";
 import * as fs from "node:fs";
 import { cwd } from "node:process";
@@ -74,6 +75,7 @@ export default function ErrorOverview({ error }: Props) {
                 </Text>
               </Box>
 
+              {/* @ts-ignore */}
               <Text key={line} backgroundColor={line === origin.line ? "red" : undefined} color={line === origin.line ? "white" : undefined}>
                 {" " + value}
               </Text>

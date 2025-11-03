@@ -31,5 +31,5 @@ const cleanTypeFile = async (pkgName: keyof typeof pkgNameAlias) => {
   await rm(distType, { force: true, recursive: true });
 };
 
-cleanTypeFile("@my-react/react");
+// cleanTypeFile("@my-react/react");
 cleanTypeFile("@my-react/react-dom");

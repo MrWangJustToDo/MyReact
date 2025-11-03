@@ -2,11 +2,10 @@
   "compilerOptions": {
     "rootDir": "src",
     "target": "ESNext",
-    "module": "ESNext",
     "esModuleInterop": true,
     "moduleResolution": "Bundler",
     "jsx": "react-jsx",
-    "jsxImportSource": "@my-react/react-terminal"
+    "jsxImportSource": "@my-react/react-opentui"
   },
   "include": ["./src"],
   "exclude": ["node_modules"]

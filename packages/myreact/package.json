@@ -53,5 +53,8 @@
   },
   "devDependencies": {
     "@my-react/react-shared": "^0.3.21"
+  },
+  "peerDependencies": {
+    "react": "^17 || ^18 || ^19"
   }
 }

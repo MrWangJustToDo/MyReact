@@ -59,7 +59,8 @@ function createReconciler<
       null, // updatePayload
       ChildSet,
       TimeoutHandle,
-      NoTimeout
+      NoTimeout,
+      unknown
     >,
     "getCurrentEventPriority" | "prepareUpdate" | "commitUpdate"
   > & {
@@ -116,7 +117,7 @@ function createReconciler<
      */
     waitForCommitToBeReady(): ((initiateCommit: Function) => Function) | null;
   }
-): ReactReconciler.Reconciler<Container, Instance, TextInstance, SuspenseInstance, PublicInstance> {
+): ReactReconciler.Reconciler<Container, Instance, TextInstance, SuspenseInstance, PublicInstance, unknown> {
   const reconciler = Reconciler(config as any);
 
   reconciler.injectIntoDevTools({
@@ -558,7 +559,9 @@ export const reconciler = /* @__PURE__ */ createReconciler<
 
     insertBefore(scene, child, beforeChild);
   },
+  // @ts-ignore
   getRootHostContext: () => NO_CONTEXT,
+  // @ts-ignore
   getChildHostContext: () => NO_CONTEXT,
   commitUpdate(instance: HostConfig["instance"], type: HostConfig["type"], oldProps: HostConfig["props"], newProps: HostConfig["props"], fiber: Fiber) {
     validateInstance(type, newProps);
@@ -623,6 +626,7 @@ export const reconciler = /* @__PURE__ */ createReconciler<
   suspendInstance() {},
   waitForCommitToBeReady: () => null,
   NotPendingTransition: null,
+  // @ts-ignore
   HostTransitionContext: /* @__PURE__ */ React.createContext<HostConfig["TransitionStatus"]>(null),
   setCurrentUpdatePriority(newPriority: number) {
     currentUpdatePriority = newPriority;

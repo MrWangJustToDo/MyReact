@@ -15,7 +15,7 @@ const shiftTab = "\u001B[Z";
 const escape = "\u001B";
 
 type Props = {
-  readonly children: ReactNode;
+  readonly children?: ReactNode;
   readonly stdin: NodeJS.ReadStream;
   readonly stdout: NodeJS.WriteStream;
   readonly stderr: NodeJS.WriteStream;

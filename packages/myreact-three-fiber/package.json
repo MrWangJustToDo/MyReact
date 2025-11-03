@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@types/three": "^0.156.0",
-    "@types/react-reconciler": "^0.31.0",
+    "@types/react-reconciler": "^0.32.0",
     "three": ">=0.156"
   },
   "peerDependencies": {

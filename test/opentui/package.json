@@ -1,0 +1,37 @@
+{
+  "name": "@test/react-opentui",
+  "author": "MrWangJustToDo",
+  "license": "MIT",
+  "main": "index.mjs",
+  "types": "./index.d.ts",
+  "type": "module",
+  "files": [
+    "dist",
+    "index.mjs",
+    "index.d.ts"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWangJustToDo/MyReact",
+    "directory": "test/opentui"
+  },
+  "buildOptions": [
+    {
+      "input": "./src/index.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/index.mjs",
+          "format": "esm",
+          "type": true,
+          "sourcemap": true
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "@my-react/react": "workspace:*",
+    "@my-react/react-opentui": "workspace:*",
+    "@opentui/core": "latest"
+  }
+}

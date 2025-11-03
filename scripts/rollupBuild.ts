@@ -82,6 +82,16 @@ const buildPackages = async () => {
     },
   });
   await rollupBuild({
+    packageName: "myreact-opentui",
+    packageScope: "packages",
+    external: externalReactLib,
+    plugins: {
+      singleOther({ defaultPlugins }) {
+        return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+      },
+    },
+  });
+  await rollupBuild({
     packageName: "myreact-three-fiber",
     packageScope: "packages",
     external: externalReactLib,

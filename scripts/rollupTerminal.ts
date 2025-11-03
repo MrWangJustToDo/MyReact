@@ -6,10 +6,12 @@ export const externalReact = (id: string) =>
   id.endsWith("@my-react/react-dom") ||
   id.includes("@my-react/react-refresh") ||
   id.endsWith("@my-react/react-terminal") ||
+  id.endsWith("@my-react/react-opentui") ||
   (id.includes("node_modules") && !id.includes("tslib"));
 
 const build = async () => {
   await rollupBuild({ packageName: "terminal", packageScope: "test", external: externalReact });
+  await rollupBuild({ packageName: "opentui", packageScope: "test", external: externalReact });
 };
 
 const watch = () => {

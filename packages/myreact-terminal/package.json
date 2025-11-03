@@ -10,8 +10,28 @@
   "files": [
     "dist",
     "index.mjs",
-    "index.d.ts"
+    "index.d.ts",
+    "jsx-runtime.js",
+    "jsx-runtime.d.ts",
+    "jsx-dev-runtime.js",
+    "jsx-dev-runtime.d.ts",
+    "jsx-namespace.d.ts",
+    "package.json"
   ],
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "types": "./index.d.ts"
+    },
+    "./jsx-runtime": {
+      "import": "./jsx-runtime.js",
+      "types": "./jsx-runtime.d.ts"
+    },
+    "./jsx-dev-runtime": {
+      "import": "./jsx-dev-runtime.js",
+      "types": "./jsx-dev-runtime.d.ts"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/MrWangJustToDo/MyReact",
@@ -53,7 +73,7 @@
     "yoga-layout": "^3.2.1"
   },
   "devDependencies": {
-    "@types/react-reconciler": "^0.31.0",
+    "@types/react-reconciler": "^0.32.0",
     "@types/signal-exit": "^4.0.0",
     "@types/slice-ansi": "^7.1.0",
     "@types/stack-utils": "^2.0.3"

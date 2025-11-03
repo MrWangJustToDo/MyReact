@@ -99,7 +99,10 @@ export default class Ink {
       null,
       "id",
       () => {},
-      null
+      null,
+      null,
+      null,
+      null,
     );
 
     // Unmount when process exits

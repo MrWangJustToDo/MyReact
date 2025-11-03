@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { createReconciler } from "@my-react/react-reconciler-compact";
 import Yoga, { type Node as YogaNode } from "yoga-layout";
 
@@ -82,8 +83,10 @@ export const Reconciler = createReconciler<
   UpdatePayload,
   unknown,
   unknown,
+  unknown,
   unknown
 >({
+  // @ts-ignore
   getRootHostContext: () => ({
     isInsideText: false,
   }),
@@ -113,7 +116,9 @@ export const Reconciler = createReconciler<
     // react will switch rootNode, so every time resetAfterCommit called, we need to clean the staticNode
     rootNode.staticNode = null;
   },
+  // @ts-ignore
   getChildHostContext(parentHostContext, type) {
+    // @ts-ignore
     const previousIsInsideText = parentHostContext.isInsideText;
     const isInsideText = type === "ink-text" || type === "ink-virtual-text";
 
@@ -125,10 +130,12 @@ export const Reconciler = createReconciler<
   },
   shouldSetTextContent: () => false,
   createInstance(originalType, newProps, _root, hostContext) {
+    // @ts-ignore
     if (hostContext.isInsideText && originalType === "ink-box") {
       throw new Error(`<Box> can’t be nested inside <Text> component`);
     }
 
+    // @ts-ignore
     const type = originalType === "ink-text" && hostContext.isInsideText ? "ink-virtual-text" : originalType;
 
     const node = createNode(type);
@@ -164,6 +171,7 @@ export const Reconciler = createReconciler<
     return node;
   },
   createTextInstance(text, _root, hostContext) {
+    // @ts-ignore
     if (!hostContext.isInsideText) {
       throw new Error(`Text string "${text}" must be rendered inside <Text> component`);
     }
@@ -177,6 +185,7 @@ export const Reconciler = createReconciler<
   unhideTextInstance(node, text) {
     setTextNodeValue(node, text);
   },
+  // @ts-ignore
   getPublicInstance: (instance) => instance,
   hideInstance(node) {
     node.yogaNode?.setDisplay(Yoga.DISPLAY_NONE);
@@ -234,6 +243,7 @@ export const Reconciler = createReconciler<
 
     return { props, style };
   },
+  // @ts-ignore
   commitUpdate(node, { props, style }) {
     if (props) {
       for (const [key, value] of Object.entries(props)) {

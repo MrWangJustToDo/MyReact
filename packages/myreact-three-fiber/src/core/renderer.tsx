@@ -137,7 +137,7 @@ export function createRoot<TCanvas extends HTMLCanvasElement | OffscreenCanvas>(
   // Create renderer
   const fiber =
     prevFiber ||
-    (reconciler as any).createContainer(
+    reconciler.createContainer(
       store, // container
       // ConcurrentRoot, // tag
       1,
@@ -146,6 +146,7 @@ export function createRoot<TCanvas extends HTMLCanvasElement | OffscreenCanvas>(
       null, // concurrentUpdatesByDefaultOverride
       "", // identifierPrefix
       logRecoverableError, // onUncaughtError
+      null,
       logRecoverableError, // onCaughtError
       logRecoverableError, // onRecoverableError
       null // transitionCallbacks

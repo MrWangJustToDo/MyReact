@@ -25,7 +25,7 @@
     "release": "ts-node ./scripts/release.ts",
     "commit": "NODE_ENV=production node ./commit.mjs",
     "prepare:terminal": "ts-node ./scripts/rollupTerminal.ts",
-    "test:opentui": "bun ./opentui.mjs",
+    "test:opentui": "DEV=true bun ./opentui.mjs",
     "test:terminal": "NODE_ENV=development DEV=true node ./test.mjs",
     "test:terminal-inspect": "NODE_ENV=development DEV=true node --inspect ./test.mjs",
     "test:three": "cd ./test/three-fiber && pnpm run dev",

@@ -15,7 +15,7 @@ import { include, STATE_TYPE } from "@my-react/react-shared";
 import { autoSetDevTools, delGlobalDispatch } from "./devtool";
 import { createDispatch } from "./dispatch";
 import { autoSetDevHMR } from "./hmr";
-import { loadScript } from "./polyfill";
+import { loadRemoteModule } from "./polyfill";
 import { createPortal } from "./portal";
 import { prepareScheduler } from "./scheduler";
 
@@ -128,7 +128,7 @@ export const Reconciler = (_config: any) => {
 
     // load core runtime
     // await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");
-    await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");
+    await loadRemoteModule("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js", { context: { globalThis } });
     // connect to devtools, current need run https://github.com/MrWangJustToDo/myreact-devtools with pnpm run dev:web command
   };
 

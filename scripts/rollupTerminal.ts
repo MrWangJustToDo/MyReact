@@ -3,6 +3,8 @@ import { rollupBuild, rollupWatch } from "project-tool/rollup";
 
 export const externalReact = (id: string) =>
   id.endsWith("@my-react/react") ||
+  id.endsWith("/react/jsx-runtime") ||
+  id.endsWith("/react/jsx-dev-runtime") ||
   id.endsWith("@my-react/react-dom") ||
   id.includes("@my-react/react-refresh") ||
   id.endsWith("@my-react/react-terminal") ||

@@ -1,3 +1,5 @@
-import { testAnimation } from "@test/react-opentui";
+import { testAnimation, testScroll } from "@test/react-opentui";
 
-testAnimation();
+// testAnimation();
+
+testScroll();

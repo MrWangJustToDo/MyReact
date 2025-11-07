@@ -20,6 +20,7 @@
   "exports": {
     ".": {
       "default": "./index.js",
+      "import": "./dist/esm/index.mjs",
       "types": "./index.d.ts"
     },
     "./package.json": "./package.json"
@@ -34,6 +35,11 @@
           "format": "cjs",
           "type": true,
           "multiple": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/index.mjs",
+          "format": "esm"
         }
       ]
     }

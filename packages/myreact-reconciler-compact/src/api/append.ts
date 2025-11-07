@@ -1,9 +1,9 @@
+import { type MyReactFiberNode, type MyReactFiberContainer, NODE_TYPE } from "@my-react/react-reconciler";
 import { include, PATCH_TYPE, remove } from "@my-react/react-shared";
 
 import { getValidParentFiberWithNode } from "../dispatchMap";
 
 import type { ReconcilerDispatch } from "../dispatch";
-import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
 export const append = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, _config: any) => {
   if (!include(_fiber.patch, PATCH_TYPE.__append__)) return;
@@ -14,7 +14,13 @@ export const append = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
 
   const mayFiberContainer = parentFiberWithNode as MyReactFiberContainer;
 
-  if (!_fiber.nativeNode) throw new Error(`append error, current render node not have a native node`);
+  if (!_fiber.nativeNode) {
+    if (include(_fiber.type, NODE_TYPE.__text__)) {
+      _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__append__);
+      return;
+    }
+    throw new Error(`append error, current render node not have a native node`);
+  }
 
   // const parentNode = config.getPublicInstance(parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode);
   const parentNode = parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode;

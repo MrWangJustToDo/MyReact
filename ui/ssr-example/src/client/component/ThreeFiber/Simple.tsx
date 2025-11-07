@@ -1,5 +1,4 @@
-import { useColorMode } from "@chakra-ui/react";
-import { Canvas, useFiber, useFrame } from "@my-react/react-three-fiber";
+import { Canvas, useFrame } from "@my-react/react-three-fiber";
 import { useRef, useState } from "react";
 
 import type { ThreeElements } from "@my-react/react-three-fiber";
@@ -9,9 +8,6 @@ function Box(props: ThreeElements["mesh"]) {
   const [hovered, hover] = useState(false);
   const [clicked, click] = useState(false);
   useFrame((state, delta) => (ref.current.rotation.x += delta));
-  const fiber = useFiber();
-  console.log("fiber", fiber);
-  console.log(useColorMode());
 
   return (
     <mesh

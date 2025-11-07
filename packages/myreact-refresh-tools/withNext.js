@@ -1,6 +1,6 @@
 const RefreshWebpackPlugin = require("./RefreshWebpackPlugin");
 
-module.exports = function withNext(nextConfig = {}) {
+module.exports = function withNext(nextConfig = {}, { generateAlias } = {}) {
   return Object.assign({}, nextConfig, {
     webpack: (config, options) => {
       const originalEntry = config.entry;
@@ -56,10 +56,15 @@ module.exports = function withNext(nextConfig = {}) {
 
       // Install webpack aliases:
       const aliases = config.resolve.alias || (config.resolve.alias = {});
-      aliases["react"] = "@my-react/react";
-      aliases["react-dom$"] = "@my-react/react-dom";
-      aliases["react-dom/server$"] = "@my-react/react-dom/server";
-      aliases["react-dom/client$"] = "@my-react/react-dom/client";
+
+      if (typeof generateAlias === "function") {
+        generateAlias(aliases, { isServer, webpackVersion });
+      } else {
+        aliases["react"] = "@my-react/react";
+        aliases["react-dom$"] = "@my-react/react-dom";
+        aliases["react-dom/server$"] = "@my-react/react-dom/server";
+        aliases["react-dom/client$"] = "@my-react/react-dom/client";
+      }
 
       return config;
     },

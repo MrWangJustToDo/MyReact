@@ -18,7 +18,13 @@ export const create = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
 
   // TODO
   if (include(_fiber.type, NODE_TYPE.__text__)) {
-    _fiber.nativeNode = _config.createTextInstance(type, rootContainerInstance, hostContext, _fiber);
+    const parent = _fiber.parent as MyReactFiberNode;
+
+    const shouldNotCreate = _config?.shouldSetTextContent(parent.elementType, parent.pendingProps) || false;
+
+    if (!shouldNotCreate) {
+      _fiber.nativeNode = _config.createTextInstance(type, rootContainerInstance, hostContext, _fiber);
+    }
   } else if (include(_fiber.type, NODE_TYPE.__plain__)) {
     _fiber.nativeNode = _config.createInstance(type, props, rootContainerInstance, hostContext, _fiber);
   } else if (include(_fiber.type, NODE_TYPE.__portal__)) {

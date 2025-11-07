@@ -18,10 +18,7 @@
   },
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
-    ".": {
-      "default": "./index.js",
-      "types": "./index.d.ts"
-    },
+    ".": "./index.js",
     "./package.json": "./package.json"
   },
   "buildOptions": [

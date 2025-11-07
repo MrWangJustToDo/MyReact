@@ -169,10 +169,10 @@ export const transformChildrenFiber = (renderDispatch: CustomRenderDispatch, par
 
   const isSuspense = include(parentFiber.state, STATE_TYPE.__suspense__);
 
-  // is current is retrigger update, skip update children
+  // if current is retrigger update, skip update children
   if (isRetrigger) return;
 
-  // if is suspense, skip update children
+  // if current is suspense, skip update children
   if (isSuspense) return;
 
   if (isUpdate || isHMR) {

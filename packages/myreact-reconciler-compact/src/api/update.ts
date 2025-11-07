@@ -21,7 +21,13 @@ export const update = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
   const hostContext = _dispatch.runtimeDom.hostContextMap.get(_fiber.parent || _fiber);
 
   if (include(_fiber.type, NODE_TYPE.__text__)) {
-    _config.commitTextUpdate?.(node, _fiber.memoizedText, _fiber.pendingText);
+    const parent = _fiber.parent as MyReactFiberNode;
+
+    const shouldNotCreate = _config?.shouldSetTextContent(parent.elementType, parent.pendingProps) || false;
+
+    if (!shouldNotCreate) {
+      _config.commitTextUpdate?.(node, _fiber.memoizedText, _fiber.pendingText);
+    }
   } else if (include(_fiber.type, NODE_TYPE.__plain__)) {
     if (typeof _config.prepareUpdate === "function") {
       const updatePayload = _config.prepareUpdate(node, type, oldProps, newProps, rootContainerInstance, hostContext, _fiber);

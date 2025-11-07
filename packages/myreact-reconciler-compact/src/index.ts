@@ -17,3 +17,5 @@ export interface FiberNode<T = Record<string, any>> extends MyReactFiberNode {
   sibling: FiberNode | null;
   alternate?: FiberNode | null;
 }
+
+export default createReconciler;

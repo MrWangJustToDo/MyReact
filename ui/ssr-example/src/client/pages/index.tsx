@@ -3,6 +3,7 @@ import { lazy } from "react";
 import { ScrollContent, ScrollControl, ScrollControlTool, ScrollSection, ScrollToTop } from "@client/component/ScrollControl";
 import { DevToolSection, MainSection } from "@client/container/Section";
 import { ApiSection as _ApiSection } from "@client/container/Section/Api";
+import { CanvasUISection } from "@client/container/Section/Canvas";
 import { NextSection } from "@client/container/Section/Next";
 import { ReconcilerSection } from "@client/container/Section/Reconciler";
 import { ThreeFiberSection } from "@client/container/Section/ThreeFiber";
@@ -33,6 +34,12 @@ const Page = () => {
         {!__REACT__ && (
           <ScrollSection>
             <ThreeFiberSection />
+          </ScrollSection>
+        )}
+
+        {!__REACT__ && (
+          <ScrollSection>
+            <CanvasUISection />
           </ScrollSection>
         )}
 

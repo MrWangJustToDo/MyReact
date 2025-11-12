@@ -86,7 +86,7 @@ async function executeInBun(code: string, url: string, context: Record<string, a
   try {
     // 方法1: 使用 data URL import (推荐)
     const dataUrl = `data:application/javascript;base64,${btoa(unescape(encodeURIComponent(code)))}`;
-    await import(dataUrl);
+    await import(/* @vite-ignore */ dataUrl);
     return;
   } catch (error) {
     // 方法2: 使用 Bun 的运行时执行
@@ -116,7 +116,7 @@ async function executeInNode(code: string, url: string, context: Record<string, 
     // 方法2: 使用 data URL import (Node.js 17+)
     try {
       const dataUrl = `data:application/javascript;base64,${Buffer.from(code).toString("base64")}`;
-      await import(dataUrl);
+      await import(/* @vite-ignore */ dataUrl);
     } catch (importError: any) {
       throw new Error(`Node.js 执行失败: ${error.message} ${importError.message}`);
     }

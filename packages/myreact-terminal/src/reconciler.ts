@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { createReconciler } from "@my-react/react-reconciler-compact";
+import createReconciler from "@my-react/react-reconciler-compact";
 import Yoga, { type Node as YogaNode } from "yoga-layout";
 
 import {
@@ -274,7 +274,6 @@ export const Reconciler = createReconciler<
     setTextNodeValue(node, newText);
   },
   removeChild(node, removeNode) {
-    
     removeChildNode(node, removeNode);
     cleanupYogaNode(removeNode.yogaNode);
   },

@@ -10,8 +10,12 @@
   "files": [
     "dist",
     "index.js",
+    "type.js",
+    "type.d.ts",
     "jsx-runtime.js",
-    "jsx-dev-runtime.js"
+    "jsx-runtime.d.ts",
+    "jsx-dev-runtime.js",
+    "jsx-dev-runtime.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -21,6 +25,7 @@
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
     ".": "./index.js",
+    "./type": "./type.js",
     "./jsx-runtime": "./jsx-runtime.js",
     "./jsx-dev-runtime": "./jsx-dev-runtime.js",
     "./package.json": "./package.json"

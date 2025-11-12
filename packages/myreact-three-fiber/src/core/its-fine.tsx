@@ -7,7 +7,7 @@
 import { HOOK_TYPE } from "@my-react/react-shared";
 import * as React from "react";
 
-import type { FiberNode, MyReactHookNode } from "@my-react/react-reconciler-compact";
+import type { FiberNode, MyReactHookNode } from "@my-react/react-reconciler-compact/type";
 
 /**
  * An SSR-friendly useLayoutEffect.

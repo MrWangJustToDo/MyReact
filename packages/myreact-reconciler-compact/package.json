@@ -8,8 +8,11 @@
   "types": "index.d.ts",
   "files": [
     "dist",
+    "type.d.ts",
     "index.js",
-    "index.d.ts"
+    "index.d.ts",
+    "constants.js",
+    "constants.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -19,9 +22,18 @@
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
     ".": {
-      "default": "./index.js",
+      "require": "./index.js",
       "import": "./dist/esm/index.mjs",
       "types": "./index.d.ts"
+    },
+    "./constants": {
+      "require": "./constants.js",
+      "import": "./dist/esm/constants.mjs",
+      "types": "./constants.d.ts"
+    },
+    "./type": {
+      "require": "./type.js",
+      "types": "./type.d.ts"
     },
     "./package.json": "./package.json"
   },
@@ -39,6 +51,23 @@
         {
           "dir": "./dist",
           "entryFileNames": "esm/index.mjs",
+          "format": "esm"
+        }
+      ]
+    },
+    {
+      "input": "./src/constants.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/constants.js",
+          "format": "cjs",
+          "type": true,
+          "multiple": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/constants.mjs",
           "format": "esm"
         }
       ]

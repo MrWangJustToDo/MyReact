@@ -3,7 +3,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
-import { createReconciler as Reconciler } from "@my-react/react-reconciler-compact";
+import Reconciler from "@my-react/react-reconciler-compact";
 import * as React from "react";
 // import {
 //   // NoEventPriority,

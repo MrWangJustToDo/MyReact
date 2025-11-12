@@ -13,7 +13,9 @@
     "server.js",
     "server.node.js",
     "server.browser.js",
-    "index.js"
+    "index.js",
+    "type.js",
+    "type.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -23,6 +25,7 @@
   "homepage": "https://mrwangjusttodo.github.io/MyReact",
   "exports": {
     ".": "./index.js",
+    "./type": "./type.js",
     "./client": "./client.js",
     "./server": "./server.js",
     "./server.browser": "./server.browser.js",

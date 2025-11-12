@@ -14,10 +14,16 @@ const writeType = async (packageName: string) => {
       `export * from "./dist/types";
 `
     );
+    const typePath = resolve(process.cwd(), "packages", packageName, "types.d.ts");
+    await writeFile(
+      typePath,
+      `export * from "./dist/types/index";
+`
+    );
     const jsxPath = resolve(process.cwd(), "packages", packageName, "jsx-runtime.d.ts");
     await writeFile(
       jsxPath,
-      `import { jsx, jsxs, Fragment } from "@my-react/react-jsx";
+      `import { jsx, jsxs, Fragment } from "react/jsx-runtime";
 
 export { jsx, jsxs, Fragment };
 `
@@ -25,7 +31,7 @@ export { jsx, jsxs, Fragment };
     const jsxDevPath = resolve(process.cwd(), "packages", packageName, "jsx-dev-runtime.d.ts");
     await writeFile(
       jsxDevPath,
-      `import { jsxDEV, Fragment } from "@my-react/react-jsx";
+      `import { jsxDEV, Fragment } from "react/jsx-dev-runtime";
 
 export { jsxDEV, Fragment };
 `
@@ -35,6 +41,12 @@ export { jsxDEV, Fragment };
     await writeFile(
       indexPath,
       `export * from "./dist/types";
+`
+    );
+    const typePath = resolve(process.cwd(), "packages", packageName, "types.d.ts");
+    await writeFile(
+      typePath,
+      `export * from "./dist/types/index";
 `
     );
     const clientPath = resolve(process.cwd(), "packages", packageName, "client.d.ts");

@@ -1,3 +1,3 @@
-import { jsxDEV, Fragment } from "@my-react/react-jsx";
+import { jsxDEV, Fragment } from "react/jsx-dev-runtime";
 
 export { jsxDEV, Fragment };

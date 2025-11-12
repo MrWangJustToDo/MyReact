@@ -1,0 +1,30 @@
+{
+  "name": "@test/canvas",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build"
+  },
+  "dependencies": {
+    "@canvas-ui/react": "catalog:",
+    "@my-react/react": "workspace:*",
+    "@my-react/react-dom": "workspace:*",
+    "react": "npm:@my-react/react@*",
+    "react-dom": "npm:@my-react/react-dom@*",
+    "react-reconciler": "npm:@my-react/react-reconciler-compact@*",
+    "react-router": "catalog:",
+    "react-router-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@my-react/react-refresh": "workspace:*",
+    "@my-react/react-vite": "workspace:*",
+    "@vitejs/plugin-react": "catalog:",
+    "babel-plugin-react-compiler": "catalog:",
+    "eslint": "catalog:",
+    "react-compiler-runtime": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

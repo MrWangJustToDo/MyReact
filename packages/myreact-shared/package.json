@@ -4,33 +4,32 @@
   "author": "MrWangJustToDo",
   "license": "MIT",
   "version": "0.3.21",
-  "main": "index.js",
+  "main": "index.mjs",
   "types": "index.d.ts",
+  "type": "module",
   "files": [
     "dist",
-    "index.js",
+    "index.mjs",
     "index.d.ts"
   ],
+  "sideEffects": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/MrWangJustToDo/MyReact",
     "directory": "packages/myreact-shared"
   },
   "exports": {
-    "node": "./index.js",
-    "types": "./index.d.ts",
-    "require": "./index.js",
-    "default": "./index.js"
+    ".": "./index.mjs",
+    "./package.json": "./package.json"
   },
   "buildOptions": {
     "input": "./src/index.ts",
     "output": [
       {
         "dir": "./dist",
-        "entryFileNames": "cjs/index.js",
-        "format": "cjs",
+        "entryFileNames": "esm/index.mjs",
         "type": true,
-        "multiple": true
+        "format": "esm"
       }
     ]
   }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import { Box, Button, Checkbox, Container, Flex, Heading, HStack, Link, Tag, Text } from "@chakra-ui/react";
+import { Box, Button, Checkbox, Container, Flex, Heading, Link, Text } from "@chakra-ui/react";
 import { useIntl } from "react-intl";
 import { useNavigate } from "react-router-dom";
 
@@ -13,10 +13,6 @@ const tsxMd = `
 \`\`\`tsx
 import { useState, useCallback } from '@my-react/react';
 import { createRoot } from '@my-react/react-dom';
-
-/**
- * hello world
- */
 
 const useCount = () => {
   const [state, setState] = useState(0);
@@ -54,75 +50,125 @@ export const MainSection = () => {
   const { formatMessage } = useIntl();
 
   return (
-    <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
-      <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
-        <Box alignSelf="flex-start" marginRight={{ base: "1%", md: "2%", lg: "3%", "2xl": "4%" }} maxWidth={{ base: "100%", md: "42%" }}>
-          <Heading as="h1" fontSize={{ base: "2xl", md: "3xl", lg: "5xl" }} marginBottom="6" color="purple.600">
+    <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" paddingTop={{ base: "16", md: "20" }}>
+      <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "4", md: "6%", lg: "8%" }} gap={{ base: "10", md: "12" }}>
+        {/* Left Section */}
+        <Box flex="1" maxWidth={{ base: "100%", md: "42%" }}>
+          {/* Title */}
+          <Heading
+            as="h1"
+            fontSize={{ base: "4xl", md: "5xl", lg: "6xl" }}
+            marginBottom="6"
+            fontWeight="bold"
+            lineHeight="1.1"
+            color="purple.600"
+            _dark={{ color: "purple.400" }}
+          >
             {formatMessage({ id: "@my-react" })}
           </Heading>
-          <Text fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} as="div" fontWeight="500">
+
+          {/* Description */}
+          <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="500" marginBottom="6" lineHeight="1.6" color="gray.700" _dark={{ color: "gray.300" }}>
             {formatMessage({ id: "description" })}
           </Text>
-          <Text color="lightTextColor" marginY="2" lineHeight="180%" as="div">
-            This website is built with <Tag verticalAlign="middle">@my-react</Tag> project. <br /> Version: @my-react/react [{reactVersion}];
-            @my-react/react-dom [{reactDOMVersion}] (enableMockReact: <Checkbox verticalAlign="middle" isChecked={enableMockReact.current} isReadOnly />)
-          </Text>
-          <Flex columnGap={2} alignItems="center" flexWrap="wrap">
-            <Text fontWeight="bold">Support bundler :</Text>
-            <Link href="https://webpack.js.org/" target="_blank">
-              <Webpack />
-            </Link>
-            |
-            <Link href="https://vite.dev/" target="_blank">
-              <Vite />
-            </Link>
-            |
-            <Link href="https://rspack.dev/" target="_blank">
-              <Rspack height={40} width={40} />
-            </Link>
+
+          {/* Version Info */}
+          <Flex marginY="6" gap="2" flexWrap="wrap" alignItems="center" fontSize="sm" color="gray.600" _dark={{ color: "gray.400" }}>
+            <Text>
+              Version:{" "}
+              <Text as="span" fontWeight="600">
+                v{reactVersion}
+              </Text>
+            </Text>
+            <Text _dark={{ color: "gray.600" }}>•</Text>
+            <Text>
+              react-dom:{" "}
+              <Text as="span" fontWeight="600">
+                v{reactDOMVersion}
+              </Text>
+            </Text>
+            {!__REACT__ && (
+              <>
+                <Text _dark={{ color: "gray.600" }}>•</Text>
+                <Flex alignItems="center" gap="1">
+                  <Checkbox size="sm" isChecked={enableMockReact.current} isReadOnly />
+                  <Text>Mock</Text>
+                </Flex>
+              </>
+            )}
           </Flex>
-          <Flex columnGap={4} alignItems="center" flexWrap="wrap">
-            <Text fontWeight="bold">Support framework :</Text>
-            <Link href="https://nextjs.org/" target="_blank">
-              <NextJs width={50} height={50} fill="currentcolor" />
-            </Link>
-            |
-            <Link href="https://remix.run/" target="_blank">
-              <Remix width={50} height={50} fill="currentcolor" />
-            </Link>
-            |
-            <Link href="https://reactrouter.com/" target="_blank">
-              <ReactRouter height={40} width={40} fill="currentcolor" />
-            </Link>
-          </Flex>
-          <HStack marginTop="14" spacing="3" display={{ base: "none", md: "flex" }} fontSize={{ md: "12px", lg: "13px", xl: "14px" }}>
-            <Button variant="solid" fontSize="inherit" colorScheme="green" onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}>
-              View Example
-            </Button>
-            <Button variant="solid" fontSize="inherit" colorScheme="blue" as="a" href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
-              View on GitHub
+
+          {/* Ecosystem */}
+          <Box marginY="8">
+            <Text fontSize="xs" fontWeight="600" textTransform="uppercase" letterSpacing="wide" color="gray.500" _dark={{ color: "gray.500" }} marginBottom="4">
+              Ecosystem
+            </Text>
+            <Flex gap="4" alignItems="center" flexWrap="wrap">
+              <Link href="https://webpack.js.org/" target="_blank" _hover={{ opacity: 0.6 }} transition="opacity 0.2s">
+                <Webpack height={36} width={36} />
+              </Link>
+              <Link href="https://vite.dev/" target="_blank" _hover={{ opacity: 0.6 }} transition="opacity 0.2s">
+                <Vite height={36} width={36} />
+              </Link>
+              <Link href="https://rspack.dev/" target="_blank" _hover={{ opacity: 0.6 }} transition="opacity 0.2s">
+                <Rspack height={36} width={36} />
+              </Link>
+              <Link href="https://nextjs.org/" target="_blank" _hover={{ opacity: 0.6 }} transition="opacity 0.2s">
+                <NextJs width={36} height={36} fill="currentcolor" />
+              </Link>
+              <Link href="https://remix.run/" target="_blank" _hover={{ opacity: 0.6 }} transition="opacity 0.2s">
+                <Remix width={36} height={36} fill="currentcolor" />
+              </Link>
+              <Link href="https://reactrouter.com/" target="_blank" _hover={{ opacity: 0.6 }} transition="opacity 0.2s">
+                <ReactRouter height={36} width={36} fill="currentcolor" />
+              </Link>
+            </Flex>
+          </Box>
+
+          {/* CTA Buttons */}
+          <Flex marginTop="10" gap="3" display={{ base: "none", md: "flex" }} flexWrap="wrap">
+            <Button
+              colorScheme="purple"
+              size="md"
+              onClick={() => navigate(noBase ? "/Blog" : `/${__BASENAME__}/Blog`)}
+              _hover={{ transform: "translateY(-1px)", boxShadow: "md" }}
+              transition="all 0.2s"
+            >
+              View Examples
             </Button>
             <Button
-              variant="solid"
-              fontSize="inherit"
-              colorScheme="teal"
-              display={{ base: "none", lg: "inline-flex" }}
+              variant="outline"
+              colorScheme="purple"
+              size="md"
+              as="a"
+              href="https://github.com/MrWangJustToDo/MyReact"
+              target="_blank"
+              _hover={{ transform: "translateY(-1px)", bg: "purple.50", _dark: { bg: "purple.900" } }}
+              transition="all 0.2s"
+            >
+              GitHub
+            </Button>
+            <Button
+              variant="ghost"
+              size="md"
               as="a"
               href="https://mrwangjusttodo.github.io/MrWangJustToDo.io?overlay=open&playGround=MyReact"
               target="_blank"
+              _hover={{ bg: "gray.100", _dark: { bg: "gray.800" } }}
+              transition="all 0.2s"
             >
-              Online play
+              Playground
             </Button>
-            <Button variant="solid" fontSize="inherit" as="a" href="https://www.npmjs.com/search?q=%40my-react" target="_blank">
-              View on NPM
-            </Button>
-          </HStack>
+          </Flex>
         </Box>
+
+        {/* Right Code Section */}
         <Section>
           <Box
             className="typo"
             overflow={{ base: "hidden", lg: "auto" }}
             border="1px solid"
+            maxWidth={{ md: "55vw", lg: "45vw" }}
             borderColor="cardBorderColor"
             marginTop={{ base: "10%", md: "0" }}
             marginBottom={{ base: "6%" }}

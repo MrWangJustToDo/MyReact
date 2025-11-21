@@ -1,4 +1,4 @@
-import { Box, Code, Container, Divider, Flex, Heading, Link, Tag, Text } from "@chakra-ui/react";
+import { Box, Code, Container, Divider, Flex, Heading, Link, Text } from "@chakra-ui/react";
 
 import { Section } from "@client/component/Section";
 import { CONTAINER_WIDTH } from "@client/config/container";
@@ -36,13 +36,13 @@ const renderBody = mark.render(tsxMd);
 export const ReconcilerSection = () => {
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
-      <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
-        <Box alignSelf="flex-start" flexShrink="0" marginRight={{ base: "1%", md: "2%", lg: "3%", "2xl": "4%" }} maxWidth={{ base: "100%", md: "42%" }}>
+      <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "4", md: "6%", lg: "8%" }} gap={{ base: "10", md: "12" }}>
+        <Box flex="1" maxWidth={{ base: "100%", md: "42%" }}>
           <Heading as="h1" fontSize={{ base: "xl", md: "2xl", lg: "4xl" }} marginBottom="6" color="purple.600">
             @my-react/react-reconciler-compact
           </Heading>
-          <Text color="lightTextColor" marginY="2" lineHeight="180%" as="div">
-            A compact version of <Tag>@my-react/react-reconciler</Tag>, which has same APIs with <Tag>react-reconciler</Tag>.
+          <Text fontSize={{ base: "xl", md: "2xl" }} fontWeight="500" marginBottom="6" lineHeight="1.6" color="gray.700" _dark={{ color: "gray.300" }}>
+            A compact version of @my-react/react-reconciler, which has same APIs with react-reconciler.
           </Text>
           <Flex columnGap={2} alignItems="center" flexWrap="wrap">
             <Text fontWeight="bold">Support render :</Text>

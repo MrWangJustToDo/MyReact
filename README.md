@@ -1,136 +1,326 @@
-# MyReact -- a React like framework
+<div align="center">
+  <h1>MyReact</h1>
+  <p><strong>A lightweight, high-performance React-like framework</strong></p>
+  <p>Fully compatible with React ecosystem, with built-in support for modern build tools</p>
 
-[![Deploy](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml/badge.svg)](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml)
-[![License](https://img.shields.io/npm/l/%40my-react%2Freact)](https://www.npmjs.com/search?q=%40my-react)
+  [![Deploy](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml/badge.svg)](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml)
+  [![License](https://img.shields.io/npm/l/%40my-react%2Freact)](https://www.npmjs.com/search?q=%40my-react)
+  [![npm version](https://img.shields.io/npm/v/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)
+  [![Downloads](https://img.shields.io/npm/dm/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)
 
-## Examples
+  [Live Demo](https://mrwangjusttodo.github.io/MrWangJustToDo.io/) · [Documentation](#api) · [Examples](#examples)
+</div>
 
-Online `Next.js` example [https://mrwangjusttodo.github.io/MrWangJustToDo.io/](https://mrwangjusttodo.github.io/MrWangJustToDo.io/)
+---
 
-## Install
+## ✨ Features
+
+- 🚀 **React Compatible** - Drop-in replacement for React with the same API
+- ⚡ **High Performance** - Optimized reconciler with minimal overhead
+- 🔧 **Modern Tooling** - First-class support for Vite, Next.js, Rspack, and Webpack
+- 🔄 **Fast Refresh** - Built-in HMR support for instant development feedback
+- 🎨 **Multiple Renderers** - DOM, Terminal, and Three.js renderers out of the box
+- 📦 **Tree Shakeable** - Optimized bundle size with ES modules
+- 🧪 **Experimental Features** - Reactive programming model and more
+- 🛠️ **DevTools** - Custom developer tools for debugging
+
+## 🎯 Quick Start
+
+### Installation
 
 ```bash
-# install
+# Install core packages
 pnpm add @my-react/react @my-react/react-dom
 ```
 
-## start in Next.js
+## 🔌 Framework Integration
+
+### Next.js
 
 ```bash
-# quick start in next.js
 pnpm add -D @my-react/react-refresh @my-react/react-refresh-tools
-
-# next.config.js
-const withNext = require("@my-react/react-refresh-tools/withNext");
-
-modules.export = withNext(nextConfig);
 ```
 
-## start in Vite
+```js
+// next.config.js
+const withNext = require("@my-react/react-refresh-tools/withNext");
+
+module.exports = withNext(nextConfig);
+```
+
+### Vite
 
 ```bash
-# quick start in vite
 pnpm add -D @my-react/react-refresh @my-react/react-vite
+```
 
-# vite.config.ts
+```ts
+// vite.config.ts
 import react from "@my-react/react-vite";
 
 export default defineConfig({
   plugins: [react({
-    # remix: true;  support remix framework
-    # router: true;  support react-router >= v7
+    // remix: true,  // Enable Remix framework support
+    // router: true, // Enable React Router v7+ support
   })],
 });
 ```
 
-## start in rspack
+### Rspack
 
 ```bash
-# quick start in rspack
 pnpm add -D @my-react/react-refresh @my-react/react-rspack
+```
 
-# rspack.config.ts
+```ts
+// rspack.config.ts
 import { rspack } from "@rspack/core";
 import RspackPlugin from "@my-react/react-rspack";
+
 const config = {
   ...config,
   plugins: [
     ...config.plugins,
     new RspackPlugin(),
   ],
-}
+};
 ```
 
----
+## 🎮 Examples
 
-## Packages
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://mrwangjusttodo.github.io/MrWangJustToDo.io/">
+        <strong>Next.js Demo</strong>
+      </a>
+      <br />
+      Full-featured SSR application
+    </td>
+    <td align="center">
+      <strong>Vite</strong>
+      <br />
+      Fast development setup
+    </td>
+    <td align="center">
+      <strong>Terminal UI</strong>
+      <br />
+      CLI applications
+    </td>
+    <td align="center">
+      <strong>Three.js</strong>
+      <br />
+      3D rendering
+    </td>
+  </tr>
+</table>
 
-| Package                                                           | Version                                                                                                                                      |
-| :---------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`@my-react/react`](packages/myreact)                             | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)                             |
-| [`@my-react/react-dom`](packages/myreact-dom)                     | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-dom)](https://www.npmjs.com/package/@my-react/react-dom)                     |
-| [`@my-react/react-terminal`](packages/myreact-terminal)           | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-terminal)](https://www.npmjs.com/package/@my-react/react-terminal)           |
-| [`@my-react/react-three-fiber`](packages/myreact-three-fiber)     | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-three-fiber)](https://www.npmjs.com/package/@my-react/react-three-fiber)     |
-| **refresh**                                                       |                                                                                                                                              |
-| [`@my-react/react-refresh`](packages/myreact-refresh)             | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh)](https://www.npmjs.com/package/@my-react/react-refresh)             |
-| [`@my-react/react-refresh-tools`](packages/myreact-refresh-tools) | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-refresh-tools)](https://www.npmjs.com/package/@my-react/react-refresh-tools) |
-| [`@my-react/react-vite`](packages/myreact-vite)                   | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-vite)](https://www.npmjs.com/package/@my-react/react-vite)                   |
-| [`@my-react/react-rspack`](packages/myreact-rspack)               | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-rspack)](https://www.npmjs.com/package/@my-react/react-rspack)               |
-| **internal**                                                      |                                                                                                                                              |
-| [`@my-react/react-jsx`](packages/myreact-jsx)                     | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-jsx)](https://www.npmjs.com/package/@my-react/react-jsx)                     |
-| [`@my-react/react-shared`](packages/myreact-shared)               | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-shared)](https://www.npmjs.com/package/@my-react/react-shared)               |
-| [`@my-react/react-reconciler`](packages/myreact-reconciler)       | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reconciler)](https://www.npmjs.com/package/@my-react/react-reconciler)       |
-| [`@my-react/react-reconciler-compact`](packages/myreact-reconciler-compact)| [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reconciler-compact)](https://www.npmjs.com/package/@my-react/react-reconciler-compact)|
-| **experimental**                                                  |                                                                                                                                              |
-| [`@my-react/react-reactive`](packages/myreact-reactivity)         | [![npm (scoped)](https://img.shields.io/npm/v/%40my-react/react-reactive)](https://www.npmjs.com/package/@my-react/react-reactive)           |
 
-## Development
+## 📦 Packages
 
-- [node@20.x](https://nodejs.org/en)
-- [pnpm@9.x](https://pnpm.io/installation)
+### Core Packages
+
+| Package | Version | Description |
+| :------ | :------ | :---------- |
+| [`@my-react/react`](packages/myreact) | [![npm](https://img.shields.io/npm/v/%40my-react/react)](https://www.npmjs.com/package/@my-react/react) | Core library with hooks and components |
+| [`@my-react/react-dom`](packages/myreact-dom) | [![npm](https://img.shields.io/npm/v/%40my-react/react-dom)](https://www.npmjs.com/package/@my-react/react-dom) | DOM renderer with SSR support |
+| [`@my-react/react-terminal`](packages/myreact-terminal) | [![npm](https://img.shields.io/npm/v/%40my-react/react-terminal)](https://www.npmjs.com/package/@my-react/react-terminal) | Terminal UI renderer |
+| [`@my-react/react-three-fiber`](packages/myreact-three-fiber) | [![npm](https://img.shields.io/npm/v/%40my-react/react-three-fiber)](https://www.npmjs.com/package/@my-react/react-three-fiber) | Three.js renderer |
+
+### Build Tool Integration
+
+| Package | Version | Description |
+| :------ | :------ | :---------- |
+| [`@my-react/react-refresh`](packages/myreact-refresh) | [![npm](https://img.shields.io/npm/v/%40my-react/react-refresh)](https://www.npmjs.com/package/@my-react/react-refresh) | Fast refresh runtime |
+| [`@my-react/react-refresh-tools`](packages/myreact-refresh-tools) | [![npm](https://img.shields.io/npm/v/%40my-react/react-refresh-tools)](https://www.npmjs.com/package/@my-react/react-refresh-tools) | Webpack & Next.js plugin |
+| [`@my-react/react-vite`](packages/myreact-vite) | [![npm](https://img.shields.io/npm/v/%40my-react/react-vite)](https://www.npmjs.com/package/@my-react/react-vite) | Vite plugin |
+| [`@my-react/react-rspack`](packages/myreact-rspack) | [![npm](https://img.shields.io/npm/v/%40my-react/react-rspack)](https://www.npmjs.com/package/@my-react/react-rspack) | Rspack plugin |
+
+### Internal Packages
+
+| Package | Version | Description |
+| :------ | :------ | :---------- |
+| [`@my-react/react-jsx`](packages/myreact-jsx) | [![npm](https://img.shields.io/npm/v/%40my-react/react-jsx)](https://www.npmjs.com/package/@my-react/react-jsx) | JSX runtime |
+| [`@my-react/react-shared`](packages/myreact-shared) | [![npm](https://img.shields.io/npm/v/%40my-react/react-shared)](https://www.npmjs.com/package/@my-react/react-shared) | Shared utilities |
+| [`@my-react/react-reconciler`](packages/myreact-reconciler) | [![npm](https://img.shields.io/npm/v/%40my-react/react-reconciler)](https://www.npmjs.com/package/@my-react/react-reconciler) | Full-featured reconciler |
+| [`@my-react/react-reconciler-compact`](packages/myreact-reconciler-compact) | [![npm](https://img.shields.io/npm/v/%40my-react/react-reconciler-compact)](https://www.npmjs.com/package/@my-react/react-reconciler-compact) | Compact reconciler |
+
+### Experimental
+
+| Package | Version | Description |
+| :------ | :------ | :---------- |
+| [`@my-react/react-reactive`](packages/myreact-reactivity) | [![npm](https://img.shields.io/npm/v/%40my-react/react-reactive)](https://www.npmjs.com/package/@my-react/react-reactive) | Reactive programming model |
+
+## 🚀 Development
+
+### Prerequisites
+
+- [Node.js 20.x+](https://nodejs.org/en)
+- [pnpm 9.x+](https://pnpm.io/installation)
+
+### Setup
 
 ```bash
-clone this project
+# Clone the repository
+git clone https://github.com/MrWangJustToDo/MyReact.git
+cd MyReact
 
+# Install dependencies
 pnpm install
 
+# Generate GraphQL types (if needed)
 pnpm gen:gql
 
+# Build all packages
 pnpm build
+```
 
-pnpm dev:ssr / dev:csr / dev:next / dev:vite / dev:remix / dev:rspack
+### Development Commands
+
+```bash
+# Start development servers
+pnpm dev:ssr      # SSR example
+pnpm dev:csr      # CSR example
+pnpm dev:next     # Next.js example
+pnpm dev:vite     # Vite example
+pnpm dev:remix    # Remix example
+pnpm dev:rspack   # Rspack example
+
+# Other commands
+pnpm dev          # Watch mode for packages
+pnpm test         # Run tests
+pnpm lint         # Lint code
 ```
 
 ---
 
-## Api
+## 📚 API Reference
 
-| @my-react/react | @my-react/react-dom          | @my-react/react-reactive | @my-react/react (hook)     | @my-react/react-refresh | @my-react/react-refresh-tools | @my-react/react-vite | @my-react/react-rspack |
-| --------------- | ---------------------------- | ------------------------ | -------------------------- | ----------------------- | ----------------------------- | -------------------- | ---------------------- |
-| createELement   | render                       | createReactive           | useState                   | babel plugin            | webpack plugin                | vite plugin          | rspack plugin          |
-| cloneElement    | renderToString               | reactive                 | useEffect                  | refresh runtime         | next.js plugin                |
-| isValidElement  | findDOMNode                  | ref                      | useLayoutEffect            |                         | webpack loader                |
-| Children        | hydrate                      | computed                 | useRef                     |
-| lazy            | createPortal                 | watch                    | useMemo                    |
-| forwardRef      | unmountComponentAtNode       | onBeforeMount            | useReducer                 |
-| createContext   | createRoot (new)             | onBeforeUnmount          | useCallback                |
-| createRef       | hydrateRoot (new)            | onBeforeUpdate           | useContext                 |
-| memo            | renderToNodeStream           | onMounted                | useImperativeHandle        |
-| Component       | renderToStaticMarkup         | onUnmounted              | useDebugValue              |
-| PureComponent   | renderToStaticNodeStream     | onUpdated                | useSignal                  |
-| StrictMode      | renderToPipeableStream (new) |                          | useDeferredValue (new)     |
-| Fragment        | renderToReadableStream (new) |                          | useId (new)                |
-| Suspense        |                              |                          | useInsertionEffect (new)   |
-| startTransition |                              |                          | useSyncExternalStore (new) |
-|                 |                              |                          | useTransition (new)        |
+### Core API
 
-## DevTool
+<table>
+<tr>
+<td valign="top">
 
-- [MyReact DevTool (beta)](https://github.com/MrWangJustToDo/myreact-devtools)
+**@my-react/react**
 
-![DevTool](https://raw.githubusercontent.com/MrWangJustToDo/myreact-devtools/main/light.png)
-![DevTool](https://raw.githubusercontent.com/MrWangJustToDo/myreact-devtools/main/dark.png)
+- `createElement`
+- `cloneElement`
+- `isValidElement`
+- `Children`
+- `lazy`
+- `forwardRef`
+- `createContext`
+- `createRef`
+- `memo`
+- `Component`
+- `PureComponent`
+- `StrictMode`
+- `Fragment`
+- `Suspense`
+- `startTransition`
 
-## License
+</td>
+<td valign="top">
 
-MIT
+**@my-react/react-dom**
+
+- `render`
+- `renderToString`
+- `findDOMNode`
+- `hydrate`
+- `createPortal`
+- `unmountComponentAtNode`
+- `createRoot` ⭐
+- `hydrateRoot` ⭐
+- `renderToNodeStream`
+- `renderToStaticMarkup`
+- `renderToStaticNodeStream`
+- `renderToPipeableStream` ⭐
+- `renderToReadableStream` ⭐
+
+</td>
+<td valign="top">
+
+**Hooks**
+
+- `useState`
+- `useEffect`
+- `useLayoutEffect`
+- `useRef`
+- `useMemo`
+- `useReducer`
+- `useCallback`
+- `useContext`
+- `useImperativeHandle`
+- `useDebugValue`
+- `useSignal`
+- `useDeferredValue` ⭐
+- `useId` ⭐
+- `useInsertionEffect` ⭐
+- `useSyncExternalStore` ⭐
+- `useTransition` ⭐
+
+</td>
+<td valign="top">
+
+**@my-react/react-reactive**
+
+- `createReactive`
+- `reactive`
+- `ref`
+- `computed`
+- `watch`
+- `onBeforeMount`
+- `onBeforeUnmount`
+- `onBeforeUpdate`
+- `onMounted`
+- `onUnmounted`
+- `onUpdated`
+
+</td>
+</tr>
+</table>
+
+⭐ = React 18+ features
+
+## 🛠️ DevTools
+
+MyReact comes with custom developer tools for debugging and inspecting your applications.
+
+**[MyReact DevTools (Beta)](https://github.com/MrWangJustToDo/myreact-devtools)**
+
+<div align="center">
+  <img src="https://raw.githubusercontent.com/MrWangJustToDo/myreact-devtools/main/light.png" alt="DevTools Light Mode" width="45%" />
+  <img src="https://raw.githubusercontent.com/MrWangJustToDo/myreact-devtools/main/dark.png" alt="DevTools Dark Mode" width="45%" />
+</div>
+
+### Features
+
+- Component tree inspection
+- Props and state debugging
+- Performance profiling
+- Hook debugging
+- Light and dark theme support
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+MIT © [MrWangJustToDo](https://github.com/MrWangJustToDo)
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ by <a href="https://github.com/MrWangJustToDo">MrWangJustToDo</a></sub>
+</div>

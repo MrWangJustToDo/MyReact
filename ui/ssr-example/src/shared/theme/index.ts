@@ -8,4 +8,9 @@ import type { ChakraTheme } from "@chakra-ui/react";
 export const theme: Partial<ChakraTheme> = extendTheme({
   styles,
   semanticTokens,
+  fonts: {
+    heading: "Outfit",
+    body: "Outfit",
+    mono: "Outfit",
+  },
 });

@@ -1,10 +1,10 @@
 import colorize from "./colorize";
-import { type DOMNode } from "./dom";
+import { type DOMElement, type DOMNode } from "./dom";
 
 import type Output from "./output";
 
 const renderBackground = (x: number, y: number, node: DOMNode, output: Output): void => {
-  if (!node.style.backgroundColor) {
+  if (!(node as DOMElement).internal_opaque && !node.style.backgroundColor) {
     return;
   }
 

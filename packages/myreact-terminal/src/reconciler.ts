@@ -65,11 +65,6 @@ type HostContext = {
   isInsideText: boolean;
 };
 
-type UpdatePayload = {
-  props: Props | undefined;
-  style: Styles | undefined;
-};
-
 export const Reconciler = createReconciler<
   ElementNames,
   Props,
@@ -79,14 +74,13 @@ export const Reconciler = createReconciler<
   DOMElement,
   unknown,
   unknown,
+  unknown,
   HostContext,
-  UpdatePayload,
   unknown,
   unknown,
   unknown,
   unknown
 >({
-  // @ts-ignore
   getRootHostContext: () => ({
     isInsideText: false,
   }),
@@ -116,9 +110,7 @@ export const Reconciler = createReconciler<
     // react will switch rootNode, so every time resetAfterCommit called, we need to clean the staticNode
     rootNode.staticNode = null;
   },
-  // @ts-ignore
   getChildHostContext(parentHostContext, type) {
-    // @ts-ignore
     const previousIsInsideText = parentHostContext.isInsideText;
     const isInsideText = type === "ink-text" || type === "ink-virtual-text";
 
@@ -130,12 +122,10 @@ export const Reconciler = createReconciler<
   },
   shouldSetTextContent: () => false,
   createInstance(originalType, newProps, _root, hostContext) {
-    // @ts-ignore
     if (hostContext.isInsideText && originalType === "ink-box") {
       throw new Error(`<Box> can’t be nested inside <Text> component`);
     }
 
-    // @ts-ignore
     const type = originalType === "ink-text" && hostContext.isInsideText ? "ink-virtual-text" : originalType;
 
     const node = createNode(type);
@@ -160,8 +150,23 @@ export const Reconciler = createReconciler<
         continue;
       }
 
+      if (key === "sticky") {
+        node.internalSticky = value as boolean;
+        continue;
+      }
+
+      if (key === "internalStickyAlternate") {
+        node.internalStickyAlternate = value as boolean;
+        continue;
+      }
+
       if (key === "internal_static") {
         node.internal_static = true;
+        continue;
+      }
+
+      if (key === "opaque") {
+        node.internal_opaque = value as boolean;
         continue;
       }
 
@@ -171,7 +176,6 @@ export const Reconciler = createReconciler<
     return node;
   },
   createTextInstance(text, _root, hostContext) {
-    // @ts-ignore
     if (!hostContext.isInsideText) {
       throw new Error(`Text string "${text}" must be rendered inside <Text> component`);
     }
@@ -215,7 +219,7 @@ export const Reconciler = createReconciler<
   scheduleTimeout: setTimeout,
   cancelTimeout: clearTimeout,
   noTimeout: -1,
-  getCurrentEventPriority: () => 0,
+  getCurrentUpdatePriority: () => 0,
   beforeActiveInstanceBlur() {},
   afterActiveInstanceBlur() {},
   detachDeletedInstance() {},
@@ -228,6 +232,7 @@ export const Reconciler = createReconciler<
     removeChildNode(node, removeNode);
     cleanupYogaNode(removeNode.yogaNode);
   },
+  // @ts-ignore my-react flow
   prepareUpdate(node, _type, oldProps, newProps, rootNode) {
     if (node.internal_static) {
       rootNode.isStaticDirty = true;
@@ -257,8 +262,23 @@ export const Reconciler = createReconciler<
           continue;
         }
 
+        if (key === "sticky") {
+          node.internalSticky = Boolean(value);
+          continue;
+        }
+
+        if (key === "internalStickyAlternate") {
+          node.internalStickyAlternate = Boolean(value);
+          continue;
+        }
+
         if (key === "internal_static") {
           node.internal_static = true;
+          continue;
+        }
+
+        if (key === "opaque") {
+          node.internal_opaque = Boolean(value);
           continue;
         }
 

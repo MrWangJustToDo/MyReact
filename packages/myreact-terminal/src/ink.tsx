@@ -1,10 +1,13 @@
+/* eslint-disable max-lines */
+import { type StyledChar } from "@alcalzone/ansi-tokenize";
 import ansiEscapes from "ansi-escapes";
 import autoBind from "auto-bind";
 import { throttle } from "es-toolkit/compat";
 import isInCi from "is-in-ci";
 import process from "node:process";
 import patchConsole from "patch-console";
-import React, { type ReactNode } from "react";
+import { type ReactNode } from "react";
+import { type FiberRoot } from "react-reconciler";
 import * as signalExit from "signal-exit";
 import wrapAnsi from "wrap-ansi";
 import Yoga from "yoga-layout";
@@ -16,10 +19,23 @@ import instances from "./instances";
 import logUpdate, { type LogUpdate } from "./log-update";
 import { Reconciler } from "./reconciler";
 import render from "./renderer";
+import { ResizeObserverEntry } from "./resize-observer";
+import { calculateScroll } from "./scroll";
+import { Selection } from "./selection";
 
-import type { MyReactFiberRoot } from "@my-react/react-reconciler";
+import type ResizeObserver from "./resize-observer";
 
 const noop = () => {};
+
+/**
+Performance metrics for a render operation.
+*/
+export type RenderMetrics = {
+  /**
+	Time spent rendering in milliseconds.
+	*/
+  renderTime: number;
+};
 
 export type Options = {
   stdout: NodeJS.WriteStream;
@@ -28,21 +44,47 @@ export type Options = {
   debug: boolean;
   exitOnCtrlC: boolean;
   patchConsole: boolean;
+  onRender?: (metrics: RenderMetrics) => void;
   isScreenReaderEnabled?: boolean;
   waitUntilExit?: () => Promise<void>;
+  maxFps?: number;
+  alternateBuffer?: boolean;
+  alternateBufferAlreadyActive?: boolean;
+  incrementalRendering?: boolean;
+  debugRainbow?: boolean;
+  selectionStyle?: (char: StyledChar) => StyledChar;
 };
+
+const rainbowColors = [
+  "red",
+  "green",
+  "yellow",
+  "blue",
+  "magenta",
+  "cyan",
+  "white",
+  "blackBright",
+  "redBright",
+  "greenBright",
+  "yellowBright",
+  "blueBright",
+  "magentaBright",
+  "cyanBright",
+  "whiteBright",
+];
 
 export default class Ink {
   private readonly options: Options;
   private readonly log: LogUpdate;
   private readonly throttledLog: LogUpdate;
   private readonly isScreenReaderEnabled: boolean;
+  private readonly selection: Selection;
 
   // Ignore last render after unmounting a tree to prevent empty output before exit
   private isUnmounted: boolean;
   private lastOutput: string;
   private lastOutputHeight: number;
-  private readonly container: MyReactFiberRoot;
+  private readonly container: FiberRoot;
   private readonly rootNode: dom.DOMElement;
   // This variable is used only in debug mode to store full static output
   // so that it's rerendered every time, not just new static parts, like in non-debug mode
@@ -50,27 +92,43 @@ export default class Ink {
   private exitPromise?: Promise<void>;
   private restoreConsole?: () => void;
   private readonly unsubscribeResize?: () => void;
+  private readonly unsubscribeSelection?: () => void;
+  private frameIndex = 0;
 
   constructor(options: Options) {
     autoBind(this);
 
     this.options = options;
+
     this.rootNode = dom.createNode("ink-root");
     this.rootNode.onComputeLayout = this.calculateLayout;
 
     this.isScreenReaderEnabled = options.isScreenReaderEnabled ?? process.env["INK_SCREEN_READER"] === "true";
 
-    const unthrottled = options.debug || this.isScreenReaderEnabled;
+    this.selection = new Selection();
 
-    this.rootNode.onRender = unthrottled
+    const unthrottled = options.debug || this.isScreenReaderEnabled;
+    const maxFps = options.maxFps ?? 30;
+    const renderThrottleMs = maxFps > 0 ? Math.max(1, Math.ceil(1000 / maxFps)) : 0;
+
+    const onRender = unthrottled
       ? this.onRender
-      : throttle(this.onRender, 32, {
+      : throttle(this.onRender, renderThrottleMs, {
           leading: true,
           trailing: true,
         });
 
+    this.rootNode.onRender = onRender;
+    this.unsubscribeSelection = this.selection.onChange(onRender);
+
     this.rootNode.onImmediateRender = this.onRender;
-    this.log = logUpdate.create(options.stdout);
+    this.log = logUpdate.create(options.stdout, {
+      alternateBuffer: options.alternateBuffer,
+      alternateBufferAlreadyActive: options.alternateBufferAlreadyActive,
+      getRows: () => options.stdout.rows,
+      getColumns: () => options.stdout.columns,
+      incremental: options.incrementalRendering,
+    });
     this.throttledLog = unthrottled
       ? this.log
       : (throttle(this.log, undefined, {
@@ -92,17 +150,16 @@ export default class Ink {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.container = Reconciler.createContainer(
       this.rootNode,
-      // Legacy mode
       0,
       null,
       false,
       null,
       "id",
       () => {},
-      null,
-      null,
-      null,
-      null,
+      () => {},
+      () => {},
+      () => {},
+      null
     );
 
     // Unmount when process exits
@@ -146,6 +203,10 @@ export default class Ink {
     this.onRender();
   };
 
+  getSelection(): Selection {
+    return this.selection;
+  }
+
   resolveExitPromise: () => void = () => {};
   rejectExitPromise: (reason?: Error) => void = () => {};
   unsubscribeExit: () => void = () => {};
@@ -158,14 +219,72 @@ export default class Ink {
     this.rootNode.yogaNode!.setWidth(terminalWidth);
 
     this.rootNode.yogaNode!.calculateLayout(undefined, undefined, Yoga.DIRECTION_LTR);
+
+    const observerEntries = new Map<ResizeObserver, ResizeObserverEntry[]>();
+    this.calculateLayoutAndTriggerObservers(this.rootNode, observerEntries);
+
+    for (const [observer, entries] of observerEntries) {
+      observer.internalTrigger(entries);
+    }
   };
+
+  calculateLayoutAndTriggerObservers(node: dom.DOMElement, observerEntries: Map<ResizeObserver, ResizeObserverEntry[]>) {
+    if (node.nodeName === "ink-box") {
+      const { style } = node;
+      const overflow = style.overflow ?? "visible";
+      const overflowX = style.overflowX ?? overflow;
+      const overflowY = style.overflowY ?? overflow;
+
+      if (overflowX === "scroll" || overflowY === "scroll") {
+        calculateScroll(node);
+      } else if (node.internal_scrollState) {
+        delete node.internal_scrollState;
+      }
+    }
+
+    if (node.resizeObservers && node.resizeObservers.size > 0 && node.yogaNode) {
+      const width = node.yogaNode.getComputedWidth();
+      const height = node.yogaNode.getComputedHeight();
+      const lastSize = node.internal_lastMeasuredSize;
+
+      if (!lastSize || lastSize.width !== width || lastSize.height !== height) {
+        const entry = new ResizeObserverEntry(node, { width, height });
+
+        for (const observer of node.resizeObservers) {
+          if (!observerEntries.has(observer)) {
+            observerEntries.set(observer, []);
+          }
+
+          observerEntries.get(observer)!.push(entry);
+        }
+
+        node.internal_lastMeasuredSize = { width, height };
+      }
+    }
+
+    for (const child of node.childNodes) {
+      if (child.nodeName !== "#text") {
+        this.calculateLayoutAndTriggerObservers(child, observerEntries);
+      }
+    }
+  }
 
   onRender: () => void = () => {
     if (this.isUnmounted) {
       return;
     }
 
-    const { output, outputHeight, staticOutput } = render(this.rootNode, this.isScreenReaderEnabled);
+    const startTime = performance.now();
+
+    let debugRainbowColor: string | undefined;
+    if (this.options.debugRainbow) {
+      debugRainbowColor = rainbowColors[this.frameIndex % rainbowColors.length];
+      this.frameIndex++;
+    }
+
+    const { output, outputHeight, staticOutput, styledOutput } = render(this.rootNode, this.isScreenReaderEnabled, this.selection, this.options.selectionStyle);
+
+    this.options.onRender?.({ renderTime: performance.now() - startTime });
 
     // If <Static> output isn't empty, it means new children have been added to it
     const hasStaticOutput = staticOutput && staticOutput !== "\n";
@@ -186,6 +305,16 @@ export default class Ink {
 
       this.lastOutput = output;
       this.lastOutputHeight = outputHeight;
+      return;
+    }
+
+    if (this.options.alternateBuffer) {
+      if (hasStaticOutput) {
+        this.fullStaticOutput += staticOutput;
+      }
+
+      this.log(this.fullStaticOutput + output, styledOutput, debugRainbowColor);
+      this.lastOutput = output;
       return;
     }
 
@@ -238,15 +367,31 @@ export default class Ink {
     if (hasStaticOutput) {
       this.log.clear();
       this.options.stdout.write(staticOutput);
-      this.log(output);
+      this.log(output, styledOutput, debugRainbowColor);
     }
 
     if (!hasStaticOutput && output !== this.lastOutput) {
-      this.throttledLog(output);
+      this.throttledLog(output, styledOutput, debugRainbowColor);
     }
 
     this.lastOutput = output;
     this.lastOutputHeight = outputHeight;
+  };
+
+  recalculateLayout(): void {
+    this.markAllTextNodesDirty(this.rootNode);
+    this.calculateLayout();
+    this.onRender();
+  }
+
+  onRerender = () => {
+    if (this.isUnmounted) {
+      return;
+    }
+
+    this.log.clear();
+    this.lastOutput = "";
+    this.onRender();
   };
 
   render(node: ReactNode): void {
@@ -259,7 +404,9 @@ export default class Ink {
           writeToStdout={this.writeToStdout}
           writeToStderr={this.writeToStderr}
           exitOnCtrlC={this.options.exitOnCtrlC}
+          selection={this.selection}
           onExit={this.unmount}
+          onRerender={this.onRerender}
         >
           {node}
         </App>
@@ -286,7 +433,7 @@ export default class Ink {
 
     this.log.clear();
     this.options.stdout.write(data);
-    this.log(this.lastOutput);
+    this.log(this.lastOutput, []);
   }
 
   writeToStderr(data: string): void {
@@ -307,7 +454,7 @@ export default class Ink {
 
     this.log.clear();
     this.options.stderr.write(data);
-    this.log(this.lastOutput);
+    this.log(this.lastOutput, []);
   }
 
   unmount(error?: Error | number | null): void {
@@ -325,6 +472,10 @@ export default class Ink {
 
     if (typeof this.unsubscribeResize === "function") {
       this.unsubscribeResize();
+    }
+
+    if (typeof this.unsubscribeSelection === "function") {
+      this.unsubscribeSelection();
     }
 
     // CIs don't handle erasing ansi escapes well, so it's better to
@@ -381,5 +532,17 @@ export default class Ink {
         }
       }
     });
+  }
+
+  private markAllTextNodesDirty(node: dom.DOMElement) {
+    if (node.nodeName === "ink-text" && node.yogaNode) {
+      node.yogaNode.markDirty();
+    }
+
+    for (const child of node.childNodes) {
+      if (child.nodeName !== "#text") {
+        this.markAllTextNodesDirty(child);
+      }
+    }
   }
 }

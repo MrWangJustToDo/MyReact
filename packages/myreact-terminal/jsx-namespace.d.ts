@@ -11,13 +11,15 @@ declare namespace Ink {
     ref?: LegacyRef<DOMElement>;
     style?: Except<Styles, "textWrap">;
     internal_accessibility?: DOMElement["internal_accessibility"];
+    sticky?: boolean;
+    internalStickyAlternate?: boolean;
+    opaque?: boolean;
   };
 
   type Text = {
     children?: ReactNode;
     key?: Key;
     style?: Styles;
-
     internal_transform?: (children: string, index: number) => string;
     internal_accessibility?: DOMElement["internal_accessibility"];
   };

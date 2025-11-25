@@ -61,6 +61,7 @@
     "es-toolkit": "^1.40.0",
     "indent-string": "^5.0.0",
     "is-in-ci": "^2.0.0",
+    "mnemonist": "^0.40.3",
     "patch-console": "^2.0.0",
     "signal-exit": "^4.1.0",
     "slice-ansi": "^7.1.2",

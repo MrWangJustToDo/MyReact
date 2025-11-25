@@ -1,5 +1,6 @@
 export type { RenderOptions, Instance } from "./render";
 export { default as render } from "./render";
+
 export type { Props as BoxProps } from "./components/Box";
 export { default as Box } from "./components/Box";
 export type { Props as TextProps } from "./components/Text";
@@ -24,7 +25,22 @@ export { default as useStderr } from "./hooks/use-stderr";
 export { default as useFocus } from "./hooks/use-focus";
 export { default as useFocusManager } from "./hooks/use-focus-manager";
 export { default as useIsScreenReaderEnabled } from "./hooks/use-is-screen-reader-enabled";
-export { default as measureElement } from "./measure-element";
-export type { DOMElement } from "./dom";
-
-export const version = __VERSION__;
+export {
+  default as measureElement,
+  getBoundingBox,
+  getInnerWidth,
+  getInnerHeight,
+  getVerticalScrollbarBoundingBox,
+  getHorizontalScrollbarBoundingBox,
+  getText,
+  getTextOffset,
+  hitTest,
+  findNodeAtOffset,
+  type ScrollbarBoundingBox,
+} from "./measure-element";
+export { getScrollHeight, getScrollWidth } from "./scroll";
+export { clearStringWidthCache, setStringWidthFunction } from "./measure-text";
+export { type DOMElement, type DOMNode, getPathToRoot } from "./dom";
+export type { StyledChar } from "@alcalzone/ansi-tokenize";
+export { default as ResizeObserver, ResizeObserverEntry } from "./resize-observer";
+export { Selection, Range, comparePoints } from "./selection";

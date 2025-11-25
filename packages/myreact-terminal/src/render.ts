@@ -1,82 +1,150 @@
+import { type StyledChar } from "@alcalzone/ansi-tokenize";
 import process from "node:process";
 import { Stream } from "node:stream";
 
-import Ink, { type Options as InkOptions } from "./ink";
+import Ink, { type Options as InkOptions, type RenderMetrics } from "./ink";
 import instances from "./instances";
+import { type Selection } from "./selection";
 
 import type { ReactNode } from "react";
 
 export type RenderOptions = {
   /**
-   * Output stream where app will be rendered.
-   *
-   * @default process.stdout
-   */
+	Output stream where app will be rendered.
+
+	@default process.stdout
+	*/
   stdout?: NodeJS.WriteStream;
+
   /**
-   * Input stream where app will listen for input.
-   *
-   * @default process.stdin
-   */
+	Input stream where app will listen for input.
+
+	@default process.stdin
+	*/
   stdin?: NodeJS.ReadStream;
+
   /**
-   * Error stream.
-   * @default process.stderr
-   */
+	Error stream.
+	@default process.stderr
+	*/
   stderr?: NodeJS.WriteStream;
+
   /**
-   * If true, each update will be rendered as a separate output, without replacing the previous one.
-   *
-   * @default false
-   */
+	If true, each update will be rendered as separate output, without replacing the previous one.
+
+	@default false
+	*/
   debug?: boolean;
+
   /**
-   * Configure whether Ink should listen to Ctrl+C keyboard input and exit the app. This is needed in case `process.stdin` is in raw mode, because then Ctrl+C is ignored by default and process is expected to handle it manually.
-   *
-   * @default true
-   */
+	Configure whether Ink should listen for Ctrl+C keyboard input and exit the app. This is needed in case `process.stdin` is in raw mode, because then Ctrl+C is ignored by default and the process is expected to handle it manually.
+
+	@default true
+	*/
   exitOnCtrlC?: boolean;
 
   /**
-   * Patch console methods to ensure console output doesn't mix with Ink output.
-   *
-   * @default true
-   */
+	Patch console methods to ensure console output doesn't mix with Ink's output.
+
+	@default true
+	*/
   patchConsole?: boolean;
 
   /**
-   * Enable screen reader support.
-   * See https://github.com/vadimdemedes/ink/blob/master/readme.md#screen-reader-support
-   *
-   * @default process.env['INK_SCREEN_READER'] === 'true'
-   */
+	Runs the given callback after each render and re-render.
+	*/
+  onRender?: (metrics: RenderMetrics) => void;
+
+  /**
+	Enable screen reader support. See https://github.com/vadimdemedes/ink/blob/master/readme.md#screen-reader-support
+
+	@default process.env['INK_SCREEN_READER'] === 'true'
+	*/
   isScreenReaderEnabled?: boolean;
+
+  /**
+	Maximum frames per second for render updates.
+	This controls how frequently the UI can update to prevent excessive re-rendering.
+	Higher values allow more frequent updates but may impact performance.
+
+	@default 30
+	*/
+  maxFps?: number;
+
+  /**
+   * Render the app in an alternate screen buffer.
+   * This is useful for fullscreen applications.
+   * @default false
+   */
+  alternateBuffer?: boolean;
+
+  /**
+   * If true, Ink will not emit the control sequence to enter alternate buffer mode,
+   * but will still emit the sequence to exit it.
+   *
+   * @default false
+   */
+  alternateBufferAlreadyActive?: boolean;
+  /**
+	Enable incremental rendering mode which only updates changed lines instead of redrawing the entire output.
+	This can reduce flickering and improve performance for frequently updating UIs.
+
+	@default false
+	*/
+  incrementalRendering?: boolean;
+
+  /**
+	If true, all content for the current frame will be rendered with background colors that alternate through a rainbow of options.
+	This is useful for debugging to see what content was actually updated on each frame.
+	Only content that was re-rendered gets a new rainbow color.
+
+	@default false
+	*/
+  debugRainbow?: boolean;
+
+  /**
+   * Function to transform selected text characters.
+   */
+  selectionStyle?: (char: StyledChar) => StyledChar;
 };
 
 export type Instance = {
   /**
-   * Replace previous root node with a new one or update props of the current root node.
-   */
+	Replace the previous root node with a new one or update props of the current root node.
+	*/
   rerender: Ink["render"];
+
   /**
-   * Manually unmount the whole Ink app.
-   */
+	Manually unmount the whole Ink app.
+	*/
   unmount: Ink["unmount"];
+
   /**
-   * Returns a promise, which resolves when app is unmounted.
-   */
+	Returns a promise that resolves when the app is unmounted.
+	*/
   waitUntilExit: Ink["waitUntilExit"];
+
   cleanup: () => void;
 
   /**
-   * Clear output.
-   */
+	Clear output.
+	*/
   clear: () => void;
+
+  /**
+   * Manually recalculate layout.
+   */
+  recalculateLayout: Ink["recalculateLayout"];
+
+  /**
+   * Get the selection object.
+   */
+  getSelection: () => Selection;
 };
 
 /**
- * Mount a component and render the output.
- */
+Mount a component and render the output.
+*/
 const render = (node: ReactNode, options?: NodeJS.WriteStream | RenderOptions): Instance => {
   const inkOptions: InkOptions = {
     stdout: process.stdout,
@@ -85,6 +153,10 @@ const render = (node: ReactNode, options?: NodeJS.WriteStream | RenderOptions): 
     debug: false,
     exitOnCtrlC: true,
     patchConsole: true,
+    maxFps: 30,
+    alternateBuffer: false,
+    alternateBufferAlreadyActive: false,
+    incrementalRendering: false,
     ...getOptions(options),
   };
 
@@ -100,6 +172,8 @@ const render = (node: ReactNode, options?: NodeJS.WriteStream | RenderOptions): 
     waitUntilExit: instance.waitUntilExit,
     cleanup: () => instances.delete(inkOptions.stdout),
     clear: instance.clear,
+    recalculateLayout: instance.recalculateLayout,
+    getSelection: instance.getSelection,
   };
 };
 

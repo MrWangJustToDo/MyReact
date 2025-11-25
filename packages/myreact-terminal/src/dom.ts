@@ -1,10 +1,12 @@
 import Yoga, { type Node as YogaNode } from "yoga-layout";
 
-import measureText from "./measure-text";
+import { measureStyledChars, toStyledCharacters, widestLineFromStyledChars } from "./measure-text";
 import { type OutputTransformer } from "./render-node-to-output";
 import squashTextNodes from "./squash-text-nodes";
 import { type Styles } from "./styles";
-import wrapText from "./wrap-text";
+import { wrapOrTruncateStyledChars } from "./text-wrap";
+
+import type ResizeObserver from "./resize-observer";
 
 type InkNode = {
   parentNode: DOMElement | undefined;
@@ -18,7 +20,6 @@ export type ElementNames = "ink-root" | "ink-box" | "ink-text" | "ink-virtual-te
 
 export type NodeNames = ElementNames | TextName;
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export type DOMElement = {
   nodeName: ElementNames;
   attributes: Record<string, DOMNodeAttribute>;
@@ -64,14 +65,28 @@ export type DOMElement = {
   onComputeLayout?: () => void;
   onRender?: () => void;
   onImmediateRender?: () => void;
+  internal_scrollState?: ScrollState;
+  internalSticky?: boolean;
+  internalStickyAlternate?: boolean;
+  internal_opaque?: boolean;
+  resizeObservers?: Set<ResizeObserver>;
+  internal_lastMeasuredSize?: { width: number; height: number };
 } & InkNode;
+
+export type ScrollState = {
+  scrollTop: number;
+  scrollLeft: number;
+  scrollHeight: number;
+  scrollWidth: number;
+  clientHeight: number;
+  clientWidth: number;
+};
 
 export type TextNode = {
   nodeName: TextName;
   nodeValue: string;
 } & InkNode;
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export type DOMNode<T = { nodeName: NodeNames }> = T extends {
   nodeName: infer U;
 }
@@ -80,7 +95,6 @@ export type DOMNode<T = { nodeName: NodeNames }> = T extends {
     : DOMElement
   : never;
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export type DOMNodeAttribute = boolean | string | number;
 
 export const createNode = (nodeName: ElementNames): DOMElement => {
@@ -92,6 +106,8 @@ export const createNode = (nodeName: ElementNames): DOMElement => {
     parentNode: undefined,
     yogaNode: nodeName === "ink-virtual-text" ? undefined : Yoga.Node.create(),
     internal_accessibility: {},
+    internalSticky: false,
+    internalStickyAlternate: false,
   };
 
   if (nodeName === "ink-text") {
@@ -191,9 +207,9 @@ export const createTextNode = (text: string): TextNode => {
 };
 
 const measureTextNode = function (node: DOMNode, width: number): { width: number; height: number } {
-  const text = node.nodeName === "#text" ? node.nodeValue : squashTextNodes(node);
+  const styledChars = toStyledCharacters(node.nodeName === "#text" ? node.nodeValue : squashTextNodes(node));
 
-  const dimensions = measureText(text);
+  const dimensions = measureStyledChars(styledChars);
 
   // Text fits into container, no need to wrap
   if (dimensions.width <= width) {
@@ -207,9 +223,10 @@ const measureTextNode = function (node: DOMNode, width: number): { width: number
   }
 
   const textWrap = node.style?.textWrap ?? "wrap";
-  const wrappedText = wrapText(text, width, textWrap);
+  const wrappedLines = textWrap === "wrap" || textWrap.startsWith("truncate") ? wrapOrTruncateStyledChars(styledChars, width, textWrap) : [styledChars];
 
-  return measureText(wrappedText);
+  const newWidth = widestLineFromStyledChars(wrappedLines);
+  return { width: newWidth, height: wrappedLines.length };
 };
 
 const findClosestYogaNode = (node?: DOMNode): YogaNode | undefined => {
@@ -233,4 +250,36 @@ export const setTextNodeValue = (node: TextNode, text: string): void => {
 
   node.nodeValue = text;
   markNodeAsDirty(node);
+};
+
+export const getPathToRoot = (node: DOMNode): DOMNode[] => {
+  const path: DOMNode[] = [];
+  let current: DOMNode | undefined = node;
+
+  while (current) {
+    path.unshift(current);
+    current = current.parentNode;
+  }
+
+  return path;
+};
+
+export const isNodeSelectable = (node: DOMElement): boolean => {
+  let current: DOMElement | undefined = node;
+
+  while (current) {
+    const { userSelect } = current.style;
+
+    if (userSelect === "none") {
+      return false;
+    }
+
+    if (userSelect === "text" || userSelect === "all") {
+      return true;
+    }
+
+    current = current.parentNode;
+  }
+
+  return true;
 };

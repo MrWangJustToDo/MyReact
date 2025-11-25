@@ -1,18 +1,15 @@
-import { type StyledChar, styledCharsFromTokens, styledCharsToString, tokenize } from "@alcalzone/ansi-tokenize";
-import sliceAnsi from "slice-ansi";
-import stringWidth from "string-width";
-import widestLine from "widest-line";
+import { type StyledChar, styledCharsToString } from "@alcalzone/ansi-tokenize";
 
+import { toStyledCharacters, inkCharacterWidth, styledCharsWidth } from "./measure-text";
 import { type OutputTransformer } from "./render-node-to-output";
 
 /**
- * "Virtual" output class
- *
- * Handles the positioning and saving of the output of each node in the tree.
- * Also responsible for applying transformations to each character of the output.
- *
- * Used to generate the final output of all nodes before writing it to actual output stream (e.g. stdout)
- */
+"Virtual" output class
+
+Handles the positioning and saving of the output of each node in the tree. Also responsible for applying transformations to each character of the output.
+
+Used to generate the final output of all nodes before writing it to actual output stream (e.g. stdout)
+*/
 
 type Options = {
   width: number;
@@ -25,8 +22,10 @@ type WriteOperation = {
   type: "write";
   x: number;
   y: number;
-  text: string;
+  items: string | StyledChar[];
   transformers: OutputTransformer[];
+  lineIndex?: number;
+  preserveBackgroundColor?: boolean;
 };
 
 type ClipOperation = {
@@ -51,6 +50,8 @@ export default class Output {
 
   private readonly operations: Operation[] = [];
 
+  private readonly clips: Clip[] = [];
+
   constructor(options: Options) {
     const { width, height } = options;
 
@@ -58,10 +59,23 @@ export default class Output {
     this.height = height;
   }
 
-  write(x: number, y: number, text: string, options: { transformers: OutputTransformer[] }): void {
-    const { transformers } = options;
+  getCurrentClip(): Clip | undefined {
+    return this.clips.at(-1);
+  }
 
-    if (!text) {
+  write(
+    x: number,
+    y: number,
+    items: string | StyledChar[],
+    options: {
+      transformers: OutputTransformer[];
+      lineIndex?: number;
+      preserveBackgroundColor?: boolean;
+    }
+  ): void {
+    const { transformers, lineIndex, preserveBackgroundColor } = options;
+
+    if (items.length === 0) {
       return;
     }
 
@@ -69,8 +83,10 @@ export default class Output {
       type: "write",
       x,
       y,
-      text,
+      items,
       transformers,
+      lineIndex,
+      preserveBackgroundColor,
     });
   }
 
@@ -79,15 +95,32 @@ export default class Output {
       type: "clip",
       clip,
     });
+
+    const previousClip = this.clips.at(-1);
+    const nextClip = { ...clip };
+
+    if (previousClip) {
+      nextClip.x1 = previousClip.x1 === undefined ? nextClip.x1 : nextClip.x1 === undefined ? previousClip.x1 : Math.max(previousClip.x1, nextClip.x1);
+
+      nextClip.x2 = previousClip.x2 === undefined ? nextClip.x2 : nextClip.x2 === undefined ? previousClip.x2 : Math.min(previousClip.x2, nextClip.x2);
+
+      nextClip.y1 = previousClip.y1 === undefined ? nextClip.y1 : nextClip.y1 === undefined ? previousClip.y1 : Math.max(previousClip.y1, nextClip.y1);
+
+      nextClip.y2 = previousClip.y2 === undefined ? nextClip.y2 : nextClip.y2 === undefined ? previousClip.y2 : Math.min(previousClip.y2, nextClip.y2);
+    }
+
+    this.clips.push(nextClip);
   }
 
   unclip() {
     this.operations.push({
       type: "unclip",
     });
+
+    this.clips.pop();
   }
 
-  get(): { output: string; height: number } {
+  get(): { output: string; height: number; styledOutput: StyledChar[][] } {
     // Initialize output array with a specific set of rows, so that margin/padding at the bottom is preserved
     const output: StyledChar[][] = [];
 
@@ -110,111 +143,30 @@ export default class Output {
 
     for (const operation of this.operations) {
       if (operation.type === "clip") {
-        clips.push(operation.clip);
+        const previousClip = clips.at(-1);
+        const nextClip = { ...operation.clip };
+
+        if (previousClip) {
+          nextClip.x1 = previousClip.x1 === undefined ? nextClip.x1 : nextClip.x1 === undefined ? previousClip.x1 : Math.max(previousClip.x1, nextClip.x1);
+
+          nextClip.x2 = previousClip.x2 === undefined ? nextClip.x2 : nextClip.x2 === undefined ? previousClip.x2 : Math.min(previousClip.x2, nextClip.x2);
+
+          nextClip.y1 = previousClip.y1 === undefined ? nextClip.y1 : nextClip.y1 === undefined ? previousClip.y1 : Math.max(previousClip.y1, nextClip.y1);
+
+          nextClip.y2 = previousClip.y2 === undefined ? nextClip.y2 : nextClip.y2 === undefined ? previousClip.y2 : Math.min(previousClip.y2, nextClip.y2);
+        }
+
+        clips.push(nextClip);
+        continue;
       }
 
       if (operation.type === "unclip") {
         clips.pop();
+        continue;
       }
 
       if (operation.type === "write") {
-        const { text, transformers } = operation;
-        let { x, y } = operation;
-        let lines = text.split("\n");
-
-        const clip = clips.at(-1);
-
-        if (clip) {
-          const clipHorizontally = typeof clip?.x1 === "number" && typeof clip?.x2 === "number";
-
-          const clipVertically = typeof clip?.y1 === "number" && typeof clip?.y2 === "number";
-
-          // If text is positioned outside of clipping area altogether,
-          // skip to the next operation to avoid unnecessary calculations
-          if (clipHorizontally) {
-            const width = widestLine(text);
-
-            if (x + width < clip.x1! || x > clip.x2!) {
-              continue;
-            }
-          }
-
-          if (clipVertically) {
-            const height = lines.length;
-
-            if (y + height < clip.y1! || y > clip.y2!) {
-              continue;
-            }
-          }
-
-          if (clipHorizontally) {
-            lines = lines.map((line) => {
-              const from = x < clip.x1! ? clip.x1! - x : 0;
-              const width = stringWidth(line);
-              const to = x + width > clip.x2! ? clip.x2! - x : width;
-
-              return sliceAnsi(line, from, to);
-            });
-
-            if (x < clip.x1!) {
-              x = clip.x1!;
-            }
-          }
-
-          if (clipVertically) {
-            const from = y < clip.y1! ? clip.y1! - y : 0;
-            const height = lines.length;
-            const to = y + height > clip.y2! ? clip.y2! - y : height;
-
-            lines = lines.slice(from, to);
-
-            if (y < clip.y1!) {
-              y = clip.y1!;
-            }
-          }
-        }
-
-        let offsetY = 0;
-
-        // eslint-disable-next-line prefer-const
-        for (let [index, line] of lines.entries()) {
-          const currentLine = output[y + offsetY];
-
-          // Line can be missing if `text` is taller than height of pre-initialized `this.output`
-          if (!currentLine) {
-            continue;
-          }
-
-          for (const transformer of transformers) {
-            line = transformer(line, index);
-          }
-
-          const characters = styledCharsFromTokens(tokenize(line));
-          let offsetX = x;
-
-          for (const character of characters) {
-            currentLine[offsetX] = character;
-
-            // Determine printed width using string-width to align with measurement
-            const characterWidth = Math.max(1, stringWidth(character.value));
-
-            // For multi-column characters, clear following cells to avoid stray spaces/artifacts
-            if (characterWidth > 1) {
-              for (let index = 1; index < characterWidth; index++) {
-                currentLine[offsetX + index] = {
-                  type: "char",
-                  value: "",
-                  fullWidth: false,
-                  styles: character.styles,
-                };
-              }
-            }
-
-            offsetX += characterWidth;
-          }
-
-          offsetY++;
-        }
+        this.applyWriteOperation(output, clips, operation);
       }
     }
 
@@ -230,6 +182,146 @@ export default class Output {
     return {
       output: generatedOutput,
       height: output.length,
+      styledOutput: output,
     };
+  }
+
+  private clearRange(currentLine: StyledChar[], range: { start: number; end: number }, styles: StyledChar["styles"], value = " ") {
+    for (let offset = range.start; offset < range.end; offset++) {
+      if (offset >= 0 && offset < this.width) {
+        currentLine[offset] = {
+          type: "char",
+          value,
+          fullWidth: false,
+          styles,
+        };
+      }
+    }
+  }
+
+  private applyWriteOperation(output: StyledChar[][], clips: Clip[], operation: WriteOperation) {
+    const { transformers, lineIndex = 0 } = operation;
+    // eslint-disable-next-line prefer-const
+    let { x, y, items } = operation;
+
+    let chars: StyledChar[] = typeof items === "string" ? toStyledCharacters(items) : items;
+
+    const clip = clips.at(-1);
+    let fromX: number | undefined;
+    let toX: number | undefined;
+
+    if (clip) {
+      const clipResult = this.clipChars(chars, x, y, clip);
+
+      if (!clipResult) {
+        return;
+      }
+
+      chars = clipResult.chars;
+      x = clipResult.x;
+      y = clipResult.y;
+      fromX = clipResult.fromX;
+      toX = clipResult.toX;
+    }
+
+    const currentLine = output[y];
+
+    // Line can be missing if `text` is taller than height of pre-initialized `this.output`
+    if (!currentLine) {
+      return;
+    }
+
+    if (transformers.length > 0) {
+      let line = styledCharsToString(chars);
+      for (const transformer of transformers) {
+        line = transformer(line, lineIndex);
+      }
+
+      chars = toStyledCharacters(line);
+    }
+
+    let offsetX = x;
+    let relativeX = 0;
+
+    for (const character of chars) {
+      const characterWidth = inkCharacterWidth(character.value);
+
+      if (toX !== undefined && relativeX >= toX) {
+        break;
+      }
+
+      if (fromX === undefined || relativeX >= fromX) {
+        if (offsetX >= this.width) {
+          break;
+        }
+
+        currentLine[offsetX] = character;
+
+        if (characterWidth > 1) {
+          this.clearRange(currentLine, { start: offsetX + 1, end: offsetX + characterWidth }, character.styles, "");
+        }
+
+        offsetX += characterWidth;
+      } else if (characterWidth > 1 && fromX !== undefined && relativeX < fromX && relativeX + characterWidth > fromX) {
+        const clearLength = relativeX + characterWidth - fromX;
+        this.clearRange(currentLine, { start: offsetX, end: offsetX + clearLength }, character.styles, " ");
+
+        offsetX += clearLength;
+      }
+
+      relativeX += characterWidth;
+    }
+
+    if (toX !== undefined) {
+      const absoluteToX = x - (fromX ?? 0) + toX;
+
+      this.clearRange(currentLine, { start: offsetX, end: absoluteToX }, [], " ");
+    }
+  }
+
+  private clipChars(
+    chars: StyledChar[],
+    x: number,
+    y: number,
+    clip: Clip
+  ):
+    | {
+        chars: StyledChar[];
+        x: number;
+        y: number;
+        fromX: number | undefined;
+        toX: number | undefined;
+      }
+    | undefined {
+    const { x1, x2, y1, y2 } = clip;
+    const clipHorizontally = typeof x1 === "number" && typeof x2 === "number";
+    const clipVertically = typeof y1 === "number" && typeof y2 === "number";
+
+    if (clipHorizontally) {
+      const width = styledCharsWidth(chars);
+
+      if (x + width < clip.x1! || x > clip.x2!) {
+        return undefined;
+      }
+    }
+
+    if (clipVertically && (y < clip.y1! || y >= clip.y2!)) {
+      return undefined;
+    }
+
+    let fromX: number | undefined;
+    let toX: number | undefined;
+
+    if (clipHorizontally) {
+      fromX = x < clip.x1! ? clip.x1! - x : 0;
+      const width = styledCharsWidth(chars);
+      toX = x + width > clip.x2! ? clip.x2! - x : width;
+
+      if (x < clip.x1!) {
+        x = clip.x1!;
+      }
+    }
+
+    return { chars, x, y, fromX, toX };
   }
 }

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
-interface LoadRemoteScriptOptions {
+export interface LoadRemoteScriptOptions {
   timeout?: number;
   context?: Record<string, any>;
   useEval?: boolean;
 }
 
-async function loadRemoteScript(url: string, options: LoadRemoteScriptOptions = {}): Promise<void> {
+export async function loadRemoteScript(url: string, options: LoadRemoteScriptOptions = {}): Promise<void> {
   const { timeout = 10000, context = {}, useEval = false } = options;
 
   try {
@@ -29,10 +29,11 @@ async function loadRemoteScript(url: string, options: LoadRemoteScriptOptions = 
     // 根据环境选择执行方式
     await executeScript(code, url, { context, useEval });
   } catch (error: any) {
-    if (error.name === "AbortError") {
+    if (error?.name === "AbortError") {
       throw new Error(`加载远程脚本超时 (${timeout}ms)`);
     }
-    throw new Error(`加载远程脚本失败: ${error.message}`);
+    const errorMsg = error?.message || String(error);
+    throw new Error(`加载远程脚本失败: ${errorMsg}`);
   }
 }
 
@@ -63,7 +64,7 @@ async function executeScript(code: string, url: string, options: { context?: Rec
 function detectEnvironment(): "bun" | "node" | "browser" {
   // 检测 Bun
   // @ts-ignore
-  if (typeof Bun !== "undefined" && Bun.version) {
+  if (typeof Bun !== "undefined" && typeof Bun === "object") {
     return "bun";
   }
 
@@ -81,28 +82,55 @@ function detectEnvironment(): "bun" | "node" | "browser" {
   return "browser";
 }
 
+// 安全的 Base64 编码函数（跨环境兼容）
+function safeBase64Encode(str: string): string {
+  // Node.js 环境
+  if (typeof Buffer !== "undefined") {
+    return Buffer.from(str, "utf-8").toString("base64");
+  }
+
+  // 浏览器环境
+  if (typeof btoa !== "undefined") {
+    // 处理 Unicode 字符
+    const utf8Bytes = new TextEncoder().encode(str);
+    let binary = "";
+    for (let i = 0; i < utf8Bytes.length; i++) {
+      binary += String.fromCharCode(utf8Bytes[i]);
+    }
+    return btoa(binary);
+  }
+
+  // 回退方案：手动实现 Base64 编码
+  const base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  const utf8Bytes = new TextEncoder().encode(str);
+  let result = "";
+
+  for (let i = 0; i < utf8Bytes.length; i += 3) {
+    const a = utf8Bytes[i];
+    const b = i + 1 < utf8Bytes.length ? utf8Bytes[i + 1] : 0;
+    const c = i + 2 < utf8Bytes.length ? utf8Bytes[i + 2] : 0;
+
+    const bitmap = (a << 16) | (b << 8) | c;
+
+    result += base64Chars[(bitmap >> 18) & 63];
+    result += base64Chars[(bitmap >> 12) & 63];
+    result += i + 1 < utf8Bytes.length ? base64Chars[(bitmap >> 6) & 63] : "=";
+    result += i + 2 < utf8Bytes.length ? base64Chars[bitmap & 63] : "=";
+  }
+
+  return result;
+}
+
 // Bun 环境执行
 async function executeInBun(code: string, url: string, context: Record<string, any>): Promise<void> {
   try {
     // 方法1: 使用 data URL import (推荐)
-    const dataUrl = `data:application/javascript;base64,${btoa(unescape(encodeURIComponent(code)))}`;
+    const base64Code = safeBase64Encode(code);
+    const dataUrl = `data:application/javascript;base64,${base64Code}`;
     await import(/* @vite-ignore */ dataUrl);
     return;
   } catch (error) {
-    // 方法2: 使用 Bun 的运行时执行
-    // @ts-ignore
-    if (typeof Bun !== "undefined") {
-      try {
-        // Bun 可以直接运行代码字符串
-        // @ts-ignore
-        Bun.$`echo ${code} | bun run -`;
-        return;
-      } catch (bunError) {
-        console.warn("Bun 直接执行失败:", bunError);
-      }
-    }
-
-    // 方法3: 使用 VM 回退
+    // 方法2: 使用 VM 回退
     await executeWithVM(code, url, context);
   }
 }
@@ -115,10 +143,13 @@ async function executeInNode(code: string, url: string, context: Record<string, 
   } catch (error: any) {
     // 方法2: 使用 data URL import (Node.js 17+)
     try {
-      const dataUrl = `data:application/javascript;base64,${Buffer.from(code).toString("base64")}`;
+      const base64Code = safeBase64Encode(code);
+      const dataUrl = `data:application/javascript;base64,${base64Code}`;
       await import(/* @vite-ignore */ dataUrl);
     } catch (importError: any) {
-      throw new Error(`Node.js 执行失败: ${error.message} ${importError.message}`);
+      const errorMsg = error?.message || String(error);
+      const importErrorMsg = importError?.message || String(importError);
+      throw new Error(`Node.js 执行失败: ${errorMsg}, ${importErrorMsg}`);
     }
   }
 }
@@ -157,9 +188,29 @@ async function executeWithVM(code: string, url: string, context: Record<string, 
       clearInterval,
       URL,
       URLSearchParams,
+      // 内置对象
+      Object,
+      Array,
+      String,
+      Number,
+      Boolean,
+      Symbol,
+      Date,
+      RegExp,
+      Error,
+      TypeError,
+      RangeError,
+      SyntaxError,
+      Map,
+      Set,
+      WeakMap,
+      WeakSet,
+      Promise,
+      JSON,
+      Math,
       // 环境特定全局变量
       ...(typeof global !== "undefined" ? { global } : {}),
-      ...(typeof window !== "undefined" ? { window } : {}),
+      // ...(typeof window !== "undefined" ? { window } : {}),
       ...(typeof process !== "undefined" ? { process } : {}),
       // 用户自定义上下文
       ...context,
@@ -176,8 +227,9 @@ async function executeWithVM(code: string, url: string, context: Record<string, 
     });
 
     script.runInContext(vmContext);
-  } catch (error) {
-    throw new Error(`VM 执行失败: ${error}`);
+  } catch (error: any) {
+    const errorMsg = error?.message || String(error);
+    throw new Error(`VM 执行失败: ${errorMsg}`);
   }
 }
 
@@ -197,14 +249,23 @@ function executeWithScriptTag(code: string, url: string): Promise<void> {
     const blobUrl = URL.createObjectURL(blob);
     script.src = blobUrl;
 
+    // 清理函数
+    const cleanup = () => {
+      URL.revokeObjectURL(blobUrl);
+      // 从 DOM 中移除 script 标签以防止内存泄漏
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+
     // 设置错误处理
     script.onerror = () => {
-      URL.revokeObjectURL(blobUrl);
+      cleanup();
       reject(new Error("Script 标签加载失败"));
     };
 
     script.onload = () => {
-      URL.revokeObjectURL(blobUrl);
+      cleanup();
       resolve();
     };
 
@@ -230,29 +291,46 @@ function executeWithEval(code: string, context: Record<string, any>): void {
     );
 
     func(...contextValues);
-  } catch (error) {
+  } catch (error: any) {
     // 回退到间接 eval
     try {
       const indirectEval = eval;
       indirectEval(code);
-    } catch (evalError) {
-      throw new Error(`Eval 执行失败: ${evalError}`);
+    } catch (evalError: any) {
+      const errorMsg = evalError?.message || String(evalError);
+      throw new Error(`Eval 执行失败: ${errorMsg}`);
     }
   }
 }
 
-// 简单的安全检查
+// 增强的安全检查
 function isPotentiallyUnsafe(code: string): boolean {
   const unsafePatterns = [
+    // Cookie 和存储访问
     /document\.cookie/i,
     /localStorage/i,
     /sessionStorage/i,
-    /eval\s*\(/i,
+    /indexedDB/i,
+    // 动态代码执行
+    /\beval\s*\(/i,
     /Function\s*\(/i,
+    /setTimeout\s*\(\s*["'`]/i, // setTimeout with string
+    /setInterval\s*\(\s*["'`]/i, // setInterval with string
+    // 动态脚本和 DOM 操作
     /script\.src/i,
-    /innerHTML/i,
-    /outerHTML/i,
+    /\.innerHTML/i,
+    /\.outerHTML/i,
     /document\.write/i,
+    /document\.writeln/i,
+    // 动态属性访问（可能绕过检查）
+    /\[["'`]eval["'`]\]/i,
+    /\[["'`]cookie["'`]\]/i,
+    /\[["'`]localStorage["'`]\]/i,
+    // import() 动态导入
+    /import\s*\(/i,
+    // 危险的 DOM API
+    /\.insertAdjacentHTML/i,
+    /createContextualFragment/i,
   ];
 
   return unsafePatterns.some((pattern) => pattern.test(code));

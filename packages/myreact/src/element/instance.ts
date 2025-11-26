@@ -19,6 +19,11 @@ export type MyReactFunctionComponent<P extends Record<string, unknown> = any> = 
 /**
  * @public
  */
+export type MyReactFunctionComponentWithRef<P extends Record<string, unknown> = any, T = any> = (props: P, ref: T) => MyReactElementNode;
+
+/**
+ * @public
+ */
 export type MyReactClassComponent<
   P extends Record<string, unknown> = any,
   S extends Record<string, unknown> = any,
@@ -60,6 +65,15 @@ export type MixinMyReactClassComponent<
  * @public
  */
 export type MixinMyReactFunctionComponent<P extends Record<string, unknown> = any> = MyReactFunctionComponent<P> & {
+  name?: string;
+  displayName?: string;
+  defaultProps?: Record<string, unknown>;
+};
+/**
+ * @public
+ */
+export type MixinMyReactFunctionComponentWithRef<P extends Record<string, unknown> = any, T = any> = MyReactFunctionComponentWithRef<P, T> & {
+  name?: string;
   displayName?: string;
   defaultProps?: Record<string, unknown>;
 };
@@ -199,7 +213,7 @@ export function createElement<P extends Record<string, unknown> = any>(
  * @public
  */
 export function createElement<P extends Record<string, unknown> = any>(
-  type: symbol,
+  type: ReturnType<typeof lazy<P>>,
   config?: CreateElementConfig<P> & CreateElementProps<P>["props"],
   ...children: ArrayMyReactElementChildren
 ): MyReactElement;

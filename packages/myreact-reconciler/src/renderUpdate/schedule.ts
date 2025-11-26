@@ -96,6 +96,8 @@ export const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
 };
 
 export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
+  __my_react_internal__.recentlyCreatedOwnerStacks.current = 0;
+
   if (renderDispatch.isAppUnmounted) {
     scheduleOther(renderDispatch);
     return;

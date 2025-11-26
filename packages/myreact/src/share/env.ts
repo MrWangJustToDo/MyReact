@@ -47,6 +47,11 @@ export const globalLoop = createRef(false);
 /**
  * @internal
  */
+export const recentlyCreatedOwnerStacks = createRef(0);
+
+/**
+ * @internal
+ */
 export const currentRunningFiber = createRef<RenderFiber | null>(null);
 
 /**

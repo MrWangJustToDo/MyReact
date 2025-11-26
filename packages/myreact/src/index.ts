@@ -35,6 +35,7 @@ import {
   currentCallingFiber,
   currentError,
   globalLoop,
+  recentlyCreatedOwnerStacks,
   enableDebugLog,
   enableSyncFlush,
   enableHMRForDev,
@@ -59,6 +60,8 @@ import {
   instanceToInitialFieldMap,
   currentScheduler,
   captureOwnerStack,
+  getMyReactElementName,
+  getMyReactElementTypeName,
 } from "./share";
 
 /**
@@ -119,9 +122,13 @@ const __my_react_scheduler__ = {
 const __my_react_internal__ = {
   MyReactInternalInstance,
   globalLoop,
+  recentlyCreatedOwnerStacks,
 
   createReadonlyRef,
   Dispatcher,
+
+  getMyReactElementName,
+  getMyReactElementTypeName,
 
   fiberToDispatchMap,
   dispatchToListenerMap,

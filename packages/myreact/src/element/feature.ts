@@ -1,7 +1,7 @@
 import { Consumer, Context, ForwardRef, isNormalEquals, Lazy, Memo, Provider, TYPEKEY } from "@my-react/react-shared";
 
 import type { RenderFiber } from "../renderFiber";
-import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactElement } from "./instance";
+import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MixinMyReactFunctionComponentWithRef } from "./instance";
 
 const defaultObject = { [TYPEKEY]: Context, displayName: "" };
 
@@ -66,7 +66,7 @@ export const createContext = <T = any>(value: T) => {
  * @public
  */
 export const forwardRef = <P extends Record<string, unknown> = any, T extends CreateElementConfig<P>["ref"] = any>(
-  render: (props: P, ref?: T) => MyReactElement
+  render: MixinMyReactFunctionComponentWithRef<P, T>
 ) => {
   const objectType = {
     [TYPEKEY]: ForwardRef,
@@ -78,7 +78,7 @@ export const forwardRef = <P extends Record<string, unknown> = any, T extends Cr
     prototype?: any;
     displayName?: string;
     defaultProps?: Record<string, unknown>;
-    render: (props: P, ref?: T) => MyReactElement;
+    render: MixinMyReactFunctionComponentWithRef<P, T>;
   };
 };
 
@@ -87,7 +87,7 @@ export type ForwardRefType<P extends Record<string, unknown>, T extends CreateEl
   prototype?: any;
   displayName?: string;
   defaultProps?: Record<string, unknown>;
-  render: (props: P, ref?: T) => MyReactElement;
+  render: MixinMyReactFunctionComponentWithRef<P, T>;
 };
 
 /**

@@ -24,15 +24,15 @@ const cleanTypeFile = async (pkgName: keyof typeof pkgNameAlias) => {
   const dirs = await readdir(dirPath, { withFileTypes: true });
 
   for (const item of dirs) {
-    if (item.isFile() && item.name.endsWith(".d.ts")) {
+    if (item.isFile() && item.name.endsWith(".d.ts") && !item.name.includes("jsx") && item.name !== "type.d.ts") {
       const filePath = resolve(dirPath, item.name);
       await rm(filePath, { force: true });
     }
   }
 
-  const distType = resolve(process.cwd(), "packages", pkgNameAlias[pkgName], "dist", "types");
+  // const distType = resolve(process.cwd(), "packages", pkgNameAlias[pkgName], "dist", "types");
 
-  await rm(distType, { force: true, recursive: true });
+  // await rm(distType, { force: true, recursive: true });
 };
 
 const getVersion = (pkgName: string) =>

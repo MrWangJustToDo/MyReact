@@ -1,6 +1,6 @@
 {
   "name": "@my-react/react-rspack",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "make @my-react work for rspack",
   "files": [
     "dist",

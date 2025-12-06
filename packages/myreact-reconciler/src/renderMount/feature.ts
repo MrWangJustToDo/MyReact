@@ -15,23 +15,11 @@ function finishMountSync(renderDispatch: CustomRenderDispatch, fiber: MyReactFib
 
   renderDispatch.reconcileCommit(fiber);
 
-  const changedList = renderDispatch.pendingChangedFiberList;
-
   renderDispatch.resetUpdateFlowRuntimeFiber();
 
   renderDispatch.pendingCommitFiberList = null;
 
-  renderDispatch.pendingChangedFiberList = null;
-
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
-
-  changedList?.length &&
-    safeCallWithCurrentFiber({
-      fiber,
-      action: function safeCallFiberHasChangeListener() {
-        renderDispatch.callOnFiberChange(changedList);
-      },
-    });
 }
 
 export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
@@ -65,23 +53,11 @@ function finishMountAsync(renderDispatch: CustomRenderDispatch, fiber: MyReactFi
 
   renderDispatch.reconcileCommit(fiber);
 
-  const changedList = renderDispatch.pendingChangedFiberList;
-
   renderDispatch.resetUpdateFlowRuntimeFiber();
 
   renderDispatch.pendingCommitFiberList = null;
 
-  renderDispatch.pendingChangedFiberList = null;
-
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
-
-  changedList?.length &&
-    safeCallWithCurrentFiber({
-      fiber,
-      action: function safeCallFiberHasChangeListener() {
-        renderDispatch.callOnFiberChange(changedList);
-      },
-    });
 }
 
 export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {

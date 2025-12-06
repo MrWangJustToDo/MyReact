@@ -34,7 +34,6 @@ export const clearContainer = (renderDispatch: CustomRenderDispatch) => {
   renderDispatch.pendingUpdateFiberArray?.clear();
   renderDispatch.pendingSuspenseFiberArray?.clear();
   renderDispatch.pendingCommitFiberList?.clear();
-  renderDispatch.pendingChangedFiberList?.clear();
   renderDispatch.resetUpdateFlowRuntimeFiber();
   renderDispatch.isAppMounted = false;
   renderDispatch.isAppUnmounted = true;

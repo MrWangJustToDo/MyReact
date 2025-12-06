@@ -3,7 +3,7 @@
   "description": "@my-react/react",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.21",
+  "version": "0.3.22",
   "main": "index.js",
   "unpkg": "./dist/umd/index.development.js",
   "jsdelivr": "./dist/umd/index.development.js",

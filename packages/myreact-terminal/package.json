@@ -3,7 +3,7 @@
   "description": "@my-react/react-terminal",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "main": "index.mjs",
   "types": "./index.d.ts",
   "type": "module",

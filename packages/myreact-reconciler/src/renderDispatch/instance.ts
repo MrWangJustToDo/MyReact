@@ -51,8 +51,6 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   pendingCommitFiberPatch: PATCH_TYPE = PATCH_TYPE.__initial__;
 
-  pendingChangedFiberList: ListTree<MyReactFiberNode> | null = null;
-
   pendingUpdateFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
 
   pendingSuspenseFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
@@ -115,20 +113,6 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
       this.pendingCommitFiberList.push(_fiber);
     }
-  }
-
-  generateChangedList(_fiber: MyReactFiberNode, withCheck?: boolean) {
-    if (!_fiber) return;
-
-    if (!this.isAppMounted) return;
-
-    this.pendingChangedFiberList = this.pendingChangedFiberList || new ListTree();
-
-    if (withCheck && this.pendingChangedFiberList.hasValue(_fiber)) {
-      return;
-    }
-
-    this.pendingChangedFiberList.push(_fiber);
   }
 
   pendingCreate(_fiber: MyReactFiberNode): void {

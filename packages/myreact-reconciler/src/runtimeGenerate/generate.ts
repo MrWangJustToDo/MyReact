@@ -84,8 +84,6 @@ const deleteIfNeed = (
         renderDispatch.pendingUnmount(parentFiber, f);
       });
     });
-
-    renderDispatch.generateChangedList(parentFiber, true);
   }
 };
 
@@ -111,12 +109,8 @@ const getNewFiberWithUpdate = (
     if (include(draftFiber?.type, NODE_TYPE.__fragment__)) {
       const newElement = createElement(Fragment, dynamicFragmentProps, newChild);
 
-      draftFiber !== prevFiberChild && renderDispatch.generateChangedList(parentFiber);
-
       return updateFiberNode(renderDispatch, { fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newElement);
     } else {
-      draftFiber && renderDispatch.generateChangedList(parentFiber);
-
       draftFiber && renderDispatch.pendingUnmount(parentFiber, draftFiber);
 
       return createFragmentWithUpdate(renderDispatch, newChild, parentFiber);
@@ -136,13 +130,9 @@ const getNewFiberWithUpdate = (
   const isSameType = getIsSameTypeNode(newChild, draftFiber);
 
   if (isSameType) {
-    draftFiber !== prevFiberChild && renderDispatch.generateChangedList(parentFiber);
-
     return updateFiberNode(renderDispatch, { fiber: draftFiber, parent: parentFiber, prevFiber: prevFiberChild }, newChild);
   } else {
     draftFiber && renderDispatch.pendingUnmount(parentFiber, draftFiber);
-
-    draftFiber && renderDispatch.generateChangedList(parentFiber);
 
     return createFiberNode(renderDispatch, { parent: parentFiber, type: "position" }, newChild);
   }
@@ -215,8 +205,6 @@ export const transformChildrenFiber = (renderDispatch: CustomRenderDispatch, par
 
     deleteIfNeed(renderDispatch, parentFiber, existingChildrenMap);
   } else {
-    renderDispatch.generateChangedList(parentFiber);
-
     const { existingChildrenMap } = getExistingChildren(parentFiber);
 
     deleteIfNeed(renderDispatch, parentFiber, existingChildrenMap);

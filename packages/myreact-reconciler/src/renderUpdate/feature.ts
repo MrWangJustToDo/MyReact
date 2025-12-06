@@ -14,13 +14,9 @@ const { enableScopeTreeLog } = __my_react_shared__;
 function finishUpdateSyncFromRoot(renderDispatch: CustomRenderDispatch) {
   const commitList = renderDispatch.pendingCommitFiberList;
 
-  const changedList = renderDispatch.pendingChangedFiberList;
-
   renderDispatch.resetUpdateFlowRuntimeFiber();
 
   renderDispatch.pendingCommitFiberList = null;
-
-  renderDispatch.pendingChangedFiberList = null;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
@@ -33,9 +29,9 @@ function finishUpdateSyncFromRoot(renderDispatch: CustomRenderDispatch) {
       renderDispatch.callOnAfterDispatchUpdate(renderDispatch);
     });
 
-  changedList?.length &&
+  commitList?.length &&
     safeCall(function safeCallFiberHasChangeListener() {
-      renderDispatch.callOnFiberChange(changedList);
+      renderDispatch.callOnFiberChange(commitList);
     });
 }
 
@@ -64,13 +60,9 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
 function finishUpdateConcurrentFromRoot(renderDispatch: CustomRenderDispatch) {
   const commitList = renderDispatch.pendingCommitFiberList;
 
-  const changedList = renderDispatch.pendingChangedFiberList;
-
   renderDispatch.resetUpdateFlowRuntimeFiber();
 
   renderDispatch.pendingCommitFiberList = null;
-
-  renderDispatch.pendingChangedFiberList = null;
 
   __DEV__ && enableScopeTreeLog.current && setLogScope();
 
@@ -83,9 +75,9 @@ function finishUpdateConcurrentFromRoot(renderDispatch: CustomRenderDispatch) {
       renderDispatch.callOnAfterDispatchUpdate(renderDispatch);
     });
 
-  changedList?.length &&
+  commitList?.length &&
     safeCall(function safeCallFiberHasChangeListener() {
-      renderDispatch.callOnFiberChange(changedList);
+      renderDispatch.callOnFiberChange(commitList);
     });
 }
 

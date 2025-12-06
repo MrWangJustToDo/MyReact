@@ -1,6 +1,6 @@
-import { TextAttributes } from "@opentui/core"
-import { render, useTimeline } from "@my-react/react-opentui"
 import { useEffect, useState } from "@my-react/react"
+import { render, useTimeline } from "@my-react/react-opentui"
+import { TextAttributes } from "@opentui/core"
 
 type Stats = {
   cpu: number

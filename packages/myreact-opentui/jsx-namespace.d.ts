@@ -4,6 +4,7 @@ import type {
   ExtendedIntrinsicElements,
   InputProps,
   LineBreakProps,
+  LineNumberProps,
   OpenTUIComponents,
   ScrollBoxProps,
   SelectProps,
@@ -17,11 +18,15 @@ declare namespace JSX {
     box: BoxProps;
     text: TextProps;
     span: SpanProps;
+    code: CodeProps;
+    diff: DiffProps;
     input: InputProps;
+    textarea: TextareaProps;
     select: SelectProps;
     scrollbox: ScrollBoxProps;
     "ascii-font": AsciiFontProps;
     "tab-select": TabSelectProps;
+    "line-number": LineNumberProps;
     // Text modifiers
     b: SpanProps;
     i: SpanProps;

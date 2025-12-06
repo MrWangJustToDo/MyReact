@@ -12,7 +12,7 @@ declare namespace Ink {
     style?: Except<Styles, "textWrap">;
     internal_accessibility?: DOMElement["internal_accessibility"];
     sticky?: boolean;
-    internalStickyAlternate?: boolean;
+    internal_sticky_alternate?: boolean;
     opaque?: boolean;
   };
 

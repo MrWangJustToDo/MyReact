@@ -157,6 +157,7 @@ export const Reconciler = (_config: any) => {
     getPublicRootInstance,
     injectIntoDevToolsWithSocketIO,
     flushSync: safeCallWithSync,
+    flushSyncWork: safeCallWithSync,
     batchedUpdates: safeCallWithSync,
   };
 };

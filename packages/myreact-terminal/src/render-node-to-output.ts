@@ -58,7 +58,7 @@ export const renderNodeToScreenReaderOutput = (
     return "";
   }
 
-  if (node.internalStickyAlternate) {
+  if (node.internal_sticky_alternate) {
     return "";
   }
 
@@ -133,7 +133,7 @@ const renderNodeToOutput = (
     return;
   }
 
-  if (node.internalStickyAlternate && !isStickyRender) {
+  if (node.internal_sticky_alternate && !isStickyRender) {
     return;
   }
 
@@ -311,7 +311,7 @@ const renderNodeToOutput = (
       }
 
       if (activeStickyNode?.yogaNode) {
-        const alternateStickyNode = activeStickyNode.childNodes.find((childNode) => (childNode as DOMElement).internalStickyAlternate) as
+        const alternateStickyNode = activeStickyNode.childNodes.find((childNode) => (childNode as DOMElement).internal_sticky_alternate) as
           | DOMElement
           | undefined;
 
@@ -399,11 +399,11 @@ function getStickyDescendants(node: DOMElement): DOMElement[] {
 
     const domChild = child;
 
-    if (domChild.internalStickyAlternate) {
+    if (domChild.internal_sticky_alternate) {
       continue;
     }
 
-    if (domChild.internalSticky) {
+    if (domChild.internal_sticky) {
       stickyDescendants.push(domChild);
     } else {
       const overflow = domChild.style.overflow ?? "visible";

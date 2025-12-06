@@ -151,12 +151,12 @@ export const Reconciler = createReconciler<
       }
 
       if (key === "sticky") {
-        node.internalSticky = value as boolean;
+        node.internal_sticky = value as boolean;
         continue;
       }
 
-      if (key === "internalStickyAlternate") {
-        node.internalStickyAlternate = value as boolean;
+      if (key === "internal_sticky_alternate") {
+        node.internal_sticky_alternate = value as boolean;
         continue;
       }
 
@@ -263,12 +263,12 @@ export const Reconciler = createReconciler<
         }
 
         if (key === "sticky") {
-          node.internalSticky = Boolean(value);
+          node.internal_sticky = Boolean(value);
           continue;
         }
 
-        if (key === "internalStickyAlternate") {
-          node.internalStickyAlternate = Boolean(value);
+        if (key === "internal_sticky_alternate") {
+          node.internal_sticky_alternate = Boolean(value);
           continue;
         }
 

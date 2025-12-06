@@ -66,8 +66,8 @@ export type DOMElement = {
   onRender?: () => void;
   onImmediateRender?: () => void;
   internal_scrollState?: ScrollState;
-  internalSticky?: boolean;
-  internalStickyAlternate?: boolean;
+  internal_sticky?: boolean;
+  internal_sticky_alternate?: boolean;
   internal_opaque?: boolean;
   resizeObservers?: Set<ResizeObserver>;
   internal_lastMeasuredSize?: { width: number; height: number };
@@ -106,8 +106,8 @@ export const createNode = (nodeName: ElementNames): DOMElement => {
     parentNode: undefined,
     yogaNode: nodeName === "ink-virtual-text" ? undefined : Yoga.Node.create(),
     internal_accessibility: {},
-    internalSticky: false,
-    internalStickyAlternate: false,
+    internal_sticky: false,
+    internal_sticky_alternate: false,
   };
 
   if (nodeName === "ink-text") {

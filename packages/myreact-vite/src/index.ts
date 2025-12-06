@@ -210,10 +210,17 @@ export default function viteReact(opts: Options = {}): Plugin[] {
     },
     options(options) {
       if (!runningInVite) {
-        options.jsx = {
-          mode: opts.jsxRuntime,
+        // @ts-expect-error Rolldown has `transform.jsx`
+        options.transform ??= {}
+        // @ts-expect-error Rolldown has `transform.jsx`
+        options.transform.jsx = {
+          runtime: opts.jsxRuntime,
           importSource: opts.jsxImportSource,
-        };
+        }
+        // options.jsx = {
+        //   mode: opts.jsxRuntime,
+        //   importSource: opts.jsxImportSource,
+        // };
         return options;
       }
     },

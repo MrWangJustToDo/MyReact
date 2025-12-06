@@ -43,7 +43,7 @@
     ]
   },
   "dependencies": {
-    "@opentui/core": "latest",
+    "@opentui/core": "^0.1.57",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {

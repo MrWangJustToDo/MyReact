@@ -72,7 +72,7 @@ export const App = () => {
         const numLines = 2 + Math.floor(Math.random() * 4); // 2 to 5 lines per box
         const lines = getRandomLoremLines(numLines);
         const bg = boxColors[i % boxColors.length];
-        const borderColor = boxColors[(i + 1) % boxColors.length];
+        // const borderColor = boxColors[(i + 1) % boxColors.length];
         return (
           <box
             key={i}

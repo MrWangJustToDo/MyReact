@@ -1,5 +1,11 @@
-import { testAnimation, testScroll } from "@test/react-opentui";
+import { testAnimation, testScroll, testBasic, testDiff, testLineNumber } from "@test/react-opentui";
 
 // testAnimation();
 
-testScroll();
+// testScroll();
+
+// testBasic();
+
+// testDiff();
+
+testLineNumber();

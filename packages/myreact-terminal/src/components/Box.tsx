@@ -122,7 +122,7 @@ const Box = forwardRef<DOMElement, PropsWithChildren<Props>>(
         {isScreenReaderEnabled && label ? label : children}
         {sticky && stickyChildren && !isScreenReaderEnabled && (
           <ink-box
-            internalStickyAlternate
+            internal_sticky_alternate
             style={{
               position: "absolute",
               ...style,

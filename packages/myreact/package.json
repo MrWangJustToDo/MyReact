@@ -12,6 +12,7 @@
     "index.js",
     "type.js",
     "type.d.ts",
+    "compiler-runtime.js",
     "jsx-runtime.js",
     "jsx-runtime.d.ts",
     "jsx-dev-runtime.js",
@@ -26,6 +27,7 @@
   "exports": {
     ".": "./index.js",
     "./type": "./type.js",
+    "./compiler-runtime": "./compiler-runtime.js",
     "./jsx-runtime": "./jsx-runtime.js",
     "./jsx-dev-runtime": "./jsx-dev-runtime.js",
     "./package.json": "./package.json"
@@ -54,7 +56,8 @@
     "react like"
   ],
   "dependencies": {
-    "@my-react/react-jsx": "^0.3.21"
+    "@my-react/react-jsx": "^0.3.21",
+    "react-compiler-runtime": "^1.0.0"
   },
   "devDependencies": {
     "@my-react/react-shared": "^0.3.21"

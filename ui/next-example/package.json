@@ -16,7 +16,7 @@
     "@my-react/react-refresh-tools": "workspace:*",
     "autoprefixer": "catalog:",
     "eslint": "catalog:",
-    "next": "^15.5.5",
+    "next": "^16.0.10",
     "postcss": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
@@ -24,6 +24,7 @@
     "typescript": "catalog:"
   },
   "_moduleAliases": {
+    "react/compiler-runtime": "node_modules/@my-react/react/compiler-runtime",
     "react": "node_modules/@my-react/react",
     "react-dom": "node_modules/@my-react/react-dom"
   },

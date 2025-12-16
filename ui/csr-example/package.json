@@ -63,7 +63,7 @@
     "@my-react/react-refresh": "workspace:*",
     "@my-react/react-refresh-tools": "workspace:*",
     "@pmmmwh/react-refresh-webpack-plugin": "catalog:",
-    "@site/webpack": "workspace: *",
+    "@site/webpack": "workspace:*",
     "@types/cookie-parser": "catalog:",
     "@types/express": "catalog:",
     "@types/loadable__component": "catalog:",

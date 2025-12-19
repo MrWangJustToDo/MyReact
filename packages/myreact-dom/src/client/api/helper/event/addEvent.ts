@@ -43,7 +43,7 @@ const afterEvent = (event: string) => {
 /**
  * @internal
  */
-export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDispatch["runtimeMap"]["eventMap"], dom: DomElement, key: string) => {
+export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDispatch["runtimeDom"]["eventMap"], dom: DomElement, key: string) => {
   const typedElementType = fiber.elementType as string;
 
   const pendingProps = fiber.pendingProps;

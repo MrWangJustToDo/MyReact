@@ -9,7 +9,7 @@ import type { DomElement } from "@my-react-dom-shared";
 /**
  * @internal
  */
-export const removeEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDispatch["runtimeMap"]["eventMap"], dom: DomElement, key: string) => {
+export const removeEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDispatch["runtimeDom"]["eventMap"], dom: DomElement, key: string) => {
   const typedElementType = fiber.elementType as string;
 
   const currentProps = fiber.memoizedProps || {};

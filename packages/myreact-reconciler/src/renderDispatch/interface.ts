@@ -16,8 +16,6 @@ type RuntimeMap = {
 
   unmountMap: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>;
 
-  eventMap: WeakMap<MyReactFiberNode, Record<string, ((...args: any[]) => void) & { cb?: any }>>;
-
   triggerCallbackMap: WeakMap<MyReactFiberNode, ListTree<() => void>>;
 };
 

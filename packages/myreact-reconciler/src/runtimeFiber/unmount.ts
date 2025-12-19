@@ -59,8 +59,6 @@ export const unmountFiberNode = (renderDispatch: CustomRenderDispatch, fiber: My
 
   renderDispatch.runtimeMap.unmountMap.delete(fiber);
 
-  renderDispatch.runtimeMap.eventMap.delete(fiber);
-
   renderDispatch.runtimeMap.triggerCallbackMap.delete(fiber);
 
   if (Boolean(__DEV__) === false) {

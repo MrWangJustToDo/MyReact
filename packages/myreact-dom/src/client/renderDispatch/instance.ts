@@ -46,6 +46,7 @@ export const domListenersMap = new Map<ClientDomDispatch, Listeners>();
 export class ClientDomDispatch extends CustomRenderDispatch {
   runtimeDom = {
     svgMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
+    eventMap: new WeakMap<MyReactFiberNode, Record<string, ((...args: any[]) => void) & { cb?: any }>>(),
     elementMap: new WeakMap<MyReactFiberNode, MyReactFiberNode>(),
   };
 

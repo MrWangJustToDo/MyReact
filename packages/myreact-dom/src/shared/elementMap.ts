@@ -45,6 +45,7 @@ export const initialElementMap = (_dispatch: ClientDomDispatch | ServerDomDispat
  */
 export const unmountElementMap = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode) => {
   _dispatch.runtimeDom.svgMap.delete(_fiber);
+  _dispatch.runtimeDom.eventMap.delete(_fiber);
   _dispatch.runtimeDom.elementMap.delete(_fiber);
 };
 

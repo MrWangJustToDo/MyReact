@@ -52,8 +52,8 @@ export const nativeUpdate = (renderDispatch: ClientDomDispatch, fiber: MyReactFi
       const newValue = newProps[key];
       if (!Object.is(oldValue, newValue) && !(isFalse(newValue) && isFalse(oldValue))) {
         if (isEvent(key)) {
-          removeEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
-          addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
+          removeEventListener(fiber, renderDispatch.runtimeDom.eventMap, node as DomElement, key);
+          addEventListener(fiber, renderDispatch.runtimeDom.eventMap, node as DomElement, key);
         } else if (isStyle(key)) {
           const typedNewValue = (newValue as Record<string, unknown>) || {};
           const typedOldValue = (oldValue as Record<string, unknown>) || {};

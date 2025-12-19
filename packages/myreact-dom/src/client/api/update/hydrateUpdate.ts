@@ -24,7 +24,7 @@ const domStyleHydrate = (fiber: MyReactFiberNode, _key: string, value: Record<st
 const domEventHydrate = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, key: string) => {
   const node = fiber.nativeNode;
 
-  addEventListener(fiber, renderDispatch.runtimeMap.eventMap, node as DomElement, key);
+  addEventListener(fiber, renderDispatch.runtimeDom.eventMap, node as DomElement, key);
 };
 
 const domInnerHTMLHydrate = hydrateInnerHtml;

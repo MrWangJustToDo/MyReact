@@ -130,8 +130,6 @@ const getInitialMap = (): RenderDispatch["runtimeMap"] => ({
 
   unmountMap: new MyWeakMap(),
 
-  eventMap: new MyWeakMap(),
-
   triggerCallbackMap: new MyWeakMap(),
 });
 

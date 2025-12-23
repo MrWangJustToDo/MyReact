@@ -14,6 +14,8 @@ module.exports = function withNext(nextConfig = {}, { generateAlias } = {}) {
           // Default aliases for @my-react
           // Use react-turbopack wrapper to auto-inject runtime in development
           aliases['react/compiler-runtime'] = '@my-react/react/compiler-runtime';
+          aliases['react/jsx-runtime'] = '@my-react/react/jsx-runtime';
+          aliases['react/jsx-dev-runtime'] = '@my-react/react/jsx-dev-runtime';
           aliases['react'] = '@my-react/react-refresh-tools/react-turbopack';
           aliases['react-dom'] = '@my-react/react-dom';
           aliases['react-dom/server'] = '@my-react/react-dom/server';

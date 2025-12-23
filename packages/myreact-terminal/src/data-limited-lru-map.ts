@@ -40,9 +40,19 @@ export class DataLimitedLruMap<V> {
         break;
       }
 
-      this.currentDataSize -= lruKey.length;
+      // If the key is not found in the map, we can't evict it.
+      // This can happen if the map is in an inconsistent state.
+      // To avoid an infinite loop, we break here.
+      // The LRUMap still has its own size limit so it is acceptable
+      // for us to make a best effort to stay within the data size limit.
+      // The alternative would be to continue searching for a valid key
+      // to delete but that would risk making calling set O(n) instead of
+      // O(1).
+      if (!this.map.delete(lruKey)) {
+        break;
+      }
 
-      this.map.delete(lruKey);
+      this.currentDataSize -= lruKey.length;
     }
 
     const result = this.map.setpop(key, value) as { evicted: boolean; key: string; value: V } | undefined;

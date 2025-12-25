@@ -13,6 +13,8 @@ export class ListTreeNode<T> {
 export class ListTree<T> {
   length = 0;
 
+  private maxLength = Infinity;
+
   head: ListTreeNode<T> | null;
 
   foot: ListTreeNode<T> | null;
@@ -21,7 +23,9 @@ export class ListTree<T> {
 
   stickyFoot: ListTreeNode<T> | null;
 
-  constructor() {
+  constructor(max?: number) {
+    this.maxLength = max || Infinity;
+
     let _stickyHead: ListTreeNode<T> | null = null;
 
     Object.defineProperty(this, "stickyHead", {
@@ -72,14 +76,23 @@ export class ListTree<T> {
   }
 
   push(node: T) {
+    while (this.length >= this.maxLength) {
+      this.pop();
+    }
+
     const listNode = new ListTreeNode(node);
+
     this.length++;
+
     if (!this.foot) {
       this.head = listNode;
+
       this.foot = listNode;
     } else {
       this.foot.next = listNode;
+
       listNode.prev = this.foot;
+
       this.foot = listNode;
     }
   }
@@ -91,6 +104,8 @@ export class ListTree<T> {
       this.push(node.value);
 
       this.stickyFoot = null;
+
+      this.length--;
     } else {
       this.length++;
     }
@@ -107,6 +122,8 @@ export class ListTree<T> {
       this.unshift(node.value);
 
       this.stickyHead = null;
+
+      this.length--;
     } else {
       this.length++;
     }
@@ -118,8 +135,10 @@ export class ListTree<T> {
 
   pop() {
     const foot = this.stickyFoot || this.foot || this.stickyHead;
+
     if (foot) {
       this.delete(foot);
+
       return foot.value;
     } else {
       return null;
@@ -127,14 +146,23 @@ export class ListTree<T> {
   }
 
   unshift(node: T) {
+    while (this.length >= this.maxLength) {
+      this.shift();
+    }
+
     const listNode = new ListTreeNode(node);
+
     this.length++;
+
     if (!this.head) {
       this.head = listNode;
+
       this.foot = listNode;
     } else {
       this.head.prev = listNode;
+
       listNode.next = this.head;
+
       this.head = listNode;
     }
   }
@@ -146,6 +174,8 @@ export class ListTree<T> {
       this.unshift(node.value);
 
       this.stickyHead = null;
+
+      this.length--;
     } else {
       this.length++;
     }
@@ -162,6 +192,8 @@ export class ListTree<T> {
       this.push(node.value);
 
       this.stickyFoot = null;
+
+      this.length--;
     } else {
       this.length++;
     }
@@ -173,8 +205,10 @@ export class ListTree<T> {
 
   shift() {
     const head = this.stickyHead || this.head || this.stickyFoot;
+
     if (head) {
       this.delete(head);
+
       return head.value;
     } else {
       return null;
@@ -271,31 +305,43 @@ export class ListTree<T> {
 
   hasNode(node: ListTreeNode<T>) {
     if (this.stickyHead && Object.is(this.stickyHead, node)) return true;
+
     if (this.stickyFoot && Object.is(this.stickyFoot, node)) return true;
+
     let listNode = this.head;
+
     while (listNode) {
       if (Object.is(listNode, node)) return true;
+
       listNode = listNode.next;
     }
+
     return false;
   }
 
   hasValue(node: T) {
     if (this.stickyHead && Object.is(this.stickyHead.value, node)) return true;
+
     if (this.stickyFoot && Object.is(this.stickyFoot.value, node)) return true;
+
     let listNode = this.head;
+
     while (listNode) {
       if (Object.is(listNode.value, node)) return true;
+
       listNode = listNode.next;
     }
+
     return false;
   }
 
   some(iterator: (node: T) => boolean | undefined) {
     let re = false;
+
     this.listToFoot((node) => {
       re = re || iterator(node);
     });
+
     return re;
   }
 
@@ -320,7 +366,7 @@ export class ListTree<T> {
   }
 
   clone(): ListTree<T> {
-    const newList = new ListTree<T>();
+    const newList = new ListTree<T>(this.maxLength);
 
     this.listToFoot((v) => newList.push(v));
 

@@ -33,6 +33,8 @@ export interface MyReactFiberNodeDev extends MyReactFiberNode {
 
   _debugUpdateQueue: ListTree<UpdateQueue>;
 
+  _debugLatestUpdateQueue: ListTree<UpdateQueue>;
+
   _debugLog: boolean;
 
   __dev_hmr_revert__: (cb?: () => void) => void;

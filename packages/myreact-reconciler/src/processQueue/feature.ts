@@ -64,6 +64,10 @@ export const processClassComponentUpdateQueueLatest = (
 
   const pendingState = Object.assign({}, fiber.pendingState);
 
+  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
+    typedFiber._debugLatestUpdateQueue = new ListTree();
+  }
+
   if (enableTaskPriority && allQueue.some((l) => l.isSync)) {
     while (node) {
       const updater = node.value;
@@ -113,9 +117,11 @@ export const processClassComponentUpdateQueueLatest = (
           typedNode._debugAfterValue = fiber.pendingState;
 
           if (enableDebugUpdateQueue.current) {
-            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
             typedFiber._debugUpdateQueue.push(typedNode);
+
+            typedFiber._debugLatestUpdateQueue.push(typedNode);
           }
         }
       } else if (updater.isSync) {
@@ -145,9 +151,11 @@ export const processClassComponentUpdateQueueLatest = (
           typedNode._debugAfterValue = fiber.pendingState;
 
           if (enableDebugUpdateQueue.current) {
-            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
             typedFiber._debugUpdateQueue.push(typedNode);
+
+            typedFiber._debugLatestUpdateQueue.push(typedNode);
           }
         }
       }
@@ -223,9 +231,11 @@ export const processClassComponentUpdateQueueLatest = (
           typedNode._debugAfterValue = fiber.pendingState;
 
           if (enableDebugUpdateQueue.current) {
-            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
             typedFiber._debugUpdateQueue.push(typedNode);
+
+            typedFiber._debugLatestUpdateQueue.push(typedNode);
           }
         }
       } else {
@@ -255,9 +265,11 @@ export const processClassComponentUpdateQueueLatest = (
           typedNode._debugAfterValue = fiber.pendingState;
 
           if (enableDebugUpdateQueue.current) {
-            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
             typedFiber._debugUpdateQueue.push(typedNode);
+
+            typedFiber._debugLatestUpdateQueue.push(typedNode);
           }
         }
       }
@@ -317,6 +329,10 @@ export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRen
 
   const pendingState = Object.assign({}, fiber.pendingState);
 
+  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
+    typedFiber._debugLatestUpdateQueue = new ListTree();
+  }
+
   if (node) {
     const updater = node.value;
 
@@ -361,9 +377,11 @@ export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRen
         typedNode._debugAfterValue = fiber.pendingState;
 
         if (enableDebugUpdateQueue.current) {
-          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
           typedFiber._debugUpdateQueue.push(typedNode);
+
+          typedFiber._debugLatestUpdateQueue.push(typedNode);
         }
       }
     } else {
@@ -393,9 +411,11 @@ export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRen
         typedNode._debugAfterValue = fiber.pendingState;
 
         if (enableDebugUpdateQueue.current) {
-          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
           typedFiber._debugUpdateQueue.push(typedNode);
+
+          typedFiber._debugLatestUpdateQueue.push(typedNode);
         }
       }
     }
@@ -456,6 +476,10 @@ export const processFunctionComponentUpdateQueueLatest = (
   const processedNodes: Array<UpdateQueue | UpdateQueue["trigger"]> = [];
 
   const callbacks: Array<() => void> = [];
+
+  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
+    typedFiber._debugLatestUpdateQueue = new ListTree();
+  }
 
   if (enableTaskPriority && allQueue.some((l) => l.isSync)) {
     while (node) {
@@ -521,11 +545,13 @@ export const processFunctionComponentUpdateQueueLatest = (
           typedNode._debugAfterValue = typedTrigger.result;
 
           if (enableDebugUpdateQueue.current) {
-            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
             typedFiber._debugUpdateQueue.push(typedNode);
 
-            typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
+            typedFiber._debugLatestUpdateQueue.push(typedNode);
+
+            typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree(10);
 
             typedTrigger._debugUpdateQueue.push(typedNode);
           }
@@ -559,9 +585,11 @@ export const processFunctionComponentUpdateQueueLatest = (
           typedNode._debugAfterValue = payLoad;
 
           if (enableDebugUpdateQueue.current) {
-            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
             typedFiber._debugUpdateQueue.push(typedNode);
+
+            typedFiber._debugLatestUpdateQueue.push(typedNode);
           }
         }
       }
@@ -654,11 +682,13 @@ export const processFunctionComponentUpdateQueueLatest = (
           typedNode._debugAfterValue = typedTrigger.result;
 
           if (enableDebugUpdateQueue.current) {
-            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
             typedFiber._debugUpdateQueue.push(typedNode);
 
-            typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
+            typedFiber._debugLatestUpdateQueue.push(typedNode);
+
+            typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree(10);
 
             typedTrigger._debugUpdateQueue.push(typedNode);
           }
@@ -692,9 +722,11 @@ export const processFunctionComponentUpdateQueueLatest = (
           typedNode._debugAfterValue = payLoad;
 
           if (enableDebugUpdateQueue.current) {
-            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+            typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
             typedFiber._debugUpdateQueue.push(typedNode);
+
+            typedFiber._debugLatestUpdateQueue.push(typedNode);
           }
         }
       }
@@ -748,6 +780,10 @@ export const processFunctionComponentUpdateQueueLegacy = (renderDispatch: Custom
   const processedNodes: Array<UpdateQueue | UpdateQueue["trigger"]> = [];
 
   const callbacks: Array<() => void> = [];
+
+  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
+    typedFiber._debugLatestUpdateQueue = new ListTree();
+  }
 
   if (node) {
     const updater = node.value;
@@ -810,11 +846,13 @@ export const processFunctionComponentUpdateQueueLegacy = (renderDispatch: Custom
         typedNode._debugAfterValue = typedTrigger.result;
 
         if (enableDebugUpdateQueue.current) {
-          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
           typedFiber._debugUpdateQueue.push(typedNode);
 
-          typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree();
+          typedFiber._debugLatestUpdateQueue.push(typedNode);
+
+          typedTrigger._debugUpdateQueue = typedTrigger._debugUpdateQueue || new ListTree(10);
 
           typedTrigger._debugUpdateQueue.push(typedNode);
         }
@@ -848,9 +886,11 @@ export const processFunctionComponentUpdateQueueLegacy = (renderDispatch: Custom
         typedNode._debugAfterValue = payLoad;
 
         if (enableDebugUpdateQueue.current) {
-          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+          typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
           typedFiber._debugUpdateQueue.push(typedNode);
+
+          typedFiber._debugLatestUpdateQueue.push(typedNode);
         }
       }
     }
@@ -902,6 +942,10 @@ export const processNormalComponentUpdateLatest = (renderDispatch: CustomRenderD
 
   const callbacks: Array<() => void> = [];
 
+  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
+    typedFiber._debugLatestUpdateQueue = new ListTree();
+  }
+
   while (node) {
     const updater = node.value;
 
@@ -933,9 +977,11 @@ export const processNormalComponentUpdateLatest = (renderDispatch: CustomRenderD
       typedNode._debugAfterValue = payLoad;
 
       if (enableDebugUpdateQueue.current) {
-        typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+        typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
         typedFiber._debugUpdateQueue.push(typedNode);
+
+        typedFiber._debugLatestUpdateQueue.push(typedNode);
       }
     }
 
@@ -984,6 +1030,10 @@ export const processNormalComponentUpdateLegacy = (renderDispatch: CustomRenderD
 
   const callbacks: Array<() => void> = [];
 
+  if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
+    typedFiber._debugLatestUpdateQueue = new ListTree();
+  }
+
   if (node) {
     const updater = node.value;
 
@@ -1013,9 +1063,11 @@ export const processNormalComponentUpdateLegacy = (renderDispatch: CustomRenderD
       typedNode._debugAfterValue = payLoad;
 
       if (enableDebugUpdateQueue.current) {
-        typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+        typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
         typedFiber._debugUpdateQueue.push(typedNode);
+
+        typedFiber._debugLatestUpdateQueue.push(typedNode);
       }
     }
   }

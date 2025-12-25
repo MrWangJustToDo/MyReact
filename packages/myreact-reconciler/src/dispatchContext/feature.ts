@@ -117,9 +117,13 @@ export const prepareUpdateAllDependence = (
     updater._debugType = UpdateQueueType[UpdateQueueType.context];
 
     if (enableDebugUpdateQueue.current) {
-      typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree();
+      typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
 
       typedFiber._debugUpdateQueue.push(updater);
+
+      typedFiber._debugLatestUpdateQueue = new ListTree();
+
+      typedFiber._debugLatestUpdateQueue.push(updater);
     }
   }
 

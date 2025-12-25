@@ -9,6 +9,7 @@ import {
   initialFiberNode,
   mountSync,
   safeCallWithSync,
+  enableDebugUpdateQueue,
 } from "@my-react/react-reconciler";
 import { include, STATE_TYPE } from "@my-react/react-shared";
 
@@ -50,6 +51,8 @@ export const Reconciler = (_config: any) => {
     }
 
     enableDebugFiled.current = __DEV__;
+
+    enableDebugUpdateQueue.current = __DEV__;
 
     enableScopeTreeLog.current = false;
 

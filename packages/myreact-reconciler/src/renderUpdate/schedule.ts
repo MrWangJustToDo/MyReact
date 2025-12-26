@@ -8,9 +8,16 @@ import { currentTriggerFiber, safeCall } from "../share";
 import { updateSyncFromRoot, updateConcurrentFromRoot } from "./feature";
 import { applyTriggerFiberCb } from "./trigger";
 
+import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { UniqueArray } from "@my-react/react-shared";
 
 const { globalLoop, currentScheduler } = __my_react_internal__;
+
+const clearLatestUpdateQueue = (fiber: MyReactFiberNode) => {
+  const typedFiber = fiber as MyReactFiberNodeDev;
+
+  typedFiber._debugLatestUpdateQueue?.clear();
+};
 
 const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
   flushEffectCallback();
@@ -32,6 +39,8 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
       if (__DEV__) {
         safeCall(function safeCallBeforeDispatchUpdate() {
           renderDispatch.callOnBeforeDispatchUpdate(renderDispatch, allLive);
+
+          allLive.forEach(clearLatestUpdateQueue);
         });
       }
 
@@ -42,6 +51,8 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
       if (__DEV__) {
         safeCall(function safeCallBeforeDispatchUpdate() {
           renderDispatch.callOnBeforeDispatchUpdate(renderDispatch, allLive);
+
+          allLive.forEach(clearLatestUpdateQueue);
         });
       }
 

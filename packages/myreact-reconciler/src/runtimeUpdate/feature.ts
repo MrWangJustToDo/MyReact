@@ -164,7 +164,44 @@ export const processAsyncLoadListOnUpdate = (renderDispatch: CustomRenderDispatc
     if (list.length === 0) return;
 
     if (renderDispatch.enableAsyncLoad) {
-      throw new Error("[@my-react/reconciler] not implemented yet");
+      const allPendingLoadArray = list.filter((item) => {
+        if (isPromise(item)) {
+          return typeof item.status !== "string";
+        } else {
+          return !item._loading && !item._loaded && !item._error;
+        }
+      });
+
+      if (allPendingLoadArray.length) {
+        Promise.all(
+          allPendingLoadArray.map(async (item) => {
+            if (isPromise(item)) {
+              await renderDispatch.processPromise(item);
+            } else {
+              await renderDispatch.processLazy(item);
+            }
+
+            const allNode = Array.from(item._list);
+
+            item._list?.clear();
+
+            allNode.forEach((node) => {
+              node.state = STATE_TYPE.__reschedule__;
+            });
+
+            suspenseField.asyncLoadList.uniDelete(item);
+          })
+        );
+
+        const root = renderDispatch.rootFiber;
+
+        root.state = remove(root.state, STATE_TYPE.__stable__);
+
+        root.state = merge(root.state, STATE_TYPE.__retrigger__);
+
+        // TODO use hide tree to improve
+        mountLoopAll(renderDispatch, root);
+      }
     } else {
       throw new Error(
         "[@my-react/reconciler] should not process async load list on sync mount without enableAsyncLoad, you may use a wrong renderDispatch instance"

@@ -36,6 +36,7 @@ export const getConfig = () => {
           __OUTPUT_SCOPE__: JSON.stringify(OUTPUT_SCOPE),
           __BUILD_TIME__: JSON.stringify(dayjs().toString()),
           "process.env.IS_PREACT": JSON.stringify("false"),
+          "process.env": {},
         }),
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore

@@ -56,11 +56,11 @@
     "react like"
   ],
   "dependencies": {
-    "@my-react/react-jsx": "^0.3.21",
+    "@my-react/react-jsx": "^0.3.22",
     "react-compiler-runtime": "^1.0.0"
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.21"
+    "@my-react/react-shared": "^0.3.22"
   },
   "peerDependencies": {
     "react": "^17 || ^18 || ^19"

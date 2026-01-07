@@ -36,9 +36,9 @@
     }
   ],
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.21"
+    "@my-react/react-shared": "^0.3.22"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.21"
+    "@my-react/react": ">=0.3.22"
   }
 }

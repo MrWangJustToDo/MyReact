@@ -32,6 +32,6 @@
   "dependencies": {
     "@my-react/react": "workspace:*",
     "@my-react/react-opentui": "workspace:*",
-    "@opentui/core": "^0.1.57"
+    "@opentui/core": "^0.1.69"
   }
 }

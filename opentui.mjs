@@ -6,6 +6,6 @@ import { testAnimation, testScroll, testBasic, testDiff, testLineNumber } from "
 
 // testBasic();
 
-// testDiff();
+testDiff();
 
-testLineNumber();
+// testLineNumber();

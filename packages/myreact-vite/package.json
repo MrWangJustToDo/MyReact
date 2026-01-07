@@ -56,17 +56,17 @@
     }
   ],
   "peerDependencies": {
-    "@my-react/react-refresh": ">=0.3.21",
+    "@my-react/react-refresh": ">=0.3.22",
     "vite": "^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0"
   },
   "dependencies": {
     "@babel/core": "^7.22.5",
     "@babel/plugin-transform-react-jsx-self": "^7.22.5",
     "@babel/plugin-transform-react-jsx-source": "^7.22.5",
-    "@rolldown/pluginutils": "1.0.0-beta.52"
+    "@rolldown/pluginutils": "1.0.0-beta.58"
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.21",
+    "@my-react/react-shared": "^0.3.22",
     "@types/babel__core": "^7.20.5"
   }
 }

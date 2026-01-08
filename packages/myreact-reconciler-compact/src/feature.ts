@@ -13,6 +13,7 @@ import {
 } from "@my-react/react-reconciler";
 import { include, STATE_TYPE } from "@my-react/react-shared";
 
+import { enableKnownConfigLog, knownConfig } from "./config";
 import { autoSetDevTools, delGlobalDispatch } from "./devtool";
 import { createDispatch } from "./dispatch";
 import { autoSetDevHMR } from "./hmr";
@@ -38,6 +39,10 @@ export const Reconciler = (_config: any) => {
   let rendererPackageName = "@my-react";
 
   const ReconcilerSet = new Set<CustomRenderDispatch>();
+
+  if (__DEV__ && enableKnownConfigLog.current) {
+    knownConfig(_config);
+  }
 
   const createContainer = (_container: RenderContainer, flag: number) => {
     prepareScheduler();

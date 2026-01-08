@@ -18,4 +18,6 @@ export interface FiberNode<T = Record<string, any>> extends MyReactFiberNode {
   alternate?: FiberNode | null;
 }
 
+export { enableKnownConfigLog } from "./config";
+
 export default createReconciler;

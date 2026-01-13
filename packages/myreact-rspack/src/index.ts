@@ -1,7 +1,5 @@
-import path from "node:path";
-
 import { normalizeOptions } from "./options";
-import { reactRefreshPath, refreshUtilsPath, runtimePaths } from "./paths";
+import { getRefreshRuntimeDirPath, getRefreshRuntimePaths, reactRefreshPath, refreshUtilsPath } from "./paths";
 import { getAdditionalEntries } from "./utils/getAdditionalEntries";
 import { getIntegrationEntry } from "./utils/getIntegrationEntry";
 import { type IntegrationType, getSocketIntegration } from "./utils/getSocketIntegration";
@@ -25,13 +23,17 @@ function addSocketEntry(sockIntegration: IntegrationType, compiler: Compiler) {
   }
 }
 
-const PLUGIN_NAME = "RefreshRspackPlugin";
+const PLUGIN_NAME = "MyReactRefreshRspackPlugin";
 
 class ReactRefreshRspackPlugin {
   options: NormalizedPluginOptions;
 
-  static deprecated_runtimePaths = runtimePaths;
-  static loader = "builtin:react-refresh-loader";
+  /**
+   * @deprecated
+   */
+  static get deprecated_runtimePaths() {
+    return getRefreshRuntimePaths();
+  }
 
   constructor(options: PluginOptions = {}) {
     this.options = normalizeOptions(options);
@@ -88,7 +90,7 @@ class ReactRefreshRspackPlugin {
         include: this.options.include!,
         exclude: {
           // biome-ignore lint: exists
-          or: [this.options.exclude!, [...runtimePaths]].filter(Boolean),
+          or: [this.options.exclude!, [...getRefreshRuntimePaths()]].filter(Boolean),
         },
         resourceQuery: this.options.resourceQuery,
         dependency: {
@@ -96,7 +98,7 @@ class ReactRefreshRspackPlugin {
           // we shoudn't inject react refresh for asset module
           not: ["url"],
         },
-        use: ReactRefreshRspackPlugin.loader,
+        use: this.options.reactRefreshLoader,
       });
     }
 
@@ -127,10 +129,10 @@ class ReactRefreshRspackPlugin {
     new compiler.webpack.DefinePlugin(definedModules).apply(compiler);
     new compiler.webpack.ProvidePlugin(providedModules).apply(compiler);
 
-    const refreshPath = path.dirname(require.resolve("@my-react/react-refresh"));
+    // const refreshPath = path.dirname(require.resolve("@my-react/react-refresh"));
     compiler.options.resolve.alias = {
-      "react-refresh": refreshPath,
-      "@my-react/react-refresh": refreshPath,
+      "react-refresh": getRefreshRuntimeDirPath(),
+      "@my-react/react-refresh": getRefreshRuntimeDirPath(),
       ...compiler.options.resolve.alias,
       react: "@my-react/react",
       "react-dom$": "@my-react/react-dom",

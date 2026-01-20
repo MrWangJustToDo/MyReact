@@ -1,4 +1,4 @@
-import { createCliRenderer, engine } from "@opentui/core";
+import { CliRenderEvents, createCliRenderer, engine } from "@opentui/core";
 import React, { type ReactNode } from "react";
 
 import { AppContext } from "../components/App";
@@ -25,6 +25,10 @@ export type Root = {
   unmount: () => void;
 };
 
+const createPortal = reconciler.createPortal;
+
+const flushSync = reconciler.flushSync;
+
 /**
  * Creates a root for rendering a React tree with the given CLI renderer.
  * @param renderer The CLI renderer to use
@@ -38,6 +42,16 @@ export type Root = {
 export function createRoot(renderer: CliRenderer): Root {
   let container: OpaqueRoot | null = null;
 
+  const cleanup = () => {
+    if (container) {
+      reconciler.updateContainer(null, container, null, () => {});
+
+      container = null;
+    }
+  };
+
+  renderer.once(CliRenderEvents.DESTROY, cleanup);
+
   return {
     render: (node: ReactNode) => {
       engine.attach(renderer);
@@ -48,14 +62,8 @@ export function createRoot(renderer: CliRenderer): Root {
       );
     },
 
-    unmount: (): void => {
-      if (!container) {
-        return;
-      }
-
-      reconciler.updateContainer(null, container, null, () => {});
-
-      container = null;
-    },
+    unmount: cleanup,
   };
 }
+
+export { createPortal, flushSync };

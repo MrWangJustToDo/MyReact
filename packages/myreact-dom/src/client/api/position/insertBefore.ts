@@ -36,7 +36,7 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReac
     const childDOM = fiber.nativeNode as DomNode;
 
     try {
-      if (enableMoveBefore.current) {
+      if (enableMoveBefore.current && childDOM.parentNode !== null) {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         parentDOM.moveBefore(childDOM, beforeDOM);

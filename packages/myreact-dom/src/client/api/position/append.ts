@@ -28,7 +28,7 @@ export const append = (fiber: MyReactFiberNode, parentItemWithDom: MyReactFiberN
 
     const childDOM = fiber.nativeNode as DomNode;
 
-    if (enableMoveBefore.current) {
+    if (enableMoveBefore.current && childDOM.parentNode !== null) {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       parentDOM.moveBefore(childDOM, null);

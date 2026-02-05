@@ -90,18 +90,16 @@ export const processState = (renderDispatch: CustomRenderDispatch, _params: Upda
             currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)
           }`
         );
-      } else if (!isErrorBoundariesComponent(ownerFiber)) {
+      } else if (enableLogForCurrentFlowIsRunning.current && !isErrorBoundariesComponent(ownerFiber)) {
         const triggeredElementName = getElementName(ownerFiber);
 
         const currentElementName = getElementName(currentCFiber);
 
-        if (enableLogForCurrentFlowIsRunning.current) {
-          onceWarnWithKeyAndFiber(
-            currentRFiber,
-            `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
-            `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
-          );
-        }
+        onceWarnWithKeyAndFiber(
+          currentRFiber,
+          `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
+          `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
+        );
       }
 
       lastRenderComponentFiber = currentCFiber;
@@ -149,18 +147,16 @@ export const processState = (renderDispatch: CustomRenderDispatch, _params: Upda
             currentComponentFiber.current && getElementName(currentComponentFiber.current as MyReactFiberNode)
           }`
         );
-      } else if (!isErrorBoundariesComponent(ownerFiber)) {
+      } else if (enableLogForCurrentFlowIsRunning.current && !isErrorBoundariesComponent(ownerFiber)) {
         const triggeredElementName = getElementName(ownerFiber);
 
         const currentElementName = getElementName(currentCFiber);
 
-        if (enableLogForCurrentFlowIsRunning.current) {
-          onceWarnWithKeyAndFiber(
-            currentRFiber,
-            `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
-            `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
-          );
-        }
+        onceWarnWithKeyAndFiber(
+          currentRFiber,
+          `updateWhenCurrentFlowIsRunning-${triggeredElementName}`,
+          `[@my-react/react] trigger an update for ${triggeredElementName} when current update flow is running, this is a unexpected behavior, please make sure current render function for ${currentElementName} is a pure function`
+        );
       }
       lastRenderComponentFiber = currentCFiber;
       lastRenderComponentTimeStep = now;

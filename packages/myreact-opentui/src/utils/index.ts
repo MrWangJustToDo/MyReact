@@ -22,18 +22,22 @@ function initEventListeners(instance: Instance, eventName: string, listener: any
 }
 
 function setStyle(instance: Instance, styles: any, oldStyles: any) {
-  if (styles && typeof styles === "object") {
-    if (oldStyles != null) {
-      for (const styleName in styles) {
-        const value = styles[styleName];
-        if (styles.hasOwnProperty(styleName) && oldStyles[styleName] !== value) {
-          instance[styleName] = value;
+  if (oldStyles != null && typeof oldStyles === "object") {
+    for (const styleName in oldStyles) {
+      if (oldStyles.hasOwnProperty(styleName)) {
+        if (styles == null || !styles.hasOwnProperty(styleName)) {
+          instance[styleName] = null;
         }
       }
-    } else {
-      for (const styleName in styles) {
-        if (styles.hasOwnProperty(styleName)) {
-          const value = styles[styleName];
+    }
+  }
+
+  if (styles != null && typeof styles === "object") {
+    for (const styleName in styles) {
+      if (styles.hasOwnProperty(styleName)) {
+        const value = styles[styleName];
+        const oldValue = oldStyles?.[styleName];
+        if (value !== oldValue) {
           instance[styleName] = value;
         }
       }

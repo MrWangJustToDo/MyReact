@@ -6,7 +6,7 @@ const config = {
   reactCompiler: true,
 };
 
-const nextConfig = withNext(config);
+const nextConfig = withNext(config, { turbopackKey: 'turbopack' });
 
 // export default config;
 

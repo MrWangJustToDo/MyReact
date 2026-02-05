@@ -5,28 +5,24 @@ import {
   DiffRenderable,
   InputRenderable,
   LineNumberRenderable,
+  MarkdownRenderable,
   ScrollBoxRenderable,
   SelectRenderable,
   TabSelectRenderable,
   TextareaRenderable,
   TextRenderable,
-} from "@opentui/core"
+} from "@opentui/core";
 
-import {
-  BoldSpanRenderable,
-  ItalicSpanRenderable,
-  LineBreakRenderable,
-  SpanRenderable,
-  UnderlineSpanRenderable,
-} from "./Text"
+import { BoldSpanRenderable, ItalicSpanRenderable, LineBreakRenderable, LinkRenderable, SpanRenderable, UnderlineSpanRenderable } from "./Text";
 
-import type { RenderableConstructor } from "../types/components"
+import type { RenderableConstructor } from "../types/components";
 
 export const baseComponents = {
   box: BoxRenderable,
   text: TextRenderable,
   code: CodeRenderable,
   diff: DiffRenderable,
+  markdown: MarkdownRenderable,
   input: InputRenderable,
   select: SelectRenderable,
   textarea: TextareaRenderable,
@@ -43,11 +39,12 @@ export const baseComponents = {
   i: ItalicSpanRenderable,
   em: ItalicSpanRenderable,
   u: UnderlineSpanRenderable,
-}
+  a: LinkRenderable,
+};
 
-type ComponentCatalogue = Record<string, RenderableConstructor>
+type ComponentCatalogue = Record<string, RenderableConstructor>;
 
-export const componentCatalogue: ComponentCatalogue = { ...baseComponents }
+export const componentCatalogue: ComponentCatalogue = { ...baseComponents };
 
 /**
  * Extend the component catalogue with new renderable components
@@ -62,11 +59,11 @@ export const componentCatalogue: ComponentCatalogue = { ...baseComponents }
  * ```
  */
 export function extend<T extends ComponentCatalogue>(objects: T): void {
-  Object.assign(componentCatalogue, objects)
+  Object.assign(componentCatalogue, objects);
 }
 
 export function getComponentCatalogue(): ComponentCatalogue {
-  return componentCatalogue
+  return componentCatalogue;
 }
 
-export type { ExtendedComponentProps, ExtendedIntrinsicElements, RenderableConstructor } from "../types/components"
+export type { ExtendedComponentProps, ExtendedIntrinsicElements, RenderableConstructor } from "../types/components";

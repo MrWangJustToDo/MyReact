@@ -1,32 +1,70 @@
 const RefreshWebpackPlugin = require("./RefreshWebpackPlugin");
 
-module.exports = function withNext(nextConfig = {}, { generateAlias } = {}) {
-  return Object.assign({}, nextConfig, {
-    // Turbopack configuration for Next.js 16+
-    turbopack: Object.assign({}, nextConfig.turbopack, {
-      resolveAlias: (() => {
-        const aliases = {};
+/**
+ * Detect which turbopack config key to use based on the user's nextConfig.
+ *
+ * - "turbopack"             → Next.js 16+  (top-level key)
+ * - "experimental.turbopack" → Next.js 15   (experimental key)
+ * - "experimental.turbo"     → Next.js 13-14 (legacy key)
+ * - null                    → no turbopack keys found, skip
+ */
+function detectTurbopackKey(nextConfig) {
+  if (nextConfig.turbopack) return "turbopack";
+  if (nextConfig.experimental?.turbopack) return "experimental.turbopack";
+  if (nextConfig.experimental?.turbo) return "experimental.turbo";
+  return null;
+}
 
-        if (typeof generateAlias === "function") {
-          // Let the custom generateAlias function populate the aliases
-          generateAlias(aliases, { isTurbopack: true });
-        } else {
-          // Default aliases for @my-react
-          // Use react-turbopack wrapper to auto-inject runtime in development
-          aliases['react/compiler-runtime'] = '@my-react/react/compiler-runtime';
-          aliases['react/jsx-runtime'] = '@my-react/react/jsx-runtime';
-          aliases['react/jsx-dev-runtime'] = '@my-react/react/jsx-dev-runtime';
-          aliases['react'] = '@my-react/react-refresh-tools/react-turbopack';
-          aliases['react-dom'] = '@my-react/react-dom';
-          aliases['react-dom/server'] = '@my-react/react-dom/server';
-          aliases['react-dom/client'] = '@my-react/react-dom/client';
-        }
+function buildTurbopackAliases(nextConfig, generateAlias) {
+  const aliases = {};
 
-        // Merge with existing turbopack resolveAlias
-        return Object.assign({}, nextConfig.turbopack?.resolveAlias, aliases);
-      })(),
-    }),
+  if (typeof generateAlias === "function") {
+    generateAlias(aliases, { isTurbopack: true });
+  } else {
+    aliases["react/compiler-runtime"] = "@my-react/react/compiler-runtime";
+    aliases["react/jsx-runtime"] = "@my-react/react/jsx-runtime";
+    aliases["react/jsx-dev-runtime"] = "@my-react/react/jsx-dev-runtime";
+    aliases["react"] = "@my-react/react-refresh-tools/react-turbopack";
+    aliases["react-dom"] = "@my-react/react-dom";
+    aliases["react-dom/server"] = "@my-react/react-dom/server";
+    aliases["react-dom/client"] = "@my-react/react-dom/client";
+  }
 
+  return aliases;
+}
+
+function applyTurbopackConfig(config, nextConfig, generateAlias, turbopackKey) {
+  const key = turbopackKey || detectTurbopackKey(nextConfig);
+  if (!key) return config;
+
+  const aliases = buildTurbopackAliases(nextConfig, generateAlias);
+
+  if (key === "turbopack") {
+    // Next.js 16+: top-level `turbopack` key
+    config.turbopack = Object.assign({}, nextConfig.turbopack, {
+      resolveAlias: Object.assign({}, nextConfig.turbopack?.resolveAlias, aliases),
+    });
+  } else if (key === "experimental.turbopack") {
+    // Next.js 15: `experimental.turbopack`
+    config.experimental = Object.assign({}, nextConfig.experimental, {
+      turbopack: Object.assign({}, nextConfig.experimental?.turbopack, {
+        resolveAlias: Object.assign({}, nextConfig.experimental?.turbopack?.resolveAlias, aliases),
+      }),
+    });
+  } else if (key === "experimental.turbo") {
+    // Next.js 13-14: `experimental.turbo`
+    config.experimental = Object.assign({}, nextConfig.experimental, {
+      turbo: Object.assign({}, nextConfig.experimental?.turbo, {
+        resolveAlias: Object.assign({}, nextConfig.experimental?.turbo?.resolveAlias, aliases),
+      }),
+    });
+  }
+
+  return config;
+}
+
+module.exports = function withNext(nextConfig = {}, { generateAlias, turbopackKey } = {}) {
+  const result = Object.assign({}, nextConfig, {
     // Webpack configuration (used when --webpack flag is provided)
     webpack: (config, options) => {
       const originalEntry = config.entry;
@@ -86,7 +124,7 @@ module.exports = function withNext(nextConfig = {}, { generateAlias } = {}) {
       if (typeof generateAlias === "function") {
         generateAlias(aliases, { isServer, webpackVersion });
       } else {
-        aliases['react/compiler-runtime'] = '@my-react/react/compiler-runtime';
+        aliases["react/compiler-runtime"] = "@my-react/react/compiler-runtime";
         aliases["react"] = "@my-react/react";
         aliases["react-dom$"] = "@my-react/react-dom";
         aliases["react-dom/server$"] = "@my-react/react-dom/server";
@@ -96,4 +134,9 @@ module.exports = function withNext(nextConfig = {}, { generateAlias } = {}) {
       return config;
     },
   });
+
+  // Apply turbopack config under the correct key for the detected Next.js version
+  applyTurbopackConfig(result, nextConfig, generateAlias, turbopackKey);
+
+  return result;
 };

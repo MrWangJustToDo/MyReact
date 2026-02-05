@@ -289,7 +289,7 @@ const createIncremental = (
               for (let j = styledOutput.length - 1; j >= 0; j--) {
                 const char = styledOutput[j];
                 if (char === undefined) continue;
-                if (char.value !== " " && char.value !== "") {
+                if ((char.value !== " " && char.value !== "") || char.styles.length > 0) {
                   lineLength = j + (char.fullWidth ? 2 : 1);
                   break;
                 }

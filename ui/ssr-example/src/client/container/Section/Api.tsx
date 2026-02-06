@@ -1,4 +1,4 @@
-import { Code, Container, Heading, Img, LinkBox, LinkOverlay, Spacer, Text } from "@chakra-ui/react";
+import { Code, Container, Heading, Img, LinkBox, LinkOverlay, Spacer, Text, VStack, Box, useColorModeValue } from "@chakra-ui/react";
 
 import { Table } from "@client/component/Table";
 import { CONTAINER_WIDTH } from "@client/config/container";
@@ -88,21 +88,46 @@ const data = [
 ];
 
 export const ApiSection = () => {
+  const subtleTextColor = useColorModeValue("gray.600", "gray.400");
+
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
-      <Heading marginLeft={{ base: "4%", md: "6%", lg: "8%" }} as="h4" fontSize={{ base: "lg", lg: "2xl" }}>
-        Packages
-      </Heading>
-      <Spacer marginTop={{ base: "4", md: "6", lg: "8", xl: "10" }} />
+      {/* Header */}
+      <Box marginX={{ base: "4", md: "6%", lg: "8%" }} marginBottom="10">
+        <VStack align="start" spacing="0">
+          <Heading
+            as="h2"
+            fontSize={{ base: "4xl", md: "5xl", lg: "6xl" }}
+            fontWeight="bold"
+            lineHeight="1.1"
+            color="purple.600"
+            _dark={{ color: "purple.400" }}
+          >
+            Packages
+          </Heading>
+
+          <Text fontSize="sm" color={subtleTextColor} marginTop="3">
+            API Reference
+          </Text>
+
+          <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="400" lineHeight="1.7" color="gray.700" _dark={{ color: "gray.300" }} marginTop="6">
+            Complete list of all @my-react packages and their exported APIs.
+          </Text>
+        </VStack>
+      </Box>
+
+      <Spacer marginTop={{ base: "4", md: "6", lg: "8" }} />
+
       <Table
         dataSource={data}
         containerProps={{
           padding: { base: "2", md: "4", lg: "6" },
           marginX: "auto",
-          maxWidth: { base: "95%", sm: "90%", lg: "80%" },
+          maxWidth: { base: "95%", sm: "90%", lg: "85%" },
           border: "1px solid",
-          borderRadius: "md",
+          borderRadius: "xl",
           borderColor: "cardBorderColor",
+          boxShadow: "lg",
         }}
         tableProps={{ borderRadius: "md" }}
         rowProps={{

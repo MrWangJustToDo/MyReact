@@ -1,6 +1,6 @@
-import { Box, Button, Container, Flex, Heading, Icon, Spacer, Tag, Text, Tooltip, useColorModeValue } from "@chakra-ui/react";
+import { Box, Button, Container, Flex, Heading, Icon, Text, VStack, HStack, useColorModeValue } from "@chakra-ui/react";
 import { SandpackProvider, SandpackLayout, SandpackCodeEditor } from "@codesandbox/sandpack-react";
-import { ChevronsRightIcon } from "lucide-react";
+import { ChevronsRightIcon, ExternalLinkIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router";
 
@@ -34,14 +34,11 @@ export default defineConfig({
 pnpm run dev`;
 
 export const ViteSection = () => {
-  const bgColor = useColorModeValue("gray.300", "gray.600");
-
   const colorScheme = useColorModeValue("light", "dark");
+  const subtleTextColor = useColorModeValue("gray.600", "gray.400");
 
   const { hash } = useLocation();
-
   const ref = useRef<HTMLDivElement>();
-
   const isMounted = useIsMounted();
 
   useEffect(() => {
@@ -52,37 +49,57 @@ export const ViteSection = () => {
 
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
-      <Flex justifyContent="space-around" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
-        <Box alignSelf="flex-start" marginRight={{ base: "1%", md: "2%", lg: "3%", "2xl": "4%" }} maxWidth={{ base: "100%", md: "42%" }}>
-          <Heading as="h1" fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} marginTop="6">
-            Quick start in <Tag fontSize="inherit">Vite</Tag>
-          </Heading>
-          <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
-            This project is a experimental project.
-          </Text>
-          <Spacer marginTop="4" />
-          <Tooltip
-            label={
-              <Text>
-                A <Tag>Vite</Tag> template power by @my-react
-              </Text>
-            }
-            hasArrow
-            placement="top"
-            bg={bgColor}
-            color="black"
-          >
-            <Button as="a" href="https://github.com/MrWangJustToDo/MyReact/tree/main/ui/vite-example" colorScheme="purple" target="_blank">
-              Example
-            </Button>
-          </Tooltip>
+      <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "4", md: "6%", lg: "8%" }} gap={{ base: "10", md: "12" }}>
+        {/* Left Section - Content */}
+        <Box flex="1" maxWidth={{ base: "100%", md: "42%" }}>
+          <VStack align="start" spacing="0">
+            {/* Title */}
+            <Heading
+              as="h2"
+              fontSize={{ base: "4xl", md: "5xl", lg: "6xl" }}
+              fontWeight="bold"
+              lineHeight="1.1"
+              color="purple.600"
+              _dark={{ color: "purple.400" }}
+            >
+              Vite
+            </Heading>
+
+            {/* Subtitle */}
+            <Text fontSize="sm" color={subtleTextColor} marginTop="3">
+              @my-react/react-vite
+            </Text>
+
+            {/* Description */}
+            <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="400" lineHeight="1.7" color="gray.700" _dark={{ color: "gray.300" }} marginTop="6">
+              First-class Vite plugin support with HMR and fast refresh. Works with Remix and React Router v7 out of the box.
+            </Text>
+
+            {/* CTA Button */}
+            <HStack spacing="3" marginTop="8">
+              <Button
+                as="a"
+                href="https://github.com/MrWangJustToDo/MyReact/tree/main/ui/vite-example"
+                target="_blank"
+                colorScheme="purple"
+                size="md"
+                rightIcon={<Icon as={ExternalLinkIcon} boxSize="4" />}
+                _hover={{ transform: "translateY(-1px)", boxShadow: "md" }}
+                transition="all 0.2s"
+              >
+                View Template
+              </Button>
+            </HStack>
+          </VStack>
         </Box>
+
+        {/* Right Section - Code */}
         <Section>
           <Box
             className="typo"
             overflow={{ base: "hidden", lg: "auto" }}
             border="1px solid"
-            maxWidth={{ md: "55vw" }}
+            maxWidth={{ md: "55vw", lg: "45vw" }}
             minWidth={{ md: "40vw" }}
             borderColor="cardBorderColor"
             marginTop={{ base: "10%", md: "0" }}
@@ -98,7 +115,7 @@ export const ViteSection = () => {
           >
             <SandpackProvider
               files={{
-                [`main.bash`]: {
+                [`setup.bash`]: {
                   code,
                   active: true,
                 },
@@ -106,19 +123,22 @@ export const ViteSection = () => {
               theme={colorScheme}
             >
               <SandpackLayout style={{ border: "none" }}>
-                <SandpackCodeEditor readOnly style={{ height: "360px" }} />
+                <SandpackCodeEditor readOnly style={{ height: "420px" }} />
               </SandpackLayout>
             </SandpackProvider>
           </Box>
         </Section>
       </Flex>
-      <Card ref={ref} overflow="hidden" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
-        <Flex padding="1" fontFamily="monospace" alignItems="center" as="a" href="#vite-section">
-          <Icon as={ChevronsRightIcon}></Icon>
-          <Text marginLeft={2}>Vite + @my-react</Text>
+
+      {/* Playground Card */}
+      <Card ref={ref} overflow="hidden" marginX={{ base: "4", md: "6%", lg: "8%" }} marginTop="8">
+        <Flex padding="3" fontFamily="monospace" alignItems="center" as="a" href="#vite-section">
+          <Icon as={ChevronsRightIcon} />
+          <Text marginLeft={2} fontWeight="500">
+            Vite + @my-react
+          </Text>
         </Flex>
         <VitePlayground />
-        {/* <RspackPlayground /> */}
       </Card>
     </Container>
   );

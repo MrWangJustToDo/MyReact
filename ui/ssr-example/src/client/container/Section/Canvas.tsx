@@ -1,4 +1,4 @@
-import { Flex, Spacer, Container, Box, Heading, Tag, Text, useColorModeValue } from "@chakra-ui/react";
+import { Flex, Container, Box, Heading, Text, useColorModeValue, VStack } from "@chakra-ui/react";
 import { SandpackCodeEditor, SandpackProvider, SandpackLayout } from "@codesandbox/sandpack-react";
 
 import { CanvasUI } from "@client/component/CanvasUI";
@@ -31,7 +31,7 @@ function HelloWorld() {
   }
 
   const handlePointerDown = () => {
-    setText(text === 'Hello, Canvas UI!' ? 'Welcome to Canvas UI! 🎉' : 'Hello, Canvas UI!')
+    setText(text === 'Hello, Canvas UI!' ? 'Welcome to Canvas UI!' : 'Hello, Canvas UI!')
   }
 
   return (
@@ -57,30 +57,52 @@ function HelloWorld() {
 
 export const CanvasUISection = () => {
   const colorScheme = useColorModeValue("light", "dark");
-
+  const subtleTextColor = useColorModeValue("gray.600", "gray.400");
   const isMounted = useIsMounted();
 
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
-      <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
-        <Box alignSelf="flex-start" marginRight={{ base: "1%", md: "2%", lg: "3%", "2xl": "4%" }} maxWidth={{ base: "100%", md: "42%" }}>
-          <Heading as="h1" fontSize={{ base: "xl", md: "3xl", lg: "4xl" }} marginTop="6">
-            CanvasUI with <Tag fontSize="inherit">@my-react</Tag>
-          </Heading>
-          <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
-            This project is a experimental project.
-          </Text>
-          <Spacer marginTop="4" />
-          <Text fontSize="sm" color="lightTextColor" marginY="2" lineHeight="180%">
-            Try to click <Tag>DevTool</Tag> to see the component tree.
-          </Text>
+      <Flex justifyContent="center" flexDirection={{ base: "column", md: "row" }} marginX={{ base: "4", md: "6%", lg: "8%" }} gap={{ base: "10", md: "12" }}>
+        {/* Left Section - Content */}
+        <Box flex="1" maxWidth={{ base: "100%", md: "42%" }}>
+          <VStack align="start" spacing="0">
+            {/* Title */}
+            <Heading
+              as="h2"
+              fontSize={{ base: "4xl", md: "5xl", lg: "6xl" }}
+              fontWeight="bold"
+              lineHeight="1.1"
+              color="purple.600"
+              _dark={{ color: "purple.400" }}
+            >
+              Canvas UI
+            </Heading>
+
+            {/* Subtitle */}
+            <Text fontSize="sm" color={subtleTextColor} marginTop="3">
+              @canvas-ui/react + @my-react
+            </Text>
+
+            {/* Description */}
+            <Text fontSize={{ base: "lg", md: "xl" }} fontWeight="400" lineHeight="1.7" color="gray.700" _dark={{ color: "gray.300" }} marginTop="6">
+              Render 2D canvas UI with React. Build high-performance graphics and interactive interfaces.
+            </Text>
+
+            {/* Tip */}
+            <Text fontSize="sm" color={subtleTextColor} marginTop="4">
+              Tip: Click the DevTool button to inspect the component tree.
+            </Text>
+          </VStack>
         </Box>
+
+        {/* Right Section - Code */}
         <Section>
           <Box
             className="typo"
             overflow={{ base: "hidden", lg: "auto" }}
             border="1px solid"
-            width={{ md: "45vw" }}
+            maxWidth={{ md: "55vw", lg: "45vw" }}
+            minWidth={{ md: "40vw" }}
             borderColor="cardBorderColor"
             marginTop={{ base: "10%", md: "0" }}
             marginBottom={{ base: "6%" }}
@@ -95,21 +117,23 @@ export const CanvasUISection = () => {
           >
             <SandpackProvider
               files={{
-                [`main.tsx`]: {
+                [`CanvasUI.tsx`]: {
                   code: file,
                   active: true,
                 },
               }}
               theme={colorScheme}
             >
-              <SandpackLayout>
-                <SandpackCodeEditor readOnly style={{ height: "380px" }} />
+              <SandpackLayout style={{ border: "none" }}>
+                <SandpackCodeEditor readOnly style={{ height: "420px" }} />
               </SandpackLayout>
             </SandpackProvider>
           </Box>
         </Section>
       </Flex>
-      <Card overflow="hidden" height="45vh" marginX={{ base: "2", md: "6%", lg: "8%", xl: "10%", "2xl": "12%" }}>
+
+      {/* Canvas Preview */}
+      <Card overflow="hidden" height="45vh" marginX={{ base: "4", md: "6%", lg: "8%" }} marginTop="8" boxShadow="lg">
         {__CLIENT__ && isMounted && <CanvasUI />}
       </Card>
     </Container>

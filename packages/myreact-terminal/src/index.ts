@@ -39,8 +39,17 @@ export {
   type ScrollbarBoundingBox,
 } from "./measure-element";
 export { getScrollHeight, getScrollWidth } from "./scroll";
-export { clearStringWidthCache, setStringWidthFunction, toStyledCharacters, styledCharsToString } from "./measure-text";
+export {
+  clearStringWidthCache,
+  setStringWidthFunction,
+  styledCharsWidth,
+  widestLineFromStyledChars,
+  toStyledCharacters,
+  styledCharsToString,
+  wordBreakStyledChars,
+} from "./measure-text";
 export { type DOMElement, type DOMNode, getPathToRoot } from "./dom";
 export type { StyledChar } from "@alcalzone/ansi-tokenize";
 export { default as ResizeObserver, ResizeObserverEntry } from "./resize-observer";
 export { Selection, Range, comparePoints } from "./selection";
+export { wrapStyledChars } from "./text-wrap";

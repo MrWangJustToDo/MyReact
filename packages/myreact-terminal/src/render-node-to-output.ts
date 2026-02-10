@@ -178,7 +178,8 @@ const renderNodeToOutput = (
     }
 
     if (node.nodeName === "ink-text") {
-      let styledChars = toStyledCharacters(squashTextNodes(node));
+      const text = squashTextNodes(node);
+      let styledChars = toStyledCharacters(text);
       let selectionState:
         | {
             range: { start: number; end: number };
@@ -199,24 +200,37 @@ const renderNodeToOutput = (
         styledChars = applySelectionToStyledChars(styledChars, selectionState, selectionStyle);
       }
 
-      if (styledChars.length > 0) {
+      if (styledChars.length > 0 || node.internal_terminalCursorFocus) {
         let lines: StyledChar[][] = [];
-        const { width: currentWidth } = measureStyledChars(styledChars);
-        const maxWidth = getMaxWidth(yogaNode);
+        let cursorLineIndex = 0;
+        let relativeCursorPosition = node.internal_terminalCursorPosition ?? 0;
 
-        if (currentWidth > maxWidth) {
-          const textWrap = node.style.textWrap ?? "wrap";
-          lines = wrapOrTruncateStyledChars(styledChars, maxWidth, textWrap);
+        if (styledChars.length > 0) {
+          const { width: currentWidth } = measureStyledChars(styledChars);
+          const maxWidth = getMaxWidth(yogaNode);
+
+          lines =
+            currentWidth > maxWidth ? wrapOrTruncateStyledChars(styledChars, maxWidth, node.style.textWrap ?? "wrap") : splitStyledCharsByNewline(styledChars);
+
+          lines = applyPaddingToStyledChars(node, lines);
+
+          // Calculate cursor line index for terminal cursor positioning
+          cursorLineIndex = lines.length - 1;
+
+          if (node.internal_terminalCursorFocus && node.internal_terminalCursorPosition !== undefined) {
+            ({ cursorLineIndex, relativeCursorPosition } = calculateWrappedCursorPosition(lines, styledChars, node.internal_terminalCursorPosition));
+          }
         } else {
-          lines = splitStyledCharsByNewline(styledChars);
+          // Empty text with cursor focus - use single empty line for IME support
+          lines = [[]];
         }
-
-        lines = applyPaddingToStyledChars(node, lines);
 
         for (const [index, line] of lines.entries()) {
           output.write(x, y + index, line, {
             transformers: newTransformers,
             lineIndex: index,
+            isTerminalCursorFocused: node.internal_terminalCursorFocus && index === cursorLineIndex,
+            terminalCursorPosition: relativeCursorPosition,
           });
         }
       }
@@ -387,6 +401,74 @@ const renderNodeToOutput = (
       }
     }
   }
+};
+
+const calculateWrappedCursorPosition = (
+  lines: StyledChar[][],
+  styledChars: StyledChar[],
+  targetOffset: number
+): { cursorLineIndex: number; relativeCursorPosition: number } => {
+  const styledCharToOffset = new Map<StyledChar, number>();
+  let offset = 0;
+
+  for (const char of styledChars) {
+    styledCharToOffset.set(char, offset);
+    offset += char.value.length;
+  }
+
+  let cursorLineIndex = lines.length - 1;
+  let relativeCursorPosition = targetOffset;
+  // -1 represents "before document start" so first character (offset 0) is handled correctly
+  let previousLineEndOffset = -1;
+
+  for (const [i, line] of lines.entries()) {
+    if (line.length > 0) {
+      const firstChar = line.find((char) => styledCharToOffset.has(char));
+      const lastChar = line.findLast((char) => styledCharToOffset.has(char));
+
+      if (!firstChar || !lastChar) {
+        // Padding-only line (originally empty), treat as empty line
+        if (targetOffset > previousLineEndOffset) {
+          cursorLineIndex = i;
+          relativeCursorPosition = targetOffset - previousLineEndOffset - 1;
+          previousLineEndOffset++;
+        }
+
+        continue;
+      }
+
+      const lineStartOffset = styledCharToOffset.get(firstChar)!;
+      const lineEndOffset = styledCharToOffset.get(lastChar)! + lastChar.value.length;
+
+      // Set as candidate if targetOffset is at or after line start
+      if (targetOffset >= lineStartOffset) {
+        cursorLineIndex = i;
+        relativeCursorPosition = Math.max(0, targetOffset - lineStartOffset);
+      }
+
+      // Finalize and exit if targetOffset is within or before this line's range.
+      // If targetOffset is in a gap (between previousLineEndOffset and lineStartOffset),
+      // the cursor stays at the previous line's end (already set in previous iteration).
+      if (targetOffset <= lineEndOffset) {
+        break;
+      }
+
+      previousLineEndOffset = lineEndOffset;
+    } else if (i === 0 && targetOffset === 0) {
+      // Edge case: First line is empty and cursor is at position 0
+      cursorLineIndex = 0;
+      relativeCursorPosition = 0;
+      break;
+    } else if (i > 0 && targetOffset > previousLineEndOffset) {
+      // Handle empty lines (usually caused by \n)
+      cursorLineIndex = i;
+      relativeCursorPosition = targetOffset - previousLineEndOffset - 1;
+      // Advance past the \n character
+      previousLineEndOffset++;
+    }
+  }
+
+  return { cursorLineIndex, relativeCursorPosition };
 };
 
 function getStickyDescendants(node: DOMElement): DOMElement[] {

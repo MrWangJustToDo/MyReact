@@ -21,6 +21,8 @@ declare namespace Ink {
     key?: Key;
     style?: Styles;
     internal_transform?: (children: string, index: number) => string;
+    internal_terminalCursorFocus?: boolean;
+    internal_terminalCursorPosition?: number;
     internal_accessibility?: DOMElement["internal_accessibility"];
   };
 }

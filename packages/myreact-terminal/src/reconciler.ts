@@ -121,7 +121,7 @@ export const Reconciler = createReconciler<
     return { isInsideText };
   },
   shouldSetTextContent: () => false,
-  createInstance(originalType, newProps, _root, hostContext) {
+  createInstance(originalType, newProps, rootNode, hostContext) {
     if (hostContext.isInsideText && originalType === "ink-box") {
       throw new Error(`<Box> can’t be nested inside <Text> component`);
     }
@@ -160,6 +160,16 @@ export const Reconciler = createReconciler<
         continue;
       }
 
+      if (key === "internal_terminalCursorFocus") {
+        node.internal_terminalCursorFocus = value as boolean;
+        continue;
+      }
+
+      if (key === "internal_terminalCursorPosition") {
+        node.internal_terminalCursorPosition = value as number;
+        continue;
+      }
+
       if (key === "internal_static") {
         node.internal_static = true;
         continue;
@@ -189,7 +199,6 @@ export const Reconciler = createReconciler<
   unhideTextInstance(node, text) {
     setTextNodeValue(node, text);
   },
-  // @ts-ignore
   getPublicInstance: (instance) => instance,
   hideInstance(node) {
     node.yogaNode?.setDisplay(Yoga.DISPLAY_NONE);
@@ -269,6 +278,16 @@ export const Reconciler = createReconciler<
 
         if (key === "internal_sticky_alternate") {
           node.internal_sticky_alternate = Boolean(value);
+          continue;
+        }
+
+        if (key === "internal_terminalCursorFocus") {
+          node.internal_terminalCursorFocus = value as boolean;
+          continue;
+        }
+
+        if (key === "internal_terminalCursorPosition") {
+          node.internal_terminalCursorPosition = value as number;
           continue;
         }
 

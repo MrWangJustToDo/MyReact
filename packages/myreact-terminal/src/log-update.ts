@@ -13,11 +13,51 @@ const enableSynchronizedOutput = true;
 const enterSynchronizedOutput = "\u001B[?2026h";
 const exitSynchronizedOutput = "\u001B[?2026l";
 
+export type CursorPosition = {
+  row: number;
+  col: number;
+};
+
+/**
+ * Build cursor movement sequence to move from currentRow to targetRow and targetCol.
+ * Uses safe pattern: go to line start → move rows → set column
+ * This avoids issues with intermediate lines being shorter than cursor position.
+ */
+function buildCursorMovement(currentRow: number, targetRow: number, targetCol: number): string {
+  let buffer = "";
+  buffer += ansiEscapes.cursorTo(0);
+  const rowDiff = targetRow - currentRow;
+  if (rowDiff > 0) {
+    buffer += ansiEscapes.cursorDown(rowDiff);
+  } else if (rowDiff < 0) {
+    buffer += ansiEscapes.cursorUp(-rowDiff);
+  }
+
+  buffer += ansiEscapes.cursorTo(targetCol);
+  return buffer;
+}
+
+/**
+ * Position terminal cursor for IME support.
+ * Calculates relative distance from the end of output to the cursor position.
+ */
+export function positionImeCursor(lineCount: number, cursorPosition: CursorPosition): string {
+  let buffer = "";
+  const moveUp = lineCount - 1 - cursorPosition.row;
+
+  if (moveUp > 0) {
+    buffer += ansiEscapes.cursorUp(moveUp);
+  }
+
+  buffer += ansiEscapes.cursorTo(cursorPosition.col);
+  return buffer;
+}
+
 export type LogUpdate = {
   clear: () => void;
   done: () => void;
-  sync: (str: string) => void;
-  (str: string, styledOutput: StyledChar[][], debugRainbowColor?: string): void;
+  sync: (str: string, cursorPosition?: CursorPosition) => void;
+  (str: string, styledOutput: StyledChar[][], debugRainbowColor?: string, cursorPosition?: CursorPosition): void;
 };
 
 const enterAlternateBuffer = (stream: Writable, alreadyActive: boolean): void => {
@@ -58,12 +98,49 @@ const ensureCursorShown = (showCursor: boolean, stream: Writable): void => {
   }
 };
 
+const isCursorPositionEqual = (a: CursorPosition | undefined, b: CursorPosition | undefined): boolean => {
+  const posA = a ?? { row: 0, col: 0 };
+  const posB = b ?? { row: 0, col: 0 };
+  return posA.row === posB.row && posA.col === posB.col;
+};
+
+/**
+ * Get cursor position sequence for Alternate Buffer.
+ * Alternate Buffer has no scroll, so we can use absolute coordinates directly.
+ */
+const getAlternateBufferCursorSequence = (cursorPosition: CursorPosition | undefined): string => {
+  if (!cursorPosition) {
+    return "";
+  }
+
+  return ansiEscapes.cursorTo(cursorPosition.col, cursorPosition.row);
+};
+
 const moveCursorDown = (buffer: string[], skippedLines: number): number => {
   if (skippedLines > 0) {
     if (skippedLines === 1) {
       buffer.push(ansiEscapes.cursorNextLine);
     } else {
       buffer.push(ansiEscapes.cursorDown(skippedLines));
+    }
+  }
+
+  return 0;
+};
+
+const getLineLength = (styledChars: StyledChar[] | undefined): number => {
+  if (styledChars === undefined) {
+    return 0;
+  }
+
+  for (let j = styledChars.length - 1; j >= 0; j--) {
+    const char = styledChars[j];
+    if (char === undefined) {
+      continue;
+    }
+
+    if ((char.value !== " " && char.value !== "") || char.styles.length > 0) {
+      return j + (char.fullWidth ? 2 : 1);
     }
   }
 
@@ -94,13 +171,17 @@ const createStandard = (
   let previousRows = 0;
   let previousColumns = 0;
   let hasHiddenCursor = false;
+  let isFirstRender = true;
+  let previousCursorPosition: CursorPosition | undefined;
 
   if (alternateBuffer) {
     enterAlternateBuffer(stream, alternateBufferAlreadyActive);
   }
 
-  const render = (str: string, _styledOutput: StyledChar[][], debugRainbowColor?: string) => {
-    hasHiddenCursor = ensureCursorHidden(showCursor, hasHiddenCursor, stream);
+  const render = (str: string, _styledOutput: StyledChar[][], debugRainbowColor?: string, cursorPosition?: CursorPosition) => {
+    if (!showCursor) {
+      hasHiddenCursor = ensureCursorHidden(showCursor, hasHiddenCursor, stream);
+    }
 
     const output = str + "\n";
 
@@ -124,7 +205,12 @@ const createStandard = (
       // In alternate buffer mode we need to re-render based on whether content
       // visible within the clipped alternate output buffer has changed even
       // if the entire output string has not changed.
-      if (alternateBufferOutput !== previousOutputAlternateBuffer || rows !== previousRows || columns !== previousColumns) {
+      if (
+        alternateBufferOutput !== previousOutputAlternateBuffer ||
+        rows !== previousRows ||
+        columns !== previousColumns ||
+        !isCursorPositionEqual(cursorPosition, previousCursorPosition)
+      ) {
         // Unfortunately, eraseScreen does not work correctly in iTerm2 so we
         // have to use clearTerminal instead.
         const eraseOperation = process.env["TERM_PROGRAM"] === "iTerm.app" ? ansiEscapes.clearTerminal : ansiEscapes.eraseScreen;
@@ -132,33 +218,72 @@ const createStandard = (
         let outputToWrite = alternateBufferOutput;
         outputToWrite = debugRainbowColor ? colorize(outputToWrite, debugRainbowColor, "background") : outputToWrite;
 
+        const cursorSequence = getAlternateBufferCursorSequence(cursorPosition);
+
         stream.write(
           (enableSynchronizedOutput ? enterSynchronizedOutput : "") +
             ansiEscapes.cursorTo(0, 0) +
             eraseOperation +
             outputToWrite +
+            cursorSequence +
             (enableSynchronizedOutput ? exitSynchronizedOutput : "")
         );
+
         previousOutputAlternateBuffer = alternateBufferOutput;
         previousRows = rows;
         previousColumns = columns;
+        previousCursorPosition = cursorPosition ?? { row: 0, col: 0 };
       }
 
       previousOutput = output;
       return;
     }
 
+    const cursorChanged = !isCursorPositionEqual(cursorPosition, previousCursorPosition);
+
     if (output === previousOutput) {
+      // Output is the same, but cursor position may have changed
+      if (cursorChanged && cursorPosition && previousCursorPosition) {
+        const buffer = buildCursorMovement(previousCursorPosition.row, cursorPosition.row, cursorPosition.col);
+        previousCursorPosition = cursorPosition;
+        stream.write(buffer);
+      }
+
       return;
     }
 
+    const lineCount = output.split("\n").length;
+    let buffer = "";
+
+    // Move cursor to end of previous output before erasing (only if we have previous cursor position)
+    if (!isFirstRender && previousCursorPosition) {
+      const moveDown = previousLineCount - 1 - previousCursorPosition.row;
+      if (moveDown > 0) {
+        buffer += ansiEscapes.cursorDown(moveDown);
+      }
+    }
+
+    // Always erase previous lines
+    buffer += ansiEscapes.eraseLines(previousLineCount);
+
+    buffer += output;
+    isFirstRender = false;
+
+    if (cursorPosition) {
+      buffer += positionImeCursor(lineCount, cursorPosition);
+    }
+
+    previousCursorPosition = cursorPosition;
+
     previousOutput = output;
-    let outputToWrite = output;
+    previousLineCount = lineCount;
+    let outputToWrite = buffer;
 
-    outputToWrite = debugRainbowColor ? colorize(outputToWrite, debugRainbowColor, "background") : outputToWrite;
+    if (debugRainbowColor) {
+      outputToWrite = ansiEscapes.eraseLines(previousLineCount) + colorize(output, debugRainbowColor, "background");
+    }
 
-    stream.write(ansiEscapes.eraseLines(previousLineCount) + outputToWrite);
-    previousLineCount = output.split("\n").length;
+    stream.write(outputToWrite);
   };
 
   render.clear = () => {
@@ -171,7 +296,15 @@ const createStandard = (
       return;
     }
 
-    stream.write(ansiEscapes.eraseLines(previousLineCount));
+    let buffer = "";
+    if (previousCursorPosition) {
+      const moveDown = previousLineCount - 1 - previousCursorPosition.row;
+      if (moveDown > 0) {
+        buffer += ansiEscapes.cursorDown(moveDown);
+      }
+    }
+
+    stream.write(buffer + ansiEscapes.eraseLines(previousLineCount));
     previousOutput = "";
     previousLineCount = 0;
   };
@@ -181,15 +314,17 @@ const createStandard = (
     previousOutput = "";
     previousLineCount = 0;
 
-    ensureCursorShown(showCursor, stream);
-    hasHiddenCursor = false;
+    if (!showCursor) {
+      ensureCursorShown(showCursor, stream);
+      hasHiddenCursor = false;
+    }
 
     if (alternateBuffer) {
       exitAlternateBuffer(stream, lastFrame);
     }
   };
 
-  render.sync = (str: string) => {
+  render.sync = (str: string, _cursorPosition?: CursorPosition) => {
     if (alternateBuffer) {
       previousOutput = str;
       return;
@@ -226,13 +361,16 @@ const createIncremental = (
   let previousColumns = 0;
   let hasHiddenCursor = false;
   let alternateBufferStyledOutput: StyledChar[][] = [];
+  let previousCursorPosition: CursorPosition | undefined;
 
   if (alternateBuffer) {
     enterAlternateBuffer(stream, alternateBufferAlreadyActive);
   }
 
-  const render = (str: string, styledOutput: StyledChar[][], debugRainbowColor?: string) => {
-    hasHiddenCursor = ensureCursorHidden(showCursor, hasHiddenCursor, stream);
+  const render = (str: string, styledOutput: StyledChar[][], debugRainbowColor?: string, cursorPosition?: CursorPosition) => {
+    if (!showCursor) {
+      hasHiddenCursor = ensureCursorHidden(showCursor, hasHiddenCursor, stream);
+    }
 
     const output = str + "\n";
 
@@ -260,8 +398,15 @@ const createIncremental = (
       // In alternate buffer mode we need to re-render based on whether content
       // visible within the clipped alternate output buffer has changed even
       // if the entire output string has not changed.
-      if (alternateBufferOutput !== previousOutputAlternateBuffer || rows !== previousRows || columns !== previousColumns) {
+      if (
+        alternateBufferOutput !== previousOutputAlternateBuffer ||
+        rows !== previousRows ||
+        columns !== previousColumns ||
+        !isCursorPositionEqual(cursorPosition, previousCursorPosition)
+      ) {
         const nextLines = alternateBufferOutput.split("\n");
+
+        const cursorSequence = getAlternateBufferCursorSequence(cursorPosition);
 
         if (rows === previousRows && columns === previousColumns) {
           const buffer: string[] = [];
@@ -282,19 +427,7 @@ const createIncremental = (
 
             let lineToWrite = nextLines[i] ?? "";
 
-            let lineLength = 0;
-            const styledOutput = alternateBufferStyledOutput[i];
-
-            if (styledOutput !== undefined) {
-              for (let j = styledOutput.length - 1; j >= 0; j--) {
-                const char = styledOutput[j];
-                if (char === undefined) continue;
-                if ((char.value !== " " && char.value !== "") || char.styles.length > 0) {
-                  lineLength = j + (char.fullWidth ? 2 : 1);
-                  break;
-                }
-              }
-            }
+            const lineLength = getLineLength(alternateBufferStyledOutput[i]);
 
             lineToWrite = debugRainbowColor ? colorize(lineToWrite, debugRainbowColor, "background") : lineToWrite;
 
@@ -322,6 +455,8 @@ const createIncremental = (
             }
           }
 
+          buffer.push(cursorSequence);
+
           if (enableSynchronizedOutput) {
             buffer.push(exitSynchronizedOutput);
           }
@@ -336,13 +471,21 @@ const createIncremental = (
 
           outputToWrite = debugRainbowColor ? colorize(outputToWrite, debugRainbowColor, "background") : outputToWrite;
 
-          stream.write(enterSynchronizedOutput + ansiEscapes.cursorTo(0, 0) + eraseOperation + outputToWrite + exitSynchronizedOutput);
+          stream.write(
+            (enableSynchronizedOutput ? enterSynchronizedOutput : "") +
+              ansiEscapes.cursorTo(0, 0) +
+              eraseOperation +
+              outputToWrite +
+              cursorSequence +
+              (enableSynchronizedOutput ? exitSynchronizedOutput : "")
+          );
           previousRows = rows;
           previousColumns = columns;
         }
 
         previousOutputAlternateBuffer = alternateBufferOutput;
         previousLines = nextLines;
+        previousCursorPosition = cursorPosition ?? { row: 0, col: 0 };
       }
 
       previousOutput = output;
@@ -350,6 +493,12 @@ const createIncremental = (
     }
 
     if (output === previousOutput) {
+      if (!isCursorPositionEqual(cursorPosition, previousCursorPosition) && cursorPosition && previousCursorPosition) {
+        const buffer = buildCursorMovement(previousCursorPosition.row, cursorPosition.row, cursorPosition.col);
+        previousCursorPosition = cursorPosition;
+        stream.write(buffer);
+      }
+
       return;
     }
 
@@ -357,6 +506,48 @@ const createIncremental = (
     const nextLines = output.split("\n");
     const nextCount = nextLines.length;
     const visibleCount = nextCount - 1;
+
+    if (cursorPosition !== undefined || previousCursorPosition !== undefined) {
+      let buffer = "";
+
+      if (output === "\n" || previousOutput.length === 0) {
+        // First rendering
+        buffer += output;
+        buffer += ansiEscapes.cursorSavePosition;
+      } else {
+        // Incremental rendering after cursor restore
+        buffer += ansiEscapes.cursorRestorePosition;
+
+        if (nextCount < previousCount) {
+          buffer += ansiEscapes.eraseLines(previousCount - nextCount + 1);
+          buffer += ansiEscapes.cursorUp(visibleCount);
+        } else {
+          buffer += ansiEscapes.cursorUp(previousCount - 1);
+        }
+
+        for (let i = 0; i < visibleCount; i++) {
+          if (nextLines[i] === previousLines[i]) {
+            buffer += ansiEscapes.cursorNextLine;
+            continue;
+          }
+
+          buffer += ansiEscapes.eraseLine + nextLines[i] + "\n";
+        }
+
+        buffer += ansiEscapes.cursorSavePosition;
+      }
+
+      if (cursorPosition) {
+        // Move cursor to specified position
+        buffer += buildCursorMovement(visibleCount, cursorPosition.row, cursorPosition.col);
+      }
+
+      stream.write(buffer);
+      previousOutput = output;
+      previousLines = nextLines;
+      previousCursorPosition = cursorPosition;
+      return;
+    }
 
     if (output === "\n" || previousOutput.length === 0) {
       let outputToWrite = output;
@@ -420,7 +611,15 @@ const createIncremental = (
       return;
     }
 
-    stream.write(ansiEscapes.eraseLines(previousLines.length));
+    let buffer = "";
+    if (previousCursorPosition) {
+      const moveDown = previousLines.length - 1 - previousCursorPosition.row;
+      if (moveDown > 0) {
+        buffer += ansiEscapes.cursorDown(moveDown);
+      }
+    }
+
+    stream.write(buffer + ansiEscapes.eraseLines(previousLines.length));
     previousOutput = "";
     previousLines = [];
   };
@@ -430,15 +629,17 @@ const createIncremental = (
     previousOutput = "";
     previousLines = [];
 
-    ensureCursorShown(showCursor, stream);
-    hasHiddenCursor = false;
+    if (!showCursor) {
+      ensureCursorShown(showCursor, stream);
+      hasHiddenCursor = false;
+    }
 
     if (alternateBuffer) {
       exitAlternateBuffer(stream, lastFrame);
     }
   };
 
-  render.sync = (str: string) => {
+  render.sync = (str: string, _cursorPosition?: CursorPosition) => {
     if (alternateBuffer) {
       previousOutput = str;
       return;

@@ -10,6 +10,7 @@ type Result = {
   outputHeight: number;
   staticOutput: string;
   styledOutput: StyledChar[][];
+  cursorPosition?: { row: number; col: number };
 };
 
 const calculateSelectionMap = (root: DOMElement, selection: Selection): Map<DOMNode, { start: number; end: number }> => {
@@ -215,7 +216,7 @@ const renderer = (node: DOMElement, isScreenReaderEnabled: boolean, selection?: 
       });
     }
 
-    const { output: generatedOutput, height: outputHeight, styledOutput } = output.get();
+    const { output: generatedOutput, height: outputHeight, styledOutput, cursorPosition } = output.get();
 
     return {
       output: generatedOutput,
@@ -224,6 +225,7 @@ const renderer = (node: DOMElement, isScreenReaderEnabled: boolean, selection?: 
       // interactive output will override last line of static output
       staticOutput: staticOutput ? `${staticOutput.get().output}\n` : "",
       styledOutput,
+      cursorPosition,
     };
   }
 

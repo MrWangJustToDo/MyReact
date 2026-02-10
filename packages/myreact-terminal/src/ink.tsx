@@ -16,7 +16,7 @@ import { accessibilityContext as AccessibilityContext } from "./components/Acces
 import App from "./components/App";
 import * as dom from "./dom";
 import instances from "./instances";
-import logUpdate, { type LogUpdate } from "./log-update";
+import logUpdate, { type LogUpdate, positionImeCursor } from "./log-update";
 import { Reconciler } from "./reconciler";
 import render from "./renderer";
 import { ResizeObserverEntry } from "./resize-observer";
@@ -53,6 +53,7 @@ export type Options = {
   incrementalRendering?: boolean;
   debugRainbow?: boolean;
   selectionStyle?: (char: StyledChar) => StyledChar;
+  standardReactLayoutTiming?: boolean;
 };
 
 const rainbowColors = [
@@ -84,6 +85,7 @@ export default class Ink {
   private isUnmounted: boolean;
   private lastOutput: string;
   private lastOutputHeight: number;
+  private lastCursorPosition?: { row: number; col: number } | undefined;
   private readonly container: FiberRoot;
   private readonly rootNode: dom.DOMElement;
   // This variable is used only in debug mode to store full static output
@@ -117,11 +119,21 @@ export default class Ink {
           leading: true,
           trailing: true,
         });
+    let isRenderScheduled = false;
+    const renderMethod = options.standardReactLayoutTiming
+      ? () => {
+          if (isRenderScheduled) return;
+          isRenderScheduled = true;
+          queueMicrotask(() => {
+            isRenderScheduled = false;
+            onRender();
+          });
+        }
+      : onRender;
+    this.rootNode.onRender = renderMethod;
+    this.unsubscribeSelection = this.selection.onChange(renderMethod);
 
-    this.rootNode.onRender = onRender;
-    this.unsubscribeSelection = this.selection.onChange(onRender);
-
-    this.rootNode.onImmediateRender = this.onRender;
+    this.rootNode.onImmediateRender = options.standardReactLayoutTiming ? renderMethod : this.onRender; // Original unthrottled method
     this.log = logUpdate.create(options.stdout, {
       alternateBuffer: options.alternateBuffer,
       alternateBufferAlreadyActive: options.alternateBufferAlreadyActive,
@@ -282,7 +294,12 @@ export default class Ink {
       this.frameIndex++;
     }
 
-    const { output, outputHeight, staticOutput, styledOutput } = render(this.rootNode, this.isScreenReaderEnabled, this.selection, this.options.selectionStyle);
+    const { output, outputHeight, staticOutput, styledOutput, cursorPosition } = render(
+      this.rootNode,
+      this.isScreenReaderEnabled,
+      this.selection,
+      this.options.selectionStyle
+    );
 
     this.options.onRender?.({ renderTime: performance.now() - startTime });
 
@@ -313,7 +330,7 @@ export default class Ink {
         this.fullStaticOutput += staticOutput;
       }
 
-      this.log(this.fullStaticOutput + output, styledOutput, debugRainbowColor);
+      this.log(this.fullStaticOutput + output, styledOutput, debugRainbowColor, cursorPosition);
       this.lastOutput = output;
       return;
     }
@@ -356,10 +373,23 @@ export default class Ink {
     }
 
     if (this.lastOutputHeight >= this.options.stdout.rows) {
-      this.options.stdout.write(ansiEscapes.clearTerminal + this.fullStaticOutput + output);
+      // Build a single buffer for all operations
+      let buffer = "";
+
+      buffer += ansiEscapes.clearTerminal + this.fullStaticOutput + output;
+
+      // Position cursor after screen clear if requested by a component
+      if (cursorPosition) {
+        const lineCount = output.split("\n").length;
+        buffer += positionImeCursor(lineCount, cursorPosition);
+      }
+
+      this.options.stdout.write(buffer);
+
       this.lastOutput = output;
       this.lastOutputHeight = outputHeight;
-      this.log.sync(output);
+      this.lastCursorPosition = cursorPosition;
+      this.log.sync(output, cursorPosition);
       return;
     }
 
@@ -367,15 +397,21 @@ export default class Ink {
     if (hasStaticOutput) {
       this.log.clear();
       this.options.stdout.write(staticOutput);
-      this.log(output, styledOutput, debugRainbowColor);
+      this.log(output, styledOutput, debugRainbowColor, cursorPosition);
     }
 
-    if (!hasStaticOutput && output !== this.lastOutput) {
-      this.throttledLog(output, styledOutput, debugRainbowColor);
+    const outputChanged = output !== this.lastOutput;
+    const cursorChanged =
+      cursorPosition !== this.lastCursorPosition &&
+      (!cursorPosition || !this.lastCursorPosition || cursorPosition.row !== this.lastCursorPosition.row || cursorPosition.col !== this.lastCursorPosition.col);
+
+    if (!hasStaticOutput && (outputChanged || cursorChanged)) {
+      this.throttledLog(output, styledOutput, debugRainbowColor, cursorPosition);
     }
 
     this.lastOutput = output;
     this.lastOutputHeight = outputHeight;
+    this.lastCursorPosition = cursorPosition;
   };
 
   recalculateLayout(): void {

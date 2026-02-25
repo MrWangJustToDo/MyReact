@@ -10,7 +10,7 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { LazyUpdateQueue, MixinMyReactFunctionComponent, lazy } from "@my-react/react";
 
-const { enableSuspenseRoot } = __my_react_shared__;
+const { enableSuspenseRoot, enableDebugFiled } = __my_react_shared__;
 const { currentScheduler } = __my_react_internal__;
 
 export const loadLazy = async (renderDispatch: CustomRenderDispatch, typedElementType: ReturnType<typeof lazy>) => {
@@ -36,6 +36,10 @@ export const loadLazy = async (renderDispatch: CustomRenderDispatch, typedElemen
     typedElementType._loaded = true;
 
     typedElementType._loading = false;
+
+    if (__DEV__ && enableDebugFiled.current) {
+      typedElementType._debugResolveTime = typedElementType._debugResolveTime || Date.now();
+    }
   }
 };
 
@@ -52,6 +56,10 @@ export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReact
     const render = typedElementType.render as ReturnType<typeof lazy>["render"];
 
     return WrapperByLazyScope(createElement(render as MixinMyReactFunctionComponent, fiber.pendingProps));
+  }
+
+  if (__DEV__ && enableDebugFiled.current) {
+    typedElementType._debugCreateTime = typedElementType._debugCreateTime || Date.now();
   }
 
   typedElementType._list = typedElementType._list || new Set();

@@ -149,5 +149,7 @@ export type LazyType<P extends Record<string, unknown>> = {
   _loaded: boolean;
   _error?: unknown;
   _list?: Set<RenderFiber>;
+  _debugCreateTime?: number;
+  _debugResolveTime?: number;
   render: null | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>;
 };

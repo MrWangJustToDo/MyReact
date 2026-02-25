@@ -16,9 +16,11 @@ export type PromiseWithState<T> = Promise<T> & {
   _reason?: any;
   _loading?: boolean;
   _list?: Set<MyReactFiberNode>;
+  _debugCreateTime?: number;
+  _debugResolveTime?: number;
 };
 
-const { enableSuspenseRoot } = __my_react_shared__;
+const { enableSuspenseRoot, enableDebugFiled } = __my_react_shared__;
 const { currentScheduler } = __my_react_internal__;
 
 export const loadPromise = async (renderDispatch: CustomRenderDispatch, promise: PromiseWithState<unknown>) => {
@@ -36,6 +38,10 @@ export const loadPromise = async (renderDispatch: CustomRenderDispatch, promise:
     promise.status = "rejected";
 
     promise._reason = reason;
+  } finally {
+    if (__DEV__ && enableDebugFiled.current) {
+      promise._debugResolveTime = promise._debugResolveTime || Date.now();
+    }
   }
 };
 
@@ -52,6 +58,10 @@ export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyRe
     if (__DEV__) {
       console.warn("[@my-react/react] throw a promise what has already fulfilled, this is not a valid usage");
     }
+  }
+
+  if (__DEV__ && enableDebugFiled.current) {
+    promise._debugCreateTime = promise._debugCreateTime || Date.now();
   }
 
   promise._list = promise._list || new Set();
@@ -128,6 +138,10 @@ export const processSuspensePromise = (renderDispatch: CustomRenderDispatch, fib
     if (__DEV__) {
       console.warn("[@my-react/react] throw a promise what has already fulfilled, this is not a valid usage");
     }
+  }
+
+  if (__DEV__ && enableDebugFiled.current) {
+    promise._debugCreateTime = promise._debugCreateTime || Date.now();
   }
 
   promise._list = promise._list || new Set();

@@ -5,7 +5,7 @@ import type { FlexProps } from "@canvas-ui/react";
 export const CanvasUI = () => {
   const containerStyle: FlexProps["style"] = {
     width: 250,
-    height: '100',
+    height: "100",
     flexDirection: "column",
     backgroundColor: "greenyellow",
   } as const;

@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
 import { type StyledChar } from "@alcalzone/ansi-tokenize";
+import { LegacyRoot } from "@my-react/react-reconciler-compact/constants";
 import ansiEscapes from "ansi-escapes";
 import autoBind from "auto-bind";
 import { throttle } from "es-toolkit/compat";
@@ -35,6 +36,16 @@ export type RenderMetrics = {
 	Time spent rendering in milliseconds.
 	*/
   renderTime: number;
+
+  /**
+	Output string for the frame.
+	*/
+  output: string;
+
+  /**
+	Static output string for the frame.
+	*/
+  staticOutput?: string;
 };
 
 export type Options = {
@@ -162,7 +173,7 @@ export default class Ink {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.container = Reconciler.createContainer(
       this.rootNode,
-      0,
+      LegacyRoot,
       null,
       false,
       null,
@@ -301,7 +312,7 @@ export default class Ink {
       this.options.selectionStyle
     );
 
-    this.options.onRender?.({ renderTime: performance.now() - startTime });
+    // this.options.onRender?.({ renderTime: performance.now() - startTime });
 
     // If <Static> output isn't empty, it means new children have been added to it
     const hasStaticOutput = staticOutput && staticOutput !== "\n";
@@ -312,6 +323,7 @@ export default class Ink {
       }
 
       this.options.stdout.write(this.fullStaticOutput + output);
+      this.callOnRender(startTime, output, staticOutput);
       return;
     }
 
@@ -322,6 +334,7 @@ export default class Ink {
 
       this.lastOutput = output;
       this.lastOutputHeight = outputHeight;
+      this.callOnRender(startTime, output, staticOutput);
       return;
     }
 
@@ -332,6 +345,7 @@ export default class Ink {
 
       this.log(this.fullStaticOutput + output, styledOutput, debugRainbowColor, cursorPosition);
       this.lastOutput = output;
+      this.callOnRender(startTime, output, staticOutput);
       return;
     }
 
@@ -345,6 +359,7 @@ export default class Ink {
       }
 
       if (output === this.lastOutput && !hasStaticOutput) {
+        this.callOnRender(startTime, output, staticOutput);
         return;
       }
 
@@ -365,6 +380,7 @@ export default class Ink {
 
       this.lastOutput = output;
       this.lastOutputHeight = wrappedOutput === "" ? 0 : wrappedOutput.split("\n").length;
+      this.callOnRender(startTime, output, staticOutput);
       return;
     }
 
@@ -390,6 +406,7 @@ export default class Ink {
       this.lastOutputHeight = outputHeight;
       this.lastCursorPosition = cursorPosition;
       this.log.sync(output, cursorPosition);
+      this.callOnRender(startTime, output, staticOutput);
       return;
     }
 
@@ -412,6 +429,7 @@ export default class Ink {
     this.lastOutput = output;
     this.lastOutputHeight = outputHeight;
     this.lastCursorPosition = cursorPosition;
+    this.callOnRender(startTime, output, staticOutput);
   };
 
   recalculateLayout(): void {
@@ -580,5 +598,13 @@ export default class Ink {
         this.markAllTextNodesDirty(child);
       }
     }
+  }
+
+  private callOnRender(startTime: number, output: string, staticOutput?: string) {
+    this.options.onRender?.({
+      renderTime: performance.now() - startTime,
+      output,
+      staticOutput,
+    });
   }
 }

@@ -1,5 +1,5 @@
 import { AspectRatio, Box, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure } from "@chakra-ui/react";
-import GitHubCalendar from "react-github-calendar";
+import { GitHubCalendar } from "react-github-calendar";
 import usePinch from "use-pinch-ref";
 
 import type { BoxProps } from "@chakra-ui/react";

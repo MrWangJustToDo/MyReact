@@ -18,10 +18,12 @@ export const loadScript = (url: string) => {
   }).finally(() => script.remove());
 };
 
+const id = Math.random();
+
 export const IframeDevTool = () => {
   const [loaded, setLoaded] = useState(false);
 
-  const token = useMemo(() => Math.random().toString(36).slice(2), []);
+  const token = useMemo(() => id.toString(36).slice(2), []);
 
   const isMounted = useIsMounted();
 

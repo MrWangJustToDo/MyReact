@@ -164,7 +164,7 @@ export class RenderDispatchEvent extends MyReactInternalInstanceClass implements
 
   runtimeFiber: RenderDispatch["runtimeFiber"];
 
-  dispatcher = Dispatcher;
+  dispatcher = Dispatcher as RenderDispatch["dispatcher"];
 
   rootNode: any;
 

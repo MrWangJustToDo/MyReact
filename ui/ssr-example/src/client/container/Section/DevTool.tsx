@@ -1,7 +1,8 @@
-import { Box, Container, Flex, Heading, Text, VStack, HStack, Button, useColorModeValue, Card, Image, Icon, Tag } from "@chakra-ui/react";
+import { Box, Container, Flex, Heading, Text, VStack, HStack, Button, useColorModeValue, Card, Icon, Tag } from "@chakra-ui/react";
 import { SandpackProvider, SandpackLayout, SandpackCodeEditor } from "@codesandbox/sandpack-react";
 import { ExternalLinkIcon } from "lucide-react";
 
+import { IframeDevTool } from "@client/component/DevTool/Item";
 import { Section } from "@client/component/Section";
 import { CONTAINER_WIDTH } from "@client/config/container";
 
@@ -26,7 +27,6 @@ pnpm run build:extension
 export const DevToolSection = () => {
   const colorScheme = useColorModeValue("light", "dark");
   const subtleTextColor = useColorModeValue("gray.600", "gray.400");
-  const img = useColorModeValue("1.png", "2.png");
 
   return (
     <Container maxWidth={CONTAINER_WIDTH} minHeight="100vh" marginTop="4%">
@@ -116,10 +116,10 @@ export const DevToolSection = () => {
         </Section>
       </Flex>
 
-      {/* DevTools Screenshot */}
+      {/* DevTools Window */}
       <Flex justifyContent="center" width="100%" marginTop="8">
-        <Card overflow="hidden" borderRadius="xl" marginX={{ base: "4", md: "6%", lg: "8%" }} width={{ md: "90%" }} boxShadow="lg">
-          <Image src={`./${img}`} alt="@my-react DevTools" />
+        <Card overflow="hidden" borderRadius="xl" marginX={{ base: "4", md: "6%", lg: "8%" }} width={{ md: "90%" }} height="500px" boxShadow="lg">
+          <IframeDevTool />
         </Card>
       </Flex>
     </Container>

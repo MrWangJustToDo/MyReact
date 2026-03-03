@@ -1,13 +1,13 @@
-import { useEffect, useState } from "@my-react/react"
-import { render, useTimeline } from "@my-react/react-opentui"
-import { TextAttributes } from "@opentui/core"
+import { useEffect, useState } from "@my-react/react";
+import { render, useTimeline } from "@my-react/react-opentui";
+import { TextAttributes } from "@opentui/core";
 
 type Stats = {
-  cpu: number
-  memory: number
-  network: number
-  disk: number
-}
+  cpu: number;
+  memory: number;
+  network: number;
+  disk: number;
+};
 
 export const App = () => {
   const [stats, setAnimatedStats] = useState<Stats>({
@@ -15,12 +15,12 @@ export const App = () => {
     memory: 0,
     network: 0,
     disk: 0,
-  })
+  });
 
   const timeline = useTimeline({
     duration: 3000,
     loop: false,
-  })
+  });
 
   useEffect(() => {
     timeline.add(
@@ -33,19 +33,19 @@ export const App = () => {
         duration: 3000,
         ease: "linear",
         onUpdate: (values) => {
-          setAnimatedStats({ ...values.targets[0] })
+          setAnimatedStats({ ...values.targets[0] });
         },
       },
-      0,
-    )
-  }, [])
+      0
+    );
+  }, []);
 
   const statsMap = [
     { name: "CPU", key: "cpu", color: "#6a5acd" },
     { name: "Memory", key: "memory", color: "#4682b4" },
     { name: "Network", key: "network", color: "#20b2aa" },
     { name: "Disk", key: "disk", color: "#daa520" },
-  ]
+  ];
 
   return (
     <box
@@ -72,8 +72,7 @@ export const App = () => {
         </box>
       ))}
     </box>
-  )
-}
-
+  );
+};
 
 export const test = () => render(<App />);

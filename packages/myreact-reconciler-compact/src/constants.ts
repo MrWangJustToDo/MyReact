@@ -1,5 +1,5 @@
-export const ConcurrentRoot = 1
-export const LegacyRoot = 0
+export const ConcurrentRoot = 1;
+export const LegacyRoot = 0;
 
 // placeholder
 export const DefaultEventPriority = 0;

@@ -113,7 +113,6 @@ const UserInput = () => {
 ```
 */
 const useInput = (inputHandler: Handler, options: Options = {}) => {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
   const { stdin, setRawMode, internal_exitOnCtrlC, internal_eventEmitter } = useStdin();
 
   useEffect(() => {

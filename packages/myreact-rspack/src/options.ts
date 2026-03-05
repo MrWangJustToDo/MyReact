@@ -1,7 +1,7 @@
-import path from 'node:path';
+import path from "node:path";
 
-import type { IntegrationType } from './utils/getSocketIntegration';
-import type { RuleSetCondition } from '@rspack/core';
+import type { IntegrationType } from "./utils/getSocketIntegration";
+import type { RuleSetCondition } from "@rspack/core";
 
 interface OverlayOptions {
   entry: string;
@@ -97,51 +97,41 @@ export interface NormalizedPluginOptions extends Required<PluginOptions> {
   overlay: false | OverlayOptions;
 }
 
-const d = <K extends keyof PluginOptions>(
-  object: PluginOptions,
-  property: K,
-  defaultValue?: PluginOptions[K],
-) => {
+const d = <K extends keyof PluginOptions>(object: PluginOptions, property: K, defaultValue?: PluginOptions[K]) => {
   // TODO: should we also add default for null?
-  if (
-    typeof object[property] === 'undefined' &&
-    typeof defaultValue !== 'undefined'
-  ) {
+  if (typeof object[property] === "undefined" && typeof defaultValue !== "undefined") {
     object[property] = defaultValue;
   }
   return object[property];
 };
 
-const normalizeOverlay = (options: PluginOptions['overlay']) => {
+const normalizeOverlay = (options: PluginOptions["overlay"]) => {
   const defaultOverlay: OverlayOptions = {
-    entry: path.join(__dirname, '../client/errorOverlayEntry.js'),
-    module: path.join(__dirname, '../client/overlay/index.js'),
-    sockIntegration: 'wds',
+    entry: path.join(__dirname, "../client/errorOverlayEntry.js"),
+    module: path.join(__dirname, "../client/overlay/index.js"),
+    sockIntegration: "wds",
   };
   if (!options) {
     return false;
   }
-  if (typeof options === 'undefined' || options === true) {
+  if (typeof options === "undefined" || options === true) {
     return defaultOverlay;
   }
   options.entry = options.entry ?? defaultOverlay.entry;
   options.module = options.module ?? defaultOverlay.module;
-  options.sockIntegration =
-    options.sockIntegration ?? defaultOverlay.sockIntegration;
+  options.sockIntegration = options.sockIntegration ?? defaultOverlay.sockIntegration;
   return options;
 };
 
-export function normalizeOptions(
-  options: PluginOptions,
-): NormalizedPluginOptions {
-  d(options, 'exclude', /node_modules/i);
-  d(options, 'include', /\.([cm]js|[jt]sx?|flow)$/i);
-  d(options, 'library');
-  d(options, 'forceEnable', false);
-  d(options, 'injectLoader', true);
-  d(options, 'injectEntry', true);
-  d(options, 'reloadOnRuntimeErrors', false);
-  d(options, 'reactRefreshLoader', 'builtin:react-refresh-loader');
+export function normalizeOptions(options: PluginOptions): NormalizedPluginOptions {
+  d(options, "exclude", /node_modules/i);
+  d(options, "include", /\.([cm]js|[jt]sx?|flow)$/i);
+  d(options, "library");
+  d(options, "forceEnable", false);
+  d(options, "injectLoader", true);
+  d(options, "injectEntry", true);
+  d(options, "reloadOnRuntimeErrors", false);
+  d(options, "reactRefreshLoader", "builtin:react-refresh-loader");
   options.overlay = normalizeOverlay(options.overlay);
   return options as NormalizedPluginOptions;
 }

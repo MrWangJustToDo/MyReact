@@ -16,7 +16,7 @@ export type Props = {
 /**
 `StderrContext` is a React context that exposes the stderr stream.
 */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 const StderrContext = createContext<Props>({
   stderr: process.stderr,
   write() {},

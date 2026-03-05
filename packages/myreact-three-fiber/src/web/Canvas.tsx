@@ -1,4 +1,3 @@
-/* eslint-disable no-inner-declarations */
 import * as React from "react";
 import useMeasure from "react-use-measure";
 import * as THREE from "three";

@@ -2,7 +2,7 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 
 import { type CustomRenderDispatch } from "../renderDispatch";
 import { mountLoopAll, processAsyncLoadListOnAsyncMount, processAsyncLoadListOnSyncMount } from "../runtimeMount";
-import { resetLogScope, safeCall, safeCallWithCurrentFiber, setLogScope } from "../share";
+import { resetLogScope, safeCall, setLogScope } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 

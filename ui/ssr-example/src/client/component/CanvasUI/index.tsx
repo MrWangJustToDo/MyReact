@@ -1,6 +1,6 @@
 import { Flex, useColorModeValue } from "@chakra-ui/react";
 import { use } from "@my-react/react";
-import { Suspense, useMemo } from "react";
+import { Suspense } from "react";
 
 const map = new Map<string, Promise<any>>();
 
@@ -13,16 +13,14 @@ const getPromise = (name: string) => {
   return promise;
 };
 
+const Com = function Example({ mode }: { mode: "light" | "dark" }) {
+  const Com = use(getPromise("Example"));
+
+  return <Com.Exp mode={mode} />;
+};
+
 export const CanvasUI = () => {
   const mode = useColorModeValue("light", "dark");
-
-  const Com = useMemo(() => {
-    return function Example({ mode }: { mode: "light" | "dark" }) {
-      const Com = use(getPromise("Example"));
-
-      return <Com.Exp mode={mode} />;
-    };
-  }, []);
 
   return (
     <Suspense

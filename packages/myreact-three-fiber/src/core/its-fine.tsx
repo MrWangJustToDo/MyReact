@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-/* eslint-disable import/namespace */
+
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 // copy from https://github.com/pmndrs/its-fine, modified for @my-react compatible

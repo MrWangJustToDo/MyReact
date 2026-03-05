@@ -7,7 +7,7 @@ import { defineConfig } from "vite";
 // https://vitejs.dev/config/
 export default defineConfig({
   optimizeDeps: {
-    include: ['@my-react/react-three-fiber', '@react-three/fiber'],
+    include: ["@my-react/react-three-fiber", "@react-three/fiber"],
   },
   resolve: {
     dedupe: ["@my-react/react-three-fiber", "@react-three/fiber"],

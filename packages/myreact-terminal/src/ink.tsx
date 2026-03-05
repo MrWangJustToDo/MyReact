@@ -170,7 +170,6 @@ export default class Ink {
     // so that it's rerendered every time, not just new static parts, like in non-debug mode
     this.fullStaticOutput = "";
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     this.container = Reconciler.createContainer(
       this.rootNode,
       LegacyRoot,

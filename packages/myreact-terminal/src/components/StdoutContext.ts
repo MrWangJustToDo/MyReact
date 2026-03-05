@@ -16,7 +16,7 @@ export type Props = {
 /**
 `StdoutContext` is a React context that exposes the stdout stream where Ink renders your app.
 */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 const StdoutContext = createContext<Props>({
   stdout: process.stdout,
   write() {},

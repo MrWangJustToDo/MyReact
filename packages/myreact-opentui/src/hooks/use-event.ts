@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef } from "react"
+import { useCallback, useLayoutEffect, useRef } from "react";
 
 /**
  * Returns a stable callback that always calls the latest version of the provided handler.
@@ -9,14 +9,14 @@ import { useCallback, useLayoutEffect, useRef } from "react"
  * or memoized child components.
  */
 export function useEffectEvent<T extends (...args: any[]) => any>(handler: T): T {
-  const handlerRef = useRef<T>(handler)
+  const handlerRef = useRef<T>(handler);
 
   useLayoutEffect(() => {
-    handlerRef.current = handler
-  })
+    handlerRef.current = handler;
+  });
 
   return useCallback((...args: Parameters<T>) => {
-    const fn = handlerRef.current
-    return fn(...args)
-  }, []) as T
+    const fn = handlerRef.current;
+    return fn(...args);
+  }, []) as T;
 }

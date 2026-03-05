@@ -26,14 +26,14 @@ export type Props = {
 /**
 `StdinContext` is a React context that exposes the input stream.
 */
-// eslint-disable-next-line @typescript-eslint/naming-convention
+
 const StdinContext = createContext<Props>({
   stdin: process.stdin,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   internal_eventEmitter: new EventEmitter(),
   setRawMode() {},
   isRawModeSupported: false,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   internal_exitOnCtrlC: true,
 });
 

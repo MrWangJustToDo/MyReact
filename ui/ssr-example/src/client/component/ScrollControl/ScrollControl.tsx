@@ -38,8 +38,7 @@ export const ScrollControl = ({ onSectionIndexChange, children, initialSectionLe
 
   useEffect(() => {
     onSectionIndexChangeRef(currentSection, prevSection);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSection, onSectionIndexChangeRef]);
+  }, [currentSection, onSectionIndexChangeRef, prevSection]);
 
   const context = useMemo(
     () => ({ totalSection, currentSection, onNextSection, onPrevSection, setCurrentSection, setTotalSection }),

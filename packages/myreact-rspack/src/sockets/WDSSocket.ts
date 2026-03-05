@@ -14,7 +14,6 @@ import getWDSMetadata from "./utils/getWDSMetadata";
 import type { SocketClient } from "./utils/getWDSMetadata";
 
 declare global {
-  // eslint-disable-next-line no-var
   var __webpack_dev_server_client__: SocketClient | { default: SocketClient };
 }
 

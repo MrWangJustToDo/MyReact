@@ -12,12 +12,12 @@ export const outputConfig = ({
   isMIDDLEWARE,
   DEV_HOST,
   WDS_PORT,
-  PROD_HOST,
-  PROD_PORT,
+  // PROD_HOST,
+  // PROD_PORT,
   BUNDLE_SCOPE,
   OUTPUT_SCOPE,
 }: SafeGenerateActionProps): Configuration["output"] => {
-  const _OUTPUT_SCOPE__ = OUTPUT_SCOPE && !OUTPUT_SCOPE.endsWith("/") ? `${OUTPUT_SCOPE}/` : OUTPUT_SCOPE;
+  // const _OUTPUT_SCOPE__ = OUTPUT_SCOPE && !OUTPUT_SCOPE.endsWith("/") ? `${OUTPUT_SCOPE}/` : OUTPUT_SCOPE;
 
   const BASENAME = process.env.BASENAME || "";
 

@@ -9,7 +9,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "react-reconciler": "@my-react/react-reconciler-compact",
-    }
+    },
   },
   ssr: {
     // switch to react need disable all the config below

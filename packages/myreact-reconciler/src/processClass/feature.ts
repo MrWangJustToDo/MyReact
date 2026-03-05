@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { __my_react_shared__, Component } from "@my-react/react";
 import { Effect_TYPE, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 

@@ -61,7 +61,7 @@ export default class App extends PureComponent<Props, State> {
   // Count how many components enabled raw mode to avoid disabling
   // raw mode until all components don't need it anymore
   rawModeEnabledCount = 0;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   internal_eventEmitter = new EventEmitter();
 
   // Determines if TTY is supported on the provided stdin
@@ -83,9 +83,9 @@ export default class App extends PureComponent<Props, State> {
             stdin: this.props.stdin,
             setRawMode: this.handleSetRawMode,
             isRawModeSupported: this.isRawModeSupported(),
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+
             internal_exitOnCtrlC: this.props.exitOnCtrlC,
-            // eslint-disable-next-line @typescript-eslint/naming-convention
+
             internal_eventEmitter: this.internal_eventEmitter,
           }}
         >

@@ -4,7 +4,7 @@ import path, { resolve } from "path";
 import type { SafeGenerateActionPropsWithReact } from "..";
 import type { RuleSetRule, RuleSetUseItem } from "webpack";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const threadLoader = require("thread-loader");
 
 const cssRules = ({ env, isDEV }: SafeGenerateActionPropsWithReact): RuleSetRule => ({

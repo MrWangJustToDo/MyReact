@@ -31,13 +31,11 @@ export const createUniversalStore = (props: CreateStoreProps = {}): SagaStore =>
   // Enable Webpack hot module
   if (__DEVELOPMENT__ && module.hot) {
     module.hot.accept("./reducer", () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { rootReducer: nextRootReducer } = require("./reducer");
       store.replaceReducer(nextRootReducer);
     });
 
     module.hot.accept("./saga", () => {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { rootSaga: nextRootSaga } = require("./saga");
       SagaManager.cancelSagas(store);
       store.sagaTask = SagaManager.startSagas(nextRootSaga, sagaMiddleware);

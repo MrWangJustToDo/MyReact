@@ -155,7 +155,7 @@ export const Reconciler = (_config: any) => {
 
   const getPublicRootInstance = (_container: RenderContainer) => {
     return _container.__container__;
-  }
+  };
 
   return {
     createPortal,

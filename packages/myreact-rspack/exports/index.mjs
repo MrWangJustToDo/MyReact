@@ -1,6 +1,8 @@
 // ES modules wrapper
-// eslint-disable-next-line import/no-useless-path-segments
-import { ReactRefreshRspackPlugin } from '../dist/index.js';
+/* eslint-disable */
+import pluginModule from "../dist/index.js";
+
+const ReactRefreshRspackPlugin = pluginModule?.ReactRefreshRspackPlugin ?? pluginModule?.default ?? pluginModule;
+
 // default export will be deprecated in next major version
 export default ReactRefreshRspackPlugin;
-export { ReactRefreshRspackPlugin };

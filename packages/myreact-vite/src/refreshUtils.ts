@@ -9,7 +9,6 @@ function debounce(fn: Function, delay: number) {
   };
 }
 
-/* eslint-disable no-undef */
 const hooks: Function[] = [];
 // @ts-ignore
 window.__registerBeforePerformReactRefresh = (cb: Function) => {

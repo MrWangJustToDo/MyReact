@@ -1,4 +1,3 @@
-/* eslint-disable import/export */
 import { Reconciler } from "./feature";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";

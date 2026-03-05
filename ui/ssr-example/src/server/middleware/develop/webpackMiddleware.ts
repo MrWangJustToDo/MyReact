@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 import type { Express } from "express";
 
 export const webpackMiddleware = (app: Express) => {

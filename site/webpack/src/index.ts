@@ -1,5 +1,6 @@
 // import * as webpackBundle from "webpack";
 import WebpackDevMiddleware from "webpack-dev-middleware";
+// eslint-disable-next-line import/default
 import WebpackDevServer from "webpack-dev-server";
 import WebpackHotMiddleware from "webpack-hot-middleware";
 import WebpackNodeExternals from "webpack-node-externals";

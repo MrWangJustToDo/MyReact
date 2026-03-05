@@ -6,7 +6,6 @@ import { OverlayArrayContext, OverlayCloseContext, OverlayOpenContext, useOverla
 import { DesktopOverlay } from "./DesktopOverlay";
 import { MobileOverlay } from "./MobileOverlay";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const ModuleManager = ({ children }: { children: JSX.Element | JSX.Element[] }) => {
   const { overlays, open, close } = useOverlaysProps();
 

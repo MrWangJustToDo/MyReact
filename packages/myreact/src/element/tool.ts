@@ -1,4 +1,17 @@
-import { TYPEKEY, Element, Consumer, ForwardRef, Memo, Lazy, Provider, Fragment, Suspense, Context, Activity } from "@my-react/react-shared";
+import {
+  TYPEKEY,
+  Element,
+  Consumer,
+  ForwardRef,
+  Memo,
+  Lazy,
+  Provider,
+  Fragment,
+  Suspense,
+  Context,
+  Activity,
+  TRANSITIONAL_ELEMENT,
+} from "@my-react/react-shared";
 
 import { currentScheduler, currentComponentFiber, enableOptimizeTreeLog } from "../share";
 
@@ -16,7 +29,12 @@ import type {
  * @public
  */
 export const isValidElement = (element?: MyReactElementNode | any): element is MyReactElement => {
-  return typeof element === "object" && !Array.isArray(element) && element !== null && element?.[TYPEKEY] === Element;
+  return (
+    typeof element === "object" &&
+    !Array.isArray(element) &&
+    element !== null &&
+    (element?.[TYPEKEY] === Element || element?.[TYPEKEY] === TRANSITIONAL_ELEMENT)
+  );
 };
 
 const keysMap = {};

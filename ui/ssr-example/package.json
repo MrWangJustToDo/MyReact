@@ -20,6 +20,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@excalidraw/excalidraw": "^0.17.6",
+    "@lazarv/rsc": "0.0.0-experimental-04f2240-20260306-7fcde375",
     "@loadable/component": "catalog:",
     "@loadable/server": "catalog:",
     "@my-react/react": "workspace:*",

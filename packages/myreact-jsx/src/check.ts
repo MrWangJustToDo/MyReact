@@ -1,5 +1,18 @@
 import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
-import { TYPEKEY, Element, Consumer, ForwardRef, Fragment, Lazy, Memo, Provider, Suspense, Context, Activity } from "@my-react/react-shared";
+import {
+  TYPEKEY,
+  Element,
+  Consumer,
+  ForwardRef,
+  Fragment,
+  Lazy,
+  Memo,
+  Provider,
+  Suspense,
+  Context,
+  Activity,
+  TRANSITIONAL_ELEMENT,
+} from "@my-react/react-shared";
 
 import type {
   MyReactElementNode,
@@ -17,7 +30,12 @@ const { currentScheduler, currentComponentFiber } = __my_react_internal__;
 const { enableOptimizeTreeLog } = __my_react_shared__;
 
 export function isValidElement(element?: MyReactElementNode | any): element is MyReactElement {
-  return typeof element === "object" && !Array.isArray(element) && element !== null && element?.[TYPEKEY] === Element;
+  return (
+    typeof element === "object" &&
+    !Array.isArray(element) &&
+    element !== null &&
+    (element?.[TYPEKEY] === Element || element?.[TYPEKEY] === TRANSITIONAL_ELEMENT)
+  );
 }
 
 const keysMap = {};

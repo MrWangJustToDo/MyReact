@@ -38,7 +38,9 @@ module.exports = (api) => {
   plugins.push(["@babel/plugin-proposal-private-methods", { loose: true }]);
   plugins.push(["@babel/plugin-proposal-private-property-in-object", { loose: true }]);
   plugins.push("@babel/plugin-transform-runtime");
-  plugins.push(["babel-plugin-react-compiler", { target: "18" }]);
+  if (web) {
+    plugins.push(["babel-plugin-react-compiler", { target: "18" }]);
+  }
   plugins.push("@babel/plugin-proposal-export-default-from");
   process.env.STREAM === "false" && plugins.push("@loadable/babel-plugin");
 

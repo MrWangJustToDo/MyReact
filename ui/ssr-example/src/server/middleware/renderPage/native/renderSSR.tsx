@@ -1,6 +1,7 @@
 import { ChakraProvider, /* cookieStorageManager */ cookieStorageManagerSSR } from "@chakra-ui/react";
 import { CacheProvider } from "@emotion/react";
-// import { extractCriticalToChunks } from "@emotion/server";
+import { createFromReadableStream } from "@lazarv/rsc/client";
+import { renderToReadableStream } from "@lazarv/rsc/server";
 import { ChunkExtractor } from "@loadable/server";
 import { renderToString } from "react-dom/server";
 import { HelmetProvider } from "react-helmet-async";
@@ -41,8 +42,6 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env, ass
 
   const body = renderToString(jsx);
 
-  // const emotionChunks = extractCriticalToChunks(body);
-
   const linkElements = webExtractor.getLinkElements();
 
   const styleElements = webExtractor.getStyleElements();
@@ -51,21 +50,27 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env, ass
 
   const refreshElements = generateScriptElements(assets.refreshPath);
 
-  res.status(200).send(
-    "<!doctype html>" +
-      renderToString(
-        <HTML
-          lang={lang}
-          env={JSON.stringify(env)}
-          script={scriptElements}
-          helmetContext={helmetContext}
-          // emotionChunks={emotionChunks}
-          link={linkElements.concat(styleElements)}
-          preloadedState={JSON.stringify(store.getState())}
-          refresh={refreshElements}
-        >
-          {body}
-        </HTML>
-      )
+  const rootEle = (
+    <HTML
+      lang={lang}
+      env={JSON.stringify(env)}
+      script={scriptElements}
+      helmetContext={helmetContext}
+      link={linkElements.concat(styleElements)}
+      preloadedState={JSON.stringify(store.getState())}
+      refresh={refreshElements}
+    >
+      {body}
+    </HTML>
   );
+
+  const htmlString = renderToString(rootEle);
+
+  const xxstream = renderToReadableStream(rootEle);
+
+  const x = await createFromReadableStream(xxstream).catch(console.log);
+
+  console.log(x);
+
+  res.status(200).send("<!doctype html>" + htmlString);
 };

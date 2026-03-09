@@ -1378,6 +1378,9 @@ importers:
       '@excalidraw/excalidraw':
         specifier: ^0.17.6
         version: 0.17.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@lazarv/rsc':
+        specifier: 0.0.0-experimental-04f2240-20260306-7fcde375
+        version: 0.0.0-experimental-04f2240-20260306-7fcde375(react@18.3.1)
       '@loadable/component':
         specifier: 'catalog:'
         version: 5.16.7(react@18.3.1)
@@ -3884,6 +3887,12 @@ packages:
 
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
+
+  '@lazarv/rsc@0.0.0-experimental-04f2240-20260306-7fcde375':
+    resolution: {integrity: sha512-/9K6JMPd6yG4SLZaKj5urtBAu6O94Qjh1nHs4YV4JouHgMyrPnx9CzF9mXs+jiIAd2VXBy9ykB6dtostuAGUDQ==}
+    engines: {node: '>=20.10.0'}
+    peerDependencies:
+      react: '>=19.0.0 || >=0.0.0-experimental'
 
   '@leichtgewicht/ip-codec@2.0.4':
     resolution: {integrity: sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==}
@@ -14887,6 +14896,10 @@ snapshots:
       keyv: 5.6.0
 
   '@keyv/serialize@1.1.1': {}
+
+  '@lazarv/rsc@0.0.0-experimental-04f2240-20260306-7fcde375(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
 
   '@leichtgewicht/ip-codec@2.0.4': {}
 

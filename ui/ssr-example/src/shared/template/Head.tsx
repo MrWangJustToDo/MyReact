@@ -5,7 +5,7 @@ import { noBase } from "@shared";
 
 import type { HTMLProps } from ".";
 
-export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}", helmetContext: { helmet } = {}, emotionChunks }: HTMLProps) => (
+export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}", helmetContext: { helmet } = {} }: HTMLProps) => (
   <head>
     <meta charSet="utf-8" />
     <meta name="build-time" content={__BUILD_TIME__} />
@@ -33,9 +33,6 @@ export const Head = ({ env = "{}", link = [], preLoad = [], preloadedState = "{}
     {preLoad.filter(Boolean).map((ele) => ele)}
     {link.filter(Boolean).map((ele) => ele)}
     <style dangerouslySetInnerHTML={{ __html: getSandpackCssText() }} id="sandpack" key="sandpack-css" />
-    {emotionChunks?.styles.map((style, index) => (
-      <style data-server data-emotion={`${style.key} ${style.ids.join(" ")}`} key={style.key + "_" + index} dangerouslySetInnerHTML={{ __html: style.css }} />
-    ))}
     <script id="__preload_env__" type="application/json" dangerouslySetInnerHTML={{ __html: `${env}` }} />
     <script id="__preload_state__" type="application/json" dangerouslySetInnerHTML={{ __html: `${preloadedState}` }} />
   </head>

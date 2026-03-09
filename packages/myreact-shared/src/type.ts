@@ -2,6 +2,8 @@ export const TYPEKEY = "$$typeof";
 
 export const Element = Symbol.for("react.element");
 
+export const TRANSITIONAL_ELEMENT = Symbol.for("react.transitional.element");
+
 export const Memo = Symbol.for("react.memo");
 
 export const ForwardRef = Symbol.for("react.forward_ref");

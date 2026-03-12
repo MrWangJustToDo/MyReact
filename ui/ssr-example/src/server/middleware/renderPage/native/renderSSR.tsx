@@ -1,7 +1,7 @@
 import { ChakraProvider, /* cookieStorageManager */ cookieStorageManagerSSR } from "@chakra-ui/react";
 import { CacheProvider } from "@emotion/react";
-import { createFromReadableStream } from "@lazarv/rsc/client";
-import { renderToReadableStream } from "@lazarv/rsc/server";
+// import { createFromReadableStream } from "@lazarv/rsc/client";
+// import { renderToReadableStream } from "@lazarv/rsc/server";
 import { ChunkExtractor } from "@loadable/server";
 import { renderToString } from "react-dom/server";
 import { HelmetProvider } from "react-helmet-async";
@@ -65,12 +65,6 @@ export const targetRender: SafeAction = async ({ req, res, store, lang, env, ass
   );
 
   const htmlString = renderToString(rootEle);
-
-  const xxstream = renderToReadableStream(rootEle);
-
-  const x = await createFromReadableStream(xxstream).catch(console.log);
-
-  console.log(x);
 
   res.status(200).send("<!doctype html>" + htmlString);
 };

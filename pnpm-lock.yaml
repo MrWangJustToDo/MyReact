@@ -259,8 +259,8 @@ catalogs:
       specifier: ^6.30.3
       version: 6.30.3
     reactivity-store:
-      specifier: ^0.3.12
-      version: 0.3.12
+      specifier: ^0.4.0
+      version: 0.4.0
     redux:
       specifier: ^5.0.1
       version: 5.0.1
@@ -526,8 +526,8 @@ importers:
         specifier: '>=0.3.22'
         version: link:../myreact
       reactivity-store:
-        specifier: ^0.3.12
-        version: 0.3.12(react@18.3.1)
+        specifier: ^0.4.0
+        version: 0.4.0(react@18.3.1)
 
   packages/myreact-reconciler:
     dependencies:
@@ -1379,8 +1379,8 @@ importers:
         specifier: ^0.17.6
         version: 0.17.6(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@lazarv/rsc':
-        specifier: 0.0.0-experimental-04f2240-20260306-7fcde375
-        version: 0.0.0-experimental-04f2240-20260306-7fcde375(react@18.3.1)
+        specifier: 0.0.0-experimental-baf0ab7-20260308-65add5d1
+        version: 0.0.0-experimental-baf0ab7-20260308-65add5d1(react@18.3.1)
       '@loadable/component':
         specifier: 'catalog:'
         version: 5.16.7(react@18.3.1)
@@ -1485,7 +1485,7 @@ importers:
         version: 6.30.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       reactivity-store:
         specifier: 'catalog:'
-        version: 0.3.12(react@18.3.1)
+        version: 0.4.0(react@18.3.1)
       redux:
         specifier: 'catalog:'
         version: 5.0.1
@@ -3888,8 +3888,8 @@ packages:
   '@keyv/serialize@1.1.1':
     resolution: {integrity: sha512-dXn3FZhPv0US+7dtJsIi2R+c7qWYiReoEh5zUntWCf4oSpMNib8FDhSoed6m3QyZdx5hK7iLFkYk3rNxwt8vTA==}
 
-  '@lazarv/rsc@0.0.0-experimental-04f2240-20260306-7fcde375':
-    resolution: {integrity: sha512-/9K6JMPd6yG4SLZaKj5urtBAu6O94Qjh1nHs4YV4JouHgMyrPnx9CzF9mXs+jiIAd2VXBy9ykB6dtostuAGUDQ==}
+  '@lazarv/rsc@0.0.0-experimental-baf0ab7-20260308-65add5d1':
+    resolution: {integrity: sha512-eiJMCHqnpQhn3pFTVbcTmulizLifUEKv2o6N0EZ/R/tuIvyWiB5MDaMZYMW39SvxYWfB5LZZdrwKcxNzMU8yPw==}
     engines: {node: '>=20.10.0'}
     peerDependencies:
       react: '>=19.0.0 || >=0.0.0-experimental'
@@ -5362,11 +5362,11 @@ packages:
     peerDependencies:
       vite: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
 
-  '@vue/reactivity@3.5.22':
-    resolution: {integrity: sha512-f2Wux4v/Z2pqc9+4SmgZC1p73Z53fyD90NFWXiX9AKVnVBEvLFOWCEgJD3GdGnlxPZt01PSlfmLqbLYzY/Fw4A==}
+  '@vue/reactivity@3.5.30':
+    resolution: {integrity: sha512-179YNgKATuwj9gB+66snskRDOitDiuOZqkYia7mHKJaidOMo/WJxHKF8DuGc4V4XbYTJANlfEKb0yxTQotnx4Q==}
 
-  '@vue/shared@3.5.22':
-    resolution: {integrity: sha512-F4yc6palwq3TT0u+FYf0Ns4Tfl9GRFURDN2gWG7L1ecIaS/4fCIuFOjMTnCyjsu/OK6vaDKLCrGAa+KvvH+h4w==}
+  '@vue/shared@3.5.30':
+    resolution: {integrity: sha512-YXgQ7JjaO18NeK2K9VTbDHaFy62WrObMa6XERNfNOkAhD1F1oDSf3ZJ7K6GqabZ0BvSDHajp8qfS5Sa2I9n8uQ==}
 
   '@web3-storage/multipart-parser@1.0.0':
     resolution: {integrity: sha512-BEO6al7BYqcnfX15W2cnGR+Q566ACXAT9UQykORCWW80lmkpWsnEob6zJS1ZVBKsSJC8+7vJkHwlp+lXG1UCdw==}
@@ -9856,8 +9856,8 @@ packages:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
     engines: {node: '>=0.10.0'}
 
-  reactivity-store@0.3.12:
-    resolution: {integrity: sha512-Idz9EL4dFUtQbHySZQzckWOTUfqjdYpUtNW0iOysC32mG7IjiUGB77QrsyR5eAWBkRiS9JscF6A3fuQAIy+LrQ==}
+  reactivity-store@0.4.0:
+    resolution: {integrity: sha512-uL9uoREOBg2o4zUa8vMU0AbvAOk0osPloizscmyZqMvJzcuuKX3ELFYYr1DX8gAcfvlhPduz4QuLZn1eChCu4Q==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -14897,7 +14897,7 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@lazarv/rsc@0.0.0-experimental-04f2240-20260306-7fcde375(react@18.3.1)':
+  '@lazarv/rsc@0.0.0-experimental-baf0ab7-20260308-65add5d1(react@18.3.1)':
     dependencies:
       react: 18.3.1
 
@@ -16493,11 +16493,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vue/reactivity@3.5.22':
+  '@vue/reactivity@3.5.30':
     dependencies:
-      '@vue/shared': 3.5.22
+      '@vue/shared': 3.5.30
 
-  '@vue/shared@3.5.22': {}
+  '@vue/shared@3.5.30': {}
 
   '@web3-storage/multipart-parser@1.0.0': {}
 
@@ -21725,10 +21725,10 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
 
-  reactivity-store@0.3.12(react@18.3.1):
+  reactivity-store@0.4.0(react@18.3.1):
     dependencies:
-      '@vue/reactivity': 3.5.22
-      '@vue/shared': 3.5.22
+      '@vue/reactivity': 3.5.30
+      '@vue/shared': 3.5.30
       react: 18.3.1
       use-sync-external-store: 1.6.0(react@18.3.1)
 

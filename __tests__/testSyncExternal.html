@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <script src="../bundle/babel.min.js"></script>
+  <script src="../bundle/react.18.development.js"></script>
+  <script src="../bundle/react-dom.18.development.js"></script>
+  <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+  <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useSyncExternalStore, memo, useEffect, useRef } = React;
+
+    class Foo {
+      #status = 'foo'
+
+      cbList = [];
+
+      get state() {
+        return this.#status;
+      }
+
+      set state(f) {
+        this.#status = f;
+
+        this.cbList.forEach(cb => cb())
+      }
+
+      addEvent = (cb) => {
+        this.cbList.push(cb);
+
+        return this.cbList = this.cbList.filter(i => i !== cb);
+      }
+    }
+
+    const Count = () => {
+      const fooRef = useRef(new Foo());
+
+      useEffect(() => {
+        setTimeout(() => fooRef.current.state = 'fffffffffff', 1000)
+      }, [])
+
+      const state = useSyncExternalStore(fooRef.current.addEvent, () => fooRef.current.state)
+
+      return (
+        <div>
+          <p>value: {state}</p>
+        </div>
+      );
+    };
+
+    ReactDOM.createRoot(root).render(<Count />);
+
+    // ReactDOM.render(<Count />, root);
+  </script>
+</body>
+
+</html>

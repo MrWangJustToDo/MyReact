@@ -211,3 +211,6 @@ const getInstance = (stdout: NodeJS.WriteStream, createInstance: () => Ink): Ink
 
   return instance;
 };
+
+// export for static output clean
+export const getExistInstance = (stdout: NodeJS.WriteStream): Ink | undefined => instances.get(stdout);

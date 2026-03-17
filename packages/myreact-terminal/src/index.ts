@@ -1,5 +1,5 @@
 export type { RenderOptions, Instance } from "./render";
-export { default as render } from "./render";
+export { default as render, getExistInstance } from "./render";
 
 export type { Props as BoxProps } from "./components/Box";
 export { default as Box } from "./components/Box";

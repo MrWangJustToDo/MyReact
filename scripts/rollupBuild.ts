@@ -134,6 +134,7 @@ const buildPackages = async () => {
   });
   await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-vite", packageScope: "packages", external: externalReact });
+  await rollupBuild({ packageName: "myreact-server", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-refresh-tools", packageScope: "packages", external: externalReact });
 };
 
@@ -148,3 +149,13 @@ const start = async () => {
 };
 
 start();
+
+// const startReact = async () => {
+//   await rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
+//   await rollupBuild({ packageName: "myreact", packageScope: "packages", external: externalReact });
+//   await writeType("myreact");
+//   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external: externalReact });
+//   await writeType("myreact-dom");
+// };
+
+// startReact();

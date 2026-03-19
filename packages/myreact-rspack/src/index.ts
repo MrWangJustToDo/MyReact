@@ -1,8 +1,8 @@
 import { normalizeOptions } from "./options";
 import { getRefreshRuntimeDirPath, getRefreshRuntimePaths, reactRefreshPath, refreshUtilsPath } from "./paths";
-import { getAdditionalEntries } from "./utils/getAdditionalEntries";
-import { getIntegrationEntry } from "./utils/getIntegrationEntry";
-import { type IntegrationType, getSocketIntegration } from "./utils/getSocketIntegration";
+import { getAdditionalEntries } from "./utils/get-additional-entries";
+import { getIntegrationEntry } from "./utils/get-integration-entry";
+import { type IntegrationType, getSocketIntegration } from "./utils/get-socket-integration";
 
 import type { NormalizedPluginOptions, PluginOptions } from "./options";
 import type { Compiler } from "@rspack/core";

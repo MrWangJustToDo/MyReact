@@ -1,4 +1,4 @@
-import RefreshModuleRuntime from "./internal/RefreshModule.runtime";
+import RefreshModuleRuntime from "./internal/refresh-module.runtime";
 
 import type { LoaderDefinition } from "webpack";
 

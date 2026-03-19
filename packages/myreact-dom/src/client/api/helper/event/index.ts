@@ -1,2 +1,2 @@
-export * from "./addEvent";
-export * from "./removeEvent";
+export * from "./add-event";
+export * from "./remove-event";

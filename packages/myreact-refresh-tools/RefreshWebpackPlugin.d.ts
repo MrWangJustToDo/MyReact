@@ -1,1 +1,1 @@
-export * from "./dist/types/webpackPlugin";
+export * from "./dist/types/webpack-plugin";

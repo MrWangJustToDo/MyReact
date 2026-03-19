@@ -1,6 +1,6 @@
 import { include, STATE_TYPE } from "@my-react/react-shared";
 
-import { getValidParentFiberWithNode } from "../dispatchMap";
+import { getValidParentFiberWithNode } from "../dispatch-map";
 
 import type { ReconcilerDispatch } from "../dispatch";
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";

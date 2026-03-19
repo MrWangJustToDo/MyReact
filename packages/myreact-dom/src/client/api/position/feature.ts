@@ -3,8 +3,8 @@ import { PATCH_TYPE, exclude, include } from "@my-react/react-shared";
 import { getValidParentFiberWithNode } from "@my-react-dom-shared";
 
 import { append } from "./append";
-import { getInsertBeforeDomFromSiblingAndParent } from "./getInsertBeforeDom";
-import { insertBefore } from "./insertBefore";
+import { getInsertBeforeDomFromSiblingAndParent } from "./get-insert-before-dom";
+import { insertBefore } from "./insert-before";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";

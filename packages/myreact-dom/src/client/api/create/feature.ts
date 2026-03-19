@@ -17,8 +17,8 @@ import {
   isHTMLTag,
 } from "@my-react-dom-shared";
 
-import { hydrateCreate } from "./hydrateCreate";
-import { nativeCreate } from "./nativeCreate";
+import { hydrateCreate } from "./hydrate-create";
+import { nativeCreate } from "./native-create";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch, MyReactFiberNodeClientDev } from "@my-react-dom-client/renderDispatch";

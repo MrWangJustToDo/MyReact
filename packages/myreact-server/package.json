@@ -1,0 +1,84 @@
+{
+  "name": "@my-react/react-server",
+  "description": "React Server Components support for MyReact",
+  "author": "MrWangJustToDo",
+  "license": "MIT",
+  "version": "0.3.22",
+  "main": "./index.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist",
+    "index.js",
+    "server",
+    "client"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MrWangJustToDo/MyReact",
+    "directory": "packages/myreact-server"
+  },
+  "homepage": "https://mrwangjusttodo.github.io/MyReact",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "require": "./index.js"
+    },
+    "./server": {
+      "types": "./dist/types/server/index.d.ts",
+      "require": "./server/index.js"
+    },
+    "./client": {
+      "types": "./dist/types/client/index.d.ts",
+      "require": "./client/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "buildOptions": [
+    {
+      "input": "./src/index.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/index.js",
+          "format": "cjs",
+          "type": true,
+          "multiple": true
+        }
+      ]
+    },
+    {
+      "input": "./src/server/index.ts",
+      "pkgName": "server",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/server/index.js",
+          "format": "cjs",
+          "multiple": true
+        }
+      ]
+    },
+    {
+      "input": "./src/client/index.ts",
+      "pkgName": "client",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/client/index.js",
+          "format": "cjs",
+          "multiple": true
+        }
+      ]
+    }
+  ],
+  "dependencies": {
+    "@lazarv/rsc": "0.0.0-experimental-baf0ab7-20260308-65add5d1"
+  },
+  "devDependencies": {
+    "@my-react/react-shared": "^0.3.22"
+  },
+  "peerDependencies": {
+    "@my-react/react": ">=0.3.22",
+    "@my-react/react-reconciler": ">=0.3.22"
+  }
+}

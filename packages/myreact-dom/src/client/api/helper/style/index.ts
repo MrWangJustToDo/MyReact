@@ -1,1 +1,1 @@
-export * from "./setStyle";
+export * from "./set-style";

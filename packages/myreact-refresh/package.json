@@ -25,7 +25,7 @@
   },
   "buildOptions": [
     {
-      "input": "./src/RefreshBabelPlugin.ts",
+      "input": "./src/refresh-babel-plugin.ts",
       "pkgName": "RefreshBabelPlugin",
       "output": [
         {
@@ -38,7 +38,7 @@
       ]
     },
     {
-      "input": "./src/RefreshRuntime.ts",
+      "input": "./src/refresh-runtime.ts",
       "pkgName": "RefreshRuntime",
       "output": [
         {

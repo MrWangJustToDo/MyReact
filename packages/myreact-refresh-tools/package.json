@@ -47,7 +47,7 @@
       ]
     },
     {
-      "input": "./src/webpackPlugin.ts",
+      "input": "./src/webpack-plugin.ts",
       "pkgName": "webpackPlugin",
       "output": [
         {

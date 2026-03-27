@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node index.js",
+    "dev": "node server.js",
     "dev:org": "next dev",
     "build": "next build",
     "start": "next start",
@@ -23,14 +23,8 @@
     "tailwindcss": "catalog:",
     "typescript": "catalog:"
   },
-  "_moduleAliases": {
-    "react/compiler-runtime": "node_modules/@my-react/react/compiler-runtime",
-    "react": "node_modules/@my-react/react",
-    "react-dom": "node_modules/@my-react/react-dom"
-  },
   "devDependencies": {
     "babel-plugin-react-compiler": "catalog:",
-    "module-alias": "catalog:",
     "react-compiler-runtime": "catalog:"
   }
 }

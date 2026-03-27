@@ -1265,9 +1265,6 @@ importers:
       babel-plugin-react-compiler:
         specifier: 'catalog:'
         version: 1.0.0
-      module-alias:
-        specifier: 'catalog:'
-        version: 2.3.4
       react-compiler-runtime:
         specifier: 'catalog:'
         version: 1.0.0(react@18.3.1)

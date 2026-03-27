@@ -6,6 +6,7 @@ const config = {
   reactCompiler: true,
 };
 
+/** @type {import('next').NextConfig} */
 const nextConfig = withNext(config, { turbopackKey: "turbopack" });
 
 // export default config;

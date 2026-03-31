@@ -1,11 +1,11 @@
 /* eslint-disable max-lines */
-import { type StyledChar } from "@alcalzone/ansi-tokenize";
 import ansiEscapes from "ansi-escapes";
 import cliCursor from "cli-cursor";
 import process from "node:process";
 import { type Writable } from "node:stream";
 
-import colorize from "./colorize";
+import colorize from "./colorize.js";
+import { type StyledLine } from "./styled-line.js";
 
 // Debugging option to simulate flicker if for terminals that do not support enableSynchronizedOutput.
 const enableSynchronizedOutput = true;
@@ -57,7 +57,7 @@ export type LogUpdate = {
   clear: () => void;
   done: () => void;
   sync: (str: string, cursorPosition?: CursorPosition) => void;
-  (str: string, styledOutput: StyledChar[][], debugRainbowColor?: string, cursorPosition?: CursorPosition): void;
+  (str: string, styledOutput: StyledLine[], debugRainbowColor?: string, cursorPosition?: CursorPosition): void;
 };
 
 const enterAlternateBuffer = (stream: Writable, alreadyActive: boolean): void => {
@@ -128,19 +128,19 @@ const moveCursorDown = (buffer: string[], skippedLines: number): number => {
   return 0;
 };
 
-const getLineLength = (styledChars: StyledChar[] | undefined): number => {
+const getLineLength = (styledChars: StyledLine | undefined): number => {
   if (styledChars === undefined) {
     return 0;
   }
 
   for (let j = styledChars.length - 1; j >= 0; j--) {
-    const char = styledChars[j];
-    if (char === undefined) {
+    const char = styledChars.getValue(j);
+    if (!char) {
       continue;
     }
 
-    if ((char.value !== " " && char.value !== "") || char.styles.length > 0) {
-      return j + (char.fullWidth ? 2 : 1);
+    if ((char !== " " && char !== "") || styledChars.hasStyles(j)) {
+      return j + (styledChars.getFullWidth(j) ? 2 : 1);
     }
   }
 
@@ -178,7 +178,7 @@ const createStandard = (
     enterAlternateBuffer(stream, alternateBufferAlreadyActive);
   }
 
-  const render = (str: string, _styledOutput: StyledChar[][], debugRainbowColor?: string, cursorPosition?: CursorPosition) => {
+  const render = (str: string, _styledOutput: StyledLine[], debugRainbowColor?: string, cursorPosition?: CursorPosition) => {
     if (!showCursor) {
       hasHiddenCursor = ensureCursorHidden(showCursor, hasHiddenCursor, stream);
     }
@@ -360,14 +360,14 @@ const createIncremental = (
   let previousRows = 0;
   let previousColumns = 0;
   let hasHiddenCursor = false;
-  let alternateBufferStyledOutput: StyledChar[][] = [];
+  let alternateBufferStyledOutput: StyledLine[] = [];
   let previousCursorPosition: CursorPosition | undefined;
 
   if (alternateBuffer) {
     enterAlternateBuffer(stream, alternateBufferAlreadyActive);
   }
 
-  const render = (str: string, styledOutput: StyledChar[][], debugRainbowColor?: string, cursorPosition?: CursorPosition) => {
+  const render = (str: string, styledOutput: StyledLine[], debugRainbowColor?: string, cursorPosition?: CursorPosition) => {
     if (!showCursor) {
       hasHiddenCursor = ensureCursorHidden(showCursor, hasHiddenCursor, stream);
     }

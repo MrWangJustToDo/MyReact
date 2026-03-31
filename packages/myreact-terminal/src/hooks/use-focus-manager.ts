@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import FocusContext, { type Props } from "../components/FocusContext";
+import FocusContext, { type Props } from "../components/FocusContext.js";
 
 type Output = {
   /**

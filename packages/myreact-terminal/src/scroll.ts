@@ -6,7 +6,7 @@
 
 import Yoga from "yoga-layout";
 
-import { type DOMElement } from "./dom";
+import { type DOMElement } from "./dom.js";
 
 function calculateScrollDimensions(node: DOMElement): {
   scrollHeight: number;
@@ -58,9 +58,29 @@ export function calculateScroll(node: DOMElement): void {
     return;
   }
 
-  const { scrollHeight, scrollWidth } = calculateScrollDimensions(node);
+  const { scrollHeight: actualScrollHeight, scrollWidth } = calculateScrollDimensions(node);
+  let scrollHeight = actualScrollHeight;
 
   const clientHeight = yogaNode.getComputedHeight() - yogaNode.getComputedBorder(Yoga.EDGE_TOP) - yogaNode.getComputedBorder(Yoga.EDGE_BOTTOM);
+
+  if (node.style.stableScrollback && node.style.overflowToBackbuffer) {
+    // When stableScrollback is enabled, we track the maximum scroll position ever reached
+    // (unless the buffer is cleared). This avoids needing to clear the entire scrollback
+    // buffer in order to change the content rendered to it. It ensures that even if child
+    // nodes are removed from the DOM, the scrollable area doesn't shrink, allowing users
+    // to still scroll up and view content that has 'fallen off' into the virtual backbuffer.
+    const actualMaxScrollTop = Math.max(0, actualScrollHeight - clientHeight);
+
+    if (node.internal_isScrollbackDirty) {
+      node.internal_maxScrollTop = actualMaxScrollTop;
+      node.internal_isScrollbackDirty = false;
+    } else {
+      node.internal_maxScrollTop = Math.max(node.internal_maxScrollTop ?? 0, actualMaxScrollTop);
+    }
+
+    // Ensure we have enough scrollHeight to accommodate internalMaxScrollTop
+    scrollHeight = Math.max(actualScrollHeight, node.internal_maxScrollTop + clientHeight);
+  }
 
   const scrollTop = Math.max(0, Math.min(node.style.scrollTop ?? 0, scrollHeight - clientHeight));
 
@@ -71,6 +91,7 @@ export function calculateScroll(node: DOMElement): void {
 
   node.internal_scrollState = {
     scrollHeight,
+    actualScrollHeight,
     scrollWidth,
     scrollTop,
     scrollLeft,

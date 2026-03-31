@@ -1,4 +1,4 @@
-import Box from "./Box";
+import Box from "./Box.js";
 
 /**
 A flexible space that expands along the major axis of its containing layout.

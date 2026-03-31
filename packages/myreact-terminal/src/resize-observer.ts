@@ -1,4 +1,4 @@
-import { type DOMElement } from "./dom";
+import { type DOMElement } from "./dom.js";
 
 export type ResizeObserverCallback = (entries: ResizeObserverEntry[], observer: ResizeObserver) => void;
 

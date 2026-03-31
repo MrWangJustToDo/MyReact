@@ -4,7 +4,10 @@ import { writeFile } from "fs/promises";
 import { resolve } from "path";
 import { rollupBuild } from "project-tool/rollup";
 
-const external = (id: string) => id.includes("@my-react/") || (id.includes("node_modules") && !id.includes("tslib"));
+const external = (id: string) =>
+  id.includes("@my-react/") ||
+  (id.includes("node_modules") && !id.includes("tslib")) ||
+  (!id.startsWith(".") && !id.startsWith("/") && !id.startsWith("\0") && !id.includes("tslib"));
 
 const writeType = async (packageName: string) => {
   if (packageName === "myreact") {

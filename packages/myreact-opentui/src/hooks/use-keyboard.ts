@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 
-import { useAppContext } from "../components/App";
+import { useAppContext } from "../components/App.js";
 
-import { useEffectEvent } from "./use-event";
+import { useEffectEvent } from "./use-event.js";
 
 import type { KeyEvent } from "@opentui/core";
 

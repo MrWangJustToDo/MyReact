@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { type DOMNode } from "./dom";
-import { collectSortedFragments, type TextFragment } from "./measure-element";
+import { type DOMNode } from "./dom.js";
+import { collectSortedFragments, type TextFragment } from "./measure-element.js";
 
 export type LayoutState = Record<string, any>;
 

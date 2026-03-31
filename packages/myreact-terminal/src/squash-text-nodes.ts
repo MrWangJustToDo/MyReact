@@ -1,7 +1,7 @@
-import { type DOMElement } from "./dom";
-import { type CharOffsetMap } from "./measure-text";
+import { type DOMElement } from "./dom.js";
+import { type CharOffsetMap } from "./measure-text.js";
 
-export type { CharOffsetMap, CharOffsetRange } from "./measure-text";
+export type { CharOffsetMap, CharOffsetRange } from "./measure-text.js";
 
 // Squashing text nodes allows to combine multiple text nodes into one and write
 // to `Output` instance only once. For example, <Text>hello{' '}world</Text>

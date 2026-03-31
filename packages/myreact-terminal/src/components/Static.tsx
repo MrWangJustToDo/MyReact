@@ -1,6 +1,6 @@
 import { useMemo, useState, useLayoutEffect, type ReactNode } from "react";
 
-import { type Styles } from "../styles";
+import { type Styles } from "../styles.js";
 
 export type Props<T> = {
   /**

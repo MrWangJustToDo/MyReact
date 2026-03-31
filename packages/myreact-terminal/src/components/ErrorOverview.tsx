@@ -4,8 +4,8 @@ import * as fs from "node:fs";
 import { cwd } from "node:process";
 import StackUtils from "stack-utils";
 
-import Box from "./Box";
-import Text from "./Text";
+import Box from "./Box.js";
+import Text from "./Text.js";
 
 // Error's source file is reported as file:///home/user/file.js
 // This function removes the file://[cwd] part

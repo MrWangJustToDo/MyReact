@@ -1,12 +1,14 @@
 import Yoga, { type Node as YogaNode } from "yoga-layout";
 
-import { measureStyledChars, toStyledCharacters, widestLineFromStyledChars } from "./measure-text";
-import { type OutputTransformer } from "./render-node-to-output";
-import squashTextNodes from "./squash-text-nodes";
-import { type Styles } from "./styles";
-import { wrapOrTruncateStyledChars } from "./text-wrap";
+import { measureStyledChars, toStyledCharacters, widestLineFromStyledChars } from "./measure-text.js";
+import { type Region } from "./output.js";
+import { type OutputTransformer } from "./render-node-to-output.js";
+import squashTextNodes from "./squash-text-nodes.js";
+import { type StyledLine } from "./styled-line.js";
+import { type Styles } from "./styles.js";
+import { wrapOrTruncateStyledChars } from "./text-wrap.js";
 
-import type ResizeObserver from "./resize-observer";
+import type ResizeObserver from "./resize-observer.js";
 
 type InkNode = {
   parentNode: DOMElement | undefined;
@@ -16,9 +18,36 @@ type InkNode = {
 };
 
 export type TextName = "#text";
-export type ElementNames = "ink-root" | "ink-box" | "ink-text" | "ink-virtual-text";
+export type ElementNames = "ink-root" | "ink-box" | "ink-text" | "ink-virtual-text" | "ink-static-render";
 
 export type NodeNames = ElementNames | TextName;
+
+export type StickyHeader = {
+  nodeId: number;
+  lines: readonly StyledLine[]; // Natural (scrolling) version
+  stuckLines?: readonly StyledLine[]; // Alternate (sticky) version
+  styledOutput: readonly StyledLine[]; // Legacy property
+  x: number; // Stuck X position relative to region
+  y: number; // Stuck Y position relative to region
+  naturalRow: number; // Natural row offset relative to content start
+  startRow: number; // Content-relative start row (same as naturalRow)
+  endRow: number; // Content-relative end row
+  scrollContainerId: number | string;
+  isStuckOnly: boolean; // If true, natural 'lines' are already in background content
+
+  // Metadata for cached headers
+  relativeX?: number; // Relative to StaticRender
+  relativeY?: number; // Relative to StaticRender
+  height?: number;
+  parentRelativeTop?: number;
+  parentHeight?: number;
+  parentBorderTop?: number;
+  parentBorderBottom?: number;
+  type?: "top" | "bottom";
+  node?: DOMElement;
+  maxStuckY?: number;
+  minStuckY?: number;
+};
 
 export type DOMElement = {
   nodeName: ElementNames;
@@ -27,6 +56,8 @@ export type DOMElement = {
   internal_transform?: OutputTransformer;
   internal_terminalCursorFocus?: boolean;
   internal_terminalCursorPosition?: number;
+  internal_onBeforeRender?: (node: DOMElement, options?: { trackSelection?: boolean }) => void;
+  cachedRender?: Region;
 
   internal_accessibility?: {
     role?:
@@ -68,22 +99,26 @@ export type DOMElement = {
   onRender?: () => void;
   onImmediateRender?: () => void;
   internal_scrollState?: ScrollState;
-  internal_sticky?: boolean;
-  internal_sticky_alternate?: boolean;
+  internal_sticky?: boolean | "top" | "bottom";
+  internal_stickyAlternate?: boolean;
   internal_opaque?: boolean;
-  resizeObservers?: Set<ResizeObserver>;
+  internal_scrollbar?: boolean;
   internal_lastMeasuredSize?: { width: number; height: number };
+  internal_maxScrollTop?: number;
+  internal_isScrollbackDirty?: boolean;
+  internal_id: number;
+  resizeObservers?: Set<ResizeObserver>;
 } & InkNode;
 
 export type ScrollState = {
   scrollTop: number;
   scrollLeft: number;
   scrollHeight: number;
+  actualScrollHeight: number;
   scrollWidth: number;
   clientHeight: number;
   clientWidth: number;
 };
-
 export type TextNode = {
   nodeName: TextName;
   nodeValue: string;
@@ -99,6 +134,8 @@ export type DOMNode<T = { nodeName: NodeNames }> = T extends {
 
 export type DOMNodeAttribute = boolean | string | number;
 
+let idCounter = 0;
+
 export const createNode = (nodeName: ElementNames): DOMElement => {
   const node: DOMElement = {
     nodeName,
@@ -107,9 +144,15 @@ export const createNode = (nodeName: ElementNames): DOMElement => {
     childNodes: [],
     parentNode: undefined,
     yogaNode: nodeName === "ink-virtual-text" ? undefined : Yoga.Node.create(),
+
     internal_accessibility: {},
     internal_sticky: false,
-    internal_sticky_alternate: false,
+    internal_stickyAlternate: false,
+    internal_opaque: false,
+    internal_scrollbar: true,
+    internal_maxScrollTop: 0,
+    internal_isScrollbackDirty: false,
+    internal_id: idCounter++,
   };
 
   if (nodeName === "ink-text") {
@@ -166,18 +209,22 @@ export const insertBeforeNode = (node: DOMElement, newChildNode: DOMNode, before
 
 export const removeChildNode = (node: DOMElement, removeNode: DOMNode): void => {
   if (removeNode.yogaNode) {
-    removeNode.parentNode?.yogaNode?.removeChild(removeNode.yogaNode);
+    const parentYogaNode = removeNode.yogaNode.getParent();
+
+    if (parentYogaNode) {
+      parentYogaNode.removeChild(removeNode.yogaNode);
+    }
   }
 
   removeNode.parentNode = undefined;
 
+  if (node.nodeName === "ink-text" || node.nodeName === "ink-virtual-text") {
+    markNodeAsDirty(node);
+  }
+
   const index = node.childNodes.indexOf(removeNode);
   if (index >= 0) {
     node.childNodes.splice(index, 1);
-  }
-
-  if (node.nodeName === "ink-text" || node.nodeName === "ink-virtual-text") {
-    markNodeAsDirty(node);
   }
 };
 
@@ -237,6 +284,19 @@ const findClosestYogaNode = (node?: DOMNode): YogaNode | undefined => {
   }
 
   return node.yogaNode ?? findClosestYogaNode(node.parentNode);
+};
+
+export const setCachedRender = (node: DOMElement, cachedRender: Region) => {
+  node.cachedRender = cachedRender;
+
+  if (node.yogaNode) {
+    node.yogaNode.setWidth(cachedRender.width);
+    node.yogaNode.setHeight(cachedRender.height);
+
+    while (node.yogaNode.getChildCount() > 0) {
+      node.yogaNode.removeChild(node.yogaNode.getChild(0));
+    }
+  }
 };
 
 const markNodeAsDirty = (node?: DOMNode): void => {

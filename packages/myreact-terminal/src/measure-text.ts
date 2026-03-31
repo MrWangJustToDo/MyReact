@@ -1,8 +1,9 @@
-import { tokenize, styledCharsFromTokens, type StyledChar } from "@alcalzone/ansi-tokenize";
 import stringWidth from "string-width";
 
-import { DataLimitedLruMap } from "./data-limited-lru-map";
-import { type DOMNode } from "./dom";
+import { DataLimitedLruMap } from "./data-limited-lru-map.js";
+import { type DOMNode } from "./dom.js";
+import { StyledLine } from "./styled-line.js";
+import { tokenize, styledLineFromTokens } from "./tokenize.js";
 
 export type StringWidth = (text: string) => number;
 
@@ -33,11 +34,19 @@ const widthCache = new Map<string, number>();
 // The keys for this cache can be very large so we need to limit the size
 // of the data cached as well as the number of keys cached to prevent
 // memory issues.
-const toStyledCharactersCache = new DataLimitedLruMap<StyledChar[]>(10_000, 1_000_000);
+const toStyledCharactersCache = new DataLimitedLruMap<StyledLine>(2000, 100_000);
+
+let toStyledCharactersCacheEnabled = true;
+
+export function setEnableToStyledCharactersCache(enabled: boolean) {
+  toStyledCharactersCacheEnabled = enabled;
+  if (!enabled) {
+    toStyledCharactersCache.clear();
+  }
+}
 
 export function setStringWidthFunction(fn: StringWidth) {
   currentStringWidth = fn;
-  // Clear the width cache to avoid stale values.
   clearStringWidthCache();
 }
 
@@ -45,128 +54,127 @@ export function clearStringWidthCache() {
   widthCache.clear();
 }
 
-export function toStyledCharacters(text: string): StyledChar[] {
-  const cached = toStyledCharactersCache.get(text);
-  if (cached !== undefined) {
-    return cached;
+export function clearToStyledCharactersCache() {
+  toStyledCharactersCache.clear();
+}
+
+export function toStyledCharacters(text: string): StyledLine {
+  if (toStyledCharactersCacheEnabled) {
+    const cached = toStyledCharactersCache.get(text);
+    if (cached !== undefined) {
+      return cached;
+    }
   }
 
   const tokens = tokenize(text);
-  const characters = styledCharsFromTokens(tokens);
-  const combinedCharacters: StyledChar[] = [];
+  const characters = styledLineFromTokens(tokens);
+  const combinedLine = new StyledLine();
 
   for (let i = 0; i < characters.length; i++) {
-    const character = characters[i];
-    if (!character) {
+    const value = characters.getValue(i);
+    const formatFlags = characters.getFormatFlags(i);
+    const fgColor = characters.getFgColor(i);
+    const bgColor = characters.getBgColor(i);
+    const link = characters.getLink(i);
+
+    if (value === "\t") {
+      for (let j = 0; j < 4; j++) {
+        combinedLine.pushChar(" ", formatFlags, fgColor, bgColor, link);
+      }
+
       continue;
     }
 
-    if (character.value === "\t") {
-      const spaceCharacter: StyledChar = { ...character, value: " " };
-
-      combinedCharacters.push(spaceCharacter, spaceCharacter, spaceCharacter, spaceCharacter);
+    if (value === "\b") {
       continue;
     }
 
-    if (character.value === "\b") {
-      continue;
-    }
-
-    let { value } = character;
+    let combinedValue = value;
     let isCombined = false;
-    const firstCodePoint = value.codePointAt(0);
+    const firstCodePoint = combinedValue.codePointAt(0);
 
     // 1. Regional Indicators (Flags)
     // These combine in pairs.
     // See: https://en.wikipedia.org/wiki/Regional_indicator_symbol
     if (firstCodePoint && firstCodePoint >= 0x1_f1_e6 && firstCodePoint <= 0x1_f1_ff && i + 1 < characters.length) {
-      const nextCharacter = characters[i + 1];
+      const nextValue = characters.getValue(i + 1);
+      const nextFirstCodePoint = nextValue.codePointAt(0);
 
-      if (nextCharacter) {
-        const nextFirstCodePoint = nextCharacter.value.codePointAt(0);
-
-        if (nextFirstCodePoint && nextFirstCodePoint >= 0x1_f1_e6 && nextFirstCodePoint <= 0x1_f1_ff) {
-          value += nextCharacter.value;
-          i++;
-
-          combinedCharacters.push({ ...character, value });
-          continue;
-        }
+      if (nextFirstCodePoint && nextFirstCodePoint >= 0x1_f1_e6 && nextFirstCodePoint <= 0x1_f1_ff) {
+        combinedValue += nextValue;
+        i++;
+        isCombined = true;
       }
     }
 
     // 2. Other combining characters
     // See: https://en.wikipedia.org/wiki/Combining_character
-    while (i + 1 < characters.length) {
-      const nextCharacter = characters[i + 1];
+    if (!isCombined) {
+      // 2. Other combining characters
+      while (i + 1 < characters.length) {
+        const nextValue = characters.getValue(i + 1);
+        if (!nextValue) break;
 
-      if (!nextCharacter) {
-        break;
-      }
+        const nextFirstCodePoint = nextValue.codePointAt(0);
+        if (!nextFirstCodePoint) break;
 
-      const codePoints = [...nextCharacter.value].map((char) => char.codePointAt(0));
+        // Unicode Mark category includes:
+        // - Combining Diacritical Marks (U+0300-036F)
+        // - Thai combining characters (U+0E31-0E3A, U+0E47-0E4E)
+        // - Variation selectors (U+FE00-FE0F)
+        // - Combining enclosing keycap (U+20E3)
+        // - And many other combining marks across Unicode
+        const isUnicodeMark = /\p{Mark}/u.test(nextValue);
 
-      const nextFirstCodePoint = codePoints[0];
+        // Skin tone modifiers (emoji modifiers, not in Mark category)
+        const isSkinToneModifier = nextFirstCodePoint >= 0x1_f3_fb && nextFirstCodePoint <= 0x1_f3_ff;
 
-      if (!nextFirstCodePoint) {
-        break;
-      }
+        // Zero-width joiner (used in emoji sequences)
+        const isZeroWidthJoiner = nextFirstCodePoint === 0x20_0d;
 
-      // Unicode Mark category includes:
-      // - Combining Diacritical Marks (U+0300-036F)
-      // - Thai combining characters (U+0E31-0E3A, U+0E47-0E4E)
-      // - Variation selectors (U+FE00-FE0F)
-      // - Combining enclosing keycap (U+20E3)
-      // - And many other combining marks across Unicode
-      const isUnicodeMark = /\p{Mark}/u.test(nextCharacter.value);
+        // Tags block (U+E0000 - U+E007F, used for flag emoji)
+        const isTagsBlock = nextFirstCodePoint >= 0xe_00_00 && nextFirstCodePoint <= 0xe_00_7f;
 
-      // Skin tone modifiers (emoji modifiers, not in Mark category)
-      const isSkinToneModifier = nextFirstCodePoint >= 0x1_f3_fb && nextFirstCodePoint <= 0x1_f3_ff;
+        const isCombining =
+          isUnicodeMark ||
+          isSkinToneModifier ||
+          isZeroWidthJoiner ||
+          isTagsBlock ||
+          nextFirstCodePoint === 0x0e_33 || // Thai SARA AM
+          nextFirstCodePoint === 0x0e_b3; // Lao SARA AM
 
-      // Zero-width joiner (used in emoji sequences)
-      const isZeroWidthJoiner = nextFirstCodePoint === 0x20_0d;
+        if (!isCombining) {
+          break;
+        }
 
-      // Tags block (U+E0000 - U+E007F, used for flag emoji)
-      const isTagsBlock = nextFirstCodePoint >= 0xe_00_00 && nextFirstCodePoint <= 0xe_00_7f;
+        // If it was a ZWJ, also consume the character after it.
+        combinedValue += nextValue;
+        i++;
 
-      const isCombining = isUnicodeMark || isSkinToneModifier || isZeroWidthJoiner || isTagsBlock;
-
-      if (!isCombining) {
-        break;
-      }
-
-      // Merge with previous character
-      value += nextCharacter.value;
-      i++; // Consume next character.
-      isCombined = true;
-
-      // If it was a ZWJ, also consume the character after it.
-      if (isZeroWidthJoiner && i + 1 < characters.length) {
-        const characterAfterZwj = characters[i + 1];
-
-        if (characterAfterZwj) {
-          value += characterAfterZwj.value;
-          i++; // Consume character after ZWJ.
+        if (isZeroWidthJoiner && i + 1 < characters.length) {
+          const characterAfterZwj = characters.getValue(i + 1);
+          if (characterAfterZwj) {
+            combinedValue += characterAfterZwj;
+            i++;
+          }
         }
       }
     }
 
-    if (isCombined) {
-      combinedCharacters.push({ ...character, value });
-    } else {
-      combinedCharacters.push(character);
-    }
+    combinedLine.pushChar(combinedValue, formatFlags, fgColor, bgColor, link);
   }
 
-  toStyledCharactersCache.set(text, combinedCharacters);
+  if (toStyledCharactersCacheEnabled) {
+    toStyledCharactersCache.set(text, combinedLine);
+  }
 
-  return combinedCharacters;
+  return combinedLine;
 }
 
-export function styledCharsWidth(styledChars: StyledChar[]): number {
+export function styledCharsWidth(line: StyledLine): number {
   let length = 0;
-  for (const char of styledChars) {
-    length += inkCharacterWidth(char.value);
+  for (let i = 0; i < line.length; i++) {
+    length += inkCharacterWidth(line.getValue(i));
   }
 
   return length;
@@ -182,8 +190,6 @@ export function inkCharacterWidth(text: string): number {
   try {
     calculatedWidth = currentStringWidth(text);
   } catch {
-    // Ignore errors and use default width of 1.
-    // We catch this result to avoid throwing exceptions repeatedly.
     calculatedWidth = 1;
     console.warn(`Failed to calculate string width for ${JSON.stringify(text)}`);
   }
@@ -192,45 +198,46 @@ export function inkCharacterWidth(text: string): number {
   return calculatedWidth;
 }
 
-export function wordBreakStyledChars(styledChars: StyledChar[]): StyledChar[][] {
-  const words: StyledChar[][] = [];
-  let currentWord: StyledChar[] = [];
+export function wordBreakStyledChars(line: StyledLine): StyledLine[] {
+  const words: StyledLine[] = [];
+  let start = 0;
 
-  for (const char of styledChars) {
-    if (char.value === "\n" || char.value === " ") {
-      if (currentWord.length > 0) {
-        words.push(currentWord);
+  for (let i = 0; i < line.length; i++) {
+    const val = line.getValue(i);
+
+    if (val === "\n" || val === " ") {
+      if (i > start) {
+        words.push(line.slice(start, i));
       }
 
-      currentWord = [];
-      words.push([char]);
-    } else {
-      currentWord.push(char);
+      words.push(line.slice(i, i + 1));
+      start = i + 1;
     }
   }
 
-  if (currentWord.length > 0) {
-    words.push(currentWord);
+  if (start < line.length) {
+    words.push(line.slice(start));
   }
 
   return words;
 }
 
-export function splitStyledCharsByNewline(styledChars: StyledChar[]): StyledChar[][] {
-  const lines: StyledChar[][] = [[]];
+export function splitStyledCharsByNewline(line: StyledLine): StyledLine[] {
+  const lines: StyledLine[] = [];
+  let start = 0;
 
-  for (const char of styledChars) {
-    if (char.value === "\n") {
-      lines.push([]);
-    } else {
-      lines.at(-1)!.push(char);
+  for (let i = 0; i < line.length; i++) {
+    if (line.getValue(i) === "\n") {
+      lines.push(line.slice(start, i));
+      start = i + 1;
     }
   }
 
+  lines.push(line.slice(start));
   return lines;
 }
 
-export function widestLineFromStyledChars(lines: StyledChar[][]): number {
+export function widestLineFromStyledChars(lines: StyledLine[]): number {
   let maxWidth = 0;
   for (const line of lines) {
     maxWidth = Math.max(maxWidth, styledCharsWidth(line));
@@ -239,31 +246,22 @@ export function widestLineFromStyledChars(lines: StyledChar[][]): number {
   return maxWidth;
 }
 
-export function styledCharsToString(styledChars: StyledChar[]): string {
-  let result = "";
-  for (const char of styledChars) {
-    result += char.value;
-  }
-
-  return result;
+export function styledCharsToString(line: StyledLine): string {
+  return line.getText();
 }
 
-export function measureStyledChars(styledChars: StyledChar[]): {
+export function measureStyledChars(line: StyledLine): {
   width: number;
   height: number;
 } {
-  if (styledChars.length === 0) {
-    return {
-      width: 0,
-      height: 0,
-    };
+  if (line.length === 0) {
+    return { width: 0, height: 0 };
   }
 
-  const lines = splitStyledCharsByNewline(styledChars);
+  const lines = splitStyledCharsByNewline(line);
   const width = widestLineFromStyledChars(lines);
   const height = lines.length;
-  const dimensions = { width, height };
-  return dimensions;
+  return { width, height };
 }
 
 /**
@@ -280,24 +278,25 @@ export function measureStyledChars(styledChars: StyledChar[]): {
  * - Newlines ('\n') advance row and reset column
  * - Other characters add their visual width to column
  */
-export function getPositionAtOffset(styledChars: StyledChar[], targetOffset: number): { row: number; col: number } {
+export function getPositionAtOffset(line: StyledLine, targetOffset: number): { row: number; col: number } {
   let row = 0;
   let col = 0;
   let charCount = 0;
 
-  for (const char of styledChars) {
+  for (let i = 0; i < line.length; i++) {
     if (charCount >= targetOffset) {
       break;
     }
 
-    if (char.value === "\n") {
+    const val = line.getValue(i);
+    if (val === "\n") {
       row++;
       col = 0;
     } else {
-      col += inkCharacterWidth(char.value);
+      col += inkCharacterWidth(val);
     }
 
-    charCount += char.value.length;
+    charCount += val.length;
   }
 
   return { row, col };

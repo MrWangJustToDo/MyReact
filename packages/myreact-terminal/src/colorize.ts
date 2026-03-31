@@ -57,4 +57,18 @@ const colorize = (str: string, color: string | undefined, type: ColorType): stri
   return str;
 };
 
+export const getBackgroundColorEscape = (color: string): string | undefined => {
+  // Chalk automatically downgrades colors based on terminal support.
+  // Since Chalk doesn't expose the raw escape codes directly without
+  // applying them to a string, we colorize a dummy character and extract
+  // the generated ANSI escape prefix.
+  const colorized = colorize("x", color, "background");
+
+  if (colorized !== "x") {
+    return colorized.split("x")[0];
+  }
+
+  return undefined;
+};
+
 export default colorize;

@@ -1,5 +1,4 @@
 /* eslint-disable max-lines */
-import { type StyledChar } from "@alcalzone/ansi-tokenize";
 import { LegacyRoot } from "@my-react/react-reconciler-compact/constants";
 import ansiEscapes from "ansi-escapes";
 import autoBind from "auto-bind";
@@ -13,18 +12,23 @@ import * as signalExit from "signal-exit";
 import wrapAnsi from "wrap-ansi";
 import Yoga from "yoga-layout";
 
-import { accessibilityContext as AccessibilityContext } from "./components/AccessibilityContext";
-import App from "./components/App";
-import * as dom from "./dom";
-import instances from "./instances";
-import logUpdate, { type LogUpdate, positionImeCursor } from "./log-update";
-import { Reconciler } from "./reconciler";
-import render from "./renderer";
-import { ResizeObserverEntry } from "./resize-observer";
-import { calculateScroll } from "./scroll";
-import { Selection } from "./selection";
+import { accessibilityContext as AccessibilityContext } from "./components/AccessibilityContext.js";
+import App from "./components/App.js";
+import { type InkOptions } from "./components/AppContext.js";
+import * as dom from "./dom.js";
+import instances from "./instances.js";
+import logUpdate, { type LogUpdate, positionImeCursor } from "./log-update.js";
+import { setEnableToStyledCharactersCache, clearToStyledCharactersCache } from "./measure-text.js";
+import { type Region } from "./output.js";
+import { Reconciler } from "./reconciler.js";
+import render from "./renderer.js";
+import { ResizeObserverEntry } from "./resize-observer.js";
+import { calculateScroll } from "./scroll.js";
+import { Selection } from "./selection.js";
+import { type StyledLine } from "./styled-line.js";
+import TerminalBuffer from "./terminal-buffer.js";
 
-import type ResizeObserver from "./resize-observer";
+import type ResizeObserver from "./resize-observer.js";
 
 const noop = () => {};
 
@@ -61,10 +65,21 @@ export type Options = {
   maxFps?: number;
   alternateBuffer?: boolean;
   alternateBufferAlreadyActive?: boolean;
+  isAlternateBufferEnabled?: boolean;
+  stickyHeadersInBackbuffer?: boolean;
   incrementalRendering?: boolean;
   debugRainbow?: boolean;
-  selectionStyle?: (char: StyledChar) => StyledChar;
+  animatedScroll?: boolean;
+  animationInterval?: number;
+  backbufferUpdateDelay?: number;
+  maxScrollbackLength?: number;
+  forceScrollToBottomOnBackbufferRefresh?: boolean;
+  selectionStyle?: (line: StyledLine, index: number) => void;
   standardReactLayoutTiming?: boolean;
+  renderProcess?: boolean;
+  terminalBuffer?: boolean;
+  cacheToStyledCharacters?: boolean;
+  trackSelection?: boolean;
 };
 
 const rainbowColors = [
@@ -85,12 +100,25 @@ const rainbowColors = [
   "whiteBright",
 ];
 
+type RenderModeOptions = {
+  output: string;
+  outputHeight: number;
+  staticOutput: string;
+  styledOutput: StyledLine[];
+  cursorPosition: { row: number; col: number } | undefined;
+  debugRainbowColor: string | undefined;
+  hasStaticOutput: boolean;
+};
+
 export default class Ink {
+  public readonly rootNode: dom.DOMElement;
   private readonly options: Options;
   private readonly log: LogUpdate;
   private readonly throttledLog: LogUpdate;
   private readonly isScreenReaderEnabled: boolean;
   private readonly selection: Selection;
+  private readonly terminalBuffer?: TerminalBuffer;
+  private optionsState: InkOptions;
 
   // Ignore last render after unmounting a tree to prevent empty output before exit
   private isUnmounted: boolean;
@@ -98,7 +126,7 @@ export default class Ink {
   private lastOutputHeight: number;
   private lastCursorPosition?: { row: number; col: number } | undefined;
   private readonly container: FiberRoot;
-  private readonly rootNode: dom.DOMElement;
+  private node: ReactNode;
   // This variable is used only in debug mode to store full static output
   // so that it's rerendered every time, not just new static parts, like in non-debug mode
   private fullStaticOutput: string;
@@ -112,6 +140,22 @@ export default class Ink {
     autoBind(this);
 
     this.options = options;
+
+    if (options.cacheToStyledCharacters === false) {
+      setEnableToStyledCharactersCache(false);
+    } else if (options.cacheToStyledCharacters === true) {
+      setEnableToStyledCharactersCache(true);
+    }
+
+    this.optionsState = {
+      isAlternateBufferEnabled: options.isAlternateBufferEnabled ?? options.alternateBuffer,
+      stickyHeadersInBackbuffer: options.stickyHeadersInBackbuffer,
+      animatedScroll: options.animatedScroll,
+      animationInterval: options.animationInterval,
+      backbufferUpdateDelay: options.backbufferUpdateDelay,
+      maxScrollbackLength: options.maxScrollbackLength,
+      forceScrollToBottomOnBackbufferRefresh: options.forceScrollToBottomOnBackbufferRefresh,
+    };
 
     this.rootNode = dom.createNode("ink-root");
     this.rootNode.onComputeLayout = this.calculateLayout;
@@ -137,7 +181,7 @@ export default class Ink {
           isRenderScheduled = true;
           queueMicrotask(() => {
             isRenderScheduled = false;
-            onRender();
+            void onRender();
           });
         }
       : onRender;
@@ -145,6 +189,23 @@ export default class Ink {
     this.unsubscribeSelection = this.selection.onChange(renderMethod);
 
     this.rootNode.onImmediateRender = options.standardReactLayoutTiming ? renderMethod : this.onRender; // Original unthrottled method
+
+    if (options.renderProcess === true || options.terminalBuffer === true) {
+      this.terminalBuffer = new TerminalBuffer(options.stdout.columns ?? 80, options.stdout.rows ?? 24, {
+        debugRainbowEnabled: options.debugRainbow,
+        renderInProcess: !options.renderProcess && options.terminalBuffer,
+        stdout: options.stdout,
+        isAlternateBufferEnabled: options.isAlternateBufferEnabled,
+        stickyHeadersInBackbuffer: options.stickyHeadersInBackbuffer,
+        animatedScroll: options.animatedScroll,
+        animationInterval: options.animationInterval,
+        backbufferUpdateDelay: options.backbufferUpdateDelay,
+        maxScrollbackLength: options.maxScrollbackLength,
+        forceScrollToBottomOnBackbufferRefresh: options.forceScrollToBottomOnBackbufferRefresh,
+        cacheToStyledCharacters: options.cacheToStyledCharacters,
+      });
+    }
+
     this.log = logUpdate.create(options.stdout, {
       alternateBuffer: options.alternateBuffer,
       alternateBufferAlreadyActive: options.alternateBufferAlreadyActive,
@@ -221,8 +282,13 @@ export default class Ink {
   }
 
   resized = () => {
+    const terminalWidth = this.options.stdout.columns ?? 80;
+    const terminalHeight = this.options.stdout.rows ?? 24;
+
+    clearToStyledCharactersCache();
+    this.terminalBuffer?.resize(terminalWidth, terminalHeight);
     this.calculateLayout();
-    this.onRender();
+    void this.onRender();
   };
 
   getSelection(): Selection {
@@ -236,7 +302,7 @@ export default class Ink {
   calculateLayout = () => {
     // The 'columns' property can be undefined or 0 when not using a TTY.
     // In that case we fall back to 80.
-    const terminalWidth = this.options.stdout.columns || 80;
+    const terminalWidth = this.options.stdout.columns ?? 80;
 
     this.rootNode.yogaNode!.setWidth(terminalWidth);
 
@@ -291,7 +357,7 @@ export default class Ink {
     }
   }
 
-  onRender: () => void = () => {
+  onRender = async (): Promise<void> => {
     if (this.isUnmounted) {
       return;
     }
@@ -304,137 +370,51 @@ export default class Ink {
       this.frameIndex++;
     }
 
-    const { output, outputHeight, staticOutput, styledOutput, cursorPosition } = render(
-      this.rootNode,
-      this.isScreenReaderEnabled,
-      this.selection,
-      this.options.selectionStyle
-    );
+    const { output, outputHeight, staticOutput, styledOutput, cursorPosition, root } = render(this.rootNode, {
+      isScreenReaderEnabled: this.isScreenReaderEnabled,
+      selection: this.selection,
+      selectionStyle: this.options.selectionStyle,
+      skipScrollbars: Boolean(this.terminalBuffer),
+    });
 
-    // this.options.onRender?.({ renderTime: performance.now() - startTime });
+    if (this.terminalBuffer && root) {
+      await this.renderWithTerminalBuffer(root, cursorPosition);
+    } else {
+      // If <Static> output isn't empty, it means new children have been added to it
+      const hasStaticOutput = Boolean(staticOutput && staticOutput !== "\n");
 
-    // If <Static> output isn't empty, it means new children have been added to it
-    const hasStaticOutput = staticOutput && staticOutput !== "\n";
+      const renderOptions: RenderModeOptions = {
+        output,
+        outputHeight,
+        staticOutput,
+        styledOutput,
+        cursorPosition,
+        debugRainbowColor,
+        hasStaticOutput,
+      };
 
-    if (this.options.debug) {
-      if (hasStaticOutput) {
-        this.fullStaticOutput += staticOutput;
-      }
-
-      this.options.stdout.write(this.fullStaticOutput + output);
-      this.callOnRender(startTime, output, staticOutput);
-      return;
-    }
-
-    if (isInCi) {
-      if (hasStaticOutput) {
-        this.options.stdout.write(staticOutput);
-      }
-
-      this.lastOutput = output;
-      this.lastOutputHeight = outputHeight;
-      this.callOnRender(startTime, output, staticOutput);
-      return;
-    }
-
-    if (this.options.alternateBuffer) {
-      if (hasStaticOutput) {
-        this.fullStaticOutput += staticOutput;
-      }
-
-      this.log(this.fullStaticOutput + output, styledOutput, debugRainbowColor, cursorPosition);
-      this.lastOutput = output;
-      this.callOnRender(startTime, output, staticOutput);
-      return;
-    }
-
-    if (this.isScreenReaderEnabled) {
-      if (hasStaticOutput) {
-        // We need to erase the main output before writing new static output
-        const erase = this.lastOutputHeight > 0 ? ansiEscapes.eraseLines(this.lastOutputHeight) : "";
-        this.options.stdout.write(erase + staticOutput);
-        // After erasing, the last output is gone, so we should reset its height
-        this.lastOutputHeight = 0;
-      }
-
-      if (output === this.lastOutput && !hasStaticOutput) {
-        this.callOnRender(startTime, output, staticOutput);
-        return;
-      }
-
-      const terminalWidth = this.options.stdout.columns || 80;
-
-      const wrappedOutput = wrapAnsi(output, terminalWidth, {
-        trim: false,
-        hard: true,
-      });
-
-      // If we haven't erased yet, do it now.
-      if (hasStaticOutput) {
-        this.options.stdout.write(wrappedOutput);
+      if (this.options.debug) {
+        this.renderDebug(renderOptions);
+      } else if (isInCi) {
+        this.renderCi(renderOptions);
+      } else if (this.optionsState.isAlternateBufferEnabled) {
+        this.renderAlternateBuffer(renderOptions);
+      } else if (this.isScreenReaderEnabled) {
+        this.renderScreenReader(renderOptions);
+      } else if (this.lastOutputHeight >= this.options.stdout.rows) {
+        this.renderFullTerminal(renderOptions);
       } else {
-        const erase = this.lastOutputHeight > 0 ? ansiEscapes.eraseLines(this.lastOutputHeight) : "";
-        this.options.stdout.write(erase + wrappedOutput);
+        this.renderLegacy(renderOptions);
       }
-
-      this.lastOutput = output;
-      this.lastOutputHeight = wrappedOutput === "" ? 0 : wrappedOutput.split("\n").length;
-      this.callOnRender(startTime, output, staticOutput);
-      return;
     }
 
-    if (hasStaticOutput) {
-      this.fullStaticOutput += staticOutput;
-    }
-
-    if (this.lastOutputHeight >= this.options.stdout.rows) {
-      // Build a single buffer for all operations
-      let buffer = "";
-
-      buffer += ansiEscapes.clearTerminal + this.fullStaticOutput + output;
-
-      // Position cursor after screen clear if requested by a component
-      if (cursorPosition) {
-        const lineCount = output.split("\n").length;
-        buffer += positionImeCursor(lineCount, cursorPosition);
-      }
-
-      this.options.stdout.write(buffer);
-
-      this.lastOutput = output;
-      this.lastOutputHeight = outputHeight;
-      this.lastCursorPosition = cursorPosition;
-      this.log.sync(output, cursorPosition);
-      this.callOnRender(startTime, output, staticOutput);
-      return;
-    }
-
-    // To ensure static output is cleanly rendered before main output, clear main output first
-    if (hasStaticOutput) {
-      this.log.clear();
-      this.options.stdout.write(staticOutput);
-      this.log(output, styledOutput, debugRainbowColor, cursorPosition);
-    }
-
-    const outputChanged = output !== this.lastOutput;
-    const cursorChanged =
-      cursorPosition !== this.lastCursorPosition &&
-      (!cursorPosition || !this.lastCursorPosition || cursorPosition.row !== this.lastCursorPosition.row || cursorPosition.col !== this.lastCursorPosition.col);
-
-    if (!hasStaticOutput && (outputChanged || cursorChanged)) {
-      this.throttledLog(output, styledOutput, debugRainbowColor, cursorPosition);
-    }
-
-    this.lastOutput = output;
-    this.lastOutputHeight = outputHeight;
-    this.lastCursorPosition = cursorPosition;
     this.callOnRender(startTime, output, staticOutput);
   };
 
   recalculateLayout(): void {
     this.markAllTextNodesDirty(this.rootNode);
     this.calculateLayout();
-    this.onRender();
+    void this.onRender();
   }
 
   onRerender = () => {
@@ -444,12 +424,29 @@ export default class Ink {
 
     this.log.clear();
     this.lastOutput = "";
-    this.onRender();
+    void this.onRender();
+  };
+
+  setOptions = (options: Partial<InkOptions>) => {
+    this.optionsState = {
+      ...this.optionsState,
+      ...options,
+    };
+
+    this.terminalBuffer?.updateOptions(this.optionsState);
+
+    this.lastOutput = "";
+    if (this.node) {
+      this.render(this.node);
+    } else {
+      this.onRerender();
+    }
   };
 
   render(node: ReactNode): void {
+    this.node = node;
     const tree = (
-      <AccessibilityContext.Provider value={{ isScreenReaderEnabled: this.isScreenReaderEnabled }}>
+      <AccessibilityContext.Provider value={{ isScreenReaderEnabled: this.isScreenReaderEnabled, instance: this }}>
         <App
           stdin={this.options.stdin}
           stdout={this.options.stdout}
@@ -458,6 +455,11 @@ export default class Ink {
           writeToStderr={this.writeToStderr}
           exitOnCtrlC={this.options.exitOnCtrlC}
           selection={this.selection}
+          options={this.optionsState}
+          setOptions={this.setOptions}
+          dumpCurrentFrame={this.dumpCurrentFrame}
+          startRecording={this.startRecording}
+          stopRecording={this.stopRecording}
           onExit={this.unmount}
           onRerender={this.onRerender}
         >
@@ -516,7 +518,7 @@ export default class Ink {
     }
 
     this.calculateLayout();
-    this.onRender();
+    void this.onRender();
     this.unsubscribeExit();
 
     if (typeof this.restoreConsole === "function") {
@@ -537,6 +539,14 @@ export default class Ink {
       this.options.stdout.write(this.lastOutput + "\n");
     } else if (!this.options.debug) {
       this.log.done();
+
+      if (this.terminalBuffer) {
+        this.terminalBuffer.done();
+      }
+    }
+
+    if (this.terminalBuffer) {
+      this.terminalBuffer.destroy();
     }
 
     this.isUnmounted = true;
@@ -559,6 +569,30 @@ export default class Ink {
     });
 
     return this.exitPromise;
+  }
+
+  dumpCurrentFrame(filename: string): void {
+    if (this.terminalBuffer) {
+      this.terminalBuffer.dumpCurrentFrame(filename);
+    } else {
+      console.error("dumpCurrentFrame is only supported when terminalBuffer is true");
+    }
+  }
+
+  startRecording(filename: string): void {
+    if (this.terminalBuffer) {
+      this.terminalBuffer.startRecording(filename);
+    } else {
+      console.error("startRecording is only supported when terminalBuffer is true");
+    }
+  }
+
+  stopRecording(): void {
+    if (this.terminalBuffer) {
+      this.terminalBuffer.stopRecording();
+    } else {
+      console.error("stopRecording is only supported when terminalBuffer is true");
+    }
   }
 
   clear(): void {
@@ -585,6 +619,124 @@ export default class Ink {
         }
       }
     });
+  }
+
+  private async renderWithTerminalBuffer(root: Region, cursorPosition: { row: number; col: number } | undefined) {
+    const appliedChanges = this.terminalBuffer!.update(0, Number.MAX_SAFE_INTEGER, root, cursorPosition);
+    if (appliedChanges) {
+      await this.terminalBuffer!.render();
+    }
+  }
+
+  private renderDebug({ output, staticOutput, hasStaticOutput }: RenderModeOptions) {
+    if (hasStaticOutput) {
+      this.fullStaticOutput += staticOutput;
+    }
+
+    this.options.stdout.write(this.fullStaticOutput + output);
+  }
+
+  private renderCi({ output, outputHeight, staticOutput, hasStaticOutput }: RenderModeOptions) {
+    if (hasStaticOutput) {
+      this.options.stdout.write(staticOutput);
+    }
+
+    this.lastOutput = output;
+    this.lastOutputHeight = outputHeight;
+  }
+
+  private renderAlternateBuffer({ output, styledOutput, staticOutput, cursorPosition, debugRainbowColor, hasStaticOutput }: RenderModeOptions) {
+    if (hasStaticOutput) {
+      this.fullStaticOutput += staticOutput;
+    }
+
+    this.log(this.fullStaticOutput + output, styledOutput, debugRainbowColor, cursorPosition);
+    this.lastOutput = output;
+  }
+
+  private renderScreenReader({ output, staticOutput, hasStaticOutput }: RenderModeOptions) {
+    if (hasStaticOutput) {
+      // We need to erase the main output before writing new static output
+      const erase = this.lastOutputHeight > 0 ? ansiEscapes.eraseLines(this.lastOutputHeight) : "";
+      this.options.stdout.write(erase + staticOutput);
+      // After erasing, the last output is gone, so we should reset its height
+      this.lastOutputHeight = 0;
+    }
+
+    if (output === this.lastOutput && !hasStaticOutput) {
+      return;
+    }
+
+    const terminalWidth = this.options.stdout.columns ?? 80;
+
+    const wrappedOutput = wrapAnsi(output, terminalWidth, {
+      trim: false,
+      hard: true,
+    });
+
+    // If we haven't erased yet, do it now.
+    if (hasStaticOutput) {
+      this.options.stdout.write(wrappedOutput);
+    } else {
+      const erase = this.lastOutputHeight > 0 ? ansiEscapes.eraseLines(this.lastOutputHeight) : "";
+      this.options.stdout.write(erase + wrappedOutput);
+    }
+
+    this.lastOutput = output;
+    this.lastOutputHeight = wrappedOutput === "" ? 0 : wrappedOutput.split("\n").length;
+  }
+
+  private renderFullTerminal({ output, outputHeight, staticOutput, cursorPosition, hasStaticOutput }: RenderModeOptions) {
+    if (hasStaticOutput) {
+      this.fullStaticOutput += staticOutput;
+    }
+
+    // Build a single buffer for all operations
+    let buffer = "";
+
+    buffer += ansiEscapes.clearTerminal + this.fullStaticOutput + output;
+
+    // Position cursor after screen clear if requested by a component
+    if (cursorPosition) {
+      const lineCount = output.split("\n").length;
+      buffer += positionImeCursor(lineCount, cursorPosition);
+    }
+
+    this.options.stdout.write(buffer);
+
+    this.lastOutput = output;
+    this.lastOutputHeight = outputHeight;
+    this.lastCursorPosition = cursorPosition;
+    this.log.sync(output, cursorPosition);
+  }
+
+  /**
+   * The goal is to remove this method making terminal buffer required.
+   */
+  private renderLegacy({ output, outputHeight, styledOutput, staticOutput, cursorPosition, debugRainbowColor, hasStaticOutput }: RenderModeOptions) {
+    if (hasStaticOutput) {
+      this.fullStaticOutput += staticOutput;
+    }
+
+    // To ensure static output is cleanly rendered before main output, clear main output first
+    if (hasStaticOutput) {
+      this.log.clear();
+      this.options.stdout.write(staticOutput);
+      this.log(output, styledOutput, debugRainbowColor, cursorPosition);
+    }
+
+    const outputChanged = output !== this.lastOutput;
+    const cursorChanged =
+      cursorPosition !== this.lastCursorPosition &&
+      (!cursorPosition || !this.lastCursorPosition || cursorPosition.row !== this.lastCursorPosition.row || cursorPosition.col !== this.lastCursorPosition.col);
+
+    if (!hasStaticOutput && (outputChanged || cursorChanged)) {
+      this.throttledLog(output, styledOutput, debugRainbowColor, cursorPosition);
+    }
+
+    this.lastOutput = output;
+    this.lastOutputHeight = outputHeight;
+    this.lastCursorPosition = cursorPosition;
   }
 
   private markAllTextNodesDirty(node: dom.DOMElement) {

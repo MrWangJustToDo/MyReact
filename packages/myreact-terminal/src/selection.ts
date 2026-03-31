@@ -4,69 +4,59 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { type StyledChar } from "@alcalzone/ansi-tokenize";
-
-import { type DOMNode, type DOMElement, getPathToRoot } from "./dom";
-import { processLayout } from "./layout";
-import { toStyledCharacters, type CharOffsetMap } from "./measure-text";
-import { squashTextNodesWithMap } from "./squash-text-nodes";
+import { type DOMNode, type DOMElement, getPathToRoot } from "./dom.js";
+import { processLayout } from "./layout.js";
+import { toStyledCharacters, type CharOffsetMap } from "./measure-text.js";
+import { squashTextNodesWithMap } from "./squash-text-nodes.js";
+import { StyledLine } from "./styled-line.js";
 
 type PlainTextResultWithMap = {
-  styledChars: StyledChar[];
+  styledChars: StyledLine;
   charOffsetMap: CharOffsetMap;
 };
 
 const getPlainTextFromDomNode = (node: DOMNode): PlainTextResultWithMap => {
-  const result: PlainTextResultWithMap = {
-    styledChars: [],
-    charOffsetMap: new Map(),
-  };
+  const isTextNode = node.nodeName === "#text";
+  const isStaticRender = node.nodeName === "ink-static-render";
 
-  if (node.nodeName === "#text") {
-    const styledChars = toStyledCharacters(node.nodeValue);
-    result.styledChars.push(...styledChars);
-    result.charOffsetMap.set(node, {
-      start: 0,
-      end: styledChars.length,
-    });
-    return result;
+  if (isTextNode || isStaticRender) {
+    const text = isTextNode ? node.nodeValue : (node.cachedRender?.selectableText ?? "");
+    const styledChars = toStyledCharacters(text);
+    return {
+      styledChars: styledChars.clone(),
+      charOffsetMap: new Map([[node, { start: 0, end: styledChars.length }]]),
+    };
   }
 
   const { state } = processLayout(node, {
-    initialState: (): PlainTextResultWithMap => ({
-      styledChars: [],
+    initialState: (): {
+      styledChars: StyledLine | undefined;
+      charOffsetMap: CharOffsetMap;
+    } => ({
+      styledChars: undefined,
       charOffsetMap: new Map<DOMNode, { start: number; end: number }>(),
     }),
     onNewline(count, state) {
+      state.styledChars ||= new StyledLine();
       for (let i = 0; i < count; i++) {
-        state.styledChars.push({
-          type: "char",
-          value: "\n",
-          fullWidth: false,
-          styles: [],
-        });
+        state.styledChars.pushChar("\n", 0);
       }
     },
     onSpace(count, state) {
+      state.styledChars ||= new StyledLine();
       for (let i = 0; i < count; i++) {
-        state.styledChars.push({
-          type: "char",
-          value: " ",
-          fullWidth: false,
-          styles: [],
-        });
+        state.styledChars.pushChar(" ", 0);
       }
     },
     onText(fragment, state) {
       const styledChars = toStyledCharacters(fragment.text);
-      const fragmentStartOffset = state.styledChars.length;
-      state.styledChars.push(...styledChars);
+      const fragmentStartOffset = state.styledChars?.length ?? 0;
+      state.styledChars = state.styledChars ? state.styledChars.combine(styledChars) : styledChars.clone();
 
       const map = new Map<DOMNode, { start: number; end: number }>();
       const offsetRef = { current: 0 };
       squashTextNodesWithMap(fragment.node, map, offsetRef);
 
-      // Add the fragment node itself to the map, as it covers the entire text
       state.charOffsetMap.set(fragment.node, {
         start: fragmentStartOffset,
         end: fragmentStartOffset + offsetRef.current,
@@ -81,10 +71,13 @@ const getPlainTextFromDomNode = (node: DOMNode): PlainTextResultWithMap => {
     },
   });
 
-  result.styledChars = state.styledChars;
-  result.charOffsetMap = state.charOffsetMap;
+  const resultStyledChars = state.styledChars ?? new StyledLine();
+  const result: PlainTextResultWithMap = {
+    styledChars: resultStyledChars,
+    charOffsetMap: state.charOffsetMap,
+  };
 
-  result.charOffsetMap.set(node, { start: 0, end: result.styledChars.length });
+  result.charOffsetMap.set(node, { start: 0, end: resultStyledChars.length });
 
   return result;
 };
@@ -143,6 +136,10 @@ const getRangeCharacterOffsets = (range: Range, charOffsetMap: Map<DOMNode, { st
     }
 
     if (node.nodeName === "#text") {
+      return nodeRange.start + offset;
+    }
+
+    if (node.nodeName === "ink-static-render") {
       return nodeRange.start + offset;
     }
 
@@ -254,10 +251,8 @@ export class Range {
       return "";
     }
 
-    return fullStyledChars
-      .slice(offsets.start, offsets.end)
-      .map((char) => char.value)
-      .join("");
+    const sliced = fullStyledChars.slice(offsets.start, offsets.end);
+    return sliced.getText();
   }
 
   private updateCollapsed() {
@@ -411,3 +406,33 @@ export class Selection {
     }
   }
 }
+
+export const applySelectionToStyledChars = (
+  styledChars: StyledLine,
+  selectionState: { range: { start: number; end: number }; currentOffset: number },
+  selectionStyle?: (line: StyledLine, index: number) => void
+): StyledLine => {
+  const { range, currentOffset } = selectionState;
+  const { start, end } = range;
+  const newStyledChars = styledChars.clone();
+
+  let charCodeUnitOffset = 0;
+  for (let i = 0; i < newStyledChars.length; i++) {
+    const val = newStyledChars.getValue(i);
+    const globalOffset = currentOffset + charCodeUnitOffset;
+
+    if (globalOffset >= start && globalOffset < end) {
+      if (selectionStyle) {
+        selectionStyle(newStyledChars, i);
+      } else {
+        newStyledChars.setInverted(i, true);
+      }
+    }
+
+    charCodeUnitOffset += val.length;
+  }
+
+  selectionState.currentOffset += charCodeUnitOffset;
+
+  return newStyledChars;
+};

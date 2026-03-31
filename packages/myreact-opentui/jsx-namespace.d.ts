@@ -1,25 +1,48 @@
+import type * as React from "react";
 import type {
   AsciiFontProps,
   BoxProps,
+  CodeProps,
+  DiffProps,
   ExtendedIntrinsicElements,
   InputProps,
   LineBreakProps,
   LineNumberProps,
+  LinkProps,
+  MarkdownProps,
   OpenTUIComponents,
   ScrollBoxProps,
   SelectProps,
   SpanProps,
   TabSelectProps,
+  TextareaProps,
   TextProps,
-} from "./src/types/components";
+} from "./src/types/components.js";
 
-declare namespace JSX {
-  interface IntrinsicElements {
+export namespace JSX {
+  type Element = React.ReactNode;
+
+  interface ElementClass extends React.Component<any> {
+    render(): React.ReactNode;
+  }
+
+  interface ElementAttributesProperty {
+    props: {};
+  }
+
+  interface ElementChildrenAttribute {
+    children: {};
+  }
+
+  interface IntrinsicAttributes extends React.Attributes {}
+
+  interface IntrinsicElements extends React.JSX.IntrinsicElements, ExtendedIntrinsicElements<OpenTUIComponents> {
     box: BoxProps;
     text: TextProps;
     span: SpanProps;
     code: CodeProps;
     diff: DiffProps;
+    markdown: MarkdownProps;
     input: InputProps;
     textarea: TextareaProps;
     select: SelectProps;
@@ -34,5 +57,6 @@ declare namespace JSX {
     strong: SpanProps;
     em: SpanProps;
     br: LineBreakProps;
+    a: LinkProps;
   }
 }

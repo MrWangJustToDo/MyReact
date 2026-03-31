@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import parseKeypress, { nonAlphanumericKeys } from "../parse-keypress";
 import { Reconciler } from "../reconciler";
 
-import useStdin from "./use-stdin";
+import useStdin from "./use-stdin.js";
 
 /**
 Handy information about a key that was pressed.

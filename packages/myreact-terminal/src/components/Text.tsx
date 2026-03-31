@@ -2,11 +2,11 @@ import chalk, { type ForegroundColorName } from "chalk";
 import { useContext, type ReactNode } from "react";
 import { type LiteralUnion } from "type-fest";
 
-import colorize from "../colorize";
-import { type Styles } from "../styles";
+import colorize from "../colorize.js";
+import { type Styles } from "../styles.js";
 
-import { accessibilityContext } from "./AccessibilityContext";
-import { backgroundContext } from "./BackgroundContext";
+import { accessibilityContext } from "./AccessibilityContext.js";
+import { backgroundContext } from "./BackgroundContext.js";
 
 export type Props = {
   /**
@@ -109,16 +109,6 @@ export default function Text({
       children = chalk.dim(children);
     }
 
-    if (color) {
-      children = colorize(children, color, "foreground");
-    }
-
-    // Use explicit backgroundColor if provided, otherwise use inherited from parent Box
-    const effectiveBackgroundColor = backgroundColor ?? inheritedBackgroundColor;
-    if (effectiveBackgroundColor) {
-      children = colorize(children, effectiveBackgroundColor, "background");
-    }
-
     if (bold) {
       children = chalk.bold(children);
     }
@@ -137,6 +127,16 @@ export default function Text({
 
     if (inverse) {
       children = chalk.inverse(children);
+    }
+
+    if (color) {
+      children = colorize(children, color, "foreground");
+    }
+
+    // Use explicit backgroundColor if provided, otherwise use inherited from parent Box
+    const effectiveBackgroundColor = backgroundColor ?? inheritedBackgroundColor;
+    if (effectiveBackgroundColor) {
+      children = colorize(children, effectiveBackgroundColor, "background");
     }
 
     return children;

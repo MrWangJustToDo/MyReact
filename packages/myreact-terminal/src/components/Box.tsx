@@ -1,13 +1,11 @@
-import { forwardRef, useContext } from "react";
+import React, { forwardRef, useContext, type PropsWithChildren, type ReactNode } from "react";
 import { type Except } from "type-fest";
 
-import { type DOMElement } from "../dom";
-import { type Styles } from "../styles";
+import { type DOMElement } from "../dom.js";
+import { type Styles } from "../styles.js";
 
-import { accessibilityContext } from "./AccessibilityContext";
-import { backgroundContext } from "./BackgroundContext";
-
-import type { PropsWithChildren, ReactNode } from "react";
+import { accessibilityContext } from "./AccessibilityContext.js";
+import { backgroundContext } from "./BackgroundContext.js";
 
 export type Props = Except<Styles, "textWrap"> & {
   /**
@@ -66,17 +64,30 @@ export type Props = Except<Styles, "textWrap"> & {
   /**
    * Make the element sticky.
    */
-  readonly sticky?: boolean;
+  readonly sticky?: boolean | "top" | "bottom";
 
   /**
    * Content to render when the element is sticky.
    */
   readonly stickyChildren?: ReactNode;
+
+  /**
+   * Whether to render scrollbars if the element is scrollable.
+   * @default true
+   */
+  readonly scrollbar?: boolean;
+
+  /**
+   * Keep the scrollback history stable when content shrinks.
+   * Only applies when `overflowToBackbuffer` is also enabled.
+   * @default false
+   */
+  readonly stableScrollback?: boolean;
 };
 
 /**
- * `<Box>` is an essential Ink component to build your layout. It's like `<div style="display: flex">` in the browser.
- */
+`<Box>` is an essential Ink component to build your layout. It's like `<div style="display: flex">` in the browser.
+*/
 const Box = forwardRef<DOMElement, PropsWithChildren<Props>>(
   (
     {
@@ -89,6 +100,8 @@ const Box = forwardRef<DOMElement, PropsWithChildren<Props>>(
       "aria-state": ariaState,
       sticky,
       opaque,
+      scrollbar = true,
+      stableScrollback = false,
       ...style
     },
     ref
@@ -109,6 +122,7 @@ const Box = forwardRef<DOMElement, PropsWithChildren<Props>>(
           flexShrink: 1,
           ...style,
           backgroundColor,
+          stableScrollback,
           overflowX: style.overflowX ?? style.overflow ?? "visible",
           overflowY: style.overflowY ?? style.overflow ?? "visible",
         }}
@@ -118,11 +132,13 @@ const Box = forwardRef<DOMElement, PropsWithChildren<Props>>(
         }}
         sticky={sticky}
         opaque={opaque}
+        scrollbar={scrollbar}
+        stableScrollback={stableScrollback}
       >
         {isScreenReaderEnabled && label ? label : children}
         {sticky && stickyChildren && !isScreenReaderEnabled && (
           <ink-box
-            internal_sticky_alternate
+            internal_stickyAlternate
             style={{
               position: "absolute",
               ...style,

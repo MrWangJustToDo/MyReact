@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import createReconciler from "@my-react/react-reconciler-compact";
-import Yoga, { type Node as YogaNode } from "yoga-layout";
+import { DefaultEventPriority, NoEventPriority } from "@my-react/react-reconciler-compact/constants";
+import Yoga from "yoga-layout";
 
 import {
   createTextNode,
@@ -15,9 +16,10 @@ import {
   type TextNode,
   type ElementNames,
   type DOMElement,
-} from "./dom";
-import { type OutputTransformer } from "./render-node-to-output";
-import applyStyles, { type Styles } from "./styles";
+  type DOMNode,
+} from "./dom.js";
+import { type OutputTransformer } from "./render-node-to-output.js";
+import applyStyles, { type Styles } from "./styles.js";
 
 type AnyObject = Record<string, unknown>;
 
@@ -54,9 +56,34 @@ const diff = (before: AnyObject, after: AnyObject): AnyObject | undefined => {
   return isChanged ? changed : undefined;
 };
 
-const cleanupYogaNode = (node?: YogaNode): void => {
-  node?.unsetMeasureFunc();
-  node?.freeRecursive();
+const cleanupNodeTree = (node?: DOMNode): void => {
+  if (!node) {
+    return;
+  }
+
+  node.yogaNode?.unsetMeasureFunc();
+
+  if ("resizeObservers" in node) {
+    node.resizeObservers?.clear();
+  }
+
+  if ("childNodes" in node && node.childNodes) {
+    for (const child of node.childNodes) {
+      cleanupNodeTree(child);
+    }
+  }
+
+  node.yogaNode?.free();
+
+  if ("cachedRender" in node) {
+    node.cachedRender = undefined;
+  }
+
+  if ("childNodes" in node) {
+    node.childNodes = [];
+  }
+
+  node.parentNode = undefined;
 };
 
 type Props = Record<string, unknown>;
@@ -64,6 +91,8 @@ type Props = Record<string, unknown>;
 type HostContext = {
   isInsideText: boolean;
 };
+
+let currentUpdatePriority = NoEventPriority;
 
 export const Reconciler = createReconciler<
   ElementNames,
@@ -151,12 +180,12 @@ export const Reconciler = createReconciler<
       }
 
       if (key === "sticky") {
-        node.internal_sticky = value as boolean;
+        node.internal_sticky = value as boolean | "top" | "bottom";
         continue;
       }
 
-      if (key === "internal_sticky_alternate") {
-        node.internal_sticky_alternate = value as boolean;
+      if (key === "internalStickyAlternate") {
+        node.internal_stickyAlternate = value as boolean;
         continue;
       }
 
@@ -170,6 +199,11 @@ export const Reconciler = createReconciler<
         continue;
       }
 
+      if (key === "internalOnBeforeRender") {
+        node.internal_onBeforeRender = value as () => void;
+        continue;
+      }
+
       if (key === "internal_static") {
         node.internal_static = true;
         continue;
@@ -177,6 +211,11 @@ export const Reconciler = createReconciler<
 
       if (key === "opaque") {
         node.internal_opaque = value as boolean;
+        continue;
+      }
+
+      if (key === "scrollbar") {
+        node.internal_scrollbar = value as boolean;
         continue;
       }
 
@@ -228,7 +267,6 @@ export const Reconciler = createReconciler<
   scheduleTimeout: setTimeout,
   cancelTimeout: clearTimeout,
   noTimeout: -1,
-  getCurrentUpdatePriority: () => 0,
   beforeActiveInstanceBlur() {},
   afterActiveInstanceBlur() {},
   detachDeletedInstance() {},
@@ -239,7 +277,7 @@ export const Reconciler = createReconciler<
   insertInContainerBefore: insertBeforeNode,
   removeChildFromContainer(node, removeNode) {
     removeChildNode(node, removeNode);
-    cleanupYogaNode(removeNode.yogaNode);
+    cleanupNodeTree(removeNode);
   },
   // @ts-ignore my-react flow
   prepareUpdate(node, _type, oldProps, newProps, rootNode) {
@@ -272,12 +310,12 @@ export const Reconciler = createReconciler<
         }
 
         if (key === "sticky") {
-          node.internal_sticky = Boolean(value);
+          node.internal_sticky = value as boolean | "top" | "bottom";
           continue;
         }
 
-        if (key === "internal_sticky_alternate") {
-          node.internal_sticky_alternate = Boolean(value);
+        if (key === "internalStickyAlternate") {
+          node.internal_stickyAlternate = Boolean(value);
           continue;
         }
 
@@ -291,6 +329,11 @@ export const Reconciler = createReconciler<
           continue;
         }
 
+        if (key === "internalOnBeforeRender") {
+          node.internal_onBeforeRender = value as (node: DOMElement) => void;
+          continue;
+        }
+
         if (key === "internal_static") {
           node.internal_static = true;
           continue;
@@ -298,6 +341,11 @@ export const Reconciler = createReconciler<
 
         if (key === "opaque") {
           node.internal_opaque = Boolean(value);
+          continue;
+        }
+
+        if (key === "scrollbar") {
+          node.internal_scrollbar = value as boolean;
           continue;
         }
 
@@ -314,6 +362,43 @@ export const Reconciler = createReconciler<
   },
   removeChild(node, removeNode) {
     removeChildNode(node, removeNode);
-    cleanupYogaNode(removeNode.yogaNode);
+    cleanupNodeTree(removeNode);
+  },
+  setCurrentUpdatePriority(newPriority: number) {
+    currentUpdatePriority = newPriority;
+  },
+  getCurrentUpdatePriority: () => currentUpdatePriority,
+  resolveUpdatePriority() {
+    if (currentUpdatePriority !== NoEventPriority) {
+      return currentUpdatePriority;
+    }
+
+    return DefaultEventPriority;
+  },
+  maySuspendCommit() {
+    return false;
+  },
+
+  NotPendingTransition: undefined,
+
+  resetFormInstance() {},
+  requestPostPaintCallback() {},
+  shouldAttemptEagerTransition() {
+    return false;
+  },
+  trackSchedulerEvent() {},
+  resolveEventType() {
+    return null;
+  },
+  resolveEventTimeStamp() {
+    return -1.1;
+  },
+  preloadInstance() {
+    return true;
+  },
+  startSuspendingCommit() {},
+  suspendInstance() {},
+  waitForCommitToBeReady() {
+    return null;
   },
 });

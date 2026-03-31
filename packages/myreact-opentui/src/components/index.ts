@@ -13,9 +13,9 @@ import {
   TextRenderable,
 } from "@opentui/core";
 
-import { BoldSpanRenderable, ItalicSpanRenderable, LineBreakRenderable, LinkRenderable, SpanRenderable, UnderlineSpanRenderable } from "./Text";
+import { BoldSpanRenderable, ItalicSpanRenderable, LineBreakRenderable, LinkRenderable, SpanRenderable, UnderlineSpanRenderable } from "./Text.js";
 
-import type { RenderableConstructor } from "../types/components";
+import type { RenderableConstructor } from "../types/components.js";
 
 export const baseComponents = {
   box: BoxRenderable,
@@ -66,4 +66,4 @@ export function getComponentCatalogue(): ComponentCatalogue {
   return componentCatalogue;
 }
 
-export type { ExtendedComponentProps, ExtendedIntrinsicElements, RenderableConstructor } from "../types/components";
+export type { ExtendedComponentProps, ExtendedIntrinsicElements, RenderableConstructor } from "../types/components.js";

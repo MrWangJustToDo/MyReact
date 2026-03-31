@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import { useRenderer } from "./use-renderer";
-import { useOnResize } from "./use-resize";
+import { useRenderer } from "./use-renderer.js";
+import { useOnResize } from "./use-resize.js";
 
 export const useTerminalDimensions = () => {
   const renderer = useRenderer();

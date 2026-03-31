@@ -75,4 +75,9 @@ export class DataLimitedLruMap<V> {
   get currentDataSizeValue(): number {
     return this.currentDataSize;
   }
+
+  clear(): void {
+    this.map.clear();
+    this.currentDataSize = 0;
+  }
 }

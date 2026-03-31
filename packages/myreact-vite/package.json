@@ -71,7 +71,7 @@
     "@babel/plugin-transform-react-jsx-source": "^7.22.5",
     "@rolldown/pluginutils": "1.0.0-rc.6",
     "estree-walker": "^3.0.3",
-    "es-module-lexer": "^1.4.1",
+    "es-module-lexer": "^1.7.0",
     "rsc-html-stream": "^0.0.7"
   },
   "devDependencies": {

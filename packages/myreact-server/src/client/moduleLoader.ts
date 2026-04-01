@@ -61,11 +61,25 @@ export function registerModule(moduleId: string, moduleExports: Record<string, u
  * @returns The module export
  * @throws Error if module is not loaded
  */
-export function requireModule(metadata: ClientReferenceMetadata): unknown {
+export function requireModule(metadata: ClientReferenceMetadata): unknown | Promise<unknown> {
   const module = moduleRegistry.get(metadata.id);
 
   if (!module) {
-    throw new Error(`[@my-react/react-server] Module "${metadata.id}" not loaded. ` + `Make sure to preload modules before consuming the Flight stream.`);
+    if (pendingLoads.has(metadata.id)) {
+      return pendingLoads.get(metadata.id)!;
+    }
+
+    const loadPromise = (async () => {
+      await preloadModule(metadata);
+      const loaded = moduleRegistry.get(metadata.id);
+      if (!loaded) {
+        throw new Error(`[@my-react/react-server] Module "${metadata.id}" not loaded after preload.`);
+      }
+      return loaded;
+    })();
+
+    pendingLoads.set(metadata.id, loadPromise);
+    return loadPromise;
   }
 
   const exportValue = module[metadata.name];
@@ -103,7 +117,7 @@ export async function preloadModule(metadata: ClientReferenceMetadata): Promise<
   const loadPromise = (async () => {
     try {
       // Dynamic import - assumes module ID is a valid URL or path
-      const module = await import(/* webpackIgnore: true */ metadata.id);
+      const module = await import(/* @vite-ignore */ metadata.id);
       moduleRegistry.set(metadata.id, module);
       return module;
     } catch (error) {

@@ -39,3 +39,13 @@ export const Offscreen = Symbol.for("react.offscreen");
 export const Activity = Symbol.for("react.activity");
 
 export const Profiler = Symbol.for("react.profiler");
+
+/**
+ * Symbol for client reference type
+ */
+export const CLIENT_REFERENCE_SYMBOL = Symbol.for("react.client.reference");
+
+/**
+ * Symbol for server reference type
+ */
+export const SERVER_REFERENCE_SYMBOL = Symbol.for("react.server.reference");

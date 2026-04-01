@@ -3,10 +3,16 @@
  * Main transform plugin for client/server module detection and transformation
  */
 
-import { createFilter } from "vite";
+import { createFilter, transformWithEsbuild, parseAstAsync } from "vite";
 
 import { detectUseClientDirective, detectUseServerDirective, detectInlineUseServerDirective, isRscEligibleFile } from "../directives";
-import { parseModuleExports, generateClientReferenceProxyCode, parseServerActions, generateServerModuleCode, findInlineServerActions } from "../transforms";
+import {
+  parseModuleExports,
+  generateClientReferenceProxyCode,
+  findInlineServerActions,
+  transformServerActionServer,
+  transformDirectiveProxyExport,
+} from "../transforms";
 import { initLexer, generateModuleId } from "../utils";
 
 import type { ClientModuleRegistry, ServerActionRegistry } from "../transforms";
@@ -45,7 +51,7 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
       await initLexer();
     },
 
-    async transform(code, id): Promise<TransformResult | null> {
+    async transform(code, id, transformOptions): Promise<TransformResult | null> {
       const [filepath] = id.split("?");
 
       // Skip non-eligible files
@@ -55,13 +61,17 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
 
       const moduleId = generateModuleId(filepath, projectRoot);
 
+      const isServer = Boolean(transformOptions?.ssr) || Boolean((this as { ssr?: boolean }).ssr) || Boolean(isBuild && config.build?.ssr);
+
+      const parseCode = await getParseCode(code, filepath);
+
       // Check for "use client" directive
       if (detectUseClientDirective(code)) {
         context.clientModules.add(moduleId);
 
-        // On server build, transform to client reference proxy
-        if (isBuild && config.build?.ssr) {
-          return transformClientModule(code, moduleId, context.clientRegistry);
+        // On server builds (including dev SSR), transform to client reference proxy
+        if (isServer) {
+          return transformClientModule(parseCode, moduleId, context.clientRegistry);
         }
 
         // Mark as client module for manifest
@@ -77,12 +87,15 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
       // Check for "use server" directive at top level
       if (detectUseServerDirective(code)) {
         context.serverModules.add(moduleId);
-        return transformServerModule(code, moduleId, context.serverRegistry);
+        return transformServerModule(parseCode, code, moduleId, context.serverRegistry, isServer);
       }
 
       // Check for inline "use server" in component files
       if (detectInlineUseServerDirective(code)) {
-        return await transformInlineServerActions(code, moduleId, context.serverRegistry);
+        if (!isServer) {
+          return null;
+        }
+        return await transformInlineServerActions(code, parseCode, moduleId, context.serverRegistry);
       }
 
       return null;
@@ -135,14 +148,71 @@ async function transformClientModule(code: string, moduleId: string, registry: C
 /**
  * Transform a "use server" module to register server actions
  */
-async function transformServerModule(code: string, moduleId: string, registry: ServerActionRegistry): Promise<TransformResult> {
-  const actions = await parseServerActions(code);
+async function transformServerModule(
+  parseCode: string,
+  originalCode: string,
+  moduleId: string,
+  registry: ServerActionRegistry,
+  isServer: boolean
+): Promise<TransformResult> {
+  const ast = (await parseAstAsync(parseCode)) as unknown as import("estree").Program;
 
-  for (const action of actions) {
+  if (isServer) {
+    const result = transformServerActionServer(parseCode, ast, {
+      runtime: (value, name) => `__registerServerReference__(${value}, ${JSON.stringify(`${moduleId}#${name}`)}, ${JSON.stringify(name)})`,
+      rejectNonAsyncFunction: true,
+    });
+
+    const exportNames = "exportNames" in result ? result.exportNames : result.names;
+    for (const action of exportNames) {
+      registry.register(moduleId, action, true);
+    }
+
+    const code = `import { registerServerReference as __registerServerReference__ } from "@my-react/react-server/server";\n${result.output.toString()}`;
+    return { code, map: null };
+  }
+
+  const proxyResult = transformDirectiveProxyExport(ast, {
+    directive: "use server",
+    code: parseCode,
+    runtime: (name) => `__createServerActionReference__(${JSON.stringify(`${moduleId}#${name}`)})`,
+    rejectNonAsyncFunction: true,
+  });
+
+  if (!proxyResult) {
+    return { code: parseCode, map: null };
+  }
+
+  for (const action of proxyResult.exportNames) {
     registry.register(moduleId, action);
   }
 
-  const transformedCode = generateServerModuleCode(code, moduleId, actions);
+  const proxyCode = `import { createServerActionReference as __createServerActionReference__ } from "@my-react/react-server/client";\n${proxyResult.output.toString()}`;
+  return { code: proxyCode, map: null };
+}
+
+/**
+ * Transform inline server actions in a component file
+ */
+async function transformInlineServerActions(code: string, parseCode: string, moduleId: string, registry: ServerActionRegistry): Promise<TransformResult> {
+  const inlineActions = await findInlineServerActions(code, parseCode);
+
+  if (inlineActions.length === 0) {
+    return { code, map: null };
+  }
+
+  const ast = (await parseAstAsync(parseCode)) as unknown as import("estree").Program;
+  const result = transformServerActionServer(parseCode, ast, {
+    runtime: (value, name) => `__registerServerReference__(${value}, ${JSON.stringify(`${moduleId}#${name}`)}, ${JSON.stringify(name)})`,
+    rejectNonAsyncFunction: true,
+  });
+
+  const exportNames = "exportNames" in result ? result.exportNames : result.names;
+  for (const action of exportNames) {
+    registry.register(moduleId, action, true);
+  }
+
+  const transformedCode = `import { registerServerReference as __registerServerReference__ } from "@my-react/react-server/server";\n${result.output.toString()}`;
 
   return {
     code: transformedCode,
@@ -150,38 +220,18 @@ async function transformServerModule(code: string, moduleId: string, registry: S
   };
 }
 
-/**
- * Transform inline server actions in a component file
- */
-async function transformInlineServerActions(code: string, moduleId: string, registry: ServerActionRegistry): Promise<TransformResult> {
-  const inlineActions = await findInlineServerActions(code);
-
-  if (inlineActions.length === 0) {
-    return { code, map: null };
+async function getParseCode(code: string, filepath: string): Promise<string> {
+  if (!/\.[tj]sx?$/.test(filepath)) {
+    return code;
   }
 
-  let transformedCode = code;
+  const loader = filepath.endsWith(".tsx") ? "tsx" : filepath.endsWith(".ts") ? "ts" : filepath.endsWith(".jsx") ? "jsx" : "js";
 
-  // Add import for server reference registration at the top
-  const importStatement = `import { registerServerReference as __registerServerReference__ } from "@my-react/react-server/server";\n`;
+  const result = await transformWithEsbuild(code, filepath, {
+    loader,
+    jsx: "automatic",
+    target: "es2020",
+  });
 
-  // Wrap each inline action with registration
-  for (const action of inlineActions) {
-    registry.register(moduleId, action.name, true);
-
-    const actionId = `${moduleId}#${action.name}`;
-
-    // Add a comment to mark the action for runtime registration
-    transformedCode = transformedCode.replace(
-      new RegExp(`(async\\s+function\\s+${action.name}|const\\s+${action.name}\\s*=\\s*async)`),
-      `/* @__SERVER_ACTION__:${actionId} */ $1`
-    );
-  }
-
-  transformedCode = importStatement + transformedCode;
-
-  return {
-    code: transformedCode,
-    map: null,
-  };
+  return result.code;
 }

@@ -4,6 +4,8 @@
  * Uses rsc-html-stream for injecting RSC payload into HTML
  */
 
+import { createElement } from "@my-react/react";
+
 import type { Plugin, ViteDevServer } from "vite";
 
 export interface DevServerPluginOptions {
@@ -40,7 +42,7 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
           const Component = module.default || module;
 
           // Use @lazarv/rsc to render to Flight stream
-          // eslint-disable-next-line import/no-unresolved
+
           const { renderToReadableStream } = await import("@lazarv/rsc/server");
 
           // Get props from request body or query
@@ -50,7 +52,7 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
             props = JSON.parse(body);
           }
 
-          const element = { type: Component, props, key: null };
+          const element = createElement(Component, props);
           const stream = renderToReadableStream(element, {
             onError: (error: unknown) => {
               console.error("[@my-react/react-vite] RSC render error:", error);
@@ -108,7 +110,7 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
 
           // Parse arguments from request body
           const contentType = req.headers["content-type"] || "";
-          // eslint-disable-next-line import/no-unresolved
+
           const { decodeReply } = await import("@lazarv/rsc/server");
 
           let args: unknown[];
@@ -125,7 +127,7 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
           const result = await action(...(Array.isArray(args) ? args : [args]));
 
           // Encode the result using Flight
-          // eslint-disable-next-line import/no-unresolved
+
           const { renderToReadableStream } = await import("@lazarv/rsc/server");
           const stream = renderToReadableStream(result, {
             onError: (error: unknown) => {

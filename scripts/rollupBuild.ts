@@ -77,15 +77,22 @@ export const externalReact = (id: string) =>
 export const externalReactLib = (id: string) =>
   externalReact(id) || id.includes("@my-react/react-jsx") || id.includes("@my-react/react/jsx-runtime") || id.includes("@my-react/react/jsx-dev-runtime");
 
-const buildPackages = async () => {
-  await rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
+// ==== build ==== //
+const myreactShared = () => rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
+const myreact = async () => {
   await rollupBuild({ packageName: "myreact", packageScope: "packages", external: externalReact });
   await writeType("myreact");
   await rollupBuild({ packageName: "myreact-jsx", packageScope: "packages", external: externalReact });
+};
+const myreactReconciler = async () => {
   await rollupBuild({ packageName: "myreact-reconciler", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-reconciler-compact", packageScope: "packages", external: externalReact });
+};
+const myreactDom = async () => {
   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external: externalReact });
   await writeType("myreact-dom");
+};
+const myreactThird = async () => {
   await rollupBuild({
     packageName: "myreact-terminal",
     packageScope: "packages",
@@ -135,30 +142,30 @@ const buildPackages = async () => {
       },
     },
   });
+};
+const myreactServer = () => rollupBuild({ packageName: "myreact-server", packageScope: "packages", external: externalReact });
+const myreactDev = async () => {
   await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-vite", packageScope: "packages", external: externalReact });
-  await rollupBuild({ packageName: "myreact-server", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-refresh-tools", packageScope: "packages", external: externalReact });
+  spawnSync("cd packages/myreact-rspack && pnpm build", { shell: true, stdio: "inherit" });
 };
 
-const buildRSPack = () => spawnSync("cd packages/myreact-rspack && pnpm build", { shell: true, stdio: "inherit" });
+const buildPackages = async () => {
+  await myreactShared();
+  await myreact();
+  await myreactReconciler();
+  await myreactDom();
+  await myreactServer();
+  await myreactDev();
+  await myreactThird();
+};
 
 const start = async () => {
   await buildPackages();
-  buildRSPack();
   await rollupBuild({ packageName: "graphql", packageScope: "site", external });
   await rollupBuild({ packageName: "webpack", packageScope: "site", external });
   process.exit(0);
 };
 
 start();
-
-// const startReact = async () => {
-//   await rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
-//   await rollupBuild({ packageName: "myreact", packageScope: "packages", external: externalReact });
-//   await writeType("myreact");
-//   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external: externalReact });
-//   await writeType("myreact-dom");
-// };
-
-// startReact();

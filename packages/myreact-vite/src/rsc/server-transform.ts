@@ -87,6 +87,7 @@ export async function transformInlineServerActions(code: string, moduleId: strin
   }
 
   let transformedCode = code;
+  const registrationLines: string[] = [];
 
   // Add import for server reference registration at the top
   const importStatement = `import { registerServerReference as __registerServerReference__ } from "@my-react/react-server/server";\n`;
@@ -104,9 +105,17 @@ export async function transformInlineServerActions(code: string, moduleId: strin
       new RegExp(`(async\\s+function\\s+${action.name}|const\\s+${action.name}\\s*=\\s*async)`),
       `/* @__SERVER_ACTION__:${actionId} */ $1`
     );
+
+    registrationLines.push(
+      `if (typeof ${action.name} === "function") { __registerServerReference__(${action.name}, ${JSON.stringify(actionId)}, ${JSON.stringify(action.name)}); }`
+    );
   }
 
   transformedCode = importStatement + transformedCode;
+
+  if (registrationLines.length > 0) {
+    transformedCode += `\n\n// Register inline server actions\n${registrationLines.join("\n")}\n`;
+  }
 
   return {
     code: transformedCode,

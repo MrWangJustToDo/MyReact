@@ -43,23 +43,23 @@ export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: Li
     }
   });
 
-  _list.listToHead(function invokePositionList(_fiber) {
-    if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
-      safeCallWithCurrentFiber({
-        fiber: _fiber,
-        action: function safeCallPosition() {
-          _dispatch.commitPosition(_fiber);
-        },
-      });
-    }
-  });
-
   _list.listToFoot(function invokeAppendList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithCurrentFiber({
         fiber: _fiber,
         action: function safeCallAppendList() {
           _dispatch.commitAppend(_fiber);
+        },
+      });
+    }
+  });
+
+  _list.listToHead(function invokePositionList(_fiber) {
+    if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
+      safeCallWithCurrentFiber({
+        fiber: _fiber,
+        action: function safeCallPosition() {
+          _dispatch.commitPosition(_fiber);
         },
       });
     }

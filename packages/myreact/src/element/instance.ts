@@ -5,7 +5,7 @@ import { currentComponentFiber } from "../share";
 
 import { checkArrayChildrenKey, checkSingleChildrenKey, checkValidElement } from "./tool";
 
-import type { createContext, forwardRef, lazy, memo } from "./feature";
+import type { lazy, createContext, forwardRef, memo } from "./feature";
 import type { MyReactComponent } from "../component";
 import type { MyReactInternalInstance } from "../internal";
 import type { RenderFiber } from "../renderFiber";

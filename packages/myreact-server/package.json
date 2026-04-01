@@ -6,6 +6,7 @@
   "version": "0.3.22",
   "main": "./index.js",
   "types": "./dist/types/index.d.ts",
+  "module": "./dist/esm/index.mjs",
   "files": [
     "dist",
     "index.js",
@@ -21,15 +22,21 @@
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "require": "./index.js"
+      "require": "./index.js",
+      "import": "./dist/esm/index.mjs",
+      "default": "./dist/esm/index.mjs"
     },
     "./server": {
       "types": "./dist/types/server/index.d.ts",
-      "require": "./server/index.js"
+      "require": "./server/index.js",
+      "import": "./dist/esm/server/index.mjs",
+      "default": "./dist/esm/server/index.mjs"
     },
     "./client": {
       "types": "./dist/types/client/index.d.ts",
-      "require": "./client/index.js"
+      "require": "./client/index.js",
+      "import": "./dist/esm/client/index.mjs",
+      "default": "./dist/esm/client/index.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -43,6 +50,11 @@
           "format": "cjs",
           "type": true,
           "multiple": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/index.mjs",
+          "format": "esm"
         }
       ]
     },
@@ -55,6 +67,11 @@
           "entryFileNames": "cjs/server/index.js",
           "format": "cjs",
           "multiple": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/server/index.mjs",
+          "format": "esm"
         }
       ]
     },
@@ -67,6 +84,11 @@
           "entryFileNames": "cjs/client/index.js",
           "format": "cjs",
           "multiple": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/client/index.mjs",
+          "format": "esm"
         }
       ]
     }

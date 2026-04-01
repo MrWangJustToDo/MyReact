@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__, createElement } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, cloneElement, createElement, isValidElement } from "@my-react/react";
 import { isPromise, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
@@ -55,7 +55,11 @@ export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReact
   if (typedElementType._loaded === true) {
     const render = typedElementType.render as ReturnType<typeof lazy>["render"];
 
-    return WrapperByLazyScope(createElement(render as MixinMyReactFunctionComponent, fiber.pendingProps));
+    if (isValidElement(render)) {
+      return WrapperByLazyScope(cloneElement(render));
+    } else {
+      return WrapperByLazyScope(createElement(render as MixinMyReactFunctionComponent, fiber.pendingProps));
+    }
   }
 
   if (__DEV__ && enableDebugFiled.current) {

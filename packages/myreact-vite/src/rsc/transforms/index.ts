@@ -20,4 +20,9 @@ export type { InlineServerAction } from "./server-parser";
 // Code generators
 export { generateClientReferenceProxyCode, createClientModuleProxy } from "./client-codegen";
 
-export { generateServerModuleCode, generateInlineActionMarker, generateServerActionHandler } from "./server-codegen";
+export { generateServerModuleCode, generateInlineActionMarker, generateServerActionHandler, generateServerActionProxyCode } from "./server-codegen";
+
+// Transform helpers (plugin-rsc style)
+export { transformServerActionServer } from "./transform-server-action";
+export { transformDirectiveProxyExport } from "./transform-proxy-export";
+export { hasDirective, getExportNames } from "./transform-utils";

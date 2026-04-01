@@ -14,6 +14,7 @@ export const createFiberNode = (
     type = "append",
   }: {
     parent: MyReactFiberNode | null;
+    prevFiber?: MyReactFiberNode;
     type?: "append" | "position";
   },
   element: MyReactElementNode

@@ -1,3 +1,4 @@
+export { CLIENT_REFERENCE_SYMBOL, SERVER_REFERENCE_SYMBOL } from "@my-react/react-shared";
 /**
  * @public
  * Metadata for a client component reference
@@ -48,7 +49,7 @@ export interface ModuleLoader {
   /**
    * Synchronously load a module export
    */
-  requireModule(metadata: ClientReferenceMetadata): unknown;
+  requireModule(metadata: ClientReferenceMetadata): unknown | Promise<unknown>;
 
   /**
    * Optionally preload module chunks
@@ -145,13 +146,3 @@ export interface ServerActionResponse {
   /** Response headers */
   headers: Headers;
 }
-
-/**
- * Symbol for client reference type
- */
-export const CLIENT_REFERENCE_SYMBOL = Symbol.for("my-react.client.reference");
-
-/**
- * Symbol for server reference type
- */
-export const SERVER_REFERENCE_SYMBOL = Symbol.for("my-react.server.reference");

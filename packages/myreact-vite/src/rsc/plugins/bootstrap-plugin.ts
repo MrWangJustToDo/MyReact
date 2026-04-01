@@ -56,10 +56,10 @@ window.__MY_REACT_RSC_CONFIG__ = {
         }
       };
       // Initialize or use existing flight data array
-      window.__FLIGHT_DATA__ = window.__FLIGHT_DATA__ || [];
-      window.__FLIGHT_DATA__.forEach(handleChunk);
+      window.__FLIGHT_DATA = window.__FLIGHT_DATA || [];
+      window.__FLIGHT_DATA.forEach(handleChunk);
       // Override push to handle new chunks as they arrive
-      window.__FLIGHT_DATA__.push = (chunk) => {
+      window.__FLIGHT_DATA.push = (chunk) => {
         handleChunk(chunk);
       };
       streamController = controller;

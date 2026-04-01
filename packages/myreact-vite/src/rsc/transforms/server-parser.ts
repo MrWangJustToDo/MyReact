@@ -136,7 +136,7 @@ type NodeWithPosition = Node & {
  * @param code - The source code
  * @returns Array of inline action locations
  */
-export async function findInlineServerActions(code: string): Promise<InlineServerAction[]> {
+export async function findInlineServerActions(code: string, parseCode?: string): Promise<InlineServerAction[]> {
   const inlineActions: InlineServerAction[] = [];
 
   // Quick check - if no "use server" in code, skip AST parsing
@@ -144,12 +144,14 @@ export async function findInlineServerActions(code: string): Promise<InlineServe
     return inlineActions;
   }
 
+  const sourceForParse = parseCode ?? code;
+
   try {
-    const ast = (await parseAstAsync(code)) as unknown as Program;
+    const ast = (await parseAstAsync(sourceForParse)) as unknown as Program;
 
     // Use estree-walker to traverse the AST
     walk(ast, {
-      enter(node, parent) {
+      enter(node) {
         const nodeWithPos = node as unknown as NodeWithPosition;
 
         // Handle function declarations

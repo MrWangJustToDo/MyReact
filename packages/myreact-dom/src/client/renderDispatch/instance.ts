@@ -56,17 +56,17 @@ export class ClientDomDispatch extends CustomRenderDispatch {
 
   renderPackage = "@my-react/react-dom";
 
-  isHydrateRender: boolean;
+  isHydrateRender?: boolean;
 
-  isClientRender: boolean;
+  isClientRender?: boolean;
 
-  isServerRender: boolean;
+  isServerRender?: boolean;
 
-  renderTime: number | null;
+  renderTime?: number | null;
 
-  hydrateTime: number | null;
+  hydrateTime?: number | null;
 
-  enableNewEntry: boolean;
+  enableNewEntry?: boolean;
 
   constructor(
     readonly rootNode: any,

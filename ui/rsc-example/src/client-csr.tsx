@@ -7,10 +7,9 @@
  * - Server actions handle form submissions with "use server" directive
  */
 
-import { use } from "@my-react/react";
-import { createRoot } from "@my-react/react-dom/client";
 import { createFlightClient } from "@my-react/react-server/client";
-import { Suspense, useEffect, useState } from "react";
+import { use, Suspense, useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
 
 import type { ReactNode } from "react";
 
@@ -37,7 +36,13 @@ const View = ({ tree }: { tree: any }) => {
 };
 
 const Main = () => {
-  const [tree, setTree] = useState(Promise.resolve(null as ReactNode));
+  const [tree, setTree] = useState(() => {
+    const stream = (window as unknown as { __MY_REACT_RSC_STREAM__?: ReadableStream<Uint8Array> }).__MY_REACT_RSC_STREAM__;
+    if (stream) {
+      return client.createFromStream(stream);
+    }
+    return Promise.resolve(null as ReactNode);
+  });
 
   useEffect(() => {
     const fetchEle = async () => {
@@ -64,4 +69,6 @@ const Main = () => {
 
 const root = createRoot(rootElement);
 
-root.render(<Main />);
+export const startRender = () => {
+  root.render(<Main />);
+};

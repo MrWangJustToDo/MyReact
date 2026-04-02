@@ -31,6 +31,7 @@ export type {
   ModuleResolver,
   ModuleLoader,
   FlightClientOptions,
+  FlightServerOptions,
   RenderToFlightStreamOptions,
   ServerActionRequest,
   ServerActionResponse,

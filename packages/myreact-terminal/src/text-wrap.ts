@@ -106,7 +106,7 @@ export const wrapStyledChars = (line: StyledLine, columns: number): StyledLine[]
 
     // Word/space is [i, j)
     if (currentRowWidth + wordWidth > columns && currentRowWidth > 0) {
-      if (firstVal === " " && !isAtStartOfLogicalLine && !line.hasStyles(i)) {
+      if (firstVal === " " && !isAtStartOfLogicalLine) {
         // Drop space that causes wrap
         i = j;
         continue;
@@ -114,7 +114,7 @@ export const wrapStyledChars = (line: StyledLine, columns: number): StyledLine[]
 
       // Wrap: finish previous row
       let trimEnd = i;
-      while (trimEnd > currentRowStart && line.getValue(trimEnd - 1) === " " && !line.hasStyles(trimEnd - 1)) {
+      while (trimEnd > currentRowStart && line.getValue(trimEnd - 1) === " ") {
         trimEnd--;
       }
 

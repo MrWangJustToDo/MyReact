@@ -119,6 +119,21 @@ export interface FlightClientOptions {
 
 /**
  * @public
+ * Options for createFlightServer
+ */
+export interface FlightServerOptions {
+  /** Module loader for resolving client references on the server */
+  moduleLoader?: ModuleLoader;
+
+  /**
+   * Optional mapper to resolve real module id for SSR
+   * e.g. append query to bypass RSC transforms
+   */
+  resolveModuleId?: (id: string) => string;
+}
+
+/**
+ * @public
  * Server action handler request
  */
 export interface ServerActionRequest {

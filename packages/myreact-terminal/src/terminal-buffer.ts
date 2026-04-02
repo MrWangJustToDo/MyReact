@@ -6,7 +6,9 @@
  */
 
 import { fork, type ChildProcess } from "node:child_process";
+import fs from "node:fs";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 
 import { type InkOptions } from "./components/AppContext.js";
 import { type DOMElement } from "./dom.js";
@@ -85,8 +87,8 @@ export default class TerminalBuffer {
 
     this.stdout = options?.stdout ?? process.stdout;
 
-    if (options?.renderInProcess) {
-      this.workerInstance = new TerminalBufferWorker(columns, rows, {
+    const createWorkerInstance = () => {
+      const instance = new TerminalBufferWorker(columns, rows, {
         debugRainbowEnabled: options?.debugRainbowEnabled,
         stdout: this.stdout,
         isAlternateBufferEnabled: options?.isAlternateBufferEnabled,
@@ -97,11 +99,37 @@ export default class TerminalBuffer {
         maxScrollbackLength: options?.maxScrollbackLength,
         forceScrollToBottomOnBackbufferRefresh: options?.forceScrollToBottomOnBackbufferRefresh,
       });
-      void this.workerInstance.render();
-    } else {
-      const workerUrl = new URL("./worker.mjs", import.meta.url);
+      void instance.render();
+      return instance;
+    };
 
-      this.worker = fork(workerUrl, {
+    let renderInProcess = options?.renderInProcess ?? false;
+    let workerUrl: URL | undefined;
+
+    if (!renderInProcess) {
+      workerUrl = new URL("./worker/worker-entry.js", import.meta.url);
+      let workerPath = workerUrl.protocol === "file:" ? fileURLToPath(workerUrl) : null;
+
+      // Fallback for ts-node testing environments
+      if (workerPath && !fs.existsSync(workerPath) && workerPath.endsWith(".js")) {
+        const tsPath = workerPath.replace(/\.js$/, ".ts");
+        if (fs.existsSync(tsPath)) {
+          workerPath = tsPath;
+          workerUrl = new URL("./worker/worker-entry.ts", import.meta.url);
+        }
+      }
+
+      if (workerPath && !fs.existsSync(workerPath)) {
+        console.warn(`Unable to launch render process at ${workerPath}`);
+        // Fallback to in-process rendering if the worker file was not bundled.
+        renderInProcess = true;
+      }
+    }
+
+    if (renderInProcess) {
+      this.workerInstance = createWorkerInstance();
+    } else {
+      this.worker = fork(workerUrl!, {
         env: {
           ...process.env,
 

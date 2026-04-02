@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { __my_react_internal__ } from "@my-react/react";
 import { TYPEKEY, Element, Fragment, Lazy } from "@my-react/react-shared";
 
@@ -13,7 +14,6 @@ import type {
   MaybeArrayMyReactElementNode,
 } from "@my-react/react";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 const createTask = __DEV__ && console.createTask ? console.createTask : () => null;
 
@@ -24,7 +24,7 @@ const getOwner = () => {
   return null;
 };
 
-function getTaskName(type) {
+function getTaskName(type: any) {
   if (type === Fragment) {
     return "<>";
   }
@@ -50,13 +50,13 @@ function UnknownOwner() {
   return (() => Error("react-stack-top-frame"))();
 }
 const createFakeCallStack = {
-  react_stack_bottom_frame: function (callStackForError) {
+  react_stack_bottom_frame: function (callStackForError: any) {
     return callStackForError();
   },
 };
 
-let unknownOwnerDebugStack;
-let unknownOwnerDebugTask;
+let unknownOwnerDebugStack: any;
+let unknownOwnerDebugTask: any;
 
 if (__DEV__) {
   // We use this technique to trick minifiers to preserve the function name.
@@ -87,10 +87,10 @@ function MyReactElementJSX(
   ref: MyReactElement["ref"],
   props: MyReactElement["props"],
   owner: MyReactElement["_owner"],
-  debugStack,
-  debugTask
+  debugStack: any,
+  debugTask: any
 ) {
-  let element;
+  let element: MyReactElement;
   if (__DEV__) {
     element = {
       // This tag allows us to uniquely identify this as a React Element
@@ -230,9 +230,12 @@ export const jsxDEV = (
 
   if (__DEV__) {
     if (trackActualOwner) {
+      // @ts-ignore
       const previousStackTraceLimit = Error.stackTraceLimit;
+      // @ts-ignore
       Error.stackTraceLimit = ownerStackTraceLimit;
       debugStackDEV = Error("react-stack-top-frame");
+      // @ts-ignore
       Error.stackTraceLimit = previousStackTraceLimit;
     } else {
       debugStackDEV = unknownOwnerDebugStack;

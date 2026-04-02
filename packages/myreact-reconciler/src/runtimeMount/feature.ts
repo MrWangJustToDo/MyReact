@@ -43,8 +43,6 @@ export const processAsyncLoadListOnAsyncMount = async (renderDispatch: CustomRen
 
     const suspenseField = getInstanceFieldByInstance(node.instance) as SuspenseInstanceField;
 
-    renderDispatch.pendingSuspenseFiberArray.clear();
-
     const list = suspenseField.asyncLoadList.getAll();
 
     await Promise.all(

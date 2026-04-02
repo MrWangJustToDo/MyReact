@@ -37,7 +37,7 @@ export const isValidElement = (element?: MyReactElementNode | any): element is M
   );
 };
 
-const keysMap = {};
+const keysMap: Record<string, boolean> = {};
 
 const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};
@@ -53,20 +53,20 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
       if (!c._store?.["validKey"]) {
         if (typeof c.key === "string") {
           if (obj[c.key]) {
-            const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : "";
+            const renderTree = currentFiber ? renderScheduler?.getFiberTree(currentFiber) : "";
 
-            if (!keysMap[renderTree]) console.warn(`[@my-react/react] array child have duplicate key '${c.key}'`);
+            if (renderTree && !keysMap[renderTree]) console.warn(`[@my-react/react] array child have duplicate key '${c.key}'`);
 
-            keysMap[renderTree] = true;
+            renderTree && (keysMap[renderTree] = true);
           }
 
           obj[c.key] = true;
         } else {
-          const renderTree = currentFiber ? renderScheduler.getFiberTree(currentFiber) : "";
+          const renderTree = currentFiber ? renderScheduler?.getFiberTree(currentFiber) : "";
 
-          if (!keysMap[renderTree]) console.warn(`[@my-react/react] each array child must have a unique key props`);
+          if (renderTree && !keysMap[renderTree]) console.warn(`[@my-react/react] each array child must have a unique key props`);
 
-          keysMap[renderTree] = true;
+          renderTree && (keysMap[renderTree] = true);
         }
         if (c._store) {
           c._store["validKey"] = true;

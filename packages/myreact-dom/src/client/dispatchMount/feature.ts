@@ -133,5 +133,5 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
     });
   };
 
-  return startMountCommit(_fiber, _hydrate);
+  return startMountCommit(_fiber, !!_hydrate);
 };

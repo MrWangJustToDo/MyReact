@@ -26,16 +26,16 @@ const syncUpdateEvent = {
   dblclick: true,
   mousedown: true,
   mouseup: true,
-};
+} as const;
 
 const beforeEvent = (event: string) => {
-  if (syncUpdateEvent[event]) {
+  if (event in syncUpdateEvent) {
     beforeSyncUpdate();
   }
 };
 
 const afterEvent = (event: string) => {
-  if (syncUpdateEvent[event]) {
+  if (event in syncUpdateEvent) {
     afterSyncUpdate();
   }
 };
@@ -53,7 +53,7 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
   let targetCallback = callback;
 
   if (enableEventSystem.current && enableControlComponent.current && controlElementTag[typedElementType] && (key === "onChange" || key === "onInput")) {
-    targetCallback = generateOnChangeFun(fiber);
+    targetCallback = generateOnChangeFun(fiber) as typeof callback;
   }
 
   if (!targetCallback) return;

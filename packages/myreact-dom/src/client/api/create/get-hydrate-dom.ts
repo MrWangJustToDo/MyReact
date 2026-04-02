@@ -18,7 +18,7 @@ const isValidHydrateDom = (el: ChildNode) => {
   return true;
 };
 
-const getNextHydrateDom = (parentDom: Element, previousDom?: ChildNode) => {
+const getNextHydrateDom = (parentDom: Element, previousDom?: ChildNode | null) => {
   if (previousDom) {
     let el = previousDom.nextSibling;
 
@@ -38,7 +38,7 @@ const getNextHydrateDom = (parentDom: Element, previousDom?: ChildNode) => {
   }
 };
 
-const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
+const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode | null) => {
   if (!dom) {
     if (enableHydrateWarn.current) {
       log(fiber, "error", `hydrate error, dom not render from server, client: "${getElementName(fiber)}"`);
@@ -67,7 +67,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
       }
       return false;
     }
-    if (fiber.elementType.toString().toLowerCase() !== dom.nodeName.toLowerCase()) {
+    if (fiber.elementType?.toString().toLowerCase() !== dom.nodeName.toLowerCase()) {
       if (enableHydrateWarn.current) {
         log(fiber, "error", `hydrate error, dom not match from server. server: "<${dom.nodeName.toLowerCase()} />", client: "${getElementName(fiber)}"`);
       }
@@ -90,7 +90,7 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode) => {
 /**
  * @internal
  */
-export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element, previousDom?: ChildNode) => {
+export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element, previousDom?: ChildNode | null) => {
   const dom = getNextHydrateDom(parentDom, previousDom);
 
   const resultDom = checkHydrateDom(fiber, dom);

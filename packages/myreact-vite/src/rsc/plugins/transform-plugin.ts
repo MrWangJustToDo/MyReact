@@ -52,10 +52,16 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
     },
 
     async transform(code, id, transformOptions): Promise<TransformResult | null> {
-      const [filepath] = id.split("?");
+      const [filepath, rawQuery] = id.split("?");
+      const isOriginal = rawQuery?.includes("rsc-original");
 
       // Skip non-eligible files
       if (!filter(filepath) || !isRscEligibleFile(filepath)) {
+        return null;
+      }
+
+      // If explicit original request, skip RSC transforms
+      if (isOriginal) {
         return null;
       }
 

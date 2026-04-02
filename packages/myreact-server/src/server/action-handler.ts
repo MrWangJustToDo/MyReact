@@ -1,7 +1,7 @@
 import { decodeReply, decodeAction } from "@lazarv/rsc/server";
 
-import { renderToFlightStream } from "./renderToFlightStream";
-import { getServerAction } from "./serverReferenceMap";
+import { renderToFlightStream } from "./render-to-flight-stream";
+import { getServerAction } from "./server-reference-map";
 
 import type { ModuleLoader } from "../shared/types";
 

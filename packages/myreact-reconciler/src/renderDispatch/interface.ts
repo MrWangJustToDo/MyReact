@@ -26,29 +26,29 @@ type DefaultRenderDispatch = {
 
   runtimeMap: RuntimeMap;
 
-  runtimeFiber: Record<FiberKey, MyReactFiberNode>;
+  runtimeFiber: Record<FiberKey, MyReactFiberNode | null>;
 
-  rootNode: any;
+  rootNode?: any;
 
-  rootFiber: MyReactFiberNode;
+  rootFiber?: MyReactFiberNode;
 
-  rootElement: MyReactElementNode;
+  rootElement?: MyReactElementNode;
 
   dispatcher: typeof Dispatcher;
 
   trigger: typeof triggerUpdateOnFiber;
 
-  isAppMounted: boolean;
+  isAppMounted?: boolean;
 
-  isAppCrashed: boolean;
+  isAppCrashed?: boolean;
 
-  isAppUnmounted: boolean;
+  isAppUnmounted?: boolean;
 
-  pendingCommitFiberList: ListTree<MyReactFiberNode> | null;
+  pendingCommitFiberList?: ListTree<MyReactFiberNode> | null;
 
-  pendingUpdateFiberArray: UniqueArray<MyReactFiberNode>;
+  pendingUpdateFiberArray?: UniqueArray<MyReactFiberNode>;
 
-  pendingSuspenseFiberArray: UniqueArray<MyReactFiberNode>;
+  pendingSuspenseFiberArray?: UniqueArray<MyReactFiberNode>;
 
   generateCommitList(_fiber: MyReactFiberNode): void;
 

@@ -52,6 +52,7 @@ export {
   styledCharsToString,
   wordBreakStyledChars,
 } from "./measure-text.js";
+export { styledLineToString } from "./tokenize.js";
 export { type DOMElement, type DOMNode, getPathToRoot } from "./dom.js";
 export { StyledLine } from "./styled-line.js";
 export { default as ResizeObserver, ResizeObserverEntry } from "./resize-observer.js";

@@ -1,13 +1,15 @@
 // Server-side RSC exports
-export { renderToFlightStream, createServerDispatch } from "./renderToFlightStream";
-export { ServerComponentDispatch } from "./ServerComponentDispatch";
-export { registerClientReference, createClientModuleProxy } from "./clientReferenceMap";
-export { registerServerReference, getServerAction, serverActionRegistry } from "./serverReferenceMap";
-export { handleServerAction, executeServerAction } from "./actionHandler";
+export { renderToFlightStream, createServerDispatch } from "./render-to-flight-stream";
+export { ServerComponentDispatch } from "./server-component-dispatch";
+export { registerClientReference, createClientModuleProxy } from "./client-reference-map";
+export { registerServerReference, getServerAction, serverActionRegistry } from "./server-reference-map";
+export { handleServerAction, executeServerAction } from "./action-handler";
+export { createFlightServer } from "./flight-server";
 
 // Re-export types
 export type {
   RenderToFlightStreamOptions,
+  FlightServerOptions,
   ModuleResolver,
   ClientReferenceMetadata,
   ServerReferenceMetadata,

@@ -12,7 +12,7 @@ export const map = (
 ) => {
   if (arrayLike === null || arrayLike === undefined) return arrayLike;
 
-  const res = [];
+  const res: ArrayMyReactElementNode = [];
 
   mapByJudge(
     arrayLike,
@@ -38,7 +38,7 @@ export const map = (
 };
 
 export const toArray = (arrayLike: MaybeArrayMyReactElementNode): ArrayMyReactElementNode => {
-  const res = [];
+  const res: ArrayMyReactElementNode = [];
 
   mapByJudge(
     arrayLike,

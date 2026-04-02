@@ -23,7 +23,7 @@ const throwHydrateError = (renderDispatch: ClientDomDispatch) => {
     const error = errorArray.shift();
     window.dispatchEvent(
       new ErrorEvent("error", {
-        error: error.value,
+        error: error?.value,
         message: error?.value?.message,
       })
     );

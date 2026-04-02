@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { isNoProps } from "@my-react-dom-client/api";
 import { enableHydrateWarn, getHTMLAttrKey, getSVGAttrKey, log } from "@my-react-dom-shared";
 
@@ -44,8 +45,10 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
   if (name in el && !isSVG && !isNoProps(el, name)) {
     try {
       if (value === null || value === undefined || value === false) {
+        // @ts-ignore
         el[name] = "";
       } else {
+        // @ts-ignore
         el[name] = String(value);
       }
     } catch (e) {
@@ -142,11 +145,14 @@ export const hydrateAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name:
       }
     } else {
       if (name in el && !isSVG && !isNoProps(el, name)) {
+        // @ts-ignore
         if (el[name].toString() !== String(value)) {
           if (!ignoreWarn) {
+            // @ts-ignore
             log(fiber, "warn", `hydrate warning, dom '${name}' props not match from server. server: ${el[name]}, client: ${value}`);
           }
           try {
+            // @ts-ignore
             el[name] = value === false ? "" : (value as string);
           } catch (e) {
             if (__DEV__) {

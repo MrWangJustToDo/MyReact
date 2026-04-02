@@ -48,16 +48,16 @@ export const create = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNod
       const typedParentFiber = parentFiberWithNode as MyReactFiberNodeClientDev;
 
       typedFiber._debugTreeScope = updatedAncestorInfoDev(
-        fiber.type & NODE_TYPE.__text__ ? "#text" : fiber.elementType.toString(),
+        fiber.type & NODE_TYPE.__text__ ? "#text" : fiber.elementType?.toString() || "undefined",
         typedFiber,
         typedParentFiber?._debugTreeScope
       );
 
       if (include(fiber.type, NODE_TYPE.__text__) && typedParentFiber) {
-        validateTextNesting(typedFiber, fiber.elementType.toString(), typedParentFiber.elementType.toString());
+        validateTextNesting(typedFiber, fiber.elementType?.toString() || "undefined", typedParentFiber.elementType?.toString() || "undefined");
       }
       if (include(fiber.type, NODE_TYPE.__plain__) && typedParentFiber) {
-        validateDOMNesting(typedFiber, fiber.elementType.toString(), typedParentFiber._debugTreeScope);
+        validateDOMNesting(typedFiber, fiber.elementType?.toString() || "undefined", typedParentFiber._debugTreeScope);
       }
     }
 
@@ -75,7 +75,7 @@ export const create = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNod
       if (__DEV__) {
         const stack = getStackTree(fiber);
 
-        setError(renderDispatch, { source: fiber, value: Error(e?.message + stack), stack });
+        setError(renderDispatch, { source: fiber, value: Error((e as Error)?.message + stack), stack });
       }
 
       nativeCreate(fiber, isSVG, parentFiberWithNode || renderDispatch);

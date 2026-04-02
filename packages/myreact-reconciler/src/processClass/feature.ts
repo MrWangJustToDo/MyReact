@@ -143,7 +143,7 @@ const processComponentDidMountOnMount = (renderDispatch: CustomRenderDispatch, f
 
   const effect = getInstanceEffectState(typedInstance);
 
-  if (exclude(effect, Effect_TYPE.__effect__)) {
+  if (typeof effect === "number" && exclude(effect, Effect_TYPE.__effect__)) {
     setEffectForInstance(typedInstance, Effect_TYPE.__effect__);
 
     renderDispatch.pendingLayoutEffect(fiber, function invokeComponentDidMountOnInstance() {
@@ -247,7 +247,7 @@ const processComponentDidUpdateOnUpdate = (
 
   const effect = getInstanceEffectState(typedInstance);
 
-  if (typedInstance.componentDidUpdate && exclude(effect, Effect_TYPE.__effect__)) {
+  if (typedInstance.componentDidUpdate && typeof effect === "number" && exclude(effect, Effect_TYPE.__effect__)) {
     setEffectForInstance(typedInstance, Effect_TYPE.__effect__);
 
     renderDispatch.pendingLayoutEffect(fiber, function invokeComponentDidUpdateOnInstance() {
@@ -451,7 +451,7 @@ const classComponentUpdateImpl = (renderDispatch: CustomRenderDispatch, fiber: M
   let shouldUpdate = Boolean(include(fiber.state, STATE_TYPE.__triggerSyncForce__ | STATE_TYPE.__triggerConcurrentForce__));
 
   if (!shouldUpdate) {
-    shouldUpdate = processComponentShouldUpdateOnUpdate(fiber, {
+    shouldUpdate = !!processComponentShouldUpdateOnUpdate(fiber, {
       nextState,
       nextProps,
       nextContext,

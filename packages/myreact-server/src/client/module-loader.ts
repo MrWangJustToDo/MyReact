@@ -3,9 +3,9 @@ import type { ClientReferenceMetadata, ModuleLoader } from "../shared/types";
 /**
  * Module registry type
  */
-interface ModuleRegistry {
+interface ModuleRegistry extends Map<string, Record<string, unknown>> {
   get(id: string): Record<string, unknown> | undefined;
-  set(id: string, module: Record<string, unknown>): void;
+  set(id: string, module: Record<string, unknown>): this;
   has(id: string): boolean;
 }
 
@@ -14,19 +14,16 @@ interface ModuleRegistry {
  */
 function initializeModuleRegistry(): ModuleRegistry {
   if (typeof globalThis !== "undefined") {
-    if (!(globalThis as any).__my_react_modules__) {
-      (globalThis as any).__my_react_modules__ = new Map<string, Record<string, unknown>>();
+    if (!globalThis.__my_react_modules__) {
+      globalThis.__my_react_modules__ = new Map<string, Record<string, unknown>>();
     }
-    return (globalThis as any).__my_react_modules__ as ModuleRegistry;
+    return globalThis.__my_react_modules__ as ModuleRegistry;
   }
 
   // Fallback for non-browser environments
   const fallbackRegistry = new Map<string, Record<string, unknown>>();
-  return {
-    get: (id) => fallbackRegistry.get(id),
-    set: (id, module) => fallbackRegistry.set(id, module),
-    has: (id) => fallbackRegistry.has(id),
-  };
+
+  return fallbackRegistry;
 }
 
 /**
@@ -164,7 +161,7 @@ export function isModuleLoaded(moduleId: string): boolean {
  */
 export function getLoadedModules(): string[] {
   const modules: string[] = [];
-  if ((moduleRegistry as any).keys) {
+  if (moduleRegistry.keys) {
     for (const key of (moduleRegistry as any).keys()) {
       modules.push(key);
     }
@@ -176,7 +173,7 @@ export function getLoadedModules(): string[] {
  * Clear all loaded modules (for testing)
  */
 export function clearModuleRegistry(): void {
-  if ((moduleRegistry as any).clear) {
-    (moduleRegistry as any).clear();
+  if (moduleRegistry.clear) {
+    moduleRegistry.clear();
   }
 }

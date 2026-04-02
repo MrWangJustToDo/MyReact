@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { enableHydrateWarn, isUnitlessNumber, log, logOnce } from "@my-react-dom-shared";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
@@ -16,10 +17,13 @@ export const setStyle = (fiber: MyReactFiberNode, el: HTMLElement, name: string,
       logOnce(fiber, "warn", "unknown style name", `unknown style name '${name}' for current element`);
     }
     if (typeof value === "number" && !isUnitlessNumber[name]) {
+      // @ts-ignore
       style[name] = `${value}px`;
     } else if (value === undefined || value === null) {
+      // @ts-ignore
       style[name] = "";
     } else {
+      // @ts-ignore
       style[name] = String(value);
     }
   }
@@ -40,6 +44,7 @@ export const hydrateStyle = (fiber: MyReactFiberNode, el: HTMLElement, name: str
     }
   } else {
     if (typeof value === "number" && !isUnitlessNumber[name]) {
+      // @ts-ignore
       const v = style[name];
       let hasMismatch = false;
       if (v !== `${value}px`) {
@@ -47,23 +52,28 @@ export const hydrateStyle = (fiber: MyReactFiberNode, el: HTMLElement, name: str
           log(fiber, "warn", `hydrate warning, style '${name}' not match from server. server: ${v}, client: ${value}px`);
         } */
         hasMismatch = true;
+        // @ts-ignore
         style[name] = `${value}px`;
       }
       if (hasMismatch && !ignoreWarn) {
+        // @ts-ignore
         const _v = style[name];
         if (_v === `${value}px`) {
           log(fiber, "warn", `hydrate warning, style '${name}' not match from server. server: ${v}, client: ${value}px`);
         }
       }
     } else if (value === undefined || value === null) {
+      // @ts-ignore
       const v = style[name];
       if (v) {
         if (!ignoreWarn) {
           log(fiber, "warn", `hydrate warning, style '${name}' not match from server. server: ${v}, client: ${value}`);
         }
+        // @ts-ignore
         style[name] = "";
       }
     } else {
+      // @ts-ignore
       const v = style[name];
       let hasMismatch = false;
       if (v !== String(value)) {
@@ -71,9 +81,11 @@ export const hydrateStyle = (fiber: MyReactFiberNode, el: HTMLElement, name: str
           log(fiber, "warn", `hydrate warning, style '${name}' not match from server. server: ${v}, client: ${value}`);
         } */
         hasMismatch = true;
+        // @ts-ignore
         style[name] = String(value);
       }
       if (hasMismatch && !ignoreWarn) {
+        // @ts-ignore
         const _v = style[name];
         if (_v === String(value)) {
           log(fiber, "warn", `hydrate warning, style '${name}' not match from server. server: ${v}, client: ${value}`);

@@ -3,12 +3,13 @@
   <p><strong>A lightweight, high-performance React-like framework</strong></p>
   <p>Fully compatible with React ecosystem, with built-in support for modern build tools</p>
 
-  [![Deploy](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml/badge.svg)](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml)
-  [![License](https://img.shields.io/npm/l/%40my-react%2Freact)](https://www.npmjs.com/search?q=%40my-react)
-  [![npm version](https://img.shields.io/npm/v/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)
-  [![Downloads](https://img.shields.io/npm/dm/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)
+[![Deploy](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml/badge.svg)](https://github.com/MrWangJustToDo/MyReact/actions/workflows/deploy.yml)
+[![License](https://img.shields.io/npm/l/%40my-react%2Freact)](https://www.npmjs.com/search?q=%40my-react)
+[![npm version](https://img.shields.io/npm/v/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)
+[![Downloads](https://img.shields.io/npm/dm/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)
 
-  [Live Demo](https://mrwangjusttodo.github.io/MrWangJustToDo.io/) · [Documentation](#api) · [Examples](#examples)
+[Live Demo](https://mrwangjusttodo.github.io/MrWangJustToDo.io/) · [Documentation](#api) · [Examples](#examples)
+
 </div>
 
 ---
@@ -59,12 +60,38 @@ pnpm add -D @my-react/react-refresh @my-react/react-vite
 import react from "@my-react/react-vite";
 
 export default defineConfig({
-  plugins: [react({
-    // remix: true,  // Enable Remix framework support
-    // router: true, // Enable React Router v7+ support
-  })],
+  plugins: [
+    react({
+      // remix: true,  // Enable Remix framework support
+      // router: true, // Enable React Router v7+ support
+    }),
+  ],
 });
 ```
+
+### Vite + RSC (Experimental)
+
+```bash
+pnpm add -D @my-react/react-vite
+pnpm add @my-react/react-server
+```
+
+```ts
+// vite.config.ts
+import react from "@my-react/react-vite";
+
+export default defineConfig({
+  plugins: [
+    react({
+      rsc: true,
+      rscEndpoint: "/__rsc",
+      rscActionEndpoint: "/__rsc_action",
+    }),
+  ],
+});
+```
+
+RSC example (SSR + RSC + hydration): `ui/rsc-example`
 
 ### Rspack
 
@@ -79,10 +106,7 @@ import RspackPlugin from "@my-react/react-rspack";
 
 const config = {
   ...config,
-  plugins: [
-    ...config.plugins,
-    new RspackPlugin(),
-  ],
+  plugins: [...config.plugins, new RspackPlugin()],
 };
 ```
 
@@ -103,6 +127,11 @@ const config = {
       Fast development setup
     </td>
     <td align="center">
+      <strong>RSC</strong>
+      <br />
+      Server Components example
+    </td>
+    <td align="center">
       <strong>Terminal UI</strong>
       <br />
       CLI applications
@@ -115,40 +144,39 @@ const config = {
   </tr>
 </table>
 
-
 ## 📦 Packages
 
 ### Core Packages
 
-| Package | Version | Description |
-| :------ | :------ | :---------- |
-| [`@my-react/react`](packages/myreact) | [![npm](https://img.shields.io/npm/v/%40my-react/react)](https://www.npmjs.com/package/@my-react/react) | Core library with hooks and components |
-| [`@my-react/react-dom`](packages/myreact-dom) | [![npm](https://img.shields.io/npm/v/%40my-react/react-dom)](https://www.npmjs.com/package/@my-react/react-dom) | DOM renderer with SSR support |
-| [`@my-react/react-terminal`](packages/myreact-terminal) | [![npm](https://img.shields.io/npm/v/%40my-react/react-terminal)](https://www.npmjs.com/package/@my-react/react-terminal) | Terminal UI renderer |
-| [`@my-react/react-three-fiber`](packages/myreact-three-fiber) | [![npm](https://img.shields.io/npm/v/%40my-react/react-three-fiber)](https://www.npmjs.com/package/@my-react/react-three-fiber) | Three.js renderer |
+| Package                                                       | Version                                                                                                                         | Description                            |
+| :------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------- |
+| [`@my-react/react`](packages/myreact)                         | [![npm](https://img.shields.io/npm/v/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)                         | Core library with hooks and components |
+| [`@my-react/react-dom`](packages/myreact-dom)                 | [![npm](https://img.shields.io/npm/v/%40my-react/react-dom)](https://www.npmjs.com/package/@my-react/react-dom)                 | DOM renderer with SSR support          |
+| [`@my-react/react-terminal`](packages/myreact-terminal)       | [![npm](https://img.shields.io/npm/v/%40my-react/react-terminal)](https://www.npmjs.com/package/@my-react/react-terminal)       | Terminal UI renderer                   |
+| [`@my-react/react-three-fiber`](packages/myreact-three-fiber) | [![npm](https://img.shields.io/npm/v/%40my-react/react-three-fiber)](https://www.npmjs.com/package/@my-react/react-three-fiber) | Three.js renderer                      |
 
 ### Build Tool Integration
 
-| Package | Version | Description |
-| :------ | :------ | :---------- |
-| [`@my-react/react-refresh`](packages/myreact-refresh) | [![npm](https://img.shields.io/npm/v/%40my-react/react-refresh)](https://www.npmjs.com/package/@my-react/react-refresh) | Fast refresh runtime |
+| Package                                                           | Version                                                                                                                             | Description              |
+| :---------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- | :----------------------- |
+| [`@my-react/react-refresh`](packages/myreact-refresh)             | [![npm](https://img.shields.io/npm/v/%40my-react/react-refresh)](https://www.npmjs.com/package/@my-react/react-refresh)             | Fast refresh runtime     |
 | [`@my-react/react-refresh-tools`](packages/myreact-refresh-tools) | [![npm](https://img.shields.io/npm/v/%40my-react/react-refresh-tools)](https://www.npmjs.com/package/@my-react/react-refresh-tools) | Webpack & Next.js plugin |
-| [`@my-react/react-vite`](packages/myreact-vite) | [![npm](https://img.shields.io/npm/v/%40my-react/react-vite)](https://www.npmjs.com/package/@my-react/react-vite) | Vite plugin |
-| [`@my-react/react-rspack`](packages/myreact-rspack) | [![npm](https://img.shields.io/npm/v/%40my-react/react-rspack)](https://www.npmjs.com/package/@my-react/react-rspack) | Rspack plugin |
+| [`@my-react/react-vite`](packages/myreact-vite)                   | [![npm](https://img.shields.io/npm/v/%40my-react/react-vite)](https://www.npmjs.com/package/@my-react/react-vite)                   | Vite plugin              |
+| [`@my-react/react-rspack`](packages/myreact-rspack)               | [![npm](https://img.shields.io/npm/v/%40my-react/react-rspack)](https://www.npmjs.com/package/@my-react/react-rspack)               | Rspack plugin            |
 
 ### Internal Packages
 
-| Package | Version | Description |
-| :------ | :------ | :---------- |
-| [`@my-react/react-jsx`](packages/myreact-jsx) | [![npm](https://img.shields.io/npm/v/%40my-react/react-jsx)](https://www.npmjs.com/package/@my-react/react-jsx) | JSX runtime |
-| [`@my-react/react-shared`](packages/myreact-shared) | [![npm](https://img.shields.io/npm/v/%40my-react/react-shared)](https://www.npmjs.com/package/@my-react/react-shared) | Shared utilities |
-| [`@my-react/react-reconciler`](packages/myreact-reconciler) | [![npm](https://img.shields.io/npm/v/%40my-react/react-reconciler)](https://www.npmjs.com/package/@my-react/react-reconciler) | Full-featured reconciler |
-| [`@my-react/react-reconciler-compact`](packages/myreact-reconciler-compact) | [![npm](https://img.shields.io/npm/v/%40my-react/react-reconciler-compact)](https://www.npmjs.com/package/@my-react/react-reconciler-compact) | Compact reconciler |
+| Package                                                                     | Version                                                                                                                                       | Description              |
+| :-------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------- |
+| [`@my-react/react-jsx`](packages/myreact-jsx)                               | [![npm](https://img.shields.io/npm/v/%40my-react/react-jsx)](https://www.npmjs.com/package/@my-react/react-jsx)                               | JSX runtime              |
+| [`@my-react/react-shared`](packages/myreact-shared)                         | [![npm](https://img.shields.io/npm/v/%40my-react/react-shared)](https://www.npmjs.com/package/@my-react/react-shared)                         | Shared utilities         |
+| [`@my-react/react-reconciler`](packages/myreact-reconciler)                 | [![npm](https://img.shields.io/npm/v/%40my-react/react-reconciler)](https://www.npmjs.com/package/@my-react/react-reconciler)                 | Full-featured reconciler |
+| [`@my-react/react-reconciler-compact`](packages/myreact-reconciler-compact) | [![npm](https://img.shields.io/npm/v/%40my-react/react-reconciler-compact)](https://www.npmjs.com/package/@my-react/react-reconciler-compact) | Compact reconciler       |
 
 ### Experimental
 
-| Package | Version | Description |
-| :------ | :------ | :---------- |
+| Package                                                   | Version                                                                                                                   | Description                |
+| :-------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------ | :------------------------- |
 | [`@my-react/react-reactive`](packages/myreact-reactivity) | [![npm](https://img.shields.io/npm/v/%40my-react/react-reactive)](https://www.npmjs.com/package/@my-react/react-reactive) | Reactive programming model |
 
 ## 🚀 Development

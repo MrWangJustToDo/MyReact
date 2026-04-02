@@ -1,6 +1,6 @@
 import { renderToReadableStream } from "@lazarv/rsc/server";
 
-import { ServerComponentDispatch } from "./ServerComponentDispatch";
+import { ServerComponentDispatch } from "./server-component-dispatch";
 
 import type { RenderToFlightStreamOptions, ModuleResolver } from "../shared/types";
 import type { MyReactElementNode } from "@my-react/react";

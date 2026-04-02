@@ -30,7 +30,7 @@ export const defaultResolveSuspenseValue = (fiber: MyReactFiberNode): MyReactEle
   return null;
 };
 
-export const defaultResolveSuspenseFiber = (fiber: MyReactFiberNode): MyReactFiberNode => {
+export const defaultResolveSuspenseFiber = (fiber: MyReactFiberNode): MyReactFiberNode | null => {
   let parent = fiber.parent;
 
   while (parent) {
@@ -43,7 +43,7 @@ export const defaultResolveSuspenseFiber = (fiber: MyReactFiberNode): MyReactFib
   return null;
 };
 
-export const defaultResolveAliveSuspenseFiber = (fiber: MyReactFiberNode): MyReactFiberNode => {
+export const defaultResolveAliveSuspenseFiber = (fiber?: MyReactFiberNode | null): MyReactFiberNode | null | undefined => {
   while (fiber) {
     if (include(fiber.type, NODE_TYPE.__suspense__) && exclude(fiber.state, STATE_TYPE.__unmount__)) {
       return fiber;

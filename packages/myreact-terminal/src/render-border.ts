@@ -1,10 +1,10 @@
 import chalk from "chalk";
 import cliBoxes from "cli-boxes";
 
-import colorize from "./colorize";
-import { type DOMNode } from "./dom";
+import colorize from "./colorize.js";
+import { type DOMNode } from "./dom.js";
 
-import type Output from "./output";
+import type Output from "./output.js";
 
 const renderBorder = (x: number, y: number, node: DOMNode, output: Output): void => {
   if (node.style.borderStyle) {

@@ -5,7 +5,7 @@ import { currentComponentFiber } from "../share";
 
 import { checkArrayChildrenKey, checkSingleChildrenKey, checkValidElement } from "./tool";
 
-import type { createContext, forwardRef, lazy, memo } from "./feature";
+import type { lazy, createContext, forwardRef, memo } from "./feature";
 import type { MyReactComponent } from "../component";
 import type { MyReactInternalInstance } from "../internal";
 import type { RenderFiber } from "../renderFiber";
@@ -103,7 +103,7 @@ export type LikeReactNode = LikeJSX | string | number | boolean | null | undefin
 export interface LikeJSX<T extends MyReactElementType<P> = any, P extends Record<string, unknown> = any, Key extends string | number = string | number> {
   type: T;
   props: P;
-  key: Key | null;
+  key?: Key | null;
   ref?: CreateElementProps["ref"];
   _owner?: CreateElementProps["_owner"];
   _self?: CreateElementProps["_self"];
@@ -154,12 +154,12 @@ export type Props = {
  */
 export type CreateElementProps<P extends Record<string, unknown> = any, S extends Record<string, unknown> = any, C extends Record<string, unknown> = any> = {
   type: MyReactElementType<P, S, C>;
-  key: string | number | null;
-  ref: ReturnType<typeof createRef> | ((node?: { [p: string]: any } | MyReactInternalInstance) => (() => void) | void) | null;
+  key?: string | number | null;
+  ref?: ReturnType<typeof createRef> | ((node?: { [p: string]: any } | MyReactInternalInstance) => (() => void) | void) | null;
   props: P & Props;
-  _self: MyReactInternalInstance | null;
-  _source: { fileName: string; lineNumber: string } | null;
-  _owner: RenderFiber | null;
+  _self?: MyReactInternalInstance | null;
+  _source?: { fileName: string; lineNumber: string } | null;
+  _owner?: RenderFiber | null;
 };
 
 /**
@@ -393,7 +393,9 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
       defaultProps = typedType?.defaultProps || {};
     }
 
-    Object.keys(resProps).forEach((key) => (props[key] = resProps[key] === undefined ? defaultProps[key] : resProps[key]));
+    Object.keys(resProps).forEach(
+      (key) => (props[key] = (resProps as Record<string, any>)[key] === undefined ? defaultProps[key] : (resProps as Record<string, any>)[key])
+    );
   }
 
   const childrenLength = arguments.length - 2;

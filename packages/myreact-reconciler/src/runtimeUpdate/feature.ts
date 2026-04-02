@@ -77,8 +77,10 @@ export const updateLoopConcurrentFromRoot = (renderDispatch: CustomRenderDispatc
 };
 
 export const processAsyncLoadListOnUpdate = (renderDispatch: CustomRenderDispatch) => {
-  if (renderDispatch.pendingSuspenseFiberArray?.length) {
+  while (renderDispatch.pendingSuspenseFiberArray?.length) {
     const allPendingSuspenseFiberArray = renderDispatch.pendingSuspenseFiberArray.getAll();
+
+    renderDispatch.pendingSuspenseFiberArray.clear();
 
     if (renderDispatch.enableAsyncLoad) {
       const allField: SuspenseInstanceField[] = [];
@@ -92,7 +94,9 @@ export const processAsyncLoadListOnUpdate = (renderDispatch: CustomRenderDispatc
           if (isPromise(item)) {
             return typeof item.status !== "string";
           } else {
-            return !item._loading && !item._loaded && !item._error;
+            // return !item._loading && !item._loaded && !item._error;
+            // return !item._loading;
+            return true;
           }
         });
 
@@ -146,8 +150,6 @@ export const processAsyncLoadListOnUpdate = (renderDispatch: CustomRenderDispatc
       mountLoopAll(renderDispatch, root);
 
       allField.forEach((field) => (field.isHidden = false));
-
-      renderDispatch.pendingSuspenseFiberArray.clear();
     } else {
       throw new Error(
         "[@my-react/reconciler] should not process async load list on sync mount without enableAsyncLoad, you may use a wrong renderDispatch instance"

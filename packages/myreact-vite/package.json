@@ -42,7 +42,7 @@
       ]
     },
     {
-      "input": "./src/refreshUtils.ts",
+      "input": "./src/refresh-utils.ts",
       "pkgName": "refreshUtils",
       "output": [
         {
@@ -56,17 +56,29 @@
     }
   ],
   "peerDependencies": {
+    "@lazarv/rsc": "^0.0.0-experimental",
     "@my-react/react-refresh": ">=0.3.22",
     "vite": "^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@lazarv/rsc": {
+      "optional": true
+    }
   },
   "dependencies": {
     "@babel/core": "^7.22.5",
     "@babel/plugin-transform-react-jsx-self": "^7.22.5",
     "@babel/plugin-transform-react-jsx-source": "^7.22.5",
-    "@rolldown/pluginutils": "1.0.0-rc.6"
+    "@rolldown/pluginutils": "1.0.0-rc.6",
+    "estree-walker": "^3.0.3",
+    "es-module-lexer": "^1.7.0",
+    "magic-string": "^0.30.12",
+    "periscopic": "^3.1.0",
+    "rsc-html-stream": "^0.0.7"
   },
   "devDependencies": {
     "@my-react/react-shared": "^0.3.22",
-    "@types/babel__core": "^7.20.5"
+    "@types/babel__core": "^7.20.5",
+    "@types/estree": "^1.0.8"
   }
 }

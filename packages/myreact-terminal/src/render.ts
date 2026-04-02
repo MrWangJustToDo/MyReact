@@ -1,10 +1,11 @@
-import { type StyledChar } from "@alcalzone/ansi-tokenize";
 import process from "node:process";
 import { Stream } from "node:stream";
 
-import Ink, { type Options as InkOptions, type RenderMetrics } from "./ink";
-import instances from "./instances";
-import { type Selection } from "./selection";
+import { type DOMElement } from "./dom.js";
+import Ink, { type Options as InkOptions, type RenderMetrics } from "./ink.js";
+import instances from "./instances.js";
+import { type Selection } from "./selection.js";
+import { type StyledLine } from "./styled-line.js";
 
 import type { ReactNode } from "react";
 
@@ -105,7 +106,7 @@ export type RenderOptions = {
   /**
    * Function to transform selected text characters.
    */
-  selectionStyle?: (char: StyledChar) => StyledChar;
+  selectionStyle?: (line: StyledLine, index: number) => void;
 
   /*
    * If true, Ink will wait for `useLayoutEffect` hooks to run before rendering a frame.
@@ -116,6 +117,40 @@ export type RenderOptions = {
    * @default false
    */
   standardReactLayoutTiming?: boolean;
+
+  /**
+   * Use a separate process-based rendering mode so that render updates are
+   * not blocked by the main thread
+   *
+   * @default false
+   */
+  renderProcess?: boolean;
+
+  /**
+   * Use the terminal buffer logic (backbuffer tracking) for rendering.
+   * If `renderProcess` is also true, this is implied.
+   * If `renderProcess` is false and this is true, the terminal buffer logic runs in the main process.
+   *
+   * @default false
+   */
+  terminalBuffer?: boolean;
+
+  /**
+   * If true, the worker-based renderer will automatically scroll all scrollable regions
+   * by 1 line every 16ms. This is only supported when using `terminalBuffer` or `renderProcess`.
+   *
+   * @default false
+   */
+  animatedScroll?: boolean;
+
+  /**
+   * Render sticky headers stuck at the top/bottom of scrollable regions
+   * when they are pushed to the terminal backbuffer.
+   * @default false
+   */
+  stickyHeadersInBackbuffer?: boolean;
+  cacheToStyledCharacters?: boolean;
+  trackSelection?: boolean;
 };
 
 export type Instance = {
@@ -150,6 +185,18 @@ export type Instance = {
    * Get the selection object.
    */
   getSelection: () => Selection;
+
+  /**
+   * Exports the current internal rendering state to a JSON file and a human-readable text dump.
+   * Only supported when `terminalBuffer` is enabled.
+   * @param filename The path/name for the JSON file (e.g., 'snapshot.json').
+   */
+  dumpCurrentFrame: (filename: string) => void;
+
+  /**
+   * Internal root node of the Ink tree.
+   */
+  rootNode: DOMElement;
 };
 
 /**
@@ -168,6 +215,9 @@ const render = (node: ReactNode, options?: NodeJS.WriteStream | RenderOptions): 
     alternateBufferAlreadyActive: false,
     incrementalRendering: false,
     standardReactLayoutTiming: false,
+    renderProcess: false,
+    terminalBuffer: false,
+    animatedScroll: false,
     ...getOptions(options),
   };
 
@@ -185,6 +235,8 @@ const render = (node: ReactNode, options?: NodeJS.WriteStream | RenderOptions): 
     clear: instance.clear,
     recalculateLayout: instance.recalculateLayout,
     getSelection: instance.getSelection,
+    dumpCurrentFrame: instance.dumpCurrentFrame,
+    rootNode: instance.rootNode,
   };
 };
 

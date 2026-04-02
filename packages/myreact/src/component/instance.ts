@@ -4,7 +4,7 @@ import { MyReactInternalInstance } from "../internal";
 import { currentScheduler, enableSyncFlush } from "../share";
 
 import type { MyReactElementNode, createContext } from "../element";
-import type { ComponentUpdateQueue } from "../renderQueue";
+import type { ComponentUpdateQueue, UpdateQueue } from "../renderQueue";
 
 /**
  * @public
@@ -85,7 +85,7 @@ export class MyReactComponent<
   }
 
   setState = (payLoad: ComponentUpdateQueue<S, P>["payLoad"], callback?: ComponentUpdateQueue["callback"]) => {
-    const updater: ComponentUpdateQueue = {
+    const updater: ComponentUpdateQueue<S, P> = {
       type: UpdateQueueType.component,
       payLoad,
       callback,
@@ -96,7 +96,7 @@ export class MyReactComponent<
 
     const renderScheduler = currentScheduler.current;
 
-    renderScheduler?.dispatchState(updater);
+    renderScheduler?.dispatchState(updater as UpdateQueue);
   };
 
   forceUpdate = () => {

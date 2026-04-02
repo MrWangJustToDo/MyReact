@@ -37,19 +37,31 @@
     "url": "https://github.com/MrWangJustToDo/MyReact",
     "directory": "packages/myreact-terminal"
   },
-  "buildOptions": {
-    "input": "./src/index.ts",
-    "output": [
-      {
-        "dir": "./dist",
-        "entryFileNames": "esm/index.mjs",
-        "format": "esm",
-        "type": true
-      }
-    ]
-  },
+  "buildOptions": [
+    {
+      "input": "./src/index.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/index.mjs",
+          "format": "esm",
+          "type": true
+        }
+      ]
+    },
+    {
+      "input": "./src/worker/worker-entry.ts",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/worker.mjs",
+          "format": "esm",
+          "type": true
+        }
+      ]
+    }
+  ],
   "dependencies": {
-    "@alcalzone/ansi-tokenize": "^0.2.5",
     "ansi-escapes": "^7.3.0",
     "ansi-styles": "^6.2.3",
     "auto-bind": "^5.0.1",
@@ -60,6 +72,7 @@
     "code-excerpt": "^4.0.0",
     "es-toolkit": "^1.45.0",
     "indent-string": "^5.0.0",
+    "is-fullwidth-code-point": "^5.0.0",
     "is-in-ci": "^2.0.0",
     "mnemonist": "^0.40.3",
     "patch-console": "^2.0.0",

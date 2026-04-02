@@ -19,10 +19,10 @@ import {
 } from "@my-react/react-reconciler";
 
 import { append, create, position, remove, setRef, unsetRef, update } from "./api";
-import { ReconcilerDispatchFiber } from "./dispatchFiber";
-import { initialMap, unmountMap } from "./dispatchMap";
-import { ReconcilerDispatchMount } from "./dispatchMount";
-import { ReconcilerDispatchUpdate } from "./dispatchUpdate";
+import { ReconcilerDispatchFiber } from "./dispatch-fiber";
+import { initialMap, unmountMap } from "./dispatch-map";
+import { ReconcilerDispatchMount } from "./dispatch-mount";
+import { ReconcilerDispatchUpdate } from "./dispatch-update";
 
 import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
 import type { MyReactFiberRoot, MyReactFiberNode, HMR } from "@my-react/react-reconciler";

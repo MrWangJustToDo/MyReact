@@ -29,7 +29,7 @@ export const getMyReactElementName = (element: MyReactElementNode) => {
 
 export const getMyReactElementTypeName = (type: MyReactElementType) => {
   const typedType = type;
-  let name = "";
+  let name: string | undefined = "";
   if (typeof typedType === "object" && typedType !== null) {
     const typedObjectType = typedType as MixinMyReactObjectComponent;
     name = name || typedObjectType.displayName;

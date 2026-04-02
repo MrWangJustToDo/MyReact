@@ -13,7 +13,7 @@ const { enableDebugFiled } = __my_react_shared__;
 
 const { currentRunningFiber, MyReactInternalInstance } = __my_react_internal__;
 
-export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextObject?: ReturnType<typeof createContext> | null) => {
+export const defaultGetContextValue = (fiber?: MyReactFiberNode | null, ContextObject?: ReturnType<typeof createContext> | null) => {
   if (fiber) {
     return fiber.pendingProps["value"] as Record<string, unknown>;
   } else {
@@ -23,7 +23,7 @@ export const defaultGetContextValue = (fiber: MyReactFiberNode | null, ContextOb
 
 export const defaultGetContextFiber = (fiber: MyReactFiberNode, ContextObject?: ReturnType<typeof createContext> | null) => {
   if (fiber?.parent && ContextObject) {
-    let parent = fiber.parent;
+    let parent: MyReactFiberNode | null = fiber.parent;
     while (parent) {
       if (include(parent.type, NODE_TYPE.__provider__)) {
         const typedElementType = parent.elementType as ReturnType<typeof createContext>["Provider"];

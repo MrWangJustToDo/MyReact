@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 export const yieldTask =
   typeof scheduler !== "undefined" && typeof scheduler.postTask === "function" && typeof AbortController === "function"
     ? function schedulerYieldTask(task: () => void) {
@@ -55,7 +56,9 @@ function flushMacroTask() {
     }
   }
 
+  // @ts-ignore
   if (typeof setImmediate === "function") {
+    // @ts-ignore
     setImmediate(invokeMacroTask);
   } else if (typeof MessageChannel === "function") {
     const { port1, port2 } = new MessageChannel();

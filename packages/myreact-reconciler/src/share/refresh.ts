@@ -7,9 +7,9 @@ import {
 } from "@my-react/react";
 import { include } from "@my-react/react-shared";
 
-import { getElementTypeFromType } from "./elementType";
+import { getElementTypeFromType } from "./element-type";
 import { currentRefreshHandler, fiberToDispatchMap } from "./env";
-import { NODE_TYPE } from "./fiberType";
+import { NODE_TYPE } from "./fiber-type";
 import { MyWeakMap } from "./map";
 
 import type { MyReactFiberNode, MyReactFiberRoot } from "../runtimeFiber";

@@ -43,8 +43,6 @@ export const processAsyncLoadListOnAsyncMount = async (renderDispatch: CustomRen
 
     const suspenseField = getInstanceFieldByInstance(node.instance) as SuspenseInstanceField;
 
-    renderDispatch.pendingSuspenseFiberArray.clear();
-
     const list = suspenseField.asyncLoadList.getAll();
 
     await Promise.all(
@@ -108,8 +106,10 @@ export const processAsyncLoadListOnAsyncMount = async (renderDispatch: CustomRen
 };
 
 export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDispatch) => {
-  if (renderDispatch.pendingSuspenseFiberArray?.length) {
+  while (renderDispatch.pendingSuspenseFiberArray?.length) {
     const allPendingSuspenseFiberArray = renderDispatch.pendingSuspenseFiberArray.getAll();
+
+    renderDispatch.pendingSuspenseFiberArray.clear();
 
     if (renderDispatch.enableAsyncLoad) {
       const allField: SuspenseInstanceField[] = [];
@@ -123,7 +123,8 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
           if (isPromise(item)) {
             return typeof item.status !== "string";
           } else {
-            return !item._loading && !item._loaded && !item._error;
+            // return !item._loading && !item._loaded && !item._error;
+            return !item._loading;
           }
         });
 
@@ -176,8 +177,6 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
       mountLoopAll(renderDispatch, root);
 
       allField.forEach((field) => (field.isHidden = false));
-
-      renderDispatch.pendingSuspenseFiberArray.clear();
     } else {
       throw new Error(
         "[@my-react/reconciler] should not process async load list on sync mount without enableAsyncLoad, you may use a wrong renderDispatch instance"

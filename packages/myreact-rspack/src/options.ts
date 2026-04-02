@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import type { IntegrationType } from "./utils/getSocketIntegration";
+import type { IntegrationType } from "./utils/get-socket-integration";
 import type { RuleSetCondition } from "@rspack/core";
 
 interface OverlayOptions {

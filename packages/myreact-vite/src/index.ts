@@ -5,6 +5,7 @@ import { createFilter } from "vite";
 import * as vite from "vite";
 
 import { addRefreshWrapper, getPreambleCode, preambleCode, runtimeCode, remixRuntimeCode, routerRuntimeCode, runtimePublicPath } from "./fast-refresh";
+import { rscPlugin } from "./rsc";
 import { silenceUseClientWarning } from "./warning";
 
 import type * as babelCore from "@babel/core";
@@ -61,6 +62,24 @@ export interface Options {
    * for react-router >= 7 fast refresh
    */
   reactRouter?: boolean;
+
+  /**
+   * Enable React Server Components support
+   * @default false
+   */
+  rsc?: boolean;
+
+  /**
+   * Custom RSC endpoint path
+   * @default "/__rsc"
+   */
+  rscEndpoint?: string;
+
+  /**
+   * Custom server action endpoint path
+   * @default "/__rsc_action"
+   */
+  rscActionEndpoint?: string;
 }
 
 export type BabelOptions = Omit<TransformOptions, "ast" | "filename" | "root" | "sourceFileName" | "sourceMaps" | "inputSourceMap">;
@@ -444,6 +463,17 @@ export default function viteReact(opts: Options = {}): Plugin[] {
     },
   };
 
+  // Get RSC plugins if enabled
+  const rscPlugins = opts.rsc
+    ? rscPlugin({
+        rsc: true,
+        include: opts.include,
+        exclude: opts.exclude,
+        rscEndpoint: opts.rscEndpoint,
+        actionEndpoint: opts.rscActionEndpoint,
+      })
+    : [];
+
   return [
     viteBabel,
     viteReactRefresh,
@@ -451,6 +481,7 @@ export default function viteReact(opts: Options = {}): Plugin[] {
     opts.remix ? viteRemixRefreshRuntime : null,
     opts.reactRouter ? viteReactRouterRefresh : null,
     opts.reactRouter ? viteReactRouterRefreshRuntime : null,
+    ...rscPlugins,
   ].filter(Boolean) as Plugin[];
 }
 

@@ -1,6 +1,6 @@
 import { Scheduler, type RenderScheduler } from "../renderScheduler";
 
-import { createReadonlyRef, createRef } from "./createRef";
+import { createReadonlyRef, createRef } from "./create-ref";
 
 import type { MyReactInternalInstance } from "../internal";
 import type { RenderFiber } from "../renderFiber";

@@ -1,0 +1,27 @@
+{
+  "name": "rsc-example",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "node --inspect ./node_modules/vite/bin/vite.js --force",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@my-react/react": "workspace:*",
+    "@my-react/react-dom": "workspace:*",
+    "@my-react/react-server": "workspace:*"
+  },
+  "devDependencies": {
+    "@lazarv/rsc": "0.0.0-experimental-196ba2e-20260326-ed190390",
+    "@my-react/react-vite": "workspace:*",
+    "@types/node": "catalog:",
+    "babel-plugin-react-compiler": "catalog:",
+    "react-compiler-runtime": "catalog:",
+    "rsc-html-stream": "^0.0.7",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vite-plugin-inspect": "^11.3.3"
+  }
+}

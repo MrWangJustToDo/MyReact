@@ -1,10 +1,10 @@
 import { CliRenderEvents, createCliRenderer, engine } from "@opentui/core";
 import React, { type ReactNode } from "react";
 
-import { AppContext } from "../components/App";
-import { ErrorBoundary } from "../components/ErrorBoundary";
+import { AppContext } from "../components/App.js";
+import { ErrorBoundary } from "../components/ErrorBoundary.js";
 
-import { _render, reconciler } from "./reconciler";
+import { _render, reconciler } from "./reconciler.js";
 
 import type { CliRenderer, CliRendererConfig } from "@opentui/core";
 import type { OpaqueRoot } from "react-reconciler";

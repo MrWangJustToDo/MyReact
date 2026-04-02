@@ -17,4 +17,4 @@ function Counter() {
   return <Text color="green">{counter} tests passed</Text>;
 }
 
-export const test = () => render(<Counter />);
+export const test = () => render(<Counter />, { terminalBuffer: true });

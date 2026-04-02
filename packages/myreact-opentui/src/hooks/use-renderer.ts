@@ -1,4 +1,4 @@
-import { useAppContext } from "../components/App";
+import { useAppContext } from "../components/App.js";
 
 export const useRenderer = () => {
   const { renderer } = useAppContext();

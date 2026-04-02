@@ -5,5 +5,5 @@ export * from "./tools";
 export * from "./array";
 export * from "./symbol";
 export * from "./version";
-export * from "./isEquals";
-export * from "./listTree";
+export * from "./is-equals";
+export * from "./list-tree";

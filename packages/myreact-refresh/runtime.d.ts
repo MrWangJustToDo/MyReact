@@ -1,3 +1,3 @@
-import * as GlobalRuntime from "./dist/types/RefreshRuntime";
+import * as GlobalRuntime from "./dist/types/refresh-runtime";
 
 export default GlobalRuntime;

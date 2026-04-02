@@ -6,5 +6,5 @@ export * from "./hook";
 export * from "./cache";
 export * from "./debug";
 export * from "./dispatch";
-export * from "./createRef";
+export * from "./create-ref";
 export * from "./transition";

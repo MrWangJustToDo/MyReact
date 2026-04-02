@@ -70,7 +70,7 @@ export const setContextForInstance = (instance: MyReactInternalInstance, fiber: 
   field._context?._addDependence(instance);
 };
 
-export const setSubscribeForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode | null, instanceField?: InstanceField) => {
+export const setSubscribeForInstance = (instance: MyReactInternalInstance, fiber?: MyReactFiberNode | null, instanceField?: InstanceField) => {
   const field = instanceField || instanceMap.get(instance);
 
   // unmount instance
@@ -126,7 +126,7 @@ export const getInstanceFieldByInstance = (instance: MyReactInternalInstance) =>
   return field;
 };
 
-export const getInstanceOwnerFiber = (instance: MyReactInternalInstance | MyReactFiberNode): MyReactFiberNode => {
+export const getInstanceOwnerFiber = (instance: MyReactInternalInstance | MyReactFiberNode): MyReactFiberNode | null | undefined => {
   const typedInstance = instance as MyReactInternalInstance;
   if (typedInstance.isMyReactInstance) {
     const field = instanceMap.get(typedInstance);

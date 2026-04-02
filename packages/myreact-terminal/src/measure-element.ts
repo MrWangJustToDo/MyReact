@@ -1,13 +1,14 @@
 /* eslint-disable max-lines */
 import Yoga from "yoga-layout";
 
-import { type DOMElement, type DOMNode, type TextNode } from "./dom";
-import getMaxWidth from "./get-max-width";
-import { processLayout } from "./layout";
-import { toStyledCharacters, inkCharacterWidth, styledCharsToString } from "./measure-text";
-import { getScrollLeft, getScrollTop } from "./scroll";
-import squashTextNodes from "./squash-text-nodes";
-import { wrapOrTruncateStyledChars } from "./text-wrap";
+import { type DOMElement, type DOMNode, type TextNode } from "./dom.js";
+import getMaxWidth from "./get-max-width.js";
+import { processLayout } from "./layout.js";
+import { toStyledCharacters, inkCharacterWidth, styledCharsToString } from "./measure-text.js";
+import { extractSelectableText } from "./output.js";
+import { getScrollLeft, getScrollTop } from "./scroll.js";
+import squashTextNodes from "./squash-text-nodes.js";
+import { wrapOrTruncateStyledChars } from "./text-wrap.js";
 
 type Output = {
   /**
@@ -153,6 +154,93 @@ export function calculateScrollbarThumb(options: {
   return { startIndex, endIndex, thumbStartHalf, thumbEndHalf };
 }
 
+export function calculateScrollbarLayout(options: {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  marginRight: number;
+  marginBottom: number;
+  clientDimension: number;
+  scrollDimension: number;
+  scrollPosition: number;
+  hasOppositeScrollbar: boolean;
+  axis: "vertical" | "horizontal";
+}): ScrollbarBoundingBox | undefined {
+  const { x, y, width, height, marginRight, marginBottom, clientDimension, scrollDimension, scrollPosition, hasOppositeScrollbar, axis } = options;
+
+  if (scrollDimension <= clientDimension) {
+    return undefined;
+  }
+
+  if (axis === "vertical") {
+    const { startIndex, endIndex, thumbStartHalf, thumbEndHalf } = calculateScrollbarThumb({
+      scrollbarDimension: height,
+      clientDimension,
+      scrollDimension,
+      scrollPosition,
+      axis,
+    });
+
+    const scrollbarX = x + width - 1 - marginRight;
+
+    return {
+      x: scrollbarX,
+      y,
+      width: 1,
+      height,
+      thumb: {
+        x: scrollbarX,
+        y: y + startIndex,
+        width: 1,
+        height: endIndex - startIndex,
+        start: startIndex,
+        end: endIndex,
+        startHalf: thumbStartHalf,
+        endHalf: thumbEndHalf,
+      },
+    };
+  }
+
+  const scrollbarWidth = width - (hasOppositeScrollbar ? 1 : 0);
+  const { startIndex, endIndex, thumbStartHalf, thumbEndHalf } = calculateScrollbarThumb({
+    scrollbarDimension: scrollbarWidth,
+    clientDimension,
+    scrollDimension,
+    scrollPosition,
+    axis,
+  });
+
+  const scrollbarY = y + height - 1 - marginBottom;
+
+  return {
+    x,
+    y: scrollbarY,
+    width: scrollbarWidth,
+    height: 1,
+    thumb: {
+      x: x + startIndex,
+      y: scrollbarY,
+      width: endIndex - startIndex,
+      height: 1,
+      start: startIndex,
+      end: endIndex,
+      startHalf: thumbStartHalf,
+      endHalf: thumbEndHalf,
+    },
+  };
+}
+
+/**
+ * Get how much scroll height was added by stableScrollback.
+ */
+export const getAddedScrollHeight = (node: DOMElement): number => {
+  const scrollHeight = node.internal_scrollState?.scrollHeight ?? 0;
+  const actualScrollHeight = node.internal_scrollState?.actualScrollHeight ?? 0;
+
+  return Math.max(0, scrollHeight - actualScrollHeight);
+};
+
 /**
  * Get the bounding box of the vertical scrollbar.
  */
@@ -179,33 +267,19 @@ export const getVerticalScrollbarBoundingBox = (node: DOMElement, offset?: { x: 
   const { x, y } = offset ?? getBoundingBox(node);
   const scrollbarHeight = yogaNode.getComputedHeight() - yogaNode.getComputedBorder(Yoga.EDGE_TOP) - yogaNode.getComputedBorder(Yoga.EDGE_BOTTOM);
 
-  const { startIndex, endIndex, thumbStartHalf, thumbEndHalf } = calculateScrollbarThumb({
-    scrollbarDimension: scrollbarHeight,
+  return calculateScrollbarLayout({
+    x: x + yogaNode.getComputedBorder(Yoga.EDGE_LEFT),
+    y: y + yogaNode.getComputedBorder(Yoga.EDGE_TOP),
+    width: yogaNode.getComputedWidth() - yogaNode.getComputedBorder(Yoga.EDGE_LEFT),
+    height: scrollbarHeight,
+    marginRight: yogaNode.getComputedBorder(Yoga.EDGE_RIGHT),
+    marginBottom: yogaNode.getComputedBorder(Yoga.EDGE_BOTTOM),
     clientDimension: clientHeight,
     scrollDimension: scrollHeight,
     scrollPosition: node.internal_scrollState?.scrollTop ?? 0,
+    hasOppositeScrollbar: false,
     axis: "vertical",
   });
-
-  const scrollbarX = x + yogaNode.getComputedWidth() - 1 - yogaNode.getComputedBorder(Yoga.EDGE_RIGHT);
-  const scrollbarY = y + yogaNode.getComputedBorder(Yoga.EDGE_TOP);
-
-  return {
-    x: scrollbarX,
-    y: scrollbarY,
-    width: 1,
-    height: scrollbarHeight,
-    thumb: {
-      x: scrollbarX,
-      y: scrollbarY + startIndex,
-      width: 1,
-      height: endIndex - startIndex,
-      start: startIndex,
-      end: endIndex,
-      startHalf: thumbStartHalf,
-      endHalf: thumbEndHalf,
-    },
-  };
 };
 
 /**
@@ -238,39 +312,19 @@ export const getHorizontalScrollbarBoundingBox = (node: DOMElement, offset?: { x
   const scrollHeight = node.internal_scrollState?.scrollHeight ?? 0;
   const isVerticalScrollbarVisible = overflowY === "scroll" && scrollHeight > clientHeight;
 
-  const scrollbarWidth =
-    yogaNode.getComputedWidth() -
-    yogaNode.getComputedBorder(Yoga.EDGE_LEFT) -
-    yogaNode.getComputedBorder(Yoga.EDGE_RIGHT) -
-    (isVerticalScrollbarVisible ? 1 : 0);
-
-  const { startIndex, endIndex, thumbStartHalf, thumbEndHalf } = calculateScrollbarThumb({
-    scrollbarDimension: scrollbarWidth,
+  return calculateScrollbarLayout({
+    x: x + yogaNode.getComputedBorder(Yoga.EDGE_LEFT),
+    y: y + yogaNode.getComputedBorder(Yoga.EDGE_TOP),
+    width: yogaNode.getComputedWidth() - yogaNode.getComputedBorder(Yoga.EDGE_LEFT) - yogaNode.getComputedBorder(Yoga.EDGE_RIGHT),
+    height: yogaNode.getComputedHeight() - yogaNode.getComputedBorder(Yoga.EDGE_TOP),
+    marginRight: yogaNode.getComputedBorder(Yoga.EDGE_RIGHT),
+    marginBottom: yogaNode.getComputedBorder(Yoga.EDGE_BOTTOM),
     clientDimension: clientWidth,
     scrollDimension: scrollWidth,
     scrollPosition: node.internal_scrollState?.scrollLeft ?? 0,
+    hasOppositeScrollbar: isVerticalScrollbarVisible,
     axis: "horizontal",
   });
-
-  const scrollbarX = x + yogaNode.getComputedBorder(Yoga.EDGE_LEFT);
-  const scrollbarY = y + yogaNode.getComputedHeight() - 1 - yogaNode.getComputedBorder(Yoga.EDGE_BOTTOM);
-
-  return {
-    x: scrollbarX,
-    y: scrollbarY,
-    width: scrollbarWidth,
-    height: 1,
-    thumb: {
-      x: scrollbarX + startIndex,
-      y: scrollbarY,
-      width: endIndex - startIndex,
-      height: 1,
-      start: startIndex,
-      end: endIndex,
-      startHalf: thumbStartHalf,
-      endHalf: thumbEndHalf,
-    },
-  };
 };
 
 export type TextFragment = {
@@ -311,7 +365,11 @@ export const collectSortedFragments = (
       currentSelectable = true;
     }
 
-    if (currentNode.nodeName === "ink-text" || currentNode.nodeName === "ink-virtual-text") {
+    if (
+      currentNode.nodeName === "ink-text" ||
+      currentNode.nodeName === "ink-virtual-text" ||
+      (currentNode.nodeName === "ink-static-render" && currentNode.cachedRender)
+    ) {
       if (currentSelectable) {
         const text = getText(currentNode);
         fragments.push({
@@ -426,10 +484,18 @@ export const getText = (node: DOMNode): string => {
     return node.nodeValue;
   }
 
+  if (node.nodeName === "ink-static-render" && node.cachedRender?.selectableSpans) {
+    const spans = node.cachedRender.selectableSpans;
+    if (spans.length === 0) return "";
+
+    // Spans are already sorted during rendering, but let's be safe
+    return extractSelectableText(spans);
+  }
+
   if (node.nodeName === "ink-text" || node.nodeName === "ink-virtual-text") {
     const text = squashTextNodes(node);
     const styledChars = toStyledCharacters(text);
-    const plainText = styledChars.map((char) => char.value).join("");
+    const plainText = styledChars.getText();
 
     const textWrap = node.style.textWrap ?? "wrap";
 
@@ -640,84 +706,110 @@ const getTextOffsetForTextNode = (node: DOMElement, x: number, y: number, option
   const textWrap = node.style.textWrap ?? "wrap";
 
   const lines = wrapOrTruncateStyledChars(styledChars, maxWidth, textWrap);
+  const fullText = styledChars.getText();
 
   let currentY = 0;
+  let searchOffset = 0;
+
   for (const line of lines) {
+    const lineStr = line.getText();
+    const searchStr = lineStr.replace("…", "");
+    const lineStartOffset = fullText.indexOf(searchStr, searchOffset);
+    const actualStartOffset = lineStartOffset === -1 ? searchOffset : lineStartOffset;
+
     if (y === currentY) {
       let currentX = 0;
+      let currentOffset = actualStartOffset;
+
       for (const char of line) {
         const charWidth = inkCharacterWidth(char.value);
         if (x < currentX + charWidth) {
-          const index = styledChars.indexOf(char);
-          if (index !== -1) {
-            let currentOffset = 0;
-            for (let i = 0; i < index; i++) {
-              currentOffset += styledChars[i]!.value.length;
-            }
-
-            if (options?.snapToChar === "end" && x >= currentX) {
-              currentOffset += char.value.length;
-            }
-
-            return currentOffset;
-          }
-
-          return getText(node).length;
-        }
-
-        currentX += charWidth;
-      }
-
-      const lastChar = line.at(-1);
-      if (lastChar) {
-        const index = styledChars.indexOf(lastChar);
-        if (index !== -1) {
-          let currentOffset = 0;
-          for (let i = 0; i <= index; i++) {
-            currentOffset += styledChars[i]!.value.length;
+          if (options?.snapToChar === "end" && x >= currentX) {
+            currentOffset += char.value.length;
           }
 
           return currentOffset;
         }
 
-        return getText(node).length;
+        currentX += charWidth;
+        currentOffset += char.value.length;
       }
 
-      // If we are here, we finished the line loop.
-      // This happens if the line is empty, or if x was greater than the line width.
-      // But wait, if x < 0, we should have returned inside the loop (first char).
-      // Unless the line is empty.
-
-      // If the line is empty, we should return the offset at the start of this line.
-      // We need to find the offset corresponding to the start of this line.
-      // Since we don't track offsets easily, we can find the first char of the line (if any) or the char after the previous line.
-
-      // However, the issue in the test was returning 1 instead of 5.
-      // This means it matched index 1.
-      // Index 1 is '2'.
-      // This means `x` was interpreted as matching '2'.
-      // This implies `x` was not < width of '1'.
-      // If `x` was 1.
-      // `visualX` must have been 0.
-      // But we saw `visualX` should be 2.
-
-      // Let's look at the logs I added.
-      // I need to run the test again and see the logs.
-      // I missed checking the logs in the previous turn output because I was focused on the failure message.
-      // The logs should be in the output.
-
-      return 0;
+      return currentOffset;
     }
 
+    searchOffset = actualStartOffset + searchStr.length;
     currentY++;
   }
 
-  return getText(node).length;
+  return fullText.length;
 };
 
 export const getTextOffset = (node: DOMNode, x: number, y: number, options?: { snapToGap?: "start" | "end"; snapToChar?: "start" | "end" }): number => {
   if (node.nodeName === "#text") {
     return 0;
+  }
+
+  if (node.nodeName === "ink-static-render" && node.cachedRender?.selectableSpans) {
+    const spans = node.cachedRender.selectableSpans;
+    if (spans.length === 0) return 0;
+    const sortedSpans = [...spans].sort((a, b) => (a.y === b.y ? a.startX - b.startX : a.y - b.y));
+
+    let textOffset = 0;
+    let currentY = sortedSpans[0]!.y;
+    let currentX = sortedSpans[0]!.startX;
+
+    let bestDist = Infinity;
+    let bestOffset = 0;
+
+    for (const span of sortedSpans) {
+      if (span.y > currentY) {
+        textOffset += span.y - currentY;
+        currentX = 0;
+        currentY = span.y;
+      }
+
+      if (span.startX > currentX) {
+        textOffset += span.startX - currentX;
+        currentX = span.startX;
+      }
+
+      // Check distance
+      if (y === span.y && x >= span.startX && x <= span.endX) {
+        // Exact hit
+        let charOffset = 0;
+        let cx = span.startX;
+        for (const char of span.text) {
+          const w = inkCharacterWidth(char);
+          if (x < cx + w) {
+            if (options?.snapToChar === "end" && x >= cx) {
+              charOffset += char.length;
+            }
+
+            return textOffset + charOffset;
+          }
+
+          cx += w;
+          charOffset += char.length;
+        }
+
+        return textOffset + charOffset;
+      }
+
+      // Update best match
+      const dy = Math.abs(y - span.y);
+      const dx = x < span.startX ? span.startX - x : x > span.endX ? x - span.endX : 0;
+      const dist = dy * 1000 + dx;
+      if (dist < bestDist) {
+        bestDist = dist;
+        bestOffset = y < span.y || (y === span.y && x < span.startX) ? textOffset : textOffset + span.text.length;
+      }
+
+      textOffset += span.text.length;
+      currentX = span.endX;
+    }
+
+    return bestOffset;
   }
 
   if (node.nodeName === "ink-text" || node.nodeName === "ink-virtual-text") {
@@ -765,12 +857,19 @@ export const getTextOffset = (node: DOMNode, x: number, y: number, options?: { s
   return 0;
 };
 
-const findNodeInSquashed = (root: DOMNode, offset: number): { node: TextNode; offset: number } | undefined => {
+const findNodeInSquashed = (root: DOMNode, offset: number): { node: DOMNode; offset: number } | undefined => {
   let currentOffset = 0;
 
-  const findNode = (node: DOMNode): { node: TextNode; offset: number } | undefined => {
+  const findNode = (node: DOMNode): { node: DOMNode; offset: number } | undefined => {
     if (node.nodeName === "#text") {
       const { length } = node.nodeValue;
+      if (offset >= currentOffset && offset <= currentOffset + length) {
+        return { node, offset: offset - currentOffset };
+      }
+
+      currentOffset += length;
+    } else if (node.nodeName === "ink-static-render" && node.cachedRender) {
+      const { length } = getText(node);
       if (offset >= currentOffset && offset <= currentOffset + length) {
         return { node, offset: offset - currentOffset };
       }
@@ -791,9 +890,13 @@ const findNodeInSquashed = (root: DOMNode, offset: number): { node: TextNode; of
   return findNode(root);
 };
 
-export const findNodeAtOffset = (node: DOMNode, targetOffset: number): { node: TextNode; offset: number } | undefined => {
+export const findNodeAtOffset = (node: DOMNode, targetOffset: number): { node: TextNode | DOMNode; offset: number } | undefined => {
   if (node.nodeName === "#text") {
     return { node, offset: Math.min(targetOffset, node.nodeValue.length) };
+  }
+
+  if (node.nodeName === "ink-static-render" && node.cachedRender) {
+    return { node, offset: Math.min(targetOffset, getText(node).length) };
   }
 
   if (node.nodeName === "ink-text" || node.nodeName === "ink-virtual-text") {
@@ -930,6 +1033,13 @@ export const hitTest = (node: DOMElement, x: number, y: number): { node: DOMNode
         }
 
         currentOffset += length;
+      } else if (n.nodeName === "ink-static-render" && n.cachedRender) {
+        const { length } = getText(n);
+        if (offsetInSquashed >= currentOffset && offsetInSquashed <= currentOffset + length) {
+          return { node: n, offset: offsetInSquashed - currentOffset };
+        }
+
+        currentOffset += length;
       } else {
         for (const child of n.childNodes) {
           const result = findNode(child);
@@ -949,3 +1059,49 @@ export const hitTest = (node: DOMElement, x: number, y: number): { node: DOMNode
 };
 
 export default measureElement;
+
+export function getRelativeTop(node: DOMElement, ancestor?: DOMElement): number | undefined {
+  if (!node.yogaNode || node === ancestor) {
+    return 0;
+  }
+
+  let top = node.yogaNode.getComputedTop();
+  let parent = node.parentNode;
+
+  while (parent && parent !== ancestor) {
+    if (parent.yogaNode) {
+      top += parent.yogaNode.getComputedTop();
+    }
+
+    parent = parent.parentNode;
+  }
+
+  if (ancestor !== undefined && parent !== ancestor) {
+    return undefined;
+  }
+
+  return top;
+}
+
+export function getRelativeLeft(node: DOMElement, ancestor?: DOMElement): number | undefined {
+  if (!node.yogaNode || node === ancestor) {
+    return 0;
+  }
+
+  let left = node.yogaNode.getComputedLeft();
+  let parent = node.parentNode;
+
+  while (parent && parent !== ancestor) {
+    if (parent.yogaNode) {
+      left += parent.yogaNode.getComputedLeft();
+    }
+
+    parent = parent.parentNode;
+  }
+
+  if (ancestor !== undefined && parent !== ancestor) {
+    return undefined;
+  }
+
+  return left;
+}

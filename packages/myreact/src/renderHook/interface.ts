@@ -27,7 +27,7 @@ export interface DefaultRenderHook extends MyReactInternalInstance {
 /**
  * @public
  */
-export type RenderHookParams = Pick<DefaultRenderHook, "type" | "deps" | "value" | "reducer">;
+export type RenderHookParams = Pick<DefaultRenderHook, "type" | "value" | "reducer"> & { deps?: any[] };
 
 /**
  * @public

@@ -3,14 +3,14 @@ import { EventEmitter } from "node:events";
 import process from "node:process";
 import { PureComponent, type ReactNode } from "react";
 
-import { type Selection } from "../selection";
+import { type Selection } from "../selection.js";
 
-import AppContext from "./AppContext";
-import ErrorOverview from "./ErrorOverview";
-import FocusContext from "./FocusContext";
-import StderrContext from "./StderrContext";
-import StdinContext from "./StdinContext";
-import StdoutContext from "./StdoutContext";
+import AppContext, { type InkOptions } from "./AppContext.js";
+import ErrorOverview from "./ErrorOverview.js";
+import FocusContext from "./FocusContext.js";
+import StderrContext from "./StderrContext.js";
+import StdinContext from "./StdinContext.js";
+import StdoutContext from "./StdoutContext.js";
 
 const tab = "\t";
 const shiftTab = "\u001B[Z";
@@ -27,6 +27,11 @@ type Props = {
   readonly onExit: (error?: Error) => void;
   readonly onRerender: () => void;
   readonly selection?: Selection;
+  readonly options: InkOptions;
+  readonly setOptions: (options: Partial<InkOptions>) => void;
+  readonly dumpCurrentFrame: (filename: string) => void;
+  readonly startRecording: (filename: string) => void;
+  readonly stopRecording: () => void;
 };
 
 type State = {
@@ -76,6 +81,11 @@ export default class App extends PureComponent<Props, State> {
           exit: this.handleExit,
           rerender: this.props.onRerender,
           selection: this.props.selection,
+          options: this.props.options,
+          setOptions: this.props.setOptions,
+          dumpCurrentFrame: this.props.dumpCurrentFrame,
+          startRecording: this.props.startRecording,
+          stopRecording: this.props.stopRecording,
         }}
       >
         <StdinContext.Provider

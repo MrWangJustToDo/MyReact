@@ -1,2 +1,2 @@
-export * from "./serverDomDispatch";
-export * from "./serverStreamDispatch";
+export * from "./server-dom-dispatch";
+export * from "./server-stream-dispatch";

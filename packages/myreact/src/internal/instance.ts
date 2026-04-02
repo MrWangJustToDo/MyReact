@@ -7,5 +7,5 @@ export class MyReactInternalInstance {
   get isMyReactInstance() {
     return true;
   }
-  _reactInternals: RenderFiber;
+  _reactInternals?: RenderFiber;
 }

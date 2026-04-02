@@ -134,7 +134,7 @@ const getNewFiberWithUpdate = (
   } else {
     draftFiber && renderDispatch.pendingUnmount(parentFiber, draftFiber);
 
-    return createFiberNode(renderDispatch, { parent: parentFiber, type: "position" }, newChild);
+    return createFiberNode(renderDispatch, { parent: parentFiber, prevFiber: draftFiber, type: "position" }, newChild);
   }
 };
 

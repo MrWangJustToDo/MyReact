@@ -2,9 +2,9 @@ import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
 import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
 
 import { enableFiberForLog } from "./env";
-import { NODE_TYPE } from "./fiberType";
+import { NODE_TYPE } from "./fiber-type";
 import { getCurrentDispatchFromFiber } from "./refresh";
-import { safeCallWithCurrentFiber } from "./safeCall";
+import { safeCallWithCurrentFiber } from "./safe-call";
 
 import type { MyReactFiberContainer, MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 import type { MyReactHookNode } from "../runtimeHook";

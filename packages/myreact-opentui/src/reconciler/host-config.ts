@@ -1,17 +1,16 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { TextNodeRenderable } from "@opentui/core";
+import { DefaultEventPriority, NoEventPriority } from "@my-react/react-reconciler-compact/constants";
+import { TextNodeRenderable, type TextRenderable, type Renderable } from "@opentui/core";
 import { createContext } from "react";
 
 import { getComponentCatalogue } from "../components";
-import { textNodeKeys, type TextNodeKey } from "../components/Text";
+import { textNodeKeys, type TextNodeKey } from "../components/Text.js";
 import { setInitialProperties, updateProperties } from "../utils";
-import { getNextId } from "../utils/id";
+import { getNextId } from "../utils/id.js";
 
-import type { Container, HostContext, Instance, Props, PublicInstance, TextInstance, Type } from "../types/host";
-import type { TextRenderable, Renderable } from "@opentui/core";
+import type { Container, HostContext, Instance, Props, PublicInstance, TextInstance, Type } from "../types/host.js";
 import type { HostConfig, ReactContext } from "react-reconciler";
 
-let currentUpdatePriority = 0;
+let currentUpdatePriority = NoEventPriority;
 
 // https://github.com/facebook/react/tree/main/packages/react-reconciler#practical-examples
 export const hostConfig: HostConfig<
@@ -199,11 +198,11 @@ export const hostConfig: HostConfig<
   getCurrentUpdatePriority: () => currentUpdatePriority,
 
   resolveUpdatePriority() {
-    if (currentUpdatePriority !== 0) {
+    if (currentUpdatePriority !== NoEventPriority) {
       return currentUpdatePriority;
     }
 
-    return 0;
+    return DefaultEventPriority;
   },
 
   maySuspendCommit() {

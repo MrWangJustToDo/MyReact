@@ -6,8 +6,8 @@ import { validDomProps } from "@my-react-dom-shared";
 
 import { controlElementTag, isControlledElement, isReadonlyElement } from "../helper";
 
-import { hydrateUpdate } from "./hydrateUpdate";
-import { nativeUpdate } from "./nativeUpdate";
+import { hydrateUpdate } from "./hydrate-update";
+import { nativeUpdate } from "./native-update";
 
 /**
  * @internal

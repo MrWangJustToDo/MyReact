@@ -38,7 +38,7 @@ export function isValidElement(element?: MyReactElementNode | any): element is M
   );
 }
 
-const keysMap = {};
+const keysMap: Record<string, boolean> = {};
 
 const checkValidKey = (children: ArrayMyReactElementNode) => {
   const obj: Record<string, boolean> = {};

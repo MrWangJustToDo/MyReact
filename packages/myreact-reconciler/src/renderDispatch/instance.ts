@@ -35,13 +35,13 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   mode = __DEV__ ? "development" : "production";
 
-  enableUpdate: boolean;
+  enableUpdate?: boolean;
 
-  enableNewEntry: boolean;
+  enableNewEntry?: boolean;
 
-  enableAsyncLoad: boolean;
+  enableAsyncLoad?: boolean;
 
-  enableConcurrentMode: boolean;
+  enableConcurrentMode?: boolean;
 
   renderMode = "render";
 
@@ -55,7 +55,7 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   pendingSuspenseFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
 
-  performanceLogTimeLimit: number;
+  performanceLogTimeLimit?: number;
 
   uniqueIdCount = 0;
 
@@ -225,10 +225,10 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
   resolveErrorBoundaries(_fiber: MyReactFiberNode): MyReactFiberNode | null {
     return defaultResolveErrorBoundaries(_fiber);
   }
-  resolveContextFiber(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): MyReactFiberNode | null {
+  resolveContextFiber(_fiber: MyReactFiberNode, _contextObject?: ReturnType<typeof createContext> | null): MyReactFiberNode | null {
     return defaultGetContextFiber(_fiber, _contextObject);
   }
-  resolveContextValue(_fiber: MyReactFiberNode, _contextObject: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
+  resolveContextValue(_fiber: MyReactFiberNode | null, _contextObject?: ReturnType<typeof createContext> | null): Record<string, unknown> | null {
     return defaultGetContextValue(_fiber, _contextObject);
   }
   reconcileCommit(_fiber: MyReactFiberNode): void {

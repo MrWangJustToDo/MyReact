@@ -1,0 +1,12 @@
+{
+  "name": "rsc-test",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "npx tsx src/directive.test.ts && npx tsx src/transform.test.ts && npx tsx src/server.test.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.0.0"
+  }
+}

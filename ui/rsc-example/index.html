@@ -5,58 +5,199 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MyReact RSC Example</title>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap");
+
+      :root {
+        color-scheme: light;
+        --bg: #f3efe8;
+        --bg-accent: #fbe9d6;
+        --surface: #ffffff;
+        --surface-2: #f7f2eb;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --line: rgba(15, 23, 42, 0.1);
+        --brand: #c96b2c;
+        --brand-strong: #a84f1e;
+        --shadow: 0 18px 40px rgba(21, 28, 39, 0.12);
+        --radius: 16px;
+      }
+
+      body[data-theme="dark"] {
+        color-scheme: dark;
+        --bg: #0c0e14;
+        --bg-accent: #1c2331;
+        --surface: #111522;
+        --surface-2: #1b2232;
+        --text: #e5e7eb;
+        --muted: #94a3b8;
+        --line: rgba(148, 163, 184, 0.15);
+        --brand: #f59e0b;
+        --brand-strong: #fbbf24;
+        --shadow: 0 20px 60px rgba(2, 6, 23, 0.55);
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
+
       body {
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        background: #f5f5f5;
+        font-family: "Space Grotesk", system-ui, sans-serif;
+        background: radial-gradient(circle at top, var(--bg-accent), var(--bg) 55%);
+        color: var(--text);
         min-height: 100vh;
-        padding: 2rem;
+        padding: 3rem 1.5rem 4rem;
       }
+
       .container {
-        max-width: 800px;
+        max-width: 960px;
         margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
       }
-      h1 {
-        color: #333;
-        margin-bottom: 1rem;
+
+      h1,
+      h2,
+      h3 {
+        letter-spacing: -0.02em;
       }
+
+      .hero {
+        display: grid;
+        gap: 1rem;
+        padding: 1.5rem 1.75rem;
+        background: linear-gradient(120deg, var(--surface), var(--surface-2));
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+      }
+
+      .hero-title {
+        font-size: clamp(2rem, 3vw, 2.7rem);
+      }
+
+      .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        font-family: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .hero-pill {
+        padding: 0.3rem 0.6rem;
+        border-radius: 999px;
+        background: rgba(201, 107, 44, 0.12);
+        border: 1px solid rgba(201, 107, 44, 0.2);
+        color: var(--brand);
+      }
+
       .card {
-        background: white;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      button {
-        background: #0070f3;
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 1rem;
-      }
-      button:hover {
-        background: #0060df;
-      }
-      input {
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-        width: 100%;
+        background: var(--surface);
+        border-radius: var(--radius);
+        padding: 1.5rem 1.6rem;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+        display: grid;
+        gap: 0.85rem;
+        margin-top: 0.5rem;
         margin-bottom: 0.5rem;
       }
+
+      .card h2 {
+        font-size: 1.25rem;
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1rem;
+      }
+
+      .nav {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .nav-link {
+        color: var(--text);
+        text-decoration: none;
+        padding: 0.45rem 0.85rem;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        transition: all 160ms ease;
+      }
+
+      .nav-link:hover {
+        border-color: var(--line);
+        background: rgba(17, 24, 39, 0.04);
+      }
+
+      .nav-link-active {
+        background: rgba(201, 107, 44, 0.12);
+        border-color: rgba(201, 107, 44, 0.3);
+        color: var(--brand-strong);
+      }
+
+      .btn,
+      button {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        padding: 0.45rem 0.95rem;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition:
+          transform 160ms ease,
+          box-shadow 160ms ease;
+        box-shadow: 0 12px 24px rgba(201, 107, 44, 0.2);
+      }
+
+      .btn:hover,
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 18px 28px rgba(201, 107, 44, 0.3);
+        background: var(--brand-strong);
+      }
+
+      input {
+        padding: 0.6rem 0.7rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        width: 100%;
+        background: var(--surface-2);
+        color: var(--text);
+      }
+
       .loading {
-        color: #666;
+        color: var(--muted);
         font-style: italic;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .list {
+        margin-top: 0.75rem;
+        padding-left: 1rem;
+      }
+
+      @media (max-width: 640px) {
+        body {
+          padding: 2rem 1rem 3rem;
+        }
+
+        .card {
+          padding: 1.2rem;
+        }
       }
     </style>
   </head>

@@ -95,6 +95,8 @@ export const cacheLazy = (promise: Promise<MyReactElementNode>) => {
 
   const loader = () => promise;
 
+  loader["$$rsc"] = promise;
+
   loader["displayName"] = "$$ServerResolve";
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

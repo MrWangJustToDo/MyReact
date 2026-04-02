@@ -1,3 +1,4 @@
+"use client";
 /**
  * RSC Example - Entry Point
  *
@@ -7,6 +8,8 @@
  * - Server actions handle form submissions with "use server" directive
  */
 
+import { Suspense, use, useEffect, useState } from "@my-react/react";
+import { createRoot, hydrateRoot } from "@my-react/react-dom/client";
 import { createFlightClient } from "@my-react/react-server/client";
 
 const rootElement = document.getElementById("root");
@@ -27,8 +30,73 @@ const client = createFlightClient({ actionEndpoint });
 
 const stream = (window as unknown as { __MY_REACT_RSC_STREAM__?: ReadableStream<Uint8Array> }).__MY_REACT_RSC_STREAM__;
 
+const fetchPayload = (url: string) =>
+  client.createFromFetch(
+    fetch(`${config.rscEndpoint}?component=/src/root.tsx`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url }),
+    })
+  );
+
+const View = ({ tree }: { tree: Promise<unknown> }) => {
+  const element = use(tree as any);
+  return element as any;
+};
+
+const BrowserRoot = () => {
+  const [tree, setTree] = useState(() => (stream ? client.createFromStream(stream) : fetchPayload(window.location.href)));
+
+  useEffect(() => {
+    const onNavigation = () => {
+      setTree(() => fetchPayload(window.location.href));
+    };
+
+    window.addEventListener("popstate", onNavigation);
+    const oldPush = window.history.pushState;
+    window.history.pushState = function (...args) {
+      const res = oldPush.apply(this, args as any);
+      onNavigation();
+      return res;
+    };
+    const oldReplace = window.history.replaceState;
+    window.history.replaceState = function (...args) {
+      const res = oldReplace.apply(this, args as any);
+      onNavigation();
+      return res;
+    };
+    function onClick(e: MouseEvent) {
+      const link = (e.target as Element).closest("a");
+      if (link instanceof HTMLAnchorElement && link.origin === location.origin && !link.target) {
+        e.preventDefault();
+        history.pushState(null, "", link.href);
+      }
+    }
+    document.addEventListener("click", onClick);
+
+    return () => {
+      document.removeEventListener("click", onClick);
+      window.removeEventListener("popstate", onNavigation);
+      window.history.pushState = oldPush;
+      window.history.replaceState = oldReplace;
+    };
+  }, []);
+
+  return (
+    <Suspense fallback={<p className="loading">Loading...</p>}>
+      <View tree={tree as Promise<unknown>} />
+    </Suspense>
+  );
+};
+
 export const startHydrate = () => {
   if (stream) {
-    client.hydrate(rootElement, stream);
+    hydrateRoot(rootElement, <BrowserRoot />);
+    return;
   }
+
+  const root = createRoot(rootElement);
+  root.render(<BrowserRoot />);
 };

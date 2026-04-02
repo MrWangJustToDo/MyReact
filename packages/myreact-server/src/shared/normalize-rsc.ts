@@ -96,6 +96,8 @@ function normalizeRscType(type: unknown, options: NormalizeOptions): unknown {
       }
     }) as unknown as () => Promise<any>;
 
+    loader["$$rsc"] = typed;
+
     return lazy(loader) as unknown as ReturnType<typeof lazy>;
   }
 
@@ -108,6 +110,10 @@ function normalizeRscType(type: unknown, options: NormalizeOptions): unknown {
         ? ((result as Record<string, unknown>)[exportName] ?? (result as Record<string, unknown>).default ?? result)
         : result;
     }) as unknown as () => Promise<any>;
+
+    loader["$$rsc"] = typed;
+
+    loader["displayName"] = "$$ClientResolve";
 
     return lazy(loader) as unknown as ReturnType<typeof lazy>;
   }
@@ -122,6 +128,10 @@ function normalizeRscType(type: unknown, options: NormalizeOptions): unknown {
           ? ((result as Record<string, unknown>)[exportName] ?? (result as Record<string, unknown>).default ?? result)
           : result;
       }) as unknown as () => Promise<any>;
+
+      loader["$$rsc"] = typed;
+
+      loader["displayName"] = "$$ServerResolve";
 
       return lazy(loader) as unknown as ReturnType<typeof lazy>;
     }

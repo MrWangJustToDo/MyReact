@@ -231,7 +231,7 @@ export const getPlainFiberName = (fiber: MyReactFiberNode) => {
     const typedRender = typedElementType?.render;
     let name = typedRender?.displayName || typedRender?.name || "";
     const loader = typedElementType.loader;
-    name = name || loader["displayName"] || loader["name"];
+    name = loader["displayName"] || name;
     if (__DEV__) {
       const element = typedFiber._debugElement as MyReactElement;
       // may be a Suspense element

@@ -8,11 +8,11 @@
  * - Server actions handle form submissions with "use server" directive
  */
 
+import { use, Suspense, useEffect, useState } from "@my-react/react";
+import { createRoot } from "@my-react/react-dom/client";
 import { createFlightClient } from "@my-react/react-server/client";
-import { use, Suspense, useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
 
-import type { ReactNode } from "react";
+import type { ReactNode } from "@my-react/react";
 
 const rootElement = document.getElementById("root");
 
@@ -47,7 +47,13 @@ const Main = () => {
 
   useEffect(() => {
     const fetchEle = async () => {
-      const response = await fetch(`${rscEndpoint}?component=/src/App.tsx`);
+      const response = await fetch(`${rscEndpoint}?component=/src/root.tsx`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: window.location.href }),
+      });
 
       if (!response.ok || !response.body) {
         throw new Error(`[@my-react/rsc-example] Failed to fetch RSC payload: ${response.status}`);

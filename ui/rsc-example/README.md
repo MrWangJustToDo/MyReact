@@ -8,6 +8,9 @@ This example demonstrates React Server Components (RSC) with MyReact using Vite.
 - SSR HTML rendering that consumes the Flight stream
 - Client hydration using the injected Flight stream
 - Server Actions support
+- Multi-page routing (Home/About/Profile)
+- Client navigation that refetches RSC
+- Suspense streaming sections
 
 ## Key files
 
@@ -26,6 +29,12 @@ pnpm dev
 ```
 
 Open `http://localhost:3000`.
+
+## Routes
+
+- `/` Home (server data + client widgets)
+- `/about` About (server data)
+- `/profile/:id` Profile (client card)
 
 ## Notes
 

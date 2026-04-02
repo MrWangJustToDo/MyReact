@@ -87,20 +87,5 @@ function wrapPromiseWithState(value: Promise<unknown>, moduleLoader: ModuleLoade
   );
   const promiseWithState = normalizedPromise as PromiseWithState<unknown>;
 
-  promiseWithState.status = "pending";
-  promiseWithState._value = undefined;
-  promiseWithState._reason = undefined;
-
-  promiseWithState.then(
-    (resolved) => {
-      promiseWithState.status = "fulfilled";
-      promiseWithState._value = resolved;
-    },
-    (error) => {
-      promiseWithState.status = "rejected";
-      promiseWithState._reason = error;
-    }
-  );
-
   return promiseWithState;
 }

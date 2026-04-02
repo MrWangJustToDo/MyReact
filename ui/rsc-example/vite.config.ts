@@ -84,7 +84,9 @@ export default defineConfig({
             const entrySsr = await server.ssrLoadModule("/src/entry-ssr.tsx");
             const { injectRSCPayload } = await import("rsc-html-stream/server");
 
-            const rscStream = await entryRsc.renderRsc();
+            const origin = `http://${req.headers.host || "localhost:3000"}`;
+            const fullUrl = new URL(req.url, origin).toString();
+            const rscStream = await entryRsc.renderRsc(fullUrl);
             const [rscForSsr, rscForClient] = rscStream.tee();
 
             const { html: ssrHtml } = await entrySsr.renderHTML(rscForSsr, {

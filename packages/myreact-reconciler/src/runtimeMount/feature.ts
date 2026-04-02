@@ -124,7 +124,8 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
             return typeof item.status !== "string";
           } else {
             // return !item._loading && !item._loaded && !item._error;
-            return !item._loading;
+            // return !item._loading;
+            return true;
           }
         });
 

@@ -1,5 +1,5 @@
 import { createFromReadableStream, createFromFetch, encodeReply, createServerReference } from "@lazarv/rsc/client";
-import { createElement, lazy, Suspense, use, type MyReactElement } from "@my-react/react";
+import { __my_react_internal__, createElement, Suspense, use, type MyReactElement } from "@my-react/react";
 import { hydrateRoot } from "@my-react/react-dom/client";
 
 import { normalizeRscValue } from "../shared/normalize-rsc";
@@ -7,6 +7,8 @@ import { normalizeRscValue } from "../shared/normalize-rsc";
 import { createModuleLoader } from "./module-loader";
 
 import type { FlightClientOptions, ModuleLoader } from "../shared/types";
+
+const { cacheLazy } = __my_react_internal__;
 
 /**
  * @public
@@ -106,7 +108,7 @@ export function createFlightClient(options: FlightClientOptions = {}): FlightCli
   }
 
   if (typeof globalThis !== "undefined") {
-    (globalThis as unknown as { __MY_REACT_CALL_SERVER__?: (actionId: string, args: unknown[]) => Promise<unknown> }).__MY_REACT_CALL_SERVER__ = callServer;
+    globalThis.__MY_REACT_CALL_SERVER__ = callServer;
   }
 
   /**
@@ -183,7 +185,7 @@ function wrapPromiseWithState(value: Promise<unknown>, moduleLoader: ModuleLoade
   const normalizedPromise = Promise.resolve(value).then((resolved) =>
     normalizeRscValue(resolved, {
       moduleLoader,
-      wrapPendingPromise: (promise) => createElement(lazy(() => promise as Promise<any>)),
+      wrapPendingPromise: (promise) => createElement(cacheLazy(promise as Promise<any>)),
     })
   );
   const promiseWithState = normalizedPromise as PromiseWithState<unknown>;
@@ -229,17 +231,17 @@ export function createServerActionReference(
   actionId: string,
   callServerFn?: (actionId: string, args: unknown[]) => Promise<unknown>
 ): (...args: unknown[]) => Promise<unknown> {
-  const resolvedCallServer =
-    callServerFn ??
-    (typeof globalThis !== "undefined"
-      ? (globalThis as unknown as { __MY_REACT_CALL_SERVER__?: (actionId: string, args: unknown[]) => Promise<unknown> }).__MY_REACT_CALL_SERVER__
-      : undefined);
+  const resolvedCallServer = callServerFn ?? (typeof globalThis !== "undefined" ? globalThis.__MY_REACT_CALL_SERVER__ : undefined);
 
   if (!resolvedCallServer) {
     throw new Error("[@my-react/react-server] Missing callServer function. Create a FlightClient or pass callServer explicitly.");
   }
 
-  return createServerReference(actionId, resolvedCallServer);
+  const reference = createServerReference(actionId, resolvedCallServer);
+
+  reference["displayName"] = "$$ServerAction";
+
+  return reference;
 }
 
 /**

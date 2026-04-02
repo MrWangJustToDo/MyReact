@@ -3,6 +3,7 @@
  * Main transform plugin for client/server module detection and transformation
  */
 
+import { walk } from "estree-walker";
 import { createFilter, transformWithEsbuild, parseAstAsync } from "vite";
 
 import { detectUseClientDirective, detectUseServerDirective, detectInlineUseServerDirective, isRscEligibleFile } from "../directives";
@@ -17,6 +18,7 @@ import { initLexer, generateModuleId } from "../utils";
 
 import type { ClientModuleRegistry, ServerActionRegistry } from "../transforms";
 import type { RscPluginOptions } from "../types";
+import type { Program } from "estree";
 import type { Plugin, ResolvedConfig, TransformResult } from "vite";
 
 export interface TransformPluginContext {
@@ -24,6 +26,61 @@ export interface TransformPluginContext {
   serverRegistry: ServerActionRegistry;
   clientModules: Set<string>;
   serverModules: Set<string>;
+}
+
+async function findInvalidServerHook(code: string): Promise<string | null> {
+  let ast: Program | null = null;
+  try {
+    ast = (await parseAstAsync(code)) as Program;
+  } catch {
+    return null;
+  }
+
+  const forbidden = new Set<string>([
+    "useState",
+    "useSingle",
+    "useReducer",
+    "useEffect",
+    "useLayoutEffect",
+    "useInsertionEffect",
+    "useMemo",
+    "useCallback",
+    "useRef",
+    "useImperativeHandle",
+    "useDebugValue",
+    "useDeferredValue",
+    "useTransition",
+    "useSyncExternalStore",
+    "useId",
+    "useContext",
+    "useActionState",
+    "useOptimistic",
+  ]);
+
+  let found: string | null = null;
+
+  walk(ast, {
+    enter(node) {
+      if (node.type !== "CallExpression") return;
+
+      const callee = node.callee;
+      if (callee.type === "Identifier") {
+        const name = callee.name;
+        if (name !== "use" && (name.startsWith("use") || forbidden.has(name))) {
+          found = name;
+          this.skip();
+        }
+      } else if (callee.type === "MemberExpression" && !callee.computed && callee.property.type === "Identifier") {
+        const name = callee.property.name;
+        if (name !== "use" && (name.startsWith("use") || forbidden.has(name))) {
+          found = name;
+          this.skip();
+        }
+      }
+    },
+  });
+
+  return found;
 }
 
 /**
@@ -70,6 +127,16 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
       const isServer = Boolean(transformOptions?.ssr) || Boolean((this as { ssr?: boolean }).ssr) || Boolean(isBuild && config.build?.ssr);
 
       const parseCode = await getParseCode(code, filepath);
+
+      if (!detectUseClientDirective(code)) {
+        const hook = await findInvalidServerHook(parseCode);
+        if (hook) {
+          throw new Error(
+            `[@my-react/react-vite] Server Component "${filepath}" uses "${hook}". ` +
+              `Hooks are not allowed in Server Components. Add "use client" or remove the hook.`
+          );
+        }
+      }
 
       // Check for "use client" directive
       if (detectUseClientDirective(code)) {
@@ -161,7 +228,7 @@ async function transformServerModule(
   registry: ServerActionRegistry,
   isServer: boolean
 ): Promise<TransformResult> {
-  const ast = (await parseAstAsync(parseCode)) as unknown as import("estree").Program;
+  const ast = (await parseAstAsync(parseCode)) as Program;
 
   if (isServer) {
     const result = transformServerActionServer(parseCode, ast, {
@@ -207,7 +274,7 @@ async function transformInlineServerActions(code: string, parseCode: string, mod
     return { code, map: null };
   }
 
-  const ast = (await parseAstAsync(parseCode)) as unknown as import("estree").Program;
+  const ast = (await parseAstAsync(parseCode)) as Program;
   const result = transformServerActionServer(parseCode, ast, {
     runtime: (value, name) => `__registerServerReference__(${value}, ${JSON.stringify(`${moduleId}#${name}`)}, ${JSON.stringify(name)})`,
     rejectNonAsyncFunction: true,

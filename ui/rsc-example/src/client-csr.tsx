@@ -1,3 +1,4 @@
+"use client";
 /**
  * RSC Example - Entry Point
  *

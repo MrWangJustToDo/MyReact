@@ -7,6 +7,7 @@
 
 import { Suspense } from "@my-react/react";
 
+import { Bar } from "./Bar";
 import Counter from "./components/Counter";
 import TodoList from "./components/TodoList";
 import { Greeting } from "./Test";
@@ -36,6 +37,8 @@ export default function App() {
         <p>This form uses a server action for submission.</p>
         <TodoList />
       </div>
+
+      <Bar />
     </div>
   );
 }

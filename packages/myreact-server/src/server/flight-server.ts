@@ -1,5 +1,5 @@
 import { createFromReadableStream, createFromFetch } from "@lazarv/rsc/client";
-import { createElement, lazy, Suspense, use } from "@my-react/react";
+import { __my_react_internal__, createElement, Suspense, use } from "@my-react/react";
 import { renderToReadableStream } from "@my-react/react-dom/server";
 
 import { createModuleLoader } from "../client/module-loader";
@@ -7,6 +7,8 @@ import { normalizeRscValue } from "../shared/normalize-rsc";
 
 import type { FlightServerOptions, ModuleLoader } from "../shared/types";
 import type { MyReactElement } from "@my-react/react";
+
+const { cacheLazy } = __my_react_internal__;
 
 export interface FlightServer {
   renderToStream(rscStream: ReadableStream<Uint8Array>): ReturnType<typeof renderToReadableStream>;
@@ -80,7 +82,7 @@ function wrapPromiseWithState(value: Promise<unknown>, moduleLoader: ModuleLoade
     normalizeRscValue(resolved, {
       isServerSide: true,
       moduleLoader,
-      wrapPendingPromise: (promise) => createElement(lazy(() => promise as Promise<any>)),
+      wrapPendingPromise: (promise) => createElement(cacheLazy(promise as Promise<any>)),
     })
   );
   const promiseWithState = normalizedPromise as PromiseWithState<unknown>;

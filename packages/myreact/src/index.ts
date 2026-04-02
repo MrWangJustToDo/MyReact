@@ -62,6 +62,7 @@ import {
   captureOwnerStack,
   getMyReactElementName,
   getMyReactElementTypeName,
+  cacheLazy,
 } from "./share";
 
 /**
@@ -122,6 +123,7 @@ const __my_react_scheduler__ = {
 const __my_react_internal__ = {
   MyReactInternalInstance,
   globalLoop,
+  cacheLazy,
   recentlyCreatedOwnerStacks,
 
   createReadonlyRef,

@@ -10,6 +10,7 @@ const pkgNameAlias = {
   "@my-react/react-reactive": "myreact-reactivity",
   "@my-react/react-reconciler": "myreact-reconciler",
   "@my-react/react-reconciler-compact": "myreact-reconciler-compact",
+  "@my-react/react-server": "myreact-server",
   "@my-react/react-refresh": "myreact-refresh",
   "@my-react/react-shared": "myreact-shared",
   "@my-react/react-refresh-tools": "myreact-refresh-tools",
@@ -91,6 +92,7 @@ const run = async () => {
   await release("@my-react/react");
   await release("@my-react/react-dom");
   await release("@my-react/react-jsx");
+  await release("@my-react/react-server");
   await release("@my-react/react-reactive");
   await release("@my-react/react-reconciler");
   await release("@my-react/react-refresh");

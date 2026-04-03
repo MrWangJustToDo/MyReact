@@ -2,6 +2,7 @@ import { createElement } from "@my-react/react";
 import { renderToFlightStream } from "@my-react/react-server/server";
 
 export async function renderRsc(url: string) {
+  console.log("run", url);
   const module = await import("./root");
   const Root = module.default || module;
 

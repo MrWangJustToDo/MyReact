@@ -25,7 +25,7 @@ export type Root = {
   unmount: () => void;
 };
 
-const createPortal = reconciler.createPortal;
+const createPortal = reconciler.createPortal as unknown as (element: ReactNode, container: any) => React.ReactPortal;
 
 const flushSync = reconciler.flushSync;
 

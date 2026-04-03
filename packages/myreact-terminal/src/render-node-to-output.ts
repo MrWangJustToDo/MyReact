@@ -7,6 +7,7 @@ import { handleCachedRenderNode } from "./render-cached.js";
 import { handleContainerNode } from "./render-container.js";
 import { renderStickyNode, getStickyDescendants } from "./render-sticky.js";
 import { handleTextNode } from "./render-text-node.js";
+import { triggerResizeObservers } from "./resize-observer.js";
 import { type StyledLine } from "./styled-line.js";
 
 export type OutputTransformer = (s: string, index: number) => string;
@@ -25,6 +26,9 @@ export const renderToStatic = (
   if (options.calculateLayout && node.yogaNode) {
     node.yogaNode.calculateLayout(undefined, undefined, Yoga.DIRECTION_LTR);
   }
+
+  // Cache dimensions of the static tree before we render it out and cache/destroy its Yoga children
+  triggerResizeObservers(node, true);
 
   const width = node.yogaNode?.getComputedWidth() ?? 0;
   const height = node.yogaNode?.getComputedHeight() ?? 0;

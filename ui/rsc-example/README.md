@@ -30,6 +30,15 @@ pnpm dev
 
 Open `http://localhost:3000`.
 
+## Production-like server
+
+```bash
+pnpm build
+pnpm start
+```
+
+This starts a custom server using Vite middleware in production mode so RSC + SSR routing still works.
+
 ## Routes
 
 - `/` Home (server data + client widgets)

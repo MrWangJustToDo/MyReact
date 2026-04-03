@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable prefer-rest-params */
 import { TYPEKEY, Element } from "@my-react/react-shared";
 
@@ -423,6 +424,12 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
   });
 
   if (__DEV__ && clonedElement._store) clonedElement._store["clonedEle"] = true;
+
+  // @ts-ignore
+  if (__DEV__ && element._rsc) {
+    // @ts-ignore
+    cloneElement._rsc = true;
+  }
 
   if (__DEV__) checkValidElement(clonedElement);
 

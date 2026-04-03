@@ -35,6 +35,18 @@ export interface RscPluginOptions {
    * @default "/__rsc_action"
    */
   actionEndpoint?: string;
+
+  /**
+   * Optional SSR wiring for dev server
+   */
+  ssr?: {
+    /** entry module that returns Flight stream */
+    entryRsc: string;
+    /** entry module that renders HTML from Flight stream */
+    entrySsr: string;
+    /** override HTML template path, defaults to /index.html */
+    indexHtmlPath?: string;
+  };
 }
 
 export interface RscPluginContext {

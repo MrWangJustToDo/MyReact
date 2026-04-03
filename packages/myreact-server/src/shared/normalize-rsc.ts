@@ -37,19 +37,26 @@ export function normalizeRscValue(value: unknown, options: NormalizeOptions): un
   }
 
   if (isValidElement(value)) {
-    const element = value as { type?: unknown; props?: Record<string, unknown> };
+    const element = value;
     const nextType = normalizeRscType(element.type, options);
     const nextProps = element.props ? normalizeRscValue(element.props, { ...options, inChildren: false }) : element.props;
     const props = (nextProps || {}) as Record<string, unknown>;
     const children = "children" in props ? normalizeRscValue(props.children, { ...options, inChildren: true }) : props.children;
+    let ele = element;
     if (nextType !== element.type || children !== props.children || nextProps !== element.props) {
-      return {
+      ele = {
         ...element,
         type: nextType,
         props: { ...props, children },
       };
     }
-    return element;
+    if (__DEV__) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ele = { ...ele, _rsc: true };
+    }
+
+    return ele;
   }
 
   if (value && typeof value === "object") {

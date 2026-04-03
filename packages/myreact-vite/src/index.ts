@@ -80,6 +80,15 @@ export interface Options {
    * @default "/__rsc_action"
    */
   rscActionEndpoint?: string;
+
+  /**
+   * Optional SSR wiring for RSC dev server
+   */
+  ssr?: {
+    entryRsc: string;
+    entrySsr: string;
+    indexHtmlPath?: string;
+  };
 }
 
 export type BabelOptions = Omit<TransformOptions, "ast" | "filename" | "root" | "sourceFileName" | "sourceMaps" | "inputSourceMap">;
@@ -467,6 +476,7 @@ export default function viteReact(opts: Options = {}): Plugin[] {
   const rscPlugins = opts.rsc
     ? rscPlugin({
         rsc: true,
+        ssr: opts.ssr,
         include: opts.include,
         exclude: opts.exclude,
         rscEndpoint: opts.rscEndpoint,

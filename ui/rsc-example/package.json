@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node --inspect ./node_modules/vite/bin/vite.js --force",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "NODE_ENV=production node ./server.mjs"
   },
   "dependencies": {
     "@my-react/react": "workspace:*",

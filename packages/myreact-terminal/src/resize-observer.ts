@@ -27,8 +27,10 @@ export default class ResizeObserver {
     if (lastMeasuredSize === undefined && element.yogaNode) {
       const width = element.yogaNode.getComputedWidth();
       const height = element.yogaNode.getComputedHeight();
-      lastMeasuredSize = { width, height };
-      element.internal_lastMeasuredSize = lastMeasuredSize;
+      if (!Number.isNaN(width) && !Number.isNaN(height)) {
+        lastMeasuredSize = { width, height };
+        element.internal_lastMeasuredSize = lastMeasuredSize;
+      }
     }
 
     if (lastMeasuredSize) {
@@ -61,5 +63,57 @@ export default class ResizeObserver {
     } catch (error) {
       console.error(error);
     }
+  }
+}
+
+export function measureAndExtractObservers(node: DOMElement, observerEntries: Map<ResizeObserver, ResizeObserverEntry[]>, forceCache = false): void {
+  const hasObservers = node.resizeObservers && node.resizeObservers.size > 0;
+  if ((hasObservers || forceCache) && node.yogaNode) {
+    const width = node.yogaNode.getComputedWidth();
+    const height = node.yogaNode.getComputedHeight();
+
+    if (!Number.isNaN(width) && !Number.isNaN(height)) {
+      const lastSize = node.internal_lastMeasuredSize;
+
+      if (!lastSize || lastSize.width !== width || lastSize.height !== height) {
+        node.internal_lastMeasuredSize = { width, height };
+
+        if (hasObservers) {
+          const entry = new ResizeObserverEntry(node, { width, height });
+
+          for (const observer of node.resizeObservers!) {
+            if (!observerEntries.has(observer)) {
+              observerEntries.set(observer, []);
+            }
+
+            observerEntries.get(observer)!.push(entry);
+          }
+        }
+      }
+    }
+  }
+}
+
+export function triggerResizeObservers(node: DOMElement, forceCache = false): void {
+  const observerEntries = new Map<ResizeObserver, ResizeObserverEntry[]>();
+
+  function traverse(n: DOMElement) {
+    measureAndExtractObservers(n, observerEntries, forceCache);
+
+    if (n.internal_static || (n.nodeName === "ink-static-render" && n !== node)) {
+      return;
+    }
+
+    for (const child of n.childNodes) {
+      if (child.nodeName !== "#text") {
+        traverse(child);
+      }
+    }
+  }
+
+  traverse(node);
+
+  for (const [observer, entries] of observerEntries) {
+    observer.internalTrigger(entries);
   }
 }

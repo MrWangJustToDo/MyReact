@@ -22,12 +22,13 @@ import { setEnableToStyledCharactersCache, clearToStyledCharactersCache } from "
 import { type Region } from "./output.js";
 import { Reconciler } from "./reconciler.js";
 import render from "./renderer.js";
-import { ResizeObserverEntry } from "./resize-observer.js";
+import { measureAndExtractObservers } from "./resize-observer.js";
 import { calculateScroll } from "./scroll.js";
 import { Selection } from "./selection.js";
 import { type StyledLine } from "./styled-line.js";
 import TerminalBuffer from "./terminal-buffer.js";
 
+import type { ResizeObserverEntry } from "./resize-observer.js";
 import type ResizeObserver from "./resize-observer.js";
 
 const noop = () => {};
@@ -330,24 +331,10 @@ export default class Ink {
       }
     }
 
-    if (node.resizeObservers && node.resizeObservers.size > 0 && node.yogaNode) {
-      const width = node.yogaNode.getComputedWidth();
-      const height = node.yogaNode.getComputedHeight();
-      const lastSize = node.internal_lastMeasuredSize;
+    measureAndExtractObservers(node, observerEntries);
 
-      if (!lastSize || lastSize.width !== width || lastSize.height !== height) {
-        const entry = new ResizeObserverEntry(node, { width, height });
-
-        for (const observer of node.resizeObservers) {
-          if (!observerEntries.has(observer)) {
-            observerEntries.set(observer, []);
-          }
-
-          observerEntries.get(observer)!.push(entry);
-        }
-
-        node.internal_lastMeasuredSize = { width, height };
-      }
+    if (node.internal_static || (node.nodeName === "ink-static-render" && node.cachedRender)) {
+      return;
     }
 
     for (const child of node.childNodes) {

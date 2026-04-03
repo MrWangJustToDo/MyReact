@@ -11,19 +11,87 @@ import type { Plugin, ViteDevServer } from "vite";
 export interface DevServerPluginOptions {
   rscEndpoint: string;
   actionEndpoint: string;
+  ssr?: {
+    entryRsc: string;
+    entrySsr: string;
+    indexHtmlPath?: string;
+  };
 }
 
 /**
  * Create the RSC dev server plugin
  */
 export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
-  const { rscEndpoint, actionEndpoint } = options;
+  const { rscEndpoint, actionEndpoint, ssr } = options;
 
   return {
     name: "vite:my-react-rsc-dev-server",
     enforce: "pre",
 
     configureServer(server: ViteDevServer) {
+      if (ssr) {
+        server.middlewares.use(async (req, res, next) => {
+          if (!req.url || req.method !== "GET") {
+            return next();
+          }
+
+          const url = new URL(req.url, `http://${req.headers.host}`);
+          if (url.pathname === rscEndpoint || url.pathname === actionEndpoint) {
+            return next();
+          }
+
+          const accept = req.headers["accept"] || "";
+          if (typeof accept === "string" && !accept.includes("text/html")) {
+            return next();
+          }
+
+          try {
+            const templatePath = ssr.indexHtmlPath ?? "index.html";
+            const html = await server.transformIndexHtml(req.url, await readFileText(server, templatePath));
+
+            const entryRsc = await server.ssrLoadModule(ssr.entryRsc);
+            const entrySsr = await server.ssrLoadModule(ssr.entrySsr);
+            const { injectRSCPayload } = await import("rsc-html-stream/server");
+
+            const origin = `http://${req.headers.host || "localhost:3000"}`;
+            const fullUrl = new URL(req.url, origin).toString();
+
+            const rscStream = await entryRsc.renderRsc(fullUrl);
+            const [rscForSsr, rscForClient] = rscStream.tee();
+
+            const { html: ssrHtml } = await entrySsr.renderHTML(rscForSsr, {
+              loadModule: (id: string) => server.ssrLoadModule(id),
+            });
+
+            const htmlWithApp = html.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`);
+
+            const htmlStream = new ReadableStream<Uint8Array>({
+              start(controller) {
+                const encoder = new TextEncoder();
+                controller.enqueue(encoder.encode(htmlWithApp));
+                controller.close();
+              },
+            });
+
+            const mergedStream = htmlStream.pipeThrough(injectRSCPayload(rscForClient));
+
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "text/html");
+
+            const reader = mergedStream.getReader();
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              res.write(Buffer.from(value));
+            }
+            res.end();
+            return;
+          } catch (error) {
+            return next(error as Error);
+          }
+        });
+      }
+
       // RSC endpoint for Flight stream requests (standalone RSC without HTML)
       server.middlewares.use(rscEndpoint, async (req, res, _next) => {
         try {
@@ -227,4 +295,11 @@ export async function injectRSCPayloadIntoHTML(
   // Dynamically import rsc-html-stream to avoid bundling issues
   const { injectRSCPayload } = await import("rsc-html-stream/server");
   return htmlStream.pipeThrough(injectRSCPayload(rscStream, options));
+}
+
+async function readFileText(server: ViteDevServer, filePath: string): Promise<string> {
+  const { readFile } = await import("node:fs/promises");
+  const { resolve } = await import("node:path");
+  const absPath = resolve(server.config.root, filePath);
+  return readFile(absPath, "utf-8");
 }

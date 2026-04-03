@@ -44,6 +44,7 @@ export function rscPlugin(options: RscPluginOptions = {}): Plugin[] {
   const devServerPlugin = createDevServerPlugin({
     rscEndpoint,
     actionEndpoint,
+    ssr: options.ssr,
   });
 
   const conditionsPlugin = createConditionsPlugin();

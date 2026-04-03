@@ -24,6 +24,7 @@
 - 📦 **Tree Shakeable** - Optimized bundle size with ES modules
 - 🧪 **Experimental Features** - Reactive programming model and more
 - 🛠️ **DevTools** - Custom developer tools for debugging
+- 🧬 **RSC Ready** - Experimental React Server Components with SSR + Flight streams
 
 ## 🎯 Quick Start
 
@@ -69,6 +70,31 @@ export default defineConfig({
 });
 ```
 
+## 🧬 React Server Components Integration
+
+MyReact is one of the first React-like frameworks to ship an end-to-end RSC pipeline in a non-React runtime. The integration includes:
+
+- Flight stream serialization/deserialization powered by `@lazarv/rsc`
+- Server Actions (`"use server"`) and client components (`"use client"`)
+- Unified SSR + RSC flow (server renders HTML from the Flight stream)
+- Vite dev server integration for RSC endpoints and SSR HTML
+
+### RSC Flow (High Level)
+
+1. Server renders Flight stream with `renderToFlightStream`.
+2. SSR decodes the Flight stream with `createFlightServer().createFromStream(...)`.
+3. HTML is rendered from the decoded tree.
+4. The same Flight stream is injected into HTML for hydration.
+5. Client hydrates using `createFlightClient()` and the injected stream.
+
+### Example Entry Points
+
+```
+ui/rsc-example/src/entry-rsc.tsx    # Flight stream
+ui/rsc-example/src/entry-ssr.tsx    # SSR HTML from Flight
+ui/rsc-example/src/entry-client.tsx # Hydration
+```
+
 ### Vite + RSC (Experimental)
 
 ```bash
@@ -86,6 +112,10 @@ export default defineConfig({
       rsc: true,
       rscEndpoint: "/__rsc",
       rscActionEndpoint: "/__rsc_action",
+      ssr: {
+        entryRsc: "/src/entry-rsc.tsx",
+        entrySsr: "/src/entry-ssr.tsx",
+      },
     }),
   ],
 });
@@ -130,16 +160,6 @@ const config = {
       <strong>RSC</strong>
       <br />
       Server Components example
-    </td>
-    <td align="center">
-      <strong>Terminal UI</strong>
-      <br />
-      CLI applications
-    </td>
-    <td align="center">
-      <strong>Three.js</strong>
-      <br />
-      3D rendering
     </td>
   </tr>
 </table>
@@ -309,6 +329,20 @@ pnpm lint         # Lint code
 </td>
 </tr>
 </table>
+
+### React Server Components API
+
+**@my-react/react-server/server**
+
+- `renderToFlightStream(element)`
+- `createFlightServer({ moduleLoader, resolveModuleId })`
+- `registerClientReference(...)`
+- `registerServerReference(...)`
+
+**@my-react/react-server/client**
+
+- `createFlightClient({ moduleLoader, actionEndpoint })`
+- `createServerActionReference(actionId, callServer?)`
 
 ⭐ = React 18+ features
 

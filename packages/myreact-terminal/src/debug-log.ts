@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 
-const debugLogEnabled = true;
+const debugLogEnabled = false;
 let isFirstRun = true;
 const logFilePath = path.join(process.cwd(), "debug.log");
 let logStream: fs.WriteStream | undefined;

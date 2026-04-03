@@ -184,7 +184,7 @@ export const Reconciler = createReconciler<
         continue;
       }
 
-      if (key === "internalStickyAlternate") {
+      if (key === "internal_stickyAlternate") {
         node.internal_stickyAlternate = value as boolean;
         continue;
       }
@@ -199,7 +199,7 @@ export const Reconciler = createReconciler<
         continue;
       }
 
-      if (key === "internalOnBeforeRender") {
+      if (key === "internal_onBeforeRender") {
         node.internal_onBeforeRender = value as () => void;
         continue;
       }
@@ -314,7 +314,7 @@ export const Reconciler = createReconciler<
           continue;
         }
 
-        if (key === "internalStickyAlternate") {
+        if (key === "internal_stickyAlternate") {
           node.internal_stickyAlternate = Boolean(value);
           continue;
         }
@@ -329,7 +329,7 @@ export const Reconciler = createReconciler<
           continue;
         }
 
-        if (key === "internalOnBeforeRender") {
+        if (key === "internal_onBeforeRender") {
           node.internal_onBeforeRender = value as (node: DOMElement) => void;
           continue;
         }

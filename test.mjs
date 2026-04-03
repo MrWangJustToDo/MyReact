@@ -11,6 +11,14 @@ import {
   testStderr,
   testDir,
   testGithub,
+  testStaticRender,
+  testAlternateBuffer,
+  testIncrementRender,
+  testMultiInput,
+  testResize,
+  testScrollIntoView,
+  testSelection,
+  testSticky,
 } from "@test/react-terminal";
 
 // testBorder();
@@ -33,6 +41,22 @@ import {
 
 // testStderr();
 
-testDir();
+// testDir();
 
 // testGithub();
+
+// testStaticRender();
+
+// testAlternateBuffer();
+
+// testIncrementRender();
+
+// testMultiInput();
+
+// testResize();
+
+// testScrollIntoView();
+
+// testSelection();
+
+testSticky();

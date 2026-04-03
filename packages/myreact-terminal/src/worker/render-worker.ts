@@ -25,7 +25,7 @@ import { type RenderLine, TerminalWriter, rainbowColors } from "./terminal-write
 const defaultAnimationInterval = 1;
 const defaultMaxScrollbackLength = 1000;
 
-export const debugWorker = true;
+export const debugWorker = false;
 const clearDebugLogPerFrame = false;
 /**
  * Core renderer that composes together scrollable blocks of styled content.
@@ -704,7 +704,9 @@ export class TerminalBufferWorker {
     } else {
       // 3. Sync
       // DEBUG: Log screen state before sync
-      debugLog(`[_render] screen.length=${this.screen.length}, rows=${this.rows}, cameraY=${cameraY}, rootHeight=${rootRegion.height}, rootLines=${this.sceneManager.getRootRegion()?.lines.length}`);
+      debugLog(
+        `[_render] screen.length=${this.screen.length}, rows=${this.rows}, cameraY=${cameraY}, rootHeight=${rootRegion.height}, rootLines=${this.sceneManager.getRootRegion()?.lines.length}`
+      );
       for (let row = 0; row < this.rows; row++) {
         const canvasLine = this.screen[row];
         if (!canvasLine) {
@@ -815,7 +817,9 @@ export class TerminalBufferWorker {
     }
 
     const canvas = Canvas.create(this.columns, this.rows, this.resized);
-    debugLog(`[composeScene] canvas(${this.columns}x${this.rows}) cameraY=${cameraY} rootHeight=${rootRegion.height} rootLines=${rootRegion.lines.length} resized=${this.resized}`);
+    debugLog(
+      `[composeScene] canvas(${this.columns}x${this.rows}) cameraY=${cameraY} rootHeight=${rootRegion.height} rootLines=${rootRegion.lines.length} resized=${this.resized}`
+    );
     this.composeNode(this.sceneManager.root!, canvas, {
       clip: undefined,
       offsetY: -cameraY,

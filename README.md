@@ -16,6 +16,7 @@
 
 ## ✨ Features
 
+- 🧬 **RSC Ready** - Experimental React Server Components with SSR + Flight streams
 - 🚀 **React Compatible** - Drop-in replacement for React with the same API
 - ⚡ **High Performance** - Optimized reconciler with minimal overhead
 - 🔧 **Modern Tooling** - First-class support for Vite, Next.js, Rspack, and Webpack
@@ -24,7 +25,6 @@
 - 📦 **Tree Shakeable** - Optimized bundle size with ES modules
 - 🧪 **Experimental Features** - Reactive programming model and more
 - 🛠️ **DevTools** - Custom developer tools for debugging
-- 🧬 **RSC Ready** - Experimental React Server Components with SSR + Flight streams
 
 ## 🎯 Quick Start
 

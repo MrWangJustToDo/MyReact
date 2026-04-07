@@ -233,7 +233,8 @@ async function transformServerModule(
   if (isServer) {
     const result = transformServerActionServer(parseCode, ast, {
       runtime: (value, name) => `__registerServerReference__(${value}, ${JSON.stringify(`${moduleId}#${name}`)}, ${JSON.stringify(name)})`,
-      rejectNonAsyncFunction: true,
+      // Allow sync server components in "use server" modules
+      rejectNonAsyncFunction: false,
     });
 
     const exportNames = "exportNames" in result ? result.exportNames : result.names;

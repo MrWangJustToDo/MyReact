@@ -1,6 +1,6 @@
 import { Box, Container, Flex, Heading, Text, SimpleGrid, Icon, VStack, Badge, useColorModeValue } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { CodeIcon, LayersIcon, ZapIcon, PackageIcon, MonitorIcon, RefreshCwIcon, ServerIcon, PaletteIcon } from "lucide-react";
+import { CodeIcon, LayersIcon, ZapIcon, PackageIcon, MonitorIcon, RefreshCwIcon, ServerIcon, PaletteIcon, CloudIcon } from "lucide-react";
 
 import { CONTAINER_WIDTH } from "@client/config/container";
 
@@ -90,6 +90,13 @@ const features = [
     description: "First-class Vite plugin support with HMR and fast refresh. Works with Remix and React Router v7 out of the box.",
     badge: "Popular",
     badgeColor: "green",
+  },
+  {
+    icon: <Icon as={CloudIcon} boxSize="6" />,
+    title: "React Server Components",
+    description: "End-to-end RSC pipeline with Flight streams, server actions, SSR decode, and hydration support.",
+    badge: "RSC",
+    badgeColor: "orange",
   },
   {
     icon: <Icon as={ServerIcon} boxSize="6" />,

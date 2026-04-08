@@ -7,6 +7,7 @@ import { CanvasUISection } from "@client/container/Section/Canvas";
 import { FeaturesSection } from "@client/container/Section/Features";
 import { NextSection } from "@client/container/Section/Next";
 import { ReconcilerSection } from "@client/container/Section/Reconciler";
+import { RscSection } from "@client/container/Section/Rsc";
 import { ThreeFiberSection } from "@client/container/Section/ThreeFiber";
 import { ViteSection } from "@client/container/Section/Vite";
 
@@ -14,7 +15,7 @@ const ApiSection = !__STREAM__ ? _ApiSection : lazy(() => import("@client/contai
 
 const Page = () => {
   return (
-    <ScrollControl initialSectionLength={9}>
+    <ScrollControl initialSectionLength={10}>
       <ScrollContent>
         {/* Hero Section */}
         <ScrollSection>
@@ -39,6 +40,11 @@ const Page = () => {
         {/* Vite Section */}
         <ScrollSection>
           <ViteSection />
+        </ScrollSection>
+
+        {/* RSC Section */}
+        <ScrollSection>
+          <RscSection />
         </ScrollSection>
 
         {/* Three Fiber Section */}

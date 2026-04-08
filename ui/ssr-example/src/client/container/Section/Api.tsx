@@ -16,6 +16,7 @@ const data = [
     "@my-react/react-vite": "vite plugin",
     "@my-react/react-rspack": "rspack plugin",
     "@my-react/react-terminal": "render",
+    "@my-react/react-server": "renderToFlightStream",
   },
   {
     "@my-react/react (hook)": "useCallback",
@@ -25,6 +26,7 @@ const data = [
     "@my-react/react-refresh": "refresh runtime",
     "@my-react/react-refresh-tools": "next.js plugin",
     "@my-react/react-terminal": "<Box />",
+    "@my-react/react-server": "createFlightServer",
   },
   {
     "@my-react/react (hook)": "useMemo",
@@ -33,6 +35,7 @@ const data = [
     "@my-react/react-reactive": "ref",
     "@my-react/react-refresh-tools": "webpack loader",
     "@my-react/react-terminal": "<Text />",
+    "@my-react/react-server": "createFlightClient",
   },
   {
     "@my-react/react (hook)": "useReducer",
@@ -310,6 +313,26 @@ export const ApiSection = () => {
             ),
           }}
           dataIndex="@my-react/react-terminal"
+          bodyCellRender={{
+            Render: ({ cellData }) => {
+              return <Code>{cellData}</Code>;
+            },
+          }}
+        />
+        <Column<(typeof data)[0]>
+          headCellRender={{
+            cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
+            Render: () => (
+              <LinkBox display="flex" alignItems="center">
+                <Text as="span">@my-react/react-server</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://www.npmjs.com/package/@my-react/react-server" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/npm/v/%40my-react/react-server" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
+          }}
+          dataIndex="@my-react/react-server"
           bodyCellRender={{
             Render: ({ cellData }) => {
               return <Code>{cellData}</Code>;

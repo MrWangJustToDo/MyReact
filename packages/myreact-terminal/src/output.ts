@@ -134,6 +134,8 @@ export type Region = {
     endX: number;
     text: string;
   }>;
+  isTrimmed?: boolean;
+  maxWrittenY?: number;
 };
 
 export type RegionNode = {
@@ -513,7 +515,11 @@ export default class Output {
   }
 
   private trimRegionLines(region: Region) {
-    for (let y = 0; y < region.lines.length; y++) {
+    if (region.isTrimmed) return;
+
+    const limit = Math.min(region.lines.length, (region.maxWrittenY ?? -1) + 1);
+
+    for (let y = 0; y < limit; y++) {
       const line = region.lines[y]!;
       const trimmedLength = line.getTrimmedLength();
 
@@ -522,9 +528,17 @@ export default class Output {
       }
     }
 
+    for (let y = limit; y < region.lines.length; y++) {
+      if (region.styledOutput[y]?.length !== 0) {
+        (region.styledOutput as StyledLine[])[y] = StyledLine.empty(0);
+      }
+    }
+
     for (const child of region.children) {
       this.trimRegionLines(child);
     }
+
+    region.isTrimmed = true;
   }
 
   private clampCursorPosition(region: Region) {
@@ -591,6 +605,8 @@ export default class Output {
     if (!currentLine) {
       return;
     }
+
+    region.maxWrittenY = Math.max(region.maxWrittenY ?? -1, y);
 
     if (transformers.length > 0) {
       let line = styledLineToString(chars);

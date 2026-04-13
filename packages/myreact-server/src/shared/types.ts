@@ -10,7 +10,49 @@ export interface ClientReferenceMetadata {
   name: string;
   /** Optional chunk IDs for preloading */
   chunks?: string[];
+  /** Optional css dependencies */
+  css?: string[];
 }
+
+/**
+ * @public
+ * Client manifest entry for RSC module resolution
+ */
+export interface ClientManifestEntry {
+  /** Resolved module id (typically chunk path in production) */
+  id: string;
+  /** Export name */
+  name: string;
+  /** Optional chunk IDs for preloading */
+  chunks?: string[];
+  /** Optional css dependencies */
+  css?: string[];
+}
+
+/**
+ * @public
+ * Client manifest mapping reference id to entry
+ */
+export type ClientManifest = Record<string, ClientManifestEntry>;
+
+/**
+ * @public
+ * Server action manifest entry
+ */
+export interface ServerActionManifestEntry {
+  /** Action id */
+  id: string;
+  /** Export name */
+  name: string;
+  /** Module id containing the action */
+  moduleId: string;
+}
+
+/**
+ * @public
+ * Server action manifest mapping action id to entry
+ */
+export type ServerActionManifest = Record<string, ServerActionManifestEntry>;
 
 /**
  * @public
@@ -92,6 +134,9 @@ export interface RenderToFlightStreamOptions {
   /** Module resolver for client/server references */
   moduleResolver?: ModuleResolver;
 
+  /** Optional client manifest for client reference resolution */
+  clientManifest?: ClientManifest;
+
   /** Error handler - return digest string for client */
   onError?: (error: unknown) => string | void;
 
@@ -109,6 +154,9 @@ export interface RenderToFlightStreamOptions {
 export interface FlightClientOptions {
   /** Module loader for client components */
   moduleLoader?: ModuleLoader;
+
+  /** Optional client manifest for module resolution */
+  clientManifest?: ClientManifest;
 
   /** Server action endpoint URL */
   actionEndpoint?: string;

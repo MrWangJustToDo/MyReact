@@ -74,7 +74,6 @@ export class TerminalWriter {
   public isTainted = false;
   public debugRainbowColor?: string;
   public backbufferDirty = false;
-  public backbufferScrolledIncorrectly = false;
   public backbufferDirtyCurrentFrame = false;
   public fullRenderTimeout?: NodeJS.Timeout;
   public maxScrollbackLength = 1000;

@@ -148,10 +148,11 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
         }
 
         // Mark as client module for manifest
+        const { exports, hasDefaultExport } = await parseModuleExports(parseCode);
         context.clientRegistry.register(moduleId, {
           moduleId,
-          exports: [],
-          hasDefaultExport: true,
+          exports,
+          hasDefaultExport,
         });
 
         return null;
@@ -174,9 +175,13 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
       return null;
     },
 
-    generateBundle() {
-      // Generate client manifest
-      if (isBuild && config.build?.ssr) {
+    generateBundle(_options) {
+      if (!isBuild) {
+        return;
+      }
+
+      // Generate client manifest during client build
+      if (!config.build?.ssr) {
         const clientManifest = context.clientRegistry.generateManifest();
         this.emitFile({
           type: "asset",
@@ -185,8 +190,8 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
         });
       }
 
-      // Generate server action manifest
-      if (isBuild) {
+      // Generate server action manifest during server build
+      if (config.build?.ssr) {
         const serverManifest = context.serverRegistry.generateManifest();
         this.emitFile({
           type: "asset",

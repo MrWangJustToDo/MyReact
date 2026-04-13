@@ -5,6 +5,7 @@ export { registerClientReference, createClientModuleProxy } from "./client-refer
 export { registerServerReference, getServerAction, serverActionRegistry } from "./server-reference-map";
 export { handleServerAction, executeServerAction } from "./action-handler";
 export { createFlightServer } from "./flight-server";
+export { createClientManifestResolver, loadServerActionManifest } from "./manifest";
 
 // Re-export types
 export type {
@@ -17,6 +18,10 @@ export type {
   ServerReference,
   ServerActionRequest,
   ServerActionResponse,
+  ClientManifest,
+  ClientManifestEntry,
+  ServerActionManifest,
+  ServerActionManifestEntry,
 } from "../shared/types";
 
 export { CLIENT_REFERENCE_SYMBOL, SERVER_REFERENCE_SYMBOL } from "../shared/types";

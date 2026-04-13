@@ -1,5 +1,6 @@
 import { renderToReadableStream } from "@lazarv/rsc/server";
 
+import { createClientManifestResolver } from "./manifest";
 import { ServerComponentDispatch } from "./server-component-dispatch";
 
 import type { RenderToFlightStreamOptions, ModuleResolver } from "../shared/types";
@@ -59,7 +60,8 @@ const defaultModuleResolver: ModuleResolver = {
 export async function renderToFlightStream(element: MyReactElementNode, options: RenderToFlightStreamOptions = {}): Promise<ReadableStream<Uint8Array>> {
   const dispatch = new ServerComponentDispatch();
 
-  const moduleResolver = options.moduleResolver || dispatch.getModuleResolver();
+  const moduleResolver =
+    options.moduleResolver || (options.clientManifest ? createClientManifestResolver(options.clientManifest) : dispatch.getModuleResolver());
 
   // Create the Flight stream using @lazarv/rsc
   const stream = renderToReadableStream(element, {

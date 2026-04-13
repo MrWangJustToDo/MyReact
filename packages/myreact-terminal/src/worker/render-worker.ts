@@ -53,15 +53,25 @@ export class TerminalBufferWorker {
   screen: RenderLine[] = [];
   backbuffer: RenderLine[] = [];
 
-  private renderPromise?: Promise<void>;
+  /**
+   * Visible for testing.
+   */
+  readonly sceneManager = new SceneManager();
 
-  private readonly sceneManager = new SceneManager();
+  /**
+   * Visible for testing.
+   */
+  readonly scrollOptimizer = new ScrollOptimizer();
+
+  private renderPromise?: Promise<void>;
   private readonly animationController: AnimationController;
-  private readonly scrollOptimizer = new ScrollOptimizer();
   private readonly primaryTerminalWriter: TerminalWriter;
   private readonly alternateTerminalWriter: TerminalWriter;
 
-  private get terminalWriter(): TerminalWriter {
+  /**
+   * Visible for testing.
+   */
+  get terminalWriter(): TerminalWriter {
     return this.isAlternateBufferEnabled ? this.alternateTerminalWriter : this.primaryTerminalWriter;
   }
 
@@ -364,14 +374,6 @@ export class TerminalBufferWorker {
     if (rootRegion) {
       const cameraY = Math.max(0, rootRegion.height - this.rows);
 
-      if (!this.isAlternateBufferEnabled) {
-        const maxPushedRoot = this.scrollOptimizer.maxRegionScrollTops.get(rootRegion.id) ?? 0;
-        if (cameraY < maxPushedRoot) {
-          this.terminalWriter.backbufferScrolledIncorrectly = true;
-          this.terminalWriter.backbufferDirtyCurrentFrame = true;
-        }
-      }
-
       for (const update of updates) {
         const region = this.sceneManager.getRegion(update.id);
 
@@ -388,14 +390,6 @@ export class TerminalBufferWorker {
               this.terminalWriter.backbufferDirty = true;
               this.terminalWriter.backbufferDirtyCurrentFrame = true;
             }
-          }
-        }
-
-        if (!this.isAlternateBufferEnabled && region && update.scrollTop !== undefined && region.overflowToBackbuffer) {
-          const maxPushed = this.scrollOptimizer.maxRegionScrollTops.get(region.id) ?? 0;
-          if (update.scrollTop < maxPushed) {
-            this.terminalWriter.backbufferScrolledIncorrectly = true;
-            this.terminalWriter.backbufferDirtyCurrentFrame = true;
           }
         }
       }
@@ -449,7 +443,6 @@ export class TerminalBufferWorker {
     }
 
     this.terminalWriter.backbufferDirty = false;
-    this.terminalWriter.backbufferScrolledIncorrectly = false;
     this.terminalWriter.backbufferDirtyCurrentFrame = false;
 
     this.composeScene(true);
@@ -703,29 +696,29 @@ export class TerminalBufferWorker {
       this.terminalWriter.writeLines([...this.backbuffer, ...this.screen]);
     } else {
       // 3. Sync
-      // DEBUG: Log screen state before sync
-      debugLog(
-        `[_render] screen.length=${this.screen.length}, rows=${this.rows}, cameraY=${cameraY}, rootHeight=${rootRegion.height}, rootLines=${this.sceneManager.getRootRegion()?.lines.length}`
-      );
       for (let row = 0; row < this.rows; row++) {
-        const canvasLine = this.screen[row];
-        if (!canvasLine) {
-          debugLog(`[_render] WARNING: screen[${row}] is undefined! screen.length=${this.screen.length}`);
-          continue;
-        }
-        const writerLine = this.terminalWriter.getScreenLine(row);
-        const canvasText = this.terminalWriter.clampLine(canvasLine.styledChars, this.columns).text;
-        const writerText = writerLine?.text ?? "<undefined>";
-        const willSkip = writerLine && !writerLine.tainted && writerText === canvasText;
-        if (!willSkip) {
-          debugLog(`[_render] row ${row} WILL UPDATE: canvas="${canvasText.slice(0, 40)}" writer="${writerText.slice(0, 40)}"`);
-        }
-        this.terminalWriter.syncLine(canvasLine, row);
+        this.terminalWriter.syncLine(this.screen[row]!, row);
       }
     }
 
     this.terminalWriter.finish();
     this.terminalWriter.flush();
+
+    if (!this.isAlternateBufferEnabled) {
+      const maxPushedRoot = this.scrollOptimizer.maxRegionScrollTops.get(rootRegion.id) ?? 0;
+      if (cameraY < maxPushedRoot) {
+        this.terminalWriter.backbufferDirtyCurrentFrame = true;
+      }
+
+      for (const region of this.sceneManager.regions.values()) {
+        if (region.overflowToBackbuffer) {
+          const maxPushed = this.scrollOptimizer.maxRegionScrollTops.get(region.id) ?? 0;
+          if ((region.scrollTop ?? 0) < maxPushed) {
+            this.terminalWriter.backbufferDirtyCurrentFrame = true;
+          }
+        }
+      }
+    }
 
     this.updateTrackingMaps(rootRegion, cameraY);
 
@@ -817,22 +810,11 @@ export class TerminalBufferWorker {
     }
 
     const canvas = Canvas.create(this.columns, this.rows, this.resized);
-    debugLog(
-      `[composeScene] canvas(${this.columns}x${this.rows}) cameraY=${cameraY} rootHeight=${rootRegion.height} rootLines=${rootRegion.lines.length} resized=${this.resized}`
-    );
     this.composeNode(this.sceneManager.root!, canvas, {
       clip: undefined,
       offsetY: -cameraY,
     });
     this.screen = canvas.getLines();
-    // DEBUG: Check for empty canvas lines that should have content
-    let emptyCount = 0;
-    for (let i = 0; i < this.screen.length; i++) {
-      if (this.screen[i]!.styledChars.length === 0) emptyCount++;
-    }
-    if (emptyCount > 0) {
-      debugLog(`[composeScene] WARNING: ${emptyCount}/${this.screen.length} canvas lines are empty`);
-    }
     this.resized = false;
   }
 

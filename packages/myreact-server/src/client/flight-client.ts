@@ -3,7 +3,7 @@ import { __my_react_internal__, createElement, Suspense, use, type MyReactElemen
 
 import { normalizeRscValue } from "../shared/normalize-rsc";
 
-import { createModuleLoader } from "./module-loader";
+import { createManifestModuleLoader, createModuleLoader } from "./module-loader";
 
 import type { FlightClientOptions, ModuleLoader } from "../shared/types";
 import type { hydrateRoot } from "@my-react/react-dom/client";
@@ -75,10 +75,10 @@ export interface FlightClient {
 export async function createFlightClient(options: FlightClientOptions = {}): Promise<FlightClient> {
   const { hydrateRoot } = await import("@my-react/react-dom/client");
 
-  const { moduleLoader: customModuleLoader, actionEndpoint = "/__rsc_action", fetch: customFetch = globalThis.fetch } = options;
+  const { moduleLoader: customModuleLoader, clientManifest, actionEndpoint = "/__rsc_action", fetch: customFetch = globalThis.fetch } = options;
 
   // Use custom or default module loader
-  const moduleLoader: ModuleLoader = customModuleLoader || createModuleLoader();
+  const moduleLoader: ModuleLoader = customModuleLoader || (clientManifest ? createManifestModuleLoader(clientManifest) : createModuleLoader());
 
   /**
    * Call a server action via HTTP POST

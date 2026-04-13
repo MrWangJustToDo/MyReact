@@ -1,4 +1,4 @@
-import type { ClientReferenceMetadata, ModuleLoader } from "../shared/types";
+import type { ClientManifest, ClientManifestEntry, ClientReferenceMetadata, ModuleLoader } from "../shared/types";
 
 /**
  * Module registry type
@@ -36,6 +36,12 @@ const moduleRegistry = initializeModuleRegistry();
  */
 const pendingLoads = new Map<string, Promise<Record<string, unknown>>>();
 
+type ModuleLoaderOptions = {
+  manifest?: ClientManifest;
+  resolveModuleId?: (id: string, metadata: ClientReferenceMetadata, entry?: ClientManifestEntry) => string;
+  loadModule?: (id: string) => Promise<unknown>;
+};
+
 /**
  * @public
  * Register a client module in the registry
@@ -49,13 +55,13 @@ export function registerModule(moduleId: string, moduleExports: Record<string, u
 
 /**
  * @public
- * Synchronously require a module export
+ * Synchronously require a module
  *
  * This is called by @lazarv/rsc when deserializing client references.
  * The module must already be loaded and registered.
  *
  * @param metadata - The client reference metadata
- * @returns The module export
+ * @returns The module exports object
  * @throws Error if module is not loaded
  */
 export function requireModule(metadata: ClientReferenceMetadata): unknown | Promise<unknown> {
@@ -79,13 +85,7 @@ export function requireModule(metadata: ClientReferenceMetadata): unknown | Prom
     return loadPromise;
   }
 
-  const exportValue = module[metadata.name];
-
-  if (exportValue === undefined && metadata.name !== "default") {
-    console.warn(`[@my-react/react-server] Export "${metadata.name}" not found in module "${metadata.id}"`);
-  }
-
-  return exportValue;
+  return module;
 }
 
 /**
@@ -136,9 +136,104 @@ export async function preloadModule(metadata: ClientReferenceMetadata): Promise<
  * @returns ModuleLoader interface
  */
 export function createModuleLoader(): ModuleLoader {
+  return createModuleLoaderWithOptions({});
+}
+
+/**
+ * @public
+ * Create a module loader with manifest support
+ */
+export function createManifestModuleLoader(manifest: ClientManifest, options?: Omit<ModuleLoaderOptions, "manifest">): ModuleLoader {
+  return createModuleLoaderWithOptions({ ...options, manifest });
+}
+
+function createModuleLoaderWithOptions(options: ModuleLoaderOptions): ModuleLoader {
+  const { manifest, resolveModuleId, loadModule } = options;
+
+  function resolveEntry(metadata: ClientReferenceMetadata): ClientManifestEntry | undefined {
+    if (!manifest) {
+      return undefined;
+    }
+
+    return manifest[`${metadata.id}#${metadata.name}`];
+  }
+
+  function resolveImportId(metadata: ClientReferenceMetadata, entry?: ClientManifestEntry): string {
+    const baseId = entry?.id ?? metadata.id;
+    return resolveModuleId ? resolveModuleId(baseId, metadata, entry) : baseId;
+  }
+
+  async function loadById(id: string): Promise<Record<string, unknown>> {
+    if (loadModule) {
+      return (await loadModule(id)) as Record<string, unknown>;
+    }
+    return (await import(/* @vite-ignore */ id)) as Record<string, unknown>;
+  }
+
+  async function preloadModuleWithOptions(metadata: ClientReferenceMetadata): Promise<void> {
+    if (moduleRegistry.has(metadata.id)) {
+      return;
+    }
+
+    if (pendingLoads.has(metadata.id)) {
+      await pendingLoads.get(metadata.id);
+      return;
+    }
+
+    const entry = resolveEntry(metadata);
+    const importId = resolveImportId(metadata, entry);
+    const chunkIds = entry?.chunks ?? [];
+
+    const loadPromise = (async () => {
+      try {
+        const preloadIds = new Set<string>([...chunkIds].filter(Boolean));
+        for (const chunkId of preloadIds) {
+          if (chunkId === importId) continue;
+          await loadById(chunkId);
+        }
+
+        const module = await loadById(importId);
+        moduleRegistry.set(metadata.id, module);
+        return module;
+      } catch (error) {
+        console.error(`[@my-react/react-server] Failed to load module "${metadata.id}":`, error);
+        throw error;
+      } finally {
+        pendingLoads.delete(metadata.id);
+      }
+    })();
+
+    pendingLoads.set(metadata.id, loadPromise);
+    await loadPromise;
+  }
+
+  function requireModuleWithOptions(metadata: ClientReferenceMetadata): unknown | Promise<unknown> {
+    const module = moduleRegistry.get(metadata.id);
+
+    if (!module) {
+      if (pendingLoads.has(metadata.id)) {
+        return pendingLoads.get(metadata.id)!;
+      }
+
+      const loadPromise = (async () => {
+        await preloadModuleWithOptions(metadata);
+        const loaded = moduleRegistry.get(metadata.id);
+        if (!loaded) {
+          throw new Error(`[@my-react/react-server] Module "${metadata.id}" not loaded after preload.`);
+        }
+        return loaded;
+      })();
+
+      pendingLoads.set(metadata.id, loadPromise);
+      return loadPromise;
+    }
+
+    return module;
+  }
+
   return {
-    requireModule,
-    preloadModule,
+    requireModule: requireModuleWithOptions,
+    preloadModule: preloadModuleWithOptions,
   };
 }
 

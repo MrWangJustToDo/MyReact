@@ -1,12 +1,12 @@
 import { createFromReadableStream, createFromFetch } from "@lazarv/rsc/client";
 import { __my_react_internal__, createElement, Suspense, use } from "@my-react/react";
-import { renderToReadableStream } from "@my-react/react-dom/server";
 
 import { createModuleLoader } from "../client/module-loader";
 import { normalizeRscValue } from "../shared/normalize-rsc";
 
 import type { FlightServerOptions, ModuleLoader } from "../shared/types";
 import type { MyReactElement } from "@my-react/react";
+import type { renderToReadableStream } from "@my-react/react-dom/server";
 
 const { cacheLazy } = __my_react_internal__;
 
@@ -16,7 +16,9 @@ export interface FlightServer {
   createFromFetch(responsePromise: Promise<Response>): Promise<unknown>;
 }
 
-export function createFlightServer(options: FlightServerOptions = {}): FlightServer {
+export async function createFlightServer(options: FlightServerOptions = {}): Promise<FlightServer> {
+  const { renderToReadableStream } = await import("@my-react/react-dom/server");
+
   const moduleLoader: ModuleLoader = options.moduleLoader || createModuleLoader();
   const resolveModuleId = options.resolveModuleId ?? ((id: string) => id);
 

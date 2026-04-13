@@ -24,7 +24,7 @@ export async function renderHTML(
     },
   };
 
-  const server = createFlightServer({
+  const server = await createFlightServer({
     moduleLoader,
     resolveModuleId: (id: string) => `${id}?rsc-original`,
   } as FlightServerOptions);

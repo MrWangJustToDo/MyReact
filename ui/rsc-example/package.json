@@ -10,8 +10,8 @@
     "start": "NODE_ENV=production node ./server.mjs"
   },
   "dependencies": {
-    "@my-react/react": "workspace:*",
-    "@my-react/react-dom": "workspace:*",
+    "@my-react/react": "0.3.23",
+    "@my-react/react-dom": "0.3.23",
     "@my-react/react-server": "workspace:*"
   },
   "devDependencies": {

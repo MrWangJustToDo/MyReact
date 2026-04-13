@@ -1,4 +1,4 @@
-import { Suspense } from "@my-react/react";
+import { Suspense } from "react";
 
 async function loadInfo() {
   await new Promise((resolve) => setTimeout(resolve, 100));

@@ -5,6 +5,7 @@
  */
 
 import { createElement } from "@my-react/react";
+import { renderToFlightStream } from "@my-react/react-server/server";
 
 import type { Plugin, ViteDevServer } from "vite";
 
@@ -109,19 +110,15 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
           const module = await server.ssrLoadModule(componentPath);
           const Component = module.default || module;
 
-          // Use @lazarv/rsc to render to Flight stream
-
-          const { renderToReadableStream } = await import("@lazarv/rsc/server");
-
           // Get props from request body or query
           let props = {};
           if (req.method === "POST") {
-            const body = await readBody(req);
+            const body = await readBodyText(req);
             props = JSON.parse(body);
           }
 
           const element = createElement(Component, props);
-          const stream = renderToReadableStream(element, {
+          const stream = await renderToFlightStream(element, {
             onError: (error: unknown) => {
               console.error("[@my-react/react-vite] RSC render error:", error);
               return error instanceof Error ? error.message : String(error);
@@ -147,68 +144,20 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
         }
 
         try {
-          // Get action ID from header (standard RSC way) or query param
-          const url = new URL(req.url || "/", `http://${req.headers.host}`);
-          const actionId = req.headers["react-server-action"] ? decodeURIComponent(req.headers["react-server-action"] as string) : url.searchParams.get("id");
+          const request = await createFetchRequest(req);
+          const serverModule = await server.ssrLoadModule("@my-react/react-server/server");
+          const response: Response = await serverModule.handleServerAction(request);
 
-          if (!actionId) {
-            res.statusCode = 400;
-            res.end(JSON.stringify({ error: "Missing action ID" }));
-            return;
-          }
-
-          // Parse module and action name from actionId
-          const [modulePath, actionName] = actionId.split("#");
-
-          if (!modulePath || !actionName) {
-            res.statusCode = 400;
-            res.end(JSON.stringify({ error: "Invalid action ID format" }));
-            return;
-          }
-
-          // Load the module and get the action
-          const module = await server.ssrLoadModule(modulePath);
-          const action = module[actionName];
-
-          if (typeof action !== "function") {
-            res.statusCode = 404;
-            res.end(JSON.stringify({ error: `Action "${actionName}" not found` }));
-            return;
-          }
-
-          // Parse arguments from request body
-          const contentType = req.headers["content-type"] || "";
-
-          const { decodeReply } = await import("@lazarv/rsc/server");
-
-          let args: unknown[];
-          if (contentType.includes("multipart/form-data")) {
-            // Handle FormData
-            const formData = await readFormData(req);
-            args = (await decodeReply(formData)) as unknown[];
-          } else {
-            const body = await readBody(req);
-            args = (await decodeReply(body)) as unknown[];
-          }
-
-          // Execute the action
-          const result = await action(...(Array.isArray(args) ? args : [args]));
-
-          // Encode the result using Flight
-
-          const { renderToReadableStream } = await import("@lazarv/rsc/server");
-          const stream = renderToReadableStream(result, {
-            onError: (error: unknown) => {
-              console.error("[@my-react/react-vite] Action error:", error);
-              return error instanceof Error ? error.message : String(error);
-            },
+          res.statusCode = response.status;
+          response.headers.forEach((value, key) => {
+            res.setHeader(key, value);
           });
 
-          res.setHeader("Content-Type", "text/x-component");
-          res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-
-          // Pipe the stream to response
-          await pipeStream(stream, res);
+          if (response.body) {
+            await pipeStream(response.body, res);
+          } else {
+            res.end();
+          }
         } catch (error) {
           console.error("[@my-react/react-vite] Action endpoint error:", error);
           res.statusCode = 500;
@@ -222,7 +171,7 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
 /**
  * Helper to read request body as string
  */
-function readBody(req: { on: (event: string, cb: (data?: unknown) => void) => void }): Promise<string> {
+function readBodyText(req: { on: (event: string, cb: (data?: unknown) => void) => void }): Promise<string> {
   return new Promise((resolve, reject) => {
     let body = "";
     req.on("data", (chunk: unknown) => {
@@ -236,26 +185,55 @@ function readBody(req: { on: (event: string, cb: (data?: unknown) => void) => vo
 }
 
 /**
- * Helper to read request body as FormData (for multipart requests)
+ * Helper to read request body as buffer
  */
-async function readFormData(req: NodeJS.ReadableStream & { headers?: Record<string, string | string[] | undefined> }): Promise<FormData> {
-  // For dev server, we use a simple approach
-  // In production, you'd use a proper multipart parser
-  const chunks: Buffer[] = [];
-
+async function readBodyBuffer(req: NodeJS.ReadableStream): Promise<Uint8Array> {
+  const chunks: Uint8Array[] = [];
   return new Promise((resolve, reject) => {
-    req.on("data", (chunk: Buffer) => {
+    req.on("data", (chunk: Uint8Array) => {
       chunks.push(chunk);
     });
     req.on("end", () => {
-      // This is a simplified version - in a real implementation,
-      // you'd use a multipart parser like busboy or formidable
-      const formData = new FormData();
-      // For now, just return empty FormData - server actions should
-      // use encodeReply which sends as text/plain
-      resolve(formData);
+      const total = chunks.reduce((sum, buf) => sum + buf.length, 0);
+      const merged = new Uint8Array(total);
+      let offset = 0;
+      for (const buf of chunks) {
+        merged.set(buf, offset);
+        offset += buf.length;
+      }
+      resolve(merged);
     });
     req.on("error", reject);
+  });
+}
+
+/**
+ * Convert Node request to Fetch Request
+ */
+async function createFetchRequest(req: NodeJS.ReadableStream & { method?: string; url?: string; headers?: Record<string, string | string[] | undefined> }) {
+  const method = req.method ?? "GET";
+  const url = new URL(req.url || "/", `http://${req.headers?.host || "localhost"}`).toString();
+  const headers = new Headers();
+
+  if (req.headers) {
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (Array.isArray(value)) {
+        headers.set(key, value.join(", "));
+      } else if (value !== undefined) {
+        headers.set(key, value);
+      }
+    }
+  }
+
+  let body: Uint8Array | undefined;
+  if (method !== "GET" && method !== "HEAD") {
+    body = await readBodyBuffer(req);
+  }
+
+  return new Request(url, {
+    method,
+    headers,
+    body: body ? Buffer.from(body) : undefined,
   });
 }
 

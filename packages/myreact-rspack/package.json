@@ -1,6 +1,6 @@
 {
   "name": "@my-react/react-rspack",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "make @my-react work for rspack",
   "files": [
     "dist",
@@ -29,7 +29,7 @@
     "dev": "tsc -b -w"
   },
   "peerDependencies": {
-    "@my-react/react-refresh": ">=0.3.23",
+    "@my-react/react-refresh": ">=0.3.24",
     "webpack-hot-middleware": "2.x"
   },
   "dependencies": {
@@ -37,7 +37,7 @@
     "html-entities": "^2.6.0"
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.23",
+    "@my-react/react-shared": "^0.3.24",
     "@rspack/core": "^1.6.5"
   }
 }

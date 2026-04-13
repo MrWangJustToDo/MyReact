@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "rootDir": "src",
-    "target": "ES5",
+    "target": "es2020",
+    "module": "es2020",
+    "moduleResolution": "bundler",
     "esModuleInterop": true
   },
   "include": ["./src"],

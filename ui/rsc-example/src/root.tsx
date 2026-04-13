@@ -1,4 +1,4 @@
-import { Suspense } from "@my-react/react";
+import { Suspense } from "react";
 
 import Nav from "./components/Nav";
 import AboutPage from "./pages/About";

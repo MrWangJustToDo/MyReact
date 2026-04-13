@@ -1,4 +1,4 @@
-import { Suspense } from "@my-react/react";
+import { Suspense } from "react";
 
 import Guestbook from "../components/client/Guestbook";
 import ThemeToggle from "../components/client/ThemeToggle";

@@ -115,8 +115,8 @@ export async function preloadModule(metadata: ClientReferenceMetadata): Promise<
     try {
       // Dynamic import - assumes module ID is a valid URL or path
       const module = await import(/* @vite-ignore */ metadata.id);
-      moduleRegistry.set(metadata.id, module);
-      return module;
+      moduleRegistry.set(metadata.id, module as Record<string, unknown>);
+      return module as Record<string, unknown>;
     } catch (error) {
       console.error(`[@my-react/react-server] Failed to load module "${metadata.id}":`, error);
       throw error;

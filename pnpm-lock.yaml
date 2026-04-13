@@ -468,7 +468,7 @@ importers:
   packages/myreact:
     dependencies:
       '@my-react/react-jsx':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-jsx
       react:
         specifier: ^17 || ^18 || ^19
@@ -478,36 +478,36 @@ importers:
         version: 1.0.0(react@19.2.4)
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-shared
 
   packages/myreact-dom:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-shared
 
   packages/myreact-jsx:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-shared
 
   packages/myreact-opentui:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact
       '@opentui/core':
         specifier: ^0.1.93
@@ -526,7 +526,7 @@ importers:
   packages/myreact-reactivity:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact
       reactivity-store:
         specifier: ^0.4.0
@@ -535,24 +535,24 @@ importers:
   packages/myreact-reconciler:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-shared
 
   packages/myreact-reconciler-compact:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-shared
       '@types/react-reconciler':
         specifier: ^0.32.3
@@ -561,33 +561,33 @@ importers:
   packages/myreact-refresh:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-shared
 
   packages/myreact-refresh-tools:
     dependencies:
       '@my-react/react-refresh':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact-refresh
       webpack:
         specifier: ^4 || ^5
         version: 5.105.4(@swc/core@1.15.18)
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-shared
 
   packages/myreact-rspack:
     dependencies:
       '@my-react/react-refresh':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact-refresh
       error-stack-parser:
         specifier: ^2.1.4
@@ -600,7 +600,7 @@ importers:
         version: 2.26.1
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-shared
       '@rspack/core':
         specifier: ^1.6.5
@@ -612,14 +612,14 @@ importers:
         specifier: 0.0.0-experimental-196ba2e-20260326-ed190390
         version: 0.0.0-experimental-196ba2e-20260326-ed190390(react@19.2.4)
       '@my-react/react':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact
       '@my-react/react-reconciler':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact-reconciler
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-shared
 
   packages/myreact-shared: {}
@@ -627,7 +627,7 @@ importers:
   packages/myreact-terminal:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact
       ansi-escapes:
         specifier: ^7.3.0
@@ -715,7 +715,7 @@ importers:
   packages/myreact-three-fiber:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact
       react-use-measure:
         specifier: ^2.1.7
@@ -755,7 +755,7 @@ importers:
         specifier: ^0.0.0-experimental
         version: 0.0.0-experimental-baf0ab7-20260308-65add5d1(react@19.2.4)
       '@my-react/react-refresh':
-        specifier: '>=0.3.23'
+        specifier: '>=0.3.24'
         version: link:../myreact-refresh
       '@rolldown/pluginutils':
         specifier: 1.0.0-rc.6
@@ -779,8 +779,11 @@ importers:
         specifier: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
         version: 7.3.1(@types/node@22.19.15)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
     devDependencies:
+      '@my-react/react-server':
+        specifier: ^0.3.24
+        version: link:../myreact-server
       '@my-react/react-shared':
-        specifier: ^0.3.23
+        specifier: ^0.3.24
         version: link:../myreact-shared
       '@types/babel__core':
         specifier: ^7.20.5
@@ -1011,12 +1014,6 @@ importers:
       '@opentui/core':
         specifier: ^0.1.93
         version: 0.1.93(stage-js@1.0.1)(typescript@5.9.3)(web-tree-sitter@0.25.10)
-
-  test/rsc:
-    devDependencies:
-      tsx:
-        specifier: ^4.0.0
-        version: 4.21.0
 
   test/terminal:
     dependencies:
@@ -1367,11 +1364,11 @@ importers:
   ui/rsc-example:
     dependencies:
       '@my-react/react':
-        specifier: workspace:*
-        version: link:../../packages/myreact
+        specifier: 0.3.23
+        version: 0.3.23(react@19.2.4)
       '@my-react/react-dom':
-        specifier: workspace:*
-        version: link:../../packages/myreact-dom
+        specifier: 0.3.23
+        version: 0.3.23(@my-react/react@0.3.23(react@19.2.4))
       '@my-react/react-server':
         specifier: workspace:*
         version: link:../../packages/myreact-server
@@ -4102,6 +4099,21 @@ packages:
     resolution: {integrity: sha512-2Z0FATFHaoYJ8b+Y4y4Hgfn3FRFwuU5zRrk+9dFWp4uGAdHGqVEdP7HP+gLA3X469KXHmfupJaUbKo1b/aDKIg==}
     peerDependencies:
       three: '>= 0.159.0'
+
+  '@my-react/react-dom@0.3.23':
+    resolution: {integrity: sha512-QV7doaeirspCME2Kba4i2IsE1+gaTgQINMvpI87fOeSUlDxzEWjn1g8obAFJlMonRQDGGllAzMv1eK8nwh6/+Q==}
+    peerDependencies:
+      '@my-react/react': '>=0.3.23'
+
+  '@my-react/react-jsx@0.3.23':
+    resolution: {integrity: sha512-fYeKYdlA6wVjuJlvFeXM5LaMyWRJvRmIG8yL3rhD4t1HAKE+rvgyhb1xx+Gb4c1swCTJwI/USlMhaJs0sDhQuw==}
+    peerDependencies:
+      '@my-react/react': '>=0.3.23'
+
+  '@my-react/react@0.3.23':
+    resolution: {integrity: sha512-FwprqYWuCf7atVFLTZQOFGVqdcMU08IRCeAuiByMhE8zu3dyxxw/7x1ViNq7WtwNS3phIOaPHDF8KAq11p/Q4A==}
+    peerDependencies:
+      react: ^17 || ^18 || ^19
 
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
@@ -14611,6 +14623,20 @@ snapshots:
       promise-worker-transferable: 1.0.4
       three: 0.183.2
 
+  '@my-react/react-dom@0.3.23(@my-react/react@0.3.23(react@19.2.4))':
+    dependencies:
+      '@my-react/react': 0.3.23(react@19.2.4)
+
+  '@my-react/react-jsx@0.3.23(@my-react/react@0.3.23(react@19.2.4))':
+    dependencies:
+      '@my-react/react': 0.3.23(react@19.2.4)
+
+  '@my-react/react@0.3.23(react@19.2.4)':
+    dependencies:
+      '@my-react/react-jsx': 0.3.23(@my-react/react@0.3.23(react@19.2.4))
+      react: 19.2.4
+      react-compiler-runtime: 1.0.0(react@19.2.4)
+
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:
       '@emnapi/core': 1.9.1
@@ -22691,6 +22717,7 @@ snapshots:
       get-tsconfig: 4.13.6
     optionalDependencies:
       fsevents: 2.3.3
+    optional: true
 
   tsyringe@4.10.0:
     dependencies:

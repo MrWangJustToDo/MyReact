@@ -69,7 +69,8 @@ export { jsxDEV, Fragment };
 
 export const externalReact = (id: string) =>
   id.endsWith("@my-react/react") ||
-  id.endsWith("@my-react/react-dom") ||
+  id.includes("@my-react/react-dom") ||
+  id.includes("@my-react/react-server") ||
   id.includes("@my-react/react-refresh") ||
   id.endsWith("@my-react/react-terminal") ||
   (id.includes("node_modules") && !id.includes("tslib"));
@@ -143,7 +144,26 @@ const myreactThird = async () => {
     },
   });
 };
-const myreactServer = () => rollupBuild({ packageName: "myreact-server", packageScope: "packages", external: externalReact });
+const myreactServer = () =>
+  rollupBuild({
+    packageName: "myreact-server",
+    packageScope: "packages",
+    external: externalReact,
+    // plugins: {
+    //   multipleDevUMD({ defaultPlugins }) {
+    //     return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+    //   },
+    //   multipleProdUMD({ defaultPlugins }) {
+    //     return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+    //   },
+    //   multipleDevOther({ defaultPlugins }) {
+    //     return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+    //   },
+    //   multipleProdOther({ defaultPlugins }) {
+    //     return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+    //   },
+    // },
+  });
 const myreactDev = async () => {
   await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-vite", packageScope: "packages", external: externalReact });
@@ -169,3 +189,5 @@ const start = async () => {
 };
 
 start();
+
+// myreactDev();

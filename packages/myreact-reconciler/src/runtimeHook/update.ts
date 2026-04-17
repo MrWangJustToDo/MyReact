@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react/type";
 import { HOOK_TYPE, STATE_TYPE, include, isArrayEquals, isNormalEquals } from "@my-react/react-shared";
 
 import { getInstanceContextFiber, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
@@ -7,7 +7,7 @@ import { getHookTree, safeCallWithCurrentFiber } from "../share";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { RenderHookParams } from "@my-react/react";
+import type { RenderHookParams } from "@my-react/react/type";
 import type { ListTreeNode } from "@my-react/react-shared";
 
 const { enableDebugLog } = __my_react_shared__;

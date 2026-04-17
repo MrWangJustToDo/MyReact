@@ -1,10 +1,10 @@
-import { __my_react_internal__, cache, createElement } from "@my-react/react";
+import { __my_react_internal__, cache, createElement } from "@my-react/react/type";
 import { include, isPromise, SERVER_REFERENCE_SYMBOL, STATE_TYPE, TYPEKEY } from "@my-react/react-shared";
 
 import { NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { forwardRef, MixinMyReactFunctionComponent, MyReactElementNode } from "@my-react/react";
+import type { forwardRef, MixinMyReactFunctionComponent, MyReactElementNode } from "@my-react/react/type";
 
 const { currentHookTreeNode, currentHookNodeIndex, currentScheduler, cacheLazy } = __my_react_internal__;
 

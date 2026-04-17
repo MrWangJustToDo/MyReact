@@ -10,6 +10,8 @@ export const reconciler = createReconciler(hostConfig);
 
 if (process.env["DEV"]) {
   const injectIntoDevTools = async (url: string, config: any) => {
+    const { preloadDevToolRuntimeIfNeed } = await import("@my-react/react-reconciler-compact/preload");
+    await preloadDevToolRuntimeIfNeed();
     const { io } = await import("socket.io-client");
     globalThis.io = io;
     const typedReconciler = reconciler as typeof reconciler & {

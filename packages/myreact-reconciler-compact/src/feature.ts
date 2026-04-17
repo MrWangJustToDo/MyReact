@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__, type MyReactElementNode } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, type MyReactElementNode } from "@my-react/react/type";
 import {
   MyReactFiberNode,
   CustomRenderDispatch,
@@ -17,7 +17,6 @@ import { enableKnownConfigLog, knownConfig } from "./config";
 import { autoSetDevTools, delGlobalDispatch } from "./devtool";
 import { createDispatch } from "./dispatch";
 import { autoSetDevHMR } from "./hmr";
-import { loadRemoteModule } from "./polyfill";
 import { createPortal } from "./portal";
 import { prepareScheduler } from "./scheduler";
 
@@ -94,6 +93,8 @@ export const Reconciler = (_config: any) => {
 
       unmountContainer(renderDispatch);
 
+      _config?.clearContainer?.(_container);
+
       ReconcilerSet.delete(renderDispatch);
 
       renderScheduler.dispatchSet.uniDelete(renderDispatch);
@@ -133,18 +134,13 @@ export const Reconciler = (_config: any) => {
     ReconcilerSet.forEach((renderDispatch) => (renderDispatch.renderPackage = rendererPackageName));
 
     if (globalThis["__MY_REACT_DEVTOOL_INTERNAL__"]) return;
-
-    // load core runtime
-    // await loadScript("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js");
-    await loadRemoteModule("https://mrwangjusttodo.github.io/myreact-devtools/bundle/hook.js", { context: { globalThis } });
-    // connect to devtools, current need run https://github.com/MrWangJustToDo/myreact-devtools with pnpm run dev:web command
   };
 
   const injectIntoDevToolsWithSocketIO = async (url: string, _config: any) => {
     // load core runtime
     await injectIntoDevTools(_config || {});
     // start, see https://github.com/MrWangJustToDo/myreact-devtools/blob/main/packages/bridge/src/hook.ts
-    const init = globalThis["__MY_REACT_DEVTOOL_NODE__"];
+    const init = globalThis["__MY_REACT_DEVTOOL_NODE__"] || globalThis["__MY_REACT_DEVTOOL_BUNDLE__"];
 
     try {
       await init(url);

@@ -40,4 +40,4 @@ export default function Example() {
   );
 }
 
-export const test = () => render(<Example />, { terminalBuffer: true });
+export const test = () => render(<Example />, { renderProcess: true });

@@ -54,7 +54,7 @@
       "output": [
         {
           "dir": "./dist",
-          "entryFileNames": "esm/worker.mjs",
+          "entryFileNames": "esm/worker-entry.mjs",
           "format": "esm",
           "type": true
         }
@@ -78,7 +78,6 @@
     "patch-console": "^2.0.0",
     "signal-exit": "^4.1.0",
     "slice-ansi": "^7.1.2",
-    "socket.io-client": "^4.8.3",
     "stack-utils": "^2.0.6",
     "string-width": "^7.2.0",
     "type-fest": "^4.41.0",
@@ -90,7 +89,8 @@
     "@types/react-reconciler": "^0.32.3",
     "@types/signal-exit": "^4.0.0",
     "@types/slice-ansi": "^7.1.0",
-    "@types/stack-utils": "^2.0.3"
+    "@types/stack-utils": "^2.0.3",
+    "socket.io-client": "^4.8.3"
   },
   "peerDependencies": {
     "@my-react/react": ">=0.3.24"

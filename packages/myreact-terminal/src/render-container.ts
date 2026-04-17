@@ -57,7 +57,7 @@ export function handleContainerNode(
   let childrenOffsetY = y;
   let childrenOffsetX = x;
   const activeStickyNodes: Array<{
-    stickyNode: DOMElement;
+    stickyNode?: DOMElement;
     type: "top" | "bottom";
     nextStickyNode?: DOMElement;
     nextStickyNodeInfo?: StickyNodeInfo;
@@ -103,11 +103,11 @@ export function handleContainerNode(
     if (clipHorizontally || clipVertically) {
       const x1 = clipHorizontally ? absoluteOffsetX + yogaNode.getComputedBorder(Yoga.EDGE_LEFT) : undefined;
 
-      const x2 = clipHorizontally ? absoluteOffsetX + yogaNode.getComputedWidth() - yogaNode.getComputedBorder(Yoga.EDGE_RIGHT) : undefined;
+      const x2 = clipHorizontally ? absoluteOffsetX + width - yogaNode.getComputedBorder(Yoga.EDGE_RIGHT) : undefined;
 
       const y1 = clipVertically ? absoluteOffsetY + yogaNode.getComputedBorder(Yoga.EDGE_TOP) : undefined;
 
-      const y2 = clipVertically ? absoluteOffsetY + yogaNode.getComputedHeight() - yogaNode.getComputedBorder(Yoga.EDGE_BOTTOM) : undefined;
+      const y2 = clipVertically ? absoluteOffsetY + height - yogaNode.getComputedBorder(Yoga.EDGE_BOTTOM) : undefined;
 
       if (verticallyScrollable || horizontallyScrollable) {
         const scrollHeight = getScrollHeight(node);

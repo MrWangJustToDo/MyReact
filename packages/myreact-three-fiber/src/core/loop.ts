@@ -73,7 +73,7 @@ function update(timestamp: number, state: RootState, frame?: XRFrame) {
   subscribers = state.internal.subscribers;
   for (let i = 0; i < subscribers.length; i++) {
     subscription = subscribers[i];
-    subscription.ref.current?.(subscription.store.getState(), delta, frame);
+    subscription.ref.current(subscription.store.getState(), delta, frame);
   }
 
   // Render content
@@ -141,7 +141,7 @@ export function invalidate(state?: RootState, frames = 1): void {
       //called from within a useFrame, it means the user wants an additional frame
       state.internal.frames = 2;
     } else {
-      //the user need a new frame, no need to increment further than 1
+      //the user needs a new frame, no need to increment further than 1
       state.internal.frames = 1;
     }
   }

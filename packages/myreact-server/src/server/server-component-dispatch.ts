@@ -1,7 +1,7 @@
 import { CLIENT_REFERENCE_SYMBOL, SERVER_REFERENCE_SYMBOL } from "../shared/types";
 
 import type { ClientReferenceMetadata, ServerReferenceMetadata, ModuleResolver, ClientReference, ServerReference } from "../shared/types";
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElementNode } from "@my-react/react/type";
 
 /**
  * @internal

@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 import { include, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import {
@@ -16,7 +16,7 @@ import { NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 import type { UpdateState } from "../processQueue";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "./instance";
-import type { TriggerUpdateQueue } from "@my-react/react";
+import type { TriggerUpdateQueue } from "@my-react/react/type";
 
 const { currentScheduler } = __my_react_internal__;
 

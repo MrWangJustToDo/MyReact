@@ -1,4 +1,4 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react/type";
 
 const { enableSyncFlush } = __my_react_shared__;
 

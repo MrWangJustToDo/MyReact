@@ -1,4 +1,4 @@
-import { kebabCase } from "./kebabCase";
+import { kebabCase } from "./kebab-case";
 
 /**
  * @internal

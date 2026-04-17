@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__ } from "@my-react/react/type";
 import { include } from "@my-react/react-shared";
 
 import { MyReactFiberNode } from "../runtimeFiber";
@@ -7,7 +7,7 @@ import { getTypeFromElementNode } from "./element-type";
 import { NODE_TYPE } from "./fiber-type";
 import { getCurrentTypeFromRefresh } from "./refresh";
 
-import type { MyReactElement, MyReactElementNode } from "@my-react/react";
+import type { MyReactElement, MyReactElementNode } from "@my-react/react/type";
 
 const { enableHMRForDev } = __my_react_shared__;
 

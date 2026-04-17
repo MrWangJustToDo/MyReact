@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__, startTransition } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, startTransition } from "@my-react/react/type";
 import { HOOK_TYPE, include, STATE_TYPE } from "@my-react/react-shared";
 
 import { defaultDeleteChildEffect, defaultDeleteCurrentEffect } from "../dispatchEffect";
@@ -12,7 +12,7 @@ import { MyReactSignal } from "./signal";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactHookNodeDev } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { Action, Reducer, RenderHookParams } from "@my-react/react";
+import type { Action, Reducer, RenderHookParams } from "@my-react/react/type";
 
 const { enableDebugLog, enableDebugFiled } = __my_react_shared__;
 

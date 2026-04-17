@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__, type SuspenseUpdateQueue } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, type SuspenseUpdateQueue } from "@my-react/react/type";
 import { include, isPromise, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { defaultDeleteChildEffect } from "../dispatchEffect";

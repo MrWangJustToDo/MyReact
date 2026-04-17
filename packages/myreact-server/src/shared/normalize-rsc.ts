@@ -1,4 +1,4 @@
-import { isValidElement, lazy } from "@my-react/react";
+import { isValidElement, lazy } from "@my-react/react/type";
 import { Lazy as REACT_LAZY_TYPE, isPromise } from "@my-react/react-shared";
 
 import { CLIENT_REFERENCE_SYMBOL, SERVER_REFERENCE_SYMBOL } from "./types";

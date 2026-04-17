@@ -45,7 +45,7 @@ import {
 
 // testGithub();
 
-// testStaticRender();
+testStaticRender();
 
 // testAlternateBuffer();
 
@@ -59,4 +59,4 @@ import {
 
 // testSelection();
 
-testSticky();
+// testSticky();

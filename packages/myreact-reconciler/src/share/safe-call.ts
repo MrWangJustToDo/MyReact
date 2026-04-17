@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 
 import { afterSyncUpdate, beforeSyncUpdate } from "./sync";
 

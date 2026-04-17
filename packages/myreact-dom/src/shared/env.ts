@@ -1,4 +1,4 @@
-import { createRef, __my_react_internal__ } from "@my-react/react";
+import { createRef, __my_react_internal__ } from "@my-react/react/type";
 
 const { createReadonlyRef } = __my_react_internal__;
 

@@ -1,5 +1,5 @@
 import type { PlainElement } from "./plain";
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElementNode } from "@my-react/react/type";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 /**

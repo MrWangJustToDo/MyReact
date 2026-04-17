@@ -4,7 +4,7 @@ import { createClientManifestResolver } from "./manifest";
 import { ServerComponentDispatch } from "./server-component-dispatch";
 
 import type { RenderToFlightStreamOptions, ModuleResolver } from "../shared/types";
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElementNode } from "@my-react/react/type";
 
 /**
  * Default module resolver when none is provided

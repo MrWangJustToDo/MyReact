@@ -60,7 +60,7 @@ export class AnimationController {
    * Sets the target scroll position for a region.
    */
   setTargetScrollTop(regionId: string | number, scrollTop: number) {
-    this.targetScrollTops.set(regionId, scrollTop);
+    this.targetScrollTops.set(regionId, Math.round(scrollTop));
   }
 
   /**

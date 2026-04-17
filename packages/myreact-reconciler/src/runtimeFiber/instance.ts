@@ -7,7 +7,15 @@ import { hmrRevert, hmrUpdate } from "./hmr";
 import { triggerUpdateOnFiber } from "./trigger";
 
 import type { MyReactFiberNodeDev } from "./interface";
-import type { MyReactElement, MyReactElementNode, MyReactElementType, MyReactInternalInstance, RenderFiber, RenderHook, UpdateQueue } from "@my-react/react";
+import type {
+  MyReactElement,
+  MyReactElementNode,
+  MyReactElementType,
+  MyReactInternalInstance,
+  RenderFiber,
+  RenderHook,
+  UpdateQueue,
+} from "@my-react/react/type";
 import type { ListTree } from "@my-react/react-shared";
 
 type NativeNode = Record<string, any>;

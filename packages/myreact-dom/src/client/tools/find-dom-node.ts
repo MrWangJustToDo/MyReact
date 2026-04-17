@@ -1,8 +1,8 @@
-import { Component } from "@my-react/react";
+import { Component } from "@my-react/react/type";
 import { getInstanceOwnerFiber, type MyReactFiberContainer, type MyReactFiberNode } from "@my-react/react-reconciler";
 import { STATE_TYPE, include } from "@my-react/react-shared";
 
-import type { MyReactInternalInstance } from "@my-react/react";
+import type { MyReactInternalInstance } from "@my-react/react/type";
 import type { DomElement } from "@my-react-dom-shared";
 
 /**

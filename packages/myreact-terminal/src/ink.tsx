@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { LegacyRoot } from "@my-react/react-reconciler-compact/constants";
+import { ConcurrentRoot } from "@my-react/react-reconciler-compact/constants";
 import ansiEscapes from "ansi-escapes";
 import autoBind from "auto-bind";
 import { throttle } from "es-toolkit/compat";
@@ -22,14 +22,11 @@ import { setEnableToStyledCharactersCache, clearToStyledCharactersCache } from "
 import { type Region } from "./output.js";
 import { Reconciler } from "./reconciler.js";
 import render from "./renderer.js";
-import { measureAndExtractObservers } from "./resize-observer.js";
+import { measureAndExtractObservers, type default as ResizeObserver, type ResizeObserverEntry } from "./resize-observer.js"; // Removed unused imports
 import { calculateScroll } from "./scroll.js";
 import { Selection } from "./selection.js";
 import { type StyledLine } from "./styled-line.js";
 import TerminalBuffer from "./terminal-buffer.js";
-
-import type { ResizeObserverEntry } from "./resize-observer.js";
-import type ResizeObserver from "./resize-observer.js";
 
 const noop = () => {};
 
@@ -235,7 +232,7 @@ export default class Ink {
 
     this.container = Reconciler.createContainer(
       this.rootNode,
-      LegacyRoot,
+      ConcurrentRoot,
       null,
       false,
       null,
@@ -252,6 +249,9 @@ export default class Ink {
 
     if (process.env["DEV"] === "true") {
       const injectIntoDevTools = async (url: string, config: any) => {
+        const { preloadDevToolRuntimeIfNeed } = await import("@my-react/react-reconciler-compact/preload");
+        // load devtool runtime
+        await preloadDevToolRuntimeIfNeed();
         const { io } = await import("socket.io-client");
         globalThis.io = io;
         const typedReconciler = Reconciler as typeof Reconciler & {
@@ -366,6 +366,7 @@ export default class Ink {
       selection: this.selection,
       selectionStyle: this.options.selectionStyle,
       skipScrollbars: Boolean(this.terminalBuffer),
+      terminalBuffer: Boolean(this.terminalBuffer),
     });
 
     if (this.terminalBuffer && root) {
@@ -732,6 +733,10 @@ export default class Ink {
   }
 
   private markAllTextNodesDirty(node: dom.DOMElement) {
+    if (node.cachedRender) {
+      return;
+    }
+
     if (node.nodeName === "ink-text" && node.yogaNode) {
       node.yogaNode.markDirty();
     }

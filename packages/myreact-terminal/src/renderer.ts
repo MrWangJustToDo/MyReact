@@ -228,9 +228,10 @@ const renderer = (
     selectionStyle?: (line: StyledLine, index: number) => void;
     skipScrollbars?: boolean;
     trackSelection?: boolean;
+    terminalBuffer?: boolean;
   }
 ): Result => {
-  const { isScreenReaderEnabled, selection, selectionStyle, skipScrollbars, trackSelection } = options;
+  const { isScreenReaderEnabled, selection, selectionStyle, skipScrollbars, trackSelection, terminalBuffer } = options;
 
   const callBeforeRender = (n: DOMElement) => {
     if (typeof n.internal_onBeforeRender === "function") {
@@ -308,14 +309,81 @@ const renderer = (
 
     const rootRegion = output.get();
 
-    const { output: generatedOutput, height: outputHeight, styledOutput, cursorPosition } = regionToOutput(rootRegion, { skipScrollbars });
+    let generatedOutput = "";
+    let outputHeight = 0;
+    let styledOutput: StyledLine[] = [];
+    let cursorPosition: { row: number; col: number } | undefined;
+
+    if (terminalBuffer) {
+      // Find cursor position efficiently by traversing the region tree
+      const findCursor = (
+        region: Region,
+        offsetX: number,
+        offsetY: number,
+        clip: { x: number; y: number; w: number; h: number }
+      ): { row: number; col: number } | undefined => {
+        if (!region.hasCursor) {
+          return undefined;
+        }
+
+        const absX = region.x + offsetX;
+        const absY = region.y + offsetY;
+
+        const myClipX = Math.max(clip.x, absX);
+        const myClipY = Math.max(clip.y, absY);
+        const myClipW = Math.min(clip.x + clip.w, absX + region.width) - myClipX;
+        const myClipH = Math.min(clip.y + clip.h, absY + region.height) - myClipY;
+
+        if (myClipW <= 0 || myClipH <= 0) {
+          return undefined;
+        }
+
+        const scrollTop = region.scrollTop ?? 0;
+        const scrollLeft = region.scrollLeft ?? 0;
+
+        if (region.cursorPosition) {
+          const cursorX = absX + region.cursorPosition.col - scrollLeft;
+          const cursorY = absY + region.cursorPosition.row - scrollTop;
+
+          if (cursorX >= myClipX && cursorX <= myClipX + myClipW && cursorY >= myClipY && cursorY <= myClipY + myClipH) {
+            return { row: cursorY, col: cursorX };
+          }
+        }
+
+        const childClip = { x: myClipX, y: myClipY, w: myClipW, h: myClipH };
+        const childOffsetX = absX - scrollLeft;
+        const childOffsetY = absY - scrollTop;
+
+        for (const child of region.children) {
+          const found = findCursor(child, childOffsetX, childOffsetY, childClip);
+          if (found) {
+            return found;
+          }
+        }
+
+        return undefined;
+      };
+
+      cursorPosition = findCursor(rootRegion, 0, 0, {
+        x: 0,
+        y: 0,
+        w: rootRegion.width,
+        h: rootRegion.height,
+      });
+    } else {
+      const result = regionToOutput(rootRegion, { skipScrollbars });
+      generatedOutput = result.output;
+      outputHeight = result.height;
+      styledOutput = result.styledOutput;
+      cursorPosition = result.cursorPosition;
+    }
 
     return {
       output: generatedOutput,
       outputHeight,
       // Newline at the end is needed, because static output doesn't have one, so
       // interactive output will override last line of static output.
-      staticOutput: staticOutput ? `${regionToOutput(staticOutput.get()).output}\n` : "",
+      staticOutput: staticOutput && !terminalBuffer ? `${regionToOutput(staticOutput.get()).output}\n` : "",
       styledOutput,
       cursorPosition,
       stickyHeaders: [],

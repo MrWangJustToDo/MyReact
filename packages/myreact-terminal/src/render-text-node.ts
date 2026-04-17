@@ -13,8 +13,8 @@ export const applyPaddingToStyledChars = (node: DOMElement, lines: StyledLine[])
   const yogaNode = node.childNodes[0]?.yogaNode;
 
   if (yogaNode) {
-    const offsetX = yogaNode.getComputedLeft();
-    const offsetY = yogaNode.getComputedTop();
+    const offsetX = Math.round(yogaNode.getComputedLeft());
+    const offsetY = Math.round(yogaNode.getComputedTop());
 
     if (offsetX > 0 || offsetY > 0) {
       const paddedLines: StyledLine[] = [];
@@ -155,8 +155,8 @@ export function handleTextNode(
       // But padding affects the visual cursor index!
       // If we pad, the cursor shifts. Let's do it after, but we need to shift the cursor position by the padding.
       const yogaNode = node.childNodes[0]?.yogaNode;
-      const offsetX = yogaNode?.getComputedLeft() ?? 0;
-      const offsetY = yogaNode?.getComputedTop() ?? 0;
+      const offsetX = Math.round(yogaNode?.getComputedLeft() ?? 0);
+      const offsetY = Math.round(yogaNode?.getComputedTop() ?? 0);
 
       lines = applyPaddingToStyledChars(node, lines);
 
@@ -170,8 +170,8 @@ export function handleTextNode(
       }
     } else {
       const yogaNode = node.childNodes[0]?.yogaNode;
-      const offsetX = yogaNode?.getComputedLeft() ?? 0;
-      const offsetY = yogaNode?.getComputedTop() ?? 0;
+      const offsetX = Math.round(yogaNode?.getComputedLeft() ?? 0);
+      const offsetY = Math.round(yogaNode?.getComputedTop() ?? 0);
 
       const line = StyledLine.empty(offsetX);
       lines = [line];

@@ -1,6 +1,6 @@
 import { initHMR } from "@my-react/react-reconciler";
 
-import type { RenderScheduler } from "@my-react/react";
+import type { RenderScheduler } from "@my-react/react/type";
 import type { CustomRenderDispatch } from "@my-react/react-reconciler";
 
 type DevToolRuntime = (dispatch: CustomRenderDispatch, scheduler: RenderScheduler, hmrRuntime: typeof initHMR) => void;

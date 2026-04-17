@@ -35,6 +35,11 @@
       "require": "./type.js",
       "types": "./type.d.ts"
     },
+    "./preload": {
+      "types": "./preload.d.ts",
+      "require": "./preload.js",
+      "import": "./dist/esm/preload.mjs"
+    },
     "./package.json": "./package.json"
   },
   "buildOptions": [
@@ -57,6 +62,7 @@
     },
     {
       "input": "./src/constants.ts",
+      "pkgName": "constants",
       "output": [
         {
           "dir": "./dist",
@@ -68,6 +74,24 @@
         {
           "dir": "./dist",
           "entryFileNames": "esm/constants.mjs",
+          "format": "esm"
+        }
+      ]
+    },
+    {
+      "input": "./src/preload.ts",
+      "pkgName": "preload",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/preload.js",
+          "format": "cjs",
+          "type": true,
+          "multiple": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/preload.mjs",
           "format": "esm"
         }
       ]

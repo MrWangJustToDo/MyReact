@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__, cloneElement, createElement, isValidElement } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, cloneElement, createElement, isValidElement } from "@my-react/react/type";
 import { isPromise, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
@@ -8,7 +8,7 @@ import { devWarnWithFiber } from "../share";
 import type { SuspenseInstanceField } from "../processSuspense";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { LazyUpdateQueue, MixinMyReactFunctionComponent, lazy } from "@my-react/react";
+import type { LazyUpdateQueue, MixinMyReactFunctionComponent, lazy } from "@my-react/react/type";
 
 const { enableSuspenseRoot, enableDebugFiled } = __my_react_shared__;
 const { currentScheduler } = __my_react_internal__;

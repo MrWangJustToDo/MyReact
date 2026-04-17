@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react/type";
 import { checkIsSameType, CustomRenderDispatch, initialFiberNode, MyReactFiberNode, triggerUpdateOnFiber } from "@my-react/react-reconciler";
 import { include, once, STATE_TYPE } from "@my-react/react-shared";
 
@@ -6,7 +6,7 @@ import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import { prepareDevContainer, unmountComponentAtNode } from "@my-react-dom-client/tools";
 import { autoSetDevHMR, autoSetDevTools, checkRoot, delGlobalDispatch, enableNewEntry, initClient, startRender, wrapperFunc } from "@my-react-dom-shared";
 
-import type { LikeJSX } from "@my-react/react";
+import type { LikeJSX } from "@my-react/react/type";
 
 export type RenderContainer = Element & {
   __fiber__: MyReactFiberNode;

@@ -1,5 +1,5 @@
 import { createFromReadableStream, createFromFetch, encodeReply, createServerReference } from "@lazarv/rsc/client";
-import { __my_react_internal__, createElement, Suspense, use, type MyReactElement } from "@my-react/react";
+import { __my_react_internal__, createElement, Suspense, use, type MyReactElement } from "@my-react/react/type";
 
 import { normalizeRscValue } from "../shared/normalize-rsc";
 
@@ -7,6 +7,7 @@ import { createManifestModuleLoader, createModuleLoader } from "./module-loader"
 
 import type { FlightClientOptions, ModuleLoader } from "../shared/types";
 import type { hydrateRoot } from "@my-react/react-dom/client";
+import type { ReactNode } from "react";
 
 const { cacheLazy } = __my_react_internal__;
 
@@ -150,7 +151,7 @@ export async function createFlightClient(options: FlightClientOptions = {}): Pro
 
     const shell = createElement(Suspense, { fallback: createElement("div", { className: "loading" }, "Loading...") }, createElement(SsrRoot));
 
-    return hydrateRoot(container, shell);
+    return hydrateRoot(container, shell as ReactNode);
   }
 
   /**

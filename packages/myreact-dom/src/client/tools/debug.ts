@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__, cloneElement, isValidElement } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, cloneElement, isValidElement } from "@my-react/react/type";
 import {
   MyReactFiberNode,
   debugWithNode,
@@ -17,7 +17,7 @@ import { latestNoopRender, legacyNoopRender } from "@my-react-dom-noop/mount/ren
 import { PlainElement, ContainerElement, CommentStartElement } from "@my-react-dom-server/api";
 import { enableControlComponent, enableDOMField, enableEventSystem, enableEventTrack, debounce, isServer, enableMoveBefore } from "@my-react-dom-shared";
 
-import type { LikeJSX } from "@my-react/react";
+import type { LikeJSX } from "@my-react/react/type";
 import type { CustomRenderDispatch, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 import type { RenderContainer } from "@my-react-dom-client/mount";
 import type { CommentEndElement, TextElement } from "@my-react-dom-server/api";

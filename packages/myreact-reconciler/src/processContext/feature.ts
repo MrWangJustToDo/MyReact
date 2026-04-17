@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 import { include, isNormalEquals, STATE_TYPE } from "@my-react/react-shared";
 
 import { prepareUpdateAllDependence } from "../dispatchContext";
@@ -7,7 +7,7 @@ import { safeCallWithCurrentFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { createContext, MyReactFunctionComponent } from "@my-react/react";
+import type { createContext, MyReactFunctionComponent } from "@my-react/react/type";
 
 const { currentComponentFiber, MyReactInternalInstance } = __my_react_internal__;
 

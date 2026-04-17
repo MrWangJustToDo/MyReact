@@ -4,7 +4,7 @@ import {
   type MixinMyReactFunctionComponent,
   type MyReactElement,
   type MyReactElementType,
-} from "@my-react/react";
+} from "@my-react/react/type";
 import { include } from "@my-react/react-shared";
 
 import { getElementTypeFromType } from "./element-type";

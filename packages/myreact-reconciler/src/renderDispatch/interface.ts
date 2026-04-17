@@ -2,7 +2,7 @@ import type { PromiseWithState } from "../processPromise";
 import type { MyReactFiberNode, triggerUpdateOnFiber } from "../runtimeFiber";
 // import type { MyReactHookNode } from "../runtimeHook";
 import type { NODE_TYPE } from "../share";
-import type { createContext, MyReactElementNode, RenderHookParams, UpdateQueue, Dispatcher, lazy } from "@my-react/react";
+import type { createContext, MyReactElementNode, RenderHookParams, UpdateQueue, Dispatcher, lazy } from "@my-react/react/type";
 import type { ListTree, UniqueArray } from "@my-react/react-shared";
 
 type RefKey = "typeForRef" | "typeForCreate" | "typeForUpdate" | "typeForAppend" | "typeForNativeNode";

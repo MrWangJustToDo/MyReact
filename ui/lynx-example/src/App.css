@@ -1,0 +1,96 @@
+.Scene {
+  flex: 1;
+  padding: 24px;
+  justify-content: space-between;
+  background: linear-gradient(160deg, #0b1c2c 0%, #19344f 50%, #26425f 100%);
+}
+
+.Scene--sun {
+  background: linear-gradient(160deg, #2e1c0d 0%, #7a3e16 45%, #f0b15a 100%);
+}
+
+.Header {
+  gap: 8px;
+}
+
+.Title {
+  font-size: 34px;
+  font-weight: 800;
+  color: #fef4e6;
+}
+
+.Subtitle {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.Card {
+  padding: 24px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.2);
+  align-items: center;
+}
+
+.Counter {
+  font-size: 48px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.Label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ButtonGroup {
+  flex-direction: row;
+  justify-content: center;
+  gap: 12px;
+}
+
+.Button {
+  padding: 12px 20px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.ButtonText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.InfoCard {
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  gap: 4px;
+}
+
+.InfoTitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.InfoValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #4ade80;
+}
+
+.Footer {
+  align-items: center;
+  padding-bottom: 12px;
+  gap: 4px;
+}
+
+.Hint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}

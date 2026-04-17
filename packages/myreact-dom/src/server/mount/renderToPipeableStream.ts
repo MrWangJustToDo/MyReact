@@ -1,4 +1,4 @@
-import { isValidElement, type LikeJSX } from "@my-react/react";
+import { isValidElement, type LikeJSX } from "@my-react/react/type";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement } from "@my-react-dom-server/api";

@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__, __my_react_internal__ } from "@my-react/react/type";
 import { initialFiberNode, MyReactFiberNode } from "@my-react/react-reconciler";
 
 import { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
@@ -8,7 +8,7 @@ import { autoSetDevHMR, autoSetDevTools, checkRoot, enableNewEntry, initClient, 
 import { onceLog, onceLogConcurrentMode, onceLogLegacyLifeCycleMode, onceLogPerformanceWarn } from "./render";
 
 import type { RenderContainer } from "./render";
-import type { MyReactElement, LikeJSX } from "@my-react/react";
+import type { MyReactElement, LikeJSX } from "@my-react/react/type";
 
 const { currentScheduler } = __my_react_internal__;
 

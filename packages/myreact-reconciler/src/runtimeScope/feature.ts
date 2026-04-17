@@ -1,10 +1,10 @@
-import { createElement } from "@my-react/react";
+import { createElement } from "@my-react/react/type";
 import { Comment, include, ScopeLazy, ScopeSuspense } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElementNode } from "@my-react/react/type";
 
 export const WrapperByLazyScope = (children: MyReactElementNode) => createElement(ScopeLazy, null, children);
 

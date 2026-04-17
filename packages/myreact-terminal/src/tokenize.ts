@@ -67,29 +67,7 @@ export function getEndCode(code: string): string {
   return ansiStyles.reset.open;
 }
 
-export function isIntensityCode(code: AnsiCode): boolean {
-  return code.code === ansiStyles.bold.open || code.code === ansiStyles.dim.open;
-}
-
 // --- tokenize.ts ---
-export type AnsiCode = {
-  type: "ansi";
-  code: string;
-  endCode: string;
-};
-
-export type ControlCode = {
-  type: "control";
-  code: string;
-};
-
-export type Char = {
-  type: "char";
-  value: string;
-  fullWidth: boolean;
-};
-
-export type Token = AnsiCode | ControlCode | Char;
 
 function findOSCTerminatorIndex(string: string, startIndex: number): number {
   for (let i = startIndex; i < string.length; i++) {
@@ -175,15 +153,113 @@ function splitCompoundSGRSequences(code: string): string[] {
   return ret.map((part) => `\u001B[${part}m`);
 }
 
-export function tokenize(str: string, endChar: number = Number.POSITIVE_INFINITY): Token[] {
-  const ret: Token[] = [];
+export function buildStyledLine(str: string, endChar: number = Number.POSITIVE_INFINITY): StyledLine {
+  const line = new StyledLine();
   let visible = 0;
   let i = 0;
 
+  let formatFlags = 0;
+  let fgColor: string | undefined;
+  let bgColor: string | undefined;
+  let link: string | undefined;
+
+  const processAnsiCode = (code: string) => {
+    switch (code) {
+      case ansiStyles.reset.open: {
+        formatFlags = 0;
+        fgColor = undefined;
+        bgColor = undefined;
+        link = undefined;
+        break;
+      }
+
+      case ansiStyles.bold.open: {
+        formatFlags |= BOLD_MASK;
+        break;
+      }
+
+      case ansiStyles.dim.open: {
+        formatFlags |= DIM_MASK;
+        break;
+      }
+
+      case ansiStyles.italic.open: {
+        formatFlags |= ITALIC_MASK;
+        break;
+      }
+
+      case ansiStyles.underline.open: {
+        formatFlags |= UNDERLINE_MASK;
+        break;
+      }
+
+      case ansiStyles.strikethrough.open: {
+        formatFlags |= STRIKETHROUGH_MASK;
+        break;
+      }
+
+      case ansiStyles.inverse.open: {
+        formatFlags |= INVERSE_MASK;
+        break;
+      }
+
+      case ansiStyles.hidden.open: {
+        formatFlags |= HIDDEN_MASK;
+        break;
+      }
+
+      case ansiStyles.bold.close:
+      case ansiStyles.dim.close: {
+        formatFlags &= ~BOLD_MASK;
+        formatFlags &= ~DIM_MASK;
+        break;
+      }
+
+      case ansiStyles.italic.close: {
+        formatFlags &= ~ITALIC_MASK;
+        break;
+      }
+
+      case ansiStyles.underline.close: {
+        formatFlags &= ~UNDERLINE_MASK;
+        break;
+      }
+
+      case ansiStyles.strikethrough.close: {
+        formatFlags &= ~STRIKETHROUGH_MASK;
+        break;
+      }
+
+      case ansiStyles.inverse.close: {
+        formatFlags &= ~INVERSE_MASK;
+        break;
+      }
+
+      case ansiStyles.hidden.close: {
+        formatFlags &= ~HIDDEN_MASK;
+        break;
+      }
+
+      default: {
+        if (code.startsWith("\u001B[38;") || (code >= "\u001B[30m" && code <= "\u001B[37m") || (code >= "\u001B[90m" && code <= "\u001B[97m")) {
+          fgColor = code;
+        } else if (code.startsWith("\u001B[48;") || (code >= "\u001B[40m" && code <= "\u001B[47m") || (code >= "\u001B[100m" && code <= "\u001B[107m")) {
+          bgColor = code;
+        } else if (code === ansiStyles.color.close) {
+          fgColor = undefined;
+        } else if (code === ansiStyles.bgColor.close) {
+          bgColor = undefined;
+        } else if (code.startsWith(linkCodePrefix)) {
+          link = code;
+        } else if (code === linkEndCode || code === linkEndCodeST || code === linkEndCodeC1ST) {
+          link = undefined;
+        }
+      }
+    }
+  };
+
   while (i < str.length) {
-    // Determine the next code point / surrogate pair string
     const codePoint = str.codePointAt(i)!;
-    // If it's a surrogate pair, it will be 2 characters long
     const charLength = codePoint > 0xff_ff ? 2 : 1;
     const charStr = str.slice(i, i + charLength);
 
@@ -194,30 +270,16 @@ export function tokenize(str: string, endChar: number = Number.POSITIVE_INFINITY
       if (nextCodePoint === CC_OSC) {
         code = parseLinkCode(str, i);
         if (code) {
-          ret.push({
-            type: "ansi",
-            code,
-            endCode: getEndCode(code),
-          });
+          processAnsiCode(code);
         } else {
           code = parseOSCSequence(str, i);
-          if (code) {
-            ret.push({
-              type: "control",
-              code,
-            });
-          }
         }
       } else if (nextCodePoint === CC_CSI) {
         code = parseSGRSequence(str, i);
         if (code) {
           const codes = splitCompoundSGRSequences(code);
           for (const individualCode of codes) {
-            ret.push({
-              type: "ansi",
-              code: individualCode,
-              endCode: getEndCode(individualCode),
-            });
+            processAnsiCode(individualCode);
           }
         }
       }
@@ -228,29 +290,24 @@ export function tokenize(str: string, endChar: number = Number.POSITIVE_INFINITY
       }
     }
 
-    // Variation Selector 16 forces emoji presentation (2 columns wide)
     const isVariationSelector = charStr.includes("\uFE0F");
-    // Regional indicator pairs form flag emoji (2 columns wide)
     const isRegionalIndicator = codePoint >= 0x1_f1_e6 && codePoint <= 0x1_f1_ff;
-
     const fullWidth = isVariationSelector || isRegionalIndicator || isFullwidthCodePoint(codePoint);
 
-    ret.push({
-      type: "char",
-      value: charStr,
-      fullWidth,
-    });
+    let finalFlags = formatFlags;
+    if (fullWidth) {
+      finalFlags |= FULL_WIDTH_MASK;
+    }
+
+    line.pushChar(charStr, finalFlags, fgColor, bgColor, link);
 
     visible += fullWidth ? 2 : 1;
-
-    if (visible >= endChar) {
-      break;
-    }
+    if (visible >= endChar) break;
 
     i += charLength;
   }
 
-  return ret;
+  return line;
 }
 
 export const BOLD_MASK = 1;
@@ -261,122 +318,6 @@ export const STRIKETHROUGH_MASK = 1 << 4;
 export const INVERSE_MASK = 1 << 5;
 export const HIDDEN_MASK = 1 << 6;
 export const FULL_WIDTH_MASK = 1 << 7;
-
-export function styledLineFromTokens(tokens: Token[]): StyledLine {
-  const line = new StyledLine();
-
-  let formatFlags = 0;
-  let fgColor: string | undefined;
-  let bgColor: string | undefined;
-  let link: string | undefined;
-
-  for (const token of tokens) {
-    if (token.type === "ansi") {
-      const { code } = token;
-      switch (code) {
-        case ansiStyles.reset.open: {
-          formatFlags = 0;
-          fgColor = undefined;
-          bgColor = undefined;
-          link = undefined;
-          break;
-        }
-
-        case ansiStyles.bold.open: {
-          formatFlags |= BOLD_MASK;
-          break;
-        }
-
-        case ansiStyles.dim.open: {
-          formatFlags |= DIM_MASK;
-          break;
-        }
-
-        case ansiStyles.italic.open: {
-          formatFlags |= ITALIC_MASK;
-          break;
-        }
-
-        case ansiStyles.underline.open: {
-          formatFlags |= UNDERLINE_MASK;
-          break;
-        }
-
-        case ansiStyles.strikethrough.open: {
-          formatFlags |= STRIKETHROUGH_MASK;
-          break;
-        }
-
-        case ansiStyles.inverse.open: {
-          formatFlags |= INVERSE_MASK;
-          break;
-        }
-
-        case ansiStyles.hidden.open: {
-          formatFlags |= HIDDEN_MASK;
-          break;
-        }
-
-        case ansiStyles.bold.close:
-        case ansiStyles.dim.close: {
-          formatFlags &= ~BOLD_MASK;
-          formatFlags &= ~DIM_MASK;
-          break;
-        }
-
-        case ansiStyles.italic.close: {
-          formatFlags &= ~ITALIC_MASK;
-          break;
-        }
-
-        case ansiStyles.underline.close: {
-          formatFlags &= ~UNDERLINE_MASK;
-          break;
-        }
-
-        case ansiStyles.strikethrough.close: {
-          formatFlags &= ~STRIKETHROUGH_MASK;
-          break;
-        }
-
-        case ansiStyles.inverse.close: {
-          formatFlags &= ~INVERSE_MASK;
-          break;
-        }
-
-        case ansiStyles.hidden.close: {
-          formatFlags &= ~HIDDEN_MASK;
-          break;
-        }
-
-        default: {
-          if (code.startsWith("\u001B[38;") || (code >= "\u001B[30m" && code <= "\u001B[37m") || (code >= "\u001B[90m" && code <= "\u001B[97m")) {
-            fgColor = code;
-          } else if (code.startsWith("\u001B[48;") || (code >= "\u001B[40m" && code <= "\u001B[47m") || (code >= "\u001B[100m" && code <= "\u001B[107m")) {
-            bgColor = code;
-          } else if (code === ansiStyles.color.close) {
-            fgColor = undefined;
-          } else if (code === ansiStyles.bgColor.close) {
-            bgColor = undefined;
-          } else if (code.startsWith(linkCodePrefix)) {
-            link = code;
-          } else if (code === linkEndCode || code === linkEndCodeST || code === linkEndCodeC1ST) {
-            link = undefined;
-          }
-        }
-      }
-    } else if (token.type === "char") {
-      let finalFlags = formatFlags;
-      if (token.fullWidth) {
-        finalFlags |= FULL_WIDTH_MASK;
-      }
-
-      line.pushChar(token.value, finalFlags, fgColor, bgColor, link);
-    }
-  }
-
-  return line;
-}
 
 export function styledLineToString(line: StyledLine): string {
   let ret = "";

@@ -3,7 +3,7 @@ import { include, STATE_TYPE } from "@my-react/react-shared";
 import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
+import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react/type";
 
 export const isErrorBoundariesInstance = (instance: MyReactComponent, Component: MixinMyReactClassComponent) => {
   return typeof instance.componentDidCatch === "function" || typeof Component.getDerivedStateFromError === "function";

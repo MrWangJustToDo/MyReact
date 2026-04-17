@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 import { STATE_TYPE, include, remove } from "@my-react/react-shared";
 
 import { type CustomRenderDispatch } from "../renderDispatch";

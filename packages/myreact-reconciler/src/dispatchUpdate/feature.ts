@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react/type";
 import { STATE_TYPE, exclude } from "@my-react/react-shared";
 
 import { addEffectCallback, effect, flushEffectCallback, insertionEffect, layoutEffect } from "../dispatchEffect";

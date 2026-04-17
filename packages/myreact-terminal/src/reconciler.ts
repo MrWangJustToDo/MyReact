@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
+import { createContext, type Props } from "@my-react/react/type";
 import createReconciler from "@my-react/react-reconciler-compact";
 import { DefaultEventPriority, NoEventPriority } from "@my-react/react-reconciler-compact/constants";
 import Yoga from "yoga-layout";
@@ -12,12 +13,14 @@ import {
   setTextNodeValue,
   createNode,
   setAttribute,
+  markNodeAsDirty,
   type DOMNodeAttribute,
   type TextNode,
   type ElementNames,
   type DOMElement,
   type DOMNode,
 } from "./dom.js";
+import { type Region } from "./output.js";
 import { type OutputTransformer } from "./render-node-to-output.js";
 import applyStyles, { type Styles } from "./styles.js";
 
@@ -85,8 +88,6 @@ const cleanupNodeTree = (node?: DOMNode): void => {
 
   node.parentNode = undefined;
 };
-
-type Props = Record<string, unknown>;
 
 type HostContext = {
   isInsideText: boolean;
@@ -209,6 +210,11 @@ export const Reconciler = createReconciler<
         continue;
       }
 
+      if (key === "cachedRender") {
+        node.cachedRender = value as Region;
+        continue;
+      }
+
       if (key === "opaque") {
         node.internal_opaque = value as boolean;
         continue;
@@ -248,16 +254,7 @@ export const Reconciler = createReconciler<
   appendInitialChild: appendChildNode,
   appendChild: appendChildNode,
   insertBefore: insertBeforeNode,
-  finalizeInitialChildren(node, _type, _props, rootNode) {
-    if (node.internal_static) {
-      rootNode.isStaticDirty = true;
-
-      // Save reference to <Static> node to skip traversal of entire
-      // node tree to find it
-      rootNode.staticNode = node;
-      // if the staticNode is removed, but current reference is still there
-    }
-
+  finalizeInitialChildren() {
     return false;
   },
   isPrimaryRenderer: true,
@@ -306,6 +303,7 @@ export const Reconciler = createReconciler<
 
         if (key === "internal_transform") {
           node.internal_transform = value as OutputTransformer;
+          markNodeAsDirty(node);
           continue;
         }
 
@@ -336,6 +334,11 @@ export const Reconciler = createReconciler<
 
         if (key === "internal_static") {
           node.internal_static = true;
+          continue;
+        }
+
+        if (key === "cachedRender") {
+          node.cachedRender = value as Region;
           continue;
         }
 
@@ -381,6 +384,7 @@ export const Reconciler = createReconciler<
 
   NotPendingTransition: undefined,
 
+  HostTransitionContext: createContext(null) as any,
   resetFormInstance() {},
   requestPostPaintCallback() {},
   shouldAttemptEagerTransition() {

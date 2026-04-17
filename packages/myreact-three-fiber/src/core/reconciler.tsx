@@ -4,14 +4,8 @@
 /* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/no-non-null-asserted-optional-chain */
 import Reconciler from "@my-react/react-reconciler-compact";
+import { ContinuousEventPriority, DiscreteEventPriority, DefaultEventPriority, NoEventPriority } from "@my-react/react-reconciler-compact/constants";
 import * as React from "react";
-// import {
-//   // NoEventPriority,
-//   ContinuousEventPriority,
-//   DiscreteEventPriority,
-//   DefaultEventPriority,
-// } from "react-reconciler/constants";
-// import { unstable_IdlePriority as idlePriority, unstable_scheduleCallback as scheduleCallback } from "scheduler";
 
 import { removeInteractivity, type EventHandlers } from "./events";
 import { diffProps, applyProps, invalidateInstance, attach, detach, prepare, isObject3D, findInitialRoot } from "./utils";
@@ -128,8 +122,6 @@ function createReconciler<
 
   return reconciler as any;
 }
-
-const NoEventPriority = 0;
 
 export interface Root {
   fiber: ReactReconciler.FiberRoot;
@@ -644,19 +636,16 @@ export const reconciler = /* @__PURE__ */ createReconciler<
       case "pointercancel":
       case "pointerdown":
       case "pointerup":
-        // return DiscreteEventPriority;
-        return 1;
+        return DiscreteEventPriority;
       case "pointermove":
       case "pointerout":
       case "pointerover":
       case "pointerenter":
       case "pointerleave":
       case "wheel":
-        return 1;
-      // return ContinuousEventPriority;
+        return ContinuousEventPriority;
       default:
-        // return DefaultEventPriority;
-        return 1;
+        return DefaultEventPriority;
     }
   },
   resetFormInstance() {},

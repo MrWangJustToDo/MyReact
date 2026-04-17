@@ -36,6 +36,7 @@ export namespace JSX {
 
   interface IntrinsicAttributes extends React.Attributes {}
 
+  // @ts-ignore
   interface IntrinsicElements extends React.JSX.IntrinsicElements, ExtendedIntrinsicElements<OpenTUIComponents> {
     box: BoxProps;
     text: TextProps;

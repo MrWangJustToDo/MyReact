@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 import {
   CustomRenderDispatch,
   NODE_TYPE,
@@ -24,7 +24,7 @@ import { initialMap, unmountMap } from "./dispatch-map";
 import { ReconcilerDispatchMount } from "./dispatch-mount";
 import { ReconcilerDispatchUpdate } from "./dispatch-update";
 
-import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
+import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react/type";
 import type { MyReactFiberRoot, MyReactFiberNode, HMR } from "@my-react/react-reconciler";
 import type { ListTree } from "@my-react/react-shared";
 

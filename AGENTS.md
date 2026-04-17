@@ -134,10 +134,6 @@ export const useState = <T>(initial: T | (() => T)) => {
 
 Each package has `buildOptions` in `package.json` for Rollup. Build scripts in `/scripts/`.
 
-### Pre-commit Hook
-
-Runs `clean:type` via Husky before commits.
-
 ## Tips for Agents
 
 1. Use **pnpm** for all package operations

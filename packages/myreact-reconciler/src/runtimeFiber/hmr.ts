@@ -1,4 +1,4 @@
-import { __my_react_internal__, createElement } from "@my-react/react";
+import { __my_react_internal__, createElement } from "@my-react/react/type";
 import { STATE_TYPE, UpdateQueueType, include, merge } from "@my-react/react-shared";
 
 import { triggerRevert } from "../renderUpdate";
@@ -7,7 +7,7 @@ import { getCurrentDispatchFromFiber, safeCallWithCurrentFiber, setRefreshTypeMa
 import { clearFiberNode } from "./clear";
 
 import type { MyReactFiberNode } from "./instance";
-import type { HMRUpdateQueue, MyReactComponentType } from "@my-react/react";
+import type { HMRUpdateQueue, MyReactComponentType } from "@my-react/react/type";
 
 const { currentScheduler } = __my_react_internal__;
 

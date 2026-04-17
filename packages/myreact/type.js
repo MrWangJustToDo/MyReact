@@ -1,1 +1,1 @@
-module.exports = require('./index');
+module.exports = require('@my-react/react');

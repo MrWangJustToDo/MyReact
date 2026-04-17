@@ -1,4 +1,4 @@
-import { __my_react_shared__, createElement, isValidElement } from "@my-react/react";
+import { __my_react_shared__, createElement, isValidElement } from "@my-react/react/type";
 import { Fragment, ListTree, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { createFiberNode, updateFiberNode } from "../runtimeFiber";
@@ -6,7 +6,7 @@ import { checkIsSameType, NODE_TYPE } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNodeDev, MyReactFiberNode } from "../runtimeFiber";
-import type { MyReactElementNode, MaybeArrayMyReactElementNode, ArrayMyReactElementChildren } from "@my-react/react";
+import type { MyReactElementNode, MaybeArrayMyReactElementNode, ArrayMyReactElementChildren } from "@my-react/react/type";
 
 const { enableDebugFiled } = __my_react_shared__;
 

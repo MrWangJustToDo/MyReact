@@ -5,7 +5,17 @@ const reactCompiler = require("eslint-plugin-react-compiler");
 module.exports = [
   // Global ignores
   {
-    ignores: ["dist", "dev", "lib", "__tests__", "bundle", "ui/vite-example", "ui/remix-example/postcss.config.cjs", "ui/remix-example/vite.config.ts"],
+    ignores: [
+      "dist",
+      "dev",
+      "lib",
+      "__tests__",
+      "bundle",
+      "ui/vite-example",
+      "ui/remix-example/postcss.config.cjs",
+      "ui/remix-example/vite.config.ts",
+      "packages/myreact-lynx/client",
+    ],
   },
 
   // Base config for all files

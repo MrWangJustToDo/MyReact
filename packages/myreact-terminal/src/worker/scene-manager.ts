@@ -58,22 +58,26 @@ export class SceneManager {
 
       if (!region) {
         // Initialize new region
-        region = {
+        const newRegion: Region = {
           id: update.id,
           selectableSpans: [],
           x: 0,
           y: 0,
           width: 0,
           height: 0,
+          bufferWidth: 0,
           lines: [],
           styledOutput: [],
           isScrollable: false,
           stickyHeaders: [],
           children: [],
         };
+        region = newRegion;
         this.regions.set(update.id, region);
         this.regionWasAtEnd.set(update.id, true);
       }
+
+      const oldOffsetY = region.linesOffsetY ?? 0;
 
       // Apply properties
       const r = region;
@@ -97,14 +101,14 @@ export class SceneManager {
       }
 
       // Apply line updates
-      if (update.lines) {
-        const mutableLines = r.lines as StyledLine[];
-        while (mutableLines.length < update.lines.totalLength) {
-          mutableLines.push(new StyledLine());
-        }
+      if (update.linesOffsetY !== undefined) {
+        r.linesOffsetY = update.linesOffsetY;
+      }
 
-        if (mutableLines.length > update.lines.totalLength) {
-          mutableLines.length = update.lines.totalLength;
+      if (update.lines) {
+        const sparseLines: StyledLine[] = [];
+        for (let i = 0; i < r.lines.length; i++) {
+          sparseLines[oldOffsetY + i] = r.lines[i]!;
         }
 
         for (const chunk of update.lines.updates) {
@@ -112,9 +116,22 @@ export class SceneManager {
           const chunkLines = deserializer.deserialize();
 
           for (const [i, line] of chunkLines.entries()) {
-            mutableLines[chunk.start + i] = line!;
+            if (line && line.length > 0) {
+              sparseLines[chunk.start + i] = line;
+            } else {
+              sparseLines[chunk.start + i] = undefined as unknown as StyledLine;
+            }
           }
         }
+
+        const newOffsetY = r.linesOffsetY ?? 0;
+        const newLines: StyledLine[] = [];
+        const newLength = update.lines.totalLength ?? 0;
+        for (let i = 0; i < newLength; i++) {
+          newLines.push(sparseLines[newOffsetY + i] || new StyledLine());
+        }
+
+        (r.lines as StyledLine[]) = newLines;
       }
     }
 

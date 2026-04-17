@@ -1,7 +1,7 @@
 import { NODE_TYPE, type MyReactFiberNode } from "@my-react/react-reconciler";
 import { include } from "@my-react/react-shared";
 
-import { isHTMLTag, isSVGTag } from "./elementTag";
+import { isHTMLTag, isSVGTag } from "./element-tag";
 import { logOnce } from "./log";
 
 /**

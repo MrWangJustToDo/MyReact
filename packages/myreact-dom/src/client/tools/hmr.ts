@@ -1,4 +1,4 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react/type";
 import { initHMR } from "@my-react/react-reconciler";
 
 import { isServer } from "@my-react-dom-shared";

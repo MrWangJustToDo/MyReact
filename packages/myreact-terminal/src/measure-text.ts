@@ -3,7 +3,7 @@ import stringWidth from "string-width";
 import { DataLimitedLruMap } from "./data-limited-lru-map.js";
 import { type DOMNode } from "./dom.js";
 import { StyledLine } from "./styled-line.js";
-import { tokenize, styledLineFromTokens } from "./tokenize.js";
+import { buildStyledLine } from "./tokenize.js";
 
 export type StringWidth = (text: string) => number;
 
@@ -66,8 +66,7 @@ export function toStyledCharacters(text: string): StyledLine {
     }
   }
 
-  const tokens = tokenize(text);
-  const characters = styledLineFromTokens(tokens);
+  const characters = buildStyledLine(text);
   const combinedLine = new StyledLine();
 
   for (let i = 0; i < characters.length; i++) {
@@ -181,6 +180,13 @@ export function styledCharsWidth(line: StyledLine): number {
 }
 
 export function inkCharacterWidth(text: string): number {
+  if (text.length === 1) {
+    const code = text.charCodeAt(0);
+    if (code >= 32 && code < 127) {
+      return 1;
+    }
+  }
+
   const width = widthCache.get(text);
   if (width !== undefined) {
     return width;

@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react/type";
 import { ListTree, STATE_TYPE, UpdateQueueType, exclude, include } from "@my-react/react-shared";
 
 import { type CustomRenderDispatch } from "../renderDispatch";
@@ -7,7 +7,7 @@ import { getInstanceOwnerFiber, initInstance, setOwnerForInstance, setSubscribeF
 import { enableDebugUpdateQueue, NODE_TYPE, safeCallWithCurrentFiber } from "../share";
 
 import type { UpdateState } from "../processQueue";
-import type { createContext, UpdateQueue } from "@my-react/react";
+import type { createContext, UpdateQueue } from "@my-react/react/type";
 
 const { enableDebugFiled } = __my_react_shared__;
 

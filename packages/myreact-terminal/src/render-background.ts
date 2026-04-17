@@ -9,8 +9,8 @@ const renderBackground = (x: number, y: number, node: DOMNode, output: Output): 
     return;
   }
 
-  const width = node.yogaNode!.getComputedWidth();
-  const height = node.yogaNode!.getComputedHeight();
+  const width = Math.round(node.yogaNode!.getComputedWidth());
+  const height = Math.round(node.yogaNode!.getComputedHeight());
 
   // Calculate the actual content area considering borders
   const leftBorderWidth = node.style.borderStyle && node.style.borderLeft !== false ? 1 : 0;

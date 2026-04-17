@@ -1,71 +1,11 @@
 import alias from "@rollup/plugin-alias";
 import { spawnSync } from "child_process";
-import { writeFile } from "fs/promises";
-import { resolve } from "path";
 import { rollupBuild } from "project-tool/rollup";
 
 const external = (id: string) =>
   id.includes("@my-react/") ||
   (id.includes("node_modules") && !id.includes("tslib")) ||
   (!id.startsWith(".") && !id.startsWith("/") && !id.startsWith("\0") && !id.includes("tslib"));
-
-const writeType = async (packageName: string) => {
-  if (packageName === "myreact") {
-    const indexPath = resolve(process.cwd(), "packages", packageName, "index.d.ts");
-    await writeFile(
-      indexPath,
-      `export * from "./dist/types";
-`
-    );
-    const typePath = resolve(process.cwd(), "packages", packageName, "types.d.ts");
-    await writeFile(
-      typePath,
-      `export * from "./dist/types/index";
-`
-    );
-    const jsxPath = resolve(process.cwd(), "packages", packageName, "jsx-runtime.d.ts");
-    await writeFile(
-      jsxPath,
-      `import { jsx, jsxs, Fragment } from "react/jsx-runtime";
-
-export { jsx, jsxs, Fragment };
-`
-    );
-    const jsxDevPath = resolve(process.cwd(), "packages", packageName, "jsx-dev-runtime.d.ts");
-    await writeFile(
-      jsxDevPath,
-      `import { jsxDEV, Fragment } from "react/jsx-dev-runtime";
-
-export { jsxDEV, Fragment };
-`
-    );
-  } else if (packageName === "myreact-dom") {
-    const indexPath = resolve(process.cwd(), "packages", packageName, "index.d.ts");
-    await writeFile(
-      indexPath,
-      `export * from "./dist/types";
-`
-    );
-    const typePath = resolve(process.cwd(), "packages", packageName, "types.d.ts");
-    await writeFile(
-      typePath,
-      `export * from "./dist/types/index";
-`
-    );
-    const clientPath = resolve(process.cwd(), "packages", packageName, "client.d.ts");
-    await writeFile(
-      clientPath,
-      `export * from "./dist/types/client";
-`
-    );
-    const serverPath = resolve(process.cwd(), "packages", packageName, "server.d.ts");
-    await writeFile(
-      serverPath,
-      `export * from "./dist/types/server";
-`
-    );
-  }
-};
 
 export const externalReact = (id: string) =>
   id.endsWith("@my-react/react") ||
@@ -82,7 +22,6 @@ export const externalReactLib = (id: string) =>
 const myreactShared = () => rollupBuild({ packageName: "myreact-shared", packageScope: "packages", external: externalReact });
 const myreact = async () => {
   await rollupBuild({ packageName: "myreact", packageScope: "packages", external: externalReact });
-  await writeType("myreact");
   await rollupBuild({ packageName: "myreact-jsx", packageScope: "packages", external: externalReact });
 };
 const myreactReconciler = async () => {
@@ -91,7 +30,6 @@ const myreactReconciler = async () => {
 };
 const myreactDom = async () => {
   await rollupBuild({ packageName: "myreact-dom", packageScope: "packages", external: externalReact });
-  await writeType("myreact-dom");
 };
 const myreactThird = async () => {
   await rollupBuild({
@@ -149,26 +87,16 @@ const myreactServer = () =>
     packageName: "myreact-server",
     packageScope: "packages",
     external: externalReact,
-    // plugins: {
-    //   multipleDevUMD({ defaultPlugins }) {
-    //     return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
-    //   },
-    //   multipleProdUMD({ defaultPlugins }) {
-    //     return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
-    //   },
-    //   multipleDevOther({ defaultPlugins }) {
-    //     return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
-    //   },
-    //   multipleProdOther({ defaultPlugins }) {
-    //     return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
-    //   },
-    // },
   });
 const myreactDev = async () => {
   await rollupBuild({ packageName: "myreact-refresh", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-vite", packageScope: "packages", external: externalReact });
   await rollupBuild({ packageName: "myreact-refresh-tools", packageScope: "packages", external: externalReact });
   spawnSync("cd packages/myreact-rspack && pnpm build", { shell: true, stdio: "inherit" });
+};
+
+const myreactLynx = () => {
+  spawnSync("cd packages/myreact-lynx && pnpm build", { shell: true, stdio: "inherit" });
 };
 
 const buildPackages = async () => {
@@ -179,6 +107,7 @@ const buildPackages = async () => {
   await myreactServer();
   await myreactDev();
   await myreactThird();
+  await myreactLynx();
 };
 
 const start = async () => {
@@ -189,3 +118,8 @@ const start = async () => {
 };
 
 start();
+// myreactThird();
+// myreactReconciler();
+// myreact();
+// myreactLynx();
+// myreactDev();

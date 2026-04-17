@@ -12,9 +12,11 @@
   ],
   "license": "MIT",
   "exports": {
+    ".": "./runtime.js",
     "./loader": "./loader.js",
     "./runtime": "./runtime.js",
     "./withNext": "./withNext.js",
+    "./header": "./helper.js",
     "./RefreshWebpackPlugin": "./RefreshWebpackPlugin.js",
     "./react-turbopack": "./react-turbopack.js",
     "./package.json": "./package.json"
@@ -53,6 +55,19 @@
         {
           "dir": "./dist",
           "entryFileNames": "cjs/webpackPlugin.js",
+          "format": "cjs",
+          "type": true,
+          "multiple": true
+        }
+      ]
+    },
+    {
+      "input": "./src/helper.ts",
+      "pkgName": "helper",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/helper.js",
           "format": "cjs",
           "type": true,
           "multiple": true

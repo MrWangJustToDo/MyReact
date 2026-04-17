@@ -1,4 +1,4 @@
-import { createRef } from "@my-react/react";
+import { createRef } from "@my-react/react/type";
 
 export const enableKnownConfigLog = createRef(false);
 

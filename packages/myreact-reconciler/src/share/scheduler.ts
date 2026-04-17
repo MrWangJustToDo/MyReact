@@ -1,11 +1,11 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 import { include, STATE_TYPE } from "@my-react/react-shared";
 
 import { getFiberTree as getFiberTreeImpl } from "./debug";
 import { getCurrentDispatchFromFiber } from "./refresh";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { UpdateQueue, RenderHookParams, createContext } from "@my-react/react";
+import type { UpdateQueue, RenderHookParams, createContext } from "@my-react/react/type";
 
 const { currentRunningFiber, currentScheduler } = __my_react_internal__;
 

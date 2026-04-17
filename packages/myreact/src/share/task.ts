@@ -31,7 +31,7 @@ export const microTask =
     ? function schedulerMicroTask(task: () => void) {
         return Promise.resolve().then(task);
       }
-    : queueMicrotask;
+    : queueMicrotask.bind(globalThis);
 
 const set = new Set<() => void>();
 

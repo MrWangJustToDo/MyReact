@@ -1,4 +1,4 @@
-import { isValidElement, __my_react_shared__ } from "@my-react/react";
+import { isValidElement, __my_react_shared__ } from "@my-react/react/type";
 import {
   Consumer,
   ForwardRef,
@@ -26,7 +26,15 @@ import { enableValidMyReactElement } from "./env";
 import { NODE_TYPE } from "./fiber-type";
 import { getElementFromRefreshIfExist } from "./refresh";
 
-import type { MyReactElementNode, MyReactObjectComponent, forwardRef, memo, MyReactElement, MyReactElementType, MyReactComponentType } from "@my-react/react";
+import type {
+  MyReactElementNode,
+  MyReactObjectComponent,
+  forwardRef,
+  memo,
+  MyReactElement,
+  MyReactElementType,
+  MyReactComponentType,
+} from "@my-react/react/type";
 
 const { enableHMRForDev } = __my_react_shared__;
 

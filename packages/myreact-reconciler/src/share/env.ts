@@ -1,4 +1,4 @@
-import { createRef, __my_react_internal__ } from "@my-react/react";
+import { createRef, __my_react_internal__ } from "@my-react/react/type";
 
 import type { RefreshHandler } from "./refresh";
 import type { CustomRenderDispatch } from "../renderDispatch";

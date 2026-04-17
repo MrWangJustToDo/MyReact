@@ -1,11 +1,11 @@
-import { isValidElement } from "@my-react/react";
+import { isValidElement } from "@my-react/react/type";
 import { MyReactFiberNode, initialFiberNode } from "@my-react/react-reconciler";
 
 import { ContainerElement } from "@my-react-dom-server/api";
 import { LegacyServerStreamDispatch } from "@my-react-dom-server/renderDispatch";
 import { checkRoot, initServer, isServer, startRender, wrapperFunc } from "@my-react-dom-shared";
 
-import type { LikeJSX } from "@my-react/react";
+import type { LikeJSX } from "@my-react/react/type";
 import type { Readable } from "stream";
 
 export const renderToStaticNodeStream = wrapperFunc((element: LikeJSX): Readable => {

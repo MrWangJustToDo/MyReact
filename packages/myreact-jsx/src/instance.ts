@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 import { TYPEKEY, Element, Fragment, Lazy } from "@my-react/react-shared";
 
 import { checkArrayChildrenKey, checkSingleChildrenKey, checkValidElement } from "./check";
@@ -12,7 +12,7 @@ import type {
   MyReactElementType,
   Props,
   MaybeArrayMyReactElementNode,
-} from "@my-react/react";
+} from "@my-react/react/type";
 
 // @ts-ignore
 const createTask = __DEV__ && console.createTask ? console.createTask : () => null;

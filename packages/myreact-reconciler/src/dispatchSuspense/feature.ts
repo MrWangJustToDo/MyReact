@@ -4,7 +4,7 @@ import { NODE_TYPE } from "../share";
 
 import type { PromiseWithState } from "../processPromise";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElementNode } from "@my-react/react/type";
 
 // TODO use Symbol to avoid conflict
 export const defaultReadPromise = (_promise: PromiseWithState<unknown>) => {

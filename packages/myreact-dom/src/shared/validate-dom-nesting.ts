@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { __my_react_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react/type";
 import { getFiberTree } from "@my-react/react-reconciler";
 
 import { logOnce } from "./log";

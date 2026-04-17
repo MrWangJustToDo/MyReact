@@ -5,7 +5,7 @@ import { initialElementMap } from "@my-react-dom-shared";
 
 import { unmount } from "./unmount";
 
-import type { UpdateQueue, RenderHookParams } from "@my-react/react";
+import type { UpdateQueue, RenderHookParams } from "@my-react/react/type";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 export class NoopLegacyRenderDispatch extends CustomRenderDispatch {

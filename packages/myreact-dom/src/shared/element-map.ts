@@ -1,6 +1,6 @@
 import { STATE_TYPE, include } from "@my-react/react-shared";
 
-import { getFiberWithNativeDom } from "./getFiberWithDom";
+import { getFiberWithNativeDom } from "./get-fiber-with-dom";
 
 import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";

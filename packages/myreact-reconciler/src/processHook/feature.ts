@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 import { HOOK_TYPE, ListTree, STATE_TYPE, include } from "@my-react/react-shared";
 
 import { getInstanceFieldByInstance } from "../runtimeGenerate";
@@ -9,7 +9,7 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { InstanceField } from "../runtimeGenerate";
 import type { HookInstanceField, MyReactHookNode } from "../runtimeHook";
-import type { RenderHookParams } from "@my-react/react";
+import type { RenderHookParams } from "@my-react/react/type";
 
 const { currentComponentFiber, currentHookNodeIndex } = __my_react_internal__;
 

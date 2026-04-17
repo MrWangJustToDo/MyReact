@@ -1,4 +1,4 @@
-import { __my_react_internal__, type MyReactInternalInstance } from "@my-react/react";
+import { __my_react_internal__, type MyReactInternalInstance } from "@my-react/react/type";
 import { Effect_TYPE } from "@my-react/react-shared";
 
 import { checkIsMyReactFiberNode, type MyReactFiberNode } from "../runtimeFiber";

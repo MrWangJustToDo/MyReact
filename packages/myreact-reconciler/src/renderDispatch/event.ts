@@ -8,7 +8,7 @@ import {
   type UpdateQueue,
   type RenderHookParams,
   type MyReactInternalInstance,
-} from "@my-react/react";
+} from "@my-react/react/type";
 
 import { initSuspenseInstance } from "../processSuspense";
 import { triggerUpdateOnFiber, type MyReactFiberNode } from "../runtimeFiber";

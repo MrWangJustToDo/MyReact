@@ -1,6 +1,18 @@
 import { Strict as StrictMode, Fragment, Suspense, Profiler, Activity } from "@my-react/react-shared";
 
 import { count, forEach, map, only, toArray } from "./children";
+import {
+  useActionState,
+  useFormStatus,
+  ViewTransition,
+  addTransitionType,
+  unstable_LegacyHidden,
+  unstable_Scope,
+  unstable_SuspenseList,
+  unstable_TracingMarker,
+  unstable_getCacheForType,
+  unstable_useCacheRefresh,
+} from "./compat";
 import { MyReactComponent, MyReactPureComponent } from "./component";
 import { createElement, cloneElement, createFactory, isValidElement, forwardRef, createContext, memo, lazy } from "./element";
 import {
@@ -22,6 +34,7 @@ import {
   useInsertionEffect,
   useImperativeHandle,
   useSyncExternalStore,
+  useEffectEvent,
 } from "./hook";
 import { MyReactInternalInstance } from "./internal";
 import {
@@ -199,6 +212,21 @@ export {
   useInsertionEffect,
   useImperativeHandle,
   useSyncExternalStore,
+  // React 19+ / experimental hooks
+  useActionState,
+  useFormStatus,
+  useEffectEvent,
+  // React 19+ features
+  ViewTransition,
+  addTransitionType,
+  // unstable/experimental features
+  unstable_LegacyHidden,
+  unstable_Scope,
+  unstable_SuspenseList,
+  unstable_TracingMarker,
+  unstable_getCacheForType,
+  unstable_useCacheRefresh,
+  // utilities
   Children,
   captureOwnerStack,
   __my_react_scheduler__,

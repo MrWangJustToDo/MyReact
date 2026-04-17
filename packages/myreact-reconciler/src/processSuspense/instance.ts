@@ -3,7 +3,7 @@ import { UniqueArray } from "@my-react/react-shared";
 import { getInstanceFieldByInstance, type VisibleInstanceField } from "../runtimeGenerate";
 
 import type { PromiseWithState } from "../processPromise";
-import type { lazy, MyReactInternalInstance } from "@my-react/react";
+import type { lazy, MyReactInternalInstance } from "@my-react/react/type";
 
 export type SuspenseInstanceField = VisibleInstanceField & {
   asyncLoadList: UniqueArray<ReturnType<typeof lazy> | PromiseWithState<any>>;

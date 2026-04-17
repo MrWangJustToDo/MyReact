@@ -43,12 +43,12 @@
     ]
   },
   "dependencies": {
-    "@opentui/core": "^0.1.93",
-    "socket.io-client": "^4.8.3"
+    "@opentui/core": "^0.1.99"
   },
   "devDependencies": {
     "@types/node": "^22.19.13",
-    "@types/react-reconciler": "^0.32.3"
+    "@types/react-reconciler": "^0.32.3",
+    "socket.io-client": "^4.8.3"
   },
   "peerDependencies": {
     "@my-react/react": ">=0.3.24"

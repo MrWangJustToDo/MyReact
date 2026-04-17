@@ -1,6 +1,5 @@
 import { readFile } from "fs/promises";
 import { spawn } from "node:child_process";
-import { readdir, rm } from "node:fs/promises";
 import { resolve } from "path";
 
 const pkgNameAlias = {
@@ -18,22 +17,6 @@ const pkgNameAlias = {
   "@my-react/react-rspack": "myreact-rspack",
   "@my-react/react-terminal": "myreact-terminal",
   "@my-react/react-three-fiber": "myreact-three-fiber",
-};
-
-const cleanTypeFile = async (pkgName: keyof typeof pkgNameAlias) => {
-  const dirPath = resolve(process.cwd(), "packages", pkgNameAlias[pkgName]);
-  const dirs = await readdir(dirPath, { withFileTypes: true });
-
-  for (const item of dirs) {
-    if (item.isFile() && item.name.endsWith(".d.ts") && !item.name.includes("jsx") && item.name !== "type.d.ts") {
-      const filePath = resolve(dirPath, item.name);
-      await rm(filePath, { force: true });
-    }
-  }
-
-  // const distType = resolve(process.cwd(), "packages", pkgNameAlias[pkgName], "dist", "types");
-
-  // await rm(distType, { force: true, recursive: true });
 };
 
 const getVersion = (pkgName: string) =>
@@ -87,8 +70,6 @@ const release = async (pkgName: keyof typeof pkgNameAlias) => {
 };
 
 const run = async () => {
-  await cleanTypeFile("@my-react/react");
-  await cleanTypeFile("@my-react/react-dom");
   await release("@my-react/react");
   await release("@my-react/react-dom");
   await release("@my-react/react-jsx");

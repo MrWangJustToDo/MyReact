@@ -1,4 +1,4 @@
-import { type MyReactElementNode, createElement } from "@my-react/react";
+import { type MyReactElementNode, createElement } from "@my-react/react/type";
 import { nextWorkNormal } from "@my-react/react-reconciler";
 import { Portal } from "@my-react/react-shared";
 

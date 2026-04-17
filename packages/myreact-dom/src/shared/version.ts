@@ -1,4 +1,4 @@
-import { version as ReactVersion, __my_react_shared__ } from "@my-react/react";
+import { version as ReactVersion, __my_react_shared__ } from "@my-react/react/type";
 import { version as ReconcilerVersion } from "@my-react/react-reconciler";
 
 const { enableMockReact } = __my_react_shared__;

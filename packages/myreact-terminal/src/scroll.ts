@@ -45,11 +45,11 @@ function calculateScrollDimensions(node: DOMElement): {
 }
 
 export function getScrollHeight(node: DOMElement): number {
-  return node.internal_scrollState?.scrollHeight ?? 0;
+  return Math.round(node.internal_scrollState?.scrollHeight ?? 0);
 }
 
 export function getScrollWidth(node: DOMElement): number {
-  return node.internal_scrollState?.scrollWidth ?? 0;
+  return Math.round(node.internal_scrollState?.scrollWidth ?? 0);
 }
 
 export function calculateScroll(node: DOMElement, isTerminalResized = false): void {
@@ -140,5 +140,5 @@ export function getScrollLeft(node: DOMElement): number {
 
   const scrollWidth = getScrollWidth(node);
   const scrollLeft = node.style.scrollLeft ?? 0;
-  return Math.max(0, Math.min(scrollLeft, scrollWidth - clientWidth));
+  return Math.round(Math.max(0, Math.min(scrollLeft, scrollWidth - clientWidth)));
 }

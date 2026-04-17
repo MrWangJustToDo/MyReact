@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react/type";
 import { PATCH_TYPE, STATE_TYPE, exclude, include, isPromise } from "@my-react/react-shared";
 
 import { processActivity } from "../processActivity";
@@ -15,7 +15,7 @@ import { getInstanceFieldByInstance, initInstance, initVisibleInstance, setOwner
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { VisibleInstanceField } from "./instance";
 import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
-import type { MaybeArrayMyReactElementNode, MyReactComponent } from "@my-react/react";
+import type { MaybeArrayMyReactElementNode, MyReactComponent } from "@my-react/react/type";
 
 const { currentComponentFiber, MyReactInternalInstance } = __my_react_internal__;
 

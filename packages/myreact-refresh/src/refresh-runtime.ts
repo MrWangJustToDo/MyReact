@@ -1,7 +1,7 @@
 /* eslint-disable max-lines */
 import { ForwardRef, Memo, STATE_TYPE, TYPEKEY, once } from "@my-react/react-shared";
 
-import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactComponentType, MyReactElementType } from "@my-react/react";
+import type { MixinMyReactClassComponent, MixinMyReactFunctionComponent, MyReactComponentType, MyReactElementType } from "@my-react/react/type";
 import type { CustomRenderDispatch, CustomRenderDispatchDev, HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 
 interface RefreshCustomRenderDispatch extends CustomRenderDispatch {

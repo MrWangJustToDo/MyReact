@@ -147,9 +147,10 @@ export class TerminalWriter {
   }
 
   appendLinesBackbuffer(lines: RenderLine[]) {
+    const linesToProcess = lines.length > this.maxScrollbackLength ? lines.slice(-this.maxScrollbackLength) : lines;
     this.startSynchronizedOutput();
     try {
-      for (const line of lines) {
+      for (const line of linesToProcess) {
         // 1. Replace the top line with the clean version
         this.syncLine(line, 0);
 
@@ -207,8 +208,11 @@ export class TerminalWriter {
     }
 
     const backBufferLength = Math.max(0, lines.length - this.rows);
+    const linesToSkip = Math.max(0, backBufferLength - this.maxScrollbackLength);
+    const linesToProcess = linesToSkip > 0 ? lines.slice(linesToSkip) : lines;
+    const actualBackBufferLength = Math.max(0, linesToProcess.length - this.rows);
 
-    for (const [i, line] of lines.entries()) {
+    for (const [i, line] of linesToProcess.entries()) {
       const clampedLine = this.clampLine(line.styledChars, this.columns);
       let textToWrite = clampedLine.text;
 
@@ -219,16 +223,16 @@ export class TerminalWriter {
       this.writeHelper(textToWrite);
       this.linesUpdated++;
 
-      if (i >= backBufferLength && i < backBufferLength + this.rows && this.isFirstRender && clampedLine.length < this.columns) {
+      if (i >= actualBackBufferLength && i < actualBackBufferLength + this.rows && this.isFirstRender && clampedLine.length < this.columns) {
         // Need to clear any text we might be rendering on top of.
         this.writeHelper(ansiEscapes.eraseEndLine);
       }
 
-      if (i + 1 < lines.length) {
+      if (i + 1 < linesToProcess.length) {
         this.writeHelper("\n");
       }
 
-      if (i < backBufferLength) {
+      if (i < actualBackBufferLength) {
         this.backbuffer.push(clampedLine);
 
         if (this.backbuffer.length > this.maxScrollbackLength) {
@@ -242,7 +246,7 @@ export class TerminalWriter {
     if (this.isFirstRender) {
       /// Clean up lines at the bottom of the screen if we
       // rendered at less than the terminal height.
-      for (let row = lines.length; row < this.rows; row++) {
+      for (let row = linesToProcess.length; row < this.rows; row++) {
         this.writeHelper("\n" + ansiEscapes.eraseEndLine);
       }
     }
@@ -440,9 +444,17 @@ export class TerminalWriter {
     }
 
     if (y !== this.rows - 1 && y !== this.scrollRegionBottom - 1) {
-      this.writeHelper("\n");
-      this.cursorY = y + 1;
-      this.cursorX = -1;
+      // Avoid a bare newline after a full-width line. Some terminals keep
+      // wrap-pending state at the last column, which can disturb rows below.
+      if (clampedLine.length >= this.columns) {
+        this.writeHelper(ansiEscapes.cursorTo(0, y + 1));
+        this.cursorY = y + 1;
+        this.cursorX = 0;
+      } else {
+        this.writeHelper("\n");
+        this.cursorY = y + 1;
+        this.cursorX = -1;
+      }
     } else {
       this.cursorY = y;
       this.cursorX = clampedLine.length;

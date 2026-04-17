@@ -1,4 +1,4 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react/type";
 import { include } from "@my-react/react-shared";
 
 import { NODE_TYPE } from "../share";

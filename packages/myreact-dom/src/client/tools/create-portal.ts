@@ -1,8 +1,8 @@
-import { createElement } from "@my-react/react";
+import { createElement } from "@my-react/react/type";
 import { nextWorkNormal } from "@my-react/react-reconciler";
 import { Portal } from "@my-react/react-shared";
 
-import type { MyReactElement } from "@my-react/react";
+import type { MyReactElement } from "@my-react/react/type";
 import type { CustomRenderDispatch, MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 
 const checkPortal = (element: MyReactElement) => {

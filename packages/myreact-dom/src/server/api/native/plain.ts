@@ -3,7 +3,7 @@ import { escapeHtml, isBoolAttrKey, isSingleTag, kebabCase } from "@my-react-dom
 import { CommentEndElement, CommentStartElement } from "./comment";
 import { TextElement } from "./text";
 
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElementNode } from "@my-react/react/type";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 /**

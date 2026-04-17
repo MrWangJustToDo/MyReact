@@ -1,4 +1,4 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react/type";
 import { enableFiberForLog, enableValidMyReactElement, initScheduler } from "@my-react/react-reconciler";
 
 const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;

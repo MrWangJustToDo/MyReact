@@ -548,11 +548,12 @@ export class TerminalBufferWorker {
       }
 
       if (region.lines.length > 0) {
+        const offsetY = region.linesOffsetY ?? 0;
         update.lines = {
           updates: [
             {
-              start: 0,
-              end: region.lines.length,
+              start: offsetY,
+              end: offsetY + region.lines.length,
               data: serializer.serialize(region.lines) as unknown as Uint8Array,
             },
           ],
@@ -623,7 +624,7 @@ export class TerminalBufferWorker {
           this.rows,
           this.columns,
           cameraY,
-          (scrollStart, count, start, end) => {
+          (scrollStart, count, start, end, scrollToBackbuffer) => {
             const originalScrollTop = region.scrollTop;
             region.scrollTop = scrollStart;
             try {
@@ -643,14 +644,14 @@ export class TerminalBufferWorker {
                 return start === 0 && end + count === lines.length ? lines : lines.slice(start, end + count);
               };
 
-              const cleanLines = getLines(true);
-              if (count > 0 && start === 0) {
+              if (scrollToBackbuffer && count > 0 && start === 0) {
                 const dirtyLines = getLines(false);
+                const cleanLines = getLines(true);
                 // First 'count' lines are clean (for backbuffer), the rest are dirty (for viewport)
                 return [...cleanLines.slice(0, count), ...dirtyLines.slice(count)];
               }
 
-              return cleanLines;
+              return getLines(false);
             } finally {
               region.scrollTop = originalScrollTop;
             }

@@ -1,4 +1,4 @@
-import { __my_react_shared__, Component } from "@my-react/react";
+import { __my_react_shared__, Component } from "@my-react/react/type";
 import { Effect_TYPE, STATE_TYPE, exclude, include } from "@my-react/react-shared";
 
 import { syncFlushComponentQueue } from "../processQueue";
@@ -19,7 +19,7 @@ import { initClassInstance, mountClassInstance } from "./instance";
 
 import type { ClassInstanceField } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react";
+import type { MyReactComponent, MixinMyReactClassComponent } from "@my-react/react/type";
 
 const { enableLegacyLifeCycle } = __my_react_shared__;
 

@@ -1,4 +1,4 @@
-import { __my_react_internal__, type createRef } from "@my-react/react";
+import { __my_react_internal__, type createRef } from "@my-react/react/type";
 
 import { hmr } from "../runtimeFiber";
 

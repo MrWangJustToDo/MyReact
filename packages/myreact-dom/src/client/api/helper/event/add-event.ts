@@ -1,4 +1,4 @@
-import { __my_react_shared__ } from "@my-react/react";
+import { __my_react_shared__ } from "@my-react/react/type";
 import { afterSyncUpdate, beforeSyncUpdate, callWithFiber } from "@my-react/react-reconciler";
 
 import { clearEvent, triggerEvent } from "@my-react-dom-client/tools";

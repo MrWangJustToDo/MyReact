@@ -1,0 +1,22 @@
+{
+  "name": "lynx-example",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "build": "rspeedy build",
+    "dev": "DEV=true rspeedy dev"
+  },
+  "dependencies": {
+    "@lynx-js/react": "^0.116.5",
+    "@my-react/react": "workspace:*",
+    "@my-react/react-lynx": "workspace:*"
+  },
+  "devDependencies": {
+    "@lynx-js/rspeedy": "^0.14.0",
+    "@lynx-js/types": "^3.7.0",
+    "@rsbuild/plugin-node-polyfill": "^1.4.4"
+  }
+}

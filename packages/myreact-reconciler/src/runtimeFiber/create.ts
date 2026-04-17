@@ -5,7 +5,7 @@ import { fiberToDispatchMap, safeCallWithCurrentFiber } from "../share";
 import { MyReactFiberNode } from "./instance";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { MyReactElementNode } from "@my-react/react";
+import type { MyReactElementNode } from "@my-react/react/type";
 
 export const createFiberNode = (
   renderDispatch: CustomRenderDispatch,

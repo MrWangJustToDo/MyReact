@@ -141,7 +141,10 @@ function shouldInvalidateReactRefreshBoundary(prevSignature: unknown[], nextSign
 }
 
 let isUpdateScheduled: boolean = false;
+let isUpdateForceSet: boolean = false;
+
 // This function aggregates updates from multiple modules into a single React Refresh call.
+// webpack base
 function scheduleUpdate() {
   if (isUpdateScheduled) {
     return;
@@ -180,6 +183,19 @@ function scheduleUpdate() {
   module.hot.addStatusHandler(statusHandler);
 }
 
+function forceUpdate(callback?: () => void) {
+  if (isUpdateForceSet) {
+    return;
+  }
+  isUpdateForceSet = true;
+
+  setTimeout(function () {
+    RefreshRuntime.performReactRefresh();
+    callback?.();
+    isUpdateForceSet = false;
+  }, 30);
+}
+
 // Needs to be compatible with IE11
 export default {
   registerExportsForReactRefresh: registerExportsForReactRefresh,
@@ -187,4 +203,5 @@ export default {
   shouldInvalidateReactRefreshBoundary: shouldInvalidateReactRefreshBoundary,
   getRefreshBoundarySignature: getRefreshBoundarySignature,
   scheduleUpdate: scheduleUpdate,
+  forceUpdate: forceUpdate,
 };

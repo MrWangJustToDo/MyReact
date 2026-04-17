@@ -78,7 +78,7 @@ export const hostConfig: HostConfig<
   },
 
   // Prepare for commit
-  prepareForCommit(containerInfo: Container) {
+  prepareForCommit(_containerInfo: Container) {
     return null;
   },
 
@@ -89,18 +89,18 @@ export const hostConfig: HostConfig<
   },
 
   // Get root container
-  getRootHostContext(rootContainerInstance: Container) {
+  getRootHostContext(_rootContainerInstance: Container) {
     return { isInsideText: false };
   },
 
   // Get child context
-  getChildHostContext(parentHostContext: HostContext, type: Type, rootContainerInstance: Container) {
+  getChildHostContext(parentHostContext: HostContext, type: Type, _rootContainerInstance: Container) {
     const isInsideText = ["text", ...textNodeKeys].includes(type);
     return { ...parentHostContext, isInsideText };
   },
 
   // Should set text content
-  shouldSetTextContent(type: Type, props: Props) {
+  shouldSetTextContent(_type: Type, _props: Props) {
     return false;
   },
 
@@ -128,18 +128,18 @@ export const hostConfig: HostConfig<
   },
 
   // Finalize initial children
-  finalizeInitialChildren(instance: Instance, type: Type, props: Props, rootContainerInstance: Container, hostContext: HostContext) {
+  finalizeInitialChildren(instance: Instance, type: Type, props: Props, _rootContainerInstance: Container, _hostContext: HostContext) {
     setInitialProperties(instance, type, props);
     return false;
   },
 
   // Commit mount
-  commitMount(instance: Instance, type: Type, props: Props, internalInstanceHandle: any) {
+  commitMount(_instance: Instance, _type: Type, _props: Props, _internalInstanceHandle: any) {
     // We could focus the instance here, but we're handling focus in setInitialProperties
   },
 
   // Commit update
-  commitUpdate(instance: Instance, type: Type, oldProps: Props, newProps: Props, internalInstanceHandle: any) {
+  commitUpdate(instance: Instance, type: Type, oldProps: Props, newProps: Props, _internalInstanceHandle: any) {
     updateProperties(instance, type, oldProps, newProps);
     instance.requestRender();
   },
@@ -166,7 +166,7 @@ export const hostConfig: HostConfig<
   },
 
   // Unhide instance
-  unhideInstance(instance: Instance, props: Props) {
+  unhideInstance(instance: Instance, _props: Props) {
     instance.visible = true;
     instance.requestRender();
   },
@@ -178,7 +178,7 @@ export const hostConfig: HostConfig<
   },
 
   // Unhide text instance
-  unhideTextInstance(textInstance: TextInstance, text: string) {
+  unhideTextInstance(textInstance: TextInstance, _text: string) {
     textInstance.visible = true;
     textInstance.requestRender();
   },
@@ -249,7 +249,7 @@ export const hostConfig: HostConfig<
     return instance;
   },
 
-  preparePortalMount(containerInfo: Container) {},
+  preparePortalMount(_containerInfo: Container) {},
 
   isPrimaryRenderer: true,
 

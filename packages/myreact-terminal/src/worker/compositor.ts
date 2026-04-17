@@ -44,8 +44,9 @@ export class Compositor {
 
       const dy = sy - absY;
       const contentY = Math.round(scrollTop + dy);
+      const lineIndex = contentY - (region.linesOffsetY ?? 0);
 
-      const line = region.lines[contentY];
+      const line = region.lines[lineIndex];
       if (!line) {
         continue;
       }

@@ -1,10 +1,10 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react/type";
 import { UpdateQueueType } from "@my-react/react-shared";
 
 import { getInstanceFieldByInstance, type InstanceField } from "../runtimeGenerate";
 
 import type { UpdateQueueDev } from "../processState";
-import type { RenderHook, Action, HookUpdateQueue } from "@my-react/react";
+import type { RenderHook, Action, HookUpdateQueue } from "@my-react/react/type";
 import type { ListTree, HOOK_TYPE } from "@my-react/react-shared";
 
 const { MyReactInternalInstance, currentScheduler } = __my_react_internal__;

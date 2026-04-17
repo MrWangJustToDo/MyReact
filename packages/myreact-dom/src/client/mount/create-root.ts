@@ -6,7 +6,7 @@ import { enableNewEntry, wrapperFunc } from "@my-react-dom-shared";
 import { render as originalRender } from "./render";
 
 import type { RenderContainer } from "./render";
-import type { LikeJSX } from "@my-react/react";
+import type { LikeJSX } from "@my-react/react/type";
 
 export type Options = {
   onRecoverableError: () => void;

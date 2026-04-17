@@ -1,12 +1,13 @@
 import { createFromReadableStream, createFromFetch } from "@lazarv/rsc/client";
-import { __my_react_internal__, createElement, Suspense, use } from "@my-react/react";
+import { __my_react_internal__, createElement, Suspense, use } from "@my-react/react/type";
 
 import { createModuleLoader } from "../client/module-loader";
 import { normalizeRscValue } from "../shared/normalize-rsc";
 
 import type { FlightServerOptions, ModuleLoader } from "../shared/types";
-import type { MyReactElement } from "@my-react/react";
+import type { MyReactElement } from "@my-react/react/type";
 import type { renderToReadableStream } from "@my-react/react-dom/server";
+import type { ReactNode } from "react";
 
 const { cacheLazy } = __my_react_internal__;
 
@@ -49,7 +50,7 @@ export async function createFlightServer(options: FlightServerOptions = {}): Pro
 
     const shell = createElement(Suspense, { fallback: createElement("div", { className: "loading" }, "Loading...") }, createElement(SsrRoot));
 
-    return renderToReadableStream(shell);
+    return renderToReadableStream(shell as ReactNode);
   }
 
   return {

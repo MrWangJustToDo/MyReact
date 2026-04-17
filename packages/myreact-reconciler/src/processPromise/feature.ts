@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react/type";
 import { STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { defaultDeleteCurrentEffect } from "../dispatchEffect";
@@ -8,7 +8,7 @@ import { devWarnWithFiber } from "../share";
 import type { SuspenseInstanceField } from "../processSuspense";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
-import type { PromiseUpdateQueue } from "@my-react/react";
+import type { PromiseUpdateQueue } from "@my-react/react/type";
 
 export type PromiseWithState<T> = Promise<T> & {
   status?: "fulfilled" | "rejected" | "pending";

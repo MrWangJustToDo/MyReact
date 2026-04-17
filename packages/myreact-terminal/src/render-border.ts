@@ -8,8 +8,8 @@ import type Output from "./output.js";
 
 const renderBorder = (x: number, y: number, node: DOMNode, output: Output): void => {
   if (node.style.borderStyle) {
-    const width = node.yogaNode!.getComputedWidth();
-    const height = node.yogaNode!.getComputedHeight();
+    const width = Math.round(node.yogaNode!.getComputedWidth());
+    const height = Math.round(node.yogaNode!.getComputedHeight());
     const box = typeof node.style.borderStyle === "string" ? cliBoxes[node.style.borderStyle] : node.style.borderStyle;
 
     const topBorderColor = node.style.borderTopColor ?? node.style.borderColor;

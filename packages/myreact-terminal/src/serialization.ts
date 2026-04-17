@@ -37,8 +37,8 @@ export class Serializer {
     }
   }
 
-  private writeLine(line: StyledLine) {
-    if (line.length === 0) {
+  private writeLine(line: StyledLine | undefined) {
+    if (!line || line.length === 0) {
       this.writeUint32(0);
       return;
     }

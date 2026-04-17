@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__, createElement } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__, createElement } from "@my-react/react/type";
 import {
   CustomRenderDispatch,
   devErrorWithFiber,
@@ -27,7 +27,7 @@ import { asyncUpdateTimeLimit, initialElementMap, unmountElementMap, shouldPause
 
 import { clientDispatchFiber } from "./dispatch";
 
-import type { MyReactElement, MyReactElementNode, MyReactElementType, RenderHookParams, UpdateQueue } from "@my-react/react";
+import type { MyReactElement, MyReactElementNode, MyReactElementType, RenderHookParams, UpdateQueue } from "@my-react/react/type";
 import type { HMR, MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reconciler";
 import type { PlainElementDev } from "@my-react-dom-server/api";
 

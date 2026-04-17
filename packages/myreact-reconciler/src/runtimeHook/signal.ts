@@ -1,10 +1,10 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 import { STATE_TYPE, exclude } from "@my-react/react-shared";
 
 import { triggerUpdateOnFiber } from "../runtimeFiber";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { RenderFiber } from "@my-react/react";
+import type { RenderFiber } from "@my-react/react/type";
 
 const { currentComponentFiber } = __my_react_internal__;
 

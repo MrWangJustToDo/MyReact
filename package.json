@@ -17,6 +17,7 @@
     "dev:remix": "cd ./ui/remix-example && pnpm run dev",
     "dev:vite-ssr": "cd ./ui/vite-ssr-example && pnpm run dev",
     "dev:rsc": "cd ./ui/rsc-example && pnpm run dev",
+    "dev:lynx": "cd ./ui/lynx-example && pnpm run dev",
     "dev:stream": "cd ./ui/csr-example && pnpm run dev:stream",
     "start:ssr": "cd ./ui/ssr-example && pnpm run build && pnpm run start",
     "build:site": "cd ./ui/ssr-example && pnpm run build:static",
@@ -36,7 +37,6 @@
     "lint:fix": "pnpm run lint --fix",
     "prettier": "prettier --ignore-path .prettierignore --write .",
     "clean": "pnpm -p -r -c exec rm -rf dist dev .cache .next tsconfig.build.tsbuildinfo",
-    "clean:type": "ts-node ./scripts/cleanType.ts",
     "purge": "pnpm -p -r -c exec rm -rf node_modules",
     "prepare": "husky"
   },
@@ -54,6 +54,7 @@
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "@my-react/react-jsx": "workspace:*",
+    "@my-react/react-lynx": "workspace:*",
     "@my-react/react-opentui": "workspace:*",
     "@my-react/react-reactive": "workspace:*",
     "@my-react/react-reconciler": "workspace:*",

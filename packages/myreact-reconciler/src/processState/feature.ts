@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react/type";
 import { ListTree, STATE_TYPE, UpdateQueueType, include } from "@my-react/react-shared";
 
 import { isErrorBoundariesComponent } from "../dispatchErrorBoundaries";
@@ -8,7 +8,7 @@ import { enableLogForCurrentFlowIsRunning, getElementName, onceWarnWithKeyAndFib
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactHookNode } from "../runtimeHook";
-import type { MyReactComponent, MyReactInternalInstance, RenderFiber, UpdateQueue } from "@my-react/react";
+import type { MyReactComponent, MyReactInternalInstance, RenderFiber, UpdateQueue } from "@my-react/react/type";
 
 export type UpdateQueueDev = UpdateQueue<{
   _debugType: string;

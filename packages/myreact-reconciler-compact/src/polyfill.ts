@@ -56,12 +56,16 @@ async function executeScript(code: string, url: string, options: { context?: Rec
       await executeInBrowser(code, url, context, useEval);
       break;
 
+    case "webworker":
+      await executeInWebWorker(code, url, context, useEval);
+      break;
+
     default:
       throw new Error("未知的 JavaScript 环境");
   }
 }
 
-function detectEnvironment(): "bun" | "node" | "browser" {
+function detectEnvironment(): "bun" | "node" | "browser" | "webworker" {
   // 检测 Bun
   // @ts-ignore
   if (typeof Bun !== "undefined" && typeof Bun === "object") {
@@ -71,6 +75,11 @@ function detectEnvironment(): "bun" | "node" | "browser" {
   // 检测 Node.js
   if (typeof process !== "undefined" && process.versions && process.versions.node) {
     return "node";
+  }
+
+  // 检测 Web Worker 环境 (must check before browser since workers don't have window/document)
+  if (typeof self !== "undefined" && typeof importScripts === "function") {
+    return "webworker";
   }
 
   // 检测浏览器环境
@@ -230,6 +239,31 @@ async function executeWithVM(code: string, url: string, context: Record<string, 
   } catch (error: any) {
     const errorMsg = error?.message || String(error);
     throw new Error(`VM 执行失败: ${errorMsg}`);
+  }
+}
+
+// Web Worker 环境执行
+async function executeInWebWorker(code: string, _url: string, context: Record<string, any>, useEval: boolean): Promise<void> {
+  if (!useEval && isPotentiallyUnsafe(code)) {
+    throw new Error("代码包含潜在不安全内容，如需执行请设置 useEval: true");
+  }
+
+  try {
+    // 方法1: 使用 Blob URL 配合 importScripts
+    const blob = new Blob([code], { type: "application/javascript" });
+    const blobUrl = URL.createObjectURL(blob);
+    try {
+      importScripts(blobUrl);
+    } finally {
+      URL.revokeObjectURL(blobUrl);
+    }
+  } catch (error) {
+    // 方法2: 使用 Function 构造函数 (回退方案)
+    if (useEval) {
+      executeWithEval(code, context);
+    } else {
+      throw new Error("Web Worker 执行失败，请启用 useEval 选项或检查 CSP 设置");
+    }
   }
 }
 

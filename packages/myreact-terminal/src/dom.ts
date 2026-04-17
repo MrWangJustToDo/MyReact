@@ -300,7 +300,7 @@ export const setCachedRender = (node: DOMElement, cachedRender: Region) => {
   }
 };
 
-const markNodeAsDirty = (node?: DOMNode): void => {
+export const markNodeAsDirty = (node?: DOMNode): void => {
   // Mark closest Yoga node as dirty to measure text dimensions again
   const yogaNode = findClosestYogaNode(node);
   yogaNode?.markDirty();

@@ -1,6 +1,6 @@
 import { getInstanceFieldByInstance, type InstanceField } from "../runtimeGenerate";
 
-import type { MyReactComponent } from "@my-react/react";
+import type { MyReactComponent } from "@my-react/react/type";
 
 export type ClassInstanceField = InstanceField & {
   isMounted: boolean;

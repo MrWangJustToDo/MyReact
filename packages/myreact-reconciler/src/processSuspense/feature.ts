@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 
 import { getInstanceFieldByInstance, initInstance, initVisibleInstance, setOwnerForInstance } from "../runtimeGenerate";
 import { WrapperBySuspenseScope } from "../runtimeScope";

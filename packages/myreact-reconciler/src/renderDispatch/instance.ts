@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { type createContext, type MyReactElementNode, type lazy } from "@my-react/react";
+import { type createContext, type MyReactElementNode, type lazy } from "@my-react/react/type";
 import { PATCH_TYPE, ListTree, UniqueArray, include, merge, exclude } from "@my-react/react-shared";
 
 import { defaultGetContextFiber, defaultGetContextValue, defaultReadContext } from "../dispatchContext";

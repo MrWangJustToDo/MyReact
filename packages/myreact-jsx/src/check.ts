@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react/type";
 import {
   TYPEKEY,
   Element,
@@ -23,7 +23,7 @@ import type {
   memo,
   MyReactObjectComponent,
   ArrayMyReactElementNode,
-} from "@my-react/react";
+} from "@my-react/react/type";
 
 const { currentScheduler, currentComponentFiber } = __my_react_internal__;
 

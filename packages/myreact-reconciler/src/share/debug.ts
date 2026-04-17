@@ -1,4 +1,4 @@
-import { __my_react_internal__, __my_react_shared__ } from "@my-react/react";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react/type";
 import { HOOK_TYPE, include, type ListTreeNode } from "@my-react/react-shared";
 
 import { enableFiberForLog } from "./env";
@@ -15,7 +15,7 @@ import type {
   MyReactElement,
   createContext,
   lazy,
-} from "@my-react/react";
+} from "@my-react/react/type";
 
 const { currentScheduler, currentRunningFiber, currentScopeFiber, currentCallingFiber } = __my_react_internal__;
 

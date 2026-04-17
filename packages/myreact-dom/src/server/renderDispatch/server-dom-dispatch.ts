@@ -5,7 +5,7 @@ import { clearPreConnects, clearPrefetchDNS, clearPreInits, clearPreloads, initi
 
 import { unmount } from "./unmount";
 
-import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react";
+import type { MyReactElementNode, RenderHookParams, UpdateQueue } from "@my-react/react/type";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
 /**

@@ -1,4 +1,4 @@
-import { __my_react_internal__ } from "@my-react/react";
+import { __my_react_internal__ } from "@my-react/react/type";
 import { ListTree, STATE_TYPE, UpdateQueueType, include, merge } from "@my-react/react-shared";
 
 import { defaultDeleteChildEffect } from "../dispatchEffect";
@@ -12,7 +12,7 @@ import { NODE_TYPE, currentTriggerFiber, devErrorWithFiber, devWarnWithFiber } f
 import { scheduleUpdate } from "./schedule";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
-import type { ComponentUpdateQueue, MixinMyReactClassComponent, MyReactComponent } from "@my-react/react";
+import type { ComponentUpdateQueue, MixinMyReactClassComponent, MyReactComponent } from "@my-react/react/type";
 
 const { globalLoop, currentScheduler, currentError } = __my_react_internal__;
 

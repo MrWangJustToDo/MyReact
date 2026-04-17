@@ -4,7 +4,7 @@
  * Uses rsc-html-stream for injecting RSC payload into HTML
  */
 
-import { createElement } from "@my-react/react";
+import { createElement } from "@my-react/react/type";
 import { renderToFlightStream } from "@my-react/react-server/server";
 
 import type { Plugin, ViteDevServer } from "vite";

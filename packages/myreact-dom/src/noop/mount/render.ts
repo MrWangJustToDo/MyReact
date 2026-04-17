@@ -1,4 +1,4 @@
-import { createElement, isValidElement } from "@my-react/react";
+import { createElement, isValidElement } from "@my-react/react/type";
 import { MyReactFiberNode, NODE_TYPE, initialFiberNode } from "@my-react/react-reconciler";
 import { exclude } from "@my-react/react-shared";
 
@@ -7,7 +7,7 @@ import { startRender, startRenderAsync } from "@my-react-dom-shared";
 
 import { NoopLegacyRenderDispatch, NoopLatestRenderDispatch } from "../renderDispatch";
 
-import type { LikeJSX } from "@my-react/react";
+import type { LikeJSX } from "@my-react/react/type";
 
 // !only used for test
 

@@ -84,17 +84,30 @@ export class Canvas {
       return;
     }
 
-    while (line.styledChars.length <= x) {
-      line.styledChars.pushChar(" ", 0);
+    if (line.styledChars.length < x) {
+      line.styledChars.padTo(x);
     }
 
-    line.styledChars.setChar(x, value, formatFlags, fgColor, bgColor, link);
+    if (line.styledChars.length === x) {
+      line.styledChars.pushChar(value, formatFlags, fgColor, bgColor, link);
+    } else {
+      line.styledChars.setChar(x, value, formatFlags, fgColor, bgColor, link);
+    }
   }
 
   /**
    * Draws a sequence of characters starting at (x, y).
    */
   drawStyledChars(x: number, y: number, chars: StyledLine, clip?: Rect) {
+    const line = this.lines[y];
+    if (!line) {
+      return;
+    }
+
+    if (line.styledChars.length < x) {
+      line.styledChars.padTo(x);
+    }
+
     for (let i = 0; i < chars.length; i++) {
       this.setChar(x + i, y, chars.getValue(i), chars.getFormatFlags(i), chars.getFgColor(i), chars.getBgColor(i), chars.getLink(i), clip);
     }

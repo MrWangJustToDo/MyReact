@@ -23,6 +23,11 @@ declare var lynxCoreInject:
 
 const g = globalThis as Record<string, unknown>;
 
+// Set runtime thread identification globals
+// These can be used for runtime checks when compile-time defines aren't available
+g["__BACKGROUND_RUNTIME__"] = true;
+g["__MAIN_THREAD_RUNTIME__"] = false;
+
 // Primary path: lynxCoreInject.tt.publishEvent (used by modern Lynx)
 if (typeof lynxCoreInject !== "undefined" && lynxCoreInject?.tt) {
   lynxCoreInject.tt.publishEvent = publishEvent;

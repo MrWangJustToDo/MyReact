@@ -1,9 +1,11 @@
 import createReconciler from "@my-react/react-reconciler-compact";
 import { LegacyRoot } from "@my-react/react-reconciler-compact/constants";
 
+import { registerDataProcessors } from "./data-processor";
 import { hostConfig } from "./reconciler";
 import { createPageRoot, type ShadowElement } from "./shadow-element";
 
+import type { DataProcessorDefinition } from "./data-processor";
 import type { ReactNode } from "react";
 
 export const reconciler = createReconciler(hostConfig);
@@ -38,6 +40,40 @@ export function render(element: React.ReactNode) {
 }
 
 /**
+ * The default root exported by `@my-react/react-lynx` for you to render a JSX.
+ *
+ * @public
+ */
+export interface Root {
+  /**
+   * Use this API to pass in your JSX to render.
+   *
+   * @example
+   * ```tsx
+   * import { root } from '@my-react/react-lynx';
+   *
+   * function App() {
+   *   return <view>...</view>;
+   * }
+   *
+   * root.render(<App />);
+   * ```
+   *
+   * @public
+   */
+  render: (jsx: ReactNode) => void;
+
+  /**
+   * Register DataProcessors. You MUST call this before `root.render()`.
+   *
+   * @deprecated Use {@link registerDataProcessors} or `lynx.registerDataProcessors` instead.
+   *
+   * @public
+   */
+  registerDataProcessors: (dataProcessorDefinition?: DataProcessorDefinition) => void;
+}
+
+/**
  * The default root for MyReact Lynx apps.
  * Compatible with ReactLynx's `root.render()` API.
  *
@@ -49,9 +85,12 @@ export function render(element: React.ReactNode) {
  * root.render(<App />);
  * ```
  */
-export const root = {
+export const root: Root = {
   render(element: React.ReactNode) {
     render(element);
+  },
+  registerDataProcessors(dataProcessorDefinition?: DataProcessorDefinition) {
+    registerDataProcessors(dataProcessorDefinition);
   },
 };
 

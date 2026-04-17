@@ -2,10 +2,33 @@ import type { ElementRef } from "@lynx-js/type-element-api";
 import { Lynx } from "@lynx-js/types";
 
 declare global {
-  /** Build-time macros */
+  /** Build-time macros (compile-time constants) */
   const __DEV__: boolean;
 
   const __HMR__: boolean;
+
+  const __LEPUS__: boolean;
+
+  /**
+   * True when code is running on the background thread.
+   * This is a compile-time constant set by the build plugin.
+   * Default is `true` for the background bundle.
+   */
+  const __BACKGROUND__: boolean;
+
+  /**
+   * True when code is running on the main thread.
+   * This is a compile-time constant set by the build plugin.
+   * Default is `false` for the background bundle.
+   */
+  const __MAIN_THREAD__: boolean;
+
+  /**
+   * Runtime thread identification (set by entry files).
+   * Use these when you need runtime checks instead of compile-time.
+   */
+  const __BACKGROUND_RUNTIME__: boolean;
+  const __MAIN_THREAD_RUNTIME__: boolean;
 
   const __DEVTOOL__:
     | boolean
@@ -37,6 +60,13 @@ declare global {
 declare module "@lynx-js/types" {
   export interface Lynx {
     SystemInfo?: Record<string, unknown>;
+
+    /** InitData passed from native side, used by useInitData */
+    __initData: Record<string, unknown>;
+
+    /** Global props, used by useGlobalProps */
+    __globalProps: Record<string, unknown>;
+
     getNativeApp():
       | {
           createJSObjectDestructionObserver?(callback: () => void): unknown;
@@ -44,5 +74,28 @@ declare module "@lynx-js/types" {
         }
       | null
       | undefined;
+
+    /** Get a JS module by name (e.g., 'GlobalEventEmitter') */
+    getJSModule(name: "GlobalEventEmitter"): {
+      addListener(eventName: string, listener: (...args: unknown[]) => void): void;
+      removeListener(eventName: string, listener: (...args: unknown[]) => void): void;
+      trigger(eventName: string, params: unknown): void;
+    };
+    getJSModule(name: string): Record<string, (...args: unknown[]) => unknown>;
+
+    /**
+     * Register data processors. Must be called before root.render().
+     * @see DataProcessorDefinition
+     */
+    registerDataProcessors(definition?: {
+      defaultDataProcessor?: (rawInitData: Record<string, unknown>) => Record<string, unknown>;
+      dataProcessors?: Record<string, (...args: unknown[]) => unknown>;
+    }): void;
+
+    /** Query a single element by selector */
+    querySelector?(selector: string): unknown | null;
+
+    /** Query all elements matching a selector */
+    querySelectorAll?(selector: string): unknown[];
   }
 }

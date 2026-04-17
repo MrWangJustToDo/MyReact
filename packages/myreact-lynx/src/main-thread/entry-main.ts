@@ -14,6 +14,11 @@ import { runOnBackground } from "./run-on-background-mt.js";
 
 const g = globalThis as Record<string, unknown>;
 
+// Set runtime thread identification globals
+// These can be used for runtime checks when compile-time defines aren't available
+g["__BACKGROUND_RUNTIME__"] = false;
+g["__MAIN_THREAD_RUNTIME__"] = true;
+
 // Expose SystemInfo on globalThis (the worklet-runtime reads it).
 // In React's main-thread bundle this is done by the generated snapshot code.
 g["SystemInfo"] = (typeof lynx !== "undefined" && lynx.SystemInfo) ?? {};
@@ -74,7 +79,6 @@ g["reactPatchUpdate"] = function ({ data }: { data: string }): void {
 // Called by the BG Thread via callLepusMethod('updateMTRefInitValue', { data }).
 // This updates the worklet ref initial values in the worklet-runtime.
 g["updateMTRefInitValue"] = function ({ data }: { data: string }): void {
-  console.log("updateMTRefInitValue", data);
   const patch = JSON.parse(data) as [id: number, value: unknown][];
   // The worklet-runtime from @lynx-js/react provides updateWorkletRefInitValueChanges
   const updateFn = (globalThis as Record<string, unknown>)["updateWorkletRefInitValueChanges"] as ((patch: [number, unknown][]) => void) | undefined;

@@ -14,7 +14,7 @@ export default defineConfig({
       reactRefresh: true,
       // SEE https://github.com/MrWangJustToDo/myreact-devtools
       // use pnpm run dev:websocket to debug lynx app
-      reactDevTool: true,
+      // reactDevTool: true,
     }),
   ],
   environments: {

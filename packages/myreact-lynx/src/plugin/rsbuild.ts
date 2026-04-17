@@ -127,6 +127,11 @@ const PLUGIN_NAME = "lynx:myreact";
  * React → MyReact alias mappings.
  * These allow existing React code to work with MyReact without modification.
  *
+ * Note: We alias `react` to `@my-react/react-lynx` so users get Lynx-specific
+ * APIs (useInitData, etc.) when importing from 'react'. However, we do NOT
+ * alias `@my-react/react` to avoid circular imports since @my-react/react-lynx
+ * internally imports from @my-react/react.
+ *
  * Note: We use `$` suffix for exact matching to avoid accidentally aliasing
  * other packages like `@lynx-js/react`. The `$` means "end of string" in
  * rspack/webpack alias matching.
@@ -189,6 +194,10 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
               __HMR__: enableRefresh,
               __DEVTOOL__: typeof reactDevTool === "boolean" ? reactDevTool : JSON.stringify(reactDevTool),
               __MY_REACT_LYNX_AUTO_PIXEL_UNIT__: JSON.stringify(autoPixelUnit),
+              // Lynx dual-thread macros (default values, overridden per layer in entry.ts)
+              __LEPUS__: "false",
+              __BACKGROUND__: "true",
+              __MAIN_THREAD__: "false",
             },
           },
           tools: {

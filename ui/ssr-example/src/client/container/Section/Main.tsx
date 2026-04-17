@@ -5,7 +5,7 @@ import { GithubIcon, PlayIcon, BookOpenIcon } from "lucide-react";
 import { useIntl } from "react-intl";
 import { useNavigate } from "react-router-dom";
 
-import { Rspack, Webpack, Vite, NextJs, Remix, ReactRouter } from "@client/component/Icons";
+import { Rspack, Webpack, Vite, NextJs, Remix, ReactRouter, Lynx, Terminal } from "@client/component/Icons";
 import { Section } from "@client/component/Section";
 import { CONTAINER_WIDTH } from "@client/config/container";
 import { noBase } from "@shared";
@@ -155,6 +155,12 @@ export const MainSection = () => {
                 </Link>
                 <Link href="https://reactrouter.com/" target="_blank" _hover={{ opacity: 0.6 }} transition="opacity 0.2s">
                   <ReactRouter height={28} width={28} fill="currentcolor" />
+                </Link>
+                <Link href="https://lynxjs.org/" target="_blank" _hover={{ opacity: 0.6 }} transition="opacity 0.2s">
+                  <Lynx height={28} width={28} />
+                </Link>
+                <Link href="https://github.com/vadimdemedes/ink" target="_blank" _hover={{ opacity: 0.6 }} transition="opacity 0.2s" title="Terminal UI (Ink)">
+                  <Terminal height={28} width={28} />
                 </Link>
               </Flex>
             </Box>

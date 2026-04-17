@@ -1,7 +1,7 @@
 import { lazy } from "react";
 
 import { ScrollContent, ScrollControl, ScrollControlTool, ScrollSection, ScrollToTop } from "@client/component/ScrollControl";
-import { DevToolSection, MainSection } from "@client/container/Section";
+import { DevToolSection, LynxSection, MainSection } from "@client/container/Section";
 import { ApiSection as _ApiSection } from "@client/container/Section/Api";
 import { CanvasUISection } from "@client/container/Section/Canvas";
 import { FeaturesSection } from "@client/container/Section/Features";
@@ -15,7 +15,7 @@ const ApiSection = !__STREAM__ ? _ApiSection : lazy(() => import("@client/contai
 
 const Page = () => {
   return (
-    <ScrollControl initialSectionLength={10}>
+    <ScrollControl initialSectionLength={11}>
       <ScrollContent>
         {/* Hero Section */}
         <ScrollSection>
@@ -45,6 +45,11 @@ const Page = () => {
         {/* RSC Section */}
         <ScrollSection>
           <RscSection />
+        </ScrollSection>
+
+        {/* Lynx Section */}
+        <ScrollSection>
+          <LynxSection />
         </ScrollSection>
 
         {/* Three Fiber Section */}

@@ -5,3 +5,5 @@ export * from "./Rspack";
 export * from "./NextJs";
 export * from "./Remix";
 export * from "./ReactRouter";
+export * from "./Lynx";
+export * from "./Terminal";

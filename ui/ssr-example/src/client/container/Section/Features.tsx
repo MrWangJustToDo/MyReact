@@ -1,6 +1,6 @@
 import { Box, Container, Flex, Heading, Text, SimpleGrid, Icon, VStack, Badge, useColorModeValue } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { CodeIcon, LayersIcon, ZapIcon, PackageIcon, MonitorIcon, RefreshCwIcon, ServerIcon, PaletteIcon, CloudIcon } from "lucide-react";
+import { CodeIcon, LayersIcon, ZapIcon, PackageIcon, MonitorIcon, RefreshCwIcon, ServerIcon, PaletteIcon, CloudIcon, SmartphoneIcon } from "lucide-react";
 
 import { CONTAINER_WIDTH } from "@client/config/container";
 
@@ -129,6 +129,13 @@ const features = [
     badge: "Experimental",
     badgeColor: "cyan",
   },
+  {
+    icon: <Icon as={SmartphoneIcon} boxSize="6" />,
+    title: "Lynx Native Apps",
+    description: "Build cross-platform native apps with Lynx's dual-thread architecture. Full React API with native performance.",
+    badge: "New",
+    badgeColor: "green",
+  },
 ];
 
 export const FeaturesSection = () => {
@@ -195,7 +202,7 @@ export const FeaturesSection = () => {
               <StatItem number="10+" label="Packages" />
               <StatItem number="100%" label="React API Coverage" />
               <StatItem number="5+" label="Build Tool Integrations" />
-              <StatItem number="3+" label="Custom Renderers" />
+              <StatItem number="4+" label="Custom Renderers" />
             </SimpleGrid>
           </MotionBox>
         </VStack>

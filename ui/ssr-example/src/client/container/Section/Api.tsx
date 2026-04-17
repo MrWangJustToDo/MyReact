@@ -17,6 +17,7 @@ const data = [
     "@my-react/react-rspack": "rspack plugin",
     "@my-react/react-terminal": "render",
     "@my-react/react-server": "renderToFlightStream",
+    "@my-react/react-lynx": "root.render",
   },
   {
     "@my-react/react (hook)": "useCallback",
@@ -27,6 +28,7 @@ const data = [
     "@my-react/react-refresh-tools": "next.js plugin",
     "@my-react/react-terminal": "<Box />",
     "@my-react/react-server": "createFlightServer",
+    "@my-react/react-lynx": "useInitData",
   },
   {
     "@my-react/react (hook)": "useMemo",
@@ -36,6 +38,7 @@ const data = [
     "@my-react/react-refresh-tools": "webpack loader",
     "@my-react/react-terminal": "<Text />",
     "@my-react/react-server": "createFlightClient",
+    "@my-react/react-lynx": "useGlobalProps",
   },
   {
     "@my-react/react (hook)": "useReducer",
@@ -43,6 +46,7 @@ const data = [
     "@my-react/react-dom": "findDOMNode",
     "@my-react/react-reactive": "computed",
     "@my-react/react-terminal": "<Static />",
+    "@my-react/react-lynx": "useMainThreadRef",
   },
   {
     "@my-react/react (hook)": "useRef",
@@ -50,6 +54,7 @@ const data = [
     "@my-react/react-dom": "createPortal",
     "@my-react/react-reactive": "watch",
     "@my-react/react-terminal": "<Transform />",
+    "@my-react/react-lynx": "useLynxGlobalEventListener",
   },
   {
     "@my-react/react (hook)": "useEffect",
@@ -57,33 +62,49 @@ const data = [
     "@my-react/react-dom": "unmountComponentAtNode",
     "@my-react/react-reactive": "onBeforeMount",
     "@my-react/react-terminal": "<NewLine />",
+    "@my-react/react-lynx": "runOnMainThread",
   },
   {
     "@my-react/react (hook)": "useLayoutEffect",
     "@my-react/react": "createContext",
     "@my-react/react-dom": "renderToNodeStream",
     "@my-react/react-reactive": "onBeforeUnmount",
+    "@my-react/react-lynx": "runOnBackground",
   },
   {
     "@my-react/react (hook)": "useImperativeHandle",
     "@my-react/react": "createRef",
     "@my-react/react-dom": "createRoot",
     "@my-react/react-reactive": "onBeforeUpdate",
+    "@my-react/react-lynx": "InitDataProvider",
   },
-  { "@my-react/react (hook)": "useContext", "@my-react/react": "memo", "@my-react/react-dom": "hydrateRoot", "@my-react/react-reactive": "onMounted" },
+  {
+    "@my-react/react (hook)": "useContext",
+    "@my-react/react": "memo",
+    "@my-react/react-dom": "hydrateRoot",
+    "@my-react/react-reactive": "onMounted",
+    "@my-react/react-lynx": "GlobalPropsProvider",
+  },
   {
     "@my-react/react (hook)": "useDebugValue",
     "@my-react/react": "Component",
     "@my-react/react-dom": "renderToStaticMarkup",
     "@my-react/react-reactive": "onUnmounted",
+    "@my-react/react-lynx": "MainThreadRef",
   },
   {
     "@my-react/react (hook)": "useSignal",
     "@my-react/react": "PureComponent",
     "@my-react/react-dom": "renderToStaticNodeStream",
     "@my-react/react-reactive": "onUpdated",
+    "@my-react/react-lynx": "registerDataProcessors",
   },
-  { "@my-react/react (hook)": "useDeferredValue", "@my-react/react": "StrictMode", "@my-react/react-dom": "renderToPipeableStream" },
+  {
+    "@my-react/react (hook)": "useDeferredValue",
+    "@my-react/react": "StrictMode",
+    "@my-react/react-dom": "renderToPipeableStream",
+    "@my-react/react-lynx": "withInitDataInState",
+  },
   { "@my-react/react (hook)": "useId", "@my-react/react": "Fragment", "@my-react/react-dom": "renderToReadableStream" },
   { "@my-react/react (hook)": "useInsertionEffect", "@my-react/react": "Suspense" },
   { "@my-react/react (hook)": "useSyncExternalStore", "@my-react/react": "createFactory" },
@@ -321,7 +342,7 @@ export const ApiSection = () => {
         />
         <Column<(typeof data)[0]>
           headCellRender={{
-            cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
+            cellProps: { fontSize: "1.1rem" },
             Render: () => (
               <LinkBox display="flex" alignItems="center">
                 <Text as="span">@my-react/react-server</Text>
@@ -333,6 +354,26 @@ export const ApiSection = () => {
             ),
           }}
           dataIndex="@my-react/react-server"
+          bodyCellRender={{
+            Render: ({ cellData }) => {
+              return <Code>{cellData}</Code>;
+            },
+          }}
+        />
+        <Column<(typeof data)[0]>
+          headCellRender={{
+            cellProps: { fontSize: "1.1rem", borderRightRadius: "2px" },
+            Render: () => (
+              <LinkBox display="flex" alignItems="center">
+                <Text as="span">@my-react/react-lynx</Text>
+                <Spacer mx="1" />
+                <LinkOverlay href="https://github.com/MrWangJustToDo/MyReact/tree/main/packages/myreact-lynx" width="60px" height="16px" isExternal>
+                  <Img display="inline" objectFit="contain" src="https://img.shields.io/badge/new-green" />
+                </LinkOverlay>
+              </LinkBox>
+            ),
+          }}
+          dataIndex="@my-react/react-lynx"
           bodyCellRender={{
             Render: ({ cellData }) => {
               return <Code>{cellData}</Code>;

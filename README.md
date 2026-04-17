@@ -21,7 +21,8 @@
 - ⚡ **High Performance** - Optimized reconciler with minimal overhead
 - 🔧 **Modern Tooling** - First-class support for Vite, Next.js, Rspack, and Webpack
 - 🔄 **Fast Refresh** - Built-in HMR support for instant development feedback
-- 🎨 **Multiple Renderers** - DOM, Terminal, and Three.js renderers out of the box
+- 🎨 **Multiple Renderers** - DOM, Terminal, Three.js, and Lynx renderers out of the box
+- 📱 **Lynx Support** - Build cross-platform native apps with Lynx dual-thread architecture
 - 📦 **Tree Shakeable** - Optimized bundle size with ES modules
 - 🧪 **Experimental Features** - Reactive programming model and more
 - 🛠️ **DevTools** - Custom developer tools for debugging
@@ -140,6 +141,54 @@ const config = {
 };
 ```
 
+### Lynx (Cross-Platform Native Apps)
+
+MyReact supports [Lynx](https://lynxjs.org/) for building cross-platform native applications with a dual-thread architecture.
+
+```bash
+pnpm add @my-react/react-lynx
+```
+
+```ts
+// lynx.config.ts
+import { defineConfig } from "@lynx-js/rspeedy";
+import { pluginMyReactLynx } from "@my-react/react-lynx/plugin";
+
+export default defineConfig({
+  plugins: [pluginMyReactLynx()],
+});
+```
+
+```tsx
+// src/index.tsx
+import { root, useInitData, InitDataProvider } from "@my-react/react-lynx";
+
+function App() {
+  const initData = useInitData();
+  return <view>{initData.message}</view>;
+}
+
+root.render(
+  <InitDataProvider>
+    <App />
+  </InitDataProvider>
+);
+```
+
+#### Lynx-Specific APIs
+
+| API | Description |
+|-----|-------------|
+| `root.render()` | Render to Lynx page root |
+| `useInitData()` | Get initData with auto re-render |
+| `useGlobalProps()` | Get globalProps with auto re-render |
+| `useLynxGlobalEventListener()` | Early event listener registration |
+| `useMainThreadRef()` | Create main-thread accessible ref |
+| `runOnMainThread()` | Execute code on main thread |
+| `runOnBackground()` | Execute code on background thread |
+| `InitDataProvider` | Provider for initData context |
+| `GlobalPropsProvider` | Provider for globalProps context |
+
 ## 🎮 Examples
 
 <table>
@@ -161,6 +210,11 @@ const config = {
       <br />
       Server Components example
     </td>
+    <td align="center">
+      <strong>Lynx</strong>
+      <br />
+      Cross-platform native app
+    </td>
   </tr>
 </table>
 
@@ -172,6 +226,7 @@ const config = {
 | :------------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------ | :------------------------------------- |
 | [`@my-react/react`](packages/myreact)                         | [![npm](https://img.shields.io/npm/v/%40my-react/react)](https://www.npmjs.com/package/@my-react/react)                         | Core library with hooks and components |
 | [`@my-react/react-dom`](packages/myreact-dom)                 | [![npm](https://img.shields.io/npm/v/%40my-react/react-dom)](https://www.npmjs.com/package/@my-react/react-dom)                 | DOM renderer with SSR support          |
+| [`@my-react/react-lynx`](packages/myreact-lynx)               | -                                                                                                                               | Lynx renderer for cross-platform apps  |
 | [`@my-react/react-terminal`](packages/myreact-terminal)       | [![npm](https://img.shields.io/npm/v/%40my-react/react-terminal)](https://www.npmjs.com/package/@my-react/react-terminal)       | Terminal UI renderer                   |
 | [`@my-react/react-three-fiber`](packages/myreact-three-fiber) | [![npm](https://img.shields.io/npm/v/%40my-react/react-three-fiber)](https://www.npmjs.com/package/@my-react/react-three-fiber) | Three.js renderer                      |
 
@@ -233,6 +288,7 @@ pnpm dev:next     # Next.js example
 pnpm dev:vite     # Vite example
 pnpm dev:remix    # Remix example
 pnpm dev:rspack   # Rspack example
+pnpm dev:lynx     # Lynx example
 
 # Other commands
 pnpm dev          # Watch mode for packages
@@ -325,6 +381,25 @@ pnpm lint         # Lint code
 - `onMounted`
 - `onUnmounted`
 - `onUpdated`
+
+</td>
+<td valign="top">
+
+**@my-react/react-lynx**
+
+- `root.render`
+- `useInitData`
+- `useInitDataChanged`
+- `useGlobalProps`
+- `useGlobalPropsChanged`
+- `useLynxGlobalEventListener`
+- `useMainThreadRef`
+- `MainThreadRef`
+- `runOnMainThread`
+- `runOnBackground`
+- `InitDataProvider`
+- `GlobalPropsProvider`
+- `registerDataProcessors`
 
 </td>
 </tr>

@@ -17,6 +17,7 @@
   "devDependencies": {
     "@lynx-js/rspeedy": "^0.14.0",
     "@lynx-js/types": "^3.7.0",
-    "@rsbuild/plugin-node-polyfill": "^1.4.4"
+    "@rsbuild/plugin-node-polyfill": "^1.4.4",
+    "socket.io-client": "^4.8.3"
   }
 }

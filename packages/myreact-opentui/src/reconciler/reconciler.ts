@@ -10,14 +10,14 @@ export const reconciler = createReconciler(hostConfig);
 
 if (process.env["DEV"]) {
   const injectIntoDevTools = async (url: string, config: any) => {
-    const { preloadDevToolRuntimeIfNeed } = await import("@my-react/react-reconciler-compact/preload");
-    await preloadDevToolRuntimeIfNeed();
+    const { preloadDevToolRuntimeAuto } = await import("@my-react/react-reconciler-compact/preload");
+    await preloadDevToolRuntimeAuto();
     const { io } = await import("socket.io-client");
     globalThis.io = io;
     const typedReconciler = reconciler as typeof reconciler & {
-      injectIntoDevToolsWithSocketIO: (url: string, config: any) => Promise<void>;
+      injectIntoDevToolsAuto: (url: string, config: any) => Promise<void>;
     };
-    typedReconciler.injectIntoDevToolsWithSocketIO(url, config);
+    typedReconciler.injectIntoDevToolsAuto(url, config);
   };
 
   const DEVTOOL_PATH = process.env["DEVTOOL_PATH"] || "localhost";

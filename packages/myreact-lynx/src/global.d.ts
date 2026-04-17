@@ -5,6 +5,14 @@ declare global {
   /** Build-time macros */
   const __DEV__: boolean;
 
+  const __HMR__: boolean;
+
+  const __DEVTOOL__:
+    | boolean
+    | {
+        wsUrl?: string;
+      };
+
   interface GlobalThis {
     __MY_REACT_LYNX_PATCH_METHOD__?: string;
   }
@@ -24,7 +32,6 @@ declare global {
    * PAPI and React's types (`FiberElement | FiberElement[]`).
    */
   function __SetCSSId(nodes: ElementRef[], cssId: number, entryName?: string): void;
-
 }
 
 declare module "@lynx-js/types" {

@@ -527,6 +527,12 @@ importers:
       '@my-react/react':
         specifier: '>=0.3.24'
         version: link:../myreact
+      '@my-react/react-refresh':
+        specifier: ^0.3.24
+        version: link:../myreact-refresh
+      '@my-react/react-refresh-tools':
+        specifier: ^0.0.35
+        version: link:../myreact-refresh-tools
     devDependencies:
       '@lynx-js/type-element-api':
         specifier: 0.0.3
@@ -546,9 +552,6 @@ importers:
       '@rspack/core':
         specifier: ^1.6.5
         version: 1.7.7(@swc/helpers@0.5.21)
-      socket.io-client:
-        specifier: ^4.8.3
-        version: 4.8.3
 
   packages/myreact-opentui:
     dependencies:
@@ -1333,6 +1336,9 @@ importers:
       '@rsbuild/plugin-node-polyfill':
         specifier: ^1.4.4
         version: 1.4.4(@rsbuild/core@1.7.5)
+      socket.io-client:
+        specifier: ^4.8.3
+        version: 4.8.3
 
   ui/next-example:
     dependencies:

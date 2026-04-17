@@ -249,15 +249,15 @@ export default class Ink {
 
     if (process.env["DEV"] === "true") {
       const injectIntoDevTools = async (url: string, config: any) => {
-        const { preloadDevToolRuntimeIfNeed } = await import("@my-react/react-reconciler-compact/preload");
+        const { preloadDevToolRuntimeAuto } = await import("@my-react/react-reconciler-compact/preload");
         // load devtool runtime
-        await preloadDevToolRuntimeIfNeed();
+        await preloadDevToolRuntimeAuto();
         const { io } = await import("socket.io-client");
         globalThis.io = io;
         const typedReconciler = Reconciler as typeof Reconciler & {
-          injectIntoDevToolsWithSocketIO: (url: string, config: any) => Promise<void>;
+          injectIntoDevToolsAuto: (url: string, config: any) => Promise<void>;
         };
-        typedReconciler.injectIntoDevToolsWithSocketIO(url, config);
+        typedReconciler.injectIntoDevToolsAuto(url, config);
       };
 
       const DEVTOOL_PATH = process.env["DEVTOOL_PATH"] || "localhost";

@@ -1,6 +1,5 @@
 import { defineConfig } from "@lynx-js/rspeedy";
 import { pluginMyReactLynx } from "@my-react/react-lynx/plugin";
-import { pluginNodePolyfill } from "@rsbuild/plugin-node-polyfill";
 
 export default defineConfig({
   source: {
@@ -13,8 +12,10 @@ export default defineConfig({
       // Enable worklet transform to support 'main thread' directive functions
       enableWorkletTransform: true,
       reactRefresh: true,
+      // SEE https://github.com/MrWangJustToDo/myreact-devtools
+      // use pnpm run dev:websocket to debug lynx app
+      reactDevTool: true,
     }),
-    pluginNodePolyfill(),
   ],
   environments: {
     web: {},

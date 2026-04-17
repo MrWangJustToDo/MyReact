@@ -109,6 +109,16 @@ export interface PluginMyReactLynxOptions {
    * @defaultValue true (in development mode)
    */
   reactRefresh?: boolean;
+
+  reactDevTool?:
+    | {
+        // default url is: ws://localhost:3002/ws
+        // SEE https://github.com/MrWangJustToDo/myreact-devtools websocket mode to known more detail
+        // https://github.com/MrWangJustToDo/myreact-devtools/blob/main/chrome/server.mjs
+        // https://github.com/MrWangJustToDo/myreact-devtools/blob/main/chrome/src/hooks/useWebSocketDev.ts
+        wsUrl?: string;
+      }
+    | boolean;
 }
 
 const PLUGIN_NAME = "lynx:myreact";
@@ -146,6 +156,7 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
     enableReactAlias = true,
     enableWorkletTransform = false,
     reactRefresh = true,
+    reactDevTool = false,
   } = options;
 
   return {
@@ -176,6 +187,7 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
             define: {
               __DEV__: "process.env.NODE_ENV !== 'production'",
               __HMR__: enableRefresh,
+              __DEVTOOL__: typeof reactDevTool === "boolean" ? reactDevTool : JSON.stringify(reactDevTool),
               __MY_REACT_LYNX_AUTO_PIXEL_UNIT__: JSON.stringify(autoPixelUnit),
             },
           },

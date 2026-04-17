@@ -128,7 +128,7 @@ export const Reconciler = (_config: any) => {
     _renderDispatch.isAppMounted = true;
   };
 
-  const injectIntoDevTools = async (_config: any) => {
+  const injectIntoDevTools = (_config: any) => {
     rendererPackageName = _config.rendererPackageName || rendererPackageName;
 
     ReconcilerSet.forEach((renderDispatch) => (renderDispatch.renderPackage = rendererPackageName));
@@ -136,11 +136,12 @@ export const Reconciler = (_config: any) => {
     if (globalThis["__MY_REACT_DEVTOOL_INTERNAL__"]) return;
   };
 
-  const injectIntoDevToolsWithSocketIO = async (url: string, _config: any) => {
-    // load core runtime
-    await injectIntoDevTools(_config || {});
+  const injectIntoDevToolsAuto = async (url: string, _config: any) => {
+    // set core runtime
+    // you should load core runtime by your self, see packages/myreact-reconciler-compact/src/preload.ts
+    injectIntoDevTools(_config || {});
     // start, see https://github.com/MrWangJustToDo/myreact-devtools/blob/main/packages/bridge/src/hook.ts
-    const init = globalThis["__MY_REACT_DEVTOOL_NODE__"] || globalThis["__MY_REACT_DEVTOOL_BUNDLE__"];
+    const init = globalThis["__MY_REACT_DEVTOOL_NODE__"] || globalThis["__MY_REACT_DEVTOOL_BUNDLE__"] || globalThis["__MY_REACT_DEVTOOL_BUNDLE_WS__"];
 
     try {
       await init(url);
@@ -159,7 +160,7 @@ export const Reconciler = (_config: any) => {
     updateContainer,
     injectIntoDevTools,
     getPublicRootInstance,
-    injectIntoDevToolsWithSocketIO,
+    injectIntoDevToolsAuto,
     flushSync: safeCallWithSync,
     flushSyncWork: safeCallWithSync,
     batchedUpdates: safeCallWithSync,

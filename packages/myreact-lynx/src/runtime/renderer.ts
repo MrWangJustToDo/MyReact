@@ -8,6 +8,21 @@ import type { ReactNode } from "react";
 
 export const reconciler = createReconciler(hostConfig);
 
+if (__DEVTOOL__) {
+  const wsUrl = typeof __DEVTOOL__ === "object" ? __DEVTOOL__.wsUrl : "ws://localhost:3002/ws";
+
+  const injectIntoDevTools = async (url: string, config: any) => {
+    const typedReconciler = reconciler as typeof reconciler & {
+      injectIntoDevToolsAuto: (url: string, config: any) => Promise<void>;
+    };
+    typedReconciler.injectIntoDevToolsAuto(url, config);
+  };
+
+  injectIntoDevTools(wsUrl, {
+    rendererPackageName: "@my-react/react-lynx",
+  });
+}
+
 /**
  * Render a React element to the Lynx page root.
  * This is the main entry point for MyReact Lynx apps.

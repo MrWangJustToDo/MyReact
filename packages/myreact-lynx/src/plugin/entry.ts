@@ -146,6 +146,8 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
     const entryBackgroundPath = path.resolve(myReactLynxRoot, "dist/runtime/entry-background.js");
     const entryMainThreadPath = path.resolve(myReactLynxRoot, "dist/main-thread/entry-main.js");
 
+    const devToolRuntime = path.resolve(myReactLynxRoot, "client/dev-runtime.js");
+
     for (const [entryName, entryPoint] of Object.entries(entries)) {
       // Collect user imports from the original entry
       const imports: string[] = [];
@@ -200,6 +202,12 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
         .prepend({
           layer: LAYERS.BACKGROUND,
           import: entryBackgroundPath,
+        })
+        .when(isDev, (entry) => {
+          entry.prepend({
+            layer: LAYERS.BACKGROUND,
+            import: devToolRuntime,
+          });
         })
         .when(enabledHMR, (entry) => {
           entry.prepend({

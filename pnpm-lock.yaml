@@ -512,6 +512,9 @@ importers:
 
   packages/myreact-lynx:
     dependencies:
+      '@lynx-js/chunk-loading-webpack-plugin':
+        specifier: ^0.3.3
+        version: 0.3.3
       '@lynx-js/css-extract-webpack-plugin':
         specifier: ^0.7.0
         version: 0.7.0(@lynx-js/template-webpack-plugin@0.10.8(tslib@2.8.1))(webpack@5.105.4(@swc/core@1.15.18(@swc/helpers@0.5.21)))

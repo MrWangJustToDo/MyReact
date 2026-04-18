@@ -54,7 +54,7 @@ const listItemsReported = new Map<number, number>();
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-/** No-op: Vue manages all items; no recycling needed. */
+/** No-op: MyReact manages all items; no recycling needed. */
 // biome-ignore lint/suspicious/noEmptyBlockStatements: intentional no-op
 function enqueueComponentNoop(): void {}
 
@@ -86,7 +86,6 @@ function createListCallbacks(bgId: number): {
     const elementIDs: number[] = [];
     for (let j = 0; j < cellIndexes.length; j++) {
       const cellIndex = cellIndexes[j]!;
-      const _operationID = operationIDs[j]!;
       if (cellIndex < 0 || cellIndex >= items.length) {
         elementIDs.push(-1);
         continue;

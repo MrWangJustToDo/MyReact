@@ -51,8 +51,7 @@ export function applySetMtRef(id: number, refImpl: unknown): void {
   const el = elements.get(id);
   // Store in workletRefMap so worklet-runtime can resolve _wvid -> element.
   // The worklet-runtime's updateWorkletRef expects the ref to already exist
-  // in _workletRefMap (populated during React's hydration step). For Vue,
-  // we pre-register the ref before calling updateWorkletRef.
+  // in _workletRefMap. We pre-register the ref before calling updateWorkletRef.
   if (el) {
     const impl = getWorkletImpl();
     if (impl?._refImpl) {

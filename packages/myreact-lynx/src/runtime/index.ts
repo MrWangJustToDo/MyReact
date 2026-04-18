@@ -20,3 +20,7 @@ export { registerDataProcessors, type DataProcessorDefinition, type DataProcesso
 
 // Lynx API extensions
 export { triggerGlobalEventFromLepus, querySelector, querySelectorAll, type LynxAPI } from "./lynx-api";
+
+// Lazy bundle loading
+export { loadLazyBundle, makeSyncThen } from "./lazy-bundle";
+export { loadDynamicJS, __dynamicImport } from "./dynamic-import";

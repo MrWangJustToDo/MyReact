@@ -74,6 +74,43 @@ export function extractSharedImports(source: string): string {
 }
 
 /**
+ * Extract dynamic import expressions from source code.
+ *
+ * Preserves import('./path') and import with webpackChunkName comments
+ * so that webpack creates async chunks for the main thread layer.
+ *
+ * This is critical for lazy-loaded components: the async chunk must exist in
+ * both background and main-thread layers for LynxTemplatePlugin to generate
+ * a proper async template with both manifest (BG) and lepusCode (MT) sections.
+ *
+ * Returns a module that triggers the dynamic imports (for side effects)
+ * without keeping their return values.
+ */
+export function extractDynamicImports(source: string): string {
+  const imports: string[] = [];
+
+  // Match dynamic imports: import('./path') or import(/* comment */ './path')
+  // This regex captures the full import() call including any magic comments
+  const re = /import\s*\(\s*(\/\*[\s\S]*?\*\/\s*)?['"]([^'"]+)['"]\s*\)/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(source)) !== null) {
+    const fullMatch = match[0] as string;
+    // Only include relative imports (starting with . or ..)
+    const importPath = match[2] as string;
+    if (importPath.startsWith(".")) {
+      imports.push(fullMatch);
+    }
+  }
+
+  if (imports.length === 0) {
+    return "";
+  }
+
+  // Add semicolons to each import statement
+  return imports.map((imp) => imp + ";").join("\n");
+}
+
+/**
  * Extract registerWorkletInternal(...) calls from LEPUS output.
  *
  * The LEPUS output contains:

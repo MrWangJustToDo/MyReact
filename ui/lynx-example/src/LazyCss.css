@@ -1,0 +1,73 @@
+.FeatureCard {
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.08);
+  flex-direction: row;
+  align-items: center;
+  gap: 14px;
+}
+
+.FeatureIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.FeatureIcon--lazy {
+  background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+}
+
+.FeatureIcon--bar {
+  background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+}
+
+.FeatureIconText {
+  font-size: 20px;
+  color: #ffffff;
+}
+
+.FeatureContent {
+  flex: 1;
+  gap: 2px;
+}
+
+.FeatureTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.FeatureDesc {
+  font-size: 12px;
+  color: rgba(248, 250, 252, 0.55);
+}
+
+.FeatureBadge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(139, 92, 246, 0.25);
+}
+
+.FeatureBadgeText {
+  font-size: 10px;
+  font-weight: 700;
+  color: #a78bfa;
+}
+
+.LazyCard {
+  border-color: rgba(139, 92, 246, 0.25);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.LazyBadge {
+  background: rgba(16, 185, 129, 0.25);
+}
+
+.LazyBadgeText {
+  color: #34d399;
+}

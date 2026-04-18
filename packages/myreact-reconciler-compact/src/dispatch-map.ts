@@ -7,7 +7,7 @@ import type { MyReactFiberNode, MyReactFiberContainer, MyReactFiberRoot } from "
 export const initialMap = (dispatch: ReconcilerDispatch, fiber: MyReactFiberNode, config: any) => {
   let parentFiberWithNode: MyReactFiberNode | null = null;
 
-  let parentFiberHostContext: any | null = null;
+  let parentFiberWithNodeHostContext: any | null = null;
 
   let hostContext: any | null = null;
 
@@ -22,12 +22,26 @@ export const initialMap = (dispatch: ReconcilerDispatch, fiber: MyReactFiberNode
       parentFiberWithNode = dispatch.runtimeDom.elementMap.get(fiber.parent) || dispatch.rootFiber;
     }
 
-    parentFiberHostContext = dispatch.runtimeDom.hostContextMap.get(parentFiberWithNode);
+    parentFiberWithNodeHostContext = dispatch.runtimeDom.hostContextMap.get(parentFiberWithNode);
 
     if (checkFiberWithNativeNode(dispatch, fiber)) {
-      hostContext = config.getChildHostContext(parentFiberHostContext, fiber.elementType, dispatch.rootNode, fiber);
+      hostContext = config.getChildHostContext(parentFiberWithNodeHostContext, fiber.elementType, dispatch.rootNode, fiber);
     } else {
-      hostContext = parentFiberHostContext;
+      hostContext = parentFiberWithNodeHostContext;
+    }
+    // help for lynx render to set css entry
+    if (config.pathHostContext && typeof config.pathHostContext === "function") {
+      const parentFiberHostContext = dispatch.runtimeDom.hostContextMap.get(mayFiberContainer);
+
+      hostContext = config.pathHostContext(
+        hostContext,
+        parentFiberHostContext,
+        parentFiberWithNodeHostContext,
+        fiber.elementType,
+        fiber.pendingProps,
+        dispatch.rootNode,
+        fiber
+      );
     }
   } else {
     hostContext = config.getRootHostContext(dispatch.rootNode);

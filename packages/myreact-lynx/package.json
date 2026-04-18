@@ -46,6 +46,10 @@
     "./plugin/loaders/*": {
       "import": "./dist/plugin/loaders/*.js"
     },
+    "./shims/lynx-react-internal": {
+      "types": "./dist/shims/lynx-react-internal.d.ts",
+      "import": "./dist/shims/lynx-react-internal.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
@@ -53,6 +57,7 @@
     "dev": "rslib build --watch"
   },
   "dependencies": {
+    "@lynx-js/chunk-loading-webpack-plugin": "^0.3.3",
     "@lynx-js/css-extract-webpack-plugin": "^0.7.0",
     "@lynx-js/react": "^0.116.5",
     "@lynx-js/runtime-wrapper-webpack-plugin": "^0.1.3",

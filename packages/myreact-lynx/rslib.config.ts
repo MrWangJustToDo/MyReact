@@ -22,6 +22,7 @@ export default defineConfig({
       "@lynx-js/types",
       "@lynx-js/react",
       "@lynx-js/react/transform",
+      "@lynx-js/react/internal",
       "@lynx-js/runtime-wrapper-webpack-plugin",
       "@lynx-js/template-webpack-plugin",
       "@rspack/core",

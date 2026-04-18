@@ -41,6 +41,46 @@ export function onFunctionCall(resolve: (value: unknown) => void): number {
   return id;
 }
 
+/**
+ * Register a resolve/reject callback pair with an optional timeout.
+ * If the timeout expires before the MT responds, the reject callback is called.
+ * This helps detect stale worklet registrations after HMR.
+ */
+export function onFunctionCallWithTimeout(resolve: (value: unknown) => void, reject: (error: Error) => void, timeoutMs: number): number {
+  if (!resolveMap) {
+    initReturnValueListener();
+  }
+  const id = nextResolveId++;
+
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+
+  const wrappedResolve = (value: unknown) => {
+    if (timeoutHandle) {
+      clearTimeout(timeoutHandle);
+    }
+    resolve(value);
+  };
+
+  resolveMap!.set(id, wrappedResolve);
+
+  if (timeoutMs > 0) {
+    timeoutHandle = setTimeout(() => {
+      if (resolveMap?.has(id)) {
+        resolveMap.delete(id);
+        reject(
+          new Error(
+            "[@my-react/react-lynx] runOnMainThread timed out waiting for response. " +
+              "This usually happens after HMR when worklet registrations become stale. " +
+              "Try refreshing the page to re-register all worklets."
+          )
+        );
+      }
+    }, timeoutMs);
+  }
+
+  return id;
+}
+
 /** Reset module state — for testing only. */
 export function resetFunctionCallState(): void {
   resolveMap = undefined;

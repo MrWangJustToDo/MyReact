@@ -12,6 +12,10 @@
  * Files without 'main thread' directives return only their local imports.
  * This preserves the dependency chain so webpack can reach files that DO
  * contain worklet registrations.
+ *
+ * NOTE: We intentionally do NOT preserve dynamic imports on the MT layer.
+ * This would create empty async chunks that cause build errors. Lazy loading
+ * works via the BG layer's async chunks only.
  */
 
 import { transformReactLynxSync } from "@lynx-js/react/transform";
@@ -44,6 +48,7 @@ export default function workletLoaderMT(this: Rspack.LoaderContext, source: stri
   // IMPORTANT: snapshot: false disables ReactLynx's JSX snapshot transformation
   // which generates ReactLynx-specific code (__DynamicPartSlot, etc.)
   // MyReact uses standard React JSX rendering, so we only need the worklet transform.
+  // dynamicImport: false disables ReactLynx's lazy bundle transformation.
   const lepusResult = transformReactLynxSync(source, {
     pluginName: "myreact:worklet-mt",
     filename,
@@ -55,6 +60,7 @@ export default function workletLoaderMT(this: Rspack.LoaderContext, source: stri
     refresh: false,
     defineDCE: false,
     directiveDCE: false,
+    dynamicImport: false,
     worklet: {
       target: "LEPUS",
       filename,

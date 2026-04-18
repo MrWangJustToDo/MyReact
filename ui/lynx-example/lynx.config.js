@@ -9,8 +9,6 @@ export default defineConfig({
   },
   plugins: [
     pluginMyReactLynx({
-      // Enable worklet transform to support 'main thread' directive functions
-      enableWorkletTransform: true,
       reactRefresh: true,
       // SEE https://github.com/MrWangJustToDo/myreact-devtools
       // use pnpm run dev:websocket to debug lynx app

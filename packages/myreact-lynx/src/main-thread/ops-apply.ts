@@ -2,7 +2,7 @@
  * Main Thread ops executor.
  *
  * Receives the flat-array ops buffer sent by the Background Thread via
- * callLepusMethod('vuePatchUpdate', { data: JSON.stringify(ops) }) and applies
+ * callLepusMethod('reactPatchUpdate', { data: JSON.stringify(ops) }) and applies
  * each operation using Lynx PAPI.
  */
 
@@ -62,9 +62,13 @@ export function applyOps(ops: unknown[]): void {
       case OP.CREATE: {
         const id = ops[i++] as number;
         const type = ops[i++] as string;
+        // Optional scope (bundle URL) for CSS scoping of lazy components
+        const maybeScope = ops[i];
+        const scope = typeof maybeScope === "string" ? (i++, maybeScope) : undefined;
         let el: LynxElement;
+        // no need for my-react
         if (type === "__comment") {
-          // Vue uses comment nodes as Fragment / v-if anchors.
+          // Comment nodes are used as Fragment anchors.
           // Create a zero-size text node as an invisible placeholder.
           el = __CreateRawText("");
         } else if (type === "list") {
@@ -74,9 +78,9 @@ export function applyOps(ops: unknown[]): void {
           // Native Lynx sets up type-specific internals (e.g. overflow
           // clipping for __CreateView) that __CreateElement may skip.
           el = createTypedElement(type, pageUniqueId);
-          // Associate element with CSS scope 0 (common/global CSS)
-          // so the CSS selector engine can match class-based rules.
-          __SetCSSId([el], 0);
+          // Associate element with CSS scope.
+          // For lazy components, scope (bundle URL) enables l-e-name scoped CSS.
+          __SetCSSId([el], 0, scope);
         }
         elements.set(id, el);
         // Set selector attribute for BG-thread NodesRef queries.
@@ -89,8 +93,13 @@ export function applyOps(ops: unknown[]): void {
 
       case OP.CREATE_TEXT: {
         const id = ops[i++] as number;
+        // Optional scope (bundle URL) for CSS scoping of lazy components
+        const maybeScope = ops[i];
+        const scope = typeof maybeScope === "string" ? (i++, maybeScope) : undefined;
         const el = __CreateText(pageUniqueId);
-        __SetCSSId([el], 0);
+        // Associate element with CSS scope.
+        // For lazy components, scope (bundle URL) enables l-e-name scoped CSS.
+        __SetCSSId([el], 0, scope);
         elements.set(id, el);
         // Set selector attribute for BG-thread NodesRef queries
         __SetAttribute(el, `react-ref-${id}`, 1);

@@ -21,7 +21,30 @@ __webpack_require__.i.push(function (options) {
     }
     return;
   }
+
   var originalFactory = options.factory;
+
+  // Handle missing factory for CSS HMR runtime in lazy-loaded chunks
+  // When CSS modules are lazy-loaded, they require hotModuleReplacement.cjs
+  // but this module may not be available in __webpack_modules__ yet.
+  // We provide a no-op factory to prevent the "factory is undefined" error.
+  if (typeof originalFactory !== "function") {
+    // Check if this is the CSS HMR runtime module
+    if (options.id && options.id.includes("hotModuleReplacement")) {
+      // Provide a no-op factory that exports basic HMR stubs
+      options.factory = function (module, exports, require) {
+        // Provide stub HMR API for lazy-loaded CSS
+        // This allows CSS to load without errors, but HMR won't work for lazy CSS
+        module.exports = function (moduleId, options) {
+          // No-op: CSS HMR is not supported for lazy-loaded modules
+          return { dispose: function() {}, accept: function() {} };
+        };
+        module.exports.cssReload = function() {};
+      };
+    }
+    return;
+  }
+
   options.factory = function (moduleObject, moduleExports, webpackRequire) {
     var prevRefreshReg = globalThis.$RefreshReg$;
     var prevRefreshSig = globalThis.$RefreshSig$;

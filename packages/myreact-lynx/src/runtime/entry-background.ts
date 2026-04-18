@@ -6,6 +6,7 @@
  */
 
 import { publishEvent } from "./event-registry.js";
+import { loadLazyBundle } from "./lazy-bundle.js";
 
 // `lynxCoreInject` is injected by RuntimeWrapperWebpackPlugin as a parameter
 // of the outer __init_card_bundle__ function – it is available as a bare
@@ -27,6 +28,13 @@ const g = globalThis as Record<string, unknown>;
 // These can be used for runtime checks when compile-time defines aren't available
 g["__BACKGROUND_RUNTIME__"] = true;
 g["__MAIN_THREAD_RUNTIME__"] = false;
+
+// Register loadLazyBundle on lynx global BEFORE any chunk loading happens
+// This is required for React.lazy() with dynamic imports to work
+// The chunk loading runtime uses lynx.loadLazyBundle() to load async template bundles
+if (typeof lynx !== "undefined") {
+  (lynx as unknown as { loadLazyBundle: typeof loadLazyBundle }).loadLazyBundle = loadLazyBundle;
+}
 
 // Primary path: lynxCoreInject.tt.publishEvent (used by modern Lynx)
 if (typeof lynxCoreInject !== "undefined" && lynxCoreInject?.tt) {

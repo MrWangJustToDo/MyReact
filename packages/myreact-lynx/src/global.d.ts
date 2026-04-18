@@ -10,6 +10,14 @@ declare global {
   const __LEPUS__: boolean;
 
   /**
+   * True when code is running on the background thread (JS side).
+   * Opposite of __LEPUS__.
+   * This is a compile-time constant set by the build plugin.
+   * Default is `true` for the background bundle.
+   */
+  const __JS__: boolean;
+
+  /**
    * True when code is running on the background thread.
    * This is a compile-time constant set by the build plugin.
    * Default is `true` for the background bundle.
@@ -97,5 +105,19 @@ declare module "@lynx-js/types" {
 
     /** Query all elements matching a selector */
     querySelectorAll?(selector: string): unknown[];
+
+    /** Query a dynamic component bundle (async callback API) */
+    QueryComponent?(source: string, callback: (result: { code: number; detail: { schema: string } }) => void): void;
+
+    /** Get the native Lynx object */
+    getNativeLynx?(): {
+      QueryComponent?(source: string, callback: (result: { code: number; detail: { schema: string } }) => void): void;
+    } | null;
+
+    /** Load a lazy bundle (set by our loadLazyBundle implementation) */
+    loadLazyBundle?<T extends { default: React.ComponentType<unknown> }>(source: string): Promise<T>;
+
+    /** Asynchronously require a module (Lynx native API) */
+    requireModuleAsync?<T>(url: string, callback: (err: Error | null, data: T | null) => void): void;
   }
 }

@@ -13,12 +13,12 @@ type LoaderContext = {
 export default function ignoreCssLoader(this: LoaderContext, source: string): string {
   this.cacheable(true);
 
-  // If the source contains ___CSS_LOADER_EXPORT___, it is not a CSS Modules
-  // file (exportOnlyLocals is enabled), so we don't need to preserve it.
+  // If the source contains ___CSS_LOADER_EXPORT___, it has full CSS output
+  // (not CSS Modules with exportOnlyLocals), so return empty export.
   if (source.includes("___CSS_LOADER_EXPORT___")) {
     return "export {}";
   }
 
-  // Preserve CSS modules export for background layer.
+  // Preserve CSS Modules class name exports.
   return source;
 }

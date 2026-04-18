@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { OP } from "../shared/op.js";
 
+import { SCOPE_PROP } from "./bundle-registry.js";
 import { register, unregister, updateHandler } from "./event-registry.js";
 import { scheduleFlush } from "./flush.js";
 import { pushOp } from "./ops.js";
@@ -123,6 +124,8 @@ type LynxELementType = "view" | "text" | "image" | "scroll-view" | "list" | "pag
 
 type HostContext = {
   isInsideText: boolean;
+  /** CSS scope (bundle URL) for lazy components */
+  scope?: string;
 };
 
 const helpAppend = (parent: ShadowElement, child: ShadowElement, anchor?: ShadowElement | null) => {
@@ -258,24 +261,54 @@ export const hostConfig: HostConfig<
   supportsPersistence: false,
   supportsHydration: false,
 
-  getRootHostContext: () => ({ isInsideText: false }),
+  getRootHostContext: () => ({ isInsideText: false, scope: undefined }),
+
+  // original function only work for staticNode
+  // but for lynx scope, it's set to component props
+  // so we need other option to do this
   getChildHostContext: (parentContext, type) => {
     const isInsideText = parentContext.isInsideText || type === "text";
-    return { ...parentContext, isInsideText };
+    const scope = parentContext.scope;
+    if (scope !== parentContext.scope || isInsideText !== parentContext.isInsideText) {
+      return { isInsideText, scope };
+    }
+    return parentContext;
+  },
+
+  // this is not standard react flow
+  // @ts-ignore
+  pathHostContext: (hostContext, parentFiberHostContext, _, type, props) => {
+    const scopeFromProps = props[SCOPE_PROP];
+    const scopeFromParent = parentFiberHostContext.scope;
+    const finalScope = scopeFromProps || scopeFromParent;
+    if (finalScope === hostContext.scope) {
+      return hostContext;
+    }
+    return { ...hostContext, scope: finalScope };
   },
 
   shouldSetTextContent: () => false,
 
-  createInstance(type) {
+  createInstance(type, _props, _rootContainer, hostContext) {
     const instance = new ShadowElement(type);
-    pushOp(OP.CREATE, instance.id, type);
+    // Include scope in CREATE op for CSS scoping of lazy components
+    if (hostContext.scope) {
+      pushOp(OP.CREATE, instance.id, type, hostContext.scope);
+    } else {
+      pushOp(OP.CREATE, instance.id, type);
+    }
     return instance;
   },
 
-  createTextInstance(text) {
+  createTextInstance(text, _rootContainer, hostContext) {
     const instance = new ShadowElement("#text");
     instance.text = text;
-    pushOp(OP.CREATE_TEXT, instance.id);
+    // Include scope in CREATE_TEXT op for CSS scoping of lazy components
+    if (hostContext.scope) {
+      pushOp(OP.CREATE_TEXT, instance.id, hostContext.scope);
+    } else {
+      pushOp(OP.CREATE_TEXT, instance.id);
+    }
     if (text) pushOp(OP.SET_TEXT, instance.id, text);
     return instance;
   },
@@ -320,6 +353,8 @@ export const hostConfig: HostConfig<
 
   commitMount(instance, type, props) {
     const { style, ...restProps } = props;
+
+    instance.props = props;
 
     applyProps(instance, restProps);
     applyStyle(instance, style as Record<string, unknown>);

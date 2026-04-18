@@ -1,5 +1,5 @@
 import createReconciler from "@my-react/react-reconciler-compact";
-import { LegacyRoot } from "@my-react/react-reconciler-compact/constants";
+import { ConcurrentRoot } from "@my-react/react-reconciler-compact/constants";
 
 import { registerDataProcessors } from "./data-processor";
 import { hostConfig } from "./reconciler";
@@ -35,7 +35,19 @@ if (__DEVTOOL__) {
  */
 export function render(element: React.ReactNode) {
   const pageRoot = createPageRoot();
-  const container = reconciler.createContainer(pageRoot, LegacyRoot, null, false, null, "", console.error, console.error, console.error, console.error, null);
+  const container = reconciler.createContainer(
+    pageRoot,
+    ConcurrentRoot,
+    null,
+    false,
+    null,
+    "",
+    console.error,
+    console.error,
+    console.error,
+    console.error,
+    null
+  );
   reconciler.updateContainer(element, container, null, () => {});
 }
 

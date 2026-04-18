@@ -1,6 +1,6 @@
 /**
  * ShadowElement: a lightweight doubly-linked tree node that lives entirely in
- * the Background Thread.  It lets Vue's renderer call parentNode() / nextSibling()
+ * the Background Thread. It lets MyReact's renderer call parentNode() / nextSibling()
  * synchronously, while the real Lynx elements exist only on the Main Thread.
  *
  * id=1 is reserved for the page root (created via __CreatePage on Main Thread).
@@ -42,7 +42,7 @@ export class ShadowElement {
   // ---------------------------------------------------------------------------
   // NodesRef — delegates to the real NodesRef returned by
   // lynx.createSelectorQuery().select(), using types from @lynx-js/types.
-  // Each method targets this element via its unique `vue-ref-{id}` attribute
+  // Each method targets this element via its unique `react-ref-{id}` attribute
   // (set on the MT side during element creation).
   // ---------------------------------------------------------------------------
 

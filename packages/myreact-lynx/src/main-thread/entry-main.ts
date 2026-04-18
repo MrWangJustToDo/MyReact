@@ -6,6 +6,8 @@
  *   - globalThis.renderPage    – creates the Lynx page root (id=1)
  *   - globalThis.updatePage    – no-op stub (required by Lynx Lepus runtime)
  *   - globalThis.reactPatchUpdate – receives ops from Background Thread
+ *   - globalThis.processEvalResult – processes lazy bundle exports
+ *   - lynx.loadLazyBundle      – for chunk loading runtime (async bundles)
  */
 
 import { elements, setPageUniqueId } from "./element-registry.js";
@@ -13,6 +15,42 @@ import { applyOps, resetMainThreadState } from "./ops-apply.js";
 import { runOnBackground } from "./run-on-background-mt.js";
 
 const g = globalThis as Record<string, unknown>;
+
+// Register processEvalResult for lazy bundle loading.
+// When a lazy bundle is loaded, the web simulator calls:
+//   processEvalResult(bundleExports, bundleUrl)
+// The bundleExports is a function: (globDynamicComponentEntry) => module.exports
+// We call it with the bundleUrl to match ReactLynx's behavior.
+if (typeof g["processEvalResult"] === "undefined") {
+  g["processEvalResult"] = function <T>(result: T | undefined, schema: string): T | undefined {
+    // If result is a function (the wrapped bundle), call it with the URL
+    if (typeof result === "function") {
+      return (result as (url: string) => T)(schema);
+    }
+    return result;
+  };
+}
+
+// Register loadLazyBundle on lynx global BEFORE any chunk loading code runs.
+// This is required for React.lazy() with dynamic imports to work.
+// The chunk loading runtime uses lynx.loadLazyBundle() to load async template bundles.
+// On main thread (LEPUS), we use __QueryComponent for synchronous loading.
+if (typeof lynx !== "undefined") {
+  (lynx as unknown as { loadLazyBundle: <T>(source: string) => Promise<T> }).loadLazyBundle = function loadLazyBundle<T>(source: string): Promise<T> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - __QueryComponent is a Lynx PAPI
+    const query = __QueryComponent(source);
+    let result: T;
+    try {
+      result = query.evalResult as T;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_e) {
+      // Return a never-resolving promise to avoid errors on first screen
+      return new Promise(() => {});
+    }
+    return Promise.resolve(result);
+  };
+}
 
 // Set runtime thread identification globals
 // These can be used for runtime checks when compile-time defines aren't available
@@ -28,7 +66,7 @@ g["SystemInfo"] = (typeof lynx !== "undefined" && lynx.SystemInfo) ?? {};
 g["runOnBackground"] = runOnBackground;
 
 // The worklet-runtime (from @lynx-js/react) is bundled into this
-// main-thread entry by the vue-lynx plugin — it provides:
+// main-thread entry by the myreact-lynx plugin — it provides:
 //   globalThis.runWorklet, globalThis.registerWorkletInternal,
 //   globalThis.lynxWorkletImpl (with Element class, Animation, etc.)
 
@@ -37,7 +75,7 @@ const PAGE_ROOT_ID = 1;
 
 // Lynx Lepus runtime requires globalThis.processData to be set.
 // It is called to transform initial data before renderPage runs.
-// For Vue we have no data processors, so just pass data through.
+// Data processors are registered via registerDataProcessors() on the BG thread.
 g["processData"] = function (data: unknown, _processorName?: string): unknown {
   return data ?? {};
 };
@@ -61,9 +99,9 @@ g["renderPage"] = function (_data: unknown): void {
 };
 
 // Lynx may call updatePage / updateGlobalProps after data changes.
-// We have no data binding on Main Thread, so these are no-ops.
+// MyReact handles data updates on the Background Thread, so these are no-ops.
 g["updatePage"] = function (_data: unknown): void {
-  // no-op: Vue Main Thread has no direct data binding
+  // no-op: MyReact handles data updates on Background Thread
 };
 
 g["updateGlobalProps"] = function (_data: unknown): void {

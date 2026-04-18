@@ -16,6 +16,8 @@
  * ```
  */
 
+import { ChunkLoadingWebpackPlugin } from "@lynx-js/chunk-loading-webpack-plugin";
+
 import { applyCSS } from "./css.js";
 import { applyEntry } from "./entry.js";
 import { LAYERS } from "./layers.js";
@@ -88,19 +90,6 @@ export interface PluginMyReactLynxOptions {
   enableReactAlias?: boolean;
 
   /**
-   * Whether to enable worklet transform loaders.
-   * When enabled, the `@lynx-js/react/transform` SWC plugin is used to
-   * transform `'main thread'` directive functions into worklet context objects.
-   *
-   * NOTE: This is currently disabled by default because the ReactLynx transform
-   * also transforms JSX into ReactLynx-specific snapshot code, which is
-   * incompatible with MyReact's standard React JSX rendering.
-   *
-   * @defaultValue false
-   */
-  enableWorkletTransform?: boolean;
-
-  /**
    * Whether to enable React Refresh (Hot Module Replacement) for components.
    * When enabled, component changes will be hot-reloaded without losing state.
    *
@@ -159,7 +148,6 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
     debugInfoOutside = true,
     autoPixelUnit = true,
     enableReactAlias = true,
-    enableWorkletTransform = false,
     reactRefresh = true,
     reactDevTool = false,
   } = options;
@@ -195,6 +183,8 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
               __DEVTOOL__: typeof reactDevTool === "boolean" ? reactDevTool : JSON.stringify(reactDevTool),
               __MY_REACT_LYNX_AUTO_PIXEL_UNIT__: JSON.stringify(autoPixelUnit),
               // Lynx dual-thread macros (default values, overridden per layer in entry.ts)
+              // __JS__ is the opposite of __LEPUS__ - true on Background Thread, false on Main Thread
+              __JS__: "true",
               __LEPUS__: "false",
               __BACKGROUND__: "true",
               __MAIN_THREAD__: "false",
@@ -217,6 +207,10 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
                     // Import from @my-react/react-lynx instead of react
                     importSource: "@my-react/react-lynx",
 
+                    // Allow JSX namespace syntax for Lynx-specific attributes
+                    // e.g., main-thread:bindmouseclick, main-thread:bindtap
+                    throwIfNamespace: false,
+
                     // enable react refresh transform, we need provider global function
                     refresh: enableRefresh,
 
@@ -229,10 +223,14 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
         });
       });
 
-      api.modifyBundlerChain((chain) => {
+      api.modifyBundlerChain((chain, { environment }) => {
         // Resolve alias for @my-react/react-lynx internal paths
         // This ensures the runtime files resolve correctly in pnpm workspaces
         chain.resolve.alias.set("@my-react/react-lynx", "@my-react/react-lynx");
+
+        // Redirect @lynx-js/react/internal to our shim which provides
+        // MyReact-compatible implementations of loadLazyBundle etc.
+        chain.resolve.alias.set("@lynx-js/react/internal$", "@my-react/react-lynx/shims/lynx-react-internal");
 
         // Apply React → MyReact aliases if enabled
         // This allows existing React code to work with MyReact
@@ -240,6 +238,24 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
           for (const [from, to] of Object.entries(REACT_ALIASES)) {
             chain.resolve.alias.set(from, to);
           }
+        }
+
+        // Configure chunk loading based on environment
+        // The 'lynx' environment needs special chunk loading, 'web' uses default
+        const isLynxEnv = environment.name === "lynx" || environment.name.startsWith("lynx-");
+
+        if (isLynxEnv) {
+          // Configure Lynx-specific chunk loading mechanism
+          // This is required for dynamic imports (React.lazy, import()) to work
+          // in the Lynx native environment
+          chain.plugin("lynx:chunk-loading").use(ChunkLoadingWebpackPlugin).end();
+
+          // Set output format for Lynx compatibility
+          chain.output.chunkLoading("lynx" as "import").chunkFormat("commonjs");
+        } else {
+          // For web environment (web simulator), use standard chunk loading
+          // which works with web workers
+          chain.output.chunkFormat("commonjs");
         }
       });
 
@@ -254,7 +270,6 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
         customCSSInheritanceList,
         enableCSSInlineVariables,
         debugInfoOutside,
-        enableWorkletTransform,
         reactRefresh,
       });
 

@@ -1330,6 +1330,9 @@ importers:
         specifier: workspace:*
         version: link:../../packages/myreact-lynx
     devDependencies:
+      '@lynx-js/qrcode-rsbuild-plugin':
+        specifier: ^0.4.6
+        version: 0.4.6
       '@lynx-js/rspeedy':
         specifier: ^0.14.0
         version: 0.14.1(@rspack/core@1.7.11(@swc/helpers@0.5.21))(typescript@5.9.3)(webpack@5.105.4(@swc/core@1.15.18(@swc/helpers@0.5.21)))
@@ -4222,6 +4225,10 @@ packages:
 
   '@lynx-js/css-serializer@0.1.5':
     resolution: {integrity: sha512-eRVsGFQR0DjclwXjZF7f/SnYRHtS2H29H1iFlAo71Rdyrjbl4y8kIk4s0qD41YbmlXqRP+UnWtUIaXiivTJLQQ==}
+
+  '@lynx-js/qrcode-rsbuild-plugin@0.4.6':
+    resolution: {integrity: sha512-KHnvkccapEWEtfRMJ4GxNoZDsv8c0RlfNfc3la/z8G2eP+vb8VtKG1Atk2FVagUVnJcuePeuue8LaivzoM/Irw==}
+    engines: {node: '>=18'}
 
   '@lynx-js/react@0.116.5':
     resolution: {integrity: sha512-qhh9mZv7d5hKMQOXoiAOYaWQe/My6MhJ8EcJAi/c9g1EH4TQQoR0Q1o/7dIWj/pZbIiXSt6bgXpTJNQpXr+Qyg==}
@@ -15366,6 +15373,8 @@ snapshots:
   '@lynx-js/css-serializer@0.1.5':
     dependencies:
       css-tree: 3.2.1
+
+  '@lynx-js/qrcode-rsbuild-plugin@0.4.6': {}
 
   '@lynx-js/react@0.116.5(@lynx-js/types@3.7.0)(@types/react@19.2.14)':
     dependencies:

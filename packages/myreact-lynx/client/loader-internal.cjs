@@ -1,4 +1,3 @@
-// @ts-nocheck
 // MyReact Lynx HMR Loader Runtime
 // Appended to each module by the loader
 var getExports = (m) => m.exports || m.__proto__.exports;

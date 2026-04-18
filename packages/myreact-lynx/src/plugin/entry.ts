@@ -8,45 +8,34 @@
  *
  * ## Lazy Loading (React.lazy / Dynamic Import) - Known Issues & Fixes
  *
- * ### Issue 1: Async chunks wrapped incorrectly by RuntimeWrapperWebpackPlugin
+ * ### Issue 1: Native Lynx requires RuntimeWrapperWebpackPlugin for all JS files
  *
- * **Error**: `TypeError: Cannot read properties of undefined (reading 'length')`
- *            at `installChunk` in webpack chunk loading runtime
+ * **Error**: `ReferenceError: Can not find variable: exports`
  *
- * **Why it happened**:
- * - `RuntimeWrapperWebpackPlugin` uses `BannerPlugin` with regex `/^(?!.*main-thread).*\.js$/`
- * - This regex matches ALL `.js` files except `main-thread.js`
- * - Async chunks (e.g., `_myreact_background_src_LazyCom_tsx.js`) were also wrapped
- * - The wrapper converts chunks from plain CommonJS format:
- *   ```js
- *   exports.ids = ["chunk_id"];
- *   exports.modules = { ... };
- *   ```
- *   to Lynx template bundle format:
- *   ```js
- *   (function(){ __init_card_bundle__(lynxCoreInject) { ... } })()
- *   ```
- * - `ChunkLoadingWebpackPlugin` expects `{ ids, modules, runtime }` format
- * - When it receives `{ init: __init_card_bundle__ }`, `chunk.ids` is undefined
+ * **Why it happens**:
+ * - Webpack generates JS files with CommonJS format using `exports`
+ * - On native Lynx, `exports` is not a global variable
+ * - The `RuntimeWrapperWebpackPlugin` provides `exports` via `tt.define()` wrapper
  *
- * **Why it was intermittent (sometimes worked, sometimes not)**:
- * - Build cache: sometimes cached chunks had correct format
- * - Plugin execution order: timing of when BannerPlugin ran varied
- * - Chunk name changes due to content hash affected regex matching
+ * **Affected files**:
+ * - Entry files: `main/background.js`
+ * - Async chunks: `_chunk_name.js`
+ * - HMR update files: `main.[hash].hot-update.js`
  *
- * **Fix**: Only wrap entry files, not async chunks
+ * **Fix**: Wrap ALL `.js` files except `main-thread.js` (same as ReactLynx)
  * ```ts
- * // Before (WRONG - wraps all .js except main-thread.js):
  * test: /^(?!.*main-thread(?:\.[A-Fa-f0-9]*)?\.js$).*\.js$/
- *
- * // After (CORRECT - only wraps specific entry files):
- * test: [/main\/background(?:\.[A-Fa-f0-9]+)?\.js$/]
  * ```
  *
- * **Why this fix works**:
- * - Entry files (e.g., `main/background.js`) need the Lynx runtime wrapper
- * - Async chunks need plain CommonJS format for `ChunkLoadingWebpackPlugin`
- * - By only wrapping entry files, async chunks stay in correct format
+ * **How native Lynx handles wrapped chunks**:
+ * - The wrapper returns `{ init: fn }` when `bundleSupportLoadScript` is true
+ * - Native Lynx runtime automatically calls `init(lynxCoreInject)`
+ * - This returns the correct `{ ids, modules }` format for chunk loading
+ *
+ * **Web simulator difference**:
+ * - Web simulator may not handle `{ init }` wrapper format the same way
+ * - This can cause chunk loading failures on web but work on native Lynx
+ * - For web compatibility, ensure proper chunk loading plugin configuration
  *
  * ### Issue 2: CSS HMR causes null pointer in React Refresh interceptor
  *
@@ -193,41 +182,31 @@
  * - `chunkFormat: 'commonjs'` ensures chunks export `{ ids, modules, runtime }`
  * - Environment check ensures web simulator uses different (default) loading
  *
- * ### Issue 8: Lazy-loaded CSS requires webpackChunkName
+ * ### Issue 8: Lazy loading automatically generates bundles (no webpackChunkName needed)
  *
- * **Error**: `RuntimeError: factory is undefined` for `hotModuleReplacement.cjs`
- * **Symptom**: CSS in lazy-loaded components doesn't apply
+ * **Previous issue**: CSS in lazy-loaded components didn't apply without `webpackChunkName`
  *
- * **Why it happens**:
- * - `LynxTemplatePlugin` generates separate `.bundle` files for async chunks
- * - These bundles include both JS and CSS for the lazy component
- * - BUT it only processes chunks that have names:
- *   ```ts
- *   .filter(cg => cg.name !== null && cg.name !== undefined)
- *   ```
- * - Without `webpackChunkName`, the chunk has no name → no async template → no CSS
+ * **Why it happened**:
+ * - `LynxTemplatePlugin` only generates `.bundle` files for named async chunks
+ * - Without `webpackChunkName`, chunks had no name → no bundle → no CSS
  *
- * **Fix**: Use `webpackChunkName` for lazy imports that need bundled CSS:
+ * **Fix**: `auto-chunk-name-loader` automatically adds `webpackChunkName` to imports.
  *
- * Without webpackChunkName - standard webpack chunk loading:
- *   `const LazyComponent = lazy(() => import("./LazyCom"));`
- *   - Build succeeds, lazy loading works
- *   - CSS may not be applied (no async template bundle)
+ * Now this just works:
+ * ```ts
+ * const LazyComponent = lazy(() => import("./LazyCom"));
+ * // No manual webpackChunkName needed!
+ * // - Generates async/LazyCom.[hash].bundle with CSS included
+ * // - Works on both native Lynx and web simulator
+ * ```
  *
- * With webpackChunkName - Lynx async template with CSS:
- *   `const LazyComponent = lazy(() => import(/​* webpackChunkName: "name" *​/ "./LazyCom"));`
- *   - Generates `async/[name].[hash].bundle` with CSS bundled
- *   - CSS is applied correctly via `lynx.loadLazyBundle()`
+ * **How it works**:
+ * 1. `auto-chunk-name-loader` transforms dynamic imports to include chunk names
+ * 2. Webpack sees the chunk name during parsing (before compilation)
+ * 3. `LynxTemplatePlugin` generates `async/[name].[hash].bundle`
+ * 4. `MyReactMarkMainThreadPlugin.asyncChunkName` normalizes layer suffixes
  *
- * **How Lynx lazy CSS works**:
- * 1. `LynxTemplatePlugin` detects named async chunks
- * 2. Generates `async/[name].[hash].bundle` files for each chunk
- * 3. Bundle includes both JS modules AND CSS styles
- * 4. `lynx.loadLazyBundle()` loads the bundle, CSS is applied automatically
- *
- * **CSS HMR Stub**: We still provide a stub for `hotModuleReplacement.cjs` in
- * `client/intercept.cjs` to prevent errors when HMR runtime is missing.
- * CSS HMR doesn't work for lazy components (requires page refresh).
+ * **Note**: CSS HMR doesn't work for lazy components (requires page refresh).
  *
  * ### Issue 9: `lynx.loadLazyBundle is not a function`
  *
@@ -600,7 +579,7 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
       }
     }
 
-    // MyReactMarkMainThreadPlugin – mark MT assets
+    // MyReactMarkMainThreadPlugin – mark MT assets and handle async chunk naming
     if ((isLynx || isWeb) && mainThreadFilenames.length > 0) {
       chain.plugin(PLUGIN_MARK_MAIN_THREAD).use(MyReactMarkMainThreadPlugin, [mainThreadFilenames]).end();
     }
@@ -616,24 +595,48 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
       }
     }
 
-    // RuntimeWrapperWebpackPlugin – wrap ONLY background entry files
-    // IMPORTANT: Do NOT wrap async chunks, they need plain CommonJS format for chunk loading
+    // RuntimeWrapperWebpackPlugin – wrap ALL .js files except main-thread
+    //
+    // ### Issue 12: Native Lynx "exports is not defined" for JS files
+    //
+    // **Error**: `ReferenceError: Can not find variable: exports`
+    //
+    // **Why it happens**:
+    // - Webpack generates JS files with CommonJS format:
+    //   ```js
+    //   exports.ids = ["chunk_id"];
+    //   exports.modules = { ... };
+    //   ```
+    // - On native Lynx, `exports` is not a global variable
+    // - The `RuntimeWrapperWebpackPlugin` wrapper provides `exports` via `tt.define()`
+    //
+    // **Affected files**:
+    // - Entry files: `main/background.js`
+    // - HMR update files: `main.[hash].hot-update.js`
+    // - Async chunks: `_chunk_name.js`
+    //
+    // **Fix**: Use the same pattern as ReactLynx - wrap ALL `.js` except `main-thread.js`
+    //
+    // **How native Lynx handles wrapped chunks**:
+    // - The wrapper returns `{ init: fn }` when `bundleSupportLoadScript` is true
+    // - Native Lynx runtime calls `init(lynxCoreInject)` to get actual exports
+    // - This returns the correct `{ ids, modules }` format for chunk loading
+    //
+    // **Note on Issue 1 (async chunk loading failure)**:
+    // - Issue 1 documented failures when wrapping async chunks on web simulator
+    // - This was because web simulator doesn't handle `{ init }` wrapper format
+    // - On native Lynx, the runtime properly handles this format
+    // - We now use ReactLynx's pattern for native compatibility
+    //
     if (isLynx) {
-      // Create regex patterns that match only the background entry files
-      // e.g., "main/background.js" or "main/background.abc123.js"
-      const backgroundEntryPatterns = Object.keys(entries).map((entryName) => {
-        // Escape special regex characters in entry name
-        const escaped = entryName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        // Match: entryName/background.js or entryName/background.[hash].js
-        return new RegExp(`${escaped}/background(?:\\.[A-Fa-f0-9]+)?\\.js$`);
-      });
-
       chain
         .plugin(PLUGIN_RUNTIME_WRAPPER)
         .use(RuntimeWrapperWebpackPlugin, [
           {
-            // Only wrap specific background entry files, not async chunks
-            test: backgroundEntryPatterns,
+            // Wrap all .js files EXCEPT main-thread.js (same as ReactLynx)
+            // - Matches: background.js, async chunks, HMR updates
+            // - Excludes: main-thread.js, main-thread.[hash].js
+            test: /^(?!.*main-thread(?:\.[A-Fa-f0-9]*)?\.js$).*\.js$/,
           },
         ])
         .end()
@@ -669,6 +672,22 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
     const mainThreadPkgDir = path.resolve(myReactLynxRoot, "dist/main-thread");
     const runtimePkgDir = path.resolve(myReactLynxRoot, "dist/runtime");
     const sharedPkgDir = path.resolve(myReactLynxRoot, "dist/shared");
+
+    // Auto chunk name loader: adds webpackChunkName to dynamic imports
+    // This ensures all lazy imports generate .bundle files with CSS included.
+    // Must run BEFORE other loaders (added last, runs first due to loader order)
+    chain.module
+      .rule("myreact:auto-chunk-name")
+      .issuerLayer(LAYERS.BACKGROUND)
+      .test(/\.(?:[cm]?[jt]sx?)$/)
+      .exclude.add(/node_modules/)
+      .add(mainThreadPkgDir)
+      .add(runtimePkgDir)
+      .add(sharedPkgDir)
+      .end()
+      .use("auto-chunk-name-loader")
+      .loader(path.resolve(_dirname, "./loaders/auto-chunk-name-loader"))
+      .end();
 
     chain.module
       .rule("myreact:worklet")
@@ -709,6 +728,20 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
     const mainThreadPkgDir = path.resolve(myReactLynxRoot, "dist/main-thread");
     const runtimePkgDir = path.resolve(myReactLynxRoot, "dist/runtime");
     const sharedPkgDir = path.resolve(myReactLynxRoot, "dist/shared");
+
+    // Auto chunk name loader for MT layer too
+    chain.module
+      .rule("myreact:auto-chunk-name-mt")
+      .issuerLayer(LAYERS.MAIN_THREAD)
+      .test(/\.[cm]?[jt]sx?$/)
+      .exclude.add(/node_modules/)
+      .add(mainThreadPkgDir)
+      .add(runtimePkgDir)
+      .add(sharedPkgDir)
+      .end()
+      .use("auto-chunk-name-loader")
+      .loader(path.resolve(_dirname, "./loaders/auto-chunk-name-loader"))
+      .end();
 
     // JS/TS/TSX on MT: LEPUS worklet transform (extract registerWorkletInternal calls).
     chain.module

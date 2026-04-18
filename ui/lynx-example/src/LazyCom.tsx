@@ -7,8 +7,10 @@ export default function LazyComponent() {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
-    const start = performance.now();
-    setElapsed(Math.round(start - loadTime + Math.random() * 50));
+    if (typeof performance !== "undefined") {
+      const start = performance.now();
+      setElapsed(Math.round(start - loadTime + Math.random() * 50));
+    }
   }, [loadTime]);
 
   return (

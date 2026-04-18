@@ -12,12 +12,12 @@ export type RefreshRuntimeGlobals = {
   $hasInject$?: boolean;
 };
 
-declare const self: Window & RefreshRuntimeGlobals;
+declare const globalThis: Window & RefreshRuntimeGlobals;
 
 const initRuntime = () => {
-  if (self.$hasInject$) return;
+  if (globalThis.$hasInject$) return;
 
-  self.$hasInject$ = true;
+  globalThis.$hasInject$ = true;
 
   if (!RefreshRuntime.version || !compareVersion(RefreshRuntime.version, "0.3.9")) {
     console.error(
@@ -26,33 +26,33 @@ const initRuntime = () => {
   }
 
   // Hook into ReactDOM initialization
-  RefreshRuntime.injectIntoGlobalHook(self);
+  RefreshRuntime.injectIntoGlobalHook(globalThis);
 
   // Register global helpers
-  self.$RefreshHelpers$ = RefreshHelpers;
+  globalThis.$RefreshHelpers$ = RefreshHelpers;
 
-  self.$RefreshRuntime$ = RefreshRuntime;
+  globalThis.$RefreshRuntime$ = RefreshRuntime;
 
-  if (typeof self.$RefreshReg$ !== "function") {
+  if (typeof globalThis.$RefreshReg$ !== "function") {
     console.error(`[@my-react/react-refresh-tools] expected global "$RefreshReg$" to be a function, please check your webpack configuration`);
   }
 
   // Register a helper for module execution interception
-  self.$RefreshInterceptModuleExecution$ = function (webpackModuleId) {
-    const prevRefreshReg = self.$RefreshReg$;
-    const prevRefreshSig = self.$RefreshSig$;
+  globalThis.$RefreshInterceptModuleExecution$ = function (webpackModuleId) {
+    const prevRefreshReg = globalThis.$RefreshReg$;
+    const prevRefreshSig = globalThis.$RefreshSig$;
 
-    self.$RefreshReg$ = function (type, id) {
+    globalThis.$RefreshReg$ = function (type, id) {
       RefreshRuntime.register(type, webpackModuleId + " " + id);
     };
 
-    self.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+    globalThis.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
 
     // Modeled after `useEffect` cleanup pattern:
     // https://react.dev/learn/synchronizing-with-effects#step-3-add-cleanup-if-needed
     return function () {
-      self.$RefreshReg$ = prevRefreshReg;
-      self.$RefreshSig$ = prevRefreshSig;
+      globalThis.$RefreshReg$ = prevRefreshReg;
+      globalThis.$RefreshSig$ = prevRefreshSig;
     };
   };
 };

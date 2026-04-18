@@ -5,10 +5,6 @@ import { Bar } from "./Bar";
 
 import "./App.css";
 
-// IMPORTANT: webpackChunkName is REQUIRED for lazy components with CSS in Lynx
-// - With webpackChunkName: generates async template bundle (.bundle) with CSS included
-// - Without webpackChunkName: JS loads but CSS is NOT applied (Lynx limitation)
-// const LazyComponent = lazy(() => import(/* webpackChunkName: "LazyCom" */ "./LazyCom.js"));
 const LazyComponent = lazy(() => import("./LazyCom.js"));
 
 export const App = () => {
@@ -64,7 +60,7 @@ export const App = () => {
   }, []);
 
   return (
-    <scroll-view className={`Scene Scene--${tone}`} style={{ height: "800px" }}>
+    <scroll-view className={`Scene Scene--${tone}`} style={{ height: "100%" }} scroll-orientation="vertical">
       {/* Header */}
       <view className="Header">
         <view className="Logo">
@@ -85,7 +81,7 @@ export const App = () => {
       </view>
 
       {/* Features Section */}
-      <view className="Section">
+      <view className="Section" style={{ margin: "10px" }}>
         <text className="SectionTitle">Features</text>
 
         {/* Lazy Component */}

@@ -1,16 +1,15 @@
 /**
  * MyReactMarkMainThreadPlugin - Webpack plugin for main-thread asset marking.
  *
- * This plugin does four things:
+ * This plugin handles:
  * 1. Forces webpack to generate startup code for MT entry chunks.
- * 2. Marks webpack-generated main-thread assets with `lynx:main-thread: true`
- *    so that LynxTemplatePlugin routes them to lepusCode.root (Lepus bytecode).
- * 3. Marks async main-thread chunk files with `lynx:main-thread: true` so
- *    LynxTemplatePlugin includes them in async template's lepusCode section.
- * 4. Wraps async main-thread chunks with `globDynamicComponentEntry` function
- *    wrapper that the web simulator/LEPUS runtime expects.
- * 5. Normalizes async chunk names between layers using LynxTemplatePlugin's
- *    `asyncChunkName` hook (removes layer suffixes).
+ * 2. Marks main-thread assets with `lynx:main-thread: true` for LynxTemplatePlugin.
+ * 3. Wraps async main-thread chunks with `globDynamicComponentEntry` wrapper.
+ * 4. Normalizes async chunk names (removes layer suffixes).
+ * 5. Provides stub for async bundles without main-thread content.
+ *
+ * Note: Chunk naming for lazy imports is handled by `auto-chunk-name-loader`
+ * which adds `webpackChunkName` comments during source transformation.
  */
 
 import { LynxTemplatePlugin } from "@lynx-js/template-webpack-plugin";
@@ -28,8 +27,7 @@ export class MyReactMarkMainThreadPlugin {
     const { RuntimeGlobals } = compiler.webpack;
 
     compiler.hooks.thisCompilation.tap(PLUGIN_MARK_MAIN_THREAD, (compilation) => {
-      // Force startup code generation for MT entry chunks so that
-      // entry module factories actually execute.
+      // Force startup code generation for MT entry chunks
       compilation.hooks.additionalTreeRuntimeRequirements.tap(PLUGIN_MARK_MAIN_THREAD, (chunk, set) => {
         const entryOptions = chunk.getEntryOptions();
         if (entryOptions?.layer === LAYERS.MAIN_THREAD) {
@@ -128,17 +126,12 @@ export class MyReactMarkMainThreadPlugin {
       // biome-ignore lint/suspicious/noExplicitAny: rspack/webpack compilation type mismatch
       const hooks = LynxTemplatePlugin.getLynxTemplatePluginHooks(compilation as any);
 
-      // Normalize async chunk names between layers.
-      // Remove layer suffixes so both layers' async chunks get the same name,
-      // allowing LynxTemplatePlugin to bundle them together.
-      //
-      // Also filter out auto-generated chunk names (no webpackChunkName provided).
-      // User-provided webpackChunkName values are simple identifiers (letters, numbers, hyphens).
-      // Auto-generated names contain underscores, dots, slashes, or file extensions.
-      // Returning empty string skips async template generation for non-user-provided names.
-      hooks.asyncChunkName.tap(PLUGIN_MARK_MAIN_THREAD, (chunkName: string) =>
-        chunkName?.replaceAll("-myreact__background", "").replaceAll("-myreact__main-thread", "")
-      );
+      // Normalize async chunk names by removing layer suffixes.
+      // This ensures both BG and MT layer chunks map to the same bundle.
+      hooks.asyncChunkName.tap(PLUGIN_MARK_MAIN_THREAD, (chunkName: string) => {
+        if (!chunkName) return chunkName;
+        return chunkName.replaceAll("-myreact__background", "").replaceAll("-myreact__main-thread", "");
+      });
 
       // Provide a minimal stub for async bundles without main-thread content.
       // When a lazy component doesn't have worklet code, the main-thread async

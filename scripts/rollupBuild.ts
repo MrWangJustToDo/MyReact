@@ -117,9 +117,9 @@ const start = async () => {
   process.exit(0);
 };
 
-// start();
+start();
 // myreactThird();
 // myreactReconciler();
 // myreact();
-myreactLynx();
+// myreactLynx();
 // myreactDev();

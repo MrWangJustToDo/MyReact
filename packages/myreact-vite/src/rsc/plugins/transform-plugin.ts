@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /**
  * @file RSC Transform Plugin
  * Main transform plugin for client/server module detection and transformation
@@ -16,6 +17,7 @@ import {
 } from "../transforms";
 import { initLexer, generateModuleId } from "../utils";
 
+import type { RscPluginManager } from "../manager";
 import type { ClientModuleRegistry, ServerActionRegistry } from "../transforms";
 import type { RscPluginOptions } from "../types";
 import type { Program } from "estree";
@@ -26,6 +28,8 @@ export interface TransformPluginContext {
   serverRegistry: ServerActionRegistry;
   clientModules: Set<string>;
   serverModules: Set<string>;
+  /** Optional manager for build orchestration */
+  manager?: RscPluginManager;
 }
 
 async function findInvalidServerHook(code: string): Promise<string | null> {
@@ -95,6 +99,9 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
   let projectRoot = process.cwd();
   let isBuild = false;
 
+  // Get manager from context for build orchestration
+  const manager = context.manager;
+
   return {
     name: "vite:my-react-rsc-transform",
     enforce: "pre",
@@ -124,7 +131,33 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
 
       const moduleId = generateModuleId(filepath, projectRoot);
 
-      const isServer = Boolean(transformOptions?.ssr) || Boolean((this as { ssr?: boolean }).ssr) || Boolean(isBuild && config.build?.ssr);
+      // Environment detection for client module transformation
+      //
+      // For "use client" modules:
+      // - RSC environment: Transform to proxy
+      // - SSR flag set (legacy/dev mode): Transform to proxy (SSR uses ?rsc-original to bypass)
+      // - Client/browser: Keep original
+      //
+      // For "use server" modules:
+      // - Server-side (RSC/SSR): Register actions
+      // - Client: Generate proxy
+      const envName = this.environment?.name;
+      const isRscEnv = envName === "rsc";
+      const isSsrEnv = envName === "ssr";
+      const ssrFlag = Boolean(transformOptions?.ssr) || Boolean((this as { ssr?: boolean }).ssr);
+
+      // Proxy client modules:
+      // - In RSC environment (build): always proxy
+      // - In dev mode with ssrFlag: proxy (SSR rendering uses ?rsc-original to bypass)
+      // - In build mode SSR environment: DON'T proxy (need real code for SSR)
+      const isBuildModeSsr = isBuild && isSsrEnv;
+      const shouldProxyClientModules = isRscEnv || (ssrFlag && !isBuildModeSsr);
+
+      // For "use server" modules, both RSC and SSR need to register actions
+      const isServerForServerModules = isRscEnv || isSsrEnv || ssrFlag;
+
+      // During scan builds, just register modules without full transformation
+      const isScanBuild = manager?.isScanBuild ?? false;
 
       const parseCode = await getParseCode(code, filepath);
 
@@ -142,18 +175,34 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
       if (detectUseClientDirective(code)) {
         context.clientModules.add(moduleId);
 
-        // On server builds (including dev SSR), transform to client reference proxy
-        if (isServer) {
-          return transformClientModule(parseCode, moduleId, context.clientRegistry);
+        const { exports, hasDefaultExport } = await parseModuleExports(parseCode);
+
+        // Register with manager if available
+        if (manager) {
+          manager.registerClientReference(moduleId, {
+            importId: moduleId,
+            exportNames: hasDefaultExport ? ["default", ...exports.filter((e) => e !== "default")] : exports,
+          });
         }
 
-        // Mark as client module for manifest
-        const { exports, hasDefaultExport } = await parseModuleExports(parseCode);
+        // Register with local registry
         context.clientRegistry.register(moduleId, {
           moduleId,
           exports,
           hasDefaultExport,
         });
+
+        // During scan build, let scan-strip plugin handle code stripping
+        // We only register the module but don't transform
+        if (isScanBuild) {
+          return null;
+        }
+
+        // Only RSC environment transforms client modules to proxies
+        // SSR and Client environments keep original code
+        if (shouldProxyClientModules) {
+          return transformClientModule(parseCode, moduleId, context.clientRegistry);
+        }
 
         return null;
       }
@@ -161,28 +210,112 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
       // Check for "use server" directive at top level
       if (detectUseServerDirective(code)) {
         context.serverModules.add(moduleId);
-        return transformServerModule(parseCode, code, moduleId, context.serverRegistry, isServer);
+
+        // During scan build, just register without transformation
+        // Let scan-strip plugin handle code stripping to preserve imports
+        if (isScanBuild) {
+          const ast = (await parseAstAsync(parseCode)) as Program;
+          const result = transformDirectiveProxyExport(ast, {
+            directive: "use server",
+            code: parseCode,
+            runtime: (_name) => `null`,
+            rejectNonAsyncFunction: false,
+          });
+
+          if (result) {
+            for (const action of result.exportNames) {
+              context.serverRegistry.register(moduleId, action);
+            }
+            if (manager) {
+              manager.registerServerReference(moduleId, result.exportNames);
+            }
+          }
+
+          return null;
+        }
+
+        return transformServerModule(parseCode, code, moduleId, context.serverRegistry, isServerForServerModules, manager);
       }
 
       // Check for inline "use server" in component files
       if (detectInlineUseServerDirective(code)) {
-        if (!isServer) {
+        if (!isServerForServerModules) {
           return null;
         }
-        return await transformInlineServerActions(code, parseCode, moduleId, context.serverRegistry);
+
+        // During scan build, skip inline action transformation
+        if (isScanBuild) {
+          return null;
+        }
+
+        return await transformInlineServerActions(code, parseCode, moduleId, context.serverRegistry, manager);
       }
 
       return null;
     },
 
-    generateBundle(_options) {
+    generateBundle(_options, bundle) {
       if (!isBuild) {
         return;
       }
 
+      // Skip manifest generation during scan builds
+      if (manager?.isScanBuild) {
+        return;
+      }
+
+      // Store bundle in manager if available
+      if (manager && this.environment?.name) {
+        manager.bundles[this.environment.name] = bundle;
+      }
+
+      // Generate manifests based on environment
+      const envName = this.environment?.name;
+      const base = config?.base ?? "/";
+
       // Generate client manifest during client build
-      if (!config.build?.ssr) {
-        const clientManifest = context.clientRegistry.generateManifest();
+      if (envName === "client" || (!envName && !config.build?.ssr)) {
+        // Use manager data for proper chunk tracking
+        const clientManifest: Record<string, { id: string; name: string; chunks: string[]; referenceKey: string }> = {};
+
+        if (manager) {
+          for (const [moduleId, meta] of Object.entries(manager.clientReferenceMetaMap)) {
+            const exports = meta.renderedExports.length > 0 ? meta.renderedExports : meta.exportNames;
+
+            for (const exportName of exports) {
+              const key = `${moduleId}#${exportName}`;
+              const chunkId = meta.groupChunkId;
+              let chunks: string[] = [];
+
+              if (chunkId && bundle[chunkId]) {
+                const chunk = bundle[chunkId];
+                if (chunk.type === "chunk") {
+                  chunks = [`${base}${chunk.fileName}`];
+                }
+              } else {
+                // Find main entry chunk
+                for (const output of Object.values(bundle)) {
+                  if (output.type === "chunk" && (output as { isEntry?: boolean }).isEntry) {
+                    chunks = [`${base}${output.fileName}`];
+                    break;
+                  }
+                }
+              }
+
+              clientManifest[key] = {
+                id: moduleId,
+                name: exportName,
+                chunks,
+                referenceKey: meta.referenceKey,
+              };
+            }
+          }
+        } else {
+          // Fallback to registry if no manager
+          const registryManifest = context.clientRegistry.generateManifest();
+          Object.assign(clientManifest, registryManifest);
+        }
+
         this.emitFile({
           type: "asset",
           fileName: "client-manifest.json",
@@ -190,9 +323,29 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
         });
       }
 
-      // Generate server action manifest during server build
-      if (config.build?.ssr) {
-        const serverManifest = context.serverRegistry.generateManifest();
+      // Generate server action manifest during RSC or SSR build
+      if (envName === "rsc" || envName === "ssr" || (!envName && config.build?.ssr)) {
+        // Use manager data for proper reference keys
+        const serverManifest: Record<string, { id: string; name: string; moduleId: string; referenceKey: string }> = {};
+
+        if (manager) {
+          for (const [moduleId, meta] of Object.entries(manager.serverReferenceMetaMap)) {
+            for (const name of meta.exportNames) {
+              const actionId = `${moduleId}#${name}`;
+              serverManifest[actionId] = {
+                id: actionId,
+                name,
+                moduleId,
+                referenceKey: meta.referenceKey,
+              };
+            }
+          }
+        } else {
+          // Fallback to registry
+          const registryManifest = context.serverRegistry.generateManifest();
+          Object.assign(serverManifest, registryManifest);
+        }
+
         this.emitFile({
           type: "asset",
           fileName: "server-manifest.json",
@@ -231,20 +384,25 @@ async function transformServerModule(
   originalCode: string,
   moduleId: string,
   registry: ServerActionRegistry,
-  isServer: boolean
+  isServer: boolean,
+  manager?: RscPluginManager
 ): Promise<TransformResult> {
   const ast = (await parseAstAsync(parseCode)) as Program;
 
   if (isServer) {
     const result = transformServerActionServer(parseCode, ast, {
       runtime: (value, name) => `__registerServerReference__(${value}, ${JSON.stringify(`${moduleId}#${name}`)}, ${JSON.stringify(name)})`,
-      // Allow sync server components in "use server" modules
       rejectNonAsyncFunction: false,
     });
 
     const exportNames = "exportNames" in result ? result.exportNames : result.names;
     for (const action of exportNames) {
       registry.register(moduleId, action, true);
+    }
+
+    // Register with manager if available
+    if (manager) {
+      manager.registerServerReference(moduleId, exportNames);
     }
 
     const code = `import { registerServerReference as __registerServerReference__ } from "@my-react/react-server/server";\n${result.output.toString()}`;
@@ -266,6 +424,11 @@ async function transformServerModule(
     registry.register(moduleId, action);
   }
 
+  // Register with manager if available
+  if (manager) {
+    manager.registerServerReference(moduleId, proxyResult.exportNames);
+  }
+
   const proxyCode = `import { createServerActionReference as __createServerActionReference__ } from "@my-react/react-server/client";\n${proxyResult.output.toString()}`;
   return { code: proxyCode, map: null };
 }
@@ -273,7 +436,13 @@ async function transformServerModule(
 /**
  * Transform inline server actions in a component file
  */
-async function transformInlineServerActions(code: string, parseCode: string, moduleId: string, registry: ServerActionRegistry): Promise<TransformResult> {
+async function transformInlineServerActions(
+  code: string,
+  parseCode: string,
+  moduleId: string,
+  registry: ServerActionRegistry,
+  manager?: RscPluginManager
+): Promise<TransformResult> {
   const inlineActions = await findInlineServerActions(code, parseCode);
 
   if (inlineActions.length === 0) {
@@ -289,6 +458,11 @@ async function transformInlineServerActions(code: string, parseCode: string, mod
   const exportNames = "exportNames" in result ? result.exportNames : result.names;
   for (const action of exportNames) {
     registry.register(moduleId, action, true);
+  }
+
+  // Register with manager if available
+  if (manager) {
+    manager.registerServerReference(moduleId, exportNames);
   }
 
   const transformedCode = `import { registerServerReference as __registerServerReference__ } from "@my-react/react-server/server";\n${result.output.toString()}`;

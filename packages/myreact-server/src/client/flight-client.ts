@@ -219,17 +219,24 @@ export function createServerActionReference(
   actionId: string,
   callServerFn?: (actionId: string, args: unknown[]) => Promise<unknown>
 ): (...args: unknown[]) => Promise<unknown> {
-  const resolvedCallServer = callServerFn ?? (typeof globalThis !== "undefined" ? globalThis.__MY_REACT_CALL_SERVER__ : undefined);
+  // Create a wrapper that lazily resolves callServer
+  // This allows the reference to be created before createFlightClient is called
+  const reference = async (...args: unknown[]): Promise<unknown> => {
+    const resolvedCallServer = callServerFn ?? (typeof globalThis !== "undefined" ? globalThis.__MY_REACT_CALL_SERVER__ : undefined);
 
-  if (!resolvedCallServer) {
-    throw new Error("[@my-react/react-server] Missing callServer function. Create a FlightClient or pass callServer explicitly.");
-  }
+    if (!resolvedCallServer) {
+      throw new Error("[@my-react/react-server] Missing callServer function. Create a FlightClient or pass callServer explicitly.");
+    }
 
-  const reference = createServerReference(actionId, resolvedCallServer);
+    return resolvedCallServer(actionId, args);
+  };
 
-  reference["$$rsc"] = { actionId, callServerFn };
-
-  reference["displayName"] = "$$ServerAction";
+  // Mark as server reference
+  (reference as any).$$typeof = Symbol.for("react.server.reference");
+  (reference as any).$$id = actionId;
+  (reference as any).$$bound = null;
+  (reference as any)["$$rsc"] = { actionId, callServerFn };
+  (reference as any)["displayName"] = "$$ServerAction";
 
   return reference;
 }

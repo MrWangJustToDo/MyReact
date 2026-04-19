@@ -5,17 +5,19 @@
   "type": "module",
   "scripts": {
     "dev": "node --inspect ./node_modules/vite/bin/vite.js --force",
-    "build": "vite build",
+    "build": "NODE_ENV=production vite build",
     "preview": "vite preview",
-    "start": "NODE_ENV=production node ./server.mjs"
+    "start": "NODE_ENV=production node --inspect ./server.mjs",
+    "start:dev": "NODE_ENV=development node ./server.mjs",
+    "serve": "node ./server.mjs"
   },
   "dependencies": {
-    "@my-react/react": "0.3.23",
-    "@my-react/react-dom": "0.3.23",
+    "@my-react/react": "^0.3.24",
+    "@my-react/react-dom": "^0.3.24",
     "@my-react/react-server": "workspace:*"
   },
   "devDependencies": {
-    "@lazarv/rsc": "0.0.0-experimental-196ba2e-20260326-ed190390",
+    "@lazarv/rsc": "0.0.0-experimental-a0c7b63-20260415-0532bb4e",
     "@my-react/react-vite": "workspace:*",
     "@types/node": "catalog:",
     "babel-plugin-react-compiler": "catalog:",

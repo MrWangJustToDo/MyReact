@@ -1,5 +1,7 @@
 import { Consumer, Context, ForwardRef, isNormalEquals, Lazy, Memo, Provider, TYPEKEY } from "@my-react/react-shared";
 
+import { assignLazy } from "../share";
+
 import type { RenderFiber } from "../renderFiber";
 import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunctionComponent, MixinMyReactFunctionComponentWithRef } from "./instance";
 
@@ -137,6 +139,10 @@ export const lazy = <P extends Record<string, unknown> = any>(
     _loaded: false,
     render: null,
   };
+
+  // support rsc lazy flow
+  assignLazy(config);
+
   return config as LazyType<P>;
 };
 

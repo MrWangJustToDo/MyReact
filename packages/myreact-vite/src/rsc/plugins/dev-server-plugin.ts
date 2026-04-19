@@ -49,19 +49,26 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
           try {
             const templatePath = ssr.indexHtmlPath ?? "index.html";
             const html = await server.transformIndexHtml(req.url, await readFileText(server, templatePath));
-
-            const entryRsc = await server.ssrLoadModule(ssr.entryRsc);
-            const entrySsr = await server.ssrLoadModule(ssr.entrySsr);
             const { injectRSCPayload } = await import("rsc-html-stream/server");
 
             const origin = `http://${req.headers.host || "localhost:3000"}`;
             const fullUrl = new URL(req.url, origin).toString();
 
-            const rscStream = await entryRsc.renderRsc(fullUrl);
+            // Load RSC entry - client components will be proxied
+            const entryRsc = await server.ssrLoadModule(ssr.entryRsc);
+            // Load SSR entry - uses the module loader which loads with ?rsc-original
+            const entrySsr = await server.ssrLoadModule(ssr.entrySsr);
+
+            const rscStream = await (entryRsc as { renderRsc: (url: string) => Promise<ReadableStream<Uint8Array>> }).renderRsc(fullUrl);
             const [rscForSsr, rscForClient] = rscStream.tee();
 
-            const { html: ssrHtml } = await entrySsr.renderHTML(rscForSsr, {
-              loadModule: (id: string) => server.ssrLoadModule(id),
+            // SSR module loading - use ?rsc-original to get actual component code
+            const { html: ssrHtml } = await (
+              entrySsr as {
+                renderHTML: (stream: ReadableStream<Uint8Array>, options: { loadModule: (id: string) => Promise<unknown> }) => Promise<{ html: string }>;
+              }
+            ).renderHTML(rscForSsr, {
+              loadModule: (id: string) => server.ssrLoadModule(`${id}?rsc-original`),
             });
 
             const htmlWithApp = html.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`);

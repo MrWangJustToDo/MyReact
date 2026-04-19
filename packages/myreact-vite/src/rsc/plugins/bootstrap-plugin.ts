@@ -5,7 +5,7 @@
  * Uses rsc-html-stream pattern for client-side RSC payload consumption
  */
 
-import type { Plugin } from "vite";
+import type { Plugin, ResolvedConfig } from "vite";
 
 export interface BootstrapPluginOptions {
   rscEndpoint: string;
@@ -15,12 +15,55 @@ export interface BootstrapPluginOptions {
 /**
  * Create the RSC bootstrap plugin
  * Injects RSC configuration and rsc-html-stream client integration into the HTML head
+ * Also automatically injects client-registry import in build mode
  */
 export function createBootstrapPlugin(options: BootstrapPluginOptions): Plugin {
   const { rscEndpoint, actionEndpoint } = options;
+  let config: ResolvedConfig;
 
   return {
     name: "vite:my-react-rsc-bootstrap",
+
+    configResolved(resolvedConfig) {
+      config = resolvedConfig;
+    },
+
+    // Inject client-registry import at the top of client entry in build mode
+    transform(code, id) {
+      // Only transform in client environment during build
+      if (this.environment?.name !== "client" || config.command !== "build") {
+        return null;
+      }
+
+      // Check if this is the client entry
+      const clientEntry = config.environments?.client?.build?.rollupOptions?.input;
+      if (!clientEntry) return null;
+
+      const entryPath = typeof clientEntry === "string" ? clientEntry : (clientEntry as Record<string, string>)?.index;
+      if (!entryPath) return null;
+
+      // Normalize paths for comparison
+      const normalizedId = id.replace(/\\/g, "/");
+      const normalizedEntry = entryPath.replace(/^\.\//, "").replace(/\\/g, "/");
+
+      // Check if this is the entry file
+      if (!normalizedId.endsWith(normalizedEntry) && !normalizedId.includes(`/${normalizedEntry}`)) {
+        return null;
+      }
+
+      // Inject client-registry import at the top
+      const importStatement = `import "virtual:my-react-rsc/client-registry";\n`;
+
+      // Don't add if already present
+      if (code.includes("virtual:my-react-rsc/client-registry")) {
+        return null;
+      }
+
+      return {
+        code: importStatement + code,
+        map: null,
+      };
+    },
 
     transformIndexHtml() {
       // Inject bootstrap script for RSC hydration

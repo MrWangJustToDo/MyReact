@@ -21,11 +21,10 @@ export async function createFlightServer(options: FlightServerOptions = {}): Pro
   const { renderToReadableStream } = await import("@my-react/react-dom/server");
 
   const moduleLoader: ModuleLoader = options.moduleLoader || createModuleLoader();
-  const resolveModuleId = options.resolveModuleId ?? ((id: string) => id);
 
   function createFromStreamInternal(stream: ReadableStream<Uint8Array>): Promise<unknown> {
     const result = createFromReadableStream(stream, {
-      moduleLoader: wrapModuleLoader(moduleLoader, resolveModuleId),
+      moduleLoader,
     }) as Promise<unknown>;
     return wrapPromiseWithState(result, moduleLoader);
   }
@@ -33,7 +32,7 @@ export async function createFlightServer(options: FlightServerOptions = {}): Pro
   function createFromFetchInternal(responsePromise: Promise<Response>): Promise<unknown> {
     const fetchFn = createFromFetch as unknown as (promise: Promise<Response>, options?: { moduleLoader: ModuleLoader }) => Promise<unknown>;
     const result = fetchFn(responsePromise, {
-      moduleLoader: wrapModuleLoader(moduleLoader, resolveModuleId),
+      moduleLoader,
     });
     return wrapPromiseWithState(result, moduleLoader);
   }
@@ -60,20 +59,6 @@ export async function createFlightServer(options: FlightServerOptions = {}): Pro
   };
 }
 
-function wrapModuleLoader(loader: ModuleLoader, resolveModuleId: (id: string) => string): ModuleLoader {
-  return {
-    requireModule(metadata) {
-      return loader.requireModule({ ...metadata, id: resolveModuleId(metadata.id) });
-    },
-    preloadModule(metadata) {
-      return loader.preloadModule?.({ ...metadata, id: resolveModuleId(metadata.id) });
-    },
-    loadServerAction(id) {
-      return loader.loadServerAction?.(id);
-    },
-  };
-}
-
 type PromiseWithState<T> = Promise<T> & {
   status?: "pending" | "fulfilled" | "rejected";
   _value?: T;
@@ -83,7 +68,6 @@ type PromiseWithState<T> = Promise<T> & {
 function wrapPromiseWithState(value: Promise<unknown>, moduleLoader: ModuleLoader): PromiseWithState<unknown> {
   const normalizedPromise = Promise.resolve(value).then((resolved) =>
     normalizeRscValue(resolved, {
-      isServerSide: true,
       moduleLoader,
       wrapPendingPromise: (promise) => createElement(cacheLazy(promise as Promise<any>)),
     })

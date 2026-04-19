@@ -11,7 +11,13 @@
  * - utils/moduleId.ts - generateModuleId function
  */
 
-import { parseModuleExports, parseModuleExportsSync, generateClientReferenceProxyCode, createClientModuleProxy } from "./transforms";
+import {
+  parseModuleExports,
+  parseModuleExportsSync,
+  generateClientReferenceProxyCode,
+  generateClientModuleProxyCode,
+  createClientModuleProxy,
+} from "./transforms";
 
 import type { ClientModuleRegistry } from "./transforms";
 import type { TransformResult } from "vite";
@@ -78,4 +84,6 @@ export function transformClientModuleSync(code: string, moduleId: string, regist
 }
 
 // Re-export the module proxy function
+export { generateClientModuleProxyCode };
+/** @deprecated Use generateClientModuleProxyCode instead */
 export { createClientModuleProxy };

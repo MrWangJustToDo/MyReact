@@ -94,7 +94,7 @@
     }
   ],
   "dependencies": {
-    "@lazarv/rsc": "0.0.0-experimental-196ba2e-20260326-ed190390"
+    "@lazarv/rsc": "0.0.0-experimental-a0c7b63-20260415-0532bb4e"
   },
   "devDependencies": {
     "@my-react/react-shared": "^0.3.24"

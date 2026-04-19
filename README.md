@@ -177,17 +177,17 @@ root.render(
 
 #### Lynx-Specific APIs
 
-| API | Description |
-|-----|-------------|
-| `root.render()` | Render to Lynx page root |
-| `useInitData()` | Get initData with auto re-render |
-| `useGlobalProps()` | Get globalProps with auto re-render |
-| `useLynxGlobalEventListener()` | Early event listener registration |
-| `useMainThreadRef()` | Create main-thread accessible ref |
-| `runOnMainThread()` | Execute code on main thread |
-| `runOnBackground()` | Execute code on background thread |
-| `InitDataProvider` | Provider for initData context |
-| `GlobalPropsProvider` | Provider for globalProps context |
+| API                            | Description                         |
+| ------------------------------ | ----------------------------------- |
+| `root.render()`                | Render to Lynx page root            |
+| `useInitData()`                | Get initData with auto re-render    |
+| `useGlobalProps()`             | Get globalProps with auto re-render |
+| `useLynxGlobalEventListener()` | Early event listener registration   |
+| `useMainThreadRef()`           | Create main-thread accessible ref   |
+| `runOnMainThread()`            | Execute code on main thread         |
+| `runOnBackground()`            | Execute code on background thread   |
+| `InitDataProvider`             | Provider for initData context       |
+| `GlobalPropsProvider`          | Provider for globalProps context    |
 
 ## 🎮 Examples
 

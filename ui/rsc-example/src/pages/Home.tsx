@@ -1,10 +1,12 @@
-import { Suspense } from "react";
+import { lazy, Suspense } from "react";
 
 import Guestbook from "../components/client/Guestbook";
 import ThemeToggle from "../components/client/ThemeToggle";
 import Counter from "../components/Counter";
 import ServerStats from "../components/server/ServerStats";
 import TodoList from "../components/TodoList";
+
+const LazyCom = lazy(() => import("../components/client/LazyCom"));
 
 async function getGreeting() {
   await new Promise((resolve) => setTimeout(resolve, 120));
@@ -31,6 +33,9 @@ export default function HomePage() {
           </Suspense>
           <Suspense fallback={<p className="loading">Loading stats...</p>}>
             <ServerStats />
+          </Suspense>
+          <Suspense fallback={<p className="loading">Loading lazy...</p>}>
+            <LazyCom />
           </Suspense>
         </div>
       </div>

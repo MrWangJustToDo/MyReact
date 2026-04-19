@@ -18,6 +18,11 @@
       "node": "./index.js",
       "require": "./index.js"
     },
+    "./rsc": {
+      "types": "./dist/types/rsc/index.d.ts",
+      "import": "./dist/esm/rsc/index.mjs",
+      "require": "./dist/cjs/rsc/index.js"
+    },
     "./refreshUtils": {
       "require": "./refreshUtils.js"
     },
@@ -37,6 +42,24 @@
         {
           "dir": "./dist",
           "entryFileNames": "esm/index.mjs",
+          "format": "esm"
+        }
+      ]
+    },
+    {
+      "input": "./src/rsc/index.ts",
+      "pkgName": "rsc",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "cjs/rsc/index.js",
+          "format": "cjs",
+          "type": true,
+          "multiple": true
+        },
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/rsc/index.mjs",
           "format": "esm"
         }
       ]

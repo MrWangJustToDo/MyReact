@@ -1,72 +1,63 @@
 import react from "@my-react/react-vite";
+import { rsc } from "@my-react/react-vite/rsc";
 import { defineConfig } from "vite";
 import inspect from "vite-plugin-inspect";
 
-export default defineConfig({
-  ssr: {
-    // switch to react need disable all the config below
-    optimizeDeps: {
-      include: [
-        "react",
-        "react-dom",
-        "react-dom/server",
-        "react-dom/client",
-        "react/jsx-runtime",
-        "react/jsx-dev-runtime",
-        "@my-react/react/jsx-runtime",
-        "@my-react/react/jsx-dev-runtime",
-        "@my-react/react",
-        "@my-react/react-dom",
-        "@my-react/react-dom/client",
-        "@my-react/react-dom/server",
-        "@my-react/react-jsx",
-        "@my-react/react/jsx-runtime",
-        "@my-react/react/jsx-dev-runtime",
-        "react-compiler-runtime",
-      ],
-    },
-    noExternal: [
+const sharedSsrConfig = {
+  optimizeDeps: {
+    include: [
       "react",
       "react-dom",
       "react-dom/server",
       "react-dom/client",
       "react/jsx-runtime",
       "react/jsx-dev-runtime",
-      "@my-react/react",
       "@my-react/react/jsx-runtime",
       "@my-react/react/jsx-dev-runtime",
+      "@my-react/react",
       "@my-react/react-dom",
       "@my-react/react-dom/client",
       "@my-react/react-dom/server",
       "@my-react/react-jsx",
-      "@my-react/react/jsx-runtime",
-      "@my-react/react/jsx-dev-runtime",
       "react-compiler-runtime",
     ],
   },
+  noExternal: ["react", "react-dom", "@my-react/react", "@my-react/react-dom", "@my-react/react-server", "react-compiler-runtime"],
+};
+
+const babelConfig = {
+  plugins: [
+    [
+      "babel-plugin-react-compiler",
+      {
+        target: "18",
+      },
+    ],
+  ],
+};
+
+export default defineConfig({
+  ssr: sharedSsrConfig,
   plugins: [
     inspect(),
     react({
-      rsc: true,
+      babel: babelConfig,
+    }),
+    // Unified RSC plugin - works for both dev and build
+    rsc({
+      entries: {
+        rsc: "./src/entry-rsc.tsx",
+        ssr: "./src/entry-ssr.tsx",
+        client: "./src/entry-client.tsx",
+      },
       rscEndpoint: "/__rsc",
-      rscActionEndpoint: "/__rsc_action",
-      ssr: {
-        entryRsc: "/src/entry-rsc.tsx",
-        entrySsr: "/src/entry-ssr.tsx",
-      },
-      babel: {
-        plugins: [
-          [
-            "babel-plugin-react-compiler",
-            {
-              target: "18",
-            },
-          ],
-        ],
-      },
+      actionEndpoint: "/__rsc_action",
     }),
   ],
   server: {
     port: 3000,
+  },
+  build: {
+    target: "esnext",
   },
 });

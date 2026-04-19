@@ -14,9 +14,7 @@ export const Bar = () => {
       </view>
       <view className="FeatureContent">
         <text className="FeatureTitle">Component Import</text>
-        <text className="FeatureDesc">
-          {expanded ? "Standard React component pattern with state management" : "Tap to see more details"}
-        </text>
+        <text className="FeatureDesc">{expanded ? "Standard React component pattern with state management" : "Tap to see more details"}</text>
       </view>
       <view className="FeatureBadge">
         <text className="FeatureBadgeText">{expanded ? "EXPANDED" : "TAP"}</text>

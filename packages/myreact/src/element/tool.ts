@@ -11,6 +11,8 @@ import {
   Context,
   Activity,
   TRANSITIONAL_ELEMENT,
+  CLIENT_REFERENCE_SYMBOL,
+  SERVER_REFERENCE_SYMBOL,
 } from "@my-react/react-shared";
 
 import { currentScheduler, currentComponentFiber, enableOptimizeTreeLog } from "../share";
@@ -224,6 +226,8 @@ export const checkValidElement = (element: MyReactElementNode) => {
               console.warn(`[@my-react/react] <Activity /> element 'mode' props only support 'visible' / 'hidden', but got ${props[key]}`);
             }
           }
+        } else if (typedRawType[TYPEKEY] === CLIENT_REFERENCE_SYMBOL || typedRawType[TYPEKEY] === SERVER_REFERENCE_SYMBOL) {
+          void 0;
         }
         // check invalid object element
         else {

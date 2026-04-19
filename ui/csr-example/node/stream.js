@@ -25,14 +25,12 @@ const app = http.createServer((req, res) => {
       )
     )
     .pipeThrough(
-      new TransformStream(
-        {
-          async transform(chunk, controller) {
-            controller.enqueue(chunk);
-            await new Promise((resolve) => setTimeout(resolve, 10));
-          },
+      new TransformStream({
+        async transform(chunk, controller) {
+          controller.enqueue(chunk);
+          await new Promise((resolve) => setTimeout(resolve, 10));
         },
-      )
+      })
     )
     .pipeTo(
       new WritableStream({

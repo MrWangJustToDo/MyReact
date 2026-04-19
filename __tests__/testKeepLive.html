@@ -16,7 +16,22 @@
     <div id="root"></div>
     <script type="text/babel" async>
       // TODO
-      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, KeepLive, Component, StrictMode, Activity } = React;
+      const {
+        memo,
+        useState,
+        useCallback,
+        useEffect,
+        useReducer,
+        useRef,
+        useMemo,
+        map,
+        cloneElement,
+        createContext,
+        KeepLive,
+        Component,
+        StrictMode,
+        Activity,
+      } = React;
 
       const TestEffect = () => {
         useEffect(() => {
@@ -86,7 +101,7 @@
               </TestChild>
             </TestG>
             <KeepLive>{i % 2 === 0 ? <input /> : <Bar />}</KeepLive>
-            <Activity mode={i % 2 === 0 ? 'visible' : 'hidden'}>123</Activity>
+            <Activity mode={i % 2 === 0 ? "visible" : "hidden"}>123</Activity>
             <button onClick={() => setI((i) => i + 1)}>toggle</button>
           </>
         );

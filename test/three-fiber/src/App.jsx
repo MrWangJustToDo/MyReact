@@ -26,9 +26,7 @@ function App() {
 
       <div ref={tutorialRef} className="tutorial-wrapper">
         {isTablet || isMobile ? (
-          <span className="mobile-tutorial">
-            Touch and drag on the screen to navigate the character.
-          </span>
+          <span className="mobile-tutorial">Touch and drag on the screen to navigate the character.</span>
         ) : (
           <div className="tutorial-keys">
             <section className="wasd-keys">

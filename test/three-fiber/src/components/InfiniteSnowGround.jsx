@@ -1,11 +1,6 @@
 import { useRef, useEffect, useMemo, useState, useCallback } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
-import {
-  useTexture,
-  useGLTF,
-  useAnimations,
-  PositionalAudio,
-} from "@react-three/drei";
+import { useTexture, useGLTF, useAnimations, PositionalAudio } from "@react-three/drei";
 import * as THREE from "three";
 import { FogEffect } from "./FogEffect";
 
@@ -69,20 +64,15 @@ const InfiniteSnowWorld = () => {
   const currentAnimationRef = useRef(null);
 
   // Load textures for snow and character
-  const [colorMap, normalMap, roughnessMap, aoMap, displacementMap] =
-    useTexture([
-      "/textures/snow/snow-color.jpg",
-      "/textures/snow/snow-normal-gl.jpg",
-      "/textures/snow/snow-roughness.jpg",
-      "/textures/snow/snow-ambientocclusion.jpg",
-      "/textures/snow/snow-displacement.jpg",
-    ]);
-
-  const [occlusion, texture, normal] = useTexture([
-    "/textures/character/occlusion.png",
-    "/textures/character/texture.png",
-    "/textures/character/normal.png",
+  const [colorMap, normalMap, roughnessMap, aoMap, displacementMap] = useTexture([
+    "/textures/snow/snow-color.jpg",
+    "/textures/snow/snow-normal-gl.jpg",
+    "/textures/snow/snow-roughness.jpg",
+    "/textures/snow/snow-ambientocclusion.jpg",
+    "/textures/snow/snow-displacement.jpg",
   ]);
+
+  const [occlusion, texture, normal] = useTexture(["/textures/character/occlusion.png", "/textures/character/texture.png", "/textures/character/normal.png"]);
 
   // Configure character textures
   texture.flipY = false;
@@ -130,11 +120,7 @@ const InfiniteSnowWorld = () => {
 
       const yMin = boundingBox.min.y;
 
-      characterParentRef.current.position.set(
-        0,
-        -yMin * characterRef.current.scale.y - 0.5,
-        0
-      );
+      characterParentRef.current.position.set(0, -yMin * characterRef.current.scale.y - 0.5, 0);
     }
   }, [scene]);
 
@@ -213,10 +199,7 @@ const InfiniteSnowWorld = () => {
       const deltaY = touch.clientY - touchStartRef.y;
 
       const maxRadius = 50; // Maximum joystick radius
-      const distance = Math.min(
-        Math.sqrt(deltaX * deltaX + deltaY * deltaY),
-        maxRadius
-      );
+      const distance = Math.min(Math.sqrt(deltaX * deltaX + deltaY * deltaY), maxRadius);
       const angle = Math.atan2(deltaY, deltaX);
 
       joystickRef.x = (distance / maxRadius) * Math.cos(angle);
@@ -260,18 +243,14 @@ const InfiniteSnowWorld = () => {
   }, []);
 
   // Utility function to generate a unique key for each chunk
-  const getChunkKey = (x, z) =>
-    `${Math.round(x / CHUNK_SIZE)},${Math.round(z / CHUNK_SIZE)}`;
+  const getChunkKey = (x, z) => `${Math.round(x / CHUNK_SIZE)},${Math.round(z / CHUNK_SIZE)}`;
 
   // Save the deformation state of a chunk
   const saveChunkDeformation = useCallback((chunk) => {
     if (!chunk) return;
     const chunkKey = getChunkKey(chunk.position.x, chunk.position.z);
     const position = chunk.geometry.attributes.position;
-    deformedChunksMapRef.current.set(
-      chunkKey,
-      new Float32Array(position.array)
-    );
+    deformedChunksMapRef.current.set(chunkKey, new Float32Array(position.array));
   }, []);
 
   // Load the deformation state of a chunk if available
@@ -293,10 +272,7 @@ const InfiniteSnowWorld = () => {
   // Get chunks neighboring a specific position
   const getNeighboringChunks = useCallback((position, chunksRef) => {
     return chunksRef.current.filter((chunk) => {
-      const distance = new THREE.Vector2(
-        chunk.position.x - position.x,
-        chunk.position.z - position.z
-      ).length();
+      const distance = new THREE.Vector2(chunk.position.x - position.x, chunk.position.z - position.z).length();
       return distance < CHUNK_SIZE + DEFORM_RADIUS;
     });
   }, []);
@@ -304,10 +280,7 @@ const InfiniteSnowWorld = () => {
   // Recycle chunks that are too far from the character
   const recycleDistantChunks = (characterPosition) => {
     chunksRef.current.forEach((chunk) => {
-      const distance = new THREE.Vector2(
-        chunk.position.x - characterPosition.x,
-        chunk.position.z - characterPosition.z
-      ).length();
+      const distance = new THREE.Vector2(chunk.position.x - characterPosition.x, chunk.position.z - characterPosition.z).length();
 
       if (distance > CHUNK_UNLOAD_DISTANCE) {
         const geometry = chunk.geometry;
@@ -336,8 +309,7 @@ const InfiniteSnowWorld = () => {
 
       neighboringChunks.forEach((chunk) => {
         const geometry = chunk.geometry;
-        if (!geometry || !geometry.attributes || !geometry.attributes.position)
-          return;
+        if (!geometry || !geometry.attributes || !geometry.attributes.position) return;
 
         const positionAttribute = geometry.attributes.position;
         const vertices = positionAttribute.array;
@@ -351,17 +323,12 @@ const InfiniteSnowWorld = () => {
           const distance = tempVertex.distanceTo(point);
 
           if (distance < DEFORM_RADIUS) {
-            const influence = Math.pow(
-              (DEFORM_RADIUS - distance) / DEFORM_RADIUS,
-              3
-            );
+            const influence = Math.pow((DEFORM_RADIUS - distance) / DEFORM_RADIUS, 3);
 
             const yOffset = influence * 10;
-            tempVertex.y -=
-              yOffset * Math.sin((distance / DEFORM_RADIUS) * Math.PI);
+            tempVertex.y -= yOffset * Math.sin((distance / DEFORM_RADIUS) * Math.PI);
 
-            tempVertex.y +=
-              WAVE_AMPLITUDE * Math.sin(WAVE_FREQUENCY * distance);
+            tempVertex.y += WAVE_AMPLITUDE * Math.sin(WAVE_FREQUENCY * distance);
 
             chunk.worldToLocal(tempVertex);
             tempVertex.toArray(vertices, i * 3);
@@ -377,9 +344,7 @@ const InfiniteSnowWorld = () => {
       });
 
       if (geometriesToUpdate.length > 0) {
-        geometriesToUpdate.forEach((geometry) =>
-          geometry.computeVertexNormals()
-        );
+        geometriesToUpdate.forEach((geometry) => geometry.computeVertexNormals());
       }
     },
     [getNeighboringChunks, chunksRef, saveChunkDeformation]
@@ -429,40 +394,22 @@ const InfiniteSnowWorld = () => {
     // Update character position and rotation
     if (characterParentRef.current) {
       if (isCurrentlyMoving) {
-        characterParentRef.current.position.addScaledVector(
-          smoothMovement.current,
-          speed * delta
-        );
+        characterParentRef.current.position.addScaledVector(smoothMovement.current, speed * delta);
 
-        const targetRotation = Math.atan2(
-          smoothMovement.current.x,
-          smoothMovement.current.z
-        );
-        currentRotation.current = lerpAngle(
-          currentRotation.current,
-          targetRotation,
-          delta * 4
-        );
+        const targetRotation = Math.atan2(smoothMovement.current.x, smoothMovement.current.z);
+        currentRotation.current = lerpAngle(currentRotation.current, targetRotation, delta * 4);
         characterParentRef.current.rotation.y = currentRotation.current;
       }
 
       characterParentRef.current.getWorldPosition(characterPosition);
 
-      cameraTargetRef.current
-        .copy(characterPosition)
-        .add(new THREE.Vector3(0, 0, 0));
+      cameraTargetRef.current.copy(characterPosition).add(new THREE.Vector3(0, 0, 0));
 
-      const offsetRotated = cameraOffset
-        .clone()
-        .applyAxisAngle(new THREE.Vector3(0, 0, 0), currentRotation.current);
+      const offsetRotated = cameraOffset.clone().applyAxisAngle(new THREE.Vector3(0, 0, 0), currentRotation.current);
       const targetCameraPosition = characterPosition.clone().add(offsetRotated);
 
       camera.position.lerp(targetCameraPosition, 0.01);
-      camera.lookAt(
-        cameraTargetRef.current.x,
-        cameraTargetRef.current.y + 7,
-        cameraTargetRef.current.z
-      );
+      camera.lookAt(cameraTargetRef.current.x, cameraTargetRef.current.y + 7, cameraTargetRef.current.z);
 
       // Handle chunk positioning and deformation when moving
       if (isCurrentlyMoving) {
@@ -470,12 +417,8 @@ const InfiniteSnowWorld = () => {
 
         // Update chunk positions based on character's current position
         chunksRef.current.forEach((chunk, index) => {
-          const chunkX =
-            Math.round(charX / CHUNK_SIZE) * CHUNK_SIZE +
-            snowChunks[index].x * CHUNK_SIZE;
-          const chunkZ =
-            Math.round(charZ / CHUNK_SIZE) * CHUNK_SIZE +
-            snowChunks[index].z * CHUNK_SIZE;
+          const chunkX = Math.round(charX / CHUNK_SIZE) * CHUNK_SIZE + snowChunks[index].x * CHUNK_SIZE;
+          const chunkZ = Math.round(charZ / CHUNK_SIZE) * CHUNK_SIZE + snowChunks[index].z * CHUNK_SIZE;
 
           if (chunk.position.x !== chunkX || chunk.position.z !== chunkZ) {
             chunk.position.set(chunkX, 0, chunkZ);
@@ -498,12 +441,7 @@ const InfiniteSnowWorld = () => {
           const chunkMinZ = chunk.position.z - CHUNK_SIZE / 2;
           const chunkMaxZ = chunk.position.z + CHUNK_SIZE / 2;
 
-          return (
-            charX >= chunkMinX &&
-            charX < chunkMaxX &&
-            charZ >= chunkMinZ &&
-            charZ < chunkMaxZ
-          );
+          return charX >= chunkMinX && charX < chunkMaxX && charZ >= chunkMinZ && charZ < chunkMaxZ;
         });
 
         if (activeChunkIndex !== -1) {
@@ -511,10 +449,8 @@ const InfiniteSnowWorld = () => {
           lastActiveChunkRef.current = activeChunk;
 
           // Get character's foot positions for deformation
-          const leftFootBone =
-            characterRef.current.getObjectByName("mixamorigLeftFoot");
-          const rightFootBone =
-            characterRef.current.getObjectByName("mixamorigRightFoot");
+          const leftFootBone = characterRef.current.getObjectByName("mixamorigLeftFoot");
+          const rightFootBone = characterRef.current.getObjectByName("mixamorigRightFoot");
 
           if (leftFootBone) {
             tempVector.setFromMatrixPosition(leftFootBone.matrixWorld);
@@ -543,22 +479,14 @@ const InfiniteSnowWorld = () => {
               chunksRef.current[index] = el;
               // Save the original position of the chunk for resetting deformations
               if (!el.geometry.userData.originalPosition) {
-                el.geometry.userData.originalPosition =
-                  el.geometry.attributes.position.array.slice();
+                el.geometry.userData.originalPosition = el.geometry.attributes.position.array.slice();
               }
             }
           }}
           rotation={[-Math.PI / 2, 0, 0]}
           position={[chunk.x * CHUNK_SIZE, 0, chunk.z * CHUNK_SIZE]}
         >
-          <planeGeometry
-            args={[
-              CHUNK_SIZE + CHUNK_OVERLAP * 2,
-              CHUNK_SIZE + CHUNK_OVERLAP * 2,
-              GRID_RESOLUTION,
-              GRID_RESOLUTION,
-            ]}
-          />
+          <planeGeometry args={[CHUNK_SIZE + CHUNK_OVERLAP * 2, CHUNK_SIZE + CHUNK_OVERLAP * 2, GRID_RESOLUTION, GRID_RESOLUTION]} />
           <meshStandardMaterial
             map={colorMap}
             normalMap={normalMap}
@@ -573,13 +501,7 @@ const InfiniteSnowWorld = () => {
       <group ref={characterParentRef}>
         <primitive ref={characterRef} object={scene} />
         <FogEffect />
-        <PositionalAudio
-          ref={footstepAudioRef}
-          url="/audio/snow-step.mp3"
-          distance={10}
-          loop={true}
-          autoplay={false}
-        />
+        <PositionalAudio ref={footstepAudioRef} url="/audio/snow-step.mp3" distance={10} loop={true} autoplay={false} />
       </group>
     </>
   );

@@ -30,6 +30,7 @@ if (!config?.rscEndpoint) {
 
 const actionEndpoint = config.actionEndpoint;
 
+// Get the RSC stream from the bootstrap script
 const stream = (window as unknown as { __MY_REACT_RSC_STREAM__?: ReadableStream<Uint8Array> }).__MY_REACT_RSC_STREAM__;
 
 const fetchPayload = (client: FlightClient, url: string) =>

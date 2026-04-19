@@ -1,11 +1,6 @@
-import {
-  CircleProps,
-  RectProps,
-  ShapeProps,
-  TextProps,
-} from "./CanvasReconciler";
+import { CircleProps, RectProps, ShapeProps, TextProps } from "./CanvasReconciler";
 
-type NodeProps<TProps extends ShapeProps> = Omit<TProps, 'type'>
+type NodeProps<TProps extends ShapeProps> = Omit<TProps, "type">;
 
 type CanvasElement<TProps extends ShapeProps> = NodeProps<TProps> & React.RefAttributes<Instance> & { children?: ReactNode | undefined };
 

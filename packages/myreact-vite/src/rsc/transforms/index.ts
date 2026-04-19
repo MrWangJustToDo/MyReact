@@ -18,7 +18,7 @@ export { parseServerActions, parseServerActionsSync, findInlineServerActions } f
 export type { InlineServerAction } from "./server-parser";
 
 // Code generators
-export { generateClientReferenceProxyCode, createClientModuleProxy } from "./client-codegen";
+export { generateClientReferenceProxyCode, generateClientModuleProxyCode, createClientModuleProxy } from "./client-codegen";
 
 export { generateServerModuleCode, generateInlineActionMarker, generateServerActionHandler, generateServerActionProxyCode } from "./server-codegen";
 

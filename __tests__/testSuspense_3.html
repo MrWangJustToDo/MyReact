@@ -30,7 +30,7 @@
 
         useEffect(() => {
           if (!active) {
-            setF(new Promise(r => null));
+            setF(new Promise((r) => null));
           } else {
             setF(null);
           }
@@ -39,7 +39,7 @@
 
         useEffect(() => {
           console.log("f change", f);
-        }, [f])
+        }, [f]);
 
         console.log(f);
 

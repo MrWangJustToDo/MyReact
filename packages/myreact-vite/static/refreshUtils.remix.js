@@ -25,16 +25,10 @@ const enqueueUpdate = debounce(async () => {
         ...imported,
         // react-refresh takes care of updating these in-place,
         // if we don't preserve existing values we'll loose state.
-        default: imported.default
-          ? window.__remixRouteModules[route.id]?.default ?? imported.default
-          : imported.default,
-        ErrorBoundary: imported.ErrorBoundary
-          ? window.__remixRouteModules[route.id]?.ErrorBoundary ??
-            imported.ErrorBoundary
-          : imported.ErrorBoundary,
+        default: imported.default ? (window.__remixRouteModules[route.id]?.default ?? imported.default) : imported.default,
+        ErrorBoundary: imported.ErrorBoundary ? (window.__remixRouteModules[route.id]?.ErrorBoundary ?? imported.ErrorBoundary) : imported.ErrorBoundary,
         HydrateFallback: imported.HydrateFallback
-          ? window.__remixRouteModules[route.id]?.HydrateFallback ??
-            imported.HydrateFallback
+          ? (window.__remixRouteModules[route.id]?.HydrateFallback ?? imported.HydrateFallback)
           : imported.HydrateFallback,
       };
       window.__remixRouteModules[route.id] = routeModule;
@@ -93,36 +87,23 @@ function validateRefreshBoundaryAndEnqueueUpdate(
   // non-component exports that are handled by the framework (e.g. `meta` and `links` for route modules)
   acceptExports = []
 ) {
-  if (
-    !predicateOnExport(
-      prevExports,
-      (key) => key in nextExports || acceptExports.includes(key)
-    )
-  ) {
+  if (!predicateOnExport(prevExports, (key) => key in nextExports || acceptExports.includes(key))) {
     return "Could not Fast Refresh (export removed)";
   }
-  if (
-    !predicateOnExport(
-      nextExports,
-      (key) => key in prevExports || acceptExports.includes(key)
-    )
-  ) {
+  if (!predicateOnExport(nextExports, (key) => key in prevExports || acceptExports.includes(key))) {
     return "Could not Fast Refresh (new export)";
   }
 
   let hasExports = false;
-  let allExportsAreHandledOrUnchanged = predicateOnExport(
-    nextExports,
-    (key, value) => {
-      hasExports = true;
-      // Remix can handle Remix-specific exports (e.g. `meta` and `links`)
-      if (acceptExports.includes(key)) return true;
-      // React Fast Refresh can handle component exports
-      if (exports.isLikelyComponentType(value)) return true;
-      // Unchanged exports are implicitly handled
-      return prevExports[key] === nextExports[key];
-    }
-  );
+  let allExportsAreHandledOrUnchanged = predicateOnExport(nextExports, (key, value) => {
+    hasExports = true;
+    // Remix can handle Remix-specific exports (e.g. `meta` and `links`)
+    if (acceptExports.includes(key)) return true;
+    // React Fast Refresh can handle component exports
+    if (exports.isLikelyComponentType(value)) return true;
+    // Unchanged exports are implicitly handled
+    return prevExports[key] === nextExports[key];
+  });
   if (hasExports && allExportsAreHandledOrUnchanged) {
     enqueueUpdate();
   } else {
@@ -184,6 +165,5 @@ import.meta.hot.on("remix:hmr", async ({ route }) => {
 
 exports.__hmr_import = __hmr_import;
 exports.registerExportsForReactRefresh = registerExportsForReactRefresh;
-exports.validateRefreshBoundaryAndEnqueueUpdate =
-  validateRefreshBoundaryAndEnqueueUpdate;
+exports.validateRefreshBoundaryAndEnqueueUpdate = validateRefreshBoundaryAndEnqueueUpdate;
 exports.enqueueUpdate = enqueueUpdate;

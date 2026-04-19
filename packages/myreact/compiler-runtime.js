@@ -1,3 +1,3 @@
-'use strict';
+"use strict";
 
-module.exports = require('react-compiler-runtime');
+module.exports = require("react-compiler-runtime");

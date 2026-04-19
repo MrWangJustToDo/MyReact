@@ -1,30 +1,9 @@
 import { renderToReadableStream } from "@lazarv/rsc/server";
 
 import { createClientManifestResolver } from "./manifest";
-import { ServerComponentDispatch } from "./server-component-dispatch";
 
-import type { RenderToFlightStreamOptions, ModuleResolver } from "../shared/types";
+import type { RenderToFlightStreamOptions } from "../shared/types";
 import type { MyReactElementNode } from "@my-react/react/type";
-
-/**
- * Default module resolver when none is provided
- */
-const defaultModuleResolver: ModuleResolver = {
-  resolveClientReference(reference) {
-    // Default: return the reference as-is
-    return {
-      id: (reference as { $$id: string }).$$id || String(reference),
-      name: (reference as { $$name: string }).$$name || "default",
-      chunks: [],
-    };
-  },
-  resolveServerReference(reference) {
-    return {
-      id: (reference as { $$id: string }).$$id || String(reference),
-      name: (reference as { $$name: string }).$$name || "default",
-    };
-  },
-};
 
 /**
  * @public
@@ -33,6 +12,10 @@ const defaultModuleResolver: ModuleResolver = {
  * This function serializes the server component tree using the React Flight
  * protocol via @lazarv/rsc. Client components are serialized as references,
  * and server components are executed on the server.
+ *
+ * Note: Client components must be registered using `registerClientReference`
+ * from `@my-react/react-server/server` (re-exported from @lazarv/rsc/server)
+ * for proper serialization.
  *
  * @param element - The root element to render
  * @param options - Rendering options
@@ -58,14 +41,12 @@ const defaultModuleResolver: ModuleResolver = {
  * ```
  */
 export async function renderToFlightStream(element: MyReactElementNode, options: RenderToFlightStreamOptions = {}): Promise<ReadableStream<Uint8Array>> {
-  const dispatch = new ServerComponentDispatch();
-
-  const moduleResolver =
-    options.moduleResolver || (options.clientManifest ? createClientManifestResolver(options.clientManifest) : dispatch.getModuleResolver());
+  // Use client manifest resolver if provided, otherwise @lazarv/rsc handles references internally
+  const moduleResolver = options.clientManifest ? createClientManifestResolver(options.clientManifest) : options.moduleResolver;
 
   // Create the Flight stream using @lazarv/rsc
   const stream = renderToReadableStream(element, {
-    moduleResolver: moduleResolver || defaultModuleResolver,
+    moduleResolver,
     onError: (error: unknown) => {
       // Call user-provided error handler
       if (options.onError) {
@@ -90,17 +71,4 @@ export async function renderToFlightStream(element: MyReactElementNode, options:
   });
 
   return stream;
-}
-
-/**
- * @public
- * Create a ServerComponentDispatch instance for advanced use cases
- *
- * This is useful when you need to register client/server references
- * manually or access the dispatch methods directly.
- *
- * @returns A new ServerComponentDispatch instance
- */
-export function createServerDispatch(): ServerComponentDispatch {
-  return new ServerComponentDispatch();
 }

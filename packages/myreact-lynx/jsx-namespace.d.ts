@@ -1,8 +1,8 @@
 import type * as React from "react";
 
-import * as Lynx from '@lynx-js/types';
+import * as Lynx from "@lynx-js/types";
 
-declare module '@lynx-js/types' {
+declare module "@lynx-js/types" {
   export interface StandardProps {
     children?: React.ReactNode;
   }

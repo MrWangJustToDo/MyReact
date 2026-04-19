@@ -152,8 +152,12 @@
           console.log("B raf");
         });
 
-        return <div className="box green" ref={(r) => console.log('B ref', r)}>B</div>;
-      }
+        return (
+          <div className="box green" ref={(r) => console.log("B ref", r)}>
+            B
+          </div>
+        );
+      };
 
       const A = () => {
         const [c, setC] = useState(1);
@@ -162,7 +166,7 @@
           console.log("A mount");
 
           if (c < 5) {
-            setC(i => i + 1);
+            setC((i) => i + 1);
           }
 
           return () => console.log("A unmount");
@@ -172,8 +176,12 @@
           console.log("A raf");
         });
 
-        return <div className="red" ref={(r) => console.log('a ref', r)}>A <B /></div>;
-      }
+        return (
+          <div className="red" ref={(r) => console.log("a ref", r)}>
+            A <B />
+          </div>
+        );
+      };
 
       const container = document.getElementById("root");
       // ReactDOM.render(<A />, container);

@@ -1,33 +1,34 @@
 import { createFlightServer } from "@my-react/react-server/server";
 
-import type { FlightServerOptions } from "@my-react/react-server/server";
-
 export async function renderHTML(
   rscStream: ReadableStream<Uint8Array>,
   options?: {
     loadModule?: (id: string) => Promise<unknown>;
   }
 ) {
+  // Simple module loading - just load and cache
+  const loadedModules = new Map<string, unknown>();
+
   const moduleLoader = {
     async preloadModule(metadata: { id: string }) {
-      if (options?.loadModule) {
-        await options.loadModule(metadata.id);
-        return;
-      }
-      await import(/* @vite-ignore */ metadata.id);
+      if (loadedModules.has(metadata.id)) return;
+
+      const mod = options?.loadModule ? await options.loadModule(metadata.id) : await import(/* @vite-ignore */ metadata.id);
+      loadedModules.set(metadata.id, mod);
     },
     async requireModule(metadata: { id: string; name: string }) {
-      if (options?.loadModule) {
-        return await options.loadModule(metadata.id);
+      if (loadedModules.has(metadata.id)) {
+        return loadedModules.get(metadata.id);
       }
-      return await import(/* @vite-ignore */ metadata.id);
+
+      const mod = options?.loadModule ? await options.loadModule(metadata.id) : await import(/* @vite-ignore */ metadata.id);
+      loadedModules.set(metadata.id, mod);
+      return mod;
     },
   };
 
-  const server = await createFlightServer({
-    moduleLoader,
-    resolveModuleId: (id: string) => `${id}?rsc-original`,
-  } as FlightServerOptions);
+  const server = await createFlightServer({ moduleLoader });
+
   const htmlStream = await server.renderToStream(rscStream);
 
   const html = await readStreamToString(htmlStream);

@@ -35,11 +35,7 @@ export function FogEffect() {
   return (
     <mesh rotation={[4.725, 0, 0]} position={[0, 4, 0]}>
       <planeGeometry args={[1000, 1000, 1, 1]} />
-      <fogMaterial
-        uColor={new THREE.Color("#ffffff")}
-        transparent
-        depthWrite={false}
-      />
+      <fogMaterial uColor={new THREE.Color("#ffffff")} transparent depthWrite={false} />
     </mesh>
   );
 }

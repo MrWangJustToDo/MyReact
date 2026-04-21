@@ -570,7 +570,7 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
               enableCSSInheritance: opts.enableCSSInheritance ?? false,
               customCSSInheritanceList: opts.customCSSInheritanceList,
               enableRemoveCSSScope: true,
-              enableNewGesture: false,
+              enableNewGesture: true,
               removeDescendantSelectorScope: true,
               cssPlugins: [],
             },

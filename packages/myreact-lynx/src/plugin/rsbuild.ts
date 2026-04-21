@@ -127,6 +127,9 @@ const PLUGIN_NAME = "lynx:myreact";
  */
 const REACT_ALIASES: Record<string, string> = {
   react$: "@my-react/react",
+  "@lynx-js/react$": "@my-react/react-lynx",
+  "@lynx-js/react/jsx-runtime": "@my-react/react-lynx/jsx-runtime",
+  "@lynx-js/react/jsx-dev-runtime": "@my-react/react-lynx/jsx-dev-runtime",
   "react-dom$": "@my-react/react-dom",
   "react-dom/server$": "@my-react/react-dom/server",
   "react-dom/client$": "@my-react/react-dom/client",
@@ -162,11 +165,18 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
         // By default, Rsbuild does not compile JavaScript files under
         // node_modules via SWC. Many npm packages ship ES2021+ syntax
         // which the Lynx JS engine does not support. Compile all JS files.
+        //
+        // Also include @lynx-js/* packages which ship .jsx files that need
+        // JSX compilation (rsbuild doesn't compile .jsx from node_modules by default).
         const userConfig = api.getRsbuildConfig("original");
         if (typeof userConfig.source?.include === "undefined") {
           config = mergeRsbuildConfig(config, {
             source: {
-              include: [/\.(?:js|mjs|cjs)$/],
+              include: [
+                /\.(?:js|mjs|cjs)$/,
+                // Include @lynx-js packages for JSX compilation
+                /@lynx-js[\\/]/,
+              ],
             },
           });
         }
@@ -227,6 +237,35 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
         // Resolve alias for @my-react/react-lynx internal paths
         // This ensures the runtime files resolve correctly in pnpm workspaces
         chain.resolve.alias.set("@my-react/react-lynx", "@my-react/react-lynx");
+
+        // Compile .jsx files from @lynx-js/* UI packages.
+        // These packages ship uncompiled JSX that needs transformation.
+        // Use @lynx-js/react as importSource since these are ReactLynx components.
+        chain.module
+          .rule("lynx-js-jsx")
+          .test(/\.jsx$/)
+          .include.add(/@lynx-js[\\/]/)
+          .end()
+          .use("swc-jsx")
+          .loader("builtin:swc-loader")
+          .options({
+            jsc: {
+              target: "es2019",
+              parser: {
+                syntax: "ecmascript",
+                jsx: true,
+              },
+              transform: {
+                react: {
+                  runtime: "automatic",
+                  importSource: "@lynx-js/react",
+                  // Allow JSX namespace syntax like main-thread:ref
+                  throwIfNamespace: false,
+                },
+              },
+            },
+          })
+          .end();
 
         // Redirect @lynx-js/react/internal to our shim which provides
         // MyReact-compatible implementations of loadLazyBundle etc.

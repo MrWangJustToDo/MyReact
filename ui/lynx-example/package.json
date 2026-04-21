@@ -10,6 +10,7 @@
     "dev": "DEV=true rspeedy dev"
   },
   "dependencies": {
+    "@lynx-js/lynx-ui": "^3.131.0",
     "@lynx-js/react": "^0.116.5",
     "@my-react/react": "workspace:*",
     "@my-react/react-lynx": "workspace:*"

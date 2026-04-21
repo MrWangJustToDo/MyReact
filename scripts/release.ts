@@ -17,6 +17,7 @@ const pkgNameAlias = {
   "@my-react/react-rspack": "myreact-rspack",
   "@my-react/react-terminal": "myreact-terminal",
   "@my-react/react-three-fiber": "myreact-three-fiber",
+  "@my-react/react-lynx": "myreact-lynx",
 };
 
 const getVersion = (pkgName: string) =>
@@ -84,6 +85,7 @@ const run = async () => {
   await release("@my-react/react-reconciler-compact");
   await release("@my-react/react-terminal");
   await release("@my-react/react-three-fiber");
+  await release("@my-react/react-lynx");
 };
 
 run();

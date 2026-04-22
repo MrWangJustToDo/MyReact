@@ -175,6 +175,8 @@ root.render(
 );
 ```
 
+![Lynx dev](./Lynx.png)
+
 #### Lynx-Specific APIs
 
 | API                            | Description                         |

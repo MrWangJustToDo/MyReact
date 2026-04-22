@@ -15,7 +15,7 @@ export default defineConfig({
       // use pnpm run dev:websocket to debug lynx app
       // reactDevTool: true,
       // reactDevTool: {
-      //   wsUrl: 'ws://192.168.0.100:3002/ws'
+      //   // wsUrl: 'ws://192.168.0.100:3002/ws'
       // },
     }),
     pluginQRCode({

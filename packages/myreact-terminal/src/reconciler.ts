@@ -78,8 +78,9 @@ const cleanupNodeTree = (node?: DOMNode): void => {
 
   node.yogaNode?.free();
 
-  if ("cachedRender" in node) {
+  if ("childNodes" in node) {
     node.cachedRender = undefined;
+    node.cachedRegion = undefined;
   }
 
   if ("childNodes" in node) {
@@ -200,8 +201,8 @@ export const Reconciler = createReconciler<
         continue;
       }
 
-      if (key === "internal_onBeforeRender") {
-        node.internal_onBeforeRender = value as () => void;
+      if (key === "internal_onRendered") {
+        node.internal_onRendered = value as () => void;
         continue;
       }
 
@@ -247,9 +248,11 @@ export const Reconciler = createReconciler<
   getPublicInstance: (instance) => instance,
   hideInstance(node) {
     node.yogaNode?.setDisplay(Yoga.DISPLAY_NONE);
+    markNodeAsDirty(node);
   },
   unhideInstance(node) {
     node.yogaNode?.setDisplay(Yoga.DISPLAY_FLEX);
+    markNodeAsDirty(node);
   },
   appendInitialChild: appendChildNode,
   appendChild: appendChildNode,
@@ -294,8 +297,14 @@ export const Reconciler = createReconciler<
   },
   // @ts-ignore
   commitUpdate(node, { props, style }) {
+    let shouldMarkDirty = Boolean(style);
+
     if (props) {
       for (const [key, value] of Object.entries(props)) {
+        if (key === "children") {
+          continue;
+        }
+
         if (key === "style") {
           setStyle(node, value as Styles);
           continue;
@@ -303,61 +312,74 @@ export const Reconciler = createReconciler<
 
         if (key === "internal_transform") {
           node.internal_transform = value as OutputTransformer;
-          markNodeAsDirty(node);
+          shouldMarkDirty = true;
           continue;
         }
 
         if (key === "sticky") {
           node.internal_sticky = value as boolean | "top" | "bottom";
+          shouldMarkDirty = true;
           continue;
         }
 
         if (key === "internal_stickyAlternate") {
           node.internal_stickyAlternate = Boolean(value);
+          shouldMarkDirty = true;
           continue;
         }
 
         if (key === "internal_terminalCursorFocus") {
           node.internal_terminalCursorFocus = value as boolean;
+          shouldMarkDirty = true;
           continue;
         }
 
         if (key === "internal_terminalCursorPosition") {
           node.internal_terminalCursorPosition = value as number;
+          shouldMarkDirty = true;
           continue;
         }
 
-        if (key === "internal_onBeforeRender") {
-          node.internal_onBeforeRender = value as (node: DOMElement) => void;
+        if (key === "internal_onRendered") {
+          node.internal_onRendered = value as () => void;
           continue;
         }
 
         if (key === "internal_static") {
           node.internal_static = true;
+          shouldMarkDirty = true;
           continue;
         }
 
         if (key === "cachedRender") {
           node.cachedRender = value as Region;
+          shouldMarkDirty = true;
           continue;
         }
 
         if (key === "opaque") {
           node.internal_opaque = Boolean(value);
+          shouldMarkDirty = true;
           continue;
         }
 
         if (key === "scrollbar") {
           node.internal_scrollbar = value as boolean;
+          shouldMarkDirty = true;
           continue;
         }
 
         setAttribute(node, key, value as DOMNodeAttribute);
+        shouldMarkDirty = true;
       }
     }
 
     if (style && node.yogaNode) {
       applyStyles(node.yogaNode, style);
+    }
+
+    if (shouldMarkDirty) {
+      markNodeAsDirty(node);
     }
   },
   commitTextUpdate(node, _oldText, newText) {

@@ -56,8 +56,9 @@ export type DOMElement = {
   internal_transform?: OutputTransformer;
   internal_terminalCursorFocus?: boolean;
   internal_terminalCursorPosition?: number;
-  internal_onBeforeRender?: (node: DOMElement, options?: { trackSelection?: boolean }) => void;
+  internal_onRendered?: () => void;
   cachedRender?: Region;
+  cachedRegion?: Region;
 
   internal_accessibility?: {
     role?:
@@ -94,6 +95,7 @@ export type DOMElement = {
 
   // Internal properties
   isStaticDirty?: boolean;
+  isYogaTreeDetached?: boolean;
   staticNode?: DOMElement;
   onComputeLayout?: () => void;
   onRender?: () => void;
@@ -162,6 +164,10 @@ export const createNode = (nodeName: ElementNames): DOMElement => {
   return node;
 };
 
+const markNodeAndParentIfStaticAsDirty = (node: DOMElement) => {
+  markNodeAsDirty(node.nodeName === "ink-static-render" && node.cachedRender ? node.parentNode : node);
+};
+
 export const appendChildNode = (node: DOMElement, childNode: DOMElement): void => {
   if (childNode.parentNode) {
     removeChildNode(childNode.parentNode, childNode);
@@ -174,9 +180,7 @@ export const appendChildNode = (node: DOMElement, childNode: DOMElement): void =
     node.yogaNode?.insertChild(childNode.yogaNode, node.yogaNode.getChildCount());
   }
 
-  if (node.nodeName === "ink-text" || node.nodeName === "ink-virtual-text") {
-    markNodeAsDirty(node);
-  }
+  markNodeAndParentIfStaticAsDirty(node);
 };
 
 export const insertBeforeNode = (node: DOMElement, newChildNode: DOMNode, beforeChildNode: DOMNode): void => {
@@ -192,19 +196,15 @@ export const insertBeforeNode = (node: DOMElement, newChildNode: DOMNode, before
     if (newChildNode.yogaNode) {
       node.yogaNode?.insertChild(newChildNode.yogaNode, index);
     }
+  } else {
+    node.childNodes.push(newChildNode);
 
-    return;
+    if (newChildNode.yogaNode) {
+      node.yogaNode?.insertChild(newChildNode.yogaNode, node.yogaNode.getChildCount());
+    }
   }
 
-  node.childNodes.push(newChildNode);
-
-  if (newChildNode.yogaNode) {
-    node.yogaNode?.insertChild(newChildNode.yogaNode, node.yogaNode.getChildCount());
-  }
-
-  if (node.nodeName === "ink-text" || node.nodeName === "ink-virtual-text") {
-    markNodeAsDirty(node);
-  }
+  markNodeAndParentIfStaticAsDirty(node);
 };
 
 export const removeChildNode = (node: DOMElement, removeNode: DOMNode): void => {
@@ -218,14 +218,12 @@ export const removeChildNode = (node: DOMElement, removeNode: DOMNode): void => 
 
   removeNode.parentNode = undefined;
 
-  if (node.nodeName === "ink-text" || node.nodeName === "ink-virtual-text") {
-    markNodeAsDirty(node);
-  }
-
   const index = node.childNodes.indexOf(removeNode);
   if (index >= 0) {
     node.childNodes.splice(index, 1);
   }
+
+  markNodeAndParentIfStaticAsDirty(node);
 };
 
 export const setAttribute = (node: DOMElement, key: string, value: DOMNodeAttribute): void => {
@@ -297,13 +295,43 @@ export const setCachedRender = (node: DOMElement, cachedRender: Region) => {
     while (node.yogaNode.getChildCount() > 0) {
       node.yogaNode.removeChild(node.yogaNode.getChild(0));
     }
+
+    node.isYogaTreeDetached = true;
+  }
+};
+
+export const getCachedRegion = (node: DOMElement): Region | undefined => node.cachedRegion;
+
+export const setCachedRegion = (node: DOMElement, cachedRegion: Region) => {
+  node.cachedRegion = cachedRegion;
+};
+
+const invalidateNodeCaches = (node?: DOMNode) => {
+  let current = node;
+  while (current) {
+    if ("childNodes" in current) {
+      const shouldPreserveStaticCache = current !== node && current.nodeName === "ink-static-render" && Boolean(current.cachedRender);
+
+      if (shouldPreserveStaticCache) {
+        break;
+      }
+
+      current.cachedRender = undefined;
+      current.cachedRegion = undefined;
+    }
+
+    current = current.parentNode;
   }
 };
 
 export const markNodeAsDirty = (node?: DOMNode): void => {
   // Mark closest Yoga node as dirty to measure text dimensions again
-  const yogaNode = findClosestYogaNode(node);
-  yogaNode?.markDirty();
+  if (node?.nodeName === "#text" || node?.nodeName === "ink-text" || node?.nodeName === "ink-virtual-text") {
+    const yogaNode = findClosestYogaNode(node);
+    yogaNode?.markDirty();
+  }
+
+  invalidateNodeCaches(node);
 };
 
 export const setTextNodeValue = (node: TextNode, text: string): void => {

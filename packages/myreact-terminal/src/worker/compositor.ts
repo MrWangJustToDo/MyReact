@@ -109,12 +109,14 @@ export class Compositor {
       if (this.options.stickyHeadersInBackbuffer && region.overflowToBackbuffer) {
         if (header.type === "top") {
           if (headerY < 0 && absY + region.height > 0) {
-            headerY = 0;
+            const maxStuckYAbs = header.maxStuckY === undefined ? 0 : absY + header.maxStuckY;
+            headerY = Math.max(headerY, Math.min(0, maxStuckYAbs));
           }
         } else if (header.type === "bottom") {
           const stuckPos = this.options.canvasHeight - (header.stuckLines ?? header.lines).length;
           if (headerY > stuckPos && absY < stuckPos + headerH) {
-            headerY = stuckPos;
+            const minStuckYAbs = header.minStuckY === undefined ? stuckPos : absY + header.minStuckY;
+            headerY = Math.min(headerY, Math.max(stuckPos, minStuckYAbs));
           }
         }
       }

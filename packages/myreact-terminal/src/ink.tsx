@@ -21,11 +21,13 @@ import logUpdate, { type LogUpdate, positionImeCursor } from "./log-update.js";
 import { setEnableToStyledCharactersCache, clearToStyledCharactersCache } from "./measure-text.js";
 import { type Region } from "./output.js";
 import { Reconciler } from "./reconciler.js";
+import { renderToStatic } from "./render-node-to-output.js";
 import render from "./renderer.js";
 import { measureAndExtractObservers, type default as ResizeObserver, type ResizeObserverEntry } from "./resize-observer.js"; // Removed unused imports
 import { calculateScroll } from "./scroll.js";
 import { Selection } from "./selection.js";
 import { type StyledLine } from "./styled-line.js";
+import applyStyles from "./styles.js";
 import TerminalBuffer from "./terminal-buffer.js";
 
 const noop = () => {};
@@ -304,6 +306,17 @@ export default class Ink {
   unsubscribeExit: () => void = () => {};
 
   calculateLayout = () => {
+    const flushLayoutObservers = (node: dom.DOMElement, isResized: boolean) => {
+      const observerEntries = new Map<ResizeObserver, ResizeObserverEntry[]>();
+      this.calculateLayoutAndTriggerObservers(node, observerEntries, isResized);
+
+      for (const [observer, entries] of observerEntries) {
+        observer.internalTrigger(entries);
+      }
+    };
+
+    this.prepareYogaTree(this.rootNode);
+
     // The 'columns' property can be undefined or 0 when not using a TTY.
     // In that case we fall back to 80.
     const terminalWidth = this.options.stdout.columns ?? 80;
@@ -312,13 +325,8 @@ export default class Ink {
 
     this.rootNode.yogaNode!.calculateLayout(undefined, undefined, Yoga.DIRECTION_LTR);
 
-    const observerEntries = new Map<ResizeObserver, ResizeObserverEntry[]>();
-    this.calculateLayoutAndTriggerObservers(this.rootNode, observerEntries, this.isTerminalResized);
+    flushLayoutObservers(this.rootNode, this.isTerminalResized);
     this.isTerminalResized = false;
-
-    for (const [observer, entries] of observerEntries) {
-      observer.internalTrigger(entries);
-    }
   };
 
   calculateLayoutAndTriggerObservers(node: dom.DOMElement, observerEntries: Map<ResizeObserver, ResizeObserverEntry[]>, isTerminalResized = false) {
@@ -367,6 +375,7 @@ export default class Ink {
       selectionStyle: this.options.selectionStyle,
       skipScrollbars: Boolean(this.terminalBuffer),
       terminalBuffer: Boolean(this.terminalBuffer),
+      stickyHeadersInBackbuffer: this.optionsState.stickyHeadersInBackbuffer,
     });
 
     if (this.terminalBuffer && root) {
@@ -730,6 +739,63 @@ export default class Ink {
     this.lastOutput = output;
     this.lastOutputHeight = outputHeight;
     this.lastCursorPosition = cursorPosition;
+  }
+
+  private prepareYogaTree(node: dom.DOMElement) {
+    const flushLayoutObservers = (node: dom.DOMElement, isResized: boolean) => {
+      const observerEntries = new Map<ResizeObserver, ResizeObserverEntry[]>();
+      this.calculateLayoutAndTriggerObservers(node, observerEntries, isResized);
+
+      for (const [observer, entries] of observerEntries) {
+        observer.internalTrigger(entries);
+      }
+    };
+
+    if (node.isYogaTreeDetached && !node.cachedRender && node.yogaNode) {
+      // Re-apply styles to revert any fixed width/height set by setCachedRender
+      node.yogaNode.setWidthAuto();
+      node.yogaNode.setHeightAuto();
+      applyStyles(node.yogaNode, node.style);
+
+      while (node.yogaNode.getChildCount() > 0) {
+        node.yogaNode.removeChild(node.yogaNode.getChild(0));
+      }
+
+      let yogaIndex = 0;
+      for (const child of node.childNodes) {
+        const domChild = child as dom.DOMElement;
+        if (child.nodeName !== "#text" && domChild.yogaNode) {
+          node.yogaNode.insertChild(domChild.yogaNode, yogaIndex);
+          yogaIndex++;
+        }
+      }
+
+      node.isYogaTreeDetached = false;
+      this.markAllTextNodesDirty(node);
+    }
+
+    for (const child of node.childNodes) {
+      if (child.nodeName !== "#text") {
+        this.prepareYogaTree(child);
+      }
+    }
+
+    if (node.nodeName === "ink-static-render" && !node.cachedRender) {
+      const terminalWidth = this.options.stdout.columns ?? 80;
+      const { width } = node.style;
+
+      if (node.yogaNode) {
+        node.yogaNode.setWidth(typeof width === "number" ? width : terminalWidth);
+        node.yogaNode.calculateLayout(undefined, undefined, Yoga.DIRECTION_LTR);
+      }
+
+      flushLayoutObservers(node, false);
+
+      renderToStatic(node, {
+        skipStaticElements: false,
+        trackSelection: this.options.trackSelection,
+      });
+    }
   }
 
   private markAllTextNodesDirty(node: dom.DOMElement) {

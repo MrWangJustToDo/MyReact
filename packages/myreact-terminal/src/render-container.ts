@@ -10,7 +10,13 @@ import { type DOMElement, type DOMNode, type StickyHeader } from "./dom.js";
 import renderBackground from "./render-background.js";
 import renderBorder from "./render-border.js";
 import renderNodeToOutput, { type OutputTransformer } from "./render-node-to-output.js";
-import { getStickyDescendants, identifyActiveStickyNodes, renderActiveStickyNodes, type StickyNodeInfo } from "./render-sticky.js";
+import {
+  getStickyDescendants,
+  identifyActiveStickyNodes,
+  renderActiveStickyNodes,
+  type StickyNodeInfo,
+  type ResolvedStickyHeaderInfo,
+} from "./render-sticky.js";
 import { getScrollTop, getScrollLeft, getScrollHeight, getScrollWidth } from "./scroll.js";
 import { type StyledLine } from "./styled-line.js";
 
@@ -28,6 +34,7 @@ export function handleContainerNode(
     skipStaticElements: boolean;
     isStickyRender: boolean;
     skipStickyHeaders: boolean;
+    stickyHeadersInBackbuffer?: boolean;
     selectionMap?: Map<DOMNode, { start: number; end: number }>;
     selectionStyle?: (line: StyledLine, index: number) => void;
     absoluteOffsetX: number;
@@ -44,6 +51,7 @@ export function handleContainerNode(
     skipStaticElements,
     isStickyRender,
     skipStickyHeaders,
+    stickyHeadersInBackbuffer,
     selectionMap,
     selectionStyle,
     absoluteOffsetX,
@@ -63,6 +71,7 @@ export function handleContainerNode(
     nextStickyNodeInfo?: StickyNodeInfo;
     cached?: StickyHeader;
     anchor?: DOMElement;
+    resolvedInfo: ResolvedStickyHeaderInfo;
   }> = [];
 
   let verticallyScrollable = false;
@@ -89,7 +98,7 @@ export function handleContainerNode(
         const clientHeight = node.internal_scrollState?.clientHeight ?? 0;
         const viewportBottom = scrollTop + clientHeight;
 
-        activeStickyNodes.push(...identifyActiveStickyNodes(stickyNodes, node, scrollTop, viewportBottom));
+        activeStickyNodes.push(...identifyActiveStickyNodes(stickyNodes, node, scrollTop, viewportBottom, stickyHeadersInBackbuffer));
       }
     }
 
@@ -171,6 +180,7 @@ export function handleContainerNode(
             skipStaticElements,
             isStickyRender,
             skipStickyHeaders: false,
+            stickyHeadersInBackbuffer,
             selectionMap,
             selectionStyle,
             trackSelection,
@@ -185,6 +195,7 @@ export function handleContainerNode(
           selectionMap,
           selectionStyle,
           trackSelection,
+          stickyHeadersInBackbuffer,
         });
 
         output.endChildRegion();
@@ -212,6 +223,7 @@ export function handleContainerNode(
           skipStaticElements,
           isStickyRender,
           skipStickyHeaders,
+          stickyHeadersInBackbuffer,
           selectionMap,
           selectionStyle,
           trackSelection,

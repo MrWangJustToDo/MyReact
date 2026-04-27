@@ -45,7 +45,7 @@ import {
 
 // testGithub();
 
-testStaticRender();
+// testStaticRender();
 
 // testAlternateBuffer();
 
@@ -53,7 +53,7 @@ testStaticRender();
 
 // testMultiInput();
 
-// testResize();
+testResize();
 
 // testScrollIntoView();
 

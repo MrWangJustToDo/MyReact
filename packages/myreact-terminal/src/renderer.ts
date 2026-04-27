@@ -229,23 +229,10 @@ const renderer = (
     skipScrollbars?: boolean;
     trackSelection?: boolean;
     terminalBuffer?: boolean;
+    stickyHeadersInBackbuffer?: boolean;
   }
 ): Result => {
-  const { isScreenReaderEnabled, selection, selectionStyle, skipScrollbars, trackSelection, terminalBuffer } = options;
-
-  const callBeforeRender = (n: DOMElement) => {
-    if (typeof n.internal_onBeforeRender === "function") {
-      n.internal_onBeforeRender(n, { trackSelection });
-    }
-
-    for (const child of n.childNodes) {
-      if (child.nodeName !== "#text") {
-        callBeforeRender(child);
-      }
-    }
-  };
-
-  callBeforeRender(node);
+  const { isScreenReaderEnabled, selection, selectionStyle, skipScrollbars, trackSelection, terminalBuffer, stickyHeadersInBackbuffer } = options;
 
   if (node.yogaNode) {
     if (isScreenReaderEnabled) {
@@ -286,6 +273,7 @@ const renderer = (
       selectionStyle,
       selectionMap,
       trackSelection,
+      stickyHeadersInBackbuffer,
     });
 
     let staticOutput;
@@ -304,6 +292,7 @@ const renderer = (
         selectionStyle,
         selectionMap: selection ? calculateSelectionMap(node.staticNode, selection) : undefined,
         trackSelection,
+        stickyHeadersInBackbuffer,
       });
     }
 

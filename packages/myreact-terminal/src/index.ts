@@ -42,7 +42,7 @@ export {
   findNodeAtOffset,
   type ScrollbarBoundingBox,
 } from "./measure-element.js";
-export { getScrollHeight, getScrollWidth } from "./scroll.js";
+export { getScrollHeight, getScrollWidth, getScrollLeft, getScrollTop } from "./scroll.js";
 export {
   clearStringWidthCache,
   setStringWidthFunction,

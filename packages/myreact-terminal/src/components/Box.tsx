@@ -108,6 +108,13 @@ const Box = forwardRef<DOMElement, PropsWithChildren<Props>>(
   ) => {
     const { isScreenReaderEnabled } = useContext(accessibilityContext);
     const label = ariaLabel ? <ink-text>{ariaLabel}</ink-text> : undefined;
+    const accessibility =
+      role || ariaState
+        ? {
+            role,
+            state: ariaState,
+          }
+        : undefined;
     if (isScreenReaderEnabled && ariaHidden) {
       return null;
     }
@@ -126,10 +133,7 @@ const Box = forwardRef<DOMElement, PropsWithChildren<Props>>(
           overflowX: style.overflowX ?? style.overflow ?? "visible",
           overflowY: style.overflowY ?? style.overflow ?? "visible",
         }}
-        internal_accessibility={{
-          role,
-          state: ariaState,
-        }}
+        internal_accessibility={accessibility}
         sticky={sticky}
         opaque={opaque}
         scrollbar={scrollbar}

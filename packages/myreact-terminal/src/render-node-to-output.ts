@@ -1,6 +1,6 @@
 import Yoga from "yoga-layout";
 
-import { type DOMElement, type DOMNode, setCachedRender, type StickyHeader } from "./dom.js";
+import { type DOMElement, type DOMNode, getCachedRegion, setCachedRegion, setCachedRender, type StickyHeader } from "./dom.js";
 import Output, { isRectIntersectingClip, extractSelectableText } from "./output.js";
 import { handleCachedRenderNode } from "./render-cached.js";
 import { handleContainerNode } from "./render-container.js";
@@ -10,6 +10,93 @@ import { triggerResizeObservers } from "./resize-observer.js";
 import { type StyledLine } from "./styled-line.js";
 
 export type OutputTransformer = (s: string, index: number) => string;
+
+const isRenderedStaticRenderLeaf = (node: DOMNode): node is DOMElement =>
+  node.nodeName === "ink-static-render" && Boolean(node.cachedRender) && node.childNodes.length === 0;
+
+const canUseCachedRegion = (
+  node: DOMElement,
+  options: {
+    skipStaticElements: boolean;
+    isStickyRender: boolean;
+    selectionMap?: Map<DOMNode, { start: number; end: number }>;
+    selectionStyle?: (line: StyledLine, index: number) => void;
+    trackSelection?: boolean;
+  }
+) => {
+  if (node.nodeName !== "ink-box") {
+    return false;
+  }
+
+  if (
+    !options.skipStaticElements ||
+    node.internal_static ||
+    node.internal_sticky ||
+    node.internal_stickyAlternate ||
+    options.isStickyRender ||
+    (options.selectionMap && options.selectionMap.size > 0) ||
+    options.selectionStyle ||
+    options.trackSelection
+  ) {
+    return false;
+  }
+
+  const overflow = node.style.overflow ?? "visible";
+  const overflowX = node.style.overflowX ?? overflow;
+  const overflowY = node.style.overflowY ?? overflow;
+
+  if (overflowX === "scroll" || overflowY === "scroll") {
+    return false;
+  }
+
+  return node.childNodes.some((childNode) => isRenderedStaticRenderLeaf(childNode));
+};
+
+const getOrRenderCachedRegion = (
+  node: DOMElement,
+  options: {
+    width: number;
+    height: number;
+    transformers: OutputTransformer[];
+    skipStaticElements: boolean;
+    isStickyRender: boolean;
+    skipStickyHeaders: boolean;
+    stickyHeadersInBackbuffer?: boolean;
+  }
+) => {
+  const { width, height, transformers, skipStaticElements, isStickyRender, skipStickyHeaders, stickyHeadersInBackbuffer } = options;
+  const cachedRegion = getCachedRegion(node);
+
+  if (cachedRegion && cachedRegion.width === width && cachedRegion.height === height) {
+    return cachedRegion;
+  }
+
+  const cachedOutput = new Output({
+    width,
+    height,
+    node,
+    id: node.internal_id,
+  });
+
+  handleContainerNode(node, cachedOutput, {
+    x: 0,
+    y: 0,
+    width,
+    height,
+    newTransformers: transformers,
+    skipStaticElements,
+    isStickyRender,
+    skipStickyHeaders,
+    stickyHeadersInBackbuffer,
+    absoluteOffsetX: 0,
+    absoluteOffsetY: 0,
+  });
+
+  const region = cachedOutput.get();
+  setCachedRegion(node, region);
+
+  return region;
+};
 
 export const renderToStatic = (
   node: DOMElement,
@@ -126,6 +213,9 @@ export const renderToStatic = (
   }
 
   setCachedRender(node, rootRegion);
+  if (node.internal_onRendered) {
+    node.internal_onRendered();
+  }
 };
 
 // After nodes are laid out, render each to output object, which later gets rendered to terminal
@@ -141,6 +231,7 @@ function renderNodeToOutput(
     skipStaticElements: boolean;
     isStickyRender?: boolean;
     skipStickyHeaders?: boolean;
+    stickyHeadersInBackbuffer?: boolean;
     selectionMap?: Map<DOMNode, { start: number; end: number }>;
     selectionStyle?: (line: StyledLine, index: number) => void;
     trackSelection?: boolean;
@@ -176,12 +267,14 @@ function renderNodeToOutput(
     }
 
     // Left and top positions in Yoga are relative to their parent node
-    const x = Math.round(offsetX + yogaNode.getComputedLeft());
-    const y = Math.round(offsetY + yogaNode.getComputedTop());
+    const computedLeft = yogaNode.getComputedLeft();
+    const computedTop = yogaNode.getComputedTop();
+    const x = Math.round(offsetX + computedLeft);
+    const y = Math.round(offsetY + computedTop);
 
     // Absolute screen coordinates (for clipping/visibility check)
-    const absX = Math.round(absoluteOffsetX + yogaNode.getComputedLeft());
-    const absY = Math.round(absoluteOffsetY + yogaNode.getComputedTop());
+    const absX = Math.round(absoluteOffsetX + computedLeft);
+    const absY = Math.round(absoluteOffsetY + computedTop);
 
     const width = Math.round(yogaNode.getComputedWidth());
     const height = Math.round(yogaNode.getComputedHeight());
@@ -230,6 +323,31 @@ function renderNodeToOutput(
       return;
     }
 
+    if (
+      width > 0 &&
+      height > 0 &&
+      canUseCachedRegion(node, {
+        skipStaticElements,
+        isStickyRender,
+        selectionMap,
+        selectionStyle,
+        trackSelection,
+      })
+    ) {
+      const cachedRegion = getOrRenderCachedRegion(node, {
+        width,
+        height,
+        transformers: newTransformers,
+        skipStaticElements,
+        isStickyRender,
+        skipStickyHeaders,
+        stickyHeadersInBackbuffer: options.stickyHeadersInBackbuffer,
+      });
+
+      output.addRegionTree(cachedRegion, x, y);
+      return;
+    }
+
     if (node.nodeName === "ink-text") {
       handleTextNode(node, output, {
         x,
@@ -251,6 +369,7 @@ function renderNodeToOutput(
       skipStaticElements,
       isStickyRender,
       skipStickyHeaders,
+      stickyHeadersInBackbuffer: options.stickyHeadersInBackbuffer,
       selectionMap,
       selectionStyle,
       absoluteOffsetX: absX,

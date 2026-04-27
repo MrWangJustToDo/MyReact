@@ -141,6 +141,148 @@ export type Region = {
   hasCursor?: boolean;
 };
 
+export class RegionReference implements Region {
+  constructor(
+    public readonly target: Region,
+    public x: number,
+    public y: number,
+    public overflowToBackbuffer: boolean
+  ) {}
+
+  get id() {
+    return this.target.id;
+  }
+  get width() {
+    return this.target.width;
+  }
+  get height() {
+    return this.target.height;
+  }
+  get bufferWidth() {
+    return this.target.bufferWidth;
+  }
+  get lines() {
+    return this.target.lines;
+  }
+  get styledOutput() {
+    return this.target.styledOutput;
+  }
+
+  get linesOffsetY() {
+    return this.target.linesOffsetY;
+  }
+  set linesOffsetY(value: number | undefined) {
+    this.target.linesOffsetY = value;
+  }
+
+  get isScrollable() {
+    return this.target.isScrollable;
+  }
+  get isVerticallyScrollable() {
+    return this.target.isVerticallyScrollable;
+  }
+  get isHorizontallyScrollable() {
+    return this.target.isHorizontallyScrollable;
+  }
+
+  get scrollTop() {
+    return this.target.scrollTop;
+  }
+  set scrollTop(value: number | undefined) {
+    this.target.scrollTop = value;
+  }
+
+  get scrollLeft() {
+    return this.target.scrollLeft;
+  }
+  set scrollLeft(value: number | undefined) {
+    this.target.scrollLeft = value;
+  }
+
+  get scrollHeight() {
+    return this.target.scrollHeight;
+  }
+  get scrollWidth() {
+    return this.target.scrollWidth;
+  }
+  get scrollbarVisible() {
+    return this.target.scrollbarVisible;
+  }
+  get marginRight() {
+    return this.target.marginRight;
+  }
+  get marginBottom() {
+    return this.target.marginBottom;
+  }
+  get scrollbarThumbColor() {
+    return this.target.scrollbarThumbColor;
+  }
+  get backgroundColor() {
+    return this.target.backgroundColor;
+  }
+  get opaque() {
+    return this.target.opaque;
+  }
+  get borderTop() {
+    return this.target.borderTop;
+  }
+  get borderBottom() {
+    return this.target.borderBottom;
+  }
+  get stickyHeaders() {
+    return this.target.stickyHeaders;
+  }
+  get cachedStickyHeaders() {
+    return this.target.cachedStickyHeaders;
+  }
+  get children() {
+    return this.target.children;
+  }
+  get stableScrollback() {
+    return this.target.stableScrollback;
+  }
+  get nodeId() {
+    return this.target.nodeId;
+  }
+  get node() {
+    return this.target.node;
+  }
+  get selectableText() {
+    return this.target.selectableText;
+  }
+  get selectableSpans() {
+    return this.target.selectableSpans;
+  }
+
+  get isTrimmed() {
+    return this.target.isTrimmed;
+  }
+  set isTrimmed(value: boolean | undefined) {
+    this.target.isTrimmed = value;
+  }
+
+  get maxWrittenY() {
+    return this.target.maxWrittenY;
+  }
+  set maxWrittenY(value: number | undefined) {
+    this.target.maxWrittenY = value;
+  }
+
+  get hasCursor() {
+    return this.target.hasCursor;
+  }
+  set hasCursor(value: boolean | undefined) {
+    this.target.hasCursor = value;
+  }
+
+  get cursorPosition() {
+    return this.target.cursorPosition;
+  }
+  set cursorPosition(value: CursorPosition | undefined) {
+    this.target.cursorPosition = value;
+  }
+}
+
 export type RegionNode = {
   id: string | number;
   children: RegionNode[];
@@ -268,6 +410,7 @@ export default class Output {
 
   private readonly activeRegionStack: Region[] = [];
   private readonly clips: Clip[] = [];
+  private readonly createdRegions: Region[] = [];
 
   constructor(options: Options) {
     const { width, height, node, id = "root", trackSelection = false } = options;
@@ -294,6 +437,7 @@ export default class Output {
     };
 
     this.activeRegionStack.push(this.root);
+    this.createdRegions.push(this.root);
   }
 
   getCurrentClip(): Clip | undefined {
@@ -412,6 +556,7 @@ export default class Output {
 
     // Push to stack
     this.activeRegionStack.push(region);
+    this.createdRegions.push(region);
   }
 
   endChildRegion() {
@@ -519,8 +664,11 @@ export default class Output {
   }
 
   get(): Region {
-    this.clampCursorPosition(this.root);
-    this.trimRegionLines(this.root);
+    for (const region of this.createdRegions) {
+      this.clampCursorPosition(region);
+      this.trimRegionLines(region);
+    }
+
     return this.root;
   }
 
@@ -528,10 +676,7 @@ export default class Output {
     const activeRegion = this.getActiveRegion();
     const overflowToBackbuffer = region.isScrollable ? region.overflowToBackbuffer : (region.overflowToBackbuffer ?? activeRegion.overflowToBackbuffer);
 
-    const regionRef = Object.create(region) as Region;
-    regionRef.x = Math.round(region.x + x);
-    regionRef.y = Math.round(region.y + y);
-    regionRef.overflowToBackbuffer = overflowToBackbuffer;
+    const regionRef = new RegionReference(region, region.x + x, region.y + y, overflowToBackbuffer ?? false);
 
     activeRegion.children.push(regionRef);
 
@@ -578,10 +723,6 @@ export default class Output {
       (region.styledOutput as StyledLine[]) = region.styledOutput.slice(minY, maxY + 1);
     }
 
-    for (const child of region.children) {
-      this.trimRegionLines(child);
-    }
-
     region.isTrimmed = true;
   }
 
@@ -593,10 +734,6 @@ export default class Output {
       const line = region.lines[row];
 
       region.cursorPosition.col = line ? clampCursorColumn(line, col) : 0;
-    }
-
-    for (const child of region.children) {
-      this.clampCursorPosition(child);
     }
   }
 

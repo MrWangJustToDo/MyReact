@@ -85,10 +85,12 @@ function App() {
         ))}
       </Box>
 
-      <StaticRender width={80}>
-        <Box padding={1} borderStyle="single" borderColor="magenta">
-          <Text>I am a StaticRender block to test layout sizing.</Text>
-        </Box>
+      <StaticRender width={80} deps={[]}>
+        {() => (
+          <Box padding={1} borderStyle="single" borderColor="magenta">
+            <Text>I am a StaticRender block to test layout sizing.</Text>
+          </Box>
+        )}
       </StaticRender>
 
       <Text>Parent ({parentDimensions ? `${parentDimensions.width}x${parentDimensions.height}` : "..."})</Text>

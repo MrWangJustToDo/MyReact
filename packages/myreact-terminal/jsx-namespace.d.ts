@@ -20,11 +20,11 @@ declare namespace Ink {
   };
 
   type StaticRender = {
-    children?: ReactNode;
-    style?: Styles;
-    ref?: LegacyRef<DOMElement>;
-    internal_onBeforeRender?: (node: DOMElement) => void;
-    cachedRender?: Region;
+		children?: ReactNode;
+		style?: Styles;
+		ref?: LegacyRef<DOMElement>;
+		cachedRender?: Region;
+		internal_onRendered?: () => void;
   };
 
   type Text = {

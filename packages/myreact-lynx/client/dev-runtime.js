@@ -3217,7 +3217,7 @@
               runtime._console = runtime._console.slice(-keep);
               runtime._consoleSentIndex = Math.max(0, runtime._consoleSentIndex - removed);
             }
-            runtime._console.push({ type: method, args: args });
+            runtime._console.push({ type: method, args: args, timestamp: Date.now() });
             notifyWithThrottle();
             original.apply(console, args);
           };
@@ -4687,6 +4687,7 @@
                 args: item.args.map(function (arg) {
                   return getNode(arg);
                 }),
+                timestamp: item.timestamp,
               };
             }),
           });

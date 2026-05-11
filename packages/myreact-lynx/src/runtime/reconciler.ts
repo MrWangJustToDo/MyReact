@@ -131,7 +131,7 @@ type HostContext = {
 const helpAppend = (parent: ShadowElement, child: ShadowElement, anchor?: ShadowElement | null) => {
   // Lynx's native <list> only accepts <list-item> children.
   if (parent.type === "list" && child.type !== "list-item") {
-    // console.warn('')
+    console.warn("[@my-react/react-lynx] <list> only accepts <list-item> children.");
     return;
   }
 
@@ -148,7 +148,7 @@ const helpAppend = (parent: ShadowElement, child: ShadowElement, anchor?: Shadow
 const helpRemove = (parent: ShadowElement, child: ShadowElement) => {
   if (child.parent) {
     if (child.parent !== parent) {
-      // console.warn('')
+      console.warn("[@my-react/react-lynx] child.parent !== parent");
     }
     const parentId = child.parent.id;
     child.parent.removeChild(child);
@@ -199,7 +199,7 @@ const applyWorklet = (instance: ShadowElement, key: string, value: any) => {
         registerWorkletCtx(value as unknown as Worklet);
         pushOp(OP.SET_WORKLET_EVENT, instance.id, event.eventType, event.eventName, value);
       } else {
-        console.warn("");
+        console.warn("[@my-react/react-lynx] Worklet handler is not a function.");
       }
     } else {
       // Worklet handler removed — send REMOVE_EVENT so MT clears eventMap

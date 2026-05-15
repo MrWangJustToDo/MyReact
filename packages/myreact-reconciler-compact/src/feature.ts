@@ -10,6 +10,8 @@ import {
   mountSync,
   safeCallWithSync,
   enableDebugUpdateQueue,
+  beforeSyncUpdate,
+  afterSyncUpdate,
 } from "@my-react/react-reconciler";
 import { include, STATE_TYPE } from "@my-react/react-shared";
 
@@ -154,15 +156,31 @@ export const Reconciler = (_config: any) => {
     return _container.__container__;
   };
 
+  const discreteUpdates = (fn: (...args: any[]) => void, a: any, b: any, c: any, d: any) => {
+    beforeSyncUpdate();
+    const res = fn(a, b, c, d);
+    afterSyncUpdate();
+    return res;
+  };
+
+  const updateContainerSync = (element: MyReactElementNode, container: RenderContainer, ignore: any, callback: () => void) => {
+    beforeSyncUpdate();
+    const res = updateContainer(element, container, ignore, callback);
+    afterSyncUpdate();
+    return res;
+  };
+
   return {
     createPortal,
     createContainer,
     updateContainer,
+    updateContainerSync,
     injectIntoDevTools,
     getPublicRootInstance,
     injectIntoDevToolsAuto,
     flushSync: safeCallWithSync,
     flushSyncWork: safeCallWithSync,
     batchedUpdates: safeCallWithSync,
+    discreteUpdates,
   };
 };

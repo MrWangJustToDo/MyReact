@@ -14,7 +14,7 @@ import { defaultDispatchUnmount, defaultGenerateUnmountMap } from "../dispatchUn
 import { defaultDispatchUpdate } from "../dispatchUpdate";
 import { loadLazy } from "../processLazy";
 import { loadPromise, type PromiseWithState } from "../processPromise";
-import { getFiberTree, NODE_TYPE, onceWarnWithKeyAndFiber, safeCall } from "../share";
+import { getFiberTree, NODE_TYPE, safeCall } from "../share";
 
 import { RenderDispatchEvent } from "./event";
 
@@ -138,7 +138,8 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
       if (include(_fiber.type, this.runtimeRef.typeForRef)) {
         _fiber.patch = merge(_fiber.patch, PATCH_TYPE.__ref__);
       } else if (exclude(_fiber.type, NODE_TYPE.__forwardRef__)) {
-        onceWarnWithKeyAndFiber(_fiber, "ref", `[@my-react/react] set ref for current element will be ignored`);
+        // support react 19 ref api, we do't need to warn
+        // onceWarnWithKeyAndFiber(_fiber, "ref", `[@my-react/react] set ref for current element will be ignored`);
       }
     }
   }

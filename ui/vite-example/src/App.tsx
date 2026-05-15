@@ -1,10 +1,20 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 
+const Bar = ({ ref }: { ref: React.Ref<HTMLDivElement> }) => {
+  return (
+    <div ref={ref}>
+      <h1>Bar</h1>
+    </div>
+  );
+};
+
 function App() {
   const [count, setCount] = useState(0);
+
+  const ref = useRef<HTMLDivElement>(null);
 
   return (
     <>
@@ -24,6 +34,7 @@ function App() {
         </p>
       </div>
       <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+      <Bar ref={ref} />
     </>
   );
 }

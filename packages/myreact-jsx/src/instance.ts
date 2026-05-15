@@ -91,6 +91,12 @@ function MyReactElementJSX(
   debugTask: any
 ) {
   let element: MyReactElement;
+
+  // support react 19 ref api
+  if (ref && typeof type !== "string") {
+    props.ref = ref;
+  }
+
   if (__DEV__) {
     element = {
       // This tag allows us to uniquely identify this as a React Element

@@ -182,6 +182,11 @@ const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }:
     props,
   };
 
+  // support react 19 ref api
+  if (ref && typeof type !== "string") {
+    props.ref = ref;
+  }
+
   if (__DEV__) {
     element._legacy = true;
 

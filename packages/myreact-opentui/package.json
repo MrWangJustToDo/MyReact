@@ -51,6 +51,6 @@
     "socket.io-client": "^4.8.3"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.24"
+    "@my-react/react": ">=0.3.25"
   }
 }

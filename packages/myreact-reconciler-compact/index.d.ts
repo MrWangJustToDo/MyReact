@@ -1,1 +1,3 @@
-export { default, HostConfig } from "react-reconciler";
+import ReactReconciler from "react-reconciler";
+export = ReactReconciler;
+export as namespace ReactReconciler;

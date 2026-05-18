@@ -4,6 +4,8 @@ import { HOOK_TYPE, STATE_TYPE, include, isArrayEquals, isNormalEquals } from "@
 import { getInstanceContextFiber, setContextForInstance, setOwnerForInstance } from "../runtimeGenerate";
 import { getHookTree, safeCallWithCurrentFiber } from "../share";
 
+import { createHookNode } from "./create";
+
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactHookNode } from "./instance";
 import type { MyReactFiberNode } from "../runtimeFiber";
@@ -25,10 +27,12 @@ export const updateHookNode = (
   const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
 
   if (!currentHook) {
-    throw new Error(`[@my-react/react] should have a hookList for current node, this is a bug for @my-react`);
+    // throw new Error(`[@my-react/react] should have a hookList for current node, this is a bug for @my-react`);
+    return createHookNode(renderDispatch, { type, value, reducer, deps }, fiber);
   }
 
   if (type !== currentHook?.type) {
+    // only throw error when type not match
     throw new Error(
       getHookTree(currentHookTreeNode.current.prev as ListTreeNode<MyReactHookNode>, {
         lastRender: currentHook?.type,

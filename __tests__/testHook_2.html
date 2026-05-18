@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh_cn">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>测试react框架</title>
+    <script src="../bundle/babel.min.js"></script>
+    <!-- <script src="../bundle/react.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.development.js"></script> -->
+    <!-- <script src="../bundle/react.18.development.js"></script> -->
+    <!-- <script src="../bundle/react-dom.18.development.js"></script> -->
+    <script src="../packages/myreact/dist/umd/index.development.js"></script>
+    <script src="../packages/myreact-dom/dist/umd/index.development.js"></script>
+    <!-- <script src="../packages/myreact/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+    <!-- <script src="../packages/myreact-dom/dist/umd/index.development.js"></script> -->
+    <style>
+      .red {
+        color: red;
+        font-size: 20px;
+      }
+      .box {
+        width: 100px;
+        height: 100px;
+        border: 1px solid red;
+        border-radius: 3px;
+      }
+
+      .green {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel" async>
+      const { memo, useState, useCallback, useEffect, useReducer, useRef, useMemo, map, cloneElement, createContext, useOptimistic } = React;
+
+      const B = ({count}) => {
+        if (count === 0) return <span>b</span>
+
+        const [bState, setBState] = useState(0);
+
+        return <div>
+          b state: {bState}
+          <button onClick={() => setBState(i => i + 1)}>add</button>
+          </div>
+
+        return (
+          <div className="box green" ref={(r) => console.log("B ref", r)}>
+            B
+          </div>
+        );
+      };
+
+      const A = () => {
+        const [c, setC] = useState(0);
+
+
+        return (
+          <div className="red" ref={(r) => console.log("a ref", r)}>
+            A count {c}
+            <button onClick={() => setC(i => i + 1)}>add a</button>
+            <B count={c} />
+          </div>
+        );
+      };
+
+      const container = document.getElementById("root");
+      // ReactDOM.render(<A />, container);
+
+      ReactDOM.createRoot(container).render(<A />);
+    </script>
+  </body>
+</html>

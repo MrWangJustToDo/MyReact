@@ -8,7 +8,7 @@ const { currentRunningFiber, currentScheduler, currentScopeFiber, currentError, 
 
 export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
   try {
-    return action.call(null, ...args);
+    return action?.call?.(null, ...args);
   } catch (e) {
     const fiber = currentCallingFiber?.[currentCallingFiber?.length - 1] || currentScopeFiber.current || currentRunningFiber.current;
 
@@ -27,7 +27,7 @@ export const safeCallWithCurrentFiber = <T extends any[] = any[], K = any>(
   currentCallingFiber.push(fiber);
 
   try {
-    return action.call(null, ...args);
+    return action?.call?.(null, ...args);
   } catch (e) {
     if (fallback) {
       return fallback();
@@ -46,7 +46,7 @@ export const safeCallWithCurrentFiber = <T extends any[] = any[], K = any>(
 export const callWithFiber = <T extends any[] = any[], K = any>({ action, fiber }: { action: (...args: T) => K; fiber: MyReactFiberNode }, ...args: T): K => {
   currentScopeFiber.current = fiber;
   try {
-    return action.call(null, ...args);
+    return action?.call?.(null, ...args);
   } finally {
     currentScopeFiber.current = null;
   }
@@ -56,7 +56,7 @@ export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...a
   try {
     beforeSyncUpdate();
 
-    return action.call(null, ...args);
+    return action?.call?.(null, ...args);
   } catch (e) {
     const fiber = currentCallingFiber?.[currentCallingFiber?.length - 1] || currentScopeFiber.current || currentRunningFiber.current;
 

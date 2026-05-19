@@ -13,16 +13,34 @@ export const reconciler = createReconciler(hostConfig);
 if (__DEVTOOL__) {
   const wsUrl = typeof __DEVTOOL__ === "object" ? __DEVTOOL__.wsUrl : "ws://localhost:3002/ws";
 
-  const injectIntoDevTools = async (url: string, config: any) => {
-    const typedReconciler = reconciler as typeof reconciler & {
-      injectIntoDevToolsAuto: (url: string, config: any) => Promise<void>;
-    };
-    typedReconciler.injectIntoDevToolsAuto(url, config);
+  const devToolsConfig = {
+    wsUrl,
+    rendererPackageName: "@my-react/react-lynx",
   };
 
-  injectIntoDevTools(wsUrl, {
-    rendererPackageName: "@my-react/react-lynx",
-  });
+  const typedReconciler = reconciler as typeof reconciler & {
+    injectIntoDevToolsAuto: (url: string, config: Record<string, unknown>) => Promise<void>;
+  };
+
+  const tryInjectDevTools = () => {
+    const init =
+      globalThis["__MY_REACT_DEVTOOL_NODE__" as keyof typeof globalThis] ||
+      globalThis["__MY_REACT_DEVTOOL_BUNDLE__" as keyof typeof globalThis] ||
+      globalThis["__MY_REACT_DEVTOOL_BUNDLE_WS__" as keyof typeof globalThis];
+
+    if (init) {
+      typedReconciler.injectIntoDevToolsAuto(devToolsConfig.wsUrl, {
+        rendererPackageName: devToolsConfig.rendererPackageName,
+      });
+      return true;
+    }
+    return false;
+  };
+
+  if (!tryInjectDevTools()) {
+    (globalThis as Record<string, unknown>).__MY_REACT_LYNX_DEVTOOLS_CONFIG__ = devToolsConfig;
+    (globalThis as Record<string, unknown>).__MY_REACT_LYNX_INJECT_DEVTOOLS__ = tryInjectDevTools;
+  }
 }
 
 /**

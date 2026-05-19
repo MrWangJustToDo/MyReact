@@ -10,6 +10,7 @@
   "files": [
     "dist",
     "client",
+    "scripts",
     "package.json",
     "readme.md"
   ],
@@ -54,7 +55,8 @@
   },
   "scripts": {
     "build": "rslib build",
-    "dev": "rslib build --watch"
+    "dev": "rslib build --watch",
+    "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
     "@lynx-js/chunk-loading-webpack-plugin": "^0.3.3",

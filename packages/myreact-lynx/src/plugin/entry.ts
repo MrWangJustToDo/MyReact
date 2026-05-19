@@ -472,7 +472,7 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
     const entryBackgroundPath = path.resolve(myReactLynxRoot, "dist/runtime/entry-background.js");
     const entryMainThreadPath = path.resolve(myReactLynxRoot, "dist/main-thread/entry-main.js");
 
-    const devToolRuntime = path.resolve(myReactLynxRoot, "client/dev-runtime.js");
+    const devToolRuntime = path.resolve(myReactLynxRoot, "client/dev-runtime-loader.js");
 
     for (const [entryName, entryPoint] of Object.entries(entries)) {
       // Collect user imports from the original entry

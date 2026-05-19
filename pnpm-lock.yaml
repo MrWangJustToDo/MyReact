@@ -664,8 +664,8 @@ importers:
   packages/myreact-server:
     dependencies:
       '@lazarv/rsc':
-        specifier: 0.0.0-experimental-a0c7b63-20260415-0532bb4e
-        version: 0.0.0-experimental-a0c7b63-20260415-0532bb4e(react@19.2.4)
+        specifier: 0.0.0-experimental-a345961-20260509-a9bcaec0
+        version: 0.0.0-experimental-a345961-20260509-a9bcaec0(react@19.2.4)
       '@my-react/react':
         specifier: '>=0.3.25'
         version: link:../myreact
@@ -1450,18 +1450,18 @@ importers:
   ui/rsc-example:
     dependencies:
       '@my-react/react':
-        specifier: ^0.3.24
-        version: link:../../packages/myreact
+        specifier: 0.3.24
+        version: 0.3.24(react@19.2.4)
       '@my-react/react-dom':
-        specifier: ^0.3.24
-        version: link:../../packages/myreact-dom
+        specifier: 0.3.24
+        version: 0.3.24(@my-react/react@0.3.24(react@19.2.4))(react-dom@18.3.1(react@19.2.4))
       '@my-react/react-server':
-        specifier: workspace:*
-        version: link:../../packages/myreact-server
+        specifier: 0.3.24
+        version: 0.3.24(@my-react/react-reconciler@packages+myreact-reconciler)(@my-react/react@0.3.24(react@19.2.4))(react@19.2.4)
     devDependencies:
       '@lazarv/rsc':
-        specifier: 0.0.0-experimental-a0c7b63-20260415-0532bb4e
-        version: 0.0.0-experimental-a0c7b63-20260415-0532bb4e(react@19.2.4)
+        specifier: 0.0.0-experimental-a345961-20260509-a9bcaec0
+        version: 0.0.0-experimental-a345961-20260509-a9bcaec0(react@19.2.4)
       '@my-react/react-vite':
         specifier: workspace:*
         version: link:../../packages/myreact-vite
@@ -4163,6 +4163,12 @@ packages:
     peerDependencies:
       react: '>=19.0.0 || >=0.0.0-experimental'
 
+  '@lazarv/rsc@0.0.0-experimental-a345961-20260509-a9bcaec0':
+    resolution: {integrity: sha512-TEuuqRgckVlm1Z7kzZwDBtrxCAIqxvzb+glF6kuOsKCun7mQ359q6mMxL0p9X6mgWMmtaFGIEumghn2N4YiCWg==}
+    engines: {node: '>=20.10.0'}
+    peerDependencies:
+      react: '>=19.0.0 || >=0.0.0-experimental'
+
   '@lazarv/rsc@0.0.0-experimental-baf0ab7-20260308-65add5d1':
     resolution: {integrity: sha512-eiJMCHqnpQhn3pFTVbcTmulizLifUEKv2o6N0EZ/R/tuIvyWiB5MDaMZYMW39SvxYWfB5LZZdrwKcxNzMU8yPw==}
     engines: {node: '>=20.10.0'}
@@ -4511,6 +4517,28 @@ packages:
     resolution: {integrity: sha512-2Z0FATFHaoYJ8b+Y4y4Hgfn3FRFwuU5zRrk+9dFWp4uGAdHGqVEdP7HP+gLA3X469KXHmfupJaUbKo1b/aDKIg==}
     peerDependencies:
       three: '>= 0.159.0'
+
+  '@my-react/react-dom@0.3.24':
+    resolution: {integrity: sha512-gPODJUXOaJuSpaCe4XKvoFsw0HLttp1q0k2jkU4MtVsbw46lhY/QRrAqeeUbqvsqIeL38BtFfDvofIt4UmZosA==}
+    peerDependencies:
+      '@my-react/react': '>=0.3.24'
+      react-dom: ^17 || ^18 || ^19
+
+  '@my-react/react-jsx@0.3.24':
+    resolution: {integrity: sha512-RgviSVFhgpTEvzQml0OZGZ9ib0fB4MaWauskhVOxhMtaBnXQ0OkeY58iksjg1B5qafOiHY5qDmQ8Lep3gPDtJg==}
+    peerDependencies:
+      '@my-react/react': '>=0.3.24'
+
+  '@my-react/react-server@0.3.24':
+    resolution: {integrity: sha512-v8ukxhohoOsHGu0K1kEEIqBx9Pn4G9xhAl4jRLwKNlZHMn90f7eZxSjddxjwZpWmtij6y/lJ+o7vqSxK+taZSg==}
+    peerDependencies:
+      '@my-react/react': '>=0.3.24'
+      '@my-react/react-reconciler': '>=0.3.24'
+
+  '@my-react/react@0.3.24':
+    resolution: {integrity: sha512-U2gWlzBNuiKTRtKLOOpvfCupddNSB+CmN6NjspPC/AOVTezsPhV02DfeiheRFL2BG1xqFKjUVOMfy8HXleZPTg==}
+    peerDependencies:
+      react: ^17 || ^18 || ^19
 
   '@napi-rs/wasm-runtime@0.2.12':
     resolution: {integrity: sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ==}
@@ -15559,6 +15587,10 @@ snapshots:
     dependencies:
       react: 19.2.4
 
+  '@lazarv/rsc@0.0.0-experimental-a345961-20260509-a9bcaec0(react@19.2.4)':
+    dependencies:
+      react: 19.2.4
+
   '@lazarv/rsc@0.0.0-experimental-baf0ab7-20260308-65add5d1(react@19.2.4)':
     dependencies:
       react: 19.2.4
@@ -16065,6 +16097,29 @@ snapshots:
     dependencies:
       promise-worker-transferable: 1.0.4
       three: 0.183.2
+
+  '@my-react/react-dom@0.3.24(@my-react/react@0.3.24(react@19.2.4))(react-dom@18.3.1(react@19.2.4))':
+    dependencies:
+      '@my-react/react': 0.3.24(react@19.2.4)
+      react-dom: 18.3.1(react@19.2.4)
+
+  '@my-react/react-jsx@0.3.24(@my-react/react@0.3.24(react@19.2.4))':
+    dependencies:
+      '@my-react/react': 0.3.24(react@19.2.4)
+
+  '@my-react/react-server@0.3.24(@my-react/react-reconciler@packages+myreact-reconciler)(@my-react/react@0.3.24(react@19.2.4))(react@19.2.4)':
+    dependencies:
+      '@lazarv/rsc': 0.0.0-experimental-a0c7b63-20260415-0532bb4e(react@19.2.4)
+      '@my-react/react': 0.3.24(react@19.2.4)
+      '@my-react/react-reconciler': link:packages/myreact-reconciler
+    transitivePeerDependencies:
+      - react
+
+  '@my-react/react@0.3.24(react@19.2.4)':
+    dependencies:
+      '@my-react/react-jsx': 0.3.24(@my-react/react@0.3.24(react@19.2.4))
+      react: 19.2.4
+      react-compiler-runtime: 1.0.0(react@19.2.4)
 
   '@napi-rs/wasm-runtime@0.2.12':
     dependencies:

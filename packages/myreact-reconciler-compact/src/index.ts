@@ -19,4 +19,20 @@ export interface FiberNode<T = Record<string, any>> extends MyReactFiberNode {
 
 export { enableKnownConfigLog } from "./config";
 
+export const defaultOnUncaughtError = (error: Error): void => {
+  console.error("Uncaught", error);
+};
+
+export const defaultOnCaughtError = (error: Error): void => {
+  console.error("Caught", error);
+};
+
+export const defaultOnRecoverableError = (error: Error): void => {
+  console.error("Recoverable", error);
+};
+
+export const startHostTransition = (): void => {
+  // no-op
+};
+
 export default createReconciler;

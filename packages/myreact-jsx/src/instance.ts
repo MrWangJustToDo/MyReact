@@ -92,9 +92,9 @@ function MyReactElementJSX(
 ) {
   let element: MyReactElement;
 
-  if (__my_react_shared__.enableRefAsProp.current) {
-    const refProp = props.ref;
-    ref = refProp !== undefined ? refProp : ref;
+  // support react 19 ref api
+  if (__my_react_shared__.enableRefAsProp.current && ref && typeof type !== "string") {
+    props.ref = ref;
   }
 
   if (__DEV__) {
@@ -183,13 +183,8 @@ export const jsx = (
     ref = config.ref as CreateElementProps["ref"];
   }
 
-  const enableRefProp = __my_react_shared__.enableRefAsProp.current;
-
   for (const propsName in config) {
-    if (
-      Object.prototype.hasOwnProperty.call(config, propsName) &&
-      (!Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName) || (propsName === "ref" && enableRefProp))
-    ) {
+    if (Object.prototype.hasOwnProperty.call(config, propsName) && !Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName)) {
       props[propsName] = config[propsName];
     }
   }
@@ -272,13 +267,8 @@ export const jsxDEV = (
     ref = config.ref as CreateElementProps["ref"];
   }
 
-  const enableRefPropDEV = __my_react_shared__.enableRefAsProp.current;
-
   for (const propsName in config) {
-    if (
-      Object.prototype.hasOwnProperty.call(config, propsName) &&
-      (!Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName) || (propsName === "ref" && enableRefPropDEV))
-    ) {
+    if (Object.prototype.hasOwnProperty.call(config, propsName) && !Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName)) {
       props[propsName] = config[propsName];
     }
   }

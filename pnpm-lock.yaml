@@ -471,7 +471,7 @@ importers:
   packages/myreact:
     dependencies:
       '@my-react/react-jsx':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-jsx
       react:
         specifier: ^17 || ^18 || ^19
@@ -481,33 +481,33 @@ importers:
         version: 1.0.0(react@19.2.4)
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
 
   packages/myreact-dom:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
       react-dom:
         specifier: ^17 || ^18 || ^19
         version: 18.3.1(react@19.2.4)
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
 
   packages/myreact-jsx:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
 
   packages/myreact-lynx:
@@ -531,13 +531,13 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
       '@my-react/react-refresh':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-refresh
       '@my-react/react-refresh-tools':
-        specifier: ^0.0.36
+        specifier: ^0.0.37
         version: link:../myreact-refresh-tools
     devDependencies:
       '@lynx-js/type-element-api':
@@ -547,7 +547,7 @@ importers:
         specifier: 3.7.0
         version: 3.7.0
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
       '@rsbuild/core':
         specifier: ^1.3.0
@@ -562,7 +562,7 @@ importers:
   packages/myreact-opentui:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
       '@opentui/core':
         specifier: ^0.1.99
@@ -581,7 +581,7 @@ importers:
   packages/myreact-reactivity:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
       reactivity-store:
         specifier: ^0.4.0
@@ -590,24 +590,24 @@ importers:
   packages/myreact-reconciler:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
 
   packages/myreact-reconciler-compact:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
       '@types/react-reconciler':
         specifier: ^0.32.3
@@ -616,33 +616,33 @@ importers:
   packages/myreact-refresh:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
     devDependencies:
       '@my-react/react-reconciler':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-reconciler
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
 
   packages/myreact-refresh-tools:
     dependencies:
       '@my-react/react-refresh':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact-refresh
       webpack:
         specifier: ^4 || ^5
         version: 5.105.4(@swc/core@1.15.18(@swc/helpers@0.5.21))
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
 
   packages/myreact-rspack:
     dependencies:
       '@my-react/react-refresh':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact-refresh
       error-stack-parser:
         specifier: ^2.1.4
@@ -655,7 +655,7 @@ importers:
         version: 2.26.1
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
       '@rspack/core':
         specifier: ^1.6.5
@@ -667,14 +667,14 @@ importers:
         specifier: 0.0.0-experimental-a345961-20260509-a9bcaec0
         version: 0.0.0-experimental-a345961-20260509-a9bcaec0(react@19.2.4)
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
       '@my-react/react-reconciler':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact-reconciler
     devDependencies:
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
 
   packages/myreact-shared: {}
@@ -682,7 +682,7 @@ importers:
   packages/myreact-terminal:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
       ansi-escapes:
         specifier: ^7.3.0
@@ -770,7 +770,7 @@ importers:
   packages/myreact-three-fiber:
     dependencies:
       '@my-react/react':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact
       react-use-measure:
         specifier: ^2.1.7
@@ -810,7 +810,7 @@ importers:
         specifier: ^0.0.0-experimental
         version: 0.0.0-experimental-baf0ab7-20260308-65add5d1(react@19.2.4)
       '@my-react/react-refresh':
-        specifier: '>=0.3.25'
+        specifier: '>=0.3.26'
         version: link:../myreact-refresh
       '@rolldown/pluginutils':
         specifier: 1.0.0-rc.6
@@ -835,10 +835,10 @@ importers:
         version: 7.3.1(@types/node@22.19.15)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
     devDependencies:
       '@my-react/react-server':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-server
       '@my-react/react-shared':
-        specifier: ^0.3.25
+        specifier: ^0.3.26
         version: link:../myreact-shared
       '@types/babel__core':
         specifier: ^7.20.5

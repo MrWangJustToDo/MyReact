@@ -140,3 +140,12 @@ export const enableMockReact = createReadonlyRef(true);
  * @internal
  */
 export const enableSuspenseRoot = createRef(true);
+
+/**
+ * @internal
+ *
+ * When enabled, `ref` is treated as a regular prop (React 19 behaviour).
+ * When disabled, `ref` is stripped from props and only available via the
+ * second argument of `forwardRef` render functions.
+ */
+export const enableRefAsProp = createRef(false);

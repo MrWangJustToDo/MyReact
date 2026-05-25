@@ -60,6 +60,7 @@ import {
   enableLegacyLifeCycle,
   enablePerformanceLog,
   enableMockReact,
+  enableRefAsProp,
   yieldTask,
   macroTask,
   microTask,
@@ -119,6 +120,7 @@ const __my_react_shared__ = {
   enableLegacyLifeCycle,
   enableOptimizeTreeLog,
   enablePerformanceLog,
+  enableRefAsProp,
 };
 
 /**

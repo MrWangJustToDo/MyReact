@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { __my_react_internal__ } from "@my-react/react/type";
+import { __my_react_internal__, __my_react_shared__ } from "@my-react/react/type";
 import { TYPEKEY, Element, Fragment, Lazy } from "@my-react/react-shared";
 
 import { checkArrayChildrenKey, checkSingleChildrenKey, checkValidElement } from "./check";
@@ -64,7 +64,7 @@ if (__DEV__) {
   unknownOwnerDebugTask = createTask(getTaskName(UnknownOwner));
 }
 
-const RESERVED_PROPS = {
+const RESERVED_PROPS: Record<string, boolean> = {
   key: true,
   ref: true,
   __self: true,
@@ -92,9 +92,9 @@ function MyReactElementJSX(
 ) {
   let element: MyReactElement;
 
-  // support react 19 ref api
-  if (ref && typeof type !== "string") {
-    props.ref = ref;
+  if (__my_react_shared__.enableRefAsProp.current) {
+    const refProp = props.ref;
+    ref = refProp !== undefined ? refProp : ref;
   }
 
   if (__DEV__) {
@@ -183,8 +183,13 @@ export const jsx = (
     ref = config.ref as CreateElementProps["ref"];
   }
 
+  const enableRefProp = __my_react_shared__.enableRefAsProp.current;
+
   for (const propsName in config) {
-    if (Object.prototype.hasOwnProperty.call(config, propsName) && !Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName)) {
+    if (
+      Object.prototype.hasOwnProperty.call(config, propsName) &&
+      (!Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName) || (propsName === "ref" && enableRefProp))
+    ) {
       props[propsName] = config[propsName];
     }
   }
@@ -267,8 +272,13 @@ export const jsxDEV = (
     ref = config.ref as CreateElementProps["ref"];
   }
 
+  const enableRefPropDEV = __my_react_shared__.enableRefAsProp.current;
+
   for (const propsName in config) {
-    if (Object.prototype.hasOwnProperty.call(config, propsName) && !Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName)) {
+    if (
+      Object.prototype.hasOwnProperty.call(config, propsName) &&
+      (!Object.prototype.hasOwnProperty.call(RESERVED_PROPS, propsName) || (propsName === "ref" && enableRefPropDEV))
+    ) {
       props[propsName] = config[propsName];
     }
   }

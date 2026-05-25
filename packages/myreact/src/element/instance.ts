@@ -2,7 +2,7 @@
 /* eslint-disable prefer-rest-params */
 import { TYPEKEY, Element } from "@my-react/react-shared";
 
-import { currentComponentFiber } from "../share";
+import { currentComponentFiber, enableRefAsProp } from "../share";
 
 import { checkArrayChildrenKey, checkSingleChildrenKey, checkValidElement } from "./tool";
 
@@ -174,6 +174,11 @@ export type CreateElementConfig<P extends Record<string, unknown> = any> = {
 };
 
 const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps): MyReactElement => {
+  if (enableRefAsProp.current) {
+    const refProp = props.ref;
+    ref = refProp !== undefined ? (refProp as CreateElementProps["ref"]) : ref;
+  }
+
   const element: MyReactElement = {
     [TYPEKEY]: Element,
     type,
@@ -181,11 +186,6 @@ const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }:
     ref,
     props,
   };
-
-  // support react 19 ref api
-  if (ref && typeof type !== "string") {
-    props.ref = ref;
-  }
 
   if (__DEV__) {
     element._legacy = true;
@@ -306,17 +306,29 @@ export function createElement<P extends Record<string, unknown> = any, S extends
   const props: CreateElementProps["props"] = {};
 
   if (config !== null && config !== undefined) {
-    const { ref: _ref, key: _key, __self, __source, ...resProps } = config;
+    if (config.ref !== undefined) {
+      ref = config.ref;
+    }
 
-    ref = _ref === undefined ? null : _ref;
+    if (config.key !== undefined) {
+      key = config.key + "";
+    }
 
-    key = _key === undefined ? null : _key + "";
+    self = config.__self === undefined ? null : config.__self;
 
-    self = __self === undefined ? null : __self;
+    source = config.__source === undefined ? null : config.__source;
 
-    source = __source === undefined ? null : __source;
-
-    Object.keys(resProps).forEach((key) => (props[key] = resProps[key]));
+    for (const propName in config) {
+      if (
+        Object.prototype.hasOwnProperty.call(config, propName) &&
+        propName !== "key" &&
+        propName !== "__self" &&
+        propName !== "__source" &&
+        (propName !== "ref" || enableRefAsProp.current)
+      ) {
+        props[propName] = config[propName];
+      }
+    }
   }
 
   if (typeof type === "function" || typeof type === "object") {
@@ -370,7 +382,7 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
 
   let key = element.key;
 
-  let ref = element.ref;
+  const ref = element.ref;
 
   const type = element.type;
 
@@ -381,15 +393,13 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
   let owner = element._owner;
 
   if (config !== null && config !== undefined) {
-    const { ref: _ref, key: _key, __self, __source, ...resProps } = config;
-
-    if (_ref !== undefined) {
-      ref = _ref;
-
+    if (config.ref !== undefined) {
       owner = currentComponentFiber.current;
     }
 
-    if (_key !== undefined) key = _key + "";
+    if (config.key !== undefined) {
+      key = config.key + "";
+    }
 
     let defaultProps: Record<string, unknown> | undefined = {};
 
@@ -399,9 +409,17 @@ export function cloneElement<P extends Record<string, unknown> = any, S extends 
       defaultProps = typedType?.defaultProps || {};
     }
 
-    Object.keys(resProps).forEach(
-      (key) => (props[key] = (resProps as Record<string, any>)[key] === undefined ? defaultProps[key] : (resProps as Record<string, any>)[key])
-    );
+    for (const propName in config) {
+      if (
+        Object.prototype.hasOwnProperty.call(config, propName) &&
+        propName !== "key" &&
+        propName !== "__self" &&
+        propName !== "__source" &&
+        !(propName === "ref" && (config.ref === undefined || !enableRefAsProp.current))
+      ) {
+        props[propName] = (config as Record<string, any>)[propName] === undefined ? defaultProps[propName] : (config as Record<string, any>)[propName];
+      }
+    }
   }
 
   const childrenLength = arguments.length - 2;

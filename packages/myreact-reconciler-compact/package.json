@@ -3,12 +3,13 @@
   "description": "@my-react/react-reconciler-compact",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "main": "index.js",
   "types": "index.d.ts",
   "files": [
     "dist",
     "type.d.ts",
+    "type.js",
     "index.js",
     "index.d.ts",
     "preload.js",
@@ -100,11 +101,11 @@
     }
   ],
   "devDependencies": {
-    "@my-react/react-reconciler": "^0.3.27",
-    "@my-react/react-shared": "^0.3.27",
+    "@my-react/react-reconciler": "^0.3.28",
+    "@my-react/react-shared": "^0.3.28",
     "@types/react-reconciler": "^0.32.3"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.27"
+    "@my-react/react": ">=0.3.28"
   }
 }

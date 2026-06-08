@@ -3,16 +3,19 @@
   "description": "@my-react/react-dom",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.27",
+  "version": "0.3.28",
   "main": "index.js",
   "unpkg": "./dist/umd/index.development.js",
   "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
+    "client.d.ts",
     "client.js",
+    "server.d.ts",
     "server.js",
     "server.node.js",
     "server.browser.js",
+    "index.d.ts",
     "index.js",
     "type.js",
     "type.d.ts"
@@ -87,11 +90,11 @@
     "react-dom client"
   ],
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.27",
-    "@my-react/react-reconciler": "^0.3.27"
+    "@my-react/react-shared": "^0.3.28",
+    "@my-react/react-reconciler": "^0.3.28"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.27",
+    "@my-react/react": ">=0.3.28",
     "react-dom": "^17 || ^18 || ^19"
   }
 }

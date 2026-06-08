@@ -3,7 +3,7 @@
   "description": "MyReact renderer for Lynx dual-thread architecture",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "type": "module",
   "main": "./dist/runtime/index.js",
   "types": "./dist/runtime/index.d.ts",
@@ -12,7 +12,12 @@
     "client",
     "scripts",
     "package.json",
-    "readme.md"
+    "readme.md",
+    "jsx-runtime.d.ts",
+    "jsx-runtime.js",
+    "jsx-namespace.d.ts",
+    "jsx-dev-runtime.d.ts",
+    "jsx-dev-runtime.js"
   ],
   "repository": {
     "type": "git",
@@ -65,19 +70,19 @@
     "@lynx-js/runtime-wrapper-webpack-plugin": "^0.1.3",
     "@lynx-js/template-webpack-plugin": "^0.10.8",
     "@lynx-js/webpack-dev-transport": "^0.2.0",
-    "@my-react/react-refresh": "^0.3.27",
-    "@my-react/react-refresh-tools": "^0.0.38"
+    "@my-react/react-refresh": "^0.3.28",
+    "@my-react/react-refresh-tools": "^0.0.39"
   },
   "devDependencies": {
     "@lynx-js/type-element-api": "0.0.3",
     "@lynx-js/types": "3.7.0",
-    "@my-react/react-shared": "^0.3.27",
+    "@my-react/react-shared": "^0.3.28",
     "@rsbuild/core": "^1.3.0",
-    "@rslib/core": "^0.19.6",
+    "@rslib/core": "^0.22.0",
     "@rspack/core": "^1.6.5"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.27",
+    "@my-react/react": ">=0.3.28",
     "@rsbuild/core": ">=1.0.0",
     "@rspack/core": ">=1.0.0"
   },

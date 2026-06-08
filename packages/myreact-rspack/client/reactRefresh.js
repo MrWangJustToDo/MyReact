@@ -1,30 +1,17 @@
-// Thanks https://github.com/pmmmwh/react-refresh-webpack-plugin
-const RefreshUtils = require("./refreshUtils");
-const RefreshRuntime = require("@my-react/react-refresh/runtime");
+import { createSignatureFunctionForTransform, register } from "@my-react/react-refresh/runtime";
+import { executeRuntime, getModuleExports } from "./refreshUtils.js";
 
-// Port from https://github.com/pmmmwh/react-refresh-webpack-plugin/blob/main/loader/utils/getRefreshModuleRuntime.js#L29
-function refresh(moduleId, webpackHot) {
-  const currentExports = RefreshUtils.getModuleExports(moduleId);
-  const fn = (exports) => {
-    var errorOverlay;
-    if (typeof __react_refresh_error_overlay__ !== "undefined") {
-      errorOverlay = __react_refresh_error_overlay__;
-    }
-    var testMode;
-    if (typeof __react_refresh_test__ !== "undefined") {
-      testMode = __react_refresh_test__;
-    }
-    RefreshUtils.executeRuntime(exports, moduleId, webpackHot, errorOverlay, testMode);
+function refresh(moduleId, hot) {
+  const currentExports = getModuleExports(moduleId);
+  const runRefresh = (moduleExports) => {
+    const testMode = typeof __react_refresh_test__ !== "undefined" ? __react_refresh_test__ : undefined;
+    executeRuntime(moduleExports, moduleId, hot, testMode);
   };
   if (typeof Promise !== "undefined" && currentExports instanceof Promise) {
-    currentExports.then(fn);
+    currentExports.then(runRefresh);
   } else {
-    fn(currentExports);
+    runRefresh(currentExports);
   }
 }
 
-module.exports = {
-  refresh,
-  register: RefreshRuntime.register,
-  createSignatureFunctionForTransform: RefreshRuntime.createSignatureFunctionForTransform,
-};
+export { createSignatureFunctionForTransform, refresh, register };

@@ -1,43 +1,41 @@
 {
   "name": "@my-react/react-rspack",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "make @my-react work for rspack",
   "files": [
-    "dist",
     "client",
-    "exports",
-    "index.js",
-    "overlay.js",
-    "react-refresh.js",
-    "react-refresh-entry.js"
+    "dist"
   ],
   "license": "MIT",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "type": "module",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": "./exports/index.cjs",
-      "default": "./exports/index.mjs"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
-    "./react-refresh": "./react-refresh.js",
-    "./react-refresh-entry": "./react-refresh-entry.js",
-    "./overlay": "./overlay.js",
+    "./react-refresh": "./client/reactRefresh.js",
+    "./react-refresh-entry": "./client/reactRefreshEntry.js",
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc -b ./tsconfig.build.json",
-    "dev": "tsc -b -w"
-  },
-  "peerDependencies": {
-    "@my-react/react-refresh": ">=0.3.27",
-    "webpack-hot-middleware": "2.x"
+    "build": "rslib",
+    "dev": "rslib -w"
   },
   "dependencies": {
-    "error-stack-parser": "^2.1.4",
-    "html-entities": "^2.6.0"
+    "@rslib/core": "^0.22.0"
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.27",
-    "@rspack/core": "^1.6.5"
+    "@my-react/react-shared": "^0.3.28",
+    "@rspack/core": "2.0.6"
+  },
+  "peerDependencies": {
+    "@rspack/core": "^2.0.0",
+    "@my-react/react-refresh": ">=0.3.28"
+  },
+  "peerDependenciesMeta": {
+    "@rspack/core": {
+      "optional": true
+    }
   }
 }

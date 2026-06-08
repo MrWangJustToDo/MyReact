@@ -21,7 +21,18 @@ async function loadBabel() {
 }
 
 export interface Options {
+  /**
+   * Can be used to process extra files like `.mdx`
+   * @example include: /\.(mdx|js|jsx|ts|tsx)$/
+   * @default /\.[tj]sx?$/
+   */
   include?: string | RegExp | Array<string | RegExp>;
+  /**
+   * Can be used to exclude JSX/TSX files that runs in a worker or are not React files.
+   * Except if explicitly desired, you should keep node_modules in the exclude list
+   * @example exclude: [/\/pdf\//, /\.solid\.tsx$/, /\/node_modules\//]
+   * @default /\/node_modules\//
+   */
   exclude?: string | RegExp | Array<string | RegExp>;
   /**
    * Control where the JSX factory is imported from.
@@ -153,7 +164,7 @@ export default function viteReact(opts: Options = {}): Plugin[] {
               jsxRefreshExclude: makeIdFiltersToMatchWithQuery(exclude),
             },
             optimizeDeps: {
-              rollupOptions: { transform: { jsx: { runtime: "automatic" } } },
+              rolldownOptions: { transform: { jsx: { runtime: "automatic" } } },
             },
           };
         }
@@ -180,7 +191,7 @@ export default function viteReact(opts: Options = {}): Plugin[] {
       runningInVite = true;
       base = config.base;
       // @ts-expect-error only available in newer rolldown-vite
-      if (config.experimental.fullBundleMode) {
+      if (config.experimental.fullBundleMode || config.experimental.bundledDev) {
         isFullBundle = true;
       }
       projectRoot = config.root;
@@ -210,17 +221,15 @@ export default function viteReact(opts: Options = {}): Plugin[] {
     },
     options(options) {
       if (!runningInVite) {
-        // @ts-expect-error Rolldown has `transform.jsx`
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- use ts-ignore for ecosystem-ci
+        // @ts-ignore Rolldown has `transform.jsx`
         options.transform ??= {};
-        // @ts-expect-error Rolldown has `transform.jsx`
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- use ts-ignore for ecosystem-ci
+        // @ts-ignore Rolldown has `transform.jsx`
         options.transform.jsx = {
           runtime: opts.jsxRuntime,
           importSource: opts.jsxImportSource,
         };
-        // options.jsx = {
-        //   mode: opts.jsxRuntime,
-        //   importSource: opts.jsxImportSource,
-        // };
         return options;
       }
     },
@@ -310,8 +319,6 @@ export default function viteReact(opts: Options = {}): Plugin[] {
           generatorOpts: {
             ...babelOptions.generatorOpts,
             // import attributes parsing available without plugin since 7.26
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
             importAttributesKeyword: "with",
             decoratorsBeforeExport: true,
           },
@@ -348,7 +355,7 @@ export default function viteReact(opts: Options = {}): Plugin[] {
   const reactCompilerPlugin = getReactCompilerPlugin(staticBabelPlugins);
 
   if (reactCompilerPlugin) {
-    dependencies.push("react-compiler-runtime");
+    dependencies.push("@my-react/react/compiler-runtime");
   }
 
   const viteReactRefresh: Plugin = {
@@ -468,7 +475,7 @@ Object.assign(viteReactForCjs, {
 export { viteReactForCjs };
 
 function canSkipBabel(plugins: ReactBabelOptions["plugins"], babelOptions: ReactBabelOptions) {
-  return !(plugins.length || babelOptions.presets.length || babelOptions.configFile || babelOptions.babelrc);
+  return !(plugins.length || babelOptions.presets.length || babelOptions.overrides.length || babelOptions.configFile || babelOptions.babelrc);
 }
 
 const loadedPlugin = new Map<string, any>();

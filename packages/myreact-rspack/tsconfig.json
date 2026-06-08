@@ -1,22 +1,15 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "target": "ES2021",
-    "esModuleInterop": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "target": "ES2023",
+    "types": ["node"],
+    "lib": ["DOM", "ESNext"],
     "declaration": true,
     "isolatedModules": true,
-    "sourceMap": true,
-    "declarationMap": true,
-    "composite": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowJs": true,
-    "checkJs": true,
-    "strict": true,
     "skipLibCheck": true,
-    "noUnusedLocals": true,
-    "outDir": "dist",
-    "rootDir": "src"
+    "module": "nodenext",
+    "moduleResolution": "nodenext"
   },
   "include": ["src"]
 }

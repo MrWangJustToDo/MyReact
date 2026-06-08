@@ -10,7 +10,12 @@
   "files": [
     "dist",
     "index.mjs",
-    "index.d.ts"
+    "index.d.ts",
+    "jsx-runtime.js",
+    "jsx-runtime.d.ts",
+    "jsx-namespace.d.ts",
+    "jsx-dev-runtime.js",
+    "jsx-dev-runtime.d.ts"
   ],
   "repository": {
     "type": "git",
@@ -51,6 +56,6 @@
     "socket.io-client": "^4.8.3"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.27"
+    "@my-react/react": ">=0.3.28"
   }
 }

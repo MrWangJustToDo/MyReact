@@ -1,12 +1,17 @@
 {
   "name": "@my-react/react-refresh-tools",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "description": "An experimental package providing utilities for @my-react Refresh.",
   "files": [
     "dist",
+    "helper.d.ts",
+    "helper.js",
+    "loader.d.ts",
     "loader.js",
+    "runtime.d.ts",
     "runtime.js",
     "withNext.js",
+    "RefreshWebpackPlugin.d.ts",
     "RefreshWebpackPlugin.js",
     "react-turbopack.js"
   ],
@@ -76,7 +81,7 @@
     }
   ],
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.27"
+    "@my-react/react-shared": "^0.3.28"
   },
   "peerDependenciesMeta": {
     "webpack": {
@@ -84,7 +89,7 @@
     }
   },
   "peerDependencies": {
-    "@my-react/react-refresh": ">=0.3.27",
+    "@my-react/react-refresh": ">=0.3.28",
     "webpack": "^4 || ^5"
   }
 }

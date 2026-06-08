@@ -1,39 +1,21 @@
-import { normalizeOptions } from "./options";
-import { getRefreshRuntimeDirPath, getRefreshRuntimePaths, reactRefreshPath, refreshUtilsPath } from "./paths";
-import { getAdditionalEntries } from "./utils/get-additional-entries";
-import { getIntegrationEntry } from "./utils/get-integration-entry";
-import { type IntegrationType, getSocketIntegration } from "./utils/get-socket-integration";
+import { normalizeOptions } from "./options.js";
+import { getRefreshRuntimeDirPath, getRefreshRuntimePaths, reactRefreshEntryPath, reactRefreshPath, refreshUtilsPath } from "./paths.js";
 
-import type { NormalizedPluginOptions, PluginOptions } from "./options";
+import type { NormalizedPluginOptions, PluginOptions } from "./options.js";
 import type { Compiler } from "@rspack/core";
 
 export type { PluginOptions };
 
 function addEntry(entry: string, compiler: Compiler) {
-  new compiler.webpack.EntryPlugin(compiler.context, entry, {
+  new compiler.rspack.EntryPlugin(compiler.context, entry, {
     name: undefined,
   }).apply(compiler);
 }
 
-function addSocketEntry(sockIntegration: IntegrationType, compiler: Compiler) {
-  const integrationEntry = getIntegrationEntry(sockIntegration);
-
-  if (integrationEntry) {
-    addEntry(integrationEntry, compiler);
-  }
-}
-
-const PLUGIN_NAME = "MyReactRefreshRspackPlugin";
+const PLUGIN_NAME = "_ReactRefreshRspackPlugin";
 
 class ReactRefreshRspackPlugin {
   options: NormalizedPluginOptions;
-
-  /**
-   * @deprecated
-   */
-  static get deprecated_runtimePaths() {
-    return getRefreshRuntimePaths();
-  }
 
   constructor(options: PluginOptions = {}) {
     this.options = normalizeOptions(options);
@@ -41,12 +23,10 @@ class ReactRefreshRspackPlugin {
 
   apply(compiler: Compiler) {
     if (
-      // Webpack do not set process.env.NODE_ENV, so we need to check for mode.
-      // Ref: https://github.com/webpack/webpack/issues/7074
       (compiler.options.mode !== "development" ||
         // We also check for production process.env.NODE_ENV,
         // in case it was set and mode is non-development (e.g. 'none')
-        (process.env && process.env.NODE_ENV === "production")) &&
+        (process.env.NODE_ENV && process.env.NODE_ENV === "production")) &&
       !this.options.forceEnable
     ) {
       compiler.options.resolve.alias = {
@@ -60,42 +40,26 @@ class ReactRefreshRspackPlugin {
       };
       return;
     }
-    const addEntries = getAdditionalEntries({
-      devServer: compiler.options.devServer,
-      options: this.options,
-    });
 
     if (this.options.injectEntry) {
-      for (const entry of addEntries.prependEntries) {
-        addEntry(entry, compiler);
-      }
+      addEntry(reactRefreshEntryPath, compiler);
     }
 
-    if (this.options.overlay !== false && this.options.overlay.sockIntegration) {
-      addSocketEntry(this.options.overlay.sockIntegration, compiler);
-    }
-
-    for (const entry of addEntries.overlayEntries) {
-      addEntry(entry, compiler);
-    }
-
-    new compiler.webpack.ProvidePlugin({
+    new compiler.rspack.ProvidePlugin({
       $ReactRefreshRuntime$: reactRefreshPath,
     }).apply(compiler);
 
     if (this.options.injectLoader) {
       compiler.options.module.rules.unshift({
         test: this.options.test,
-        // biome-ignore lint: exists
         include: this.options.include!,
         exclude: {
-          // biome-ignore lint: exists
           or: [this.options.exclude!, [...getRefreshRuntimePaths()]].filter(Boolean),
         },
         resourceQuery: this.options.resourceQuery,
         dependency: {
-          // `new URL("static/sdk.js", import.meta.url)` the sdk.js is an asset module
-          // we shoudn't inject react refresh for asset module
+          // Assets loaded via `new URL("static/sdk.js", import.meta.url)` are asset modules
+          // React Refresh should not be injected for asset modules as they are static resources
           not: ["url"],
         },
         use: this.options.reactRefreshLoader,
@@ -104,30 +68,16 @@ class ReactRefreshRspackPlugin {
 
     const definedModules: Record<string, string | boolean> = {
       // For Multiple Instance Mode
-      // For Multiple Instance Mode
       __react_refresh_library__: JSON.stringify(
-        compiler.webpack.Template.toIdentifier(this.options.library || compiler.options.output.uniqueName || compiler.options.output.library)
+        compiler.rspack.Template.toIdentifier(this.options.library || compiler.options.output.uniqueName || compiler.options.output.library)
       ),
       __reload_on_runtime_errors__: this.options.reloadOnRuntimeErrors,
     };
     const providedModules: Record<string, string> = {
       __react_refresh_utils__: refreshUtilsPath,
     };
-    if (this.options.overlay === false) {
-      // Stub errorOverlay module so their calls can be erased
-      definedModules.__react_refresh_error_overlay__ = false;
-      definedModules.__react_refresh_socket__ = false;
-    } else {
-      if (this.options.overlay.module) {
-        providedModules.__react_refresh_error_overlay__ = require.resolve(this.options.overlay.module);
-      }
-
-      if (this.options.overlay.sockIntegration) {
-        providedModules.__react_refresh_socket__ = getSocketIntegration(this.options.overlay.sockIntegration);
-      }
-    }
-    new compiler.webpack.DefinePlugin(definedModules).apply(compiler);
-    new compiler.webpack.ProvidePlugin(providedModules).apply(compiler);
+    new compiler.rspack.DefinePlugin(definedModules).apply(compiler);
+    new compiler.rspack.ProvidePlugin(providedModules).apply(compiler);
 
     // const refreshPath = path.dirname(require.resolve("@my-react/react-refresh"));
     compiler.options.resolve.alias = {
@@ -151,4 +101,3 @@ class ReactRefreshRspackPlugin {
 }
 
 export { ReactRefreshRspackPlugin };
-export default ReactRefreshRspackPlugin;

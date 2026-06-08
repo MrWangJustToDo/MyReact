@@ -3,12 +3,13 @@
   "description": "@my-react/react",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.27",
+  "version": "0.3.28",
   "main": "index.js",
   "unpkg": "./dist/umd/index.development.js",
   "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
+    "index.d.ts",
     "index.js",
     "type.js",
     "type.d.ts",
@@ -56,11 +57,11 @@
     "react like"
   ],
   "dependencies": {
-    "@my-react/react-jsx": "^0.3.27",
+    "@my-react/react-jsx": "^0.3.28",
     "react-compiler-runtime": "^1.0.0"
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.27"
+    "@my-react/react-shared": "^0.3.28"
   },
   "peerDependencies": {
     "react": "^17 || ^18 || ^19"

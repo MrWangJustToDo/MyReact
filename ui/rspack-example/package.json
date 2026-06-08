@@ -4,6 +4,7 @@
   "private": true,
   "license": "MIT",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "build": "cross-env NODE_ENV=production rspack build",
     "dev": "rspack serve "
@@ -17,7 +18,8 @@
   "devDependencies": {
     "@my-react/react-refresh": "workspace:*",
     "@my-react/react-rspack": "workspace:*",
-    "@rspack/cli": "1.7.7",
-    "@rspack/core": "1.7.7"
+    "@rspack/cli": "^2.0.6",
+    "@rspack/core": "^2.0.6",
+    "@rspack/dev-server": "^2.0.3"
   }
 }

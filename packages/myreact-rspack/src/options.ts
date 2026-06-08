@@ -1,23 +1,11 @@
-import path from "node:path";
-
-import type { IntegrationType } from "./utils/get-socket-integration";
 import type { RuleSetCondition } from "@rspack/core";
-
-interface OverlayOptions {
-  entry: string;
-  module: string;
-  sockIntegration: IntegrationType | false;
-  sockHost?: string;
-  sockPath?: string;
-  sockPort?: string;
-  sockProtocol?: string;
-}
 
 export type PluginOptions = {
   /**
    * Specifies which files should be processed by the React Refresh loader.
    * This option is passed to the `builtin:react-refresh-loader` as the `rule.test` condition.
    * Works identically to Rspack's `rule.test` option.
+   * @default /\.(?:js|jsx|mjs|cjs|ts|tsx|mts|cts)$/
    * @see https://rspack.rs/config/module-rules#rulestest
    */
   test?: RuleSetCondition;
@@ -26,14 +14,14 @@ export type PluginOptions = {
    * This option is passed to the `builtin:react-refresh-loader` as the `rule.include` condition.
    * Use this to limit processing to specific directories or file patterns.
    * Works identically to Rspack's `rule.include` option.
-   * @default /\.([cm]js|[jt]sx?|flow)$/i
+   * @default undefined
    * @see https://rspack.rs/config/module-rules#rulesinclude
    */
   include?: RuleSetCondition | null;
   /**
    * Exclude files from being processed by the plugin.
    * The value is the same as the `rule.exclude` option in Rspack.
-   * @default /node_modules/
+   * @default /[\\/]node_modules[\\/]/
    * @see https://rspack.rs/config/module-rules#rulesexclude
    */
   exclude?: RuleSetCondition | null;
@@ -65,17 +53,10 @@ export type PluginOptions = {
    */
   forceEnable?: boolean;
   /**
-   * Modify the behavior of the error overlay.
-   * @default false
-   */
-  overlay?: boolean | Partial<OverlayOptions>;
-
-  /**
    * Whether to inject the builtin:react-refresh-loader
    * @default true
    */
   injectLoader?: boolean;
-
   /**
    * Whether to inject the client/reactRefreshEntry.js
    * @default true
@@ -93,9 +74,7 @@ export type PluginOptions = {
   reactRefreshLoader?: string;
 };
 
-export interface NormalizedPluginOptions extends Required<PluginOptions> {
-  overlay: false | OverlayOptions;
-}
+export type NormalizedPluginOptions = Required<PluginOptions>;
 
 const d = <K extends keyof PluginOptions>(object: PluginOptions, property: K, defaultValue?: PluginOptions[K]) => {
   // TODO: should we also add default for null?
@@ -105,33 +84,14 @@ const d = <K extends keyof PluginOptions>(object: PluginOptions, property: K, de
   return object[property];
 };
 
-const normalizeOverlay = (options: PluginOptions["overlay"]) => {
-  const defaultOverlay: OverlayOptions = {
-    entry: path.join(__dirname, "../client/errorOverlayEntry.js"),
-    module: path.join(__dirname, "../client/overlay/index.js"),
-    sockIntegration: "wds",
-  };
-  if (!options) {
-    return false;
-  }
-  if (typeof options === "undefined" || options === true) {
-    return defaultOverlay;
-  }
-  options.entry = options.entry ?? defaultOverlay.entry;
-  options.module = options.module ?? defaultOverlay.module;
-  options.sockIntegration = options.sockIntegration ?? defaultOverlay.sockIntegration;
-  return options;
-};
-
 export function normalizeOptions(options: PluginOptions): NormalizedPluginOptions {
-  d(options, "exclude", /node_modules/i);
-  d(options, "include", /\.([cm]js|[jt]sx?|flow)$/i);
+  d(options, "test", /\.(?:js|jsx|mjs|cjs|ts|tsx|mts|cts)$/);
+  d(options, "exclude", /[\\/]node_modules[\\/]/);
   d(options, "library");
   d(options, "forceEnable", false);
   d(options, "injectLoader", true);
   d(options, "injectEntry", true);
   d(options, "reloadOnRuntimeErrors", false);
   d(options, "reactRefreshLoader", "builtin:react-refresh-loader");
-  options.overlay = normalizeOverlay(options.overlay);
   return options as NormalizedPluginOptions;
 }

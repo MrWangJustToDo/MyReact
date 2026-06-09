@@ -1,8 +1,10 @@
 import { AspectRatio, Box, Image, Modal, ModalBody, ModalCloseButton, ModalContent, ModalOverlay, useDisclosure } from "@chakra-ui/react";
-import { GitHubCalendar } from "react-github-calendar";
+import { lazy, Suspense } from "react";
 import usePinch from "use-pinch-ref";
 
 import type { BoxProps } from "@chakra-ui/react";
+
+const Calendar = lazy(() => import("react-github-calendar").then((module) => ({ default: module.GitHubCalendar })));
 
 export const Chart = (props: Omit<BoxProps, "children">) => {
   const { pinchRef, coverRef } = usePinch<HTMLImageElement, HTMLDivElement>();
@@ -20,7 +22,9 @@ export const Chart = (props: Omit<BoxProps, "children">) => {
           <ModalCloseButton />
           <ModalBody>
             <Box marginTop="4em" />
-            <GitHubCalendar username="MrWangJustToDo" year="last" />
+            <Suspense fallback={<Box>Loading...</Box>}>
+              <Calendar username="MrWangJustToDo" year="last" />
+            </Suspense>
             <Box marginBottom="4em" />
           </ModalBody>
         </ModalContent>

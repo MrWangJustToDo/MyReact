@@ -37,7 +37,9 @@ if (process.env["DEV"]) {
 process.on("SIGINT", () => process.exit());
 
 export function _render(element: React.ReactNode, root: RootRenderable) {
-  const container = reconciler.createContainer(root, ConcurrentRoot, null, false, null, "", console.error, console.error, console.error, console.error, null);
+  const container = reconciler.createContainer(root, ConcurrentRoot, null, false, null, "", console.error, console.error, console.error, () => {}, null);
 
   reconciler.updateContainer(element, container, null, () => {});
+
+  return container;
 }

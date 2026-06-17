@@ -12,6 +12,13 @@ import type { HostConfig, ReactContext } from "react-reconciler";
 
 let currentUpdatePriority = NoEventPriority;
 
+type ReconcilerExtensions = {
+  maySuspendCommitOnUpdate(type: Type, oldProps: Props, newProps: Props): boolean;
+  maySuspendCommitInSyncRender(type: Type, props: Props): boolean;
+  rendererPackageName: string;
+  rendererVersion: string;
+};
+
 // https://github.com/facebook/react/tree/main/packages/react-reconciler#practical-examples
 export const hostConfig: HostConfig<
   Type,
@@ -28,10 +35,13 @@ export const hostConfig: HostConfig<
   unknown, // TimeoutHandle
   unknown, // NoTimeout
   unknown // TransitionStatus
-> = {
+> &
+  ReconcilerExtensions = {
   supportsMutation: true,
   supportsPersistence: false,
   supportsHydration: false,
+  supportsMicrotasks: true,
+  scheduleMicrotask: queueMicrotask,
 
   // Create instances of opentui components
   createInstance(type: Type, props: Props, rootContainerInstance: Container, hostContext: HostContext) {
@@ -78,7 +88,7 @@ export const hostConfig: HostConfig<
   },
 
   // Prepare for commit
-  prepareForCommit(_containerInfo: Container) {
+  prepareForCommit(containerInfo: Container) {
     return null;
   },
 
@@ -89,18 +99,18 @@ export const hostConfig: HostConfig<
   },
 
   // Get root container
-  getRootHostContext(_rootContainerInstance: Container) {
+  getRootHostContext(rootContainerInstance: Container) {
     return { isInsideText: false };
   },
 
   // Get child context
-  getChildHostContext(parentHostContext: HostContext, type: Type, _rootContainerInstance: Container) {
+  getChildHostContext(parentHostContext: HostContext, type: Type, rootContainerInstance: Container) {
     const isInsideText = ["text", ...textNodeKeys].includes(type);
     return { ...parentHostContext, isInsideText };
   },
 
   // Should set text content
-  shouldSetTextContent(_type: Type, _props: Props) {
+  shouldSetTextContent(type: Type, props: Props) {
     return false;
   },
 
@@ -122,32 +132,29 @@ export const hostConfig: HostConfig<
   // No timeout
   noTimeout: -1,
 
-  // Should attempt synchronous flush
   shouldAttemptEagerTransition() {
-    return false;
+    return true;
   },
 
   // Finalize initial children
-  finalizeInitialChildren(instance: Instance, type: Type, props: Props, _rootContainerInstance: Container, _hostContext: HostContext) {
+  finalizeInitialChildren(instance: Instance, type: Type, props: Props, rootContainerInstance: Container, hostContext: HostContext) {
     setInitialProperties(instance, type, props);
     return false;
   },
 
   // Commit mount
-  commitMount(_instance: Instance, _type: Type, _props: Props, _internalInstanceHandle: any) {
+  commitMount(instance: Instance, type: Type, props: Props, internalInstanceHandle: any) {
     // We could focus the instance here, but we're handling focus in setInitialProperties
   },
 
-  // Commit update
-  commitUpdate(instance: Instance, type: Type, oldProps: Props, newProps: Props, _internalInstanceHandle: any) {
+  // No explicit requestRender() needed in commit methods — core's property setters
+  // already call requestRender() internally, and resetAfterCommit handles the frame trigger.
+  commitUpdate(instance: Instance, type: Type, oldProps: Props, newProps: Props, internalInstanceHandle: any) {
     updateProperties(instance, type, oldProps, newProps);
-    instance.requestRender();
   },
 
-  // Commit text update
   commitTextUpdate(textInstance: TextInstance, oldText: string, newText: string) {
     textInstance.children = [newText];
-    textInstance.requestRender();
   },
 
   // Append child to container
@@ -159,28 +166,21 @@ export const hostConfig: HostConfig<
     parent.add(child);
   },
 
-  // Hide instance
+  // Visibility setters in core call requestRender() internally.
   hideInstance(instance: Instance) {
     instance.visible = false;
-    instance.requestRender();
   },
 
-  // Unhide instance
-  unhideInstance(instance: Instance, _props: Props) {
+  unhideInstance(instance: Instance, props: Props) {
     instance.visible = true;
-    instance.requestRender();
   },
 
-  // Hide text instance
   hideTextInstance(textInstance: TextInstance) {
     textInstance.visible = false;
-    textInstance.requestRender();
   },
 
-  // Unhide text instance
-  unhideTextInstance(textInstance: TextInstance, _text: string) {
+  unhideTextInstance(textInstance: TextInstance, text: string) {
     textInstance.visible = true;
-    textInstance.requestRender();
   },
 
   // Clear container
@@ -206,6 +206,14 @@ export const hostConfig: HostConfig<
   },
 
   maySuspendCommit() {
+    return false;
+  },
+
+  maySuspendCommitOnUpdate() {
+    return false;
+  },
+
+  maySuspendCommitInSyncRender() {
     return false;
   },
 
@@ -249,7 +257,7 @@ export const hostConfig: HostConfig<
     return instance;
   },
 
-  preparePortalMount(_containerInfo: Container) {},
+  preparePortalMount(containerInfo: Container) {},
 
   isPrimaryRenderer: true,
 
@@ -266,4 +274,7 @@ export const hostConfig: HostConfig<
   getInstanceFromScope() {
     return null;
   },
+
+  rendererPackageName: "@my-react/react-opentui",
+  rendererVersion: "0.0.1",
 };

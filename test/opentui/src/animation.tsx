@@ -1,6 +1,6 @@
-import { useEffect, useState } from "@my-react/react";
-import { render, useTimeline } from "@my-react/react-opentui";
-import { TextAttributes } from "@opentui/core";
+import { createRoot, useTimeline } from "@my-react/react-opentui";
+import { createCliRenderer, TextAttributes } from "@opentui/core";
+import { useEffect, useState } from "react";
 
 type Stats = {
   cpu: number;
@@ -75,4 +75,4 @@ export const App = () => {
   );
 };
 
-export const test = () => render(<App />);
+createCliRenderer().then((renderer) => createRoot(renderer).render(<App />));

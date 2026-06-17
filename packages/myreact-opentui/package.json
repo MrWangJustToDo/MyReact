@@ -48,7 +48,7 @@
     ]
   },
   "dependencies": {
-    "@opentui/core": "^0.1.99"
+    "@opentui/core": "^0.4.1"
   },
   "devDependencies": {
     "@types/node": "^22.19.13",

@@ -20,14 +20,17 @@ export async function render(node: ReactNode, rendererConfig: CliRendererConfig 
   );
 }
 
+// flushSync was renamed to flushSyncFromReconciler in react-reconciler 0.32.0
+// the types for react-reconciler are not up to date with the library
+const _r = reconciler as typeof reconciler & { flushSyncFromReconciler?: typeof reconciler.flushSync };
+const flushSync = _r.flushSyncFromReconciler ?? _r.flushSync;
+
 export type Root = {
   render: (node: ReactNode) => void;
   unmount: () => void;
 };
 
 const createPortal = reconciler.createPortal as unknown as (element: ReactNode, container: any) => React.ReactPortal;
-
-const flushSync = reconciler.flushSync;
 
 /**
  * Creates a root for rendering a React tree with the given CLI renderer.
@@ -45,7 +48,6 @@ export function createRoot(renderer: CliRenderer): Root {
   const cleanup = () => {
     if (container) {
       reconciler.updateContainer(null, container, null, () => {});
-
       container = null;
     }
   };

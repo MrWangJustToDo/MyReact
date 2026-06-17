@@ -5,6 +5,12 @@ import { extend } from "./components";
 
 import type { ExtendedComponentProps } from "./types/components.js";
 
+// declare module "@my-react/react-opentui" {
+//   interface OpenTUIComponents {
+//     "time-to-first-draw": typeof TimeToFirstDrawRenderable;
+//   }
+// }
+
 extend({ "time-to-first-draw": TimeToFirstDrawRenderable });
 
 export type TimeToFirstDrawProps = ExtendedComponentProps<typeof TimeToFirstDrawRenderable>;

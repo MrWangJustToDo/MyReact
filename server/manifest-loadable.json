@@ -1,0 +1,891 @@
+{
+  "name": "server",
+  "hash": "6a78abfe9f250955dac7",
+  "publicPath": "/MyReact/client/",
+  "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/server",
+  "assetsByChunkName": {
+    "main": [
+      "app.js"
+    ],
+    "common-Layout": [
+      "common-Layout-d98934ede1fc76ad2b43.js"
+    ],
+    "pages-": [
+      "pages--596756033cc769764dc5.js"
+    ],
+    "pages-404": [
+      "pages-404-a4dd641a588527bcd42a.js"
+    ],
+    "pages-About": [
+      "pages-About-83a73deb91cf69512609.js"
+    ],
+    "pages-Blog": [
+      "pages-Blog-e6fb3397ae5a19685cdb.js"
+    ],
+    "pages-Excalidraw": [
+      "pages-Excalidraw-f11d857b9b8575317108.js"
+    ]
+  },
+  "assets": [
+    {
+      "type": "asset",
+      "name": "app.js",
+      "size": 288493,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "app.js.LICENSE.txt"
+        }
+      },
+      "chunkNames": [
+        "main"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        792
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "21-80cbdb36de7e60e265af.js",
+      "size": 120382,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "80cbdb36de7e60e265af",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        21
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages--596756033cc769764dc5.js",
+      "size": 73912,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "596756033cc769764dc5",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [
+        "pages-"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        746
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "680-f3fce4e21374df450813.js",
+      "size": 70510,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "f3fce4e21374df450813",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "680-f3fce4e21374df450813.js.LICENSE.txt"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [
+        "vendors"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        680
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-Blog-e6fb3397ae5a19685cdb.js",
+      "size": 23604,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "e6fb3397ae5a19685cdb",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [
+        "pages-Blog"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        186
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "common-Layout-d98934ede1fc76ad2b43.js",
+      "size": 17959,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "d98934ede1fc76ad2b43",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [
+        "common-Layout"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        659
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "188-2ac62b124637f8254e89.js",
+      "size": 7625,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "2ac62b124637f8254e89",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        188
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "753-d53fa27b8f4bf9c27545.js",
+      "size": 2921,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "d53fa27b8f4bf9c27545",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        753
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "511-9f26d34d7d0105356154.js",
+      "size": 1898,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "9f26d34d7d0105356154",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        511
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "540-467e005e6c60148defe0.js",
+      "size": 1566,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "467e005e6c60148defe0",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        540
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "205-fdd1be06235b0a1d9c00.js",
+      "size": 1236,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "fdd1be06235b0a1d9c00",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        205
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "280-e09ec38a5f3657d52b09.js",
+      "size": 1082,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "e09ec38a5f3657d52b09",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        280
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-Excalidraw-f11d857b9b8575317108.js",
+      "size": 1024,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "f11d857b9b8575317108",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [
+        "pages-Excalidraw"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        794
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "978-42825418d90d82fd62e1.js",
+      "size": 860,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "42825418d90d82fd62e1",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        978
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "687-d6194c62ea25ab573832.js",
+      "size": 838,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "d6194c62ea25ab573832",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        687
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "731-7436ae5d25eb25b7da34.js",
+      "size": 833,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "7436ae5d25eb25b7da34",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        731
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "262-8b23d808747861685c59.js",
+      "size": 737,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "8b23d808747861685c59",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        262
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "633-844138914f612ba1474c.js",
+      "size": 705,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "844138914f612ba1474c",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        633
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-About-83a73deb91cf69512609.js",
+      "size": 435,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "83a73deb91cf69512609",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [
+        "pages-About"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        669
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-404-a4dd641a588527bcd42a.js",
+      "size": 426,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "a4dd641a588527bcd42a",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [
+        "pages-404"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        934
+      ],
+      "auxiliaryChunks": []
+    }
+  ],
+  "namedChunkGroups": {
+    "main": {
+      "name": "main",
+      "chunks": [
+        792
+      ],
+      "assets": [
+        {
+          "name": "app.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "common-Layout": {
+      "name": "common-Layout",
+      "chunks": [
+        659
+      ],
+      "assets": [
+        {
+          "name": "common-Layout-d98934ede1fc76ad2b43.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-": {
+      "name": "pages-",
+      "chunks": [
+        680,
+        21,
+        188,
+        746
+      ],
+      "assets": [
+        {
+          "name": "680-f3fce4e21374df450813.js"
+        },
+        {
+          "name": "21-80cbdb36de7e60e265af.js"
+        },
+        {
+          "name": "188-2ac62b124637f8254e89.js"
+        },
+        {
+          "name": "pages--596756033cc769764dc5.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-404": {
+      "name": "pages-404",
+      "chunks": [
+        934
+      ],
+      "assets": [
+        {
+          "name": "pages-404-a4dd641a588527bcd42a.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-404-tsx": {
+      "name": "pages-404-tsx",
+      "chunks": [
+        934
+      ],
+      "assets": [
+        {
+          "name": "pages-404-a4dd641a588527bcd42a.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-About": {
+      "name": "pages-About",
+      "chunks": [
+        669
+      ],
+      "assets": [
+        {
+          "name": "pages-About-83a73deb91cf69512609.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-About-tsx": {
+      "name": "pages-About-tsx",
+      "chunks": [
+        669
+      ],
+      "assets": [
+        {
+          "name": "pages-About-83a73deb91cf69512609.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Blog": {
+      "name": "pages-Blog",
+      "chunks": [
+        680,
+        21,
+        186
+      ],
+      "assets": [
+        {
+          "name": "680-f3fce4e21374df450813.js"
+        },
+        {
+          "name": "21-80cbdb36de7e60e265af.js"
+        },
+        {
+          "name": "pages-Blog-e6fb3397ae5a19685cdb.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Blog-tsx": {
+      "name": "pages-Blog-tsx",
+      "chunks": [
+        680,
+        21,
+        186
+      ],
+      "assets": [
+        {
+          "name": "680-f3fce4e21374df450813.js"
+        },
+        {
+          "name": "21-80cbdb36de7e60e265af.js"
+        },
+        {
+          "name": "pages-Blog-e6fb3397ae5a19685cdb.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Excalidraw": {
+      "name": "pages-Excalidraw",
+      "chunks": [
+        794
+      ],
+      "assets": [
+        {
+          "name": "pages-Excalidraw-f11d857b9b8575317108.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Excalidraw-tsx": {
+      "name": "pages-Excalidraw-tsx",
+      "chunks": [
+        794
+      ],
+      "assets": [
+        {
+          "name": "pages-Excalidraw-f11d857b9b8575317108.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-index": {
+      "name": "pages-index",
+      "chunks": [
+        680,
+        21,
+        188,
+        746
+      ],
+      "assets": [
+        {
+          "name": "680-f3fce4e21374df450813.js"
+        },
+        {
+          "name": "21-80cbdb36de7e60e265af.js"
+        },
+        {
+          "name": "188-2ac62b124637f8254e89.js"
+        },
+        {
+          "name": "pages--596756033cc769764dc5.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-index-tsx": {
+      "name": "pages-index-tsx",
+      "chunks": [
+        680,
+        21,
+        188,
+        746
+      ],
+      "assets": [
+        {
+          "name": "680-f3fce4e21374df450813.js"
+        },
+        {
+          "name": "21-80cbdb36de7e60e265af.js"
+        },
+        {
+          "name": "188-2ac62b124637f8254e89.js"
+        },
+        {
+          "name": "pages--596756033cc769764dc5.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 0,
+      "auxiliaryAssetsSize": 0,
+      "children": {},
+      "childAssets": {}
+    }
+  },
+  "generator": "loadable-components",
+  "chunks": [
+    {
+      "id": 792,
+      "files": [
+        "app.js"
+      ]
+    },
+    {
+      "id": 659,
+      "files": [
+        "common-Layout-d98934ede1fc76ad2b43.js"
+      ]
+    },
+    {
+      "id": 746,
+      "files": [
+        "pages--596756033cc769764dc5.js"
+      ]
+    },
+    {
+      "id": 934,
+      "files": [
+        "pages-404-a4dd641a588527bcd42a.js"
+      ]
+    },
+    {
+      "id": 669,
+      "files": [
+        "pages-About-83a73deb91cf69512609.js"
+      ]
+    },
+    {
+      "id": 186,
+      "files": [
+        "pages-Blog-e6fb3397ae5a19685cdb.js"
+      ]
+    },
+    {
+      "id": 794,
+      "files": [
+        "pages-Excalidraw-f11d857b9b8575317108.js"
+      ]
+    },
+    {
+      "id": 687,
+      "files": [
+        "687-d6194c62ea25ab573832.js"
+      ]
+    },
+    {
+      "id": 205,
+      "files": [
+        "205-fdd1be06235b0a1d9c00.js"
+      ]
+    },
+    {
+      "id": 633,
+      "files": [
+        "633-844138914f612ba1474c.js"
+      ]
+    },
+    {
+      "id": 753,
+      "files": [
+        "753-d53fa27b8f4bf9c27545.js"
+      ]
+    },
+    {
+      "id": 978,
+      "files": [
+        "978-42825418d90d82fd62e1.js"
+      ]
+    },
+    {
+      "id": 540,
+      "files": [
+        "540-467e005e6c60148defe0.js"
+      ]
+    },
+    {
+      "id": 280,
+      "files": [
+        "280-e09ec38a5f3657d52b09.js"
+      ]
+    },
+    {
+      "id": 731,
+      "files": [
+        "731-7436ae5d25eb25b7da34.js"
+      ]
+    },
+    {
+      "id": 262,
+      "files": [
+        "262-8b23d808747861685c59.js"
+      ]
+    },
+    {
+      "id": 511,
+      "files": [
+        "511-9f26d34d7d0105356154.js"
+      ]
+    },
+    {
+      "id": 680,
+      "files": [
+        "680-f3fce4e21374df450813.js"
+      ]
+    },
+    {
+      "id": 21,
+      "files": [
+        "21-80cbdb36de7e60e265af.js"
+      ]
+    },
+    {
+      "id": 188,
+      "files": [
+        "188-2ac62b124637f8254e89.js"
+      ]
+    }
+  ]
+}

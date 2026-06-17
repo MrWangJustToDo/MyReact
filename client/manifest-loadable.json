@@ -1,0 +1,1557 @@
+{
+  "name": "client",
+  "hash": "2ed71755243625975e17",
+  "publicPath": "/MyReact/client/",
+  "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
+  "assetsByChunkName": {
+    "main": [
+      "main-87793ae4dfd2f6033ffb.css",
+      "main-52b6d118ee53ce089e9f.js",
+      "main-87793ae4dfd2f6033ffb.css.map",
+      "main-52b6d118ee53ce089e9f.js.map"
+    ],
+    "runtime": [
+      "runtime-845d2f31b68233bbd5dd.js",
+      "runtime-845d2f31b68233bbd5dd.js.map"
+    ],
+    "common-Layout": [
+      "common-Layout-982e9de9b4b41c4d463e.js",
+      "common-Layout-982e9de9b4b41c4d463e.js.map"
+    ],
+    "pages-": [
+      "pages--413e84fa4cca8e73e0f6.js",
+      "pages--413e84fa4cca8e73e0f6.js.map"
+    ],
+    "pages-404": [
+      "pages-404-1b1564a9958fabc6fdf0.js",
+      "pages-404-1b1564a9958fabc6fdf0.js.map"
+    ],
+    "pages-About": [
+      "pages-About-a51043c881adc3784da0.js",
+      "pages-About-a51043c881adc3784da0.js.map"
+    ],
+    "pages-Blog": [
+      "pages-Blog-4a44c1085c474983bc69.js",
+      "pages-Blog-4a44c1085c474983bc69.js.map"
+    ],
+    "pages-Excalidraw": [
+      "pages-Excalidraw-480e9986a7fc8d4b55a1.js",
+      "pages-Excalidraw-480e9986a7fc8d4b55a1.js.map"
+    ],
+    "vendor": [
+      "vendor-9328974fc70a775aa966.css",
+      "vendor-fe33bbd8b1864097a5f6.js",
+      "vendor-9328974fc70a775aa966.css.map",
+      "vendor-fe33bbd8b1864097a5f6.js.map"
+    ],
+    "vendor-react": [
+      "vendor-react-fc119cfb8844cf06c6a9.js",
+      "vendor-react-fc119cfb8844cf06c6a9.js.map"
+    ],
+    "vendor-ui": [
+      "vendor-ui-744a900ca12749098f79.js",
+      "vendor-ui-744a900ca12749098f79.js.map"
+    ],
+    "vendor-lodash": [
+      "vendor-lodash-2ff3c50a6a372f0f78e9.js",
+      "vendor-lodash-2ff3c50a6a372f0f78e9.js.map"
+    ],
+    "vendor-icons": [
+      "vendor-icons-c3e42fd8f451e655074c.js",
+      "vendor-icons-c3e42fd8f451e655074c.js.map"
+    ],
+    "vendor-babel": [
+      "vendor-babel-dad4713c9b30f692df2c.js",
+      "vendor-babel-dad4713c9b30f692df2c.js.map"
+    ],
+    "vendor-emotion": [
+      "vendor-emotion-93506d9f5c810e42c8c0.js",
+      "vendor-emotion-93506d9f5c810e42c8c0.js.map"
+    ]
+  },
+  "assets": [
+    {
+      "type": "asset",
+      "name": "vendor-fe33bbd8b1864097a5f6.js",
+      "size": 4178626,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "fe33bbd8b1864097a5f6",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "vendor-fe33bbd8b1864097a5f6.js.LICENSE.txt",
+          "sourceMap": "vendor-fe33bbd8b1864097a5f6.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 2,
+      "chunks": [
+        502
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "main-52b6d118ee53ce089e9f.js",
+      "size": 288354,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "52b6d118ee53ce089e9f",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "main-52b6d118ee53ce089e9f.js.map"
+        }
+      },
+      "chunkNames": [
+        "main"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        792
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-react-fc119cfb8844cf06c6a9.js",
+      "size": 214511,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "fc119cfb8844cf06c6a9",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "vendor-react-fc119cfb8844cf06c6a9.js.LICENSE.txt",
+          "sourceMap": "vendor-react-fc119cfb8844cf06c6a9.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-react"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 2,
+      "chunks": [
+        967
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "933-fa629bf1fd3fcc6050c2.js",
+      "size": 180997,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "fa629bf1fd3fcc6050c2",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "933-fa629bf1fd3fcc6050c2.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        933
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-ui-744a900ca12749098f79.js",
+      "size": 174871,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "744a900ca12749098f79",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "vendor-ui-744a900ca12749098f79.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-ui"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        980
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "668-960d2467bc07e1104a17.js",
+      "size": 146194,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "960d2467bc07e1104a17",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "668-960d2467bc07e1104a17.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        668
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "21-f9d86aa2197639ce941f.js",
+      "size": 127254,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "f9d86aa2197639ce941f",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "21-f9d86aa2197639ce941f.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        21
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages--413e84fa4cca8e73e0f6.js",
+      "size": 90386,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "413e84fa4cca8e73e0f6",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages--413e84fa4cca8e73e0f6.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        746
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-emotion-93506d9f5c810e42c8c0.js",
+      "size": 68459,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "93506d9f5c810e42c8c0",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "vendor-emotion-93506d9f5c810e42c8c0.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-emotion"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        61
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-Blog-4a44c1085c474983bc69.js",
+      "size": 39965,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "4a44c1085c474983bc69",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages-Blog-4a44c1085c474983bc69.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-Blog"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        186
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-lodash-2ff3c50a6a372f0f78e9.js",
+      "size": 32687,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "2ff3c50a6a372f0f78e9",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "vendor-lodash-2ff3c50a6a372f0f78e9.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-lodash"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        305
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "common-Layout-982e9de9b4b41c4d463e.js",
+      "size": 23627,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "982e9de9b4b41c4d463e",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "common-Layout-982e9de9b4b41c4d463e.js.map"
+        }
+      },
+      "chunkNames": [
+        "common-Layout"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        659
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "188-0a6e98641828c620f18d.js",
+      "size": 18374,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "0a6e98641828c620f18d",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "188-0a6e98641828c620f18d.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        188
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-babel-dad4713c9b30f692df2c.js",
+      "size": 11983,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "dad4713c9b30f692df2c",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "vendor-babel-dad4713c9b30f692df2c.js.LICENSE.txt",
+          "sourceMap": "vendor-babel-dad4713c9b30f692df2c.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-babel"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 2,
+      "chunks": [
+        798
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-icons-c3e42fd8f451e655074c.js",
+      "size": 8509,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "c3e42fd8f451e655074c",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "vendor-icons-c3e42fd8f451e655074c.js.LICENSE.txt",
+          "sourceMap": "vendor-icons-c3e42fd8f451e655074c.js.map"
+        }
+      },
+      "chunkNames": [
+        "vendor-icons"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 2,
+      "chunks": [
+        916
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "753-52e869f1bf15b205f4c2.js",
+      "size": 5932,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "52e869f1bf15b205f4c2",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "753-52e869f1bf15b205f4c2.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        753
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "main-87793ae4dfd2f6033ffb.css",
+      "size": 5055,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "87793ae4dfd2f6033ffb",
+        "minimized": true,
+        "related": {
+          "sourceMap": "main-87793ae4dfd2f6033ffb.css.map"
+        }
+      },
+      "chunkNames": [
+        "main"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        792
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "runtime-845d2f31b68233bbd5dd.js",
+      "size": 3967,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "845d2f31b68233bbd5dd",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "runtime-845d2f31b68233bbd5dd.js.map"
+        }
+      },
+      "chunkNames": [
+        "runtime"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        121
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "vendor-9328974fc70a775aa966.css",
+      "size": 3536,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "9328974fc70a775aa966",
+        "minimized": true,
+        "related": {
+          "sourceMap": "vendor-9328974fc70a775aa966.css.map"
+        }
+      },
+      "chunkNames": [
+        "vendor"
+      ],
+      "chunkIdHints": [
+        "vendor"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        502
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "205-8889087b5d0c02133161.js",
+      "size": 3101,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "8889087b5d0c02133161",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "205-8889087b5d0c02133161.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        205
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "540-9e6c62ba83a42ef746e8.js",
+      "size": 2781,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "9e6c62ba83a42ef746e8",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "540-9e6c62ba83a42ef746e8.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        540
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "511-1b5952cd4a221d29907f.js",
+      "size": 2649,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "1b5952cd4a221d29907f",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "511-1b5952cd4a221d29907f.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        511
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "731-5614901661358b73e5d5.js",
+      "size": 2274,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "5614901661358b73e5d5",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "731-5614901661358b73e5d5.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        731
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "280-1796bdc4314bedbd4e0c.js",
+      "size": 2144,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "1796bdc4314bedbd4e0c",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "280-1796bdc4314bedbd4e0c.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        280
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-Excalidraw-480e9986a7fc8d4b55a1.js",
+      "size": 1792,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "480e9986a7fc8d4b55a1",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages-Excalidraw-480e9986a7fc8d4b55a1.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-Excalidraw"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        794
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "978-70b58c6f81e9391a598d.js",
+      "size": 1602,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "70b58c6f81e9391a598d",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "978-70b58c6f81e9391a598d.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        978
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "262-898c03c57309d44a77e8.js",
+      "size": 1342,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "898c03c57309d44a77e8",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "262-898c03c57309d44a77e8.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        262
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "633-8ae79fcb45ee65f00fdc.js",
+      "size": 1242,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "8ae79fcb45ee65f00fdc",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "633-8ae79fcb45ee65f00fdc.js.map"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        633
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "manifest-deps.json",
+      "size": 788,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {},
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-About-a51043c881adc3784da0.js",
+      "size": 705,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "a51043c881adc3784da0",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages-About-a51043c881adc3784da0.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-About"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        669
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "pages-404-1b1564a9958fabc6fdf0.js",
+      "size": 651,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "1b1564a9958fabc6fdf0",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "sourceMap": "pages-404-1b1564a9958fabc6fdf0.js.map"
+        }
+      },
+      "chunkNames": [
+        "pages-404"
+      ],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        934
+      ],
+      "auxiliaryChunks": []
+    }
+  ],
+  "namedChunkGroups": {
+    "main": {
+      "name": "main",
+      "chunks": [
+        121,
+        502,
+        967,
+        980,
+        305,
+        798,
+        61,
+        792
+      ],
+      "assets": [
+        {
+          "name": "runtime-845d2f31b68233bbd5dd.js"
+        },
+        {
+          "name": "vendor-9328974fc70a775aa966.css"
+        },
+        {
+          "name": "vendor-fe33bbd8b1864097a5f6.js"
+        },
+        {
+          "name": "vendor-react-fc119cfb8844cf06c6a9.js"
+        },
+        {
+          "name": "vendor-ui-744a900ca12749098f79.js"
+        },
+        {
+          "name": "vendor-lodash-2ff3c50a6a372f0f78e9.js"
+        },
+        {
+          "name": "vendor-babel-dad4713c9b30f692df2c.js"
+        },
+        {
+          "name": "vendor-emotion-93506d9f5c810e42c8c0.js"
+        },
+        {
+          "name": "main-87793ae4dfd2f6033ffb.css"
+        },
+        {
+          "name": "main-52b6d118ee53ce089e9f.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 10,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "common-Layout": {
+      "name": "common-Layout",
+      "chunks": [
+        502,
+        967,
+        980,
+        916,
+        798,
+        61,
+        659
+      ],
+      "assets": [
+        {
+          "name": "vendor-9328974fc70a775aa966.css"
+        },
+        {
+          "name": "vendor-fe33bbd8b1864097a5f6.js"
+        },
+        {
+          "name": "vendor-react-fc119cfb8844cf06c6a9.js"
+        },
+        {
+          "name": "vendor-ui-744a900ca12749098f79.js"
+        },
+        {
+          "name": "vendor-icons-c3e42fd8f451e655074c.js"
+        },
+        {
+          "name": "vendor-babel-dad4713c9b30f692df2c.js"
+        },
+        {
+          "name": "vendor-emotion-93506d9f5c810e42c8c0.js"
+        },
+        {
+          "name": "common-Layout-982e9de9b4b41c4d463e.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 8,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-": {
+      "name": "pages-",
+      "chunks": [
+        502,
+        967,
+        980,
+        305,
+        916,
+        798,
+        61,
+        21,
+        188,
+        746
+      ],
+      "assets": [
+        {
+          "name": "vendor-9328974fc70a775aa966.css"
+        },
+        {
+          "name": "vendor-fe33bbd8b1864097a5f6.js"
+        },
+        {
+          "name": "vendor-react-fc119cfb8844cf06c6a9.js"
+        },
+        {
+          "name": "vendor-ui-744a900ca12749098f79.js"
+        },
+        {
+          "name": "vendor-lodash-2ff3c50a6a372f0f78e9.js"
+        },
+        {
+          "name": "vendor-icons-c3e42fd8f451e655074c.js"
+        },
+        {
+          "name": "vendor-babel-dad4713c9b30f692df2c.js"
+        },
+        {
+          "name": "vendor-emotion-93506d9f5c810e42c8c0.js"
+        },
+        {
+          "name": "21-f9d86aa2197639ce941f.js"
+        },
+        {
+          "name": "188-0a6e98641828c620f18d.js"
+        },
+        {
+          "name": "pages--413e84fa4cca8e73e0f6.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 11,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-404": {
+      "name": "pages-404",
+      "chunks": [
+        980,
+        934
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-744a900ca12749098f79.js"
+        },
+        {
+          "name": "pages-404-1b1564a9958fabc6fdf0.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 2,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-404-tsx": {
+      "name": "pages-404-tsx",
+      "chunks": [
+        980,
+        934
+      ],
+      "assets": [
+        {
+          "name": "vendor-ui-744a900ca12749098f79.js"
+        },
+        {
+          "name": "pages-404-1b1564a9958fabc6fdf0.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 2,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-About": {
+      "name": "pages-About",
+      "chunks": [
+        669
+      ],
+      "assets": [
+        {
+          "name": "pages-About-a51043c881adc3784da0.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 1,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-About-tsx": {
+      "name": "pages-About-tsx",
+      "chunks": [
+        669
+      ],
+      "assets": [
+        {
+          "name": "pages-About-a51043c881adc3784da0.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 1,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Blog": {
+      "name": "pages-Blog",
+      "chunks": [
+        502,
+        967,
+        980,
+        305,
+        916,
+        21,
+        186
+      ],
+      "assets": [
+        {
+          "name": "vendor-9328974fc70a775aa966.css"
+        },
+        {
+          "name": "vendor-fe33bbd8b1864097a5f6.js"
+        },
+        {
+          "name": "vendor-react-fc119cfb8844cf06c6a9.js"
+        },
+        {
+          "name": "vendor-ui-744a900ca12749098f79.js"
+        },
+        {
+          "name": "vendor-lodash-2ff3c50a6a372f0f78e9.js"
+        },
+        {
+          "name": "vendor-icons-c3e42fd8f451e655074c.js"
+        },
+        {
+          "name": "21-f9d86aa2197639ce941f.js"
+        },
+        {
+          "name": "pages-Blog-4a44c1085c474983bc69.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 8,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Blog-tsx": {
+      "name": "pages-Blog-tsx",
+      "chunks": [
+        502,
+        967,
+        980,
+        305,
+        916,
+        21,
+        186
+      ],
+      "assets": [
+        {
+          "name": "vendor-9328974fc70a775aa966.css"
+        },
+        {
+          "name": "vendor-fe33bbd8b1864097a5f6.js"
+        },
+        {
+          "name": "vendor-react-fc119cfb8844cf06c6a9.js"
+        },
+        {
+          "name": "vendor-ui-744a900ca12749098f79.js"
+        },
+        {
+          "name": "vendor-lodash-2ff3c50a6a372f0f78e9.js"
+        },
+        {
+          "name": "vendor-icons-c3e42fd8f451e655074c.js"
+        },
+        {
+          "name": "21-f9d86aa2197639ce941f.js"
+        },
+        {
+          "name": "pages-Blog-4a44c1085c474983bc69.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 8,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Excalidraw": {
+      "name": "pages-Excalidraw",
+      "chunks": [
+        794
+      ],
+      "assets": [
+        {
+          "name": "pages-Excalidraw-480e9986a7fc8d4b55a1.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 1,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-Excalidraw-tsx": {
+      "name": "pages-Excalidraw-tsx",
+      "chunks": [
+        794
+      ],
+      "assets": [
+        {
+          "name": "pages-Excalidraw-480e9986a7fc8d4b55a1.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 1,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-index": {
+      "name": "pages-index",
+      "chunks": [
+        502,
+        967,
+        980,
+        305,
+        916,
+        798,
+        61,
+        21,
+        188,
+        746
+      ],
+      "assets": [
+        {
+          "name": "vendor-9328974fc70a775aa966.css"
+        },
+        {
+          "name": "vendor-fe33bbd8b1864097a5f6.js"
+        },
+        {
+          "name": "vendor-react-fc119cfb8844cf06c6a9.js"
+        },
+        {
+          "name": "vendor-ui-744a900ca12749098f79.js"
+        },
+        {
+          "name": "vendor-lodash-2ff3c50a6a372f0f78e9.js"
+        },
+        {
+          "name": "vendor-icons-c3e42fd8f451e655074c.js"
+        },
+        {
+          "name": "vendor-babel-dad4713c9b30f692df2c.js"
+        },
+        {
+          "name": "vendor-emotion-93506d9f5c810e42c8c0.js"
+        },
+        {
+          "name": "21-f9d86aa2197639ce941f.js"
+        },
+        {
+          "name": "188-0a6e98641828c620f18d.js"
+        },
+        {
+          "name": "pages--413e84fa4cca8e73e0f6.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 11,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    },
+    "pages-index-tsx": {
+      "name": "pages-index-tsx",
+      "chunks": [
+        502,
+        967,
+        980,
+        305,
+        916,
+        798,
+        61,
+        21,
+        188,
+        746
+      ],
+      "assets": [
+        {
+          "name": "vendor-9328974fc70a775aa966.css"
+        },
+        {
+          "name": "vendor-fe33bbd8b1864097a5f6.js"
+        },
+        {
+          "name": "vendor-react-fc119cfb8844cf06c6a9.js"
+        },
+        {
+          "name": "vendor-ui-744a900ca12749098f79.js"
+        },
+        {
+          "name": "vendor-lodash-2ff3c50a6a372f0f78e9.js"
+        },
+        {
+          "name": "vendor-icons-c3e42fd8f451e655074c.js"
+        },
+        {
+          "name": "vendor-babel-dad4713c9b30f692df2c.js"
+        },
+        {
+          "name": "vendor-emotion-93506d9f5c810e42c8c0.js"
+        },
+        {
+          "name": "21-f9d86aa2197639ce941f.js"
+        },
+        {
+          "name": "188-0a6e98641828c620f18d.js"
+        },
+        {
+          "name": "pages--413e84fa4cca8e73e0f6.js"
+        }
+      ],
+      "filteredAssets": 0,
+      "assetsSize": null,
+      "filteredAuxiliaryAssets": 11,
+      "auxiliaryAssetsSize": null,
+      "children": {},
+      "childAssets": {}
+    }
+  },
+  "generator": "loadable-components",
+  "chunks": [
+    {
+      "id": 792,
+      "files": [
+        "main-87793ae4dfd2f6033ffb.css",
+        "main-52b6d118ee53ce089e9f.js"
+      ]
+    },
+    {
+      "id": 121,
+      "files": [
+        "runtime-845d2f31b68233bbd5dd.js"
+      ]
+    },
+    {
+      "id": 659,
+      "files": [
+        "common-Layout-982e9de9b4b41c4d463e.js"
+      ]
+    },
+    {
+      "id": 746,
+      "files": [
+        "pages--413e84fa4cca8e73e0f6.js"
+      ]
+    },
+    {
+      "id": 934,
+      "files": [
+        "pages-404-1b1564a9958fabc6fdf0.js"
+      ]
+    },
+    {
+      "id": 669,
+      "files": [
+        "pages-About-a51043c881adc3784da0.js"
+      ]
+    },
+    {
+      "id": 186,
+      "files": [
+        "pages-Blog-4a44c1085c474983bc69.js"
+      ]
+    },
+    {
+      "id": 794,
+      "files": [
+        "pages-Excalidraw-480e9986a7fc8d4b55a1.js"
+      ]
+    },
+    {
+      "id": 668,
+      "files": [
+        "668-960d2467bc07e1104a17.js"
+      ]
+    },
+    {
+      "id": 205,
+      "files": [
+        "205-8889087b5d0c02133161.js"
+      ]
+    },
+    {
+      "id": 633,
+      "files": [
+        "633-8ae79fcb45ee65f00fdc.js"
+      ]
+    },
+    {
+      "id": 753,
+      "files": [
+        "753-52e869f1bf15b205f4c2.js"
+      ]
+    },
+    {
+      "id": 978,
+      "files": [
+        "978-70b58c6f81e9391a598d.js"
+      ]
+    },
+    {
+      "id": 540,
+      "files": [
+        "540-9e6c62ba83a42ef746e8.js"
+      ]
+    },
+    {
+      "id": 280,
+      "files": [
+        "280-1796bdc4314bedbd4e0c.js"
+      ]
+    },
+    {
+      "id": 731,
+      "files": [
+        "731-5614901661358b73e5d5.js"
+      ]
+    },
+    {
+      "id": 262,
+      "files": [
+        "262-898c03c57309d44a77e8.js"
+      ]
+    },
+    {
+      "id": 511,
+      "files": [
+        "511-1b5952cd4a221d29907f.js"
+      ]
+    },
+    {
+      "id": 502,
+      "files": [
+        "vendor-9328974fc70a775aa966.css",
+        "vendor-fe33bbd8b1864097a5f6.js"
+      ]
+    },
+    {
+      "id": 967,
+      "files": [
+        "vendor-react-fc119cfb8844cf06c6a9.js"
+      ]
+    },
+    {
+      "id": 980,
+      "files": [
+        "vendor-ui-744a900ca12749098f79.js"
+      ]
+    },
+    {
+      "id": 305,
+      "files": [
+        "vendor-lodash-2ff3c50a6a372f0f78e9.js"
+      ]
+    },
+    {
+      "id": 916,
+      "files": [
+        "vendor-icons-c3e42fd8f451e655074c.js"
+      ]
+    },
+    {
+      "id": 798,
+      "files": [
+        "vendor-babel-dad4713c9b30f692df2c.js"
+      ]
+    },
+    {
+      "id": 61,
+      "files": [
+        "vendor-emotion-93506d9f5c810e42c8c0.js"
+      ]
+    },
+    {
+      "id": 933,
+      "files": [
+        "933-fa629bf1fd3fcc6050c2.js"
+      ]
+    },
+    {
+      "id": 21,
+      "files": [
+        "21-f9d86aa2197639ce941f.js"
+      ]
+    },
+    {
+      "id": 188,
+      "files": [
+        "188-0a6e98641828c620f18d.js"
+      ]
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 {
-  "./Excalidraw": {
+  "./Blog": {
     "path": [
-      "page-Excalidraw.js"
+      "pages-Blog.js"
     ],
     "static": true
   },
   "./About": {
     "path": [
-      "page-About.js",
+      "pages-About.js",
       "205-js",
       "262-js",
       "280-js",
@@ -19,25 +19,14 @@
       "933-js",
       "978-js",
       "188-js",
-      "511-js"
-    ],
-    "static": true
-  },
-  "./404": {
-    "path": [
-      "page-404.js"
-    ],
-    "static": true
-  },
-  "./Blog": {
-    "path": [
-      "page-Blog.js"
+      "511-js",
+      "vendor-icons.js"
     ],
     "static": true
   },
   "./": {
     "path": [
-      "page-.js",
+      "pages-.js",
       "205-js",
       "262-js",
       "280-js",
@@ -48,6 +37,18 @@
       "753-js",
       "933-js",
       "978-js"
+    ],
+    "static": true
+  },
+  "./Excalidraw": {
+    "path": [
+      "pages-Excalidraw.js"
+    ],
+    "static": true
+  },
+  "./404": {
+    "path": [
+      "pages-404.js"
     ],
     "static": true
   }

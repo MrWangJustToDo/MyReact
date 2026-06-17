@@ -1,7 +1,7 @@
 import { Body } from "./Body";
 import { Head } from "./Head";
 
-import type { ReactElement } from "react";
+import type { JSX, ReactElement } from "react";
 import type { HelmetServerState } from "react-helmet-async";
 
 export type HTMLProps = {

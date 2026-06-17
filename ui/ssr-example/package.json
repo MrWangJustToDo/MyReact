@@ -83,6 +83,8 @@
     "@types/loadable__component": "catalog:",
     "@types/loadable__server": "catalog:",
     "@types/markdown-it": "^14.1.2",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "@types/react-grid-layout": "^2.1.0",
     "@types/react-resizable": "^3.0.8",
     "@types/three": "^0.156.0",

@@ -9,6 +9,7 @@ import { createUniversalStore, safeData } from "../shared";
 import "@client/styles/global.scss";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
+import "@my-react/react-terminal/web/css";
 
 import { Root } from "./app";
 

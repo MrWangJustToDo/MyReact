@@ -49,15 +49,11 @@ export const getConfig = () => {
           react: isReact ? "react" : "@my-react/react",
           "react-dom": isReact ? "react-dom" : "@my-react/react-dom",
           "react-reconciler": isReact ? "react-reconciler" : "@my-react/react-reconciler-compact",
+          ink: "@my-react/react-terminal/web",
           "@build": resolve(process.cwd(), "build"),
           "@server": resolve(process.cwd(), "src", "server"),
           "@client": resolve(process.cwd(), "src", "client"),
           "@shared": resolve(process.cwd(), "src", "shared"),
-        },
-        fallback: {
-          https: false,
-          http: false,
-          vm: false,
         },
       };
 

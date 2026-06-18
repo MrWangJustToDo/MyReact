@@ -249,7 +249,7 @@ export default class Ink {
     // Unmount when process exits
     this.unsubscribeExit = signalExit.onExit(this.unmount, { alwaysLast: false });
 
-    if (process.env["DEV"] === "true") {
+    if (!__WEB__ && process.env["DEV"] === "true") {
       const injectIntoDevTools = async (url: string, config: any) => {
         const { preloadDevToolRuntimeAuto } = await import("@my-react/react-reconciler-compact/preload");
         // load devtool runtime

@@ -427,4 +427,5 @@ export const Reconciler = createReconciler<
   waitForCommitToBeReady() {
     return null;
   },
+  rendererPackageName: "@my-react/react-terminal",
 });

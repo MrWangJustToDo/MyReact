@@ -5,6 +5,7 @@ import { DevToolSection, LynxSection, MainSection } from "@client/container/Sect
 import { ApiSection as _ApiSection } from "@client/container/Section/Api";
 import { CanvasUISection } from "@client/container/Section/Canvas";
 import { FeaturesSection } from "@client/container/Section/Features";
+import { InkSection } from "@client/container/Section/Ink";
 import { NextSection } from "@client/container/Section/Next";
 import { ReconcilerSection } from "@client/container/Section/Reconciler";
 import { RscSection } from "@client/container/Section/Rsc";
@@ -63,6 +64,13 @@ const Page = () => {
         {!__REACT__ && (
           <ScrollSection>
             <CanvasUISection />
+          </ScrollSection>
+        )}
+
+        {/* Ink Section */}
+        {!__REACT__ && (
+          <ScrollSection>
+            <InkSection />
           </ScrollSection>
         )}
 

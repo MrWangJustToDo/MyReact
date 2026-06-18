@@ -35,10 +35,64 @@ const myreactThird = async () => {
   await rollupBuild({
     packageName: "myreact-terminal",
     packageScope: "packages",
-    external: externalReactLib,
+    external: (id) => {
+      if (id === "@xterm/xterm" || id === "@xterm/addon-fit") return true;
+      const re = externalReactLib(id);
+      if (re) {
+        if (id.includes("stack-utils") || id.includes("escape-string-regexp") || id.includes("ansi-escapes")) return false;
+      }
+      return re;
+    },
     plugins: {
-      singleOther({ defaultPlugins }) {
-        return [...defaultPlugins, alias({ entries: [{ find: "react", replacement: "@my-react/react" }] })];
+      singleOther({ defaultPlugins, defaultPluginProps, defaultPluginPackages }) {
+        const input = typeof defaultPluginProps.options.input === "string" ? defaultPluginProps.options.input : "";
+        const isWebEntry = input.includes("web/index");
+        const reactAlias = { find: "react", replacement: "@my-react/react" };
+
+        if (isWebEntry) {
+          const shimsDir = defaultPluginProps.absolutePath + "/src/web/shims";
+
+          return [
+            ...defaultPlugins,
+            defaultPluginPackages.replace({ __WEB__: "true", preventAssignment: true }),
+            alias({
+              entries: [
+                reactAlias,
+                // Node.js built-in shims
+                { find: "module", replacement: shimsDir + "/module.ts" },
+                { find: "node:module", replacement: shimsDir + "/module.ts" },
+                { find: "os", replacement: shimsDir + "/os.ts" },
+                { find: "node:os", replacement: shimsDir + "/os.ts" },
+                { find: "process", replacement: shimsDir + "/process.ts" },
+                { find: "node:process", replacement: shimsDir + "/process.ts" },
+                { find: "stream", replacement: shimsDir + "/stream.ts" },
+                { find: "node:stream", replacement: shimsDir + "/stream.ts" },
+                { find: "events", replacement: shimsDir + "/events.ts" },
+                { find: "node:events", replacement: shimsDir + "/events.ts" },
+                { find: "fs", replacement: shimsDir + "/fs.ts" },
+                { find: "node:fs", replacement: shimsDir + "/fs.ts" },
+                { find: "buffer", replacement: shimsDir + "/buffer.ts" },
+                { find: "node:buffer", replacement: shimsDir + "/buffer.ts" },
+                { find: "child_process", replacement: shimsDir + "/child_process.ts" },
+                { find: "node:child_process", replacement: shimsDir + "/child_process.ts" },
+                { find: "url", replacement: shimsDir + "/url.ts" },
+                { find: "node:url", replacement: shimsDir + "/url.ts" },
+                { find: "path", replacement: shimsDir + "/path.ts" },
+                { find: "node:path", replacement: shimsDir + "/path.ts" },
+                { find: "tty", replacement: shimsDir + "/tty.ts" },
+                { find: "node:tty", replacement: shimsDir + "/tty.ts" },
+                // Node.js-only npm package shims
+                { find: "signal-exit", replacement: shimsDir + "/signal-exit.ts" },
+                { find: "cli-cursor", replacement: shimsDir + "/cli-cursor.ts" },
+                { find: "patch-console", replacement: shimsDir + "/patch-console.ts" },
+                { find: "is-in-ci", replacement: shimsDir + "/is-in-ci.ts" },
+                { find: "environment", replacement: shimsDir + "/environment.ts" },
+              ],
+            }),
+          ];
+        }
+
+        return [...defaultPlugins, alias({ entries: [reactAlias] }), defaultPluginPackages.replace({ __WEB__: "false", preventAssignment: true })];
       },
     },
   });

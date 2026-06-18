@@ -276,5 +276,6 @@ export const hostConfig: HostConfig<
   },
 
   rendererPackageName: "@my-react/react-opentui",
+
   rendererVersion: "0.0.1",
 };

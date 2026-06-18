@@ -36,6 +36,7 @@
     "graphql": "catalog:",
     "highlight.js": "^11.11.1",
     "immer": "catalog:",
+    "ink-stream-markdown": "^0.0.8",
     "js-cookie": "^3.0.5",
     "lodash-es": "catalog:",
     "lucide-react": "^0.576.0",

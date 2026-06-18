@@ -1,0 +1,74 @@
+@import "@xterm/xterm/css/xterm.css";
+
+/* Terminal box container */
+.ink-terminal-box {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  overflow: hidden;
+  position: relative;
+  background: #000000;
+  box-sizing: border-box;
+}
+
+/* Remove focus ring */
+.ink-terminal-box:focus,
+.ink-terminal-box *:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Isolate terminal from parent styles */
+.ink-terminal-box .ink-terminal-reset {
+  width: 100%;
+  height: 100%;
+  text-align: left !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  overflow: hidden !important;
+  max-width: 100% !important;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Ensure xterm container fills the space */
+.ink-terminal-box .xterm {
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+
+.ink-terminal-box .xterm .xterm-screen {
+  padding: 0;
+}
+
+/* Prevent parent styles from centering terminal text */
+.ink-terminal-box .xterm .xterm-screen,
+.ink-terminal-box .xterm .xterm-rows,
+.ink-terminal-box .xterm .xterm-row {
+  text-align: left !important;
+  display: block !important;
+}
+
+/* Ensure proper font rendering */
+.ink-terminal-box .xterm-helper-textarea {
+  position: absolute !important;
+  opacity: 0 !important;
+}
+
+/* Enable vertical scrolling, prevent horizontal */
+.ink-terminal-box .xterm .xterm-viewport {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Hide default cursor - ink renders its own */
+.ink-terminal-box .xterm .xterm-cursor {
+  display: none;
+}

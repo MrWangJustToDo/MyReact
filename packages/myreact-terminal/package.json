@@ -11,6 +11,10 @@
     "dist",
     "index.mjs",
     "index.d.ts",
+    "web.mjs",
+    "web.d.ts",
+    "web-css.d.ts",
+    "src/web/ink-terminal.css",
     "jsx-runtime.js",
     "jsx-runtime.d.ts",
     "jsx-dev-runtime.js",
@@ -22,6 +26,14 @@
     ".": {
       "import": "./index.mjs",
       "types": "./index.d.ts"
+    },
+    "./web": {
+      "import": "./web.mjs",
+      "types": "./web.d.ts"
+    },
+    "./web/css": {
+      "import": "./src/web/ink-terminal.css",
+      "types": "./web-css.d.ts"
     },
     "./jsx-runtime": {
       "import": "./jsx-runtime.js",
@@ -51,10 +63,23 @@
     },
     {
       "input": "./src/worker/worker-entry.ts",
+      "pkgName": "worker",
       "output": [
         {
           "dir": "./dist",
           "entryFileNames": "esm/worker-entry.mjs",
+          "format": "esm",
+          "type": true
+        }
+      ]
+    },
+    {
+      "input": "./src/web/index.ts",
+      "pkgName": "web",
+      "output": [
+        {
+          "dir": "./dist",
+          "entryFileNames": "esm/web.mjs",
           "format": "esm",
           "type": true
         }
@@ -93,6 +118,16 @@
     "socket.io-client": "^4.8.3"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.28"
+    "@my-react/react": ">=0.3.28",
+    "@xterm/xterm": ">=5.0.0",
+    "@xterm/addon-fit": ">=0.10.0"
+  },
+  "peerDependenciesMeta": {
+    "@xterm/xterm": {
+      "optional": true
+    },
+    "@xterm/addon-fit": {
+      "optional": true
+    }
   }
 }

@@ -124,8 +124,8 @@ const features = [
   },
   {
     icon: <Icon as={PaletteIcon} boxSize="6" />,
-    title: "Three.js & Canvas",
-    description: "Render 3D graphics with React Three Fiber and 2D canvas UI. Perfect for interactive visualizations and games.",
+    title: "Three.js & Canvas & Ink",
+    description: "Render 3D graphics with React Three Fiber and 2D canvas UI and TUI. Perfect for interactive visualizations and games.",
     badge: "Experimental",
     badgeColor: "cyan",
   },

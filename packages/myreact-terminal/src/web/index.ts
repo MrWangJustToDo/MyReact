@@ -1,0 +1,73 @@
+// Core bridge
+export { mountInkInXterm, getTerminalHeight, filterStdoutChunk } from "./xterm-ink.js";
+export type { InkWebOptions, InkWebInstance, RenderFunction } from "./xterm-ink.js";
+
+// React components
+export { InkXterm } from "./InkXterm.js";
+export type { InkXtermProps } from "./InkXterm.js";
+
+export { InkTerminalBox } from "./InkTerminalBox.js";
+export type { InkTerminalBoxProps } from "./InkTerminalBox.js";
+
+// Shims (for advanced usage / custom bundler config)
+export { Stream, Writable, Readable, PassThrough, EventEmitter } from "./shims";
+
+// Re-export commonly used Ink components and hooks
+export type { Props as BoxProps } from "../components/Box.js";
+export { default as Box } from "../components/Box.js";
+export type { Props as TextProps } from "../components/Text.js";
+export { default as Text } from "../components/Text.js";
+export type { Props as AppProps } from "../components/AppContext.js";
+export { default as AppContext } from "../components/AppContext.js";
+export type { Props as StdinProps } from "../components/StdinContext.js";
+export type { Props as StdoutProps } from "../components/StdoutContext.js";
+export type { Props as StderrProps } from "../components/StderrContext.js";
+export type { Props as StaticProps } from "../components/Static.js";
+export { default as Static } from "../components/Static.js";
+export type { Props as StaticRenderProps } from "../components/StaticRender.js";
+export { default as StaticRender } from "../components/StaticRender.js";
+export type { Props as TransformProps } from "../components/Transform.js";
+export { default as Transform } from "../components/Transform.js";
+export type { Props as NewlineProps } from "../components/Newline.js";
+export { default as Newline } from "../components/Newline.js";
+export { default as Spacer } from "../components/Spacer.js";
+export type { Key } from "../hooks/use-input.js";
+export { default as useInput } from "../hooks/use-input.js";
+export { default as useApp } from "../hooks/use-app.js";
+export { default as useStdin } from "../hooks/use-stdin.js";
+export { default as useStdout } from "../hooks/use-stdout.js";
+export { default as useStderr } from "../hooks/use-stderr.js";
+export { default as useFocus } from "../hooks/use-focus.js";
+export { default as useFocusManager } from "../hooks/use-focus-manager.js";
+export { default as useIsScreenReaderEnabled } from "../hooks/use-is-screen-reader-enabled.js";
+
+export {
+  default as measureElement,
+  getBoundingBox,
+  getInnerWidth,
+  getInnerHeight,
+  getVerticalScrollbarBoundingBox,
+  getHorizontalScrollbarBoundingBox,
+  getAddedScrollHeight,
+  getText,
+  getTextOffset,
+  hitTest,
+  findNodeAtOffset,
+  type ScrollbarBoundingBox,
+} from "../measure-element.js";
+export { getScrollHeight, getScrollWidth, getScrollLeft, getScrollTop } from "../scroll.js";
+export {
+  clearStringWidthCache,
+  setStringWidthFunction,
+  styledCharsWidth,
+  widestLineFromStyledChars,
+  toStyledCharacters,
+  styledCharsToString,
+  wordBreakStyledChars,
+} from "../measure-text.js";
+export { styledLineToString } from "../tokenize.js";
+export { type DOMElement, type DOMNode, getPathToRoot } from "../dom.js";
+export { StyledLine } from "../styled-line.js";
+export { default as ResizeObserver, ResizeObserverEntry } from "../resize-observer.js";
+export { Selection, Range, comparePoints } from "../selection.js";
+export { wrapStyledChars } from "../text-wrap.js";

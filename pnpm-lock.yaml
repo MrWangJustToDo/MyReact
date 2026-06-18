@@ -679,10 +679,10 @@ importers:
         specifier: '>=0.3.28'
         version: link:../myreact
       '@xterm/addon-fit':
-        specifier: '>=0.10.0'
+        specifier: '>=0.11.0'
         version: 0.11.0
       '@xterm/xterm':
-        specifier: '>=5.0.0'
+        specifier: '>=5.0.0 || >=6.0.0'
         version: 6.0.0
       ansi-escapes:
         specifier: ^7.3.0

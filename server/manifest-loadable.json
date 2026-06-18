@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "hash": "534bbb53bb7659a941fa",
+  "hash": "7db6bc74400271b9b866",
   "publicPath": "/MyReact/client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/server",
   "assetsByChunkName": {
@@ -11,7 +11,7 @@
       "common-Layout-d98934ede1fc76ad2b43.js"
     ],
     "pages-": [
-      "pages--596756033cc769764dc5.js"
+      "pages--bfe11a6ff70bb6645298.js"
     ],
     "pages-404": [
       "pages-404-a4dd641a588527bcd42a.js"
@@ -29,8 +29,62 @@
   "assets": [
     {
       "type": "asset",
+      "name": "658-d4852e71c62fe3d0fef0.js",
+      "size": 331632,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "d4852e71c62fe3d0fef0",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "658-d4852e71c62fe3d0fef0.js.LICENSE.txt"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [
+        "vendors"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        658
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "19-cf535811e700f0c50c35.js",
+      "size": 319271,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "cf535811e700f0c50c35",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "19-cf535811e700f0c50c35.js.LICENSE.txt"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        19
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
       "name": "app.js",
-      "size": 288493,
+      "size": 289939,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
@@ -50,6 +104,30 @@
       "filteredRelated": 1,
       "chunks": [
         792
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "383-d37608e35c7b66b60a58.js",
+      "size": 172117,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "d37608e35c7b66b60a58",
+        "javascriptModule": false,
+        "minimized": true
+      },
+      "chunkNames": [],
+      "chunkIdHints": [
+        "vendors"
+      ],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "chunks": [
+        383
       ],
       "auxiliaryChunks": []
     },
@@ -77,14 +155,14 @@
     },
     {
       "type": "asset",
-      "name": "pages--596756033cc769764dc5.js",
-      "size": 73912,
+      "name": "pages--bfe11a6ff70bb6645298.js",
+      "size": 78117,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "596756033cc769764dc5",
+        "contenthash": "bfe11a6ff70bb6645298",
         "javascriptModule": false,
         "minimized": true
       },
@@ -126,6 +204,32 @@
         680
       ],
       "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "620cbaf4b51669d0a030.mjs",
+      "size": 61396,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "sourceFilename": "../../packages/myreact-terminal/dist/esm/worker-entry.mjs",
+        "immutable": true,
+        "contenthash": "620cbaf4b51669d0a030",
+        "minimized": true,
+        "related": {
+          "license": "620cbaf4b51669d0a030.mjs.LICENSE.txt"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [],
+      "auxiliaryChunks": [
+        19
+      ]
     },
     {
       "type": "asset",
@@ -260,6 +364,32 @@
       "auxiliaryChunkIdHints": [],
       "chunks": [
         540
+      ],
+      "auxiliaryChunks": []
+    },
+    {
+      "type": "asset",
+      "name": "160-0a11674c81ca5233dd56.js",
+      "size": 1306,
+      "emitted": false,
+      "comparedForEmit": false,
+      "cached": true,
+      "info": {
+        "immutable": true,
+        "contenthash": "0a11674c81ca5233dd56",
+        "javascriptModule": false,
+        "minimized": true,
+        "related": {
+          "license": "160-0a11674c81ca5233dd56.js.LICENSE.txt"
+        }
+      },
+      "chunkNames": [],
+      "chunkIdHints": [],
+      "auxiliaryChunkNames": [],
+      "auxiliaryChunkIdHints": [],
+      "filteredRelated": 1,
+      "chunks": [
+        160
       ],
       "auxiliaryChunks": []
     },
@@ -544,7 +674,7 @@
           "name": "188-2ac62b124637f8254e89.js"
         },
         {
-          "name": "pages--596756033cc769764dc5.js"
+          "name": "pages--bfe11a6ff70bb6645298.js"
         }
       ],
       "filteredAssets": 0,
@@ -725,7 +855,7 @@
           "name": "188-2ac62b124637f8254e89.js"
         },
         {
-          "name": "pages--596756033cc769764dc5.js"
+          "name": "pages--bfe11a6ff70bb6645298.js"
         }
       ],
       "filteredAssets": 0,
@@ -754,7 +884,7 @@
           "name": "188-2ac62b124637f8254e89.js"
         },
         {
-          "name": "pages--596756033cc769764dc5.js"
+          "name": "pages--bfe11a6ff70bb6645298.js"
         }
       ],
       "filteredAssets": 0,
@@ -782,7 +912,7 @@
     {
       "id": 746,
       "files": [
-        "pages--596756033cc769764dc5.js"
+        "pages--bfe11a6ff70bb6645298.js"
       ]
     },
     {
@@ -813,6 +943,12 @@
       "id": 687,
       "files": [
         "687-d6194c62ea25ab573832.js"
+      ]
+    },
+    {
+      "id": 19,
+      "files": [
+        "19-cf535811e700f0c50c35.js"
       ]
     },
     {
@@ -870,9 +1006,27 @@
       ]
     },
     {
+      "id": 658,
+      "files": [
+        "658-d4852e71c62fe3d0fef0.js"
+      ]
+    },
+    {
+      "id": 160,
+      "files": [
+        "160-0a11674c81ca5233dd56.js"
+      ]
+    },
+    {
       "id": 680,
       "files": [
         "680-f3fce4e21374df450813.js"
+      ]
+    },
+    {
+      "id": 383,
+      "files": [
+        "383-d37608e35c7b66b60a58.js"
       ]
     },
     {

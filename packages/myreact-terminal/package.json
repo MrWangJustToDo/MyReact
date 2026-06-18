@@ -119,8 +119,8 @@
   },
   "peerDependencies": {
     "@my-react/react": ">=0.3.28",
-    "@xterm/xterm": ">=5.0.0",
-    "@xterm/addon-fit": ">=0.10.0"
+    "@xterm/xterm": ">=5.0.0 || >=6.0.0",
+    "@xterm/addon-fit": ">=0.11.0"
   },
   "peerDependenciesMeta": {
     "@xterm/xterm": {

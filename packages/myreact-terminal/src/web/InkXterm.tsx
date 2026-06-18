@@ -20,10 +20,10 @@ export type InkXtermProps = {
   /** Inline styles for the container div */
   style?: CSSProperties;
   /** Build render options */
-  buildInRenderOptions?: RenderOptions;
+  inkRenderOptions?: RenderOptions;
 };
 
-export function InkXterm({ children, termOptions, focus, onReady, className, style, buildInRenderOptions }: InkXtermProps): ReactElement {
+export function InkXterm({ children, termOptions, focus, onReady, className, style, inkRenderOptions }: InkXtermProps): ReactElement {
   const containerRef = useRef<HTMLDivElement>(null);
   const unmountRef = useRef<(() => void) | null>(null);
   const rerenderRef = useRef<((node: ReactNode) => void) | null>(null);
@@ -51,7 +51,7 @@ export function InkXterm({ children, termOptions, focus, onReady, className, sty
         termOptions: stableTermOptions,
         focus,
         onReady,
-        buildInRenderOptions,
+        inkRenderOptions,
       };
 
       mountInkInXterm(childrenRef.current, opts).then((api) => {

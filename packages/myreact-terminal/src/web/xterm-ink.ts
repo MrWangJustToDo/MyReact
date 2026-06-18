@@ -25,7 +25,7 @@ export type InkWebOptions = {
   termOptions?: Partial<ITerminalOptions>;
   focus?: boolean;
   onReady?: (api: InkWebInstance) => void;
-  buildInRenderOptions?: RenderOptions;
+  inkRenderOptions?: RenderOptions;
 };
 
 export type InkWebInstance = {
@@ -131,7 +131,8 @@ export async function mountInkInXterm(element: ReactNode, options: InkWebOptions
   let pendingElement: ReactNode = element;
 
   instance = renderFn(pendingElement, {
-    ...options.buildInRenderOptions,
+    terminalBuffer: true,
+    ...options.inkRenderOptions,
     stdout: stdout as unknown as NodeJS.WriteStream,
     stdin: stdin as unknown as NodeJS.ReadStream,
     stderr: stdout as unknown as NodeJS.WriteStream,

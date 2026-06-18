@@ -10,7 +10,7 @@ export const InkUI = () => {
   use(promise);
 
   return (
-    <InkTerminalBox style={{ height: "100%" }} buildInRenderOptions={{ incrementalRendering: false, terminalBuffer: true }}>
+    <InkTerminalBox style={{ height: "100%" }} inkRenderOptions={{ incrementalRendering: false, terminalBuffer: true }}>
       <InkExample />
     </InkTerminalBox>
   );

@@ -9,13 +9,10 @@
   "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
-    "client.d.ts",
     "client.js",
-    "server.d.ts",
     "server.js",
     "server.node.js",
     "server.browser.js",
-    "index.d.ts",
     "index.js",
     "type.js",
     "type.d.ts"

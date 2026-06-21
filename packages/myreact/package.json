@@ -9,7 +9,6 @@
   "jsdelivr": "./dist/umd/index.development.js",
   "files": [
     "dist",
-    "index.d.ts",
     "index.js",
     "type.js",
     "type.d.ts",

@@ -708,6 +708,9 @@ importers:
       code-excerpt:
         specifier: ^4.0.0
         version: 4.0.0
+      environment:
+        specifier: ^1.1.0
+        version: 1.1.0
       es-toolkit:
         specifier: ^1.45.0
         version: 1.45.1

@@ -21,6 +21,8 @@ Please ensure you have a single version of @my-react/react and that your rendere
 };
 
 export class Scheduler implements RenderScheduler {
+  hasInit = false;
+
   microTask(_task: () => void): void {
     microTask(_task);
   }

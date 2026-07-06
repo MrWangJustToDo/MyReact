@@ -9,6 +9,8 @@ import type { UniqueArray } from "@my-react/react-shared";
  * @public
  */
 export interface DefaultRenderScheduler {
+  hasInit: boolean;
+
   dispatchSet: UniqueArray<MyReactInternalInstance>;
 
   microTask(_task: () => void): void;

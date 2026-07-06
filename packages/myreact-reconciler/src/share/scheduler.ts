@@ -151,6 +151,10 @@ const getFiberTree = (fiber: MyReactFiberNode): string => {
 export const initScheduler = () => {
   const scheduler = currentScheduler.current;
 
+  if (scheduler.hasInit) return;
+
+  scheduler.hasInit = true;
+
   scheduler.getFiberTree = getFiberTree;
 
   scheduler.readPromise = readPromise;

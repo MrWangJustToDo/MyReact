@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { OP } from "../shared/op.js";
+import { retainWorkletCtx, type WorkletLike } from "../shared/worklet-bindings.js";
 
 import { SCOPE_PROP } from "./bundle-registry.js";
 import { register, unregister, updateHandler } from "./event-registry.js";
 import { scheduleFlush } from "./flush.js";
+import { retainGestureCallbacks, serializeGestureForOp } from "./gesture.js";
 import { pushOp } from "./ops.js";
 import { registerWorkletCtx } from "./run-on-background.js";
 import { ShadowElement } from "./shadow-element.js";
@@ -145,6 +147,17 @@ const helpAppend = (parent: ShadowElement, child: ShadowElement, anchor?: Shadow
   pushOp(OP.INSERT, parent.id, child.id, anchor ? anchor.id : -1);
 };
 
+const cleanupElementEvents = (elementId: number): void => {
+  const signs = elementEventSigns.get(elementId);
+  if (!signs) {
+    return;
+  }
+  for (const sign of signs.values()) {
+    unregister(sign);
+  }
+  elementEventSigns.delete(elementId);
+};
+
 const helpRemove = (parent: ShadowElement, child: ShadowElement) => {
   if (child.parent) {
     if (child.parent !== parent) {
@@ -152,6 +165,7 @@ const helpRemove = (parent: ShadowElement, child: ShadowElement) => {
     }
     const parentId = child.parent.id;
     child.parent.removeChild(child);
+    cleanupElementEvents(child.id);
     pushOp(OP.REMOVE, parentId, child.id);
   }
 };
@@ -186,25 +200,48 @@ const applyEvent = (instance: ShadowElement, key: string, value: any) => {
 };
 
 const applyWorklet = (instance: ShadowElement, key: string, value: any) => {
-  const suffix = key.slice("main-thread-".length);
+  const suffix = key.startsWith("main-thread:") ? key.slice("main-thread:".length) : key.slice("main-thread-".length);
+
   if (suffix === "ref") {
-    // MainThreadRef — send the serialised { _wvid, _initValue } to MT
     if (value != null && typeof value === "object" && "_wvid" in (value as Record<string, unknown>)) {
       pushOp(OP.SET_MT_REF, instance.id, (value as { toJSON(): unknown }).toJSON());
+    } else {
+      pushOp(OP.SET_MT_REF, instance.id, null);
+    }
+  } else if (suffix === "gesture") {
+    if (value != null) {
+      const serialized = serializeGestureForOp(value);
+      if (serialized) {
+        retainGestureCallbacks(serialized);
+        pushOp(OP.SET_GESTURE, instance.id, serialized);
+      } else {
+        pushOp(OP.SET_GESTURE, instance.id, null);
+      }
+    } else {
+      pushOp(OP.SET_GESTURE, instance.id, null);
     }
   } else {
     const event = parseEventProp(suffix);
-    if (event && value) {
-      if (typeof value === "function") {
-        registerWorkletCtx(value as unknown as Worklet);
-        pushOp(OP.SET_WORKLET_EVENT, instance.id, event.eventType, event.eventName, value);
-      } else {
-        console.warn("[@my-react/react-lynx] Worklet handler is not a function.");
+    if (!event) {
+      if (value != null) {
+        console.warn(`[@my-react/react-lynx] Unknown main-thread prop "${suffix}".`);
       }
-    } else {
-      // Worklet handler removed — send REMOVE_EVENT so MT clears eventMap
-      pushOp(OP.REMOVE_EVENT, instance.id, event.eventType, event.eventName);
+      return;
     }
+
+    if (value != null && typeof value === "function") {
+      registerWorkletCtx(value as unknown as Worklet);
+      retainWorkletCtx(value as unknown as WorkletLike);
+      pushOp(OP.SET_WORKLET_EVENT, instance.id, event.eventType, event.eventName, value);
+      return;
+    }
+
+    if (value != null && typeof value !== "function") {
+      console.warn("[@my-react/react-lynx] Worklet handler is not a function.");
+    }
+
+    // Handler removed or replaced with a non-function — clear MT listener.
+    pushOp(OP.REMOVE_EVENT, instance.id, event.eventType, event.eventName);
   }
 };
 
@@ -395,6 +432,11 @@ export const hostConfig: HostConfig<
   getPublicInstance: (instance) => instance,
 
   clearContainer() {
+    for (const signs of elementEventSigns.values()) {
+      for (const sign of signs.values()) {
+        unregister(sign);
+      }
+    }
     elementEventSigns.clear();
     return false;
   },

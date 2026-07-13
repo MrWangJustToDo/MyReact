@@ -48,6 +48,5 @@ if (typeof lynxCoreInject !== "undefined" && lynxCoreInject?.tt) {
 g["publishEvent"] = publishEvent;
 
 g["updatePage"] = function (_data: unknown): void {
-  console.log("updatePage", _data);
-  // no-op for MVP
+  // no-op: MyReact handles data updates on Background Thread
 };

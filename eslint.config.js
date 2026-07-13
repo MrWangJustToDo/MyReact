@@ -9,6 +9,7 @@ module.exports = [
       "dist",
       "dev",
       "lib",
+      "tmp/**",
       "__tests__",
       "bundle",
       "ui/vite-example",

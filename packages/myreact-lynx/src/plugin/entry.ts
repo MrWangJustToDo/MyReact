@@ -382,9 +382,17 @@ export interface ApplyEntryOptions {
    * @defaultValue true
    */
   reactRefresh?: boolean;
+
+  /**
+   * Minimum Lynx Engine version required for the app bundle to function properly.
+   *
+   * @defaultValue `'3.2'`
+   */
+  engineVersion?: string;
 }
 
 export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}): void {
+  const engineVersion = opts.engineVersion ?? "3.2";
   // Expose LynxTemplatePlugin hooks so other plugins can interact with the Lynx template pipeline.
   const sLynxTemplatePlugin = Symbol.for("LynxTemplatePlugin");
   api.expose(sLynxTemplatePlugin, {
@@ -572,6 +580,7 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
               enableRemoveCSSScope: true,
               enableNewGesture: true,
               removeDescendantSelectorScope: true,
+              targetSdkVersion: engineVersion,
               cssPlugins: [],
             },
           ])
@@ -633,6 +642,7 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
         .plugin(PLUGIN_RUNTIME_WRAPPER)
         .use(RuntimeWrapperWebpackPlugin, [
           {
+            targetSdkVersion: engineVersion,
             // Wrap all .js files EXCEPT main-thread.js (same as ReactLynx)
             // - Matches: background.js, async chunks, HMR updates
             // - Excludes: main-thread.js, main-thread.[hash].js

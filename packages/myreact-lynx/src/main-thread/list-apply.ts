@@ -50,6 +50,9 @@ const listItemPlatformInfo = new Map<number, Record<string, unknown>>();
 /** How many items have already been reported via update-list-info per list */
 const listItemsReported = new Map<number, number>();
 
+/** Pending remove actions queued during the current applyOps batch */
+const pendingRemoves = new Map<number, Record<string, unknown>[]>();
+
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
@@ -137,6 +140,50 @@ export function insertListItem(parentId: number, child: LynxElement, childId: nu
   if (items) items.push({ el: child, bgId: childId });
 }
 
+/** REMOVE case: remove a child from a <list> parent's tracked items */
+export function removeListItem(parentId: number, childId: number): void {
+  const items = listItems.get(parentId);
+  if (!items) {
+    return;
+  }
+
+  const index = items.findIndex((entry) => entry.bgId === childId);
+  if (index === -1) {
+    return;
+  }
+
+  const itemKey = itemKeyMap.get(childId) ?? String(index);
+  items.splice(index, 1);
+
+  let removes = pendingRemoves.get(parentId);
+  if (!removes) {
+    removes = [];
+    pendingRemoves.set(parentId, removes);
+  }
+  removes.push({
+    position: index,
+    "item-key": itemKey,
+  });
+
+  itemKeyMap.delete(childId);
+  listItemPlatformInfo.delete(childId);
+
+  if (listItemsReported.has(parentId)) {
+    const reported = listItemsReported.get(parentId)!;
+    if (reported > items.length) {
+      listItemsReported.set(parentId, items.length);
+    }
+  }
+}
+
+/** REMOVE case: drop tracking state when a <list> element itself is removed */
+export function removeListElement(id: number): void {
+  listElementIds.delete(id);
+  listItems.delete(id);
+  listItemsReported.delete(id);
+  pendingRemoves.delete(id);
+}
+
 /** SET_PROP case: store a platform-info attribute for a list item */
 export function setPlatformInfoProp(id: number, key: string, value: unknown): void {
   const info = listItemPlatformInfo.get(id);
@@ -156,28 +203,40 @@ export function setPlatformInfoProp(id: number, key: string, value: unknown): vo
 export function flushListUpdates(): void {
   for (const [bgId, items] of listItems) {
     const reported = listItemsReported.get(bgId) ?? 0;
-    if (items.length <= reported) continue;
-    const listEl = elements.get(bgId);
-    if (!listEl) continue;
-    const insertAction: Record<string, unknown>[] = [];
-    for (let j = reported; j < items.length; j++) {
-      const entry = items[j]!;
-      const action: Record<string, unknown> = {
-        position: j,
-        type: "list-item",
-        "item-key": itemKeyMap.get(entry.bgId) ?? String(j),
-      };
-      // Merge any collected platform info attributes into the action
-      const pInfo = listItemPlatformInfo.get(entry.bgId);
-      if (pInfo) Object.assign(action, pInfo);
-      insertAction.push(action);
+    const removeAction = pendingRemoves.get(bgId) ?? [];
+    const hasInserts = items.length > reported;
+
+    if (!hasInserts && removeAction.length === 0) {
+      continue;
     }
+
+    const listEl = elements.get(bgId);
+    if (!listEl) {
+      continue;
+    }
+
+    const insertAction: Record<string, unknown>[] = [];
+    if (hasInserts) {
+      for (let j = reported; j < items.length; j++) {
+        const entry = items[j]!;
+        const action: Record<string, unknown> = {
+          position: j,
+          type: "list-item",
+          "item-key": itemKeyMap.get(entry.bgId) ?? String(j),
+        };
+        const pInfo = listItemPlatformInfo.get(entry.bgId);
+        if (pInfo) Object.assign(action, pInfo);
+        insertAction.push(action);
+      }
+      listItemsReported.set(bgId, items.length);
+    }
+
     __SetAttribute(listEl, "update-list-info", {
       insertAction,
-      removeAction: [],
+      removeAction,
       updateAction: [],
     });
-    listItemsReported.set(bgId, items.length);
+    pendingRemoves.delete(bgId);
   }
 }
 
@@ -188,4 +247,5 @@ export function resetListState(): void {
   itemKeyMap.clear();
   listItemPlatformInfo.clear();
   listItemsReported.clear();
+  pendingRemoves.clear();
 }

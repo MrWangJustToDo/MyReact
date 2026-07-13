@@ -18,10 +18,12 @@
 
 import { ChunkLoadingWebpackPlugin } from "@lynx-js/chunk-loading-webpack-plugin";
 
+import { applyBackgroundOnly } from "./backgroundOnly.js";
 import { applyCSS } from "./css.js";
 import { applyEntry } from "./entry.js";
 import { LAYERS } from "./layers.js";
 import { applyRefresh } from "./refresh.js";
+import { applyThreadDefines } from "./threadDefines.js";
 
 import type { RsbuildPlugin } from "@rsbuild/core";
 
@@ -108,6 +110,14 @@ export interface PluginMyReactLynxOptions {
         wsUrl?: string;
       }
     | boolean;
+
+  /**
+   * Minimum Lynx Engine version required for the app bundle to function properly.
+   * Passed to `LynxTemplatePlugin` and `RuntimeWrapperWebpackPlugin`.
+   *
+   * @defaultValue `'3.2'`
+   */
+  engineVersion?: string;
 }
 
 const PLUGIN_NAME = "lynx:myreact";
@@ -153,6 +163,7 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
     enableReactAlias = true,
     reactRefresh = true,
     reactDevTool = false,
+    engineVersion = "3.2",
   } = options;
 
   return {
@@ -192,12 +203,6 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
               __HMR__: enableRefresh,
               __DEVTOOL__: typeof reactDevTool === "boolean" ? reactDevTool : JSON.stringify(reactDevTool),
               __MY_REACT_LYNX_AUTO_PIXEL_UNIT__: JSON.stringify(autoPixelUnit),
-              // Lynx dual-thread macros (default values, overridden per layer in entry.ts)
-              // __JS__ is the opposite of __LEPUS__ - true on Background Thread, false on Main Thread
-              __JS__: "true",
-              __LEPUS__: "false",
-              __BACKGROUND__: "true",
-              __MAIN_THREAD__: "false",
             },
           },
           tools: {
@@ -310,7 +315,11 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
         enableCSSInlineVariables,
         debugInfoOutside,
         reactRefresh,
+        engineVersion,
       });
+
+      applyBackgroundOnly(api);
+      applyThreadDefines(api);
 
       if (reactRefresh) {
         applyRefresh(api);

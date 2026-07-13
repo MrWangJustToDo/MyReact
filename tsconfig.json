@@ -1,4 +1,5 @@
 {
+  "exclude": ["tmp", "node_modules", "dist"],
   "compilerOptions": {
     "strict": true,
     "target": "ESNext",

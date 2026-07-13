@@ -8,8 +8,19 @@
 
 import { OP } from "../shared/op.js";
 
+import { cleanupElementState } from "./element-cleanup.js";
 import { elements, pageUniqueId, setPageUniqueId } from "./element-registry.js";
-import { createListElement, flushListUpdates, insertListItem, isListParent, isPlatformInfoAttr, resetListState, setPlatformInfoProp } from "./list-apply.js";
+import { applySetGesture, resetGestureState } from "./gesture-apply.js";
+import {
+  createListElement,
+  flushListUpdates,
+  insertListItem,
+  isListParent,
+  isPlatformInfoAttr,
+  removeListItem,
+  resetListState,
+  setPlatformInfoProp,
+} from "./list-apply.js";
 import { applyInitMtRef, applySetMtRef, applySetWorkletEvent, resetWorkletState } from "./worklet-apply.js";
 
 /**
@@ -131,8 +142,13 @@ export function applyOps(ops: unknown[]): void {
         const parent = elements.get(parentId);
         const child = elements.get(childId);
         if (parent && child) {
-          __RemoveElement(parent, child);
+          if (isListParent(parentId)) {
+            removeListItem(parentId, childId);
+          } else {
+            __RemoveElement(parent, child);
+          }
         }
+        cleanupElementState(childId);
         break;
       }
 
@@ -225,9 +241,15 @@ export function applyOps(ops: unknown[]): void {
         break;
       }
 
-      default:
-        // Unknown op – skip (future-compat)
+      case OP.SET_GESTURE: {
+        const id = ops[i++] as number;
+        const gesture = ops[i++] as Record<string, unknown> | null | undefined;
+        applySetGesture(id, gesture as Parameters<typeof applySetGesture>[1]);
         break;
+      }
+
+      default:
+        throw new Error(`[@my-react/react-lynx] Unknown op code ${code} at buffer index ${i - 1}`);
     }
   }
 
@@ -246,4 +268,5 @@ export function resetMainThreadState(): void {
   setPageUniqueId(1);
   resetListState();
   resetWorkletState();
+  resetGestureState();
 }

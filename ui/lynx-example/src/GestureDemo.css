@@ -1,0 +1,131 @@
+.GestureScene {
+  flex: 1;
+  padding: 20px;
+  gap: 14px;
+  background: linear-gradient(165deg, #0c1222 0%, #1a1f35 55%, #2d1b4e 100%);
+}
+
+.GestureTopBar {
+  gap: 8px;
+}
+
+.GestureBackButton {
+  align-self: flex-start;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.GestureBackText {
+  font-size: 13px;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.GestureHeader {
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0 12px;
+}
+
+.GestureTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.GestureSubtitle {
+  font-size: 13px;
+  color: rgba(248, 250, 252, 0.6);
+  text-align: center;
+}
+
+.GestureHint {
+  font-size: 12px;
+  color: rgba(248, 250, 252, 0.45);
+  line-height: 18px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.GesturePanel {
+  gap: 8px;
+}
+
+.GesturePanelTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(248, 250, 252, 0.45);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding-left: 4px;
+}
+
+.GestureStage {
+  height: 220px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border-width: 1px;
+  border-style: dashed;
+  border-color: rgba(255, 255, 255, 0.12);
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.GestureBox {
+  width: 120px;
+  height: 120px;
+  border-radius: 18px;
+  align-items: center;
+  justify-content: center;
+}
+
+.GestureBox--pan {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+}
+
+.GestureBox--tap {
+  width: 100%;
+  height: 72px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.GestureBox--longpress {
+  width: 100%;
+  height: 72px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+}
+
+.GestureBoxLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.GestureStatus {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.65);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(148, 163, 184, 0.2);
+  gap: 4px;
+}
+
+.GestureStatusTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(148, 163, 184, 0.9);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+.GestureStatusValue {
+  font-size: 14px;
+  color: #e2e8f0;
+  line-height: 20px;
+}

@@ -518,6 +518,9 @@ importers:
       '@lynx-js/css-extract-webpack-plugin':
         specifier: ^0.7.0
         version: 0.7.0(@lynx-js/template-webpack-plugin@0.10.8(tslib@2.8.1))(webpack@5.105.4(@swc/core@1.15.18(@swc/helpers@0.5.23)))
+      '@lynx-js/gesture-runtime':
+        specifier: ^2.1.3
+        version: 2.1.3(@lynx-js/react@0.116.5(@lynx-js/types@3.7.0)(@types/react@19.2.14))(@lynx-js/types@3.7.0)
       '@lynx-js/react':
         specifier: ^0.116.5
         version: 0.116.5(@lynx-js/types@3.7.0)(@types/react@19.2.14)
@@ -565,8 +568,8 @@ importers:
         specifier: '>=0.3.28'
         version: link:../myreact
       '@opentui/core':
-        specifier: ^0.4.1
-        version: 0.4.1(typescript@5.9.3)(web-tree-sitter@0.25.10)
+        specifier: ^0.4.3
+        version: 0.4.3(typescript@5.9.3)(web-tree-sitter@0.25.10)
     devDependencies:
       '@types/node':
         specifier: ^22.19.13
@@ -658,8 +661,8 @@ importers:
   packages/myreact-server:
     dependencies:
       '@lazarv/rsc':
-        specifier: 0.0.0-experimental-a345961-20260509-a9bcaec0
-        version: 0.0.0-experimental-a345961-20260509-a9bcaec0(react@19.2.4)
+        specifier: 0.0.0-experimental-ea77130-20260606-da63a699
+        version: 0.0.0-experimental-ea77130-20260606-da63a699(react@19.2.4)
       '@my-react/react':
         specifier: '>=0.3.28'
         version: link:../myreact
@@ -1070,8 +1073,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/myreact-opentui
       '@opentui/core':
-        specifier: ^0.4.1
-        version: 0.4.1(typescript@5.9.3)(web-tree-sitter@0.25.10)
+        specifier: ^0.4.3
+        version: 0.4.3(typescript@5.9.3)(web-tree-sitter@0.25.10)
 
   test/terminal:
     dependencies:
@@ -1326,6 +1329,9 @@ importers:
 
   ui/lynx-example:
     dependencies:
+      '@lynx-js/gesture-runtime':
+        specifier: ^2.1.3
+        version: 2.1.3(@lynx-js/react@0.116.5(@lynx-js/types@3.7.0)(@types/react@19.2.14))(@lynx-js/types@3.7.0)
       '@lynx-js/lynx-ui':
         specifier: ^3.131.0
         version: 3.131.0(@emotion/is-prop-valid@1.4.0)(@lynx-js/react@0.116.5(@lynx-js/types@3.7.0)(@types/react@19.2.14))(@lynx-js/types@3.7.0)(@types/react@19.2.14)(react-dom@18.3.1(react@19.2.4))(react@19.2.4)
@@ -1463,8 +1469,8 @@ importers:
         version: 0.3.24(@my-react/react-reconciler@packages+myreact-reconciler)(@my-react/react@0.3.24(react@19.2.4))(react@19.2.4)
     devDependencies:
       '@lazarv/rsc':
-        specifier: 0.0.0-experimental-a345961-20260509-a9bcaec0
-        version: 0.0.0-experimental-a345961-20260509-a9bcaec0(react@19.2.4)
+        specifier: 0.0.0-experimental-ea77130-20260606-da63a699
+        version: 0.0.0-experimental-ea77130-20260606-da63a699(react@19.2.4)
       '@my-react/react-vite':
         specifier: workspace:*
         version: link:../../packages/myreact-vite
@@ -4076,14 +4082,14 @@ packages:
     peerDependencies:
       react: '>=19.0.0 || >=0.0.0-experimental'
 
-  '@lazarv/rsc@0.0.0-experimental-a345961-20260509-a9bcaec0':
-    resolution: {integrity: sha512-TEuuqRgckVlm1Z7kzZwDBtrxCAIqxvzb+glF6kuOsKCun7mQ359q6mMxL0p9X6mgWMmtaFGIEumghn2N4YiCWg==}
+  '@lazarv/rsc@0.0.0-experimental-baf0ab7-20260308-65add5d1':
+    resolution: {integrity: sha512-eiJMCHqnpQhn3pFTVbcTmulizLifUEKv2o6N0EZ/R/tuIvyWiB5MDaMZYMW39SvxYWfB5LZZdrwKcxNzMU8yPw==}
     engines: {node: '>=20.10.0'}
     peerDependencies:
       react: '>=19.0.0 || >=0.0.0-experimental'
 
-  '@lazarv/rsc@0.0.0-experimental-baf0ab7-20260308-65add5d1':
-    resolution: {integrity: sha512-eiJMCHqnpQhn3pFTVbcTmulizLifUEKv2o6N0EZ/R/tuIvyWiB5MDaMZYMW39SvxYWfB5LZZdrwKcxNzMU8yPw==}
+  '@lazarv/rsc@0.0.0-experimental-ea77130-20260606-da63a699':
+    resolution: {integrity: sha512-aeOQn6wYN18O29VEBUROr2NR35m60H1KwOXhHOmI6lVJYjE7zkqTJ0E0hH4pM3na08GWUMihokfyy39N9hbmuQ==}
     engines: {node: '>=20.10.0'}
     peerDependencies:
       react: '>=19.0.0 || >=0.0.0-experimental'
@@ -4153,6 +4159,12 @@ packages:
 
   '@lynx-js/gesture-runtime@2.1.1':
     resolution: {integrity: sha512-zBDOHakuePjw5wPCButExNgcllyFPGqYzqP2CWCWcQaX4gqJmCmYeRKguihyxH6ma6ExxlH/J2x5CHD91ed3bQ==}
+    peerDependencies:
+      '@lynx-js/react': '*'
+      '@lynx-js/types': '*'
+
+  '@lynx-js/gesture-runtime@2.1.3':
+    resolution: {integrity: sha512-p8ckoJ1ly399LsYKmuJTDivp4/kIUystzYrtRtRZ38ruYVV01O/3Bwi5CT6tylqFCnX+WriX/r0ZlHnkOnx8jw==}
     peerDependencies:
       '@lynx-js/react': '*'
       '@lynx-js/types': '*'
@@ -4559,48 +4571,48 @@ packages:
   '@open-draft/deferred-promise@2.2.0':
     resolution: {integrity: sha512-CecwLWx3rhxVQF6V4bAgPS5t+So2sTbPgAzafKkVizyi7tlwpcFpdFqq+wqF2OwNBmqFuu6tOyouTuxgpMfzmA==}
 
-  '@opentui/core-darwin-arm64@0.4.1':
-    resolution: {integrity: sha512-ocs73hj9n0zLArOTpUWIXCWU6ERThG+3wQzO78EvfaR4hb5FRrDHGKWTzXpr6ukSKsUtKdztK5XYTPsJ5e3vww==}
+  '@opentui/core-darwin-arm64@0.4.3':
+    resolution: {integrity: sha512-p5+7AAxpxGuDGagyQfewKtmTFnN7THvTVY4FyKqUtJomNaHdQXPHztapNNzMx0DGWbwOUbVKzpL+yc3CZY3chQ==}
     cpu: [arm64]
     os: [darwin]
 
-  '@opentui/core-darwin-x64@0.4.1':
-    resolution: {integrity: sha512-YogRtDBfxGeOkcSHDMsGkKFBIt3cWPMPGNu2AmEN6a5KKjDYwAZCudwbDJaUbZDCJjfAUHz9iXjhJVXJBXs9vQ==}
+  '@opentui/core-darwin-x64@0.4.3':
+    resolution: {integrity: sha512-+fh0vEUE0lwVC7RW5ijYLRlTLp5NfvCRj8SzxDVd7IL2j2ssB6YXcfIbXq2EW7UGnrejwPRXf1tgUrIXW9KmOw==}
     cpu: [x64]
     os: [darwin]
 
-  '@opentui/core-linux-arm64-musl@0.4.1':
-    resolution: {integrity: sha512-Eps9qB+vQ/Lel4ZYqMH87Um9oiU17Vu4oWzvRi40Yf+69vA1a3R4D7KUCeY3OxKWnRnwAHkMU9TxNnjKngPH/w==}
+  '@opentui/core-linux-arm64-musl@0.4.3':
+    resolution: {integrity: sha512-8p8g8/AEq/xFGpQ7XcIFKcAqjc0QwsZcv+Ll9RbCDpUA56FGH6jfLDir0KYTNTgYXJTIrBIENI9K46VuxMUMQA==}
     cpu: [arm64]
     os: [linux]
 
-  '@opentui/core-linux-arm64@0.4.1':
-    resolution: {integrity: sha512-sBZTS1eEGeVSQ8fAmDALKQcT7FckrhK64oHfEO7W0lJ+lXapfJuOKtTM33na54V56GAM9guk4RD4cbPeTXEh4g==}
+  '@opentui/core-linux-arm64@0.4.3':
+    resolution: {integrity: sha512-gl6qA5QJy6u8Cbt7gOtHbhhfMZ4qQDb0kEwFXHcMGmbnKzz4OHoq74D6tNjyvSQB9saoC7C6C0tvn2DcJOuNog==}
     cpu: [arm64]
     os: [linux]
 
-  '@opentui/core-linux-x64-musl@0.4.1':
-    resolution: {integrity: sha512-UYcp8XGX4DZXN+VYUVuCrJkbFMJ0L+VUVu0t5KqqaeJ74fI4NZ+DmwNqPPg1+C+EIzoW4QChlEUdhlZRdiEQiA==}
+  '@opentui/core-linux-x64-musl@0.4.3':
+    resolution: {integrity: sha512-/QiFpCrpU2O7vy8QYmLIQYbvAtKDgmqcVjR7dGtqSzkiQk3ktNJoo5RozG7ueXnjung1Wp0nKldKxo2Csg/OrA==}
     cpu: [x64]
     os: [linux]
 
-  '@opentui/core-linux-x64@0.4.1':
-    resolution: {integrity: sha512-9/xjYGzX5RdUl0qmGQY0OCayjJ4VffDhsBmApQdseUkMT6LGL3RumI4zPK3Y9vo1fuy6ffLnriLFOktOgutXDg==}
+  '@opentui/core-linux-x64@0.4.3':
+    resolution: {integrity: sha512-dXpJitiZdYE3hq2Pvx6e9I0uPQSOcnaLLp1pDgWAHv+3kvKSHEX//9Yr/pV/Ua6qqT7p+2D/K4vXNap/NKVo2w==}
     cpu: [x64]
     os: [linux]
 
-  '@opentui/core-win32-arm64@0.4.1':
-    resolution: {integrity: sha512-hkIbpUJcKd4iLetTygPlFS45teOBTto49aXuxNeafYQUNd3ehiSwJENNBlAGULLfq+KP3dMJoWUiOcbuPVOQRA==}
+  '@opentui/core-win32-arm64@0.4.3':
+    resolution: {integrity: sha512-Mx2zuOjrhm/z2SDS6RExIyjP/SnN/8QhhagxURUw0jQi/NssGSeAllu1cBAFFnhobJL5QLTE4FU4CRhUK9svgg==}
     cpu: [arm64]
     os: [win32]
 
-  '@opentui/core-win32-x64@0.4.1':
-    resolution: {integrity: sha512-s1kGBcloy4ksl3wFCMqqOUFtXWlTTpzxe6pkLFhFhzgqKsMXHE9pwebiS3pzJkkFUxah5MYG+kbcn2Dw2Gdncg==}
+  '@opentui/core-win32-x64@0.4.3':
+    resolution: {integrity: sha512-NuoqvWKGXaYnmlqvu7Gg2lLI6yVMnS9OfWBvxp+7Q+McSgHFSTQmYBXaPpvQ8HikpQXE1nCeMPtuSG4PdZHe2w==}
     cpu: [x64]
     os: [win32]
 
-  '@opentui/core@0.4.1':
-    resolution: {integrity: sha512-ejlunoFCGLcghYGdfamI/DlWHsgCTLbuoL2JeOmFuLsN+DM5phje3CQbGR4tpl24cadCgHJQFomjoQ9Htvin+Q==}
+  '@opentui/core@0.4.3':
+    resolution: {integrity: sha512-rrJfAk13tALDqldYjhc78eWQ+aKq1iknJgffIOg3OwyZoqQo+p6gtuqyhmWvXIfQzlNUbpgpCPcxbXlhMnlaHQ==}
     peerDependencies:
       web-tree-sitter: 0.25.10
 
@@ -5833,6 +5845,7 @@ packages:
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
+    deprecated: Potential CWE-502 - Update to 1.3.1 or higher
 
   '@unrs/resolver-binding-android-arm-eabi@1.11.1':
     resolution: {integrity: sha512-ppLRUgHVaGRWUx0R0Ut06Mjo9gBaBkg3v/8AxusGLhsIotbBLuRk51rAzqLC8gq6NyyAojEXglNjzf6R948DNw==}
@@ -6540,8 +6553,8 @@ packages:
   builtin-status-codes@3.0.0:
     resolution: {integrity: sha512-HpGFw18DgFWlncDfjTa2rcQ4W88O1mC8e8yZ2AvQY5KDaktSTwo+KRf6nHK6FRI5FyRyb/5T6+TSxfP7QyGsmQ==}
 
-  bun-ffi-structs@0.2.3:
-    resolution: {integrity: sha512-pgJiXP+hEgFo9qG51J6ItfY4ocs3vniwNzJ9WhoakB3QB2GdzQxX2EXssentPYlB2hOfJrTjO6iIQkWYzUodpg==}
+  bun-ffi-structs@0.2.4:
+    resolution: {integrity: sha512-AJzsqoVFs1KBbJbWHIYrVZLDC3NhTqqh25awRXqzoLzmBAKr5oqk6+CwuYHAekKx+VBCYVohBoKuRq40dV+TYg==}
     peerDependencies:
       typescript: ^5
 
@@ -11544,10 +11557,6 @@ packages:
     resolution: {integrity: sha512-tsaTIkKW9b4N+AEj+SVA+WhJzV7/zMhcSu78mLKWSk7cXMOSHsBKFWUs0fWwq8QyK3MgJBQRX6Gbi4kYbdvGkQ==}
     engines: {node: '>=18'}
 
-  string-width@8.2.0:
-    resolution: {integrity: sha512-6hJPQ8N0V0P3SNmP6h2J99RLuzrWz2gvT7VnK5tKvrNqJoyS9W4/Fb8mo31UiPvy00z7DQXkP2hnKBVav76thw==}
-    engines: {node: '>=20'}
-
   string-width@8.2.1:
     resolution: {integrity: sha512-IIaP0g3iy9Cyy18w3M9YcaDudujEAVHKt3a3QJg1+sr/oX96TbaGUubG0hJyCjCBThFH+tFpcIyoUHUn1ogaLA==}
     engines: {node: '>=20'}
@@ -12000,6 +12009,7 @@ packages:
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
+    deprecated: unmaintained
     hasBin: true
     peerDependencies:
       typescript: ^5.0.0
@@ -12319,6 +12329,7 @@ packages:
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   uvu@0.5.6:
@@ -15475,11 +15486,11 @@ snapshots:
     dependencies:
       react: 19.2.4
 
-  '@lazarv/rsc@0.0.0-experimental-a345961-20260509-a9bcaec0(react@19.2.4)':
+  '@lazarv/rsc@0.0.0-experimental-baf0ab7-20260308-65add5d1(react@19.2.4)':
     dependencies:
       react: 19.2.4
 
-  '@lazarv/rsc@0.0.0-experimental-baf0ab7-20260308-65add5d1(react@19.2.4)':
+  '@lazarv/rsc@0.0.0-experimental-ea77130-20260606-da63a699(react@19.2.4)':
     dependencies:
       react: 19.2.4
 
@@ -15556,6 +15567,11 @@ snapshots:
       css-tree: 3.2.1
 
   '@lynx-js/gesture-runtime@2.1.1(@lynx-js/react@0.116.5(@lynx-js/types@3.7.0)(@types/react@19.2.14))(@lynx-js/types@3.7.0)':
+    dependencies:
+      '@lynx-js/react': 0.116.5(@lynx-js/types@3.7.0)(@types/react@19.2.14)
+      '@lynx-js/types': 3.7.0
+
+  '@lynx-js/gesture-runtime@2.1.3(@lynx-js/react@0.116.5(@lynx-js/types@3.7.0)(@types/react@19.2.14))(@lynx-js/types@3.7.0)':
     dependencies:
       '@lynx-js/react': 0.116.5(@lynx-js/types@3.7.0)(@types/react@19.2.14)
       '@lynx-js/types': 3.7.0
@@ -16117,47 +16133,47 @@ snapshots:
 
   '@open-draft/deferred-promise@2.2.0': {}
 
-  '@opentui/core-darwin-arm64@0.4.1':
+  '@opentui/core-darwin-arm64@0.4.3':
     optional: true
 
-  '@opentui/core-darwin-x64@0.4.1':
+  '@opentui/core-darwin-x64@0.4.3':
     optional: true
 
-  '@opentui/core-linux-arm64-musl@0.4.1':
+  '@opentui/core-linux-arm64-musl@0.4.3':
     optional: true
 
-  '@opentui/core-linux-arm64@0.4.1':
+  '@opentui/core-linux-arm64@0.4.3':
     optional: true
 
-  '@opentui/core-linux-x64-musl@0.4.1':
+  '@opentui/core-linux-x64-musl@0.4.3':
     optional: true
 
-  '@opentui/core-linux-x64@0.4.1':
+  '@opentui/core-linux-x64@0.4.3':
     optional: true
 
-  '@opentui/core-win32-arm64@0.4.1':
+  '@opentui/core-win32-arm64@0.4.3':
     optional: true
 
-  '@opentui/core-win32-x64@0.4.1':
+  '@opentui/core-win32-x64@0.4.3':
     optional: true
 
-  '@opentui/core@0.4.1(typescript@5.9.3)(web-tree-sitter@0.25.10)':
+  '@opentui/core@0.4.3(typescript@5.9.3)(web-tree-sitter@0.25.10)':
     dependencies:
-      bun-ffi-structs: 0.2.3(typescript@5.9.3)
+      bun-ffi-structs: 0.2.4(typescript@5.9.3)
       diff: 9.0.0
       marked: 17.0.1
       string-width: 7.2.0
       strip-ansi: 7.1.2
       web-tree-sitter: 0.25.10
     optionalDependencies:
-      '@opentui/core-darwin-arm64': 0.4.1
-      '@opentui/core-darwin-x64': 0.4.1
-      '@opentui/core-linux-arm64': 0.4.1
-      '@opentui/core-linux-arm64-musl': 0.4.1
-      '@opentui/core-linux-x64': 0.4.1
-      '@opentui/core-linux-x64-musl': 0.4.1
-      '@opentui/core-win32-arm64': 0.4.1
-      '@opentui/core-win32-x64': 0.4.1
+      '@opentui/core-darwin-arm64': 0.4.3
+      '@opentui/core-darwin-x64': 0.4.3
+      '@opentui/core-linux-arm64': 0.4.3
+      '@opentui/core-linux-arm64-musl': 0.4.3
+      '@opentui/core-linux-x64': 0.4.3
+      '@opentui/core-linux-x64-musl': 0.4.3
+      '@opentui/core-win32-arm64': 0.4.3
+      '@opentui/core-win32-x64': 0.4.3
     transitivePeerDependencies:
       - typescript
 
@@ -18453,7 +18469,7 @@ snapshots:
 
   builtin-status-codes@3.0.0: {}
 
-  bun-ffi-structs@0.2.3(typescript@5.9.3):
+  bun-ffi-structs@0.2.4(typescript@5.9.3):
     dependencies:
       typescript: 5.9.3
 
@@ -24457,11 +24473,6 @@ snapshots:
       get-east-asian-width: 1.5.0
       strip-ansi: 7.2.0
 
-  string-width@8.2.0:
-    dependencies:
-      get-east-asian-width: 1.5.0
-      strip-ansi: 7.2.0
-
   string-width@8.2.1:
     dependencies:
       get-east-asian-width: 1.5.0
@@ -24663,7 +24674,7 @@ snapshots:
       postcss-safe-parser: 7.0.1(postcss@8.5.8)
       postcss-selector-parser: 7.1.1
       postcss-value-parser: 4.2.0
-      string-width: 8.2.0
+      string-width: 8.2.1
       supports-hyperlinks: 4.4.0
       svg-tags: 1.0.0
       table: 6.9.0

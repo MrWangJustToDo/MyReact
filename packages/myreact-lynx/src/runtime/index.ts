@@ -3,6 +3,7 @@ import React from "@my-react/react";
 export * from "@my-react/react/type";
 export { React };
 export { reconciler, render, root, createPortal, flushSync, type Root } from "./renderer";
+export { markFirstScreenPatchComplete } from "./first-screen-patch";
 export { useMainThreadRef, MainThreadRef } from "./main-thread-ref";
 export { runOnBackground } from "./run-on-background";
 export { transformToWorklet } from "./transform-to-worklet";
@@ -24,3 +25,34 @@ export { triggerGlobalEventFromLepus, querySelector, querySelectorAll, type Lynx
 // Lazy bundle loading
 export { loadLazyBundle, makeSyncThen } from "./lazy-bundle";
 export { loadDynamicJS, __dynamicImport } from "./dynamic-import";
+
+// Gesture system
+export {
+  Gesture,
+  BaseGesture,
+  ContinuousGesture,
+  PanGesture,
+  TapGesture,
+  LongPressGesture,
+  FlingGesture,
+  NativeGesture,
+  DefaultScrollGesture,
+  SimultaneousGesture,
+  ComposedGesture,
+  ExclusiveGesture,
+} from "@lynx-js/gesture-runtime";
+export { useGesture } from "./useGesture.js";
+export type {
+  GestureKind,
+  GestureChangeEvent,
+  PanGestureChangeEvent,
+  TapGestureChangeEvent,
+  LongPressGestureChangeEvent,
+  FlingGestureChangeEvent,
+  GestureCallback,
+  PanGestureConfig,
+  TapGestureConfig,
+  LongPressGestureConfig,
+  FlingGestureConfig,
+  StateManager,
+} from "@lynx-js/gesture-runtime";

@@ -5,6 +5,7 @@ import * as Lynx from "@lynx-js/types";
 declare module "@lynx-js/types" {
   export interface StandardProps {
     children?: React.ReactNode;
+    "main-thread:gesture"?: import("@lynx-js/gesture-runtime").GestureKind;
   }
 }
 

@@ -6,6 +6,7 @@ export default defineConfig({
   source: {
     entry: {
       main: "./src/index.tsx",
+      gesture: "./src/gesture.tsx",
     },
   },
   plugins: [

@@ -10,11 +10,19 @@
  *   - lynx.loadLazyBundle      – for chunk loading runtime (async bundles)
  */
 
+import { parsePatchPayload } from "../shared/patch-payload.js";
+import { onFirstScreenPatchFinished } from "../shared/worklet-bindings.js";
+
 import { elements, setPageUniqueId } from "./element-registry.js";
+import { resetFirstScreenPatchState, setFirstScreenPatch } from "./first-screen-patch.js";
+import { loadLazyBundleOnMainThread } from "./load-lazy-bundle-mt.js";
 import { applyOps, resetMainThreadState } from "./ops-apply.js";
 import { runOnBackground } from "./run-on-background-mt.js";
 
 const g = globalThis as Record<string, unknown>;
+
+/** Fallback for legacy bare-array patch payloads. */
+let legacyFirstScreenPatchPending = true;
 
 // Register processEvalResult for lazy bundle loading.
 // When a lazy bundle is loaded, the web simulator calls:
@@ -36,20 +44,7 @@ if (typeof g["processEvalResult"] === "undefined") {
 // The chunk loading runtime uses lynx.loadLazyBundle() to load async template bundles.
 // On main thread (LEPUS), we use __QueryComponent for synchronous loading.
 if (typeof lynx !== "undefined") {
-  (lynx as unknown as { loadLazyBundle: <T>(source: string) => Promise<T> }).loadLazyBundle = function loadLazyBundle<T>(source: string): Promise<T> {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - __QueryComponent is a Lynx PAPI
-    const query = __QueryComponent(source);
-    let result: T;
-    try {
-      result = query.evalResult as T;
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_e) {
-      // Return a never-resolving promise to avoid errors on first screen
-      return new Promise(() => {});
-    }
-    return Promise.resolve(result);
-  };
+  (lynx as unknown as { loadLazyBundle: typeof loadLazyBundleOnMainThread }).loadLazyBundle = loadLazyBundleOnMainThread;
 }
 
 // Set runtime thread identification globals
@@ -89,6 +84,8 @@ g["renderPage"] = function (_data: unknown): void {
   //    when ShadowElement IDs restart from 2 between test renders.
   // 2. Hot reload: ensures stale element handles don't persist.
   resetMainThreadState();
+  resetFirstScreenPatchState();
+  legacyFirstScreenPatchPending = true;
   const page = __CreatePage("0", 0);
   // Set global CSS scope on page so its style_sheet_manager_ is populated.
   // This matches ReactLynx 3.0's root snapshot: __SetCSSId([__page], 0).
@@ -110,8 +107,27 @@ g["updateGlobalProps"] = function (_data: unknown): void {
 
 // Called by the BG Thread via callLepusMethod('reactPatchUpdate', { data }).
 g["reactPatchUpdate"] = function ({ data }: { data: string }): void {
-  const ops = JSON.parse(data) as unknown[];
-  applyOps(ops);
+  const payload = parsePatchPayload(data);
+  const isFirstScreen = payload.isFirstScreen ?? legacyFirstScreenPatchPending;
+  const endFirstScreen = payload.endFirstScreen ?? false;
+
+  if (isFirstScreen && payload.ops.length > 0) {
+    setFirstScreenPatch(true);
+    try {
+      applyOps(payload.ops);
+    } finally {
+      setFirstScreenPatch(false);
+    }
+  } else if (payload.ops.length > 0) {
+    applyOps(payload.ops);
+  }
+
+  if (endFirstScreen) {
+    onFirstScreenPatchFinished();
+    legacyFirstScreenPatchPending = false;
+  } else if (isFirstScreen) {
+    legacyFirstScreenPatchPending = true;
+  }
 };
 
 // Called by the BG Thread via callLepusMethod('updateMTRefInitValue', { data }).

@@ -7,7 +7,11 @@ import "./App.css";
 
 const LazyComponent = lazy(() => import("./LazyCom.js"));
 
-export const App = () => {
+interface AppProps {
+  onOpenGesture?: () => void;
+}
+
+export const App = ({ onOpenGesture }: AppProps) => {
   const [count, setCount] = useState(0);
   const [tone, setTone] = useState<"sea" | "sun">("sea");
   const [mtMessage, setMtMessage] = useState("Waiting...");
@@ -83,6 +87,19 @@ export const App = () => {
       {/* Features Section */}
       <view className="Section" style={{ margin: "10px" }}>
         <text className="SectionTitle">Features</text>
+
+        <view className="FeatureCard" bindtap={onOpenGesture}>
+          <view className="FeatureIcon FeatureIcon--gesture">
+            <text className="FeatureIconText">👆</text>
+          </view>
+          <view className="FeatureContent">
+            <text className="FeatureTitle">Gesture Test</text>
+            <text className="FeatureDesc">Pan, tap, and long-press with @lynx-js/gesture-runtime</text>
+          </view>
+          <view className="FeatureBadge FeatureBadge--gesture">
+            <text className="FeatureBadgeText FeatureBadgeText--gesture">OPEN</text>
+          </view>
+        </view>
 
         {/* Lazy Component */}
         <Suspense

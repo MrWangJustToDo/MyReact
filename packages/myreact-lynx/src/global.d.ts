@@ -63,6 +63,25 @@ declare global {
    * PAPI and React's types (`FiberElement | FiberElement[]`).
    */
   function __SetCSSId(nodes: ElementRef[], cssId: number, entryName?: string): void;
+
+  /** Bind a React Lynx gesture detector to an element. */
+  function __SetGestureDetector(
+    dom: LynxElement,
+    id: number,
+    type: number,
+    config: {
+      callbacks: { name: string; callback: unknown }[];
+      config?: Record<string, unknown>;
+    },
+    relationMap: {
+      waitFor: number[];
+      simultaneous: number[];
+      continueWith: number[];
+    }
+  ): void;
+
+  /** Remove a gesture detector from an element. */
+  function __RemoveGestureDetector(dom: LynxElement, id: number): void;
 }
 
 declare module "@lynx-js/types" {

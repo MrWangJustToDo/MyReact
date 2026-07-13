@@ -17,7 +17,7 @@
     "@my-react/react-server": "0.3.24"
   },
   "devDependencies": {
-    "@lazarv/rsc": "0.0.0-experimental-a345961-20260509-a9bcaec0",
+    "@lazarv/rsc": "0.0.0-experimental-ea77130-20260606-da63a699",
     "@my-react/react-vite": "workspace:*",
     "@types/node": "catalog:",
     "babel-plugin-react-compiler": "catalog:",

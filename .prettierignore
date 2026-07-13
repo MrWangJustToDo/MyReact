@@ -2,4 +2,5 @@
 **/dist
 **/dev
 **/bundle
+**/tmp
 pnpm-lock.yaml

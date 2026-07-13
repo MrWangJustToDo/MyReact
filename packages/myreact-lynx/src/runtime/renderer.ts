@@ -3,12 +3,17 @@ import { ConcurrentRoot } from "@my-react/react-reconciler-compact/constants";
 
 import { registerDataProcessors } from "./data-processor";
 import { hostConfig } from "./reconciler";
+import { scheduleFirstScreenPatchEnd } from "./schedule-first-screen-patch-end.js";
 import { createPageRoot, type ShadowElement } from "./shadow-element";
 
 import type { DataProcessorDefinition } from "./data-processor";
 import type { ReactNode } from "react";
 
 export const reconciler = createReconciler(hostConfig);
+
+let rootContainer: ReturnType<typeof reconciler.createContainer> | null = null;
+let pageRoot: ShadowElement | null = null;
+let initialRenderPending = true;
 
 if (__DEVTOOL__) {
   const wsUrl = typeof __DEVTOOL__ === "object" ? __DEVTOOL__.wsUrl : "ws://localhost:3002/ws";
@@ -52,21 +57,28 @@ if (__DEVTOOL__) {
  * to prevent double-rendering and errors from calling Lepus methods.
  */
 export function render(element: React.ReactNode) {
-  const pageRoot = createPageRoot();
-  const container = reconciler.createContainer(
-    pageRoot,
-    ConcurrentRoot,
-    null,
-    false,
-    null,
-    "",
-    console.error,
-    console.error,
-    console.error,
-    console.error,
-    null
-  );
-  reconciler.updateContainer(element, container, null, () => {});
+  if (!pageRoot) {
+    pageRoot = createPageRoot();
+    rootContainer = reconciler.createContainer(
+      pageRoot,
+      ConcurrentRoot,
+      null,
+      false,
+      null,
+      "",
+      console.error,
+      console.error,
+      console.error,
+      console.error,
+      null
+    );
+  }
+  reconciler.updateContainer(element, rootContainer, null, () => {
+    if (initialRenderPending) {
+      initialRenderPending = false;
+      scheduleFirstScreenPatchEnd();
+    }
+  });
 }
 
 /**

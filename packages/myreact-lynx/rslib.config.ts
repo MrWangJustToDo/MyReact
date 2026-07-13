@@ -21,6 +21,7 @@ export default defineConfig({
       "@lynx-js/type-element-api",
       "@lynx-js/types",
       "@lynx-js/react",
+      "@lynx-js/gesture-runtime",
       "@lynx-js/react/transform",
       "@lynx-js/react/internal",
       "@lynx-js/runtime-wrapper-webpack-plugin",

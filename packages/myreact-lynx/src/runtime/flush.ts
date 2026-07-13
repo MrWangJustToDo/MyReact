@@ -1,5 +1,6 @@
 import { __my_react_scheduler__ } from "@my-react/react/type";
 
+import { buildFirstScreenPatchMeta } from "./first-screen-patch.js";
 import { takeOps } from "./ops.js";
 import { takeWorkletRefInitValuePatch } from "./worklet-ref-pool.js";
 
@@ -42,9 +43,17 @@ const doFlush = () => {
   sendWorkletRefInitValues();
 
   const ops = takeOps();
-  if (ops.length === 0) {
+  const { isFirstScreen, endFirstScreen } = buildFirstScreenPatchMeta();
+
+  if (ops.length === 0 && !endFirstScreen) {
     return;
   }
+
+  const resolvePendingAck = () => {
+    pendingAckResolve?.();
+    pendingAckResolve = null;
+    pendingAckPromise = null;
+  };
 
   pendingAckPromise = new Promise<void>((resolve) => {
     pendingAckResolve = resolve;
@@ -53,11 +62,27 @@ const doFlush = () => {
   const app = lynx?.getNativeApp?.();
   const method = globalThis.__MY_REACT_LYNX_PATCH_METHOD__ || "reactPatchUpdate";
 
-  app?.callLepusMethod?.(method, { data: JSON.stringify(ops) }, () => {
-    pendingAckResolve?.();
-    pendingAckResolve = null;
-    pendingAckPromise = null;
-  });
+  if (!app?.callLepusMethod) {
+    if (__DEV__) {
+      console.warn("[@my-react/react-lynx] callLepusMethod is unavailable; skipping main-thread patch flush.");
+    }
+    resolvePendingAck();
+    return;
+  }
+
+  app.callLepusMethod(
+    method,
+    {
+      data: JSON.stringify({
+        ops,
+        isFirstScreen,
+        endFirstScreen,
+      }),
+    },
+    () => {
+      resolvePendingAck();
+    }
+  );
 };
 
 export const scheduleFlush = () => {

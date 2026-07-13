@@ -13,6 +13,7 @@ export const OP = {
   SET_WORKLET_EVENT: 11,
   SET_MT_REF: 12,
   INIT_MT_REF: 13,
+  SET_GESTURE: 14,
 } as const;
 
 export type OpCode = (typeof OP)[keyof typeof OP];

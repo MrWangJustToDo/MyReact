@@ -1,22 +1,22 @@
 {
   "name": "client",
-  "hash": "5bf083e5d57814b86aba",
+  "hash": "1741fbc3acd8fbe06535",
   "publicPath": "/MyReact/client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
   "assetsByChunkName": {
     "main": [
       "main-5aa2e3b272be33de521e.css",
-      "main-e02c5a687c94e0fe8d27.js",
+      "main-f8a14277b449b7cc6c97.js",
       "main-5aa2e3b272be33de521e.css.map",
-      "main-e02c5a687c94e0fe8d27.js.map"
+      "main-f8a14277b449b7cc6c97.js.map"
     ],
     "runtime": [
-      "runtime-90ab851c9ad97bdb1f71.js",
-      "runtime-90ab851c9ad97bdb1f71.js.map"
+      "runtime-4ed0fe6bbfce5e858248.js",
+      "runtime-4ed0fe6bbfce5e858248.js.map"
     ],
     "common-Layout": [
-      "common-Layout-e1a1ace4c9f52a7fbbc6.js",
-      "common-Layout-e1a1ace4c9f52a7fbbc6.js.map"
+      "common-Layout-083bbdfe394ca5885e8b.js",
+      "common-Layout-083bbdfe394ca5885e8b.js.map"
     ],
     "pages-": [
       "pages--79ad4b57108cbdc4d974.js",
@@ -40,9 +40,9 @@
     ],
     "vendor": [
       "vendor-efe928ce816e1058cf97.css",
-      "vendor-eac8d9c645acd33bb636.js",
+      "vendor-d33ee92bfbb259680471.js",
       "vendor-efe928ce816e1058cf97.css.map",
-      "vendor-eac8d9c645acd33bb636.js.map"
+      "vendor-d33ee92bfbb259680471.js.map"
     ],
     "vendor-react": [
       "vendor-react-39790b1e3426a16dc2e9.js",
@@ -61,8 +61,8 @@
       "vendor-icons-17ae56ef39ce8119bfc0.js.map"
     ],
     "vendor-babel": [
-      "vendor-babel-85842c90acde0c0e6e30.js",
-      "vendor-babel-85842c90acde0c0e6e30.js.map"
+      "vendor-babel-dad4713c9b30f692df2c.js",
+      "vendor-babel-dad4713c9b30f692df2c.js.map"
     ],
     "vendor-emotion": [
       "vendor-emotion-ee97b60ffa6fbdc1344f.js",
@@ -72,19 +72,19 @@
   "assets": [
     {
       "type": "asset",
-      "name": "vendor-eac8d9c645acd33bb636.js",
-      "size": 11805761,
+      "name": "vendor-d33ee92bfbb259680471.js",
+      "size": 11805784,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "eac8d9c645acd33bb636",
+        "contenthash": "d33ee92bfbb259680471",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "license": "vendor-eac8d9c645acd33bb636.js.LICENSE.txt",
-          "sourceMap": "vendor-eac8d9c645acd33bb636.js.map"
+          "license": "vendor-d33ee92bfbb259680471.js.LICENSE.txt",
+          "sourceMap": "vendor-d33ee92bfbb259680471.js.map"
         }
       },
       "chunkNames": [
@@ -130,18 +130,18 @@
     },
     {
       "type": "asset",
-      "name": "main-e02c5a687c94e0fe8d27.js",
+      "name": "main-f8a14277b449b7cc6c97.js",
       "size": 294627,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "e02c5a687c94e0fe8d27",
+        "contenthash": "f8a14277b449b7cc6c97",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "main-e02c5a687c94e0fe8d27.js.map"
+          "sourceMap": "main-f8a14277b449b7cc6c97.js.map"
         }
       },
       "chunkNames": [
@@ -439,18 +439,18 @@
     },
     {
       "type": "asset",
-      "name": "common-Layout-e1a1ace4c9f52a7fbbc6.js",
+      "name": "common-Layout-083bbdfe394ca5885e8b.js",
       "size": 23626,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "e1a1ace4c9f52a7fbbc6",
+        "contenthash": "083bbdfe394ca5885e8b",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "common-Layout-e1a1ace4c9f52a7fbbc6.js.map"
+          "sourceMap": "common-Layout-083bbdfe394ca5885e8b.js.map"
         }
       },
       "chunkNames": [
@@ -467,18 +467,18 @@
     },
     {
       "type": "asset",
-      "name": "442-e15240a6a9c1ed4135e1.js",
+      "name": "442-e5ba311b46d17089e258.js",
       "size": 18375,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "e15240a6a9c1ed4135e1",
+        "contenthash": "e5ba311b46d17089e258",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "442-e15240a6a9c1ed4135e1.js.map"
+          "sourceMap": "442-e5ba311b46d17089e258.js.map"
         }
       },
       "chunkNames": [],
@@ -493,19 +493,19 @@
     },
     {
       "type": "asset",
-      "name": "vendor-babel-85842c90acde0c0e6e30.js",
+      "name": "vendor-babel-dad4713c9b30f692df2c.js",
       "size": 11983,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "85842c90acde0c0e6e30",
+        "contenthash": "dad4713c9b30f692df2c",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "license": "vendor-babel-85842c90acde0c0e6e30.js.LICENSE.txt",
-          "sourceMap": "vendor-babel-85842c90acde0c0e6e30.js.map"
+          "license": "vendor-babel-dad4713c9b30f692df2c.js.LICENSE.txt",
+          "sourceMap": "vendor-babel-dad4713c9b30f692df2c.js.map"
         }
       },
       "chunkNames": [
@@ -637,18 +637,18 @@
     },
     {
       "type": "asset",
-      "name": "runtime-90ab851c9ad97bdb1f71.js",
+      "name": "runtime-4ed0fe6bbfce5e858248.js",
       "size": 4953,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "90ab851c9ad97bdb1f71",
+        "contenthash": "4ed0fe6bbfce5e858248",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "runtime-90ab851c9ad97bdb1f71.js.map"
+          "sourceMap": "runtime-4ed0fe6bbfce5e858248.js.map"
         }
       },
       "chunkNames": [
@@ -691,18 +691,18 @@
     },
     {
       "type": "asset",
-      "name": "488-4b16e329e4de4de21ab8.js",
+      "name": "488-f88e4633edf91398f585.js",
       "size": 2781,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "4b16e329e4de4de21ab8",
+        "contenthash": "f88e4633edf91398f585",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "488-4b16e329e4de4de21ab8.js.map"
+          "sourceMap": "488-f88e4633edf91398f585.js.map"
         }
       },
       "chunkNames": [],
@@ -986,13 +986,13 @@
       ],
       "assets": [
         {
-          "name": "runtime-90ab851c9ad97bdb1f71.js"
+          "name": "runtime-4ed0fe6bbfce5e858248.js"
         },
         {
           "name": "vendor-efe928ce816e1058cf97.css"
         },
         {
-          "name": "vendor-eac8d9c645acd33bb636.js"
+          "name": "vendor-d33ee92bfbb259680471.js"
         },
         {
           "name": "vendor-react-39790b1e3426a16dc2e9.js"
@@ -1004,7 +1004,7 @@
           "name": "vendor-lodash-2ff3c50a6a372f0f78e9.js"
         },
         {
-          "name": "vendor-babel-85842c90acde0c0e6e30.js"
+          "name": "vendor-babel-dad4713c9b30f692df2c.js"
         },
         {
           "name": "vendor-emotion-ee97b60ffa6fbdc1344f.js"
@@ -1013,7 +1013,7 @@
           "name": "main-5aa2e3b272be33de521e.css"
         },
         {
-          "name": "main-e02c5a687c94e0fe8d27.js"
+          "name": "main-f8a14277b449b7cc6c97.js"
         }
       ],
       "filteredAssets": 0,
@@ -1039,7 +1039,7 @@
           "name": "vendor-efe928ce816e1058cf97.css"
         },
         {
-          "name": "vendor-eac8d9c645acd33bb636.js"
+          "name": "vendor-d33ee92bfbb259680471.js"
         },
         {
           "name": "vendor-react-39790b1e3426a16dc2e9.js"
@@ -1051,13 +1051,13 @@
           "name": "vendor-icons-17ae56ef39ce8119bfc0.js"
         },
         {
-          "name": "vendor-babel-85842c90acde0c0e6e30.js"
+          "name": "vendor-babel-dad4713c9b30f692df2c.js"
         },
         {
           "name": "vendor-emotion-ee97b60ffa6fbdc1344f.js"
         },
         {
-          "name": "common-Layout-e1a1ace4c9f52a7fbbc6.js"
+          "name": "common-Layout-083bbdfe394ca5885e8b.js"
         }
       ],
       "filteredAssets": 0,
@@ -1086,7 +1086,7 @@
           "name": "vendor-efe928ce816e1058cf97.css"
         },
         {
-          "name": "vendor-eac8d9c645acd33bb636.js"
+          "name": "vendor-d33ee92bfbb259680471.js"
         },
         {
           "name": "vendor-react-39790b1e3426a16dc2e9.js"
@@ -1101,7 +1101,7 @@
           "name": "vendor-icons-17ae56ef39ce8119bfc0.js"
         },
         {
-          "name": "vendor-babel-85842c90acde0c0e6e30.js"
+          "name": "vendor-babel-dad4713c9b30f692df2c.js"
         },
         {
           "name": "vendor-emotion-ee97b60ffa6fbdc1344f.js"
@@ -1110,7 +1110,7 @@
           "name": "444-2f45c0cac11e99e66b60.js"
         },
         {
-          "name": "442-e15240a6a9c1ed4135e1.js"
+          "name": "442-e5ba311b46d17089e258.js"
         },
         {
           "name": "pages--79ad4b57108cbdc4d974.js"
@@ -1215,7 +1215,7 @@
           "name": "vendor-efe928ce816e1058cf97.css"
         },
         {
-          "name": "vendor-eac8d9c645acd33bb636.js"
+          "name": "vendor-d33ee92bfbb259680471.js"
         },
         {
           "name": "vendor-react-39790b1e3426a16dc2e9.js"
@@ -1259,7 +1259,7 @@
           "name": "vendor-efe928ce816e1058cf97.css"
         },
         {
-          "name": "vendor-eac8d9c645acd33bb636.js"
+          "name": "vendor-d33ee92bfbb259680471.js"
         },
         {
           "name": "vendor-react-39790b1e3426a16dc2e9.js"
@@ -1340,7 +1340,7 @@
           "name": "vendor-efe928ce816e1058cf97.css"
         },
         {
-          "name": "vendor-eac8d9c645acd33bb636.js"
+          "name": "vendor-d33ee92bfbb259680471.js"
         },
         {
           "name": "vendor-react-39790b1e3426a16dc2e9.js"
@@ -1355,7 +1355,7 @@
           "name": "vendor-icons-17ae56ef39ce8119bfc0.js"
         },
         {
-          "name": "vendor-babel-85842c90acde0c0e6e30.js"
+          "name": "vendor-babel-dad4713c9b30f692df2c.js"
         },
         {
           "name": "vendor-emotion-ee97b60ffa6fbdc1344f.js"
@@ -1364,7 +1364,7 @@
           "name": "444-2f45c0cac11e99e66b60.js"
         },
         {
-          "name": "442-e15240a6a9c1ed4135e1.js"
+          "name": "442-e5ba311b46d17089e258.js"
         },
         {
           "name": "pages--79ad4b57108cbdc4d974.js"
@@ -1396,7 +1396,7 @@
           "name": "vendor-efe928ce816e1058cf97.css"
         },
         {
-          "name": "vendor-eac8d9c645acd33bb636.js"
+          "name": "vendor-d33ee92bfbb259680471.js"
         },
         {
           "name": "vendor-react-39790b1e3426a16dc2e9.js"
@@ -1411,7 +1411,7 @@
           "name": "vendor-icons-17ae56ef39ce8119bfc0.js"
         },
         {
-          "name": "vendor-babel-85842c90acde0c0e6e30.js"
+          "name": "vendor-babel-dad4713c9b30f692df2c.js"
         },
         {
           "name": "vendor-emotion-ee97b60ffa6fbdc1344f.js"
@@ -1420,7 +1420,7 @@
           "name": "444-2f45c0cac11e99e66b60.js"
         },
         {
-          "name": "442-e15240a6a9c1ed4135e1.js"
+          "name": "442-e5ba311b46d17089e258.js"
         },
         {
           "name": "pages--79ad4b57108cbdc4d974.js"
@@ -1440,19 +1440,19 @@
       "id": 792,
       "files": [
         "main-5aa2e3b272be33de521e.css",
-        "main-e02c5a687c94e0fe8d27.js"
+        "main-f8a14277b449b7cc6c97.js"
       ]
     },
     {
       "id": 121,
       "files": [
-        "runtime-90ab851c9ad97bdb1f71.js"
+        "runtime-4ed0fe6bbfce5e858248.js"
       ]
     },
     {
       "id": 659,
       "files": [
-        "common-Layout-e1a1ace4c9f52a7fbbc6.js"
+        "common-Layout-083bbdfe394ca5885e8b.js"
       ]
     },
     {
@@ -1524,7 +1524,7 @@
     {
       "id": 488,
       "files": [
-        "488-4b16e329e4de4de21ab8.js"
+        "488-f88e4633edf91398f585.js"
       ]
     },
     {
@@ -1555,7 +1555,7 @@
       "id": 502,
       "files": [
         "vendor-efe928ce816e1058cf97.css",
-        "vendor-eac8d9c645acd33bb636.js"
+        "vendor-d33ee92bfbb259680471.js"
       ]
     },
     {
@@ -1585,7 +1585,7 @@
     {
       "id": 798,
       "files": [
-        "vendor-babel-85842c90acde0c0e6e30.js"
+        "vendor-babel-dad4713c9b30f692df2c.js"
       ]
     },
     {
@@ -1609,7 +1609,7 @@
     {
       "id": 442,
       "files": [
-        "442-e15240a6a9c1ed4135e1.js"
+        "442-e5ba311b46d17089e258.js"
       ]
     }
   ]

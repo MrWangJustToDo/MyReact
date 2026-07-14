@@ -309,6 +309,12 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
         enableCSSInvalidation: enableCSSSelector,
       });
 
+      // Thread-defines must be registered before worklet loaders (both enforce:pre).
+      // Webpack/Rspack applies later-registered pre loaders first on the source, so
+      // worklets hash against unsubstituted `__BACKGROUND__`/`__MAIN_THREAD__` and
+      // BG/MT `_wkltId`s stay aligned; defines still rewrite the macros afterward.
+      applyThreadDefines(api);
+
       applyEntry(api, {
         enableCSSSelector,
         enableCSSInheritance,
@@ -320,7 +326,6 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
       });
 
       applyBackgroundOnly(api);
-      applyThreadDefines(api);
 
       if (reactRefresh) {
         applyRefresh(api);

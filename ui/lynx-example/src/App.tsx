@@ -9,9 +9,10 @@ const LazyComponent = lazy(() => import("./LazyCom.js"));
 
 interface AppProps {
   onOpenGesture?: () => void;
+  onOpenMotion?: () => void;
 }
 
-export const App = ({ onOpenGesture }: AppProps) => {
+export const App = ({ onOpenGesture, onOpenMotion }: AppProps) => {
   const [count, setCount] = useState(0);
   const [tone, setTone] = useState<"sea" | "sun">("sea");
   const [mtMessage, setMtMessage] = useState("Waiting...");
@@ -95,6 +96,19 @@ export const App = ({ onOpenGesture }: AppProps) => {
           <view className="FeatureContent">
             <text className="FeatureTitle">Gesture Test</text>
             <text className="FeatureDesc">Pan, tap, and long-press with @lynx-js/gesture-runtime</text>
+          </view>
+          <view className="FeatureBadge FeatureBadge--gesture">
+            <text className="FeatureBadgeText FeatureBadgeText--gesture">OPEN</text>
+          </view>
+        </view>
+
+        <view className="FeatureCard" bindtap={onOpenMotion}>
+          <view className="FeatureIcon FeatureIcon--gesture">
+            <text className="FeatureIconText">🎞</text>
+          </view>
+          <view className="FeatureContent">
+            <text className="FeatureTitle">Motion Slider</text>
+            <text className="FeatureDesc">iOSSlider-style demo with @lynx-js/motion</text>
           </view>
           <view className="FeatureBadge FeatureBadge--gesture">
             <text className="FeatureBadgeText FeatureBadgeText--gesture">OPEN</text>

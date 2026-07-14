@@ -6,10 +6,18 @@
  * worklet context object (`{ _wkltId, _c }`) at build time. At runtime,
  * `runOnMainThread` dispatches the context to the Main Thread via
  * 'Lynx.Worklet.runWorkletCtx', where the worklet-runtime executes it.
+ *
+ * During render / before the next ops flush, calls are delayed and shipped
+ * with the patch (same ordering as official ReactLynx) so MainThreadRefs are
+ * registered before the worklet body runs.
  */
 
+import { enqueueDelayedRunOnMainThread } from "./delayed-run-on-main-thread.js";
+import { hasPendingFlushAck, isFlushScheduled, sendWorkletRefInitValues, waitForFlush } from "./flush.js";
 import { onFunctionCall, onFunctionCallWithTimeout } from "./function-call.js";
+import { hasPendingOps } from "./ops.js";
 import { registerWorkletCtx } from "./run-on-background.js";
+import { hasPendingWorkletRefInits } from "./worklet-ref-pool.js";
 
 const RUN_WORKLET_CTX = "Lynx.Worklet.runWorkletCtx";
 
@@ -18,6 +26,27 @@ const DEV_WORKLET_TIMEOUT = __DEV__ ? 5000 : 0;
 
 /** Track if we've shown the HMR warning */
 let hmrWarningShown = false;
+
+type RunWorkletCtxData = {
+  worklet: Worklet;
+  params: unknown[];
+  resolveId: number;
+};
+
+/**
+ * Delay when pending MT state has not been flushed yet.
+ * Covers render-time calls from hooks like `useMotionValueRef`.
+ */
+function shouldDelayRunOnMainThread(): boolean {
+  return isFlushScheduled() || hasPendingOps() || hasPendingWorkletRefInits();
+}
+
+function dispatchRunOnMainThreadEvent(data: RunWorkletCtxData): void {
+  lynx.getCoreContext().dispatchEvent({
+    type: RUN_WORKLET_CTX,
+    data: JSON.stringify(data),
+  });
+}
 
 /**
  * Mark a function to be executed on the Main Thread.
@@ -80,14 +109,30 @@ export function runOnMainThread<R, Fn extends (...args: unknown[]) => R>(fn: Fn)
           ? onFunctionCallWithTimeout(resolve as (value: unknown) => void, reject, DEV_WORKLET_TIMEOUT)
           : onFunctionCall(resolve as (value: unknown) => void);
 
-      lynx.getCoreContext().dispatchEvent({
-        type: RUN_WORKLET_CTX,
-        data: JSON.stringify({
-          worklet,
-          params,
-          resolveId,
-        }),
-      });
+      const data: RunWorkletCtxData = {
+        worklet,
+        params,
+        resolveId,
+      };
+
+      if (shouldDelayRunOnMainThread()) {
+        enqueueDelayedRunOnMainThread(data);
+        return;
+      }
+
+      // After commit flush started / completed: wait for MT ack so refs exist.
+      void (async () => {
+        try {
+          if (hasPendingFlushAck()) {
+            await waitForFlush();
+          }
+          // Leftover inits created after the last flush (should be rare).
+          sendWorkletRefInitValues();
+          dispatchRunOnMainThreadEvent(data);
+        } catch (err) {
+          reject(err);
+        }
+      })();
     });
   };
 }

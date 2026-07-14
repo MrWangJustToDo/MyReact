@@ -48,6 +48,11 @@ function getWorkletImpl(): LynxWorkletImpl | undefined {
 export function applySetWorkletEvent(id: number, eventType: string, eventName: string, ctx: Record<string, unknown>): void {
   const el = elements.get(id);
   if (!el) {
+    if (__DEV__) {
+      throw new Error(
+        `[@my-react/react-lynx] SET_WORKLET_EVENT: element id=${id} missing for ${eventType}:${eventName} ` + `(ops apply order / duplicate-batch skip?).`
+      );
+    }
     return;
   }
 
@@ -76,6 +81,9 @@ export function applySetWorkletEvent(id: number, eventType: string, eventName: s
 export function applySetMtRef(id: number, refImpl: unknown): void {
   const el = elements.get(id);
   if (!el) {
+    if (__DEV__) {
+      throw new Error(`[@my-react/react-lynx] SET_MT_REF: element id=${id} missing`);
+    }
     return;
   }
 
@@ -86,19 +94,27 @@ export function applySetMtRef(id: number, refImpl: unknown): void {
 
   // Store in workletRefMap so worklet-runtime can resolve _wvid -> element.
   const impl = getWorkletImpl();
-  if (impl?._refImpl) {
-    const ref = refImpl as { _wvid?: number; _initValue?: unknown };
-    if (ref._wvid != null) {
-      const refMap = impl._refImpl._workletRefMap;
-      if (refMap && !(ref._wvid in refMap)) {
-        refMap[ref._wvid] = {
-          current: ref._initValue ?? null,
-          _wvid: ref._wvid,
-        };
-      }
-      impl._refImpl.updateWorkletRef(refImpl, el);
+  if (!impl?._refImpl) {
+    if (__DEV__) {
+      throw new Error("[@my-react/react-lynx] SET_MT_REF: lynxWorkletImpl._refImpl unavailable");
     }
+    return;
   }
+  const ref = refImpl as { _wvid?: number; _initValue?: unknown };
+  if (ref._wvid == null) {
+    if (__DEV__) {
+      throw new Error("[@my-react/react-lynx] SET_MT_REF: ref payload missing _wvid");
+    }
+    return;
+  }
+  const refMap = impl._refImpl._workletRefMap;
+  if (refMap && !(ref._wvid in refMap)) {
+    refMap[ref._wvid] = {
+      current: ref._initValue ?? null,
+      _wvid: ref._wvid,
+    };
+  }
+  impl._refImpl.updateWorkletRef(refImpl, el);
 }
 
 /** INIT_MT_REF: register a value-only MainThreadRef in the worklet ref map */

@@ -5,6 +5,9 @@
  * globalThis.publishEvent), so we must assign to both to cover all versions.
  */
 
+import "../shared/lynx-globals-polyfill.js";
+import "./install-lynx-scheduler.js";
+
 import { publishEvent } from "./event-registry.js";
 import { loadLazyBundle } from "./lazy-bundle.js";
 

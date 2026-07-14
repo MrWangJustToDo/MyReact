@@ -10,7 +10,9 @@
  *   - lynx.loadLazyBundle      – for chunk loading runtime (async bundles)
  */
 
-import { parsePatchPayload } from "../shared/patch-payload.js";
+import "../shared/lynx-globals-polyfill.js";
+
+import { parsePatchPayload, type DelayedRunOnMainThreadPayload } from "../shared/patch-payload.js";
 import { onFirstScreenPatchFinished } from "../shared/worklet-bindings.js";
 
 import { elements, setPageUniqueId } from "./element-registry.js";
@@ -23,6 +25,77 @@ const g = globalThis as Record<string, unknown>;
 
 /** Fallback for legacy bare-array patch payloads. */
 let legacyFirstScreenPatchPending = true;
+
+function getWorkletRefImpl():
+  | {
+      updateWorkletRefInitValueChanges?: (patch: [number, unknown][]) => void;
+    }
+  | undefined {
+  const impl = g["lynxWorkletImpl"] as
+    | {
+        _refImpl?: {
+          updateWorkletRefInitValueChanges?: (patch: [number, unknown][]) => void;
+        };
+      }
+    | undefined;
+  return impl?._refImpl;
+}
+
+/** Seed MainThreadRefs before ops / delayed worklets access them. */
+function applyWorkletRefInitValues(patch: [number, unknown][] | undefined): void {
+  if (!patch?.length) {
+    return;
+  }
+  const refImpl = getWorkletRefImpl();
+  if (refImpl?.updateWorkletRefInitValueChanges) {
+    refImpl.updateWorkletRefInitValueChanges(patch);
+    return;
+  }
+  if (__DEV__) {
+    throw new Error(
+      "[@my-react/react-lynx] lynxWorkletImpl._refImpl.updateWorkletRefInitValueChanges is unavailable; " +
+        "MainThreadRef.current will be undefined in worklets."
+    );
+  }
+}
+
+/**
+ * Run worklets that were deferred so they execute after ops / ref inits in the
+ * same patch — matches official ReactLynx `updateMainThread` ordering.
+ */
+function runDelayedRunOnMainThreadData(items: DelayedRunOnMainThreadPayload[] | undefined): void {
+  if (!items?.length) {
+    return;
+  }
+
+  const impl = g["lynxWorkletImpl"] as
+    | {
+        _workletMap?: Record<string, unknown>;
+        _runRunOnMainThreadTask?: (worklet: Worklet, params: unknown[], resolveId: number) => void;
+      }
+    | undefined;
+
+  const runTask = impl?._runRunOnMainThreadTask;
+  if (!runTask) {
+    if (__DEV__) {
+      throw new Error(
+        "[@my-react/react-lynx] lynxWorkletImpl._runRunOnMainThreadTask is unavailable; " + "delayed runOnMainThread calls from this patch will be skipped."
+      );
+    }
+    return;
+  }
+
+  for (const data of items) {
+    const id = (data.worklet as { _wkltId?: string } | undefined)?._wkltId;
+    if (__DEV__ && id && impl?._workletMap && !(id in impl._workletMap)) {
+      throw new Error(
+        `[@my-react/react-lynx] delayed runOnMainThread: worklet "${id}" is not registered on MT ` +
+          "(BG/MT _wkltId mismatch or worklet-loader-mt missed the file)."
+      );
+    }
+    runTask(data.worklet, data.params, data.resolveId);
+  }
+}
 
 // Register processEvalResult for lazy bundle loading.
 // When a lazy bundle is loaded, the web simulator calls:
@@ -52,9 +125,11 @@ if (typeof lynx !== "undefined") {
 g["__BACKGROUND_RUNTIME__"] = false;
 g["__MAIN_THREAD_RUNTIME__"] = true;
 
-// Expose SystemInfo on globalThis (the worklet-runtime reads it).
-// In React's main-thread bundle this is done by the generated snapshot code.
-g["SystemInfo"] = (typeof lynx !== "undefined" && lynx.SystemInfo) ?? {};
+// Match official ReactLynx setupLynxEnv: host injects lynx.SystemInfo
+// (including lynxSdkVersion). worklet-runtime gates rAF on SDK > 2.15 — if the
+// host omits the field it defaults to "1.0" and rAF throws; do not hardcode a
+// fake version here.
+g["SystemInfo"] = (typeof lynx !== "undefined" && (lynx as { SystemInfo?: unknown }).SystemInfo) || {};
 
 // Register runOnBackground as a global — extracted LEPUS worklet code calls it
 // as a bare identifier (the SWC transform generates `runOnBackground(_jsFnK)`).
@@ -111,6 +186,9 @@ g["reactPatchUpdate"] = function ({ data }: { data: string }): void {
   const isFirstScreen = payload.isFirstScreen ?? legacyFirstScreenPatchPending;
   const endFirstScreen = payload.endFirstScreen ?? false;
 
+  // 1) Seed MainThreadRefs  2) apply element ops  3) delayed runOnMainThread
+  applyWorkletRefInitValues(payload.workletRefInitValues);
+
   if (isFirstScreen && payload.ops.length > 0) {
     setFirstScreenPatch(true);
     try {
@@ -122,6 +200,9 @@ g["reactPatchUpdate"] = function ({ data }: { data: string }): void {
     applyOps(payload.ops);
   }
 
+  // After elements + SET_MT_REF are applied — same point as official ReactLynx.
+  runDelayedRunOnMainThreadData(payload.delayedRunOnMainThreadData);
+
   if (endFirstScreen) {
     onFirstScreenPatchFinished();
     legacyFirstScreenPatchPending = false;
@@ -131,28 +212,9 @@ g["reactPatchUpdate"] = function ({ data }: { data: string }): void {
 };
 
 // Called by the BG Thread via callLepusMethod('updateMTRefInitValue', { data }).
-// Seeds value-only MainThreadRefs into worklet-runtime's _workletRefMap before
-// gesture / event worklets access ref.current.
+// Legacy / leftover path — prefer in-patch `workletRefInitValues`.
 g["updateMTRefInitValue"] = function ({ data }: { data: string }): void {
-  const patch = JSON.parse(data) as [id: number, value: unknown][];
-  // API lives on lynxWorkletImpl._refImpl — it is NOT a globalThis export.
-  const impl = g["lynxWorkletImpl"] as
-    | {
-        _refImpl?: {
-          updateWorkletRefInitValueChanges?: (patch: [number, unknown][]) => void;
-        };
-      }
-    | undefined;
-  if (impl?._refImpl?.updateWorkletRefInitValueChanges) {
-    impl._refImpl.updateWorkletRefInitValueChanges(patch);
-    return;
-  }
-  if (__DEV__) {
-    console.warn(
-      "[@my-react/react-lynx] lynxWorkletImpl._refImpl.updateWorkletRefInitValueChanges is unavailable; " +
-        "MainThreadRef.current will be undefined in worklets."
-    );
-  }
+  applyWorkletRefInitValues(JSON.parse(data) as [id: number, value: unknown][]);
 };
 
 // Worklet registrations are included in this bundle via webpack's dependency

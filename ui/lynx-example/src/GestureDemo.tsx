@@ -1,5 +1,6 @@
+import { LongPressGesture, PanGesture, TapGesture } from "@lynx-js/gesture-runtime";
 import { useMemo, useState } from "@my-react/react";
-import { LongPressGesture, PanGesture, TapGesture, runOnBackground, useGesture, useMainThreadRef } from "@my-react/react-lynx";
+import { runOnBackground, useGesture, useMainThreadRef } from "@my-react/react-lynx";
 
 import "./GestureDemo.css";
 

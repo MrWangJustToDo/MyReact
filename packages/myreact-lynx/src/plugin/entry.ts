@@ -6,6 +6,9 @@
  * - Background Thread: runs the MyReact reconciler and user app
  * - Main Thread (LEPUS): executes PAPI operations and worklets
  *
+ * Entries use {@link LAYERS} (`entry.layer` + `issuerLayer` on loaders).
+ * Rspack 2 enables module layers by default — no `experiments.layers` flag.
+ *
  * ## Lazy Loading (React.lazy / Dynamic Import) - Known Issues & Fixes
  *
  * ### Issue 1: Native Lynx requires RuntimeWrapperWebpackPlugin for all JS files
@@ -353,6 +356,7 @@ import { fileURLToPath } from "node:url";
 
 import { LAYERS } from "./layers.js";
 import { MyReactCSSConfigPlugin, MyReactMarkMainThreadPlugin, PLUGIN_MARK_MAIN_THREAD } from "./plugins";
+import { createNodeModulesExceptWorkletPackagesExclude, createWorkletPackagesPathTest } from "./worklet-packages.js";
 
 import type { RsbuildPluginAPI } from "@rsbuild/core";
 
@@ -507,17 +511,10 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
         mainThreadFilenames.push(mainThreadName);
       }
 
-      // Main Thread bundle – PAPI bootstrap + worklet runtime + user code
-      // User code is included for 'main thread' directive extraction.
-      //
-      // Optionally pull in gesture-runtime so wrapCallback's `'main thread'`
-      // wrappers are extracted by worklet-loader-mt (peer is optional).
+      // Main Thread bundle – PAPI bootstrap + worklet runtime + user code.
+      // Worklet npm packages join the MT graph via app imports (side-effect
+      // stitches in worklet-loader-mt). Do not force-entry gesture/motion here.
       const mainThreadImports = [entryMainThreadPath, workletRuntimePath, ...imports];
-      try {
-        mainThreadImports.push(require.resolve("@lynx-js/gesture-runtime"));
-      } catch {
-        // peer not installed — fine when gesture APIs are unused
-      }
 
       chain
         .entry(mainThreadEntry)
@@ -535,7 +532,7 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
         .end();
 
       // Background bundle – MyReact runtime + user app
-      chain
+      const backgroundEntry = chain
         .entry(entryName)
         .add({
           layer: LAYERS.BACKGROUND,
@@ -545,7 +542,13 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
         .prepend({
           layer: LAYERS.BACKGROUND,
           import: entryBackgroundPath,
-        })
+        });
+
+      // Do NOT prepend motion's BG shim here: it assigns `lynx.queueMicrotask` onto
+      // globalThis, which breaks MyReact's scheduler (`queueMicrotask.bind(globalThis)`).
+      // BG uses our Promise-based polyfill in entry-background instead.
+
+      backgroundEntry
         .when(isDev, (entry) => {
           entry.prepend({
             layer: LAYERS.BACKGROUND,
@@ -675,12 +678,15 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
 }
 
 /**
- * Apply worklet transform loaders for BG and MT layers.
+ * Apply worklet transform loaders for BG and MT layers (`issuerLayer`).
  *
- * These loaders use @lynx-js/react/transform SWC plugin to transform
- * 'main thread' directive functions into worklet context objects.
+ * Uses `@lynx-js/react/transform`: BG → JS worklet contexts; MT → LEPUS then
+ * bare `registerWorkletInternal` extraction (see worklet-loader-mt).
  */
 function applyWorkletLoaders(api: RsbuildPluginAPI): void {
+  const excludeNodeModulesExceptWorkletPkgs = createNodeModulesExceptWorkletPackagesExclude();
+  const workletPkgPathTest = createWorkletPackagesPathTest();
+
   // Worklet loader (BG layer): runs SWC JS-target transform on BG-layer files
   // to replace 'main thread' functions with context objects.
   api.modifyBundlerChain((chain, { environment }) => {
@@ -693,27 +699,9 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
     const runtimePkgDir = path.resolve(myReactLynxRoot, "dist/runtime");
     const sharedPkgDir = path.resolve(myReactLynxRoot, "dist/shared");
 
-    // Exclude node_modules EXCEPT @lynx-js/gesture-runtime — its wrapCallback
-    // returns an inline `'main thread'` function that must become a worklet
-    // context object, otherwise JSON op flush drops the callbacks.
-    //
-    // Must be a function (not a simple lookahead regex): under pnpm the first
-    // `node_modules/` segment is `node_modules/.pnpm/...`, so a negative
-    // lookahead right after it never sees `@lynx-js/gesture-runtime`.
-    const excludeNodeModulesExceptGesture = (resourcePath: string) => {
-      if (/[\\/]@lynx-js[\\/]gesture-runtime([\\/]|$)/.test(resourcePath)) {
-        return false;
-      }
-      return /[\\/]node_modules[\\/]/.test(resourcePath);
-    };
-
-    // gesture-runtime declares sideEffects:false — without this, worklet-loader-mt's
-    // rewritten `import './baseGesture.js'` edges are tree-shaken and wrapCallback
-    // never emits registerWorkletInternal on the Main Thread.
-    chain.module
-      .rule("myreact:gesture-runtime-side-effects")
-      .test(/[\\/]@lynx-js[\\/]gesture-runtime[\\/]/)
-      .sideEffects(true);
+    // These packages often declare sideEffects:false — without this, worklet-loader-mt's
+    // rewritten relative imports are tree-shaken and registerWorkletInternal never runs.
+    chain.module.rule("myreact:worklet-pkg-side-effects").test(workletPkgPathTest).sideEffects(true);
 
     // Auto chunk name loader: adds webpackChunkName to dynamic imports
     // This ensures all lazy imports generate .bundle files with CSS included.
@@ -731,11 +719,16 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
       .loader(path.resolve(_dirname, "./loaders/auto-chunk-name-loader"))
       .end();
 
+    // enforce:pre + registered after thread-defines so this runs BEFORE
+    // `__BACKGROUND__`/`__MAIN_THREAD__` substitution. Substituting those
+    // macros first makes BG vs MT source differ and produces mismatched
+    // `_wkltId`s (e.g. useMotionValueRefCore), leaving MainThreadRefs unset.
     chain.module
       .rule("myreact:worklet")
       .issuerLayer(LAYERS.BACKGROUND)
+      .enforce("pre")
       .test(/\.(?:[cm]?[jt]sx?)$/)
-      .exclude.add(excludeNodeModulesExceptGesture)
+      .exclude.add(excludeNodeModulesExceptWorkletPkgs)
       .add(mainThreadPkgDir)
       .add(runtimePkgDir)
       .add(sharedPkgDir)
@@ -770,12 +763,6 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
     const mainThreadPkgDir = path.resolve(myReactLynxRoot, "dist/main-thread");
     const runtimePkgDir = path.resolve(myReactLynxRoot, "dist/runtime");
     const sharedPkgDir = path.resolve(myReactLynxRoot, "dist/shared");
-    const excludeNodeModulesExceptGesture = (resourcePath: string) => {
-      if (/[\\/]@lynx-js[\\/]gesture-runtime([\\/]|$)/.test(resourcePath)) {
-        return false;
-      }
-      return /[\\/]node_modules[\\/]/.test(resourcePath);
-    };
 
     // Auto chunk name loader for MT layer too
     chain.module
@@ -791,13 +778,14 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
       .loader(path.resolve(_dirname, "./loaders/auto-chunk-name-loader"))
       .end();
 
-    // JS/TS/TSX on MT: LEPUS worklet transform (extract registerWorkletInternal calls).
-    // Include gesture-runtime so wrapCallback worklets are registered on MT.
+    // JS/TS/TSX on MT: LEPUS worklet transform (extract registerWorkletInternal).
+    // Same enforce:pre ordering as BG — hash must match the Background `_wkltId`.
     chain.module
       .rule("myreact:worklet-mt")
       .issuerLayer(LAYERS.MAIN_THREAD)
+      .enforce("pre")
       .test(/\.[cm]?[jt]sx?$/)
-      .exclude.add(excludeNodeModulesExceptGesture)
+      .exclude.add(excludeNodeModulesExceptWorkletPkgs)
       .add(mainThreadPkgDir)
       .add(runtimePkgDir)
       .add(sharedPkgDir)

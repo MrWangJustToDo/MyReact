@@ -139,10 +139,10 @@ export function useMainThreadRef<T>(initValue: T | null): MainThreadRef<T | null
 export function useMainThreadRef<T = undefined>(): MainThreadRef<T | undefined>;
 
 export function useMainThreadRef<T>(initValue?: T): MainThreadRef<T | undefined> {
-  // Use useMemo with empty deps to ensure the ref is only created once per component
-  return useMemo(() => {
-    return new MainThreadRef(initValue);
-  }, []);
+  // Match official ReactLynx: stable identity via useMemo([]).
+  // If `.current` is undefined in worklets, prefer fixing `_wkltId` alignment /
+  // in-patch ref init / HMR memo invalidation — not replacing this with useRef.
+  return useMemo(() => new MainThreadRef(initValue), []);
 }
 
 /** Reset module state — for testing only. */

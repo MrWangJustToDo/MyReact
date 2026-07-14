@@ -1,5 +1,12 @@
-## copy from vue-lynx
+# `@my-react/react-lynx`
 
-SEE https://github.com/Huxpro/vue-lynx
+MyReact renderer for Lynx dual-thread architecture (Background reconciler + Main Thread / LEPUS).
 
-NOTE: the dev-tool runtime currently copy from https://github.com/MrWangJustToDo/myreact-devtools, should improve later
+## Docs
+
+- **[PLUGIN.md](./PLUGIN.md)** — plugin pipeline, key invariants (layers / worklets), common failures and causes.
+
+## Notes
+
+- Dev-tool runtime currently copied from [myreact-devtools](https://github.com/MrWangJustToDo/myreact-devtools); improve later.
+- Historical reference: [vue-lynx](https://github.com/Huxpro/vue-lynx).

@@ -199,6 +199,17 @@ const applyEvent = (instance: ShadowElement, key: string, value: any) => {
   }
 };
 
+/** SWC turns `'main thread'` fns into `{ _wkltId, _c }` objects (not functions). */
+const isWorkletEventHandler = (value: unknown): value is WorkletLike => {
+  if (value == null) {
+    return false;
+  }
+  if (typeof value === "function") {
+    return true;
+  }
+  return typeof value === "object" && "_wkltId" in (value as Record<string, unknown>);
+};
+
 const applyWorklet = (instance: ShadowElement, key: string, value: any) => {
   const suffix = key.startsWith("main-thread:") ? key.slice("main-thread:".length) : key.slice("main-thread-".length);
 
@@ -229,18 +240,18 @@ const applyWorklet = (instance: ShadowElement, key: string, value: any) => {
       return;
     }
 
-    if (value != null && typeof value === "function") {
+    if (isWorkletEventHandler(value)) {
       registerWorkletCtx(value as unknown as Worklet);
-      retainWorkletCtx(value as unknown as WorkletLike);
+      retainWorkletCtx(value as WorkletLike);
       pushOp(OP.SET_WORKLET_EVENT, instance.id, event.eventType, event.eventName, value);
       return;
     }
 
-    if (value != null && typeof value !== "function") {
-      console.warn("[@my-react/react-lynx] Worklet handler is not a function.");
+    if (value != null) {
+      console.warn("[@my-react/react-lynx] Worklet handler must be a 'main thread' function or worklet context.");
     }
 
-    // Handler removed or replaced with a non-function — clear MT listener.
+    // Handler removed or replaced with a non-worklet — clear MT listener.
     pushOp(OP.REMOVE_EVENT, instance.id, event.eventType, event.eventName);
   }
 };

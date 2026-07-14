@@ -1,5 +1,6 @@
 import { __my_react_scheduler__ } from "@my-react/react/type";
 
+import { resetDelayedRunOnMainThread, takeDelayedRunOnMainThreadData } from "./delayed-run-on-main-thread.js";
 import { buildFirstScreenPatchMeta } from "./first-screen-patch.js";
 import { takeOps } from "./ops.js";
 import { takeWorkletRefInitValuePatch } from "./worklet-ref-pool.js";
@@ -16,12 +17,22 @@ export function waitForFlush(): Promise<void> {
   return pendingAckPromise ?? Promise.resolve();
 }
 
+/** @internal */
+export function isFlushScheduled(): boolean {
+  return scheduled;
+}
+
+/** @internal */
+export function hasPendingFlushAck(): boolean {
+  return pendingAckPromise != null;
+}
+
 /**
- * Send worklet ref init values to the main thread.
- * This must be called before the ops flush so the main thread has
- * the ref values available when worklet functions try to access them.
+ * Send leftover worklet ref init values to the main thread (standalone path).
+ * Prefer in-patch `workletRefInitValues` during `doFlush` for ordering with
+ * delayed `runOnMainThread` calls.
  */
-function sendWorkletRefInitValues(): void {
+export function sendWorkletRefInitValues(): void {
   const patch = takeWorkletRefInitValuePatch();
   if (patch.length === 0) {
     return;
@@ -39,13 +50,14 @@ function sendWorkletRefInitValues(): void {
 const doFlush = () => {
   scheduled = false;
 
-  // Send worklet ref init values first
-  sendWorkletRefInitValues();
-
+  // Take ref inits into the SAME patch as ops + delayed worklets so MT
+  // applies them in order (separate callLepusMethod can race).
+  const workletRefInitValues = takeWorkletRefInitValuePatch();
   const ops = takeOps();
+  const delayedRunOnMainThreadData = takeDelayedRunOnMainThreadData();
   const { isFirstScreen, endFirstScreen } = buildFirstScreenPatchMeta();
 
-  if (ops.length === 0 && !endFirstScreen) {
+  if (ops.length === 0 && !endFirstScreen && delayedRunOnMainThreadData.length === 0 && workletRefInitValues.length === 0) {
     return;
   }
 
@@ -77,6 +89,8 @@ const doFlush = () => {
         ops,
         isFirstScreen,
         endFirstScreen,
+        workletRefInitValues: workletRefInitValues.length > 0 ? workletRefInitValues : undefined,
+        delayedRunOnMainThreadData: delayedRunOnMainThreadData.length > 0 ? delayedRunOnMainThreadData : undefined,
       }),
     },
     () => {
@@ -97,4 +111,5 @@ export const resetFlushState = () => {
   scheduled = false;
   pendingAckResolve = null;
   pendingAckPromise = null;
+  resetDelayedRunOnMainThread();
 };

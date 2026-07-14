@@ -8,7 +8,7 @@
  * 4. Return the JS output to webpack
  *
  * LEPUS registration extraction is handled separately by worklet-loader-mt
- * on the Main Thread layer, which provides natural per-entry isolation
+ * on the Main Thread layer (`issuerLayer`), which keeps BG/MT copies separate
  * via webpack's dependency graph.
  */
 

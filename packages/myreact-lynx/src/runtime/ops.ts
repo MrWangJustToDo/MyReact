@@ -13,3 +13,8 @@ export function takeOps(): unknown[] {
   buffer = [];
   return b;
 }
+
+/** @internal */
+export function hasPendingOps(): boolean {
+  return buffer.length > 0;
+}

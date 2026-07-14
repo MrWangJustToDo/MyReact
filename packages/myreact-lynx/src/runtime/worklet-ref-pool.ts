@@ -30,6 +30,11 @@ export function takeWorkletRefInitValuePatch(): WorkletRefInitValuePatch {
   return res;
 }
 
+/** @internal */
+export function hasPendingWorkletRefInits(): boolean {
+  return initValuePatch.length > 0;
+}
+
 /**
  * Reset the pool state - for testing only.
  * @internal

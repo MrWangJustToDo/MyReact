@@ -1,54 +1,61 @@
 /**
- * Webpack loader for the Main Thread (LEPUS) layer.
+ * Webpack loader for the Main Thread (LEPUS) layer (`issuerLayer: MAIN_THREAD`).
  *
- * Applied to .js/.ts/.tsx files when imported from the MT entry.
- * For each file:
- * 1. Extract local (relative-path) imports to preserve webpack dep graph
- * 2. Quick-check for 'main thread' directive — skip LEPUS transform if absent
- * 3. SWC with target='LEPUS' → produces registerWorkletInternal calls
- * 4. Extract only registerWorkletInternal(...) calls
- * 5. Return local imports + extracted registrations as module content
+ * Keeps relative / allowlisted-package side-effect imports and extracts bare
+ * `registerWorkletInternal(...)` calls so worklets register without running
+ * React/component module bodies.
  *
- * Files without 'main thread' directives return only their local imports.
- * This preserves the dependency chain so webpack can reach files that DO
- * contain worklet registrations.
+ * **Do not emit full SWC LEPUS for npm worklet packages.** That output gates
+ * registration with `loadWorkletRuntime(...) && registerWorkletInternal(...)`.
+ * Official `loadWorkletRuntime` returns `false` when `__LoadLepusChunk` is
+ * undefined (MT entry already bundles worklet-runtime) → skipped register →
+ * `_workletMap[id]` missing → `.bind is not a function`.
  *
- * NOTE: We intentionally do NOT preserve dynamic imports on the MT layer.
- * This would create empty async chunks that cause build errors. Lazy loading
- * works via the BG layer's async chunks only.
+ * Layering (Rspack default) duplicates modules per layer, so MT stitches that
+ * drop exports do not clear BG `BaseGesture` / `@lynx-js/motion` APIs.
+ *
+ * NOTE: Do NOT preserve dynamic imports on the MT layer (empty async chunks).
  */
 
 import { transformReactLynxSync } from "@lynx-js/react/transform";
 
-import { extractLocalImports, extractRegistrations, extractSharedImports } from "./worklet-utils.js";
+import { WORKLET_NODE_MODULES_PACKAGES } from "../worklet-packages.js";
+import {
+  extractLocalImports,
+  extractRegistrations,
+  extractSharedImports,
+  extractWorkletPackageSideEffectImports,
+} from "./worklet-utils.js";
 
 import type { Rspack } from "@rsbuild/core";
+
+function shouldPassThroughOnMT(resourcePath: string): boolean {
+  return /[\\/]polyfill[\\/]/.test(resourcePath) || /[\\/](?:shim|polyfill)\.[cm]?js$/.test(resourcePath);
+}
 
 export default function workletLoaderMT(this: Rspack.LoaderContext, source: string): string {
   this.cacheable(true);
 
-  // Preserve local (relative-path) imports so webpack follows the dependency
-  // graph to sub-modules that may contain worklet registrations.
   const localImports = extractLocalImports(source);
+  const workletPkgImports = shouldPassThroughOnMT(this.resourcePath)
+    ? ""
+    : extractWorkletPackageSideEffectImports(source, WORKLET_NODE_MODULES_PACKAGES);
 
-  // Quick check: skip LEPUS transform for files without 'main thread' directive
-  // (but still extract shared imports from source since they don't need LEPUS)
-  if (!source.includes("'main thread'") && !source.includes('"main thread"')) {
-    const sharedImports = extractSharedImports(source);
-    if (!sharedImports) {
-      return localImports || "";
-    }
-    return sharedImports + (localImports ? `\n${localImports}` : "");
+  // Polyfill/shim: keep as-is (no worklet bodies; may set globals).
+  if (shouldPassThroughOnMT(this.resourcePath)) {
+    return source;
   }
 
-  const resourcePath = this.resourcePath;
-  const filename = resourcePath;
+  const hasMainThread = source.includes("'main thread'") || source.includes('"main thread"');
 
-  // LEPUS target — extracts registerWorkletInternal calls
-  // IMPORTANT: snapshot: false disables ReactLynx's JSX snapshot transformation
-  // which generates ReactLynx-specific code (__DynamicPartSlot, etc.)
-  // MyReact uses standard React JSX rendering, so we only need the worklet transform.
-  // dynamicImport: false disables ReactLynx's lazy bundle transformation.
+  if (!hasMainThread) {
+    const sharedImports = extractSharedImports(source);
+    const parts = [localImports, workletPkgImports, sharedImports].filter(Boolean);
+    return parts.join("\n");
+  }
+
+  const filename = this.resourcePath;
+
   const lepusResult = transformReactLynxSync(source, {
     pluginName: "myreact:worklet-mt",
     filename,
@@ -75,11 +82,8 @@ export default function workletLoaderMT(this: Rspack.LoaderContext, source: stri
     return localImports || "";
   }
 
-  // Extract shared imports from the LEPUS output (SWC preserves them)
   const sharedImports = extractSharedImports(lepusResult.code);
-
-  // Return shared imports + local imports (for dep graph) + extracted registrations
   const registrations = extractRegistrations(lepusResult.code);
-  const parts = [sharedImports, localImports, registrations].filter(Boolean);
+  const parts = [localImports, workletPkgImports, sharedImports, registrations].filter(Boolean);
   return parts.join("\n");
 }

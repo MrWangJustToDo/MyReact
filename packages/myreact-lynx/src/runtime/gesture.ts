@@ -5,7 +5,9 @@
  * retains worklet callback contexts so they stay alive after JSON transfer.
  */
 
-import { retainWorkletCtx } from "../shared/worklet-bindings.js";
+import { retainWorkletCtx, type WorkletLike } from "../shared/worklet-bindings.js";
+
+import { registerWorkletCtx } from "./run-on-background.js";
 
 const GESTURE_TYPE_COMPOSED = -1;
 
@@ -18,6 +20,10 @@ type SerializedGesture = Record<string, unknown> & {
 
 function isGestureKind(value: unknown): value is Record<string, unknown> & { __isGesture: true } {
   return !!value && typeof value === "object" && (value as Record<string, unknown>).__isGesture === true;
+}
+
+function isWorkletCallback(value: unknown): value is WorkletLike {
+  return !!value && typeof value === "object" && "_wkltId" in (value as Record<string, unknown>);
 }
 
 function appendSerializedBaseGestures(gesture: SerializedGesture | undefined, out: SerializedGesture[], seenIds: Set<number>): void {
@@ -62,19 +68,32 @@ export function serializeGestureForOp(value: unknown): SerializedGesture | null 
     (value as unknown as { processPanDistance: () => void }).processPanDistance();
   }
 
+  let serialized: SerializedGesture | null = null;
   if (typeof (value as unknown as { serialize?: () => SerializedGesture }).serialize === "function") {
-    return (value as unknown as { serialize: () => SerializedGesture }).serialize();
+    serialized = (value as unknown as { serialize: () => SerializedGesture }).serialize();
+  } else if ((value as SerializedGesture).__isSerialized) {
+    serialized = value as SerializedGesture;
   }
 
-  if ((value as SerializedGesture).__isSerialized) {
-    return value as SerializedGesture;
+  if (__DEV__ && serialized?.callbacks) {
+    for (const [name, callback] of Object.entries(serialized.callbacks)) {
+      if (typeof callback === "function") {
+        console.warn(
+          `[@my-react/react-lynx] Gesture callback "${name}" is still a plain function after serialize. ` +
+            `@lynx-js/gesture-runtime wrapCallback was not worklet-transformed — gesture events will be dropped. ` +
+            `Ensure worklet-loader processes @lynx-js/gesture-runtime.`
+        );
+        break;
+      }
+    }
   }
 
-  return null;
+  return serialized;
 }
 
 /**
- * Retain worklet contexts referenced by gesture callbacks on the BG thread.
+ * Retain / register worklet contexts referenced by gesture callbacks on the BG thread.
+ * `registerWorkletCtx` is required when callbacks use `runOnBackground`.
  */
 export function retainGestureCallbacks(gesture: SerializedGesture | null | undefined): void {
   if (!gesture) {
@@ -91,8 +110,10 @@ export function retainGestureCallbacks(gesture: SerializedGesture | null | undef
     }
     for (const key of Object.keys(callbacks)) {
       const callback = callbacks[key];
-      if (callback && typeof callback === "object") {
-        retainWorkletCtx(callback as Parameters<typeof retainWorkletCtx>[0]);
+      if (isWorkletCallback(callback)) {
+        // Same cast as reconciler worklet events — BG Worklet != DOM Worklet global.
+        registerWorkletCtx(callback as unknown as Worklet);
+        retainWorkletCtx(callback);
       }
     }
   }

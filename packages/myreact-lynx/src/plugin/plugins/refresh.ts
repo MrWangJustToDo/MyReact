@@ -130,7 +130,9 @@ export class ReactRefreshRspackPlugin {
       return;
     }
 
-    const { ProvidePlugin } = compiler.webpack;
+    // Prefer compiler.webpack (stable webpack-compat surface that Lynx upstream
+    // still uses). Fall back to compiler.rspack for Rspack-only builds.
+    const { ProvidePlugin } = compiler.webpack ?? compiler.rspack;
 
     const provide: Record<string, string> = {
       __myreact_refresh_utils__: require.resolve("@my-react/react-refresh-tools/header"),

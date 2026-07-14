@@ -1,8 +1,8 @@
 /**
- * MyReactMarkMainThreadPlugin - Webpack plugin for main-thread asset marking.
+ * MyReactMarkMainThreadPlugin - Rspack plugin for main-thread asset marking.
  *
  * This plugin handles:
- * 1. Forces webpack to generate startup code for MT entry chunks.
+ * 1. Forces Rspack to generate startup code for MT entry chunks.
  * 2. Marks main-thread assets with `lynx:main-thread: true` for LynxTemplatePlugin.
  * 3. Wraps async main-thread chunks with `globDynamicComponentEntry` wrapper.
  * 4. Normalizes async chunk names (removes layer suffixes).
@@ -16,15 +16,15 @@ import { LynxTemplatePlugin } from "@lynx-js/template-webpack-plugin";
 
 import { LAYERS } from "../layers.js";
 
-import type { WebpackCompiler } from "../types";
+import type { RspackCompiler } from "../types";
 
 export const PLUGIN_MARK_MAIN_THREAD = "lynx:myreact-mark-main-thread";
 
 export class MyReactMarkMainThreadPlugin {
   constructor(private readonly mainThreadFilenames: string[]) {}
 
-  apply(compiler: WebpackCompiler): void {
-    const { RuntimeGlobals } = compiler.webpack;
+  apply(compiler: RspackCompiler): void {
+    const { RuntimeGlobals } = compiler.rspack;
 
     compiler.hooks.thisCompilation.tap(PLUGIN_MARK_MAIN_THREAD, (compilation) => {
       // Force startup code generation for MT entry chunks
@@ -40,7 +40,7 @@ export class MyReactMarkMainThreadPlugin {
       compilation.hooks.processAssets.tap(
         {
           name: PLUGIN_MARK_MAIN_THREAD,
-          stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+          stage: compiler.rspack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
         },
         () => {
           // Mark static main-thread entry files
@@ -83,13 +83,13 @@ export class MyReactMarkMainThreadPlugin {
       // Wrap async main-thread chunks with globDynamicComponentEntry wrapper.
       // This is the format that the web simulator/LEPUS runtime expects for
       // dynamically loaded LEPUS code.
-      const { ConcatSource } = compiler.webpack.sources;
+      const { ConcatSource } = compiler.rspack.sources;
       compilation.hooks.processAssets.tap(
         {
           name: PLUGIN_MARK_MAIN_THREAD,
           // Run after OPTIMIZE_SIZE (minification) but before DEV_TOOLING (sourcemaps)
           // to ensure the wrapper is added after minification but before sourcemap generation.
-          stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE + 1,
+          stage: compiler.rspack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE + 1,
         },
         () => {
           for (const chunkGroup of compilation.chunkGroups) {
@@ -123,7 +123,7 @@ export class MyReactMarkMainThreadPlugin {
         }
       );
 
-      // biome-ignore lint/suspicious/noExplicitAny: rspack/webpack compilation type mismatch
+      // biome-ignore lint/suspicious/noExplicitAny: LynxTemplatePlugin hooks expect webpack Compilation types
       const hooks = LynxTemplatePlugin.getLynxTemplatePluginHooks(compilation as any);
 
       // Normalize async chunk names by removing layer suffixes.
@@ -137,7 +137,7 @@ export class MyReactMarkMainThreadPlugin {
       // When a lazy component doesn't have worklet code, the main-thread async
       // chunk is effectively empty. But the web simulator expects lepusCode.root
       // to exist. We provide a minimal stub that exports an empty object.
-      const { RawSource } = compiler.webpack.sources;
+      const { RawSource } = compiler.rspack.sources;
       // biome-ignore lint/suspicious/noExplicitAny: hook args type is complex
       hooks.beforeEncode.tap(PLUGIN_MARK_MAIN_THREAD, (args: any) => {
         const { encodeData } = args;

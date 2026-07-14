@@ -1,5 +1,5 @@
 /**
- * MyReactCSSConfigPlugin - Webpack plugin for CSS config injection.
+ * MyReactCSSConfigPlugin - Rspack plugin for CSS config injection.
  *
  * Injects Lynx engine compiler options into the encoded template
  * via the LynxTemplatePlugin beforeEncode hook.
@@ -7,14 +7,14 @@
 
 import { LynxTemplatePlugin } from "@lynx-js/template-webpack-plugin";
 
-import type { WebpackCompiler } from "../types";
+import type { RspackCompiler } from "../types";
 
 export const PLUGIN_CSS_CONFIG = "lynx:myreact-css-config";
 
 export class MyReactCSSConfigPlugin {
   constructor(private readonly compilerOptions: Record<string, unknown>) {}
 
-  apply(compiler: WebpackCompiler): void {
+  apply(compiler: RspackCompiler): void {
     compiler.hooks.thisCompilation.tap(PLUGIN_CSS_CONFIG, (compilation) => {
       const hooks = LynxTemplatePlugin.getLynxTemplatePluginHooks(
         // @ts-expect-error Rspack x Webpack compilation type mismatch

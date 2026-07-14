@@ -1,5 +1,5 @@
 import { useMemo, useState } from "@my-react/react";
-import { LongPressGesture, PanGesture, TapGesture, runOnBackground, useGesture } from "@my-react/react-lynx";
+import { LongPressGesture, PanGesture, TapGesture, runOnBackground, useGesture, useMainThreadRef } from "@my-react/react-lynx";
 
 import "./GestureDemo.css";
 
@@ -7,9 +7,19 @@ interface GestureDemoProps {
   onBack?: () => void;
 }
 
+type PanOffset = { x: number; y: number };
+type PanDragStart = { pageX: number; pageY: number; x: number; y: number };
+
 export const GestureDemo = ({ onBack }: GestureDemoProps) => {
   const [tapCount, setTapCount] = useState(0);
   const [longPressCount, setLongPressCount] = useState(0);
+
+  // Persist drag position across pan sessions (must live on MT via MainThreadRef).
+  const panOffset = useMainThreadRef<PanOffset>({ x: 0, y: 0 });
+  const panDragStart = useMainThreadRef<PanDragStart>({ pageX: 0, pageY: 0, x: 0, y: 0 });
+  // Tracks whether this finger session already captured the drag origin.
+  // onUpdate can fire without onStart on some hosts; never treat init {0,0} as origin.
+  const panDragging = useMainThreadRef(false);
 
   const bumpTap = useMemo(
     () =>
@@ -29,17 +39,61 @@ export const GestureDemo = ({ onBack }: GestureDemoProps) => {
 
   const pan = useGesture(PanGesture);
   pan.minDistance(4);
-  pan.onUpdate((event) => {
+
+  // Capture origin on finger-down. Relying only on onStart leaves start at {0,0}
+  // so the first onUpdate treats pageY as an absolute translate → jumps to bottom.
+  pan.onBegin((event, stateManager) => {
     "main thread";
-    const { x, y } = event.params;
-    event.currentTarget.setStyleProperty("transform", `translate(${x}px, ${y}px)`);
+    stateManager.active();
+    stateManager.interceptGesture(true);
+    if (panDragging.current) {
+      return;
+    }
+    const { pageX, pageY } = event.params;
+    const offset = panOffset.current;
+    panDragStart.current = { pageX, pageY, x: offset.x, y: offset.y };
+    panDragging.current = true;
+  });
+  pan.onStart((event, stateManager) => {
+    "main thread";
+    stateManager.active();
+    stateManager.interceptGesture(true);
+    if (panDragging.current) {
+      return;
+    }
+    const { pageX, pageY } = event.params;
+    const offset = panOffset.current;
+    panDragStart.current = { pageX, pageY, x: offset.x, y: offset.y };
+    panDragging.current = true;
+  });
+  pan.onUpdate((event, stateManager) => {
+    "main thread";
+    stateManager.active();
+    const { pageX, pageY } = event.params;
+    // Lazy-init if begin/start never ran — still never use the {0,0} sentinel.
+    if (!panDragging.current) {
+      const offset = panOffset.current;
+      panDragStart.current = { pageX, pageY, x: offset.x, y: offset.y };
+      panDragging.current = true;
+      return;
+    }
+    const start = panDragStart.current;
+    const nextX = start.x + (pageX - start.pageX);
+    const nextY = start.y + (pageY - start.pageY);
+    panOffset.current = { x: nextX, y: nextY };
+    event.currentTarget.setStyleProperty("transform", `translate(${nextX}px, ${nextY}px)`);
   });
   pan.onEnd((event) => {
     "main thread";
+    panDragging.current = false;
     event.currentTarget.setStyleProperty("opacity", "0.92");
     setTimeout(() => {
       event.currentTarget.setStyleProperty("opacity", "1");
     }, 100);
+  });
+  pan.onTouchesCancel(() => {
+    "main thread";
+    panDragging.current = false;
   });
 
   const tap = useGesture(TapGesture);
@@ -79,8 +133,8 @@ export const GestureDemo = ({ onBack }: GestureDemoProps) => {
       </view>
 
       <text className="GestureHint">
-        Pan moves the blue box on the main thread. Tap and long-press flash on MT and bump the counters on the
-        background thread through runOnBackground.
+        Pan uses page deltas + MainThreadRef offset on the main thread (avoids transform feedback flicker). Tap and long-press flash on MT and bump counters via
+        runOnBackground.
       </text>
 
       <view className="GesturePanel">

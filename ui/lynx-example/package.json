@@ -10,17 +10,19 @@
     "dev": "DEV=true rspeedy dev"
   },
   "dependencies": {
-    "@lynx-js/gesture-runtime": "^2.1.3",
-    "@lynx-js/lynx-ui": "^3.131.0",
-    "@lynx-js/react": "^0.116.5",
+    "@lynx-js/gesture-runtime": "2.1.3",
+    "@lynx-js/react": "0.122.1",
     "@my-react/react": "workspace:*",
     "@my-react/react-lynx": "workspace:*"
   },
   "devDependencies": {
-    "@lynx-js/qrcode-rsbuild-plugin": "^0.4.6",
-    "@lynx-js/rspeedy": "^0.14.0",
-    "@lynx-js/types": "^3.7.0",
-    "@rsbuild/plugin-node-polyfill": "^1.4.4",
+    "@lynx-js/qrcode-rsbuild-plugin": "0.5.0",
+    "@lynx-js/rspeedy": "0.15.2",
+    "@lynx-js/types": "4.0.0",
+    "@rsbuild/core": "2.0.11",
+    "@rsbuild/plugin-node-polyfill": "1.4.6",
+    "@rspack/core": "2.0.8",
+    "@types/react": "catalog:",
     "socket.io-client": "^4.8.3"
   }
 }

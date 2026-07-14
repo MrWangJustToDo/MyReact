@@ -58,7 +58,7 @@
   font-weight: 700;
   color: rgba(248, 250, 252, 0.45);
   letter-spacing: 1px;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
   padding-left: 4px;
 }
 
@@ -121,7 +121,7 @@
   font-weight: 700;
   color: rgba(148, 163, 184, 0.9);
   letter-spacing: 0.8px;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
 }
 
 .GestureStatusValue {

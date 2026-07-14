@@ -1,12 +1,15 @@
 /**
  * CSS extraction pipeline for MyReact Lynx.
  *
- * Mirrors the behaviour of `@lynx-js/react-rsbuild-plugin`'s `applyCSS()`:
+ * Mirrors `@lynx-js/react-rsbuild-plugin`'s `applyCSS()` for Rsbuild 2:
  * 1. Disables `style-loader` (forces CSS extraction via CssExtractPlugin).
  * 2. Replaces the rsbuild-default CssExtract plugin with
  *    `@lynx-js/css-extract-webpack-plugin` which emits Lynx-compatible CSS.
  * 3. Removes `lightningcss-loader` (Lynx has its own CSS processor).
  * 4. Configures the Main-Thread layer to ignore CSS entirely.
+ *
+ * Rsbuild 2 splits CSS rules into `oneOf` branches — loaders must be applied
+ * on `CHAIN_ID.ONE_OF.CSS_MAIN` / `CSS_INLINE` (and sass/less equivalents).
  */
 
 import path from "node:path";
@@ -14,8 +17,8 @@ import { fileURLToPath } from "node:url";
 
 import { LAYERS } from "./layers.js";
 
-import type { CssExtractRspackPluginOptions, CssExtractWebpackPluginOptions } from "@lynx-js/css-extract-webpack-plugin";
-import type { CSSLoaderOptions, RsbuildPluginAPI, Rspack } from "@rsbuild/core";
+import type { CssExtractRspackPluginOptions } from "@lynx-js/css-extract-webpack-plugin";
+import type { ChainIdentifier, CSSLoaderOptions, RsbuildPluginAPI, Rspack } from "@rsbuild/core";
 
 export interface ApplyCSSOptions {
   enableCSSSelector: boolean;
@@ -43,52 +46,68 @@ export function applyCSS(api: RsbuildPluginAPI, options: ApplyCSSOptions): void 
     const isLynx = environment.name === "lynx" || environment.name.startsWith("lynx-");
     const isWeb = environment.name === "web" || environment.name.startsWith("web-");
 
+    const cssRules = [CHAIN_ID.RULE.CSS, CHAIN_ID.RULE.SASS, CHAIN_ID.RULE.LESS, CHAIN_ID.RULE.STYLUS] as const;
+
     // Only apply Lynx CSS handling for Lynx environments
     // Web preview uses standard CSS handling (no Lynx-specific HMR)
     if (!isLynx) {
       // For web, only remove lightningcss (Lynx doesn't support it)
       if (isWeb) {
-        const cssRules = [CHAIN_ID.RULE.CSS, CHAIN_ID.RULE.SASS, CHAIN_ID.RULE.LESS, CHAIN_ID.RULE.STYLUS] as const;
         cssRules
           .filter((rule) => chain.module.rules.has(rule))
           .forEach((ruleName) => {
             const rule = chain.module.rule(ruleName);
-            if (rule.uses.has(CHAIN_ID.USE.LIGHTNINGCSS)) {
-              rule.uses.delete(CHAIN_ID.USE.LIGHTNINGCSS);
+            for (const name of cssOneOfNames(ruleName, CHAIN_ID)) {
+              if (rule.oneOfs.has(name)) {
+                removeLightningCSS(rule.oneOf(name), CHAIN_ID);
+              }
             }
           });
       }
       return;
     }
 
-    const { CssExtractRspackPlugin, CssExtractWebpackPlugin } = await import("@lynx-js/css-extract-webpack-plugin");
-    const CssExtractPlugin = api.context.bundlerType === "rspack" ? CssExtractRspackPlugin : CssExtractWebpackPlugin;
-
-    const cssRules = [CHAIN_ID.RULE.CSS, CHAIN_ID.RULE.SASS, CHAIN_ID.RULE.LESS, CHAIN_ID.RULE.STYLUS] as const;
+    const { CssExtractRspackPlugin } = await import("@lynx-js/css-extract-webpack-plugin");
+    const CssExtractPlugin = CssExtractRspackPlugin;
 
     cssRules
       .filter((rule) => chain.module.rules.has(rule))
       .forEach((ruleName) => {
         const rule = chain.module.rule(ruleName);
+        const mainRuleName = ruleName === CHAIN_ID.RULE.CSS ? CHAIN_ID.ONE_OF.CSS_MAIN : ruleName;
+        const mainRule = rule.oneOf(mainRuleName);
+        const parentRuleEntries = rule.entries() as Rspack.RuleSetRule;
 
         // Remove lightningcss-loader — Lynx processes CSS natively.
-        removeLightningCSS(rule, CHAIN_ID);
+        removeLightningCSS(mainRule, CHAIN_ID);
 
         // Use the Lynx CssExtract loader for the Background layer.
-        rule.issuerLayer(LAYERS.BACKGROUND).use(CHAIN_ID.USE.MINI_CSS_EXTRACT).loader(CssExtractPlugin.loader).end();
+        mainRule.issuerLayer(LAYERS.BACKGROUND).use(CHAIN_ID.USE.MINI_CSS_EXTRACT).loader(CssExtractPlugin.loader).end();
 
         // Clone the existing CSS rule chain for the Main-Thread layer.
         // Main-Thread bundles never contain user CSS — only the PAPI
         // bootstrap code. We replace all loaders with ignore-css + a
         // css-loader configured for `exportOnlyLocals: true`.
-        const uses = rule.uses.entries();
-        const ruleEntries = rule.entries() as Rspack.RuleSetRule;
+        const uses = mainRule.uses.entries();
+        const ruleEntries = mainRule.entries() as Rspack.RuleSetRule;
         const cssLoaderRule = uses[CHAIN_ID.USE.CSS]?.entries() as Rspack.RuleSetRule | undefined;
+        if (!cssLoaderRule) {
+          return;
+        }
 
-        chain.module
+        const mainThreadLayerRule = chain.module
           .rule(`${ruleName}:${LAYERS.MAIN_THREAD}`)
+          .test(parentRuleEntries.test!)
           .merge(ruleEntries)
-          .issuerLayer(LAYERS.MAIN_THREAD)
+          .issuerLayer(LAYERS.MAIN_THREAD);
+
+        if (parentRuleEntries.dependency !== undefined) {
+          mainThreadLayerRule.merge({
+            dependency: parentRuleEntries.dependency,
+          });
+        }
+
+        mainThreadLayerRule
           .use(CHAIN_ID.USE.IGNORE_CSS)
           .loader(path.resolve(_dirname, "./loaders/ignore-css-loader"))
           .end()
@@ -99,26 +118,23 @@ export function applyCSS(api: RsbuildPluginAPI, options: ApplyCSSOptions): void 
           .end();
 
         // Re-add css-loader with exportOnlyLocals for main-thread
-        if (cssLoaderRule) {
-          chain.module
-            .rule(`${ruleName}:${LAYERS.MAIN_THREAD}`)
-            .use(CHAIN_ID.USE.CSS)
-            .after(CHAIN_ID.USE.IGNORE_CSS)
-            .merge(cssLoaderRule)
-            .options(normalizeCssLoaderOptions(cssLoaderRule.options as CSSLoaderOptions, true))
-            .end();
-        }
+        mainThreadLayerRule
+          .use(CHAIN_ID.USE.CSS)
+          .after(CHAIN_ID.USE.IGNORE_CSS)
+          .merge(cssLoaderRule)
+          .options(normalizeCssLoaderOptions(cssLoaderRule.options as CSSLoaderOptions, true))
+          .end();
       });
 
-    // Also strip lightningcss from inline CSS rules (Rsbuild ≥1.3.0).
-    const RULE = CHAIN_ID.RULE as Record<string, string>;
-    const inlineCSSRuleNames = ["CSS_INLINE", "SASS_INLINE", "LESS_INLINE", "STYLUS_INLINE"] as const;
-
-    inlineCSSRuleNames
-      .map((key) => RULE[key])
-      .filter((ruleName): ruleName is string => !!ruleName && chain.module.rules.has(ruleName))
+    // Strip lightningcss from inline CSS oneOf branches.
+    cssRules
+      .filter((rule) => chain.module.rules.has(rule))
       .forEach((ruleName) => {
-        removeLightningCSS(chain.module.rule(ruleName), CHAIN_ID);
+        const inlineRuleName = ruleName === CHAIN_ID.RULE.CSS ? CHAIN_ID.ONE_OF.CSS_INLINE : `${ruleName}-inline`;
+        const rule = chain.module.rule(ruleName);
+        if (rule.oneOfs.has(inlineRuleName)) {
+          removeLightningCSS(rule.oneOf(inlineRuleName), CHAIN_ID);
+        }
       });
 
     // Replace the CssExtract plugin instance with the Lynx-aware one
@@ -133,21 +149,36 @@ export function applyCSS(api: RsbuildPluginAPI, options: ApplyCSSOptions): void 
             enableCSSSelector,
             enableCSSInvalidation,
             cssPlugins: [],
-          } as CssExtractWebpackPluginOptions | CssExtractRspackPluginOptions,
+          } as CssExtractRspackPluginOptions,
         ];
       })
       .init((_, args: unknown[]) => {
-        return new CssExtractPlugin(...(args as [options: CssExtractWebpackPluginOptions & CssExtractRspackPluginOptions]));
+        return new CssExtractPlugin(...(args as [options: CssExtractRspackPluginOptions]));
       })
       .end()
       .end();
-
-    function removeLightningCSS(rule: ReturnType<typeof chain.module.rule>, ids: typeof CHAIN_ID): void {
-      if (rule.uses.has(ids.USE.LIGHTNINGCSS)) {
-        rule.uses.delete(ids.USE.LIGHTNINGCSS);
-      }
-    }
   });
+}
+
+function cssOneOfNames(ruleName: string, CHAIN_ID: ChainIdentifier): string[] {
+  if (ruleName === CHAIN_ID.RULE.CSS) {
+    return [CHAIN_ID.ONE_OF.CSS_MAIN, CHAIN_ID.ONE_OF.CSS_INLINE, CHAIN_ID.ONE_OF.CSS_RAW, CHAIN_ID.ONE_OF.CSS_URL];
+  }
+  return [ruleName, `${ruleName}-inline`, `${ruleName}-raw`];
+}
+
+function removeLightningCSS(
+  rule: {
+    uses: {
+      has: (id: string) => boolean;
+      delete: (id: string) => unknown;
+    };
+  },
+  ids: ChainIdentifier
+): void {
+  if (rule.uses.has(ids.USE.LIGHTNINGCSS)) {
+    rule.uses.delete(ids.USE.LIGHTNINGCSS);
+  }
 }
 
 /**

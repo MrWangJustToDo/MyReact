@@ -413,16 +413,17 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
     }
   }
 
-  // Default to all-in-one chunk splitting to avoid async chunks that break
-  // Lynx's single-file bundle requirement.
+  // Default to no automatic vendor splitting — Lynx prefers self-contained
+  // entry bundles. (Rsbuild 2: `splitChunks: false` replaces
+  // `performance.chunkSplit.strategy: 'all-in-one'`.)
   api.modifyRsbuildConfig((config, { mergeRsbuildConfig }) => {
     const userConfig = api.getRsbuildConfig("original");
-    if (!userConfig.performance?.chunkSplit?.strategy) {
-      return mergeRsbuildConfig(config, {
-        performance: { chunkSplit: { strategy: "all-in-one" } },
-      });
+    if (userConfig.splitChunks !== undefined || userConfig.performance?.chunkSplit?.strategy) {
+      return config;
     }
-    return config;
+    return mergeRsbuildConfig(config, {
+      splitChunks: false,
+    });
   });
 
   // Exclude main-thread chunks from chunk splitting so each remains self-contained.
@@ -459,12 +460,13 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
     const isLynx = environment.name === "lynx" || environment.name.startsWith("lynx-");
     const isWeb = environment.name === "web" || environment.name.startsWith("web-");
 
-    // HMR / Live Reload flags
-    // Note: HMR is disabled for web because Lynx web preview doesn't support CSS HMR.
-    // CSS changes in web preview require a page reload.
+    // HMR / Live Reload — match @lynx-js/react-rsbuild-plugin + rspeedy 0.15:
+    // enable for BOTH lynx and web. Rspeedy 0.15.2 stopped giving the web
+    // environment Rsbuild's `target: 'web'` HMR client (which crashed on
+    // `lynx.requireModuleAsync`); web now uses the same Lynx transport as lynx.
     const { hmr, liveReload } = environment.config.dev ?? {};
-    const enabledHMR = isDev && !isWeb && hmr !== false;
-    const enabledLiveReload = isDev && !isWeb && liveReload !== false;
+    const enabledHMR = isDev && hmr !== false;
+    const enabledLiveReload = isDev && liveReload !== false;
 
     const entries = chain.entryPoints.entries() ?? {};
 
@@ -507,7 +509,15 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
 
       // Main Thread bundle – PAPI bootstrap + worklet runtime + user code
       // User code is included for 'main thread' directive extraction.
+      //
+      // Optionally pull in gesture-runtime so wrapCallback's `'main thread'`
+      // wrappers are extracted by worklet-loader-mt (peer is optional).
       const mainThreadImports = [entryMainThreadPath, workletRuntimePath, ...imports];
+      try {
+        mainThreadImports.push(require.resolve("@lynx-js/gesture-runtime"));
+      } catch {
+        // peer not installed — fine when gesture APIs are unused
+      }
 
       chain
         .entry(mainThreadEntry)
@@ -683,6 +693,28 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
     const runtimePkgDir = path.resolve(myReactLynxRoot, "dist/runtime");
     const sharedPkgDir = path.resolve(myReactLynxRoot, "dist/shared");
 
+    // Exclude node_modules EXCEPT @lynx-js/gesture-runtime — its wrapCallback
+    // returns an inline `'main thread'` function that must become a worklet
+    // context object, otherwise JSON op flush drops the callbacks.
+    //
+    // Must be a function (not a simple lookahead regex): under pnpm the first
+    // `node_modules/` segment is `node_modules/.pnpm/...`, so a negative
+    // lookahead right after it never sees `@lynx-js/gesture-runtime`.
+    const excludeNodeModulesExceptGesture = (resourcePath: string) => {
+      if (/[\\/]@lynx-js[\\/]gesture-runtime([\\/]|$)/.test(resourcePath)) {
+        return false;
+      }
+      return /[\\/]node_modules[\\/]/.test(resourcePath);
+    };
+
+    // gesture-runtime declares sideEffects:false — without this, worklet-loader-mt's
+    // rewritten `import './baseGesture.js'` edges are tree-shaken and wrapCallback
+    // never emits registerWorkletInternal on the Main Thread.
+    chain.module
+      .rule("myreact:gesture-runtime-side-effects")
+      .test(/[\\/]@lynx-js[\\/]gesture-runtime[\\/]/)
+      .sideEffects(true);
+
     // Auto chunk name loader: adds webpackChunkName to dynamic imports
     // This ensures all lazy imports generate .bundle files with CSS included.
     // Must run BEFORE other loaders (added last, runs first due to loader order)
@@ -703,7 +735,7 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
       .rule("myreact:worklet")
       .issuerLayer(LAYERS.BACKGROUND)
       .test(/\.(?:[cm]?[jt]sx?)$/)
-      .exclude.add(/node_modules/)
+      .exclude.add(excludeNodeModulesExceptGesture)
       .add(mainThreadPkgDir)
       .add(runtimePkgDir)
       .add(sharedPkgDir)
@@ -738,6 +770,12 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
     const mainThreadPkgDir = path.resolve(myReactLynxRoot, "dist/main-thread");
     const runtimePkgDir = path.resolve(myReactLynxRoot, "dist/runtime");
     const sharedPkgDir = path.resolve(myReactLynxRoot, "dist/shared");
+    const excludeNodeModulesExceptGesture = (resourcePath: string) => {
+      if (/[\\/]@lynx-js[\\/]gesture-runtime([\\/]|$)/.test(resourcePath)) {
+        return false;
+      }
+      return /[\\/]node_modules[\\/]/.test(resourcePath);
+    };
 
     // Auto chunk name loader for MT layer too
     chain.module
@@ -754,11 +792,12 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
       .end();
 
     // JS/TS/TSX on MT: LEPUS worklet transform (extract registerWorkletInternal calls).
+    // Include gesture-runtime so wrapCallback worklets are registered on MT.
     chain.module
       .rule("myreact:worklet-mt")
       .issuerLayer(LAYERS.MAIN_THREAD)
       .test(/\.[cm]?[jt]sx?$/)
-      .exclude.add(/node_modules/)
+      .exclude.add(excludeNodeModulesExceptGesture)
       .add(mainThreadPkgDir)
       .add(runtimePkgDir)
       .add(sharedPkgDir)

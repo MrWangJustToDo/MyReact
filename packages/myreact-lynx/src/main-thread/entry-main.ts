@@ -131,13 +131,27 @@ g["reactPatchUpdate"] = function ({ data }: { data: string }): void {
 };
 
 // Called by the BG Thread via callLepusMethod('updateMTRefInitValue', { data }).
-// This updates the worklet ref initial values in the worklet-runtime.
+// Seeds value-only MainThreadRefs into worklet-runtime's _workletRefMap before
+// gesture / event worklets access ref.current.
 g["updateMTRefInitValue"] = function ({ data }: { data: string }): void {
   const patch = JSON.parse(data) as [id: number, value: unknown][];
-  // The worklet-runtime from @lynx-js/react provides updateWorkletRefInitValueChanges
-  const updateFn = (globalThis as Record<string, unknown>)["updateWorkletRefInitValueChanges"] as ((patch: [number, unknown][]) => void) | undefined;
-  if (updateFn) {
-    updateFn(patch);
+  // API lives on lynxWorkletImpl._refImpl — it is NOT a globalThis export.
+  const impl = g["lynxWorkletImpl"] as
+    | {
+        _refImpl?: {
+          updateWorkletRefInitValueChanges?: (patch: [number, unknown][]) => void;
+        };
+      }
+    | undefined;
+  if (impl?._refImpl?.updateWorkletRefInitValueChanges) {
+    impl._refImpl.updateWorkletRefInitValueChanges(patch);
+    return;
+  }
+  if (__DEV__) {
+    console.warn(
+      "[@my-react/react-lynx] lynxWorkletImpl._refImpl.updateWorkletRefInitValueChanges is unavailable; " +
+        "MainThreadRef.current will be undefined in worklets."
+    );
   }
 };
 

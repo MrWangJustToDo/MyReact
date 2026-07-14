@@ -144,6 +144,26 @@ function removeGestureDetector(dom: LynxElement, id: number): void {
   }
 }
 
+function setGestureDetector(
+  dom: LynxElement,
+  id: number,
+  type: number,
+  config: GestureConfig,
+  relationMap: { waitFor: number[]; simultaneous: number[]; continueWith: number[] }
+): void {
+  if (typeof __SetGestureDetector !== "function") {
+    if (__DEV__) {
+      console.warn(
+        "[@my-react/react-lynx] __SetGestureDetector is undefined. New Gesture requires a Lynx runtime " +
+          "with enableNewGesture (page config is set) and a native host/Explorer that supports it. " +
+          "Web simulator may not provide this PAPI."
+      );
+    }
+    return;
+  }
+  __SetGestureDetector(dom, id, type, config, relationMap);
+}
+
 function clearLegacyGestureState(dom: LynxElement): void {
   __SetAttribute(dom, "has-react-gesture", null);
   if (typeof __RemoveGestureDetector !== "function") {
@@ -215,7 +235,7 @@ function processGesture(dom: LynxElement, gesture: GestureKind | undefined, oldG
 
     const { config, relationMap } = getGestureInfo(singleBaseGesture, singleOldBaseGesture, dom);
     if (singleBaseGesture.id != null && singleBaseGesture.type != null) {
-      __SetGestureDetector(dom, singleBaseGesture.id, singleBaseGesture.type, config, relationMap);
+      setGestureDetector(dom, singleBaseGesture.id, singleBaseGesture.type, config, relationMap);
     }
     return;
   }
@@ -248,7 +268,7 @@ function processGesture(dom: LynxElement, gesture: GestureKind | undefined, oldG
     const oldBaseGesture = consumeOldBaseGesture(baseGesture, uniqOldBaseGestures, oldBaseGesturesById);
     const { config, relationMap } = getGestureInfo(baseGesture, oldBaseGesture, dom);
     if (baseGesture.id != null && baseGesture.type != null) {
-      __SetGestureDetector(dom, baseGesture.id, baseGesture.type, config, relationMap);
+      setGestureDetector(dom, baseGesture.id, baseGesture.type, config, relationMap);
     }
   }
 }

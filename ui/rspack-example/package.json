@@ -18,8 +18,8 @@
   "devDependencies": {
     "@my-react/react-refresh": "workspace:*",
     "@my-react/react-rspack": "workspace:*",
-    "@rspack/cli": "^2.0.6",
-    "@rspack/core": "^2.0.6",
-    "@rspack/dev-server": "^2.0.3"
+    "@rspack/cli": "^2.0.8",
+    "@rspack/core": "^2.0.8",
+    "@rspack/dev-server": "^2.1.0"
   }
 }

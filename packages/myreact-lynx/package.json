@@ -65,29 +65,30 @@
     "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
-    "@lynx-js/chunk-loading-webpack-plugin": "^0.3.3",
-    "@lynx-js/css-extract-webpack-plugin": "^0.7.0",
+    "@lynx-js/chunk-loading-webpack-plugin": "^0.4.0",
+    "@lynx-js/css-extract-webpack-plugin": "^0.8.0",
     "@lynx-js/gesture-runtime": "^2.1.3",
-    "@lynx-js/react": "^0.116.5",
-    "@lynx-js/runtime-wrapper-webpack-plugin": "^0.1.3",
-    "@lynx-js/template-webpack-plugin": "^0.10.8",
-    "@lynx-js/webpack-dev-transport": "^0.2.0",
+    "@lynx-js/react": "^0.122.1",
+    "@lynx-js/runtime-wrapper-webpack-plugin": "^0.2.1",
+    "@lynx-js/template-webpack-plugin": "^0.12.2",
+    "@lynx-js/webpack-dev-transport": "^0.3.0",
     "@my-react/react-refresh": "^0.3.28",
     "@my-react/react-refresh-tools": "^0.0.39"
   },
   "devDependencies": {
-    "@lynx-js/type-element-api": "0.0.3",
-    "@lynx-js/types": "3.7.0",
+    "@lynx-js/type-element-api": "0.0.8",
+    "@lynx-js/types": "4.0.0",
     "@my-react/react-shared": "^0.3.28",
-    "@rsbuild/core": "^1.3.0",
-    "@rslib/core": "^0.22.0",
-    "@rspack/core": "^1.6.5"
+    "@rsbuild/core": "2.0.11",
+    "@rslib/core": "^0.23.2",
+    "@rspack/core": "2.0.8",
+    "@types/react": "catalog:"
   },
   "peerDependencies": {
     "@lynx-js/gesture-runtime": ">=2.0.0",
     "@my-react/react": ">=0.3.28",
-    "@rsbuild/core": ">=1.0.0",
-    "@rspack/core": ">=1.0.0"
+    "@rsbuild/core": ">=2.0.0",
+    "@rspack/core": ">=2.0.0"
   },
     "peerDependenciesMeta": {
     "@lynx-js/gesture-runtime": {

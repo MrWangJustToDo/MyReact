@@ -27,11 +27,6 @@ const myReactLynxRoot = path.resolve(_dirname, "../..");
 const PLUGIN_NAME_REACT_REFRESH = "lynx:myreact:refresh";
 
 export function applyRefresh(api: RsbuildPluginAPI): void {
-  api.modifyWebpackChain?.(async (chain, { CHAIN_ID, isProd }) => {
-    if (!isProd) {
-      await applyRefreshRules(api, chain, CHAIN_ID, ReactRefreshRspackPlugin);
-    }
-  });
   api.modifyBundlerChain(async (chain, { isProd, CHAIN_ID }) => {
     if (!isProd) {
       await applyRefreshRules(api, chain, CHAIN_ID, ReactRefreshRspackPlugin);

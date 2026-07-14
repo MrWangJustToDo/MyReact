@@ -1,1 +1,1 @@
-export type { WebpackChunk, WebpackCompilation, WebpackCompiler } from "./webpack";
+export type { RspackChunk, RspackCompilation, RspackCompiler, WebpackChunk, WebpackCompilation, WebpackCompiler } from "./rspack";

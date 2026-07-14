@@ -212,9 +212,10 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
               },
             },
             swc: {
+              // Do NOT set `jsc.target` — Rspeedy owns the SWC target via `env`
+              // (mutually exclusive with jsc.target). Compilation level comes from
+              // `@lynx-js/rspeedy`'s target plugin (es2017 + env.include transforms).
               jsc: {
-                // The Lynx JS engine only supports up to ES2019 syntax.
-                target: "es2019",
                 transform: {
                   react: {
                     // Use automatic JSX runtime (jsx/jsxs from react/jsx-runtime)
@@ -254,8 +255,8 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
           .use("swc-jsx")
           .loader("builtin:swc-loader")
           .options({
+            // Target is derived from Rspack `target` (set by Rspeedy), so omit jsc.target.
             jsc: {
-              target: "es2019",
               parser: {
                 syntax: "ecmascript",
                 jsx: true,

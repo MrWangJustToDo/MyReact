@@ -23,11 +23,11 @@
     "dev": "rslib -w"
   },
   "dependencies": {
-    "@rslib/core": "^0.22.0"
+    "@rslib/core": "^0.23.2"
   },
   "devDependencies": {
     "@my-react/react-shared": "^0.3.28",
-    "@rspack/core": "2.0.6"
+    "@rspack/core": "2.0.8"
   },
   "peerDependencies": {
     "@rspack/core": "^2.0.0",

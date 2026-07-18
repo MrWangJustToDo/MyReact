@@ -1,18 +1,18 @@
 {
   "name": "client",
-  "hash": "1741fbc3acd8fbe06535",
+  "hash": "5581881677e1a569905b",
   "publicPath": "/MyReact/client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/client",
   "assetsByChunkName": {
     "main": [
       "main-5aa2e3b272be33de521e.css",
-      "main-f8a14277b449b7cc6c97.js",
+      "main-045009a872b049eab936.js",
       "main-5aa2e3b272be33de521e.css.map",
-      "main-f8a14277b449b7cc6c97.js.map"
+      "main-045009a872b049eab936.js.map"
     ],
     "runtime": [
-      "runtime-4ed0fe6bbfce5e858248.js",
-      "runtime-4ed0fe6bbfce5e858248.js.map"
+      "runtime-56f6fa5a17168cb225ef.js",
+      "runtime-56f6fa5a17168cb225ef.js.map"
     ],
     "common-Layout": [
       "common-Layout-083bbdfe394ca5885e8b.js",
@@ -103,19 +103,19 @@
     },
     {
       "type": "asset",
-      "name": "911-00a4bddf94a5a6f6e156.js",
-      "size": 321151,
+      "name": "911-ca48323a32f4bf493a8a.js",
+      "size": 326196,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "00a4bddf94a5a6f6e156",
+        "contenthash": "ca48323a32f4bf493a8a",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "license": "911-00a4bddf94a5a6f6e156.js.LICENSE.txt",
-          "sourceMap": "911-00a4bddf94a5a6f6e156.js.map"
+          "license": "911-ca48323a32f4bf493a8a.js.LICENSE.txt",
+          "sourceMap": "911-ca48323a32f4bf493a8a.js.map"
         }
       },
       "chunkNames": [],
@@ -130,18 +130,18 @@
     },
     {
       "type": "asset",
-      "name": "main-f8a14277b449b7cc6c97.js",
-      "size": 294627,
+      "name": "main-045009a872b049eab936.js",
+      "size": 294693,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "f8a14277b449b7cc6c97",
+        "contenthash": "045009a872b049eab936",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "main-f8a14277b449b7cc6c97.js.map"
+          "sourceMap": "main-045009a872b049eab936.js.map"
         }
       },
       "chunkNames": [
@@ -189,18 +189,18 @@
     },
     {
       "type": "asset",
-      "name": "933-ab660e932eaf2ae08e6c.js",
-      "size": 181045,
+      "name": "933-85b30e824bafe736fd83.js",
+      "size": 181111,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "ab660e932eaf2ae08e6c",
+        "contenthash": "85b30e824bafe736fd83",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "933-ab660e932eaf2ae08e6c.js.map"
+          "sourceMap": "933-85b30e824bafe736fd83.js.map"
         }
       },
       "chunkNames": [],
@@ -245,18 +245,18 @@
     },
     {
       "type": "asset",
-      "name": "976-b289e9c65ff3a6ff06c4.js",
-      "size": 146243,
+      "name": "976-42dd00ce6523919e29b9.js",
+      "size": 146309,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "b289e9c65ff3a6ff06c4",
+        "contenthash": "42dd00ce6523919e29b9",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "976-b289e9c65ff3a6ff06c4.js.map"
+          "sourceMap": "976-42dd00ce6523919e29b9.js.map"
         }
       },
       "chunkNames": [],
@@ -355,18 +355,18 @@
     },
     {
       "type": "asset",
-      "name": "620cbaf4b51669d0a030.mjs",
-      "size": 61396,
+      "name": "96d06eae4c0ea8bc5471.mjs",
+      "size": 65671,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "sourceFilename": "../../packages/myreact-terminal/dist/esm/worker-entry.mjs",
         "immutable": true,
-        "contenthash": "620cbaf4b51669d0a030",
+        "contenthash": "96d06eae4c0ea8bc5471",
         "minimized": true,
         "related": {
-          "license": "620cbaf4b51669d0a030.mjs.LICENSE.txt"
+          "license": "96d06eae4c0ea8bc5471.mjs.LICENSE.txt"
         }
       },
       "chunkNames": [],
@@ -637,18 +637,18 @@
     },
     {
       "type": "asset",
-      "name": "runtime-4ed0fe6bbfce5e858248.js",
+      "name": "runtime-56f6fa5a17168cb225ef.js",
       "size": 4953,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "4ed0fe6bbfce5e858248",
+        "contenthash": "56f6fa5a17168cb225ef",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "sourceMap": "runtime-4ed0fe6bbfce5e858248.js.map"
+          "sourceMap": "runtime-56f6fa5a17168cb225ef.js.map"
         }
       },
       "chunkNames": [
@@ -986,7 +986,7 @@
       ],
       "assets": [
         {
-          "name": "runtime-4ed0fe6bbfce5e858248.js"
+          "name": "runtime-56f6fa5a17168cb225ef.js"
         },
         {
           "name": "vendor-efe928ce816e1058cf97.css"
@@ -1013,7 +1013,7 @@
           "name": "main-5aa2e3b272be33de521e.css"
         },
         {
-          "name": "main-f8a14277b449b7cc6c97.js"
+          "name": "main-045009a872b049eab936.js"
         }
       ],
       "filteredAssets": 0,
@@ -1440,13 +1440,13 @@
       "id": 792,
       "files": [
         "main-5aa2e3b272be33de521e.css",
-        "main-f8a14277b449b7cc6c97.js"
+        "main-045009a872b049eab936.js"
       ]
     },
     {
       "id": 121,
       "files": [
-        "runtime-4ed0fe6bbfce5e858248.js"
+        "runtime-56f6fa5a17168cb225ef.js"
       ]
     },
     {
@@ -1488,13 +1488,13 @@
     {
       "id": 976,
       "files": [
-        "976-b289e9c65ff3a6ff06c4.js"
+        "976-42dd00ce6523919e29b9.js"
       ]
     },
     {
       "id": 911,
       "files": [
-        "911-00a4bddf94a5a6f6e156.js"
+        "911-ca48323a32f4bf493a8a.js"
       ]
     },
     {
@@ -1597,7 +1597,7 @@
     {
       "id": 933,
       "files": [
-        "933-ab660e932eaf2ae08e6c.js"
+        "933-85b30e824bafe736fd83.js"
       ]
     },
     {

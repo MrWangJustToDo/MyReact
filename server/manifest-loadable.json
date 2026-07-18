@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "hash": "8d03ddc9a5df549d1317",
+  "hash": "8e1fc4284a8ecae191a6",
   "publicPath": "/MyReact/client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/server",
   "assetsByChunkName": {
@@ -57,18 +57,18 @@
     },
     {
       "type": "asset",
-      "name": "911-afe37ecd9d82f2cade9b.js",
-      "size": 319302,
+      "name": "911-8953306449d824b240cb.js",
+      "size": 324347,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "afe37ecd9d82f2cade9b",
+        "contenthash": "8953306449d824b240cb",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "license": "911-afe37ecd9d82f2cade9b.js.LICENSE.txt"
+          "license": "911-8953306449d824b240cb.js.LICENSE.txt"
         }
       },
       "chunkNames": [],
@@ -207,18 +207,18 @@
     },
     {
       "type": "asset",
-      "name": "620cbaf4b51669d0a030.mjs",
-      "size": 61396,
+      "name": "96d06eae4c0ea8bc5471.mjs",
+      "size": 65671,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "sourceFilename": "../../packages/myreact-terminal/dist/esm/worker-entry.mjs",
         "immutable": true,
-        "contenthash": "620cbaf4b51669d0a030",
+        "contenthash": "96d06eae4c0ea8bc5471",
         "minimized": true,
         "related": {
-          "license": "620cbaf4b51669d0a030.mjs.LICENSE.txt"
+          "license": "96d06eae4c0ea8bc5471.mjs.LICENSE.txt"
         }
       },
       "chunkNames": [],
@@ -948,7 +948,7 @@
     {
       "id": 911,
       "files": [
-        "911-afe37ecd9d82f2cade9b.js"
+        "911-8953306449d824b240cb.js"
       ]
     },
     {

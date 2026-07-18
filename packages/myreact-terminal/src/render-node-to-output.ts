@@ -107,6 +107,7 @@ export const renderToStatic = (
     selectionMap?: Map<DOMNode, { start: number; end: number }>;
     selectionStyle?: (line: StyledLine, index: number) => void;
     trackSelection?: boolean;
+    onRendered?: (node: DOMElement) => void;
   } = {}
 ) => {
   if (options.calculateLayout && node.yogaNode) {
@@ -213,8 +214,10 @@ export const renderToStatic = (
   }
 
   setCachedRender(node, rootRegion);
-  if (node.internal_onRendered) {
-    node.internal_onRendered();
+  if (options.onRendered) {
+    options.onRendered(node);
+  } else if (node.internal_onRendered) {
+    node.internal_onRendered(node);
   }
 };
 

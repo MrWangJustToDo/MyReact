@@ -149,6 +149,15 @@ export type RenderOptions = {
    * @default false
    */
   stickyHeadersInBackbuffer?: boolean;
+
+  /**
+   * Maximum number of lines to keep in the terminal backbuffer.
+   * This is only supported when using `terminalBuffer` or `renderProcess`.
+   *
+   * @default 1000
+   */
+  maxScrollbackLength?: number;
+
   cacheToStyledCharacters?: boolean;
   trackSelection?: boolean;
 };

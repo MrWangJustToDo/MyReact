@@ -19,6 +19,7 @@ import {
   testScrollIntoView,
   testSelection,
   testSticky,
+  testStaticRenderCache,
 } from "@test/react-terminal";
 
 // testBorder();
@@ -53,10 +54,12 @@ import {
 
 // testMultiInput();
 
-testResize();
+// testResize();
 
 // testScrollIntoView();
 
 // testSelection();
 
-// testSticky();
+testSticky();
+
+// testStaticRenderCache();

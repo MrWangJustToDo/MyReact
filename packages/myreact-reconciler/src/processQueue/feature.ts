@@ -58,11 +58,11 @@ export const processClassComponentUpdateQueueLatest = (
 
   const typedInstance = fiber.instance as MyReactComponent;
 
-  const baseState = Object.assign({}, fiber.pendingState);
-
   const baseProps = Object.assign({}, typedInstance.props);
 
-  const pendingState = Object.assign({}, fiber.pendingState);
+  const getBaseState = () => Object.assign({}, fiber.pendingState);
+
+  const getPendingState = () => Object.assign({}, fiber.pendingState);
 
   if (__DEV__ && enableDebugFiled.current && enableDebugUpdateQueue.current) {
     typedFiber._debugLatestUpdateQueue = new ListTree();
@@ -73,6 +73,10 @@ export const processClassComponentUpdateQueueLatest = (
       const updater = node.value;
 
       const nextNode = node.next;
+
+      const pendingState = getPendingState();
+
+      const baseState = getBaseState();
 
       if (updater.type === UpdateQueueType.component && updater.isSync) {
         if (__DEV__ && updater.trigger !== typedInstance) {
@@ -88,7 +92,7 @@ export const processClassComponentUpdateQueueLatest = (
         fiber.pendingState = safeCallWithCurrentFiber({
           fiber,
           fallback: function safeFallbackForState() {
-            return pendingState;
+            return getPendingState();
           },
           action: function safeGetNextState() {
             return Object.assign({}, fiber.pendingState, typeof payLoad === "function" ? payLoad(baseState, baseProps) : payLoad);
@@ -110,11 +114,9 @@ export const processClassComponentUpdateQueueLatest = (
 
           typedNode._debugRunTime = Date.now();
 
-          typedNode._debugBeforeValue = pendingState;
+          typedNode._debugBeforeValue = baseState;
 
-          typedNode._debugBaseValue = baseState;
-
-          typedNode._debugAfterValue = fiber.pendingState;
+          typedNode._debugAfterValue = getPendingState();
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
@@ -146,9 +148,7 @@ export const processClassComponentUpdateQueueLatest = (
 
           typedNode._debugBeforeValue = pendingState;
 
-          typedNode._debugBaseValue = baseState;
-
-          typedNode._debugAfterValue = fiber.pendingState;
+          typedNode._debugAfterValue = getPendingState();
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
@@ -190,6 +190,10 @@ export const processClassComponentUpdateQueueLatest = (
 
       const nextNode = node.next;
 
+      const pendingState = getPendingState();
+
+      const baseState = getBaseState();
+
       if (updater.type === UpdateQueueType.component) {
         if (__DEV__ && updater.trigger !== typedInstance) throw new Error("[@my-react/react] current update not valid, look like a bug for @my-react");
 
@@ -226,9 +230,7 @@ export const processClassComponentUpdateQueueLatest = (
 
           typedNode._debugBeforeValue = pendingState;
 
-          typedNode._debugBaseValue = baseState;
-
-          typedNode._debugAfterValue = fiber.pendingState;
+          typedNode._debugAfterValue = getPendingState();
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
@@ -260,9 +262,7 @@ export const processClassComponentUpdateQueueLatest = (
 
           typedNode._debugBeforeValue = pendingState;
 
-          typedNode._debugBaseValue = baseState;
-
-          typedNode._debugAfterValue = fiber.pendingState;
+          typedNode._debugAfterValue = getPendingState();
 
           if (enableDebugUpdateQueue.current) {
             typedFiber._debugUpdateQueue = typedFiber._debugUpdateQueue || new ListTree(10);
@@ -372,8 +372,6 @@ export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRen
 
         typedNode._debugBeforeValue = pendingState;
 
-        typedNode._debugBaseValue = baseState;
-
         typedNode._debugAfterValue = fiber.pendingState;
 
         if (enableDebugUpdateQueue.current) {
@@ -405,8 +403,6 @@ export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRen
         typedNode._debugRunTime = Date.now();
 
         typedNode._debugBeforeValue = pendingState;
-
-        typedNode._debugBaseValue = baseState;
 
         typedNode._debugAfterValue = fiber.pendingState;
 

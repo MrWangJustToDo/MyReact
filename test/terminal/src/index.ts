@@ -18,3 +18,4 @@ export { test as testResize } from "./resize-observer";
 export { test as testScrollIntoView } from "./scroll-into-view";
 export { test as testSelection } from "./selection";
 export { test as testSticky } from "./sticky";
+export { test as testStaticRenderCache } from "./static-render-cache";

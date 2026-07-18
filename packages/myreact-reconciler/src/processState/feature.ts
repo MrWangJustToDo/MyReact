@@ -15,7 +15,6 @@ export type UpdateQueueDev = UpdateQueue<{
   _debugCreateTime: number;
   _debugBeforeValue: any;
   _debugAfterValue: any;
-  _debugBaseValue: any;
   _debugRunTime: number;
 }>;
 

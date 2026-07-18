@@ -118,6 +118,7 @@ export default class Ink {
   private readonly isScreenReaderEnabled: boolean;
   private readonly selection: Selection;
   private readonly terminalBuffer?: TerminalBuffer;
+  private readonly pendingStaticRenderCallbacks = new Set<dom.DOMElement>();
   private optionsState: InkOptions;
 
   // Ignore last render after unmounting a tree to prevent empty output before exit
@@ -326,6 +327,7 @@ export default class Ink {
     this.rootNode.yogaNode!.calculateLayout(undefined, undefined, Yoga.DIRECTION_LTR);
 
     flushLayoutObservers(this.rootNode, this.isTerminalResized);
+    this.flushStaticRenderCallbacks();
     this.isTerminalResized = false;
   };
 
@@ -623,6 +625,21 @@ export default class Ink {
     });
   }
 
+  private flushStaticRenderCallbacks() {
+    if (this.pendingStaticRenderCallbacks.size === 0) {
+      return;
+    }
+
+    const nodes = [...this.pendingStaticRenderCallbacks];
+    this.pendingStaticRenderCallbacks.clear();
+
+    for (const node of nodes) {
+      if (node.cachedRender && node.internal_onRendered) {
+        node.internal_onRendered(node);
+      }
+    }
+  }
+
   private async renderWithTerminalBuffer(root: Region, cursorPosition: { row: number; col: number } | undefined) {
     const appliedChanges = this.terminalBuffer!.update(0, Number.MAX_SAFE_INTEGER, root, cursorPosition);
     if (appliedChanges) {
@@ -794,6 +811,9 @@ export default class Ink {
       renderToStatic(node, {
         skipStaticElements: false,
         trackSelection: this.options.trackSelection,
+        onRendered: (node) => {
+          this.pendingStaticRenderCallbacks.add(node);
+        },
       });
     }
   }

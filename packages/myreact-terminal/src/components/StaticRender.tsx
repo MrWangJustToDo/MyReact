@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useState, type ReactNode, type DependencyList } from "react";
 
-import { markNodeAsDirty, type DOMElement } from "../dom.js";
+import { type DOMElement } from "../dom.js";
+import { type Region } from "../output.js";
 import { type Styles } from "../styles.js";
 
-export type Props = {
-  readonly children: () => ReactNode;
+export type CommonProps = {
   readonly width: number;
   readonly style?: Styles;
   /**
@@ -13,7 +13,24 @@ export type Props = {
    * If omitted, the content will re-render whenever the `children` function reference changes.
    */
   readonly deps?: DependencyList;
+  /**
+   * Callback fired after the static content has been rendered and cached.
+   * Useful for measuring the element's size after rendering.
+   */
+  readonly onRender?: (node: DOMElement) => void;
 };
+
+export type Props = CommonProps &
+  (
+    | {
+        readonly cachedRender: Region;
+        readonly children?: never;
+      }
+    | {
+        readonly children: () => ReactNode;
+        readonly cachedRender?: never;
+      }
+  );
 
 const areDepsEqual = (prevDeps?: DependencyList, nextDeps?: DependencyList): boolean => {
   if (prevDeps === nextDeps) return true;
@@ -50,8 +67,8 @@ const areDepsEqual = (prevDeps?: DependencyList, nextDeps?: DependencyList): boo
  * over newly appended items, allowing it to only render the newest items and append them to the
  * terminal output.
  *
- * `<StaticRender>` instead takes a `children` function that returns the entire block to be
- * rendered and cached. Currently, the API of `<StaticRender>` does not support taking an array
+ * `<StaticRender>` instead takes either a `children` function that returns the entire block to be
+ * rendered and cached, or a pre-computed `cachedRender` Region object. Currently, the API of `<StaticRender>` does not support taking an array
  * of items. However, we might modify it to support that in the future to improve performance
  * (for very large, continuously growing lists) if we can figure out the right incremental
  * invalidation solution.
@@ -59,54 +76,52 @@ const areDepsEqual = (prevDeps?: DependencyList, nextDeps?: DependencyList): boo
  * @param props.width Required. The width of the static block. Ink needs this to pre-calculate
  * the layout having it be dependent on the rest of the app's layout.
  */
-export default function StaticRender({ children, width, style, deps }: Props) {
+export default function StaticRender({ children, width, style, deps, onRender, cachedRender }: Props) {
   const ref = useRef<DOMElement>(null);
   const [renderedVersion, setRenderedVersion] = useState(0);
+  const prevCachedRender = useRef(cachedRender);
   const prevChildren = useRef(children);
   const prevDeps = useRef(deps);
   const pendingVersion = useRef(1);
 
-  let nextPendingVersion = pendingVersion.current;
+  const cachedRenderChanged = cachedRender !== prevCachedRender.current;
+  const depsChanged = deps !== undefined && !areDepsEqual(prevDeps.current, deps);
+  const childrenChanged = deps === undefined && children !== prevChildren.current;
 
-  if (deps !== undefined) {
-    if (!areDepsEqual(prevDeps.current, deps)) {
-      prevDeps.current = deps;
-      nextPendingVersion++;
-    }
-  } else if (children !== prevChildren.current) {
+  if (cachedRenderChanged || depsChanged || childrenChanged) {
+    prevCachedRender.current = cachedRender;
     prevChildren.current = children;
-    nextPendingVersion++;
+    prevDeps.current = deps;
+    pendingVersion.current++;
   }
 
-  if (nextPendingVersion !== pendingVersion.current) {
-    pendingVersion.current = nextPendingVersion;
-    if (ref.current) {
-      ref.current.cachedRender = undefined;
-      markNodeAsDirty(ref.current);
-    }
-  }
-
-  const shouldRender = renderedVersion !== pendingVersion.current;
+  // We only render children if we haven't successfully rendered this pendingVersion yet.
+  const pendingRenderVersion = pendingVersion.current;
+  const shouldRenderChildren = !cachedRender && renderedVersion !== pendingRenderVersion && children;
 
   useEffect(() => {
     const node = ref.current;
     return () => {
-      if (node) {
+      if (node && !cachedRender) {
         node.cachedRender = undefined;
       }
     };
-  }, []);
+  }, [cachedRender]);
 
   return (
     <ink-static-render
       ref={ref}
       style={{ ...style, width }}
-      internal_onRendered={() => {
-        const nextRenderedVersion = pendingVersion.current;
-        setRenderedVersion((currentVersion) => (currentVersion === nextRenderedVersion ? currentVersion : nextRenderedVersion));
+      cachedRender={cachedRender}
+      internal_staticRenderVersion={pendingRenderVersion}
+      internal_onRendered={(node) => {
+        setRenderedVersion((currentVersion) => (currentVersion === pendingRenderVersion ? currentVersion : pendingRenderVersion));
+        if (onRender) {
+          onRender(node);
+        }
       }}
     >
-      {shouldRender ? children() : null}
+      {shouldRenderChildren ? children() : null}
     </ink-static-render>
   );
 }

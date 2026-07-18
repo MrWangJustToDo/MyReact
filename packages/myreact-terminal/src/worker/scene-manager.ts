@@ -28,6 +28,7 @@ export class SceneManager {
     updates: RegionUpdate[],
     options: {
       animatedScroll: boolean;
+      maxScrollbackLength?: number;
       onScrollUpdate: (regionId: string | number, scrollTop: number, isNew: boolean) => void;
       onRegionDeleted?: (regionId: string | number) => void;
     }
@@ -125,12 +126,32 @@ export class SceneManager {
         }
 
         const newOffsetY = r.linesOffsetY ?? 0;
-        const newLines: StyledLine[] = [];
         const newLength = update.lines.totalLength ?? 0;
-        for (let i = 0; i < newLength; i++) {
-          newLines.push(sparseLines[newOffsetY + i] || new StyledLine());
+        let retainedStart = newOffsetY;
+
+        if (r.overflowToBackbuffer && options.maxScrollbackLength !== undefined) {
+          retainedStart = Math.max(0, newOffsetY + newLength - options.maxScrollbackLength);
+          retainedStart = Math.min(retainedStart, newOffsetY);
+
+          let minPopulated = r.lines.length > 0 ? oldOffsetY : Number.POSITIVE_INFINITY;
+          for (const chunk of update.lines.updates) {
+            minPopulated = Math.min(minPopulated, chunk.start);
+          }
+
+          if (minPopulated !== Number.POSITIVE_INFINITY) {
+            retainedStart = Math.max(retainedStart, minPopulated);
+          } else if (r.lines.length === 0 && newOffsetY > 0) {
+            // If we have no chunks and no old lines, don't generate history out of nowhere
+            retainedStart = newOffsetY;
+          }
         }
 
+        const newLines: StyledLine[] = [];
+        for (let i = retainedStart; i < newOffsetY + newLength; i++) {
+          newLines.push(sparseLines[i] || new StyledLine());
+        }
+
+        r.linesOffsetY = retainedStart;
         (r.lines as StyledLine[]) = newLines;
       }
     }

@@ -75,4 +75,4 @@ export const App = () => {
   );
 };
 
-createCliRenderer().then((renderer) => createRoot(renderer).render(<App />));
+export const test = () => createCliRenderer().then((renderer) => createRoot(renderer).render(<App />));

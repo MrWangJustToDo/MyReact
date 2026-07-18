@@ -477,7 +477,14 @@ export default class TerminalBuffer {
     }
 
     // Diff lines
-    const lineUpdates = this.diffLines(last.lines, last.linesOffsetY ?? 0, current.lines, current.linesOffsetY ?? 0);
+    const lineUpdates = this.diffLines(
+      last.lines,
+      last.linesOffsetY ?? 0,
+      current.lines,
+      current.linesOffsetY ?? 0,
+      current.overflowToBackbuffer ?? false,
+      current.scrollTop ?? 0
+    );
 
     if (lineUpdates.length > 0 || last.lines.length !== current.lines.length || last.linesOffsetY !== current.linesOffsetY) {
       hasChanges = true;
@@ -515,7 +522,9 @@ export default class TerminalBuffer {
     oldLines: readonly StyledLine[],
     oldOffsetY: number,
     newLines: readonly StyledLine[],
-    newOffsetY: number
+    newOffsetY: number,
+    overflowToBackbuffer: boolean,
+    scrollTop: number
   ): Array<{
     start: number;
     end: number;
@@ -558,6 +567,11 @@ export default class TerminalBuffer {
     };
 
     for (let y = minOffset; y < maxOffset; y++) {
+      if (overflowToBackbuffer && y < newOffsetY && y < scrollTop) {
+        flushChunk();
+        continue;
+      }
+
       const oldLine = y >= oldOffsetY && y < maxOld ? oldLines[y - oldOffsetY] : undefined;
       const newLine = y >= newOffsetY && y < maxNew ? newLines[y - newOffsetY] : undefined;
 

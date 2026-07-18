@@ -24,7 +24,8 @@ declare namespace Ink {
 		style?: Styles;
 		ref?: LegacyRef<DOMElement>;
 		cachedRender?: Region;
-		internal_onRendered?: () => void;
+    internal_staticRenderVersion?: number;
+		internal_onRendered?: (node: DOMElement) => void;
   };
 
   type Text = {

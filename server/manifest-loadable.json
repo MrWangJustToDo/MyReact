@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "hash": "8e1fc4284a8ecae191a6",
+  "hash": "9617d328bfe75492677b",
   "publicPath": "/MyReact/client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/server",
   "assetsByChunkName": {
@@ -57,18 +57,18 @@
     },
     {
       "type": "asset",
-      "name": "911-8953306449d824b240cb.js",
+      "name": "911-5ee2ebbc31746c2181f3.js",
       "size": 324347,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,
       "info": {
         "immutable": true,
-        "contenthash": "8953306449d824b240cb",
+        "contenthash": "5ee2ebbc31746c2181f3",
         "javascriptModule": false,
         "minimized": true,
         "related": {
-          "license": "911-8953306449d824b240cb.js.LICENSE.txt"
+          "license": "911-5ee2ebbc31746c2181f3.js.LICENSE.txt"
         }
       },
       "chunkNames": [],
@@ -948,7 +948,7 @@
     {
       "id": 911,
       "files": [
-        "911-8953306449d824b240cb.js"
+        "911-5ee2ebbc31746c2181f3.js"
       ]
     },
     {

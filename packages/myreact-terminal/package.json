@@ -3,7 +3,7 @@
   "description": "@my-react/react-terminal",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "main": "index.mjs",
   "types": "./index.d.ts",
   "type": "module",
@@ -119,7 +119,7 @@
     "socket.io-client": "^4.8.3"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.28",
+    "@my-react/react": ">=0.3.29",
     "@xterm/xterm": ">=5.0.0 || >=6.0.0",
     "@xterm/addon-fit": ">=0.11.0"
   },

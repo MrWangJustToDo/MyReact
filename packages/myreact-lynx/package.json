@@ -3,7 +3,7 @@
   "description": "MyReact renderer for Lynx dual-thread architecture",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "type": "module",
   "main": "./dist/runtime/index.js",
   "types": "./dist/runtime/index.d.ts",
@@ -72,13 +72,13 @@
     "@lynx-js/runtime-wrapper-webpack-plugin": "^0.2.1",
     "@lynx-js/template-webpack-plugin": "^0.12.2",
     "@lynx-js/webpack-dev-transport": "^0.3.0",
-    "@my-react/react-refresh": "^0.3.28",
-    "@my-react/react-refresh-tools": "^0.0.39"
+    "@my-react/react-refresh": "^0.3.29",
+    "@my-react/react-refresh-tools": "^0.0.40"
   },
   "devDependencies": {
     "@lynx-js/type-element-api": "0.0.8",
     "@lynx-js/types": "4.0.0",
-    "@my-react/react-shared": "^0.3.28",
+    "@my-react/react-shared": "^0.3.29",
     "@rsbuild/core": "2.0.11",
     "@rslib/core": "^0.23.2",
     "@rspack/core": "2.0.8",
@@ -86,7 +86,7 @@
   },
   "peerDependencies": {
     "@lynx-js/gesture-runtime": ">=2.0.0",
-    "@my-react/react": ">=0.3.28",
+    "@my-react/react": ">=0.3.29",
     "@rsbuild/core": ">=2.0.0",
     "@rspack/core": ">=2.0.0"
   },

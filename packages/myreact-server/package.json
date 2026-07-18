@@ -3,7 +3,7 @@
   "description": "React Server Components support for MyReact",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.28",
+  "version": "0.3.29",
   "main": "./index.js",
   "types": "./dist/types/index.d.ts",
   "module": "./dist/esm/index.mjs",
@@ -97,10 +97,10 @@
     "@lazarv/rsc": "0.0.0-experimental-ea77130-20260606-da63a699"
   },
   "devDependencies": {
-    "@my-react/react-shared": "^0.3.28"
+    "@my-react/react-shared": "^0.3.29"
   },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.28",
-    "@my-react/react-reconciler": ">=0.3.28"
+    "@my-react/react": ">=0.3.29",
+    "@my-react/react-reconciler": ">=0.3.29"
   }
 }

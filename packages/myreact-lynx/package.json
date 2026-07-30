@@ -5,8 +5,8 @@
   "license": "MIT",
   "version": "0.0.8",
   "type": "module",
-  "main": "./dist/runtime/index.js",
-  "types": "./dist/runtime/index.d.ts",
+  "main": "./dist/background/index.js",
+  "types": "./dist/background/index.d.ts",
   "files": [
     "dist",
     "client",
@@ -14,6 +14,8 @@
     "scripts",
     "package.json",
     "readme.md",
+    "PLUGIN.md",
+    "FEATURES.md",
     "jsx-runtime.d.ts",
     "jsx-runtime.js",
     "jsx-namespace.d.ts",
@@ -27,8 +29,8 @@
   },
   "exports": {
     ".": {
-      "types": "./dist/runtime/index.d.ts",
-      "import": "./dist/runtime/index.js"
+      "types": "./dist/background/index.d.ts",
+      "import": "./dist/background/index.js"
     },
     "./jsx-runtime": {
       "import": "./jsx-runtime.js",
@@ -38,13 +40,13 @@
       "import": "./jsx-dev-runtime.js",
       "types": "./jsx-dev-runtime.d.ts"
     },
-    "./entry-background": {
-      "types": "./dist/runtime/entry-background.d.ts",
-      "import": "./dist/runtime/entry-background.js"
+    "./background": {
+      "types": "./dist/background/entry.d.ts",
+      "import": "./dist/background/entry.js"
     },
     "./main-thread": {
-      "types": "./dist/main-thread/entry-main.d.ts",
-      "import": "./dist/main-thread/entry-main.js"
+      "types": "./dist/main-thread/entry.d.ts",
+      "import": "./dist/main-thread/entry.js"
     },
     "./plugin": {
       "types": "./dist/plugin/index.d.ts",

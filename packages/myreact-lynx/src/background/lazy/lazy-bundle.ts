@@ -10,8 +10,8 @@
  * 3. Loader sets `defaultProps.__lynxScope` on the component
  */
 
-import { loadLazyBundleSync } from "../shared/load-lazy-bundle-sync.js";
-import { makeSyncThen } from "../shared/make-sync-then.js";
+import { loadLazyBundleSync } from "../../shared/load-lazy-bundle-sync.js";
+import { makeSyncThen } from "../../shared/make-sync-then.js";
 
 import { registerModuleScope } from "./bundle-registry.js";
 

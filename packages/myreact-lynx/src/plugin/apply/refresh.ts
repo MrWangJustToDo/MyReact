@@ -9,20 +9,20 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { LAYERS } from "./layers.js";
-import { ReactRefreshRspackPlugin } from "./plugins";
+import { LAYERS } from "../layers.js";
+import { ReactRefreshRspackPlugin } from "../rspack-plugins";
 
 import type { ChainIdentifier, RsbuildPluginAPI, RspackChain } from "@rsbuild/core";
 
 export { ReactRefreshRspackPlugin };
-export type { ReactRefreshRspackPluginOptions } from "./plugins";
+export type { ReactRefreshRspackPluginOptions } from "../rspack-plugins";
 
 const __filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(__filename);
 
 const require = createRequire(__filename);
 
-const myReactLynxRoot = path.resolve(_dirname, "../..");
+const myReactLynxRoot = path.resolve(_dirname, "../../..");
 
 const PLUGIN_NAME_REACT_REFRESH = "lynx:myreact:refresh";
 

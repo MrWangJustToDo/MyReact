@@ -16,9 +16,7 @@ export const WORKLET_NODE_MODULES_PACKAGES = ["@lynx-js/gesture-runtime", "@lynx
  * Webpack `exclude` predicate: skip `node_modules` except worklet packages.
  * Function form required for pnpm's `node_modules/.pnpm/...` layout.
  */
-export function createNodeModulesExceptWorkletPackagesExclude(
-  packages: readonly string[] = WORKLET_NODE_MODULES_PACKAGES
-): (resourcePath: string) => boolean {
+export function createNodeModulesExceptWorkletPackagesExclude(packages: readonly string[] = WORKLET_NODE_MODULES_PACKAGES): (resourcePath: string) => boolean {
   const pkgMatchers = packages.map((pkg) => {
     const escaped = pkg.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\//g, "[\\\\/]");
     return new RegExp(`[\\\\/]${escaped}([\\\\/]|$)`);

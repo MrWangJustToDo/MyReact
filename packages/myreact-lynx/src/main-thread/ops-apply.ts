@@ -125,7 +125,7 @@ export function applyOps(ops: unknown[]): void {
         const child = elements.get(childId);
         if (parent && child) {
           if (isListParent(parentId)) {
-            insertListItem(parentId, child, childId);
+            insertListItem(parentId, child, childId, anchorId);
           } else if (anchorId === -1) {
             __AppendElement(parent, child);
           } else {
@@ -259,7 +259,7 @@ export function applyOps(ops: unknown[]): void {
   __FlushElementTree();
 }
 
-/** Expose elements map so entry-main.ts can seed the page-root entry. */
+/** Expose elements map so main-thread/entry.ts can seed the page-root entry. */
 export { elements };
 
 /** Reset module state – for testing only. */

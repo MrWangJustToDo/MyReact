@@ -40,29 +40,29 @@ export {
 // Worklet SWC transform (runtimePkg) and packages like `@lynx-js/motion` import these.
 export { loadWorkletRuntime, runWorkletCtx } from "@lynx-js/react/worklet-runtime/bindings";
 
-export { reconciler, render, root, createPortal, flushSync, type Root } from "./renderer";
-export { markFirstScreenPatchComplete } from "./first-screen-patch";
-export { useMainThreadRef, MainThreadRef } from "./main-thread-ref";
-export { runOnBackground } from "./run-on-background";
-export { transformToWorklet } from "./transform-to-worklet";
-export { runOnMainThread } from "./cross-thread";
+export { reconciler, render, root, createPortal, flushSync, type Root } from "./render/renderer.js";
+export { markFirstScreenPatchComplete } from "./first-screen/first-screen-patch.js";
+export { useMainThreadRef, MainThreadRef } from "./worklet/main-thread-ref.js";
+export { runOnBackground } from "./worklet/run-on-background.js";
+export { transformToWorklet } from "./worklet/transform-to-worklet.js";
+export { runOnMainThread } from "./worklet/cross-thread.js";
 
 // InitData system
-export { useLynxGlobalEventListener } from "./use-lynx-global-event-listener";
-export { useInitData, useInitDataChanged, InitDataProvider, InitDataConsumer, withInitDataInState, type InitData, type InitDataRaw } from "./init-data";
+export { useLynxGlobalEventListener } from "./data/use-lynx-global-event-listener.js";
+export { useInitData, useInitDataChanged, InitDataProvider, InitDataConsumer, withInitDataInState, type InitData, type InitDataRaw } from "./data/init-data.js";
 
 // GlobalProps system
-export { useGlobalProps, useGlobalPropsChanged, GlobalPropsProvider, GlobalPropsConsumer, type GlobalProps } from "./global-props";
+export { useGlobalProps, useGlobalPropsChanged, GlobalPropsProvider, GlobalPropsConsumer, type GlobalProps } from "./data/global-props.js";
 
 // Data Processor system
-export { registerDataProcessors, type DataProcessorDefinition, type DataProcessors } from "./data-processor";
+export { registerDataProcessors, type DataProcessorDefinition, type DataProcessors } from "./data/data-processor.js";
 
 // Lynx API extensions
-export { triggerGlobalEventFromLepus, querySelector, querySelectorAll, type LynxAPI } from "./lynx-api";
+export { triggerGlobalEventFromLepus, querySelector, querySelectorAll, type LynxAPI } from "./data/lynx-api.js";
 
 // Lazy bundle loading
-export { loadLazyBundle, makeSyncThen } from "./lazy-bundle";
-export { loadDynamicJS, __dynamicImport } from "./dynamic-import";
+export { loadLazyBundle, makeSyncThen } from "./lazy/lazy-bundle.js";
+export { loadDynamicJS, __dynamicImport } from "./lazy/dynamic-import.js";
 
 // Gesture system
 export {
@@ -79,7 +79,7 @@ export {
   ComposedGesture,
   ExclusiveGesture,
 } from "@lynx-js/gesture-runtime";
-export { useGesture } from "./useGesture.js";
+export { useGesture } from "./gesture/use-gesture.js";
 export type {
   GestureKind,
   GestureChangeEvent,

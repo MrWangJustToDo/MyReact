@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useMemo, lazy, Suspense } from "@my-react/react";
+import { useCallback, useState, useEffect, useMemo, lazy, Suspense } from "@my-react/react";
 import { useMainThreadRef, runOnMainThread } from "@my-react/react-lynx";
 
 import { Bar } from "./Bar";
@@ -7,12 +7,36 @@ import "./App.css";
 
 const LazyComponent = lazy(() => import("./LazyCom.js"));
 
+export type DemoPage =
+  | "home"
+  | "gesture"
+  | "motion"
+  | "events"
+  | "list"
+  | "data"
+  | "portal"
+  | "css";
+
 interface AppProps {
-  onOpenGesture?: () => void;
-  onOpenMotion?: () => void;
+  onOpen: (page: Exclude<DemoPage, "home">) => void;
 }
 
-export const App = ({ onOpenGesture, onOpenMotion }: AppProps) => {
+const FEATURES: Array<{
+  id: Exclude<DemoPage, "home">;
+  title: string;
+  desc: string;
+  icon: string;
+}> = [
+  { id: "gesture", title: "Gesture", desc: "Pan / tap / long-press + runOnBackground", icon: "👆" },
+  { id: "motion", title: "Motion", desc: "@lynx-js/motion slider (worklet allowlist)", icon: "🎞" },
+  { id: "events", title: "Events & Worklets", desc: "bind / catch / main-thread:bind / runOnMainThread", icon: "⚡" },
+  { id: "list", title: "List", desc: "<list> / <list-item> + item-key", icon: "📋" },
+  { id: "data", title: "Data APIs", desc: "initData / globalProps / processors", icon: "📦" },
+  { id: "portal", title: "Portal & flushSync", desc: "createPortal + flushSync", icon: "🚪" },
+  { id: "css", title: "CSS & Query", desc: "selectors / CSS vars / querySelector", icon: "🎨" },
+];
+
+export const App = ({ onOpen }: AppProps) => {
   const [count, setCount] = useState(0);
   const [tone, setTone] = useState<"sea" | "sun">("sea");
   const [mtMessage, setMtMessage] = useState("Waiting...");
@@ -20,7 +44,6 @@ export const App = ({ onOpenGesture, onOpenMotion }: AppProps) => {
   const cardRef = useMainThreadRef<any>(null);
 
   const onTap = useCallback(() => {
-    console.log("[Background Thread] onTap called");
     setCount((prev) => prev + 1);
     setTone((prev) => (prev === "sea" ? "sun" : "sea"));
   }, []);
@@ -29,16 +52,13 @@ export const App = ({ onOpenGesture, onOpenMotion }: AppProps) => {
     () =>
       function () {
         "main thread";
-        console.log("[Main Thread] onMainThreadTap executed!");
         return "Hello from Main Thread!";
       },
     []
   );
 
   const triggerMainThread = useCallback(async () => {
-    console.log("[Background Thread] Calling runOnMainThread...");
     const result = await runOnMainThread(onMainThreadTap)();
-    console.log("[Background Thread] Got result:", result);
     setMtMessage(result);
   }, [onMainThreadTap]);
 
@@ -47,7 +67,6 @@ export const App = ({ onOpenGesture, onOpenMotion }: AppProps) => {
       "main thread";
       const el = ref.current;
       if (el) {
-        console.log("[Main Thread] Animating element:", el);
         el.setStyleProperty?.("opacity", "0.5");
         setTimeout(() => {
           el.setStyleProperty?.("opacity", "1");
@@ -66,16 +85,14 @@ export const App = ({ onOpenGesture, onOpenMotion }: AppProps) => {
 
   return (
     <scroll-view className={`Scene Scene--${tone}`} style={{ height: "100%" }} scroll-orientation="vertical">
-      {/* Header */}
       <view className="Header">
         <view className="Logo">
           <text className="LogoText">M</text>
         </view>
         <text className="Title">MyReact Lynx</text>
-        <text className="Subtitle">Dual-Thread Architecture Demo</text>
+        <text className="Subtitle">Capability demos (see FEATURES.md)</text>
       </view>
 
-      {/* Counter Section */}
       <view className="Section">
         <text className="SectionTitle">Interactive Counter</text>
         <view className="Card" main-thread:ref={cardRef} bindtap={onTap}>
@@ -85,37 +102,24 @@ export const App = ({ onOpenGesture, onOpenMotion }: AppProps) => {
         </view>
       </view>
 
-      {/* Features Section */}
       <view className="Section" style={{ margin: "10px" }}>
-        <text className="SectionTitle">Features</text>
+        <text className="SectionTitle">Feature demos</text>
 
-        <view className="FeatureCard" bindtap={onOpenGesture}>
-          <view className="FeatureIcon FeatureIcon--gesture">
-            <text className="FeatureIconText">👆</text>
+        {FEATURES.map((f) => (
+          <view key={f.id} className="FeatureCard" bindtap={() => onOpen(f.id)}>
+            <view className="FeatureIcon FeatureIcon--gesture">
+              <text className="FeatureIconText">{f.icon}</text>
+            </view>
+            <view className="FeatureContent">
+              <text className="FeatureTitle">{f.title}</text>
+              <text className="FeatureDesc">{f.desc}</text>
+            </view>
+            <view className="FeatureBadge FeatureBadge--gesture">
+              <text className="FeatureBadgeText FeatureBadgeText--gesture">OPEN</text>
+            </view>
           </view>
-          <view className="FeatureContent">
-            <text className="FeatureTitle">Gesture Test</text>
-            <text className="FeatureDesc">Pan, tap, and long-press with @lynx-js/gesture-runtime</text>
-          </view>
-          <view className="FeatureBadge FeatureBadge--gesture">
-            <text className="FeatureBadgeText FeatureBadgeText--gesture">OPEN</text>
-          </view>
-        </view>
+        ))}
 
-        <view className="FeatureCard" bindtap={onOpenMotion}>
-          <view className="FeatureIcon FeatureIcon--gesture">
-            <text className="FeatureIconText">🎞</text>
-          </view>
-          <view className="FeatureContent">
-            <text className="FeatureTitle">Motion Slider</text>
-            <text className="FeatureDesc">iOSSlider-style demo with @lynx-js/motion</text>
-          </view>
-          <view className="FeatureBadge FeatureBadge--gesture">
-            <text className="FeatureBadgeText FeatureBadgeText--gesture">OPEN</text>
-          </view>
-        </view>
-
-        {/* Lazy Component */}
         <Suspense
           fallback={
             <view className="Loading">
@@ -126,11 +130,9 @@ export const App = ({ onOpenGesture, onOpenMotion }: AppProps) => {
           <LazyComponent />
         </Suspense>
 
-        {/* Bar Component */}
         <Bar />
       </view>
 
-      {/* Main Thread Actions */}
       <view className="Section">
         <text className="SectionTitle">Main Thread Actions</text>
         <view className="ButtonGroup">
@@ -145,7 +147,6 @@ export const App = ({ onOpenGesture, onOpenMotion }: AppProps) => {
         </view>
       </view>
 
-      {/* Response Card */}
       <view className="InfoCard">
         <view className="InfoIcon">
           <text className="InfoIconText">✓</text>
@@ -156,15 +157,10 @@ export const App = ({ onOpenGesture, onOpenMotion }: AppProps) => {
         </view>
       </view>
 
-      {/* Footer */}
       <view className="Footer">
         <view className="FooterRow">
           <view className="FooterDot FooterDot--bg" />
-          <text className="FooterText">Background: React reconciler & app logic</text>
-        </view>
-        <view className="FooterRow">
-          <view className="FooterDot FooterDot--main" />
-          <text className="FooterText">Main Thread: Native PAPI & worklets</text>
+          <text className="FooterText">Home also covers: BG state, CSS, Suspense lazy, useMainThreadRef</text>
         </view>
       </view>
     </scroll-view>

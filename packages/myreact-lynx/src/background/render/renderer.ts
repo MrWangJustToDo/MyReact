@@ -1,12 +1,13 @@
 import createReconciler from "@my-react/react-reconciler-compact";
 import { ConcurrentRoot } from "@my-react/react-reconciler-compact/constants";
 
-import { registerDataProcessors } from "./data-processor";
-import { hostConfig } from "./reconciler";
-import { scheduleFirstScreenPatchEnd } from "./schedule-first-screen-patch-end.js";
-import { createPageRoot, type ShadowElement } from "./shadow-element";
+import { registerDataProcessors } from "../data/data-processor.js";
 
-import type { DataProcessorDefinition } from "./data-processor";
+import { scheduleFirstScreenPatchEnd } from "./flush.js";
+import { hostConfig } from "./reconciler.js";
+import { createPageRoot, type ShadowElement } from "./shadow-element.js";
+
+import type { DataProcessorDefinition } from "../data/data-processor.js";
 import type { ReactNode } from "react";
 
 export const reconciler = createReconciler(hostConfig);
@@ -73,7 +74,7 @@ export function render(element: React.ReactNode) {
       null
     );
   }
-  reconciler.updateContainer(element, rootContainer, null, () => {
+  reconciler.updateContainer(element as ReactNode, rootContainer, null, () => {
     if (initialRenderPending) {
       initialRenderPending = false;
       scheduleFirstScreenPatchEnd();
@@ -136,6 +137,6 @@ export const root: Root = {
   },
 };
 
-export const createPortal = reconciler.createPortal as unknown as (element: ReactNode, container: ShadowElement) => React.ReactPortal;
+export const createPortal = reconciler.createPortal as unknown as (element: ReactNode, container: ShadowElement) => React.ReactNode;
 
 export const flushSync = reconciler.flushSync;

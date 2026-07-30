@@ -9,7 +9,7 @@
  *
  * Split of responsibilities:
  * - Here: Promise-based `globalThis.queueMicrotask` when missing (library-safe)
- * - `install-lynx-scheduler.ts`: framework `microTask` via `lynx.queueMicrotask`
+ * - `background/render/install-lynx-scheduler.ts`: framework `microTask` via `lynx.queueMicrotask`
  */
 
 type MicrotaskFn = (callback: () => void) => void;

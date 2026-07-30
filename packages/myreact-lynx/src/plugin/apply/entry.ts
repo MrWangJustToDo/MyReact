@@ -74,14 +74,14 @@
  * - The `@lynx-js/react/internal` module is pre-built, so `DefinePlugin` can't replace it
  * - When user code imports `loadLazyBundle`, it fails at runtime
  *
- * **Fix**: Created shim module and alias (in `rsbuild.ts` and `shims/lynx-react-internal.ts`)
+ * **Fix**: Created shim module and alias (in `plugin/rsbuild.ts` and `src/shims/lynx-react-internal.ts`)
  * ```ts
  * // Alias redirects imports to our shim
  * chain.resolve.alias.set("@lynx-js/react/internal$", "@my-react/react-lynx/shims/lynx-react-internal");
  *
  * // Shim re-exports everything but overrides loadLazyBundle
  * export * from "@lynx-js/react/internal";
- * export { loadLazyBundle } from "../runtime/lazy-bundle.js";
+ * export { loadLazyBundle } from "../background/lazy/lazy-bundle.js";
  * ```
  *
  * **Why this fix works**:
@@ -99,7 +99,7 @@
  * - `__dynamicImport` uses ReactLynx's lazy bundle system (not standard webpack chunks)
  * - This is designed for ReactLynx's snapshot system, not standard React.lazy()
  *
- * **Fix**: Disable dynamicImport in worklet loaders (in `worklet-loader.ts` and `worklet-loader-mt.ts`)
+ * **Fix**: Disable dynamicImport in worklet loaders (in `plugin/loaders/worklet-loader.ts` and `worklet-loader-mt.ts`)
  * ```ts
  * const result = transformReactLynxSync(source, {
  *   dynamicImport: false,  // Don't transform import() calls
@@ -121,7 +121,7 @@
  * - SWC's React JSX transform rejects namespace syntax by default
  * - This is a Lynx-specific extension for main-thread event binding
  *
- * **Fix**: Enable namespace support in SWC config (in `rsbuild.ts`)
+ * **Fix**: Enable namespace support in SWC config (in `plugin/rsbuild.ts`)
  * ```ts
  * tools: {
  *   swc: {
@@ -147,7 +147,7 @@
  * - Main Thread's map still has old hash, new hash lookup returns `undefined`
  * - Calling `.bind()` on undefined throws
  *
- * **Fix**: Added timeout and warning in `cross-thread.ts`
+ * **Fix**: Added timeout and warning in `background/worklet/cross-thread.ts`
  * ```ts
  * // In dev mode, use timeout to detect stale worklets
  * if (__DEV__) {
@@ -170,7 +170,7 @@
  * - Default webpack chunk loading (jsonp/import-scripts) doesn't work in Lynx
  * - Need `ChunkLoadingWebpackPlugin` to enable `chunkLoading: 'lynx'`
  *
- * **Fix**: Added chunk loading plugin with environment awareness (in `rsbuild.ts`)
+ * **Fix**: Added chunk loading plugin with environment awareness (in `plugin/rsbuild.ts`)
  * ```ts
  * const isLynxEnv = environment.name === "lynx" || environment.name.startsWith("lynx-");
  * if (isLynxEnv) {
@@ -221,9 +221,9 @@
  * - The chunk loading code calls `lynx.loadLazyBundle()` to load async bundles
  * - Without registration, `lynx.loadLazyBundle` is undefined
  *
- * **Fix**: Register `loadLazyBundle` on `lynx` in entry-background.ts
+ * **Fix**: Register `loadLazyBundle` on `lynx` in background/entry.ts
  * ```ts
- * import { loadLazyBundle } from "./lazy-bundle.js";
+ * import { loadLazyBundle } from "./lazy/lazy-bundle.js";
  *
  * if (typeof lynx !== "undefined") {
  *   lynx.loadLazyBundle = loadLazyBundle;
@@ -261,7 +261,7 @@
  *    return parts.join("\n");
  *    ```
  *
- * 2. **Mark async MT chunks with `lynx:main-thread` info in mark-main-thread.ts**:
+ * 2. **Mark async MT chunks with `lynx:main-thread` info in `plugin/rspack-plugins/mark-main-thread.ts`**:
  *    ```ts
  *    for (const chunkGroup of compilation.chunkGroups) {
  *      if (chunkGroup.isInitial()) continue;
@@ -284,7 +284,7 @@
  *    ));
  *    ```
  *
- * 4. **Provide minimal stub for empty lepusCode in mark-main-thread.ts**:
+ * 4. **Provide minimal stub for empty lepusCode in `plugin/rspack-plugins/mark-main-thread.ts`**:
  *    ```ts
  *    // In beforeEncode hook for async bundles
  *    if (encodeData.sourceContent?.appType === "DynamicComponent" && !encodeData.lepusCode?.root) {
@@ -310,11 +310,11 @@
  *
  * **Why it happened**:
  * - The chunk loading runtime calls `lynx.loadLazyBundle()` to load async bundles
- * - We only registered `loadLazyBundle` on the background thread (`entry-background.ts`)
+ * - We only registered `loadLazyBundle` on the background thread (`background/entry.ts`)
  * - The main thread runs BEFORE the background thread bootstrap
  * - When MT dynamic import resolves, `lynx.loadLazyBundle` is undefined
  *
- * **Fix**: Register `loadLazyBundle` on main thread too (`entry-main.ts`)
+ * **Fix**: Register `loadLazyBundle` on main thread too (`main-thread/entry.ts`)
  * ```ts
  * if (typeof lynx !== "undefined") {
  *   lynx.loadLazyBundle = function loadLazyBundle<T>(source: string): Promise<T> {
@@ -354,9 +354,9 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { LAYERS } from "./layers.js";
-import { MyReactCSSConfigPlugin, MyReactMarkMainThreadPlugin, PLUGIN_MARK_MAIN_THREAD } from "./plugins";
-import { createNodeModulesExceptWorkletPackagesExclude, createWorkletPackagesPathTest } from "./worklet-packages.js";
+import { LAYERS } from "../layers.js";
+import { MyReactCSSConfigPlugin, MyReactMarkMainThreadPlugin, PLUGIN_MARK_MAIN_THREAD } from "../rspack-plugins";
+import { createNodeModulesExceptWorkletPackagesExclude, createWorkletPackagesPathTest } from "../worklet-packages.js";
 
 import type { RsbuildPluginAPI } from "@rsbuild/core";
 
@@ -371,7 +371,7 @@ const DEFAULT_INTERMEDIATE = ".rspeedy";
 const _dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 
-const myReactLynxRoot = path.resolve(_dirname, "../..");
+const myReactLynxRoot = path.resolve(_dirname, "../../..");
 
 export interface ApplyEntryOptions {
   enableCSSSelector?: boolean;
@@ -483,8 +483,8 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
     const workletRuntimePath = require.resolve("@lynx-js/react/worklet-runtime");
 
     // Resolve entry paths relative to package dist
-    const entryBackgroundPath = path.resolve(myReactLynxRoot, "dist/runtime/entry-background.js");
-    const entryMainThreadPath = path.resolve(myReactLynxRoot, "dist/main-thread/entry-main.js");
+    const entryBackgroundPath = path.resolve(myReactLynxRoot, "dist/background/entry.js");
+    const entryMainThreadPath = path.resolve(myReactLynxRoot, "dist/main-thread/entry.js");
 
     const devToolRuntime = path.resolve(myReactLynxRoot, "client/dev-runtime-loader.js");
 
@@ -546,7 +546,7 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
 
       // Do NOT prepend motion's BG shim here: it assigns `lynx.queueMicrotask` onto
       // globalThis, which breaks MyReact's scheduler (`queueMicrotask.bind(globalThis)`).
-      // BG uses our Promise-based polyfill in entry-background instead.
+      // BG uses our Promise-based polyfill in background/entry instead.
 
       backgroundEntry
         .when(isDev, (entry) => {
@@ -696,7 +696,7 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
 
     // Resolve bootstrap package directories to exclude from BG loaders.
     const mainThreadPkgDir = path.resolve(myReactLynxRoot, "dist/main-thread");
-    const runtimePkgDir = path.resolve(myReactLynxRoot, "dist/runtime");
+    const backgroundPkgDir = path.resolve(myReactLynxRoot, "dist/background");
     const sharedPkgDir = path.resolve(myReactLynxRoot, "dist/shared");
 
     // These packages often declare sideEffects:false — without this, worklet-loader-mt's
@@ -712,11 +712,11 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
       .test(/\.(?:[cm]?[jt]sx?)$/)
       .exclude.add(/node_modules/)
       .add(mainThreadPkgDir)
-      .add(runtimePkgDir)
+      .add(backgroundPkgDir)
       .add(sharedPkgDir)
       .end()
       .use("auto-chunk-name-loader")
-      .loader(path.resolve(_dirname, "./loaders/auto-chunk-name-loader"))
+      .loader(path.resolve(_dirname, "../loaders/auto-chunk-name-loader"))
       .end();
 
     // enforce:pre + registered after thread-defines so this runs BEFORE
@@ -730,11 +730,11 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
       .test(/\.(?:[cm]?[jt]sx?)$/)
       .exclude.add(excludeNodeModulesExceptWorkletPkgs)
       .add(mainThreadPkgDir)
-      .add(runtimePkgDir)
+      .add(backgroundPkgDir)
       .add(sharedPkgDir)
       .end()
       .use("worklet-loader")
-      .loader(path.resolve(_dirname, "./loaders/worklet-loader"))
+      .loader(path.resolve(_dirname, "../loaders/worklet-loader"))
       .end();
 
     // Scope injection loader: injects defaultProps.__lynxScope on exported components
@@ -745,11 +745,11 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
       .test(/\.(?:[cm]?[jt]sx?)$/)
       .exclude.add(/node_modules/)
       .add(mainThreadPkgDir)
-      .add(runtimePkgDir)
+      .add(backgroundPkgDir)
       .add(sharedPkgDir)
       .end()
       .use("scope-inject-loader")
-      .loader(path.resolve(_dirname, "./loaders/scope-inject-loader"))
+      .loader(path.resolve(_dirname, "../loaders/scope-inject-loader"))
       .end();
   });
 
@@ -761,7 +761,7 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
 
     // Resolve bootstrap package directories to exclude from MT loaders.
     const mainThreadPkgDir = path.resolve(myReactLynxRoot, "dist/main-thread");
-    const runtimePkgDir = path.resolve(myReactLynxRoot, "dist/runtime");
+    const backgroundPkgDir = path.resolve(myReactLynxRoot, "dist/background");
     const sharedPkgDir = path.resolve(myReactLynxRoot, "dist/shared");
 
     // Auto chunk name loader for MT layer too
@@ -771,11 +771,11 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
       .test(/\.[cm]?[jt]sx?$/)
       .exclude.add(/node_modules/)
       .add(mainThreadPkgDir)
-      .add(runtimePkgDir)
+      .add(backgroundPkgDir)
       .add(sharedPkgDir)
       .end()
       .use("auto-chunk-name-loader")
-      .loader(path.resolve(_dirname, "./loaders/auto-chunk-name-loader"))
+      .loader(path.resolve(_dirname, "../loaders/auto-chunk-name-loader"))
       .end();
 
     // JS/TS/TSX on MT: LEPUS worklet transform (extract registerWorkletInternal).
@@ -787,11 +787,11 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
       .test(/\.[cm]?[jt]sx?$/)
       .exclude.add(excludeNodeModulesExceptWorkletPkgs)
       .add(mainThreadPkgDir)
-      .add(runtimePkgDir)
+      .add(backgroundPkgDir)
       .add(sharedPkgDir)
       .end()
       .use("worklet-loader-mt")
-      .loader(path.resolve(_dirname, "./loaders/worklet-loader-mt"))
+      .loader(path.resolve(_dirname, "../loaders/worklet-loader-mt"))
       .end();
   });
 }

@@ -1,4 +1,4 @@
-export { OP } from "../shared/op";
+export { OP } from "../../shared/op.js";
 
 let buffer: unknown[] = [];
 

@@ -16,10 +16,10 @@ import { parsePatchPayload, type DelayedRunOnMainThreadPayload } from "../shared
 import { onFirstScreenPatchFinished } from "../shared/worklet-bindings.js";
 
 import { elements, setPageUniqueId } from "./element-registry.js";
-import { resetFirstScreenPatchState, setFirstScreenPatch } from "./first-screen-patch.js";
-import { loadLazyBundleOnMainThread } from "./load-lazy-bundle-mt.js";
+import { resetFirstScreenPatchState, setFirstScreenPatch } from "./first-screen-flag.js";
+import { loadLazyBundleOnMainThread } from "./load-lazy-bundle.js";
 import { applyOps, resetMainThreadState } from "./ops-apply.js";
-import { runOnBackground } from "./run-on-background-mt.js";
+import { runOnBackground } from "./run-on-background.js";
 
 const g = globalThis as Record<string, unknown>;
 
@@ -140,7 +140,7 @@ g["runOnBackground"] = runOnBackground;
 //   globalThis.runWorklet, globalThis.registerWorkletInternal,
 //   globalThis.lynxWorkletImpl (with Element class, Animation, etc.)
 
-/** PAGE_ROOT_ID must match the value in runtime/src/shadow-element.ts */
+/** PAGE_ROOT_ID must match the value in background/render/shadow-element.ts */
 const PAGE_ROOT_ID = 1;
 
 // Lynx Lepus runtime requires globalThis.processData to be set.

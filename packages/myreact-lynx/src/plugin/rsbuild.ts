@@ -18,12 +18,12 @@
 
 import { ChunkLoadingWebpackPlugin } from "@lynx-js/chunk-loading-webpack-plugin";
 
-import { applyBackgroundOnly } from "./backgroundOnly.js";
-import { applyCSS } from "./css.js";
-import { applyEntry } from "./entry.js";
+import { applyCSS } from "./apply/css.js";
+import { applyEntry } from "./apply/entry.js";
+import { applyRefresh } from "./apply/refresh.js";
+import { applyBackgroundOnly } from "./background-only.js";
 import { LAYERS } from "./layers.js";
-import { applyRefresh } from "./refresh.js";
-import { applyThreadDefines } from "./threadDefines.js";
+import { applyThreadDefines } from "./thread-defines.js";
 
 import type { RsbuildPlugin } from "@rsbuild/core";
 

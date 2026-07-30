@@ -7,7 +7,7 @@
 import { onWorkletCtxUpdate, retainWorkletCtx, type WorkletLike } from "../shared/worklet-bindings.js";
 
 import { elements } from "./element-registry.js";
-import { isFirstScreenPatch } from "./first-screen-patch.js";
+import { isFirstScreenPatch } from "./first-screen-flag.js";
 
 // ---------------------------------------------------------------------------
 // State

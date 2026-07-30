@@ -15,7 +15,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { LAYERS } from "./layers.js";
+import { LAYERS } from "../layers.js";
 
 import type { CssExtractRspackPluginOptions } from "@lynx-js/css-extract-webpack-plugin";
 import type { ChainIdentifier, CSSLoaderOptions, RsbuildPluginAPI, Rspack } from "@rsbuild/core";
@@ -109,7 +109,7 @@ export function applyCSS(api: RsbuildPluginAPI, options: ApplyCSSOptions): void 
 
         mainThreadLayerRule
           .use(CHAIN_ID.USE.IGNORE_CSS)
-          .loader(path.resolve(_dirname, "./loaders/ignore-css-loader"))
+          .loader(path.resolve(_dirname, "../loaders/ignore-css-loader"))
           .end()
           .uses.merge(uses)
           .delete(CHAIN_ID.USE.MINI_CSS_EXTRACT)

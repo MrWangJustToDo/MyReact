@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { OP } from "../shared/op.js";
-import { retainWorkletCtx, type WorkletLike } from "../shared/worklet-bindings.js";
+import { OP } from "../../shared/op.js";
+import { retainWorkletCtx, type WorkletLike } from "../../shared/worklet-bindings.js";
+import { retainGestureCallbacks, serializeGestureForOp } from "../gesture/serialize-gesture.js";
+import { SCOPE_PROP } from "../lazy/bundle-registry.js";
+import { registerWorkletCtx } from "../worklet/run-on-background.js";
 
-import { SCOPE_PROP } from "./bundle-registry.js";
 import { register, unregister, updateHandler } from "./event-registry.js";
 import { scheduleFlush } from "./flush.js";
-import { retainGestureCallbacks, serializeGestureForOp } from "./gesture.js";
 import { pushOp } from "./ops.js";
-import { registerWorkletCtx } from "./run-on-background.js";
 import { ShadowElement } from "./shadow-element.js";
 
 import type { Props } from "@my-react/react/type";

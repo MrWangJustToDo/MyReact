@@ -5,9 +5,8 @@
  * retains worklet callback contexts so they stay alive after JSON transfer.
  */
 
-import { retainWorkletCtx, type WorkletLike } from "../shared/worklet-bindings.js";
-
-import { registerWorkletCtx } from "./run-on-background.js";
+import { retainWorkletCtx, type WorkletLike } from "../../shared/worklet-bindings.js";
+import { registerWorkletCtx } from "../worklet/run-on-background.js";
 
 const GESTURE_TYPE_COMPOSED = -1;
 

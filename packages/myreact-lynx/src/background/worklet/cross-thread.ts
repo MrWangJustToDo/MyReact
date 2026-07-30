@@ -12,10 +12,11 @@
  * registered before the worklet body runs.
  */
 
+import { hasPendingFlushAck, isFlushScheduled, sendWorkletRefInitValues, waitForFlush } from "../render/flush.js";
+import { hasPendingOps } from "../render/ops.js";
+
 import { enqueueDelayedRunOnMainThread } from "./delayed-run-on-main-thread.js";
-import { hasPendingFlushAck, isFlushScheduled, sendWorkletRefInitValues, waitForFlush } from "./flush.js";
 import { onFunctionCall, onFunctionCallWithTimeout } from "./function-call.js";
-import { hasPendingOps } from "./ops.js";
 import { registerWorkletCtx } from "./run-on-background.js";
 import { hasPendingWorkletRefInits } from "./worklet-ref-pool.js";
 

@@ -4,6 +4,9 @@
  * MyReact does not use ReactLynx snapshot hydration. This module tracks when
  * BG→MT ops belong to the initial mount so worklet/gesture lifecycle hooks
  * can run deferred first-screen work on the Main Thread.
+ *
+ * Terminal flush scheduling lives in `background/render/flush.ts`
+ * (`scheduleFirstScreenPatchEnd`) to avoid a circular import with this module.
  */
 
 let inFirstScreenPhase = true;

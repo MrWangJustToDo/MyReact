@@ -2,9 +2,14 @@
  * List element management for the Main Thread ops executor.
  *
  * Native <list> elements must be created via __CreateList with callbacks.
- * The native list calls componentAtIndex(list, listID, cellIndex, operationID)
- * when it needs to render an item. We collect items as they're inserted and
- * provide them via the callback.
+ * Diffs are flushed via `update-list-info`.
+ *
+ * Diff strategy (aligned with VueLynx / ReactLynx ListUpdateInfoRecording):
+ * - Mutate a live `listItems` array so `componentAtIndex` always sees current order.
+ * - On flush, diff `lastFlushed` against `listItems` with LIS-based move detection:
+ *   items that stay in increasing old-index order are kept; everything else is
+ *   remove+insert. Avoids "duplicated item-key" (native error 2202) from naive
+ *   append-only `listItemsReported` tracking.
  */
 
 import { elements, pageUniqueId } from "./element-registry.js";
@@ -14,11 +19,14 @@ import { elements, pageUniqueId } from "./element-registry.js";
 // ---------------------------------------------------------------------------
 
 /** Per-list state: ordered list of child elements that the native list can request */
-interface ListItemEntry {
+export interface ListItemEntry {
   el: LynxElement;
   bgId: number;
 }
 const listItems = new Map<number, ListItemEntry[]>();
+
+/** Snapshot of listItems after the last successful flush (native's view). */
+const lastFlushed = new Map<number, ListItemEntry[]>();
 
 /** Set of BG-thread element IDs that are <list> elements */
 const listElementIds = new Set<number>();
@@ -28,9 +36,8 @@ const itemKeyMap = new Map<number, string>();
 
 /**
  * Platform info attributes for list items — these must go ONLY into
- * update-list-info's insertAction, NOT via __SetAttribute on the native element.
+ * update-list-info's insertAction / updateAction, NOT via __SetAttribute.
  * Setting them both ways causes the native list to count items twice.
- * (Matches React Lynx's platformInfoAttributes in snapshot/platformInfo.ts)
  */
 const PLATFORM_INFO_ATTRS = new Set([
   "item-key",
@@ -44,21 +51,100 @@ const PLATFORM_INFO_ATTRS = new Set([
   "recyclable",
 ]);
 
-/** Per list-item bg ID -> platform info attributes (for update-list-info) */
+/** Per list-item bg ID -> platform info attributes */
 const listItemPlatformInfo = new Map<number, Record<string, unknown>>();
 
-/** How many items have already been reported via update-list-info per list */
-const listItemsReported = new Map<number, number>();
+/** bgIds whose platform info changed since last flush */
+const dirtyPlatformInfo = new Set<number>();
 
-/** Pending remove actions queued during the current applyOps batch */
-const pendingRemoves = new Map<number, Record<string, unknown>[]>();
+// ---------------------------------------------------------------------------
+// Diff (exported for unit tests)
+// ---------------------------------------------------------------------------
+
+export interface ListDiffResult {
+  removeAction: number[];
+  insertAction: Array<{ position: number; bgId: number }>;
+  /** bgIds that remained in place (LIS) — eligible for updateAction */
+  stayedBgIds: Set<number>;
+}
+
+/**
+ * Longest increasing subsequence of `seq` (values are old indices).
+ * Returns the set of values (old indices) that are part of one LIS.
+ */
+export function longestIncreasingSubsequence(seq: number[]): Set<number> {
+  const n = seq.length;
+  if (n === 0) return new Set();
+  const tails: number[] = [];
+  const prev: number[] = Array.from({ length: n }, () => -1);
+
+  for (let i = 0; i < n; i++) {
+    const v = seq[i]!;
+    let lo = 0;
+    let hi = tails.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (seq[tails[mid]!]! < v) lo = mid + 1;
+      else hi = mid;
+    }
+    if (lo > 0) prev[i] = tails[lo - 1]!;
+    if (lo === tails.length) tails.push(i);
+    else tails[lo] = i;
+  }
+
+  const lisIdx = new Set<number>();
+  let k = tails[tails.length - 1]!;
+  while (k >= 0) {
+    lisIdx.add(seq[k]!);
+    k = prev[k]!;
+  }
+  return lisIdx;
+}
+
+/**
+ * Diff old (last flushed) vs new (live listItems) by bgId.
+ * Stayers = LIS of old indices among items present in both, in new order.
+ * Removals = old indices not in stayers. Insertions = new items not in stayers.
+ */
+export function diffListItems(oldItems: ListItemEntry[], newItems: ListItemEntry[]): ListDiffResult {
+  const oldIndex = new Map<number, number>();
+  for (let i = 0; i < oldItems.length; i++) {
+    oldIndex.set(oldItems[i]!.bgId, i);
+  }
+
+  const commonNewOrder: number[] = [];
+  for (const entry of newItems) {
+    const oi = oldIndex.get(entry.bgId);
+    if (oi !== undefined) commonNewOrder.push(oi);
+  }
+  const stayedOldIndices = longestIncreasingSubsequence(commonNewOrder);
+
+  const removeAction: number[] = [];
+  for (let i = 0; i < oldItems.length; i++) {
+    if (!stayedOldIndices.has(i)) removeAction.push(i);
+  }
+
+  const insertAction: Array<{ position: number; bgId: number }> = [];
+  const stayedBgIds = new Set<number>();
+  for (const oi of stayedOldIndices) {
+    stayedBgIds.add(oldItems[oi]!.bgId);
+  }
+
+  for (let pos = 0; pos < newItems.length; pos++) {
+    const bgId = newItems[pos]!.bgId;
+    if (!stayedBgIds.has(bgId)) {
+      insertAction.push({ position: pos, bgId });
+    }
+  }
+
+  return { removeAction, insertAction, stayedBgIds };
+}
 
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-/** No-op: MyReact manages all items; no recycling needed. */
-// biome-ignore lint/suspicious/noEmptyBlockStatements: intentional no-op
+/** No-op: MyReact manages all items; recycle pool not implemented yet. */
 function enqueueComponentNoop(): void {}
 
 function createListCallbacks(bgId: number): {
@@ -109,6 +195,17 @@ function createListCallbacks(bgId: number): {
   return { componentAtIndex, enqueueComponent, componentAtIndexes };
 }
 
+function buildPlatformAction(itemBgId: number, position: number): Record<string, unknown> {
+  const action: Record<string, unknown> = {
+    position,
+    type: "list-item",
+    "item-key": itemKeyMap.get(itemBgId) ?? String(position),
+  };
+  const pInfo = listItemPlatformInfo.get(itemBgId);
+  if (pInfo) Object.assign(action, pInfo);
+  return action;
+}
+
 // ---------------------------------------------------------------------------
 // Public API (called from ops-apply.ts switch cases)
 // ---------------------------------------------------------------------------
@@ -127,64 +224,57 @@ export function isPlatformInfoAttr(key: string): boolean {
 export function createListElement(id: number): LynxElement {
   listElementIds.add(id);
   listItems.set(id, []);
-  listItemsReported.set(id, 0);
+  lastFlushed.set(id, []);
   const cbs = createListCallbacks(id);
   const el = __CreateList(pageUniqueId, cbs.componentAtIndex, cbs.enqueueComponent, {}, cbs.componentAtIndexes);
   __SetCSSId([el], 0);
   return el;
 }
 
-/** INSERT case: collect a child into a <list> parent's item array */
-export function insertListItem(parentId: number, child: LynxElement, childId: number): void {
+/**
+ * Place a child into the live list array.
+ * `anchorId === -1` → append; otherwise insert before anchor.
+ * If the child is already in this list, splice it out first (same-list move).
+ */
+export function insertListItem(parentId: number, child: LynxElement, childId: number, anchorId = -1): void {
   const items = listItems.get(parentId);
-  if (items) items.push({ el: child, bgId: childId });
+  if (!items) return;
+
+  const existingIdx = items.findIndex((e) => e.bgId === childId);
+  if (existingIdx !== -1) {
+    items.splice(existingIdx, 1);
+  }
+
+  const entry: ListItemEntry = { el: child, bgId: childId };
+  if (anchorId === -1) {
+    items.push(entry);
+  } else {
+    const anchorIdx = items.findIndex((e) => e.bgId === anchorId);
+    if (anchorIdx === -1) items.push(entry);
+    else items.splice(anchorIdx, 0, entry);
+  }
 }
 
-/** REMOVE case: remove a child from a <list> parent's tracked items */
+/** Drop a child from the live list array (hard remove). Diff emits removeAction on flush. */
 export function removeListItem(parentId: number, childId: number): void {
   const items = listItems.get(parentId);
-  if (!items) {
-    return;
-  }
-
-  const index = items.findIndex((entry) => entry.bgId === childId);
-  if (index === -1) {
-    return;
-  }
-
-  const itemKey = itemKeyMap.get(childId) ?? String(index);
-  items.splice(index, 1);
-
-  let removes = pendingRemoves.get(parentId);
-  if (!removes) {
-    removes = [];
-    pendingRemoves.set(parentId, removes);
-  }
-  removes.push({
-    position: index,
-    "item-key": itemKey,
-  });
-
+  if (!items) return;
+  const idx = items.findIndex((entry) => entry.bgId === childId);
+  if (idx === -1) return;
+  items.splice(idx, 1);
   itemKeyMap.delete(childId);
   listItemPlatformInfo.delete(childId);
-
-  if (listItemsReported.has(parentId)) {
-    const reported = listItemsReported.get(parentId)!;
-    if (reported > items.length) {
-      listItemsReported.set(parentId, items.length);
-    }
-  }
+  dirtyPlatformInfo.delete(childId);
 }
 
 /** REMOVE case: drop tracking state when a <list> element itself is removed */
 export function removeListElement(id: number): void {
   listElementIds.delete(id);
   listItems.delete(id);
-  listItemsReported.delete(id);
-  pendingRemoves.delete(id);
+  lastFlushed.delete(id);
 }
 
-/** SET_PROP case: store a platform-info attribute for a list item */
+/** SET_PROP case: store a platform-info attribute; mark dirty for updateAction if already flushed */
 export function setPlatformInfoProp(id: number, key: string, value: unknown): void {
   const info = listItemPlatformInfo.get(id);
   if (info) {
@@ -193,59 +283,63 @@ export function setPlatformInfoProp(id: number, key: string, value: unknown): vo
     listItemPlatformInfo.set(id, { [key]: value });
   }
   if (key === "item-key") itemKeyMap.set(id, String(value));
+  dirtyPlatformInfo.add(id);
 }
 
 /**
- * Post-ops flush: for any <list> elements with newly-inserted items, tell the
- * native list via the 'update-list-info' attribute. Only send items added since
- * the last applyOps call to avoid "duplicated item-key" errors.
+ * Diff lastFlushed → listItems and set `update-list-info`.
  */
 export function flushListUpdates(): void {
   for (const [bgId, items] of listItems) {
-    const reported = listItemsReported.get(bgId) ?? 0;
-    const removeAction = pendingRemoves.get(bgId) ?? [];
-    const hasInserts = items.length > reported;
+    const prev = lastFlushed.get(bgId) ?? [];
+    const { removeAction, insertAction, stayedBgIds } = diffListItems(prev, items);
 
-    if (!hasInserts && removeAction.length === 0) {
+    const updateAction: Record<string, unknown>[] = [];
+    for (const stayedId of stayedBgIds) {
+      if (!dirtyPlatformInfo.has(stayedId)) continue;
+      const idx = items.findIndex((e) => e.bgId === stayedId);
+      if (idx === -1) continue;
+      const pInfo = listItemPlatformInfo.get(stayedId) ?? {};
+      updateAction.push({
+        ...pInfo,
+        from: idx,
+        to: idx,
+        flush: false,
+        type: "list-item",
+      });
+      dirtyPlatformInfo.delete(stayedId);
+    }
+
+    for (const { bgId: itemBgId } of insertAction) {
+      dirtyPlatformInfo.delete(itemBgId);
+    }
+
+    if (removeAction.length === 0 && insertAction.length === 0 && updateAction.length === 0) {
       continue;
     }
 
     const listEl = elements.get(bgId);
-    if (!listEl) {
-      continue;
-    }
-
-    const insertAction: Record<string, unknown>[] = [];
-    if (hasInserts) {
-      for (let j = reported; j < items.length; j++) {
-        const entry = items[j]!;
-        const action: Record<string, unknown> = {
-          position: j,
-          type: "list-item",
-          "item-key": itemKeyMap.get(entry.bgId) ?? String(j),
-        };
-        const pInfo = listItemPlatformInfo.get(entry.bgId);
-        if (pInfo) Object.assign(action, pInfo);
-        insertAction.push(action);
-      }
-      listItemsReported.set(bgId, items.length);
-    }
+    if (!listEl) continue;
 
     __SetAttribute(listEl, "update-list-info", {
-      insertAction,
+      insertAction: insertAction.map(({ position, bgId: itemBgId }) => buildPlatformAction(itemBgId, position)),
       removeAction,
-      updateAction: [],
+      updateAction,
     });
-    pendingRemoves.delete(bgId);
+
+    lastFlushed.set(
+      bgId,
+      items.map((e) => ({ el: e.el, bgId: e.bgId }))
+    );
   }
 }
 
 /** Reset all list state — for testing only. */
 export function resetListState(): void {
   listItems.clear();
+  lastFlushed.clear();
   listElementIds.clear();
   itemKeyMap.clear();
   listItemPlatformInfo.clear();
-  listItemsReported.clear();
-  pendingRemoves.clear();
+  dirtyPlatformInfo.clear();
 }

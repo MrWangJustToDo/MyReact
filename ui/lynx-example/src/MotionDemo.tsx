@@ -1,5 +1,5 @@
 import { animate, clamp, mapValue, mix, progress as calcProgress, styleEffect, transformValue, useMotionValueRef } from "@lynx-js/motion";
-import { runOnMainThread, useEffect, useMainThreadRef } from "@lynx-js/react";
+import { runOnMainThread, useEffect, useMainThreadRef } from "@my-react/react-lynx";
 
 import type { MainThread } from "@lynx-js/types";
 

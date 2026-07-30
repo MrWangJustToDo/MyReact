@@ -6,10 +6,10 @@
  */
 
 import "../shared/lynx-globals-polyfill.js";
-import "./install-lynx-scheduler.js";
+import "./render/install-lynx-scheduler.js";
 
-import { publishEvent } from "./event-registry.js";
-import { loadLazyBundle } from "./lazy-bundle.js";
+import { loadLazyBundle } from "./lazy/lazy-bundle.js";
+import { publishEvent } from "./render/event-registry.js";
 
 // `lynxCoreInject` is injected by RuntimeWrapperWebpackPlugin as a parameter
 // of the outer __init_card_bundle__ function – it is available as a bare

@@ -12,11 +12,14 @@ export default defineConfig({
   plugins: [
     pluginMyReactLynx({
       reactRefresh: true,
+      enableCSSSelector: true,
+      enableCSSInheritance: true,
+      enableCSSInlineVariables: true,
       // SEE https://github.com/MrWangJustToDo/myreact-devtools
       // use pnpm run dev:websocket to debug lynx app
       // reactDevTool: true,
       reactDevTool: {
-        wsUrl: 'ws://10.23.195.101:3002/ws'
+        wsUrl: "ws://10.23.195.101:3002/ws",
       },
     }),
     pluginQRCode({

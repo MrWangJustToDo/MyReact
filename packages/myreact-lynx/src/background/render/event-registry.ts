@@ -13,7 +13,7 @@ interface RegistryState {
 }
 
 // The consumer bundle can materialize multiple event-registry module instances
-// (for example via separate entry-background/runtime graphs). Store the state
+// (for example via separate background/main-thread graphs). Store the state
 // on globalThis so register() and publishEvent() still see the same handlers.
 const REGISTRY_STATE_KEY = "__REACT_LYNX_EVENT_REGISTRY__";
 

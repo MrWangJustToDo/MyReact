@@ -30,7 +30,7 @@ export function installLynxScheduler(): void {
     scheduler.microTask = lynxMicroTask;
   }
 
-  // flush.ts / schedule-first-screen use this alias of the schedule helpers.
+  // flush.ts / first-screen patch end use this alias of the schedule helpers.
   __my_react_scheduler__.microTask = lynxMicroTask;
 }
 

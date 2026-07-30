@@ -53,9 +53,7 @@ export function EventsDemo({ onBack }: EventsDemoProps) {
 
   return (
     <DemoShell title="Events & Worklets" subtitle="bind / catch / main-thread:bind / cross-thread" onBack={onBack}>
-      <text className="DemoHint">
-        Background handlers use bind/catch. Main-thread:bind runs on LEPUS and can call runOnBackground to update React state.
-      </text>
+      <text className="DemoHint">Background handlers use bind/catch. Main-thread:bind runs on LEPUS and can call runOnBackground to update React state.</text>
 
       <view className="DemoPanel">
         <text className="DemoPanelTitle">Background bindtap</text>

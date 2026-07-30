@@ -44,12 +44,7 @@ export function ListDemo({ onBack }: ListDemoProps) {
 
       <text className="DemoValue">items: {count}</text>
 
-      <list
-        className="ListDemoList"
-        style={{ width: "100%", height: "420px" }}
-        scroll-orientation="vertical"
-        list-type="single"
-      >
+      <list className="ListDemoList" style={{ width: "100%", height: "420px" }} scroll-orientation="vertical" list-type="single">
         {items.map((i) => (
           <list-item
             key={String(i)}

@@ -3,6 +3,8 @@ import { createPortal, flushSync } from "@my-react/react-lynx";
 
 import { DemoShell } from "./DemoShell";
 
+import type { NodesRef } from "@lynx-js/types";
+
 interface PortalDemoProps {
   onBack?: () => void;
 }
@@ -12,7 +14,7 @@ interface PortalDemoProps {
  */
 export function PortalDemo({ onBack }: PortalDemoProps) {
   // BG host config getPublicInstance returns the ShadowElement instance.
-  const hostRef = useRef<unknown>(null);
+  const hostRef = useRef<NodesRef>(null);
   const [ready, setReady] = useState(false);
   const [syncTicks, setSyncTicks] = useState(0);
   const [portalLabel, setPortalLabel] = useState("portaled child");
@@ -31,24 +33,24 @@ export function PortalDemo({ onBack }: PortalDemoProps) {
   return (
     <DemoShell title="Portal & flushSync" subtitle="createPortal → ShadowElement host" onBack={onBack}>
       <text className="DemoHint">
-        BG refs expose ShadowElement instances. createPortal mounts children into that host in the shadow tree. flushSync
-        forces an immediate ops flush.
+        BG refs expose ShadowElement instances. createPortal mounts children into that host in the shadow tree. flushSync forces an immediate ops flush.
       </text>
 
       <view className="DemoPanel">
         <text className="DemoPanelTitle">Portal host</text>
         <view className="PortalHost" ref={hostRef}>
           <text className="DemoValue">host view (children below via portal)</text>
-          {ready && hostRef.current
-            ? createPortal(
-                <view className="PortalChild">
-                  <text className="PortalChildText">{portalLabel}</text>
-                </view>,
-                hostRef.current as never
-              )
-            : null}
         </view>
       </view>
+
+      {ready && hostRef.current
+        ? createPortal(
+            <view className="PortalChild">
+              <text className="PortalChildText">{portalLabel}</text>
+            </view>,
+            hostRef.current as never
+          )
+        : null}
 
       <view className="DemoPanel">
         <text className="DemoPanelTitle">flushSync</text>

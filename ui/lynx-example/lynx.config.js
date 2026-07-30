@@ -16,10 +16,10 @@ export default defineConfig({
       enableCSSInheritance: true,
       enableCSSInlineVariables: true,
       // SEE https://github.com/MrWangJustToDo/myreact-devtools
-      // use pnpm run dev:websocket to debug lynx app
+      // use pnpm run dev:web to debug lynx app
       // reactDevTool: true,
       reactDevTool: {
-        wsUrl: "ws://10.23.195.101:3002/ws",
+        // wsUrl: "ws://10.23.195.101:3002/ws",
       },
     }),
     pluginQRCode({

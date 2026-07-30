@@ -7,15 +7,7 @@ import "./App.css";
 
 const LazyComponent = lazy(() => import("./LazyCom.js"));
 
-export type DemoPage =
-  | "home"
-  | "gesture"
-  | "motion"
-  | "events"
-  | "list"
-  | "data"
-  | "portal"
-  | "css";
+export type DemoPage = "home" | "gesture" | "motion" | "events" | "list" | "data" | "portal" | "css";
 
 interface AppProps {
   onOpen: (page: Exclude<DemoPage, "home">) => void;

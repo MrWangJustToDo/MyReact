@@ -36,9 +36,9 @@ export const append = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
   if (isRender) {
     if (isContainer) {
       if (_config.appendChildToContainer) {
-        _config.appendChildToContainer?.(rootNode, currentNode, _fiber);
+        _config.appendChildToContainer?.(parentNode || rootNode, currentNode, _fiber);
       } else {
-        _config.appendInitialChild?.(rootNode, currentNode, _fiber);
+        _config.appendInitialChild?.(parentNode || rootNode, currentNode, _fiber);
       }
     } else {
       _config.appendInitialChild?.(parentNode, currentNode, _fiber);
@@ -46,9 +46,9 @@ export const append = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
   } else {
     if (isContainer) {
       if (_config.appendChildToContainer) {
-        _config.appendChildToContainer?.(rootNode, currentNode, _fiber);
+        _config.appendChildToContainer?.(parentNode || rootNode, currentNode, _fiber);
       } else {
-        _config.appendChild?.(rootNode, currentNode, _fiber);
+        _config.appendChild?.(parentNode || rootNode, currentNode, _fiber);
       }
     } else {
       _config.appendChild?.(parentNode, currentNode, _fiber);

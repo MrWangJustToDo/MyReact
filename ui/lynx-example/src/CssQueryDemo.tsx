@@ -39,8 +39,7 @@ export function CssQueryDemo({ onBack }: CssQueryDemoProps) {
   return (
     <DemoShell title="CSS & Query" subtitle="selectors / CSS vars / querySelector*" onBack={onBack}>
       <text className="DemoHint">
-        Plugin enables enableCSSSelector, enableCSSInheritance, and enableCSSInlineVariables. Query uses main-thread
-        lynx.querySelector when possible.
+        Plugin enables enableCSSSelector, enableCSSInheritance, and enableCSSInlineVariables. Query uses main-thread lynx.querySelector when possible.
       </text>
 
       <view

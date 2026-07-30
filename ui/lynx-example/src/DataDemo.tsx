@@ -84,8 +84,7 @@ export function DataDemo({ onBack }: DataDemoProps) {
   return (
     <DemoShell title="Data APIs" subtitle="initData / globalProps / processors / events" onBack={onBack}>
       <text className="DemoHint">
-        registerDataProcessors runs before root.render (see index.tsx). Values depend on the Lynx host injecting __initData /
-        __globalProps.
+        registerDataProcessors runs before root.render (see index.tsx). Values depend on the Lynx host injecting __initData / __globalProps.
       </text>
 
       <InitDataProvider>

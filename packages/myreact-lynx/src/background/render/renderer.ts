@@ -8,6 +8,7 @@ import { hostConfig } from "./reconciler.js";
 import { createPageRoot, type ShadowElement } from "./shadow-element.js";
 
 import type { DataProcessorDefinition } from "../data/data-processor.js";
+import type { NodesRef } from "@lynx-js/types";
 import type { ReactNode } from "react";
 
 export const reconciler = createReconciler(hostConfig);
@@ -137,6 +138,6 @@ export const root: Root = {
   },
 };
 
-export const createPortal = reconciler.createPortal as unknown as (element: ReactNode, container: ShadowElement) => React.ReactNode;
+export const createPortal = reconciler.createPortal as unknown as (element: ReactNode, container: NodesRef) => React.ReactNode;
 
 export const flushSync = reconciler.flushSync;

@@ -3,6 +3,10 @@
  *
  * Dev: Vite thin middleware converts Connect → Request and calls this.
  * Prod: Node server imports dist/rsc and calls this — no Vite.
+ *
+ * HTML mode depends on `__RSC_ENABLE_SSR__` (from vite `define` / `RSC_SSR` env):
+ * - true: Flight → SSR HTML into #root → inject payload → hydrate
+ * - false: empty shell → inject payload → createRoot
  */
 
 import { createElement } from "@my-react/react";
@@ -94,13 +98,22 @@ async function handleHtml(request: Request): Promise<Response> {
   const { injectRSCPayload } = await import("rsc-html-stream/server");
 
   const rscStream = await renderRsc(request.url);
-  const [rscForSsr, rscForClient] = rscStream.tee();
-
-  const ssrEntry = await import.meta.viteRsc.loadModule<{ renderHTML: typeof RenderHTML }>("ssr", "index");
-  const { html: ssrHtml } = await ssrEntry.renderHTML(rscForSsr);
-
   const shell = await getHtmlShell(request.url);
-  const htmlWithApp = shell.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`);
+
+  let htmlWithApp: string;
+  let streamForClient: ReadableStream<Uint8Array>;
+
+  if (__RSC_ENABLE_SSR__) {
+    const [rscForSsr, rscForBrowser] = rscStream.tee();
+    const ssrEntry = await import.meta.viteRsc.loadModule<{ renderHTML: typeof RenderHTML }>("ssr", "index");
+    const { html: ssrHtml } = await ssrEntry.renderHTML(rscForSsr);
+    htmlWithApp = shell.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`);
+    streamForClient = rscForBrowser;
+  } else {
+    // No-SSR: keep empty #root; browser createRoot consumes the injected Flight stream
+    htmlWithApp = shell;
+    streamForClient = rscStream;
+  }
 
   const htmlStream = new ReadableStream<Uint8Array>({
     start(controller) {
@@ -109,7 +122,7 @@ async function handleHtml(request: Request): Promise<Response> {
     },
   });
 
-  const merged = htmlStream.pipeThrough(injectRSCPayload(rscForClient));
+  const merged = htmlStream.pipeThrough(injectRSCPayload(streamForClient));
 
   return new Response(merged, {
     headers: { "Content-Type": "text/html; charset=utf-8" },

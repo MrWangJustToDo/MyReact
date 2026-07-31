@@ -133,8 +133,10 @@ function normalizeRscType(type: unknown, options: NormalizeOptions): unknown {
 
       // Raw numeric reference like "$L8" - this is a Flight protocol internal ID
       // that should have been resolved by @lazarv/rsc. If we see it here,
-      // the stream processing is still pending. Return a lazy wrapper that
-      // will render null/fallback until the reference is resolved.
+      // the stream processing is still pending or client modules were not ready
+      // (common on cold DEV first paint; refresh often works). Changing this to
+      // throw is desirable long-term but needs a proper pending/lazy bridge first.
+      // See RSC-AUDIT.md §A6.
       if (__DEV__) {
         console.warn(`[@my-react/react-server] Unresolved lazy reference: ${type}`);
       }

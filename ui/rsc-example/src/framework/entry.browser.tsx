@@ -18,19 +18,19 @@ if (!rootElement) {
 
 const root = rootElement;
 
-const config = (window as unknown as { __MY_REACT_RSC_CONFIG__?: { rscEndpoint?: string; actionEndpoint?: string } }).__MY_REACT_RSC_CONFIG__;
+const config = window.__MY_REACT_RSC_CONFIG__;
 
 if (!config?.rscEndpoint) {
   throw new Error("[@my-react/rsc-example] Missing RSC configuration");
 }
 
 const actionEndpoint = config.actionEndpoint;
-const stream = (window as unknown as { __MY_REACT_RSC_STREAM__?: ReadableStream<Uint8Array> }).__MY_REACT_RSC_STREAM__;
+const stream = window.__MY_REACT_RSC_STREAM__;
 
 const fetchPayload = (client: FlightClient, url: string) => client.createFromFetch(fetch(`${config.rscEndpoint}?url=${encodeURIComponent(url)}`));
 
 const View = ({ tree }: { tree: Promise<unknown> }) => {
-  const element = use(tree as any);
+  const element = use(tree as never);
   return element as ReactNode;
 };
 
@@ -52,13 +52,15 @@ const BrowserRoot = ({ client }: { client: FlightClient }) => {
 
 async function main() {
   const client = await createFlightClient({ actionEndpoint });
+  const app = <BrowserRoot client={client} />;
 
-  if (stream) {
-    hydrateRoot(root, <BrowserRoot client={client} />);
+  // SSR mode: hydrate into server-rendered #root. No-SSR: always createRoot (empty shell).
+  if (__RSC_ENABLE_SSR__ && stream) {
+    hydrateRoot(root, app);
     return;
   }
 
-  createRoot(root).render(<BrowserRoot client={client} />);
+  createRoot(root).render(app);
 }
 
 main();

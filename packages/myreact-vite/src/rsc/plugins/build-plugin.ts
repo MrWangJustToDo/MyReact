@@ -10,7 +10,7 @@ import path from "node:path";
 import { workspaceCommonjsInclude } from "../../warning";
 
 import type { RscPluginManager, AssetDeps } from "../manager";
-import type { Plugin, UserConfig, ViteBuilder } from "vite";
+import type { Environment, Plugin, UserConfig, ViteBuilder } from "vite";
 
 export interface BuildPluginOptions {
   /** Entry points for each environment */
@@ -134,6 +134,7 @@ export function createBuildPlugin(manager: RscPluginManager, options: BuildPlugi
           environments: {
             // RSC environment - runs server components with react-server condition
             rsc: {
+              consumer: "server",
               resolve: {
                 conditions: RSC_CONDITIONS,
                 noExternal: SERVER_NO_EXTERNAL_PACKAGES,
@@ -160,6 +161,7 @@ export function createBuildPlugin(manager: RscPluginManager, options: BuildPlugi
             ...(enableSsr
               ? {
                   ssr: {
+                    consumer: "server",
                     resolve: {
                       noExternal: SERVER_NO_EXTERNAL_PACKAGES,
                     },
@@ -371,33 +373,7 @@ async function orchestrateBuild(builder: ViteBuilder, manager: RscPluginManager,
 
     // After scan builds, inject server action modules as additional RSC entries
     // This ensures server actions are bundled and registerServerReference calls are executed
-    const serverActionModules = Object.keys(manager.serverReferenceMetaMap);
-    if (serverActionModules.length > 0) {
-      const existingInput = rscEnv.config.build.rollupOptions?.input;
-      const currentInputs: Record<string, string> = {};
-
-      if (typeof existingInput === "string") {
-        currentInputs["index"] = existingInput;
-      } else if (Array.isArray(existingInput)) {
-        existingInput.forEach((input, i) => {
-          currentInputs[`entry${i}`] = input;
-        });
-      } else if (existingInput && typeof existingInput === "object") {
-        Object.assign(currentInputs, existingInput);
-      }
-
-      // Add each server action module as an additional entry
-      serverActionModules.forEach((moduleId, i) => {
-        // Convert /src/... path to relative path
-        const relativePath = moduleId.startsWith("/") ? `.${moduleId}` : moduleId;
-        currentInputs[`__server_action_${i}`] = path.resolve(builder.config.root, relativePath);
-      });
-
-      rscEnv.config.build.rollupOptions = {
-        ...rscEnv.config.build.rollupOptions,
-        input: currentInputs,
-      };
-    }
+    injectServerActionEntries(rscEnv, manager, builder.config.root);
 
     logStep("[3/5] Building RSC environment...");
     await builder.build(rscEnv);
@@ -517,6 +493,9 @@ async function orchestrateBuild(builder: ViteBuilder, manager: RscPluginManager,
     rscEnv.config.build.write = true;
     clientEnv.config.build.write = true;
 
+    // Same as SSR path: ensure "use server" modules are RSC entries so they register at runtime
+    injectServerActionEntries(rscEnv, manager, builder.config.root);
+
     logStep("[3/4] Building RSC environment...");
     await builder.build(rscEnv);
 
@@ -530,6 +509,39 @@ async function orchestrateBuild(builder: ViteBuilder, manager: RscPluginManager,
 
     manager.writeAssetsManifest(["rsc"]);
   }
+}
+
+/**
+ * Add discovered "use server" modules as extra RSC rollup inputs.
+ */
+function injectServerActionEntries(rscEnv: Environment, manager: RscPluginManager, root: string): void {
+  const serverActionModules = Object.keys(manager.serverReferenceMetaMap);
+  if (serverActionModules.length === 0) {
+    return;
+  }
+
+  const existingInput = rscEnv.config.build.rollupOptions?.input;
+  const currentInputs: Record<string, string> = {};
+
+  if (typeof existingInput === "string") {
+    currentInputs["index"] = existingInput;
+  } else if (Array.isArray(existingInput)) {
+    existingInput.forEach((input, i) => {
+      currentInputs[`entry${i}`] = input;
+    });
+  } else if (existingInput && typeof existingInput === "object") {
+    Object.assign(currentInputs, existingInput);
+  }
+
+  serverActionModules.forEach((moduleId, i) => {
+    const relativePath = moduleId.startsWith("/") ? `.${moduleId}` : moduleId;
+    currentInputs[`__server_action_${i}`] = path.resolve(root, relativePath);
+  });
+
+  rscEnv.config.build.rollupOptions = {
+    ...rscEnv.config.build.rollupOptions,
+    input: currentInputs,
+  };
 }
 
 /**

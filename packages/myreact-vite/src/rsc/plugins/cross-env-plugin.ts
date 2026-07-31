@@ -42,14 +42,7 @@ export function createCrossEnvPlugin(manager: RscPluginManager): Plugin[] {
       configureServer(viteServer) {
         server = viteServer;
 
-        // Prefer ssrLoadModule in DEV (CJS-safe). Keep runner helper for advanced use.
-        globalThis.__MY_REACT_ENVIRONMENT_SSR_LOAD_MODULE__ = async function (id: string): Promise<unknown> {
-          if (!server) {
-            throw new Error(`[@my-react/react-vite] Vite server is not available`);
-          }
-          return server.ssrLoadModule(id);
-        };
-
+        // Official plugin-rsc convention: load via environment ModuleRunner in DEV.
         globalThis.__MY_REACT_ENVIRONMENT_RUNNER_IMPORT__ = async function (environmentName: string, id: string): Promise<unknown> {
           const environment = server?.environments[environmentName];
           if (!environment) {
@@ -61,6 +54,14 @@ export function createCrossEnvPlugin(manager: RscPluginManager): Plugin[] {
           }
 
           return environment.runner.import(id);
+        };
+
+        // Kept for older generated code / diagnostics; prefer RUNNER_IMPORT.
+        globalThis.__MY_REACT_ENVIRONMENT_SSR_LOAD_MODULE__ = async function (id: string): Promise<unknown> {
+          if (!server) {
+            throw new Error(`[@my-react/react-vite] Vite server is not available`);
+          }
+          return server.ssrLoadModule(id);
         };
       },
 
@@ -88,26 +89,37 @@ export function createCrossEnvPlugin(manager: RscPluginManager): Plugin[] {
 
           let replacement: string;
 
+          const configuredEntry = manager.entries[environmentName as keyof typeof manager.entries];
+
+          // When enableSsr:false, entries.ssr is omitted but loadModule("ssr") may still
+          // appear in dead branches (define runs after this pre plugin). Emit a runtime
+          // reject instead of resolving Vite's default empty `ssr` env to `./index`.
+          if (!configuredEntry) {
+            replacement = `Promise.reject(new Error(${JSON.stringify(
+              `[@my-react/react-vite] No entry configured for loadModule("${environmentName}"${entryName ? `, "${entryName}"` : ""}). Set rsc({ entries.${environmentName} }) or enableSsr.`
+            )}))`;
+            s.update(start, end, replacement);
+            continue;
+          }
+
           if (server && this.environment?.mode !== "build") {
-            // Dev: prefer ssrLoadModule for reliability with CJS deps (same as importFromEnvironment).
-            // ModuleRunner.import throws `module is not defined` on packages like @my-react/react.
-            const environment = server.environments[environmentName] ?? server.environments.ssr;
+            // Dev: load via the target environment's ModuleRunner (matches BUILD/PROD graphs).
+            // Do not fall back to server.environments.ssr — that is Vite's default env and
+            // is not our RSC SSR graph when enableSsr is false.
+            const environment = server.environments[environmentName];
             if (!environment) {
               this.error(`[@my-react/react-vite] Unknown environment '${environmentName}'`);
               continue;
             }
 
-            const source =
-              manager.entries[environmentName as keyof typeof manager.entries] ??
-              getEntrySource(environment.config as { build?: { rollupOptions?: { input?: unknown } } }, entryName);
-            const resolved = await environment.pluginContainer.resolveId(source);
+            const resolved = await environment.pluginContainer.resolveId(configuredEntry);
 
             if (!resolved) {
-              this.error(`[@my-react/react-vite] Failed to resolve entry '${source}'`);
+              this.error(`[@my-react/react-vite] Failed to resolve entry '${configuredEntry}'`);
               continue;
             }
 
-            replacement = `globalThis.__MY_REACT_ENVIRONMENT_SSR_LOAD_MODULE__(${JSON.stringify(resolved.id)})`;
+            replacement = `globalThis.__MY_REACT_ENVIRONMENT_RUNNER_IMPORT__(${JSON.stringify(environmentName)}, ${JSON.stringify(resolved.id)})`;
           } else {
             // Build mode: emit a marker to be replaced in renderChunk
             const marker = {
@@ -247,28 +259,6 @@ export function createCrossEnvPlugin(manager: RscPluginManager): Plugin[] {
       },
     },
   ];
-}
-
-/**
- * Get the entry source path for an environment
- */
-function getEntrySource(config: { build?: { rollupOptions?: { input?: unknown } } }, entryName?: string): string {
-  const input = config.build?.rollupOptions?.input;
-
-  if (!input) {
-    return entryName ? `./${entryName}` : "./index";
-  }
-
-  if (typeof input === "string") {
-    return input;
-  }
-
-  if (typeof input === "object" && input !== null && !Array.isArray(input)) {
-    const name = entryName || "index";
-    return (input as Record<string, string>)[name] ?? `./${name}`;
-  }
-
-  return entryName ? `./${entryName}` : "./index";
 }
 
 /**

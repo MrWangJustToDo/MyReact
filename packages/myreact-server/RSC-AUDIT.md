@@ -75,9 +75,11 @@
 
 ### A3 — 闭包绑定明文 `.bind`（无加密）
 
+**状态**：**deferred / TODO**（2026-07-31 — 暂不实现，代码留 TODO）
+
 **位置**：
 
-- [`transform-hoist-inline.ts`](../myreact-vite/src/rsc/transforms/transform-hoist-inline.ts) L121–123：无 `encode` 时 `bind(null, bindVars…)`
+- [`transform-hoist-inline.ts`](../myreact-vite/src/rsc/transforms/transform-hoist-inline.ts)：无 `encode` 时 `bind(null, bindVars…)`
 - [`transform-plugin.ts`](../myreact-vite/src/rsc/plugins/transform-plugin.ts) 调用 `transformServerActionServer` **未传入** `encode`/`decode`
 
 **问题**：内联 `"use server"` 捕获的闭包变量会以明文进入 Flight / `.bind` 参数。攻击者可改 bound args 再调同一 actionId（官方用 encryption key 防篡改）。
@@ -101,7 +103,7 @@
 **修复（2026-07-31）**：
 
 - `createClientErrorDigest` / `createPublicErrorMessage`：生产返回不透明 id，详情只打日志；`__DEV__` 仍回 message
-- `renderToFlightStream` 默认 onError、`handleServerAction` 500、dev-server catch 使用脱敏文案
+- `renderToFlightStream` 默认 onError、`handleServerAction` 执行失败改回 **Flight** `text/x-component`（CSRF/缺 header 仍 JSON）、dev-server catch 使用脱敏文案
 - 404 已不回显 actionId
 
 ---
@@ -170,7 +172,7 @@ ID = `` `${moduleId}#${name}` ``（常含源文件路径）。便于枚举（配
 **修复（2026-07-31）**：
 
 - `conditions-plugin` 改为 `configEnvironment("rsc")` 仅注入
-- HTML/`/__rsc`/`action` 经 `importFromEnvironment`（当前 DEV 为 `ssrLoadModule`，避 CJS `module is not defined`）
+- HTML/`/__rsc`/`action` 经 `importFromEnvironment` → **`environments.rsc.runner.import`**（与 BUILD 同图；CJS 靠 `noExternal` + `optimizeDeps` + `react/type` alias）
 
 ---
 
@@ -231,7 +233,7 @@ ID = `` `${moduleId}#${name}` ``（常含源文件路径）。便于枚举（配
 - [x] **A1** 去掉任意 `component` 加载；client 导航改为 `renderRsc`/`?url=` 同源校验
 - [x] **A2** Action 端点加 Origin/Host 校验（至少默认开启）
 - [x] **A16** action 处理前预热 `server-actions-init`
-- [x] **A17** `react-server` condition 仅限 rsc env（DEV 加载暂用 `ssrLoadModule` 避 CJS）
+- [x] **A17** `react-server` condition 仅限 rsc env；DEV 已切回 `runner.import`（不再永久 `ssrLoadModule`）
 - [x] **A4** FormData/Header action id 一致
 - [x] **A10**（部分）`/__rsc` 64KB + action 4MB body 限制
 - [x] **A5** 生产错误响应与 digest 脱敏

@@ -38,6 +38,13 @@ export function createScanPlugin(manager: RscPluginManager): Plugin {
         return null;
       }
 
+      // Only strip app sources. Stripping workspace CJS (`packages/myreact*`) or
+      // node_modules breaks Rollup commonjs interop (`__require` / `?commonjs-es-import`)
+      // — which surfaces on no-ssr builds that use a client scan instead of SSR scan.
+      if (!shouldScanModule(id)) {
+        return null;
+      }
+
       try {
         const output = await transformScanBuildStrip(code);
         return {
@@ -122,13 +129,15 @@ export async function transformScanBuildStrip(code: string): Promise<string> {
  * @returns Whether to scan this module
  */
 export function shouldScanModule(id: string): boolean {
-  // Skip node_modules except for specific packages
+  // Framework / deps: keep full code so CJS interop and package graphs stay valid
   if (id.includes("node_modules")) {
-    const allowedPackages = ["@my-react/", "react-server-dom"];
-    return allowedPackages.some((pkg) => id.includes(pkg));
+    return false;
+  }
+  if (id.includes("/packages/myreact")) {
+    return false;
   }
 
-  // Only scan JS/TS files
+  // Only scan JS/TS app sources for "use client" / "use server" boundaries
   return /\.[jt]sx?$/.test(id);
 }
 

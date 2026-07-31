@@ -1,4 +1,5 @@
 import { decodeReply, decodeAction } from "@lazarv/rsc/server";
+import { createElement } from "@my-react/react/type";
 
 import { createClientErrorDigest, createPublicErrorMessage } from "../shared/error-digest";
 
@@ -267,11 +268,35 @@ export async function handleServerAction(request: Request, options: HandleServer
   } catch (error) {
     console.error("[@my-react/react-server] Server action error:", error);
 
-    return new Response(JSON.stringify({ error: createPublicErrorMessage("Server action failed", error) }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    // Encode failures as Flight (same as success) so callServer can createFromReadableStream.
+    // CSRF / missing-header rejects above stay JSON — those never reach the Flight client path.
+    return flightErrorResponse(error, 500);
   }
+}
+
+/**
+ * Serialize an action failure as a Flight stream that rejects on the client.
+ */
+async function flightErrorResponse(error: unknown, status: number): Promise<Response> {
+  const digest = createClientErrorDigest(error, "A");
+  const thrown = error instanceof Error ? error : new Error(createPublicErrorMessage("Server action failed", error));
+  (thrown as Error & { digest?: string }).digest = digest;
+
+  function ActionErrorBoundary(): never {
+    throw thrown;
+  }
+
+  const stream = await renderToFlightStream(createElement(ActionErrorBoundary) as never, {
+    onError: () => digest,
+  });
+
+  return new Response(stream, {
+    status,
+    headers: {
+      "Content-Type": "text/x-component",
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+    },
+  });
 }
 
 function jsonError(status: number, error: string): Response {

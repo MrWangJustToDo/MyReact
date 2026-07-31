@@ -99,18 +99,27 @@ export async function createFlightClient(options: FlightClientOptions = {}): Pro
       credentials: "same-origin",
     });
 
+    const contentType = response.headers.get("Content-Type") || "";
+
+    // Flight action results (success or encoded error) — same normalize path as createFromStream
+    if (contentType.includes("text/x-component") && response.body) {
+      return wrapPromiseWithState(
+        Promise.resolve(
+          createFromReadableStream(response.body, {
+            moduleLoader,
+            callServer,
+          }) as Promise<unknown>
+        ),
+        moduleLoader
+      );
+    }
+
     if (!response.ok) {
       const error = await response.text();
       throw new Error(`[@my-react/react-server] Server action failed: ${error}`);
     }
 
-    // Consume the response as a Flight stream
-    const result = createFromReadableStream(response.body!, {
-      moduleLoader,
-      callServer,
-    });
-
-    return result;
+    throw new Error(`[@my-react/react-server] Server action returned unexpected Content-Type: ${contentType || "(empty)"}`);
   }
 
   if (typeof globalThis !== "undefined") {

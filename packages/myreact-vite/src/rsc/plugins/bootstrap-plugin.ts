@@ -109,7 +109,11 @@ window.__MY_REACT_RSC_CONFIG__ = {
     },
   });
 
-  // Close the stream when DOM is ready
+  // Close when the HTML document has finished parsing.
+  // Same pattern as rsc-html-stream/client: body <script> pushes run during parse,
+  // then DOMContentLoaded closes. Cold-start "$L…" / lazy misses are usually
+  // unresolved client modules (A6), not an early close — do not "fix" by
+  // delaying close without a real end-of-flight signal.
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       streamController?.close();

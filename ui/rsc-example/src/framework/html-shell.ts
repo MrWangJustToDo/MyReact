@@ -3,10 +3,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 /**
- * Resolve the HTML document shell used for SSR responses.
+ * Resolve the HTML document shell.
  *
  * Dev: Vite middleware sets `__MY_REACT_RSC_GET_HTML_TEMPLATE__` (transformIndexHtml).
  * Prod: read the built `dist/client/index.html` next to `dist/rsc`.
+ * Used for both SSR (filled #root) and no-SSR (empty #root + Flight inject).
  */
 export async function getHtmlShell(requestUrl: string): Promise<string> {
   const getter = (globalThis as unknown as { __MY_REACT_RSC_GET_HTML_TEMPLATE__?: (url: string) => Promise<string> }).__MY_REACT_RSC_GET_HTML_TEMPLATE__;

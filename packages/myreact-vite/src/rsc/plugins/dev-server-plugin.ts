@@ -4,6 +4,8 @@
  * Routing (HTML / Flight / actions) lives in the app's RSC entry (official plugin-rsc style).
  */
 
+import { isRunnableDevEnvironment } from "vite";
+
 import { withRscSsrOriginalQuery } from "../utils/rsc-original";
 
 import type { Plugin, ViteDevServer } from "vite";
@@ -27,14 +29,28 @@ export interface DevServerPluginOptions {
 }
 
 /**
- * Import a module for RSC/SSR work in DEV.
+ * Import a module for RSC/SSR work in DEV via the named environment's ModuleRunner.
  *
- * Always uses Vite's SSR module graph (`ssrLoadModule`). The `rsc` ModuleRunner
- * evaluates packages according to `environments.rsc.resolve.noExternal`; raw CJS
- * entrypoints such as `@my-react/react` (`module.exports`) throw
- * `module is not defined` when left external.
+ * Uses `environments[name].runner.import` so DEV matches BUILD/PROD:
+ * - `react-server` resolve conditions on the `rsc` env
+ * - SC hook lint (`envName === "rsc"`)
+ * - per-env `noExternal` / `optimizeDeps` (CJS workspace packages must be listed there)
+ *
+ * Fallback to `ssrLoadModule` only if the environment is not runnable (misconfig).
  */
-export async function importFromEnvironment(server: ViteDevServer, _environmentName: string, id: string): Promise<Record<string, unknown>> {
+export async function importFromEnvironment(server: ViteDevServer, environmentName: string, id: string): Promise<Record<string, unknown>> {
+  const environment = server.environments[environmentName];
+  if (environment && isRunnableDevEnvironment(environment)) {
+    return environment.runner.import(id) as Promise<Record<string, unknown>>;
+  }
+
+  if (environmentName !== "ssr" && environmentName !== "client") {
+    console.warn(
+      `[@my-react/react-vite] Environment '${environmentName}' is not runnable; falling back to ssrLoadModule. ` +
+        `DEV may skip react-server conditions / SC hook lint.`
+    );
+  }
+
   return server.ssrLoadModule(id);
 }
 
@@ -90,7 +106,9 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
             return server.transformIndexHtml(requestUrl, html);
           };
 
-          globalThis.__MY_REACT_RSC_SSR_LOAD_MODULE__ = (id: string) => server.ssrLoadModule(withRscSsrOriginalQuery(id));
+          // Client-module originals for SSR Flight decode — must use the `ssr` graph
+          // (with internal original query), not the `rsc` proxy transform.
+          globalThis.__MY_REACT_RSC_SSR_LOAD_MODULE__ = (id: string) => importFromEnvironment(server, "ssr", withRscSsrOriginalQuery(id));
 
           const entryRsc = await importFromEnvironment(server, "rsc", ssr.entryRsc);
           const handler = resolveHandler(entryRsc);

@@ -149,9 +149,17 @@ rsc env:  SC tree ──renderToReadableStream──► Flight
 
 | ID | 差距 | 说明 |
 | --- | --- | --- |
-| P0-1 | **Server Component HMR** | 官方主打能力；MyReact openspec 明确 deferred |
+| P0-1 | **Server Component HMR** | 见下方实现草图；openspec 16.3 仍 open |
 | P0-2 | **Flight 协议对拍 / hydration e2e** | 依赖 `@lazarv/rsc` vs `react-server-dom`；缺 Playwright 级回归 |
 | P0-3 | **文档与 API 一致性** | README `react({ rsc: true })` vs 真实 `import { rsc } from '@my-react/react-vite/rsc'` |
+
+**SC HMR 实现草图（未落地）**
+
+1. **Phase 0（可先做）**：`rsc`/`ssr` 图上 SC 文件 `hot.update` → `server.ws.send({ type: 'full-reload' })`。正确但粗暴。
+2. **Phase 1（推荐下一步）**：SC 变更时 invalidate `environments.rsc` 模块图 → 浏览器已有 navigation listener 再 `GET /__rsc?url=location` → `setTree`（`entry.browser` 已具备接树能力）。CC HMR 继续走现有 React Refresh。
+3. **Phase 2**：边界级刷新（只重拉变更 SC 子树），需 Flight 局部更新协议，成本高。
+
+前置：DEV 若仍 `ssrLoadModule`，HMR 应挂在实际加载用的环境上，或先切回 `rsc` ModuleRunner。
 
 ### P1 — 与官方 bundler 原语对齐
 
@@ -170,7 +178,7 @@ rsc env:  SC tree ──renderToReadableStream──► Flight
 | ID | 差距 |
 | --- | --- |
 | P2-1 | `"use cache"` / cache callable transforms |
-| P2-2 | no-ssr / client-first |
+| P2-2 | no-ssr / client-first | **partial**：`ui/rsc-example` 设 `RSC_SSR=0`（或 `pnpm dev:no-ssr` / `build:no-ssr`）走 shell+Flight、无 `ssr` env；client-first 仍未做 |
 | P2-3 | PPR / SSG 示例 |
 | P2-4 | `loadModuleDevProxy`、自定义 environment runner |
 | P2-5 | `onClientReference` 扩展 |

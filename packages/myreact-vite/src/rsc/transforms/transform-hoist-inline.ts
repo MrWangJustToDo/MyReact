@@ -123,6 +123,10 @@ export function transformHoistInlineDirective(
 
         let newCode = `/* #__PURE__ */ ${runtime(newName, newName, { directiveMatch: match })}`;
         if (bindVars.length > 0) {
+          // TODO(A3): Wire encode/decode (server encryption key) for bound closure args.
+          // Today plaintext `.bind(null, a, b)` is forgeable — do not trust closures for authz.
+          // Hooks exist on options.encode/decode; transform-plugin does not pass them yet.
+          // See packages/myreact-server/RSC-AUDIT.md §A3.
           const bindArgs = options.encode ? options.encode("[" + bindVars.join(", ") + "]") : bindVars.join(", ");
           newCode = `${newCode}.bind(null, ${bindArgs})`;
         }

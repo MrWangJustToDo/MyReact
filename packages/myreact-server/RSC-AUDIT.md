@@ -19,7 +19,7 @@
 
 ## 摘要
 
-源码审查（含二次交叉核对）。**已修复：A1、A2、A4、A5、A7–A10（部分）、A14–A20**。A6 保持现状。仍开放：**A3** 及低优先级项。
+源码审查（含二次交叉核对）。**已修复：A1、A2、A4–A10（部分）、A14–A20**。仍开放：**A3** 及低优先级项。
 
 | # | 级别 | 标题 | 状态 |
 | --- | --- | --- | --- |
@@ -27,8 +27,8 @@
 | A2 | High | Server Action 无 Origin / CSRF 防护 | **fixed** (2026-07-31) → `assertSameOriginActionRequest` |
 | A3 | High | 内联 `"use server"` 闭包绑定明文 `.bind`（无加密） | open |
 | A4 | High | FormData `decodeAction` 与 Header actionId 可不一致 | **fixed** (2026-07-31) → FormData id 必须匹配 Header |
-| A5 | Medium | `onError` / 404 把内部错误与 actionId 回给客户端 | **fixed** (2026-07-31) → opaque digest；A6 保持现状 |
-| A6 | Medium | 未解析 `$L…` Flight 引用被静默变成 `() => null` | **wontfix** — 保持现状 |
+| A5 | Medium | `onError` / 404 把内部错误与 actionId 回给客户端 | **fixed** (2026-07-31) → opaque digest |
+| A6 | Medium | 未解析 `$L…` Flight 引用被静默变成 `() => null` | **fixed** → lazarv lazy→MyReact lazy；裸 `$L\d+` reject（非 hang） |
 | A7 | Medium | `createServerActionReference` 未走 `createServerReference` | **fixed** (2026-07-31) |
 | A8 | Medium | 文件级 `"use server"` 未强制 async（`rejectNonAsyncFunction: false`） | **fixed** (2026-07-31) |
 | A9 | Medium | `transform-hoist-inline` 静默删除 `export *` / re-export | **fixed** (2026-07-31) → 编译报错 |
@@ -108,9 +108,12 @@
 
 ---
 
-### A6 — 未解析 `$L…` 静默变 `null` 组件 — **WONTFIX（保持现状）**
+### A6 — 未解析 `$L…` 静默变 `null` 组件 — **FIXED（suspend）**
 
-按产品决定暂不改为抛错；DEV 仍 `console.warn`，运行时 `() => null`。
+**修复**：  
+- `@lazarv/rsc` 的 `createLazyWrapper`（**function** + `_init`/`_payload`）会转成 MyReact `lazy(loader)`（含 throw-thenable 重试）。  
+- 仍落到裸字符串 `$L<number>` 时 **reject**（不再 `() => null`，也不再 forever-pending）。  
+- 示例 SC 对 CC 使用静态 import，避免 `React.lazy()` 绕出未绑定 chunk id。
 
 ---
 
@@ -239,7 +242,7 @@ ID = `` `${moduleId}#${name}` ``（常含源文件路径）。便于枚举（配
 - [x] **A5** 生产错误响应与 digest 脱敏
 - [x] **A7** 统一 `createServerReference`
 - [x] **A8 / A9** transform 与 React 约定对齐（async + export* 报错）
-- [~] **A6** 未解析引用 — 保持现状（wontfix）
+- [x] **A6** 未解析 `$L` → MyReact lazy / Suspense pending（不再 `() => null`）
 - [x] **A18 / A19** 收紧 `rsc-original` 与 module loader
 - [x] **A20** `use*` 启发式白名单
 - [x] **A14** `validateImports`（server-only / client-only）
@@ -259,6 +262,7 @@ ID = `` `${moduleId}#${name}` ``（常含源文件路径）。便于枚举（配
 | 2026-07-31 | 合并二次审查：A4 升为 High；新增 A16–A22 |
 | 2026-07-31 | **A2/A4/A16/A17 fixed**；A10 partial；action 404 脱敏 |
 | 2026-07-31 | **A5/A7/A8/A9 fixed**；A6 wontfix 保持现状 |
+| 2026-08-01 | **A6 fixed**：lazarv function lazy → MyReact lazy；裸 `$L\d+` Suspense pending |
 | 2026-07-31 | **A18/A19/A20 fixed** |
 | 2026-07-31 | **A14 fixed**：`validateImports` 插件默认开启 |
 | 2026-07-31 | **A15/A21 fixed**：handler(Request) + 纯 Node prod server；example `src/framework/` |

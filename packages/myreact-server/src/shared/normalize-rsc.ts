@@ -3,6 +3,7 @@ import { Lazy as REACT_LAZY_TYPE, isPromise, TRANSITIONAL_ELEMENT } from "@my-re
 
 import { CLIENT_REFERENCE_SYMBOL, SERVER_REFERENCE_SYMBOL } from "./types";
 
+import type { FlightChunkRegistry } from "./flight-chunk-registry";
 import type { ModuleLoader, ClientReferenceMetadata } from "./types";
 
 type PromiseWithState<T> = Promise<T> & {
@@ -14,7 +15,19 @@ type PromiseWithState<T> = Promise<T> & {
 type NormalizeOptions = {
   inChildren?: boolean;
   moduleLoader: ModuleLoader;
+  /** Parallel I-row scan — lets `$L<id>` loaders await chunk binding */
+  flightChunks?: FlightChunkRegistry;
   wrapPendingPromise?: (promise: PromiseWithState<unknown>) => unknown;
+};
+
+type LazarvLazyWrapper = {
+  $$typeof?: symbol;
+  _payload?: unknown;
+  _init?: (payload: unknown) => unknown;
+  loader?: unknown;
+  $$id?: string;
+  $$name?: string;
+  $$metadata?: ClientReferenceMetadata;
 };
 
 const REACT_TRANSITIONAL_ELEMENT_TYPE = TRANSITIONAL_ELEMENT;
@@ -45,6 +58,145 @@ function convertElementTupleToElement(tuple: [string, unknown, unknown, Record<s
   }
 
   return element;
+}
+
+/**
+ * @lazarv/rsc createLazyWrapper returns a *callable function* with
+ * `$$typeof: react.lazy` + `_init`/`_payload`. MyReact only understands its own
+ * `lazy({ loader })` shape — convert before render.
+ *
+ * `_init` may throw a thenable while the Flight chunk is PENDING (React Suspense protocol).
+ */
+async function runLazarvInit(init: (payload: unknown) => unknown, payload: unknown): Promise<unknown> {
+  for (;;) {
+    try {
+      return init(payload);
+    } catch (thrown) {
+      if (isPromise(thrown)) {
+        await thrown;
+        continue;
+      }
+      throw thrown;
+    }
+  }
+}
+
+function toMyReactLazyFromLazarv(typed: LazarvLazyWrapper, options: NormalizeOptions): unknown {
+  const payload = typed._payload as {
+    status?: number;
+    value?: {
+      $$typeof?: symbol;
+      $$id?: string;
+      $$metadata?: ClientReferenceMetadata;
+    };
+    promise?: Promise<unknown>;
+    _modulePromise?: Promise<unknown>;
+  };
+
+  if (payload?.value?.$$typeof === CLIENT_REFERENCE_SYMBOL && payload.value.$$metadata) {
+    const metadata = payload.value.$$metadata;
+    const lazyLoader = (async () => {
+      const result = await options.moduleLoader.requireModule(metadata);
+      const exportName = metadata.name || "default";
+      return typeof result === "object" && result !== null
+        ? ((result as Record<string, unknown>)[exportName] ?? (result as Record<string, unknown>).default ?? result)
+        : result;
+    }) as unknown as () => Promise<any>;
+
+    lazyLoader["displayName"] = `$$LazyClient(${metadata.id}#${metadata.name})`;
+    return lazy(lazyLoader) as unknown as ReturnType<typeof lazy>;
+  }
+
+  if (payload?.promise || payload?._modulePromise || typeof typed._init === "function") {
+    const lazyLoader = (async () => {
+      if (payload?.promise) {
+        await payload.promise;
+      }
+      if (payload?._modulePromise) {
+        await payload._modulePromise;
+      }
+
+      if (payload?.value?.$$typeof === CLIENT_REFERENCE_SYMBOL && payload.value.$$metadata) {
+        const metadata = payload.value.$$metadata;
+        const result = await options.moduleLoader.requireModule(metadata);
+        const exportName = metadata.name || "default";
+        return typeof result === "object" && result !== null
+          ? ((result as Record<string, unknown>)[exportName] ?? (result as Record<string, unknown>).default ?? result)
+          : result;
+      }
+
+      if (typeof typed._init === "function") {
+        return runLazarvInit(typed._init, typed._payload);
+      }
+
+      return payload?.value;
+    }) as unknown as () => Promise<any>;
+
+    lazyLoader["displayName"] = `$$LazyClientPending`;
+    return lazy(lazyLoader) as unknown as ReturnType<typeof lazy>;
+  }
+
+  const lazyLoader = (async () => (typeof typed._init === "function" ? runLazarvInit(typed._init, typed._payload) : typed)) as unknown as () => Promise<any>;
+  return lazy(lazyLoader) as unknown as ReturnType<typeof lazy>;
+}
+
+function toMyReactLazyFromClientRef(typed: LazarvLazyWrapper, options: NormalizeOptions): unknown {
+  const metadata = typed.$$metadata ?? { id: typed.$$id ?? "", name: typed.$$name ?? "default" };
+  const lazyLoader = (async () => {
+    const result = await options.moduleLoader.requireModule(metadata as ClientReferenceMetadata);
+    const exportName = metadata.name || "default";
+    return typeof result === "object" && result !== null
+      ? ((result as Record<string, unknown>)[exportName] ?? (result as Record<string, unknown>).default ?? result)
+      : result;
+  }) as unknown as () => Promise<any>;
+
+  lazyLoader["$$rsc"] = typed;
+  lazyLoader["displayName"] = "$$ClientResolve";
+  return lazy(lazyLoader) as unknown as ReturnType<typeof lazy>;
+}
+
+/**
+ * `$L8` is a Flight module-chunk id. Prefer waiting on the teed I-row registry
+ * (same binding `@lazarv/rsc` uses) so React.lazy / undigested tuples can resolve.
+ */
+function toFlightChunkLazy(ref: string, options: NormalizeOptions): unknown {
+  const id = Number(ref.slice(2));
+  const registry = options.flightChunks;
+
+  if (!registry || !Number.isFinite(id)) {
+    const error = new Error(`[@my-react/react-server] Unresolved Flight reference ${ref} (no chunk registry).`);
+    if (__DEV__) {
+      console.warn(error.message);
+    }
+    const lazyLoader = (() => Promise.reject(error)) as unknown as () => Promise<any>;
+    lazyLoader["displayName"] = `$$UnresolvedFlightRef(${ref})`;
+    return lazy(lazyLoader) as unknown as ReturnType<typeof lazy>;
+  }
+
+  const lazyLoader = (async () => {
+    const value = await registry.waitForChunk(id);
+
+    if (typeof value === "function") {
+      return value;
+    }
+
+    if (value && typeof value === "object") {
+      const typed = value as LazarvLazyWrapper;
+      if (typed.$$typeof === CLIENT_REFERENCE_SYMBOL && typed.$$metadata) {
+        const metadata = typed.$$metadata;
+        const result = await options.moduleLoader.requireModule(metadata);
+        const exportName = metadata.name || "default";
+        return typeof result === "object" && result !== null
+          ? ((result as Record<string, unknown>)[exportName] ?? (result as Record<string, unknown>).default ?? result)
+          : result;
+      }
+    }
+
+    return value;
+  }) as unknown as () => Promise<any>;
+
+  lazyLoader["displayName"] = `$$FlightChunkRef(${ref})`;
+  return lazy(lazyLoader) as unknown as ReturnType<typeof lazy>;
 }
 
 // we need this because the different between react tree from @my-react tree
@@ -108,9 +260,7 @@ export function normalizeRscValue(value: unknown, options: NormalizeOptions): un
 }
 
 function normalizeRscType(type: unknown, options: NormalizeOptions): unknown {
-  // Handle string type references like "$L<moduleId>#<exportName>"
   if (typeof type === "string") {
-    // $L reference with inline format: $Lmodule/path.js#exportName
     if (type.startsWith("$L")) {
       const rest = type.slice(2);
       const hashIndex = rest.indexOf("#");
@@ -131,19 +281,43 @@ function normalizeRscType(type: unknown, options: NormalizeOptions): unknown {
         return lazy(loader) as unknown as ReturnType<typeof lazy>;
       }
 
-      // Raw numeric reference like "$L8" - this is a Flight protocol internal ID
-      // that should have been resolved by @lazarv/rsc. If we see it here,
-      // the stream processing is still pending or client modules were not ready
-      // (common on cold DEV first paint; refresh often works). Changing this to
-      // throw is desirable long-term but needs a proper pending/lazy bridge first.
-      // See RSC-AUDIT.md §A6.
-      if (__DEV__) {
-        console.warn(`[@my-react/react-server] Unresolved lazy reference: ${type}`);
+      // `$L8` — wait for teed I-row scan to bind the same module chunk
+      if (/^\d+$/.test(rest)) {
+        return toFlightChunkLazy(type, options);
       }
-      // Return a placeholder component to avoid rendering "$L8" as DOM tag
+
+      if (__DEV__) {
+        console.warn(`[@my-react/react-server] Unrecognized $L reference: ${type}`);
+      }
       return () => null;
     }
 
+    return type;
+  }
+
+  // @lazarv/rsc lazy wrappers are callable functions — must convert before the
+  // non-object early return, otherwise MyReact never sees a MyReact `lazy()`.
+  if (typeof type === "function") {
+    const typed = type as LazarvLazyWrapper;
+    if (typed.$$typeof === REACT_LAZY_TYPE && typeof typed.loader !== "function" && typeof typed._init === "function") {
+      return toMyReactLazyFromLazarv(typed, options);
+    }
+    if (typed.$$typeof === CLIENT_REFERENCE_SYMBOL) {
+      return toMyReactLazyFromClientRef(typed, options);
+    }
+    if (typed.$$typeof === SERVER_REFERENCE_SYMBOL) {
+      const metadata = typed.$$metadata ?? { id: typed.$$id ?? "", name: typed.$$name ?? "default" };
+      const loader = (async () => {
+        const result = await options.moduleLoader.requireModule(metadata as ClientReferenceMetadata);
+        const exportName = metadata.name || "default";
+        return typeof result === "object" && result !== null
+          ? ((result as Record<string, unknown>)[exportName] ?? (result as Record<string, unknown>).default ?? result)
+          : result;
+      }) as unknown as () => Promise<any>;
+      loader["$$rsc"] = typed;
+      loader["displayName"] = "$$ServerResolve";
+      return lazy(loader) as unknown as ReturnType<typeof lazy>;
+    }
     return type;
   }
 
@@ -151,84 +325,14 @@ function normalizeRscType(type: unknown, options: NormalizeOptions): unknown {
     return type;
   }
 
-  const typed = type as {
-    $$typeof?: symbol;
-    _payload?: unknown;
-    _init?: (payload: unknown) => unknown;
-    loader?: unknown;
-    $$id?: string;
-    $$name?: string;
-    $$metadata?: ClientReferenceMetadata;
-  };
+  const typed = type as LazarvLazyWrapper;
 
   if (typed.$$typeof === REACT_LAZY_TYPE && typeof typed.loader !== "function" && typeof typed._init === "function") {
-    // This is a lazy wrapper from @lazarv/rsc
-    const payload = typed._payload as {
-      status?: number;
-      value?: {
-        $$typeof?: symbol;
-        $$id?: string;
-        $$metadata?: ClientReferenceMetadata;
-      };
-      promise?: Promise<unknown>;
-    };
-
-    // Handle resolved client reference
-    if (payload?.value?.$$typeof === CLIENT_REFERENCE_SYMBOL && payload.value.$$metadata) {
-      const metadata = payload.value.$$metadata;
-      const lazyLoader = (async () => {
-        const result = await options.moduleLoader.requireModule(metadata);
-        const exportName = metadata.name || "default";
-        return typeof result === "object" && result !== null
-          ? ((result as Record<string, unknown>)[exportName] ?? (result as Record<string, unknown>).default ?? result)
-          : result;
-      }) as unknown as () => Promise<any>;
-
-      lazyLoader["displayName"] = `$$LazyClient(${metadata.id}#${metadata.name})`;
-      return lazy(lazyLoader) as unknown as ReturnType<typeof lazy>;
-    }
-
-    // Handle pending lazy - wait for promise and then load
-    if (payload?.promise) {
-      const lazyLoader = (async () => {
-        await payload.promise;
-
-        if (payload.value?.$$typeof === CLIENT_REFERENCE_SYMBOL && payload.value.$$metadata) {
-          const metadata = payload.value.$$metadata;
-          const result = await options.moduleLoader.requireModule(metadata);
-          const exportName = metadata.name || "default";
-          return typeof result === "object" && result !== null
-            ? ((result as Record<string, unknown>)[exportName] ?? (result as Record<string, unknown>).default ?? result)
-            : result;
-        }
-
-        return typed._init!(typed._payload);
-      }) as unknown as () => Promise<any>;
-
-      lazyLoader["displayName"] = `$$LazyClientPending`;
-      return lazy(lazyLoader) as unknown as ReturnType<typeof lazy>;
-    }
-
-    // Fallback: use original init
-    const lazyLoader = (async () => typed._init!(typed._payload)) as unknown as () => Promise<any>;
-    return lazy(lazyLoader) as unknown as ReturnType<typeof lazy>;
+    return toMyReactLazyFromLazarv(typed, options);
   }
 
   if (typed.$$typeof === CLIENT_REFERENCE_SYMBOL) {
-    const metadata = typed.$$metadata ?? { id: typed.$$id ?? "", name: typed.$$name ?? "default" };
-    const lazyLoader = (async () => {
-      const result = await options.moduleLoader.requireModule(metadata as ClientReferenceMetadata);
-      const exportName = metadata.name || "default";
-      return typeof result === "object" && result !== null
-        ? ((result as Record<string, unknown>)[exportName] ?? (result as Record<string, unknown>).default ?? result)
-        : result;
-    }) as unknown as () => Promise<any>;
-
-    lazyLoader["$$rsc"] = typed;
-
-    lazyLoader["displayName"] = "$$ClientResolve";
-
-    return lazy(lazyLoader) as unknown as ReturnType<typeof lazy>;
+    return toMyReactLazyFromClientRef(typed, options);
   }
 
   if (typed.$$typeof === SERVER_REFERENCE_SYMBOL) {
@@ -242,9 +346,7 @@ function normalizeRscType(type: unknown, options: NormalizeOptions): unknown {
     }) as unknown as () => Promise<any>;
 
     loader["$$rsc"] = typed;
-
     loader["displayName"] = "$$ServerResolve";
-
     return lazy(loader) as unknown as ReturnType<typeof lazy>;
   }
 

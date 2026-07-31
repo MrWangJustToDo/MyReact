@@ -1,10 +1,12 @@
-import { createFromReadableStream, createFromFetch, encodeReply, createServerReference } from "@lazarv/rsc/client";
+import { createFromReadableStream, encodeReply, createServerReference } from "@lazarv/rsc/client";
 import { __my_react_internal__, createElement, Suspense, use, type MyReactElement } from "@my-react/react/type";
 
+import { attachFlightChunkRegistry } from "../shared/flight-chunk-registry";
 import { normalizeRscValue } from "../shared/normalize-rsc";
 
 import { createManifestModuleLoader, createModuleLoader } from "./module-loader";
 
+import type { FlightChunkRegistry } from "../shared/flight-chunk-registry";
 import type { FlightClientOptions, ModuleLoader } from "../shared/types";
 import type { hydrateRoot } from "@my-react/react-dom/client";
 import type { ReactNode } from "react";
@@ -103,15 +105,7 @@ export async function createFlightClient(options: FlightClientOptions = {}): Pro
 
     // Flight action results (success or encoded error) — same normalize path as createFromStream
     if (contentType.includes("text/x-component") && response.body) {
-      return wrapPromiseWithState(
-        Promise.resolve(
-          createFromReadableStream(response.body, {
-            moduleLoader,
-            callServer,
-          }) as Promise<unknown>
-        ),
-        moduleLoader
-      );
+      return decodeFlightStream(response.body, moduleLoader, callServer);
     }
 
     if (!response.ok) {
@@ -130,22 +124,19 @@ export async function createFlightClient(options: FlightClientOptions = {}): Pro
    * Consume a Flight stream
    */
   function createFromStreamInternal(stream: ReadableStream<Uint8Array>): Promise<unknown> {
-    const result = createFromReadableStream(stream, {
-      moduleLoader,
-      callServer,
-    }) as Promise<unknown>;
-    return wrapPromiseWithState(result, moduleLoader);
+    return decodeFlightStream(stream, moduleLoader, callServer);
   }
 
   /**
    * Consume a Flight stream from a fetch response
    */
   function createFromFetchInternal(responsePromise: Promise<Response>): Promise<unknown> {
-    const result = createFromFetch(responsePromise, {
-      moduleLoader,
-      callServer,
-    }) as Promise<unknown>;
-    return wrapPromiseWithState(result, moduleLoader);
+    return Promise.resolve(responsePromise).then(async (response) => {
+      if (!response.body) {
+        throw new Error("[@my-react/react-server] Missing response body for Flight fetch");
+      }
+      return decodeFlightStream(response.body, moduleLoader, callServer);
+    });
   }
 
   /**
@@ -196,10 +187,24 @@ type PromiseWithState<T> = Promise<T> & {
   _reason?: unknown;
 };
 
-function wrapPromiseWithState(value: Promise<unknown>, moduleLoader: ModuleLoader): PromiseWithState<unknown> {
+function decodeFlightStream(
+  stream: ReadableStream<Uint8Array>,
+  moduleLoader: ModuleLoader,
+  callServer?: (id: string, args: unknown[]) => Promise<unknown>
+): PromiseWithState<unknown> {
+  const { stream: decodeStream, registry } = attachFlightChunkRegistry(stream, moduleLoader);
+  const result = createFromReadableStream(decodeStream, {
+    moduleLoader,
+    callServer,
+  }) as Promise<unknown>;
+  return wrapPromiseWithState(result, moduleLoader, registry);
+}
+
+function wrapPromiseWithState(value: Promise<unknown>, moduleLoader: ModuleLoader, flightChunks?: FlightChunkRegistry): PromiseWithState<unknown> {
   const normalizedPromise = Promise.resolve(value).then((resolved) =>
     normalizeRscValue(resolved, {
       moduleLoader,
+      flightChunks,
       wrapPendingPromise: (promise) => createElement(cacheLazy(promise as Promise<any>)),
     })
   );

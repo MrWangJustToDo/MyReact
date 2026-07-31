@@ -1,9 +1,11 @@
-import { createFromReadableStream, createFromFetch } from "@lazarv/rsc/client";
+import { createFromReadableStream } from "@lazarv/rsc/client";
 import { __my_react_internal__, createElement, Suspense, use } from "@my-react/react/type";
 
 import { createModuleLoader } from "../client/module-loader";
+import { attachFlightChunkRegistry } from "../shared/flight-chunk-registry";
 import { normalizeRscValue } from "../shared/normalize-rsc";
 
+import type { FlightChunkRegistry } from "../shared/flight-chunk-registry";
 import type { FlightServerOptions, ModuleLoader } from "../shared/types";
 import type { MyReactElement } from "@my-react/react/type";
 import type { renderToReadableStream } from "@my-react/react-dom/server";
@@ -23,18 +25,16 @@ export async function createFlightServer(options: FlightServerOptions = {}): Pro
   const moduleLoader: ModuleLoader = options.moduleLoader || createModuleLoader();
 
   function createFromStreamInternal(stream: ReadableStream<Uint8Array>): Promise<unknown> {
-    const result = createFromReadableStream(stream, {
-      moduleLoader,
-    }) as Promise<unknown>;
-    return wrapPromiseWithState(result, moduleLoader);
+    return decodeFlightStream(stream, moduleLoader);
   }
 
   function createFromFetchInternal(responsePromise: Promise<Response>): Promise<unknown> {
-    const fetchFn = createFromFetch as unknown as (promise: Promise<Response>, options?: { moduleLoader: ModuleLoader }) => Promise<unknown>;
-    const result = fetchFn(responsePromise, {
-      moduleLoader,
+    return Promise.resolve(responsePromise).then(async (response) => {
+      if (!response.body) {
+        throw new Error("[@my-react/react-server] Missing response body for Flight fetch");
+      }
+      return decodeFlightStream(response.body, moduleLoader);
     });
-    return wrapPromiseWithState(result, moduleLoader);
   }
 
   function renderToStream(rscStream: ReadableStream<Uint8Array>) {
@@ -65,10 +65,19 @@ type PromiseWithState<T> = Promise<T> & {
   _reason?: unknown;
 };
 
-function wrapPromiseWithState(value: Promise<unknown>, moduleLoader: ModuleLoader): PromiseWithState<unknown> {
+function decodeFlightStream(stream: ReadableStream<Uint8Array>, moduleLoader: ModuleLoader): PromiseWithState<unknown> {
+  const { stream: decodeStream, registry } = attachFlightChunkRegistry(stream, moduleLoader);
+  const result = createFromReadableStream(decodeStream, {
+    moduleLoader,
+  }) as Promise<unknown>;
+  return wrapPromiseWithState(result, moduleLoader, registry);
+}
+
+function wrapPromiseWithState(value: Promise<unknown>, moduleLoader: ModuleLoader, flightChunks?: FlightChunkRegistry): PromiseWithState<unknown> {
   const normalizedPromise = Promise.resolve(value).then((resolved) =>
     normalizeRscValue(resolved, {
       moduleLoader,
+      flightChunks,
       wrapPendingPromise: (promise) => createElement(cacheLazy(promise as Promise<any>)),
     })
   );

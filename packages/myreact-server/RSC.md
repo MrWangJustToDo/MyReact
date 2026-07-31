@@ -15,7 +15,7 @@
 | — | 不适用（架构选择不同） |
 
 相关内部设计：[`openspec/changes/implement-rsc/`](../../openspec/changes/implement-rsc/)。  
-**已实现路径的漏洞/错误审计**：[RSC-AUDIT.md](./RSC-AUDIT.md)（多数 High/Medium 已修；A6 保持现状；A3 闭包加密仍开）。
+**已实现路径的漏洞/错误审计**：[RSC-AUDIT.md](./RSC-AUDIT.md)（多数 High/Medium 已修；A6 suspend 已修；A3 闭包加密仍开）。
 
 ---
 
@@ -200,7 +200,7 @@ rsc env:  SC tree ──renderToReadableStream──► Flight
 | --- | --- | --- |
 | 协议实现 | Meta `react-server-dom-*` | `@lazarv/rsc`（experimental pin） |
 | 模块加载约定 | webpack-style manifest + Vite 生成 loader | 自建 `module-loader` / manifest helpers |
-| 树归一化 | React 内部 | `normalize-rsc.ts`（`$L…`、lazy、Promise）；未解析引用 DEV 下 placeholder |
+| 树归一化 | React 内部 | `normalize-rsc.ts`（`$L…`、lazarv lazy→MyReact lazy、Promise）；裸 `$L\d+` Suspense pending |
 
 **风险**：任何 React canary Flight 变更，官方插件跟 `react-server-dom`；MyReact 跟 `@lazarv/rsc` 节奏，可能出现 **payload 不完全互通**。
 

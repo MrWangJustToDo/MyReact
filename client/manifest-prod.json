@@ -1,6 +1,6 @@
 {
   "main.css": "/MyReact/client/main-5aa2e3b272be33de521e.css",
-  "main.js": "/MyReact/client/main-e7fd2ceb48d20857497a.js",
+  "main.js": "/MyReact/client/main-3bbd88d31847649a4257.js",
   "runtime.js": "/MyReact/client/runtime-a9220425fc2ec7e8d44d.js",
   "common-Layout.js": "/MyReact/client/common-Layout-083bbdfe394ca5885e8b.js",
   "pages-.js": "/MyReact/client/pages--79ad4b57108cbdc4d974.js",
@@ -34,7 +34,7 @@
   "manifest-loadable.json": "/MyReact/client/manifest-loadable.json",
   "manifest-deps.json": "/MyReact/client/manifest-deps.json",
   "main-css.map": "/MyReact/client/main-5aa2e3b272be33de521e.css.map",
-  "main-js.map": "/MyReact/client/main-e7fd2ceb48d20857497a.js.map",
+  "main-js.map": "/MyReact/client/main-3bbd88d31847649a4257.js.map",
   "runtime-js.map": "/MyReact/client/runtime-a9220425fc2ec7e8d44d.js.map",
   "common-Layout-js.map": "/MyReact/client/common-Layout-083bbdfe394ca5885e8b.js.map",
   "pages--js.map": "/MyReact/client/pages--79ad4b57108cbdc4d974.js.map",

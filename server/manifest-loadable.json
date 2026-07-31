@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "hash": "2fc292d95ed9c047817c",
+  "hash": "1e2aafe4d9e6b5532f8c",
   "publicPath": "/MyReact/client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/server",
   "assetsByChunkName": {

@@ -34,3 +34,5 @@ export {
 export { createCrossEnvPlugin } from "./cross-env-plugin";
 
 export { createValidateImportsPlugin } from "./validate-imports-plugin";
+
+export { createHmrPlugin } from "./hmr-plugin";

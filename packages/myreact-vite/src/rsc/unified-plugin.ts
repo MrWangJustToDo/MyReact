@@ -14,6 +14,7 @@ import {
   createVirtualModulesPlugin,
   createCrossEnvPlugin,
   createValidateImportsPlugin,
+  createHmrPlugin,
 } from "./plugins";
 import { ClientModuleRegistry, ServerActionRegistry } from "./transforms";
 
@@ -177,6 +178,9 @@ export function rsc(options: UnifiedRscPluginOptions = {}): Plugin[] {
 
   // Cross-environment module loading
   plugins.push(...createCrossEnvPlugin(manager));
+
+  // Server Component HMR (Phase 1: rsc:update → browser Flight refetch)
+  plugins.push(createHmrPlugin(manager));
 
   // A14: server-only / client-only boundary validation (default on)
   if (options.validateImports !== false) {

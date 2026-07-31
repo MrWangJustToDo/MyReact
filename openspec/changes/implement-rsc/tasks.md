@@ -113,7 +113,7 @@
 
 - [x] 16.1 Add `/__rsc` endpoint for Flight stream requests in `configureServer`
 - [x] 16.2 Add `/__rsc_action` endpoint for server action requests
-- [ ] 16.3 Implement HMR support for server component changes (deferred for future)
+- [x] 16.3 Implement HMR support for server component changes (Phase 1: `rsc:update` → Flight refetch)
 - [x] 16.4 Add bootstrap script injection middleware
 
 ## 17. Package Exports and Types

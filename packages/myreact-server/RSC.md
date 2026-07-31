@@ -108,7 +108,7 @@ rsc env:  SC tree ──renderToReadableStream──► Flight
 | `rsc({ entries })` 统一插件 | ✅ | ✅ `@my-react/react-vite/rsc` | 根 README 仍写 `react({ rsc: true })`（文档过时） |
 | 默认 serverHandler 中间件 | ✅ | ◐ 自建 `/__rsc` + `/__rsc_action` + HTML SSR | 路径可配；行为更「示例级」 |
 | HTML + Flight 注入 | ✅ | ✅ `rsc-html-stream` + bootstrap | |
-| SC / CC HMR | ✅ | ❌ SC HMR | **P0** |
+| SC / CC HMR | ✅ | ✅ Phase 1 SC（`rsc:update`）+ CC Refresh | Phase 2 边界级未做 |
 | `loadModuleDevProxy`（跨 runtime RPC） | ✅ | ❌ | Cloudflare 等；P2 |
 | `defineEncryptionKey` | ✅ | ❌ | P1（与闭包绑定安全相关） |
 | `rscCssTransform` / `loadCss()` | ✅ | ❌ | P1 |
@@ -149,17 +149,15 @@ rsc env:  SC tree ──renderToReadableStream──► Flight
 
 | ID | 差距 | 说明 |
 | --- | --- | --- |
-| P0-1 | **Server Component HMR** | 见下方实现草图；openspec 16.3 仍 open |
+| P0-1 | **Server Component HMR** | **done（Phase 1）**：`rsc` `hotUpdate` → `rsc:update` → browser 重拉 `/__rsc` + `setTree`；CC 仍走 React Refresh。Phase 2 局部子树未做 |
 | P0-2 | **Flight 协议对拍 / hydration e2e** | 依赖 `@lazarv/rsc` vs `react-server-dom`；缺 Playwright 级回归 |
 | P0-3 | **文档与 API 一致性** | README `react({ rsc: true })` vs 真实 `import { rsc } from '@my-react/react-vite/rsc'` |
 
-**SC HMR 实现草图（未落地）**
+**SC HMR 实现草图**
 
-1. **Phase 0（可先做）**：`rsc`/`ssr` 图上 SC 文件 `hot.update` → `server.ws.send({ type: 'full-reload' })`。正确但粗暴。
-2. **Phase 1（推荐下一步）**：SC 变更时 invalidate `environments.rsc` 模块图 → 浏览器已有 navigation listener 再 `GET /__rsc?url=location` → `setTree`（`entry.browser` 已具备接树能力）。CC HMR 继续走现有 React Refresh。
+1. **Phase 0**：`rsc`/`ssr` 图上 SC 文件 `hot.update` → `server.ws.send({ type: 'full-reload' })`。正确但粗暴（未采用）。
+2. **Phase 1（已落地）**：SC 变更时 `environments.rsc` invalidate → `client.hot.send({ event: 'rsc:update' })` → browser `GET /__rsc?url=location` → `setTree`（`entry.browser`）。CC HMR 继续走 React Refresh；CC update 时同步 invalidate RSC 上同模块 proxy。
 3. **Phase 2**：边界级刷新（只重拉变更 SC 子树），需 Flight 局部更新协议，成本高。
-
-前置：DEV 若仍 `ssrLoadModule`，HMR 应挂在实际加载用的环境上，或先切回 `rsc` ModuleRunner。
 
 ### P1 — 与官方 bundler 原语对齐
 

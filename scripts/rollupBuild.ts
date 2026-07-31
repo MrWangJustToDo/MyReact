@@ -172,11 +172,11 @@ const start = async () => {
   process.exit(0);
 };
 
-// start();
+start();
 // myreact();
-myreactServer();
+// myreactServer();
 // myreactThird();
 // myreactReconciler();
 // myreact();
 // myreactLynx();
-myreactDev();
+// myreactDev();

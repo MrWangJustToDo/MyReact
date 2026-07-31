@@ -1,5 +1,7 @@
 import { renderToReadableStream } from "@lazarv/rsc/server";
 
+import { createClientErrorDigest } from "../shared/error-digest";
+
 import { createClientManifestResolver } from "./manifest";
 
 import type { RenderToFlightStreamOptions } from "../shared/types";
@@ -56,15 +58,8 @@ export async function renderToFlightStream(element: MyReactElementNode, options:
         }
       }
 
-      // Default: return error message as digest
-      if (error instanceof Error) {
-        if (typeof __DEV__ !== "undefined" && __DEV__) {
-          console.error("[@my-react/react-server] RSC rendering error:", error);
-        }
-        return error.message;
-      }
-
-      return String(error);
+      // Default: opaque digest in production; message in __DEV__
+      return createClientErrorDigest(error, "R");
     },
     signal: options.signal,
     identifierPrefix: options.identifierPrefix,

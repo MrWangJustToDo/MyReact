@@ -13,3 +13,10 @@ declare module "virtual:my-react-rsc/client-references" {
   const references: Record<string, unknown>;
   export default references;
 }
+
+interface ImportMeta {
+  readonly viteRsc: {
+    loadModule: <T = unknown>(environment: string, entryName?: string) => Promise<T>;
+    loadBootstrapScriptContent: (entryName?: string) => string;
+  };
+}

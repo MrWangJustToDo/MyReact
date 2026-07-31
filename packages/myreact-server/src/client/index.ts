@@ -10,6 +10,7 @@ export {
   preloadModule,
   isModuleLoaded,
   getLoadedModules,
+  assertSafeClientModuleId,
 } from "./module-loader";
 
 // Re-export types

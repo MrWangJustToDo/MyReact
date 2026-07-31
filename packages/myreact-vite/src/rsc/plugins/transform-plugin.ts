@@ -16,6 +16,7 @@ import {
   transformDirectiveProxyExport,
 } from "../transforms";
 import { initLexer, generateModuleId } from "../utils";
+import { hasRscSsrOriginalQuery } from "../utils/rsc-original";
 
 import type { RscPluginManager } from "../manager";
 import type { ClientModuleRegistry, ServerActionRegistry } from "../transforms";
@@ -70,13 +71,14 @@ async function findInvalidServerHook(code: string): Promise<string | null> {
       const callee = node.callee;
       if (callee.type === "Identifier") {
         const name = callee.name;
-        if (name !== "use" && (name.startsWith("use") || forbidden.has(name))) {
+        // A20: only known React hooks — do not treat every use* helper as forbidden
+        if (forbidden.has(name)) {
           found = name;
           this.skip();
         }
       } else if (callee.type === "MemberExpression" && !callee.computed && callee.property.type === "Identifier") {
         const name = callee.property.name;
-        if (name !== "use" && (name.startsWith("use") || forbidden.has(name))) {
+        if (forbidden.has(name)) {
           found = name;
           this.skip();
         }
@@ -92,7 +94,10 @@ async function findInvalidServerHook(code: string): Promise<string | null> {
  */
 export function createTransformPlugin(options: RscPluginOptions, context: TransformPluginContext): Plugin {
   const include = options.include ?? /\.[tj]sx?$/;
-  const exclude = options.exclude ?? /node_modules/;
+  // Workspace packages ship as source/CJS under packages/* — never treat them as app SCs.
+  const exclude =
+    options.exclude ??
+    /node_modules|[/\\]packages[/\\]myreact|[/\\]@my-react[/\\]react([/\\]|$)|[/\\]@my-react[/\\]react-dom([/\\]|$)|[/\\]@my-react[/\\]react-server([/\\]|$)|[/\\]@my-react[/\\]react-shared([/\\]|$)/;
   const filter = createFilter(include, exclude);
 
   let config: ResolvedConfig;
@@ -117,15 +122,9 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
 
     async transform(code, id, transformOptions): Promise<TransformResult | null> {
       const [filepath, rawQuery] = id.split("?");
-      const isOriginal = rawQuery?.includes("rsc-original");
 
       // Skip non-eligible files
       if (!filter(filepath) || !isRscEligibleFile(filepath)) {
-        return null;
-      }
-
-      // If explicit original request, skip RSC transforms
-      if (isOriginal) {
         return null;
       }
 
@@ -135,7 +134,7 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
       //
       // For "use client" modules:
       // - RSC environment: Transform to proxy
-      // - SSR flag set (legacy/dev mode): Transform to proxy (SSR uses ?rsc-original to bypass)
+      // - SSR flag set (legacy/dev mode): Transform to proxy (SSR uses internal original query to bypass)
       // - Client/browser: Keep original
       //
       // For "use server" modules:
@@ -146,9 +145,15 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
       const isSsrEnv = envName === "ssr";
       const ssrFlag = Boolean(transformOptions?.ssr) || Boolean((this as { ssr?: boolean }).ssr);
 
+      // A18: only SSR may bypass transforms via the internal original query.
+      // Client/browser requests that forge the query still get normal RSC transforms.
+      if (hasRscSsrOriginalQuery(rawQuery) && (isSsrEnv || (!envName && ssrFlag))) {
+        return null;
+      }
+
       // Proxy client modules:
       // - In RSC environment (build): always proxy
-      // - In dev mode with ssrFlag: proxy (SSR rendering uses ?rsc-original to bypass)
+      // - In dev mode with ssrFlag: proxy (SSR rendering uses internal original query to bypass)
       // - In build mode SSR environment: DON'T proxy (need real code for SSR)
       const isBuildModeSsr = isBuild && isSsrEnv;
       const shouldProxyClientModules = isRscEnv || (ssrFlag && !isBuildModeSsr);
@@ -161,7 +166,9 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
 
       const parseCode = await getParseCode(code, filepath);
 
-      if (!detectUseClientDirective(code)) {
+      // Only RSC modules are Server Components by default. Client/SSR graphs may
+      // load framework CJS (e.g. @my-react/react) that defines hooks — do not lint those.
+      if (isRscEnv && !detectUseClientDirective(code)) {
         const hook = await findInvalidServerHook(parseCode);
         if (hook) {
           throw new Error(
@@ -219,7 +226,7 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
             directive: "use server",
             code: parseCode,
             runtime: (_name) => `null`,
-            rejectNonAsyncFunction: false,
+            rejectNonAsyncFunction: true,
           });
 
           if (result) {
@@ -392,7 +399,7 @@ async function transformServerModule(
   if (isServer) {
     const result = transformServerActionServer(parseCode, ast, {
       runtime: (value, name) => `__registerServerReference__(${value}, ${JSON.stringify(`${moduleId}#${name}`)}, ${JSON.stringify(name)})`,
-      rejectNonAsyncFunction: false,
+      rejectNonAsyncFunction: true,
     });
 
     const exportNames = "exportNames" in result ? result.exportNames : result.names;

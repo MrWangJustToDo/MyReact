@@ -83,6 +83,13 @@ export class RscPluginManager {
   /** Server action endpoint path */
   actionEndpoint: string = "/__rsc_action";
 
+  /** Entry points from rsc({ entries }) — used by cross-env loadModule in DEV */
+  entries: {
+    rsc?: string;
+    ssr?: string;
+    client?: string;
+  } = {};
+
   /** Rollup bundles from each environment */
   bundles: Record<string, Rollup.OutputBundle> = {};
 

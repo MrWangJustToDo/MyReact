@@ -15,7 +15,7 @@ Careful comparison of **ReactLynx** (official full set), **VueLynx**, and **MyRe
 | --- | --- | --- | --- |
 | ReactLynx | `tmp/lynx-family-lynx-stack` | `c1136da` (2026-07-30) | `@lynx-js/react` **0.123.1** |
 | VueLynx | `tmp/Huxpro-vue-lynx` | `c17c3f7` (2026-07-30) | `vue-lynx` **0.5.1** |
-| MyReact Lynx | `packages/myreact-lynx` | workspace | `@my-react/react-lynx` **0.0.8** |
+| MyReact Lynx | `packages/myreact-lynx` | workspace | `@my-react/react-lynx` **0.0.9** |
 
 Evidence is from these trees’ runtime + plugin source (not docs alone).
 
@@ -188,7 +188,7 @@ MyReact:    loadTemplate → empty page → BG reconcile → ops
 3. **Element Templates**: Vue ✅ and React ◐ are **different mechanisms**; do not treat as the same feature.  
 4. **IFR**: ReactLynx = always (Snapshot). VueLynx = opt-in 0.5. MyReact = none (first-screen **patch flags ≠ IFR**).  
 5. **initData**: MyReact ≈ ReactLynx API surface; Vue only stubs `processData`.  
-6. Package version: MyReact is **0.0.8**, not 0.0.7.
+6. Package version: MyReact Lynx is **0.0.9**.
 
 ---
 
@@ -207,7 +207,7 @@ MyReact:    loadTemplate → empty page → BG reconcile → ops
 ```
 ReactLynx 0.123 = Snapshot IFR (default) + optional ET backend + fullest Lynx React surface
 VueLynx   0.5.1 = Ops + opt-in IFR/ET − gesture API − initData − real list recycle
-MyReact   0.0.8 = Ops + gestures/initData − IFR/Snapshot/ET − real list recycle
+MyReact   0.0.9 = Ops + gestures/initData − IFR/Snapshot/ET − real list recycle
 ```
 
 Refresh:

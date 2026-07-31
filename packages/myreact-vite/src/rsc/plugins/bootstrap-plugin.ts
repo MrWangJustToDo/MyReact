@@ -133,7 +133,7 @@ window.__MY_REACT_RSC_CONFIG__ = {
  */
 export function getClientRSCStream(): ReadableStream<Uint8Array> | null {
   if (typeof window !== "undefined") {
-    return (window as unknown as { __MY_REACT_RSC_STREAM__?: ReadableStream<Uint8Array> }).__MY_REACT_RSC_STREAM__ ?? null;
+    return window.__MY_REACT_RSC_STREAM__ ?? null;
   }
   return null;
 }

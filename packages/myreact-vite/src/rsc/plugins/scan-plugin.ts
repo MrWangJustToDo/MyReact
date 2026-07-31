@@ -7,7 +7,10 @@ import * as esModuleLexer from "es-module-lexer";
 import { walk } from "estree-walker";
 import { parseAstAsync } from "vite";
 
+import { asWalkRoot, getNodeRange } from "../utils";
+
 import type { RscPluginManager } from "../manager";
+import type { CallExpression, Identifier, MemberExpression, MetaProperty, Node } from "estree";
 import type { Plugin } from "vite";
 
 /**
@@ -84,24 +87,19 @@ export async function transformScanBuildStrip(code: string): Promise<string> {
   // Preserve import.meta.glob for proper glob handling
   if (importGlobRE.test(code)) {
     try {
-      const ast = await parseAstAsync(code);
+      const ast = asWalkRoot(await parseAstAsync(code));
 
-      walk(ast as any, {
-        enter(node: any) {
-          if (
-            node.type === "CallExpression" &&
-            node.callee?.type === "MemberExpression" &&
-            node.callee.object?.type === "MetaProperty" &&
-            node.callee.object.meta?.type === "Identifier" &&
-            node.callee.object.meta.name === "import" &&
-            node.callee.object.property?.type === "Identifier" &&
-            node.callee.object.property.name === "meta" &&
-            node.callee.property?.type === "Identifier" &&
-            node.callee.property.name === "glob"
-          ) {
-            const importMetaGlob = code.slice(node.start, node.end);
-            output += `console.log(${importMetaGlob});\n`;
+      walk(ast, {
+        enter(node) {
+          if (!isImportMetaGlobCall(node)) {
+            return;
           }
+          const range = getNodeRange(node);
+          if (!range) {
+            return;
+          }
+          const importMetaGlob = code.slice(range.start, range.end);
+          output += `console.log(${importMetaGlob});\n`;
         },
       });
     } catch {
@@ -132,4 +130,23 @@ export function shouldScanModule(id: string): boolean {
 
   // Only scan JS/TS files
   return /\.[jt]sx?$/.test(id);
+}
+
+function isImportMetaGlobCall(node: Node): node is CallExpression {
+  if (node.type !== "CallExpression" || node.callee.type !== "MemberExpression") {
+    return false;
+  }
+  const callee = node.callee as MemberExpression;
+  if (callee.object.type !== "MetaProperty" || callee.property.type !== "Identifier") {
+    return false;
+  }
+  const meta = callee.object as MetaProperty;
+  const property = callee.property as Identifier;
+  return (
+    meta.meta.type === "Identifier" &&
+    meta.meta.name === "import" &&
+    meta.property.type === "Identifier" &&
+    meta.property.name === "meta" &&
+    property.name === "glob"
+  );
 }

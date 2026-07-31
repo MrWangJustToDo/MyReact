@@ -1,42 +1,26 @@
-import _react from "@my-react/react-vite";
-// import react from "@vitejs/plugin-react";
+import react from "@my-react/react-vite";
 import { defineConfig } from "vite";
 
-// !SEE https://github.com/vitejs/vite/issues/12738
-// !build will fail when using monorepo symlinks, npm install works fine, so build always fails in this case
-// https://vitejs.dev/config/
+/**
+ * Monorepo notes
+ * -------------
+ * `react` / `react-dom` resolve to workspace CJS (`packages/myreact/index.js`).
+ * `@my-react/react-vite` sets `build.commonjsOptions.include` so Rollup interops
+ * those entries (otherwise: `"useState" is not exported by .../index.js`).
+ *
+ * Prebuilt third-party ESM (react-router, framer-motion, …) that do
+ * `import { createContext } from "react"` can still fail against CJS react;
+ * this example avoids those deps. See https://github.com/vitejs/vite/issues/12738
+ */
 export default defineConfig({
   ssr: {
-    // switch to react need disable all the config below
     optimizeDeps: {
-      include: [
-        "react",
-        "react-dom",
-        "react-dom/server",
-        "react-dom/client",
-        "react/jsx-runtime",
-        "react/jsx-dev-runtime",
-        "react-router",
-        "react-router-dom",
-        "react-router-dom/server",
-        "react-compiler-runtime",
-      ],
+      include: ["react", "react-dom", "react-dom/server", "react-dom/client", "react/jsx-runtime", "react/jsx-dev-runtime", "react-compiler-runtime"],
     },
-    noExternal: [
-      "react",
-      "react-dom",
-      "react-dom/server",
-      "react-dom/client",
-      "react/jsx-runtime",
-      "react/jsx-dev-runtime",
-      "react-router",
-      "react-router-dom",
-      "react-router-dom/server",
-      "react-compiler-runtime",
-    ],
+    noExternal: ["react", "react-dom", "react-dom/server", "react-dom/client", "react/jsx-runtime", "react/jsx-dev-runtime", "react-compiler-runtime"],
   },
   plugins: [
-    _react({
+    react({
       babel: {
         plugins: [
           [
@@ -48,6 +32,5 @@ export default defineConfig({
         ],
       },
     }),
-    // react(),
   ],
 });

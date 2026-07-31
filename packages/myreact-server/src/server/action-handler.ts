@@ -1,5 +1,7 @@
 import { decodeReply, decodeAction } from "@lazarv/rsc/server";
 
+import { createClientErrorDigest, createPublicErrorMessage } from "../shared/error-digest";
+
 import { renderToFlightStream } from "./render-to-flight-stream";
 import { getServerAction } from "./server-reference-map";
 
@@ -20,6 +22,109 @@ const serverModuleLoader: ModuleLoader = {
     return action;
   },
 };
+
+export type HandleServerActionOptions = {
+  /**
+   * When true (default), reject cross-site requests missing a matching Origin/Referer.
+   * Set false only for trusted non-browser callers (e.g. local tests).
+   * @default true
+   */
+  requireSameOrigin?: boolean;
+};
+
+/**
+ * @public
+ * Reject cross-site / forged Origin requests for server action POSTs.
+ * Returns a Response when the request should be blocked; otherwise null.
+ */
+export function assertSameOriginActionRequest(request: Request): Response | null {
+  const host = request.headers.get("host");
+  if (!host) {
+    return jsonError(400, "Missing Host header");
+  }
+
+  const secFetchSite = request.headers.get("sec-fetch-site");
+  if (secFetchSite === "cross-site") {
+    return jsonError(403, "Cross-site server action rejected");
+  }
+
+  const origin = request.headers.get("origin");
+  if (origin) {
+    try {
+      if (new URL(origin).host !== host) {
+        return jsonError(403, "Origin does not match Host");
+      }
+      return null;
+    } catch {
+      return jsonError(403, "Invalid Origin header");
+    }
+  }
+
+  const referer = request.headers.get("referer");
+  if (referer) {
+    try {
+      if (new URL(referer).host !== host) {
+        return jsonError(403, "Referer does not match Host");
+      }
+      return null;
+    } catch {
+      return jsonError(403, "Invalid Referer header");
+    }
+  }
+
+  // Browser fetch() same-origin POST sends Origin; missing both is treated as non-browser / CSRF-unsafe
+  return jsonError(403, "Missing Origin or Referer for server action");
+}
+
+/**
+ * Extract action id from FormData using the same field conventions as @lazarv/rsc decodeAction
+ */
+export function extractActionIdFromFormData(body: FormData): string | null {
+  let actionId: string | null = null;
+  let boundPrefix: string | null = null;
+
+  for (const key of body.keys()) {
+    if (key.startsWith("$ACTION_ID_")) {
+      actionId = key.slice("$ACTION_ID_".length);
+      break;
+    }
+    if (key.startsWith("$ACTION_REF_")) {
+      boundPrefix = "$ACTION_" + key.slice("$ACTION_REF_".length) + ":";
+      break;
+    }
+  }
+
+  if (!actionId && !boundPrefix) {
+    const legacy = body.get("$ACTION_ID");
+    if (typeof legacy === "string") {
+      actionId = legacy;
+    }
+  }
+
+  if (boundPrefix) {
+    const metadataPayload = body.get(boundPrefix + "0");
+    if (metadataPayload && typeof metadataPayload === "string") {
+      try {
+        const parsed = JSON.parse(metadataPayload) as { id?: string } | string;
+        if (parsed && typeof parsed === "object" && typeof parsed.id === "string") {
+          actionId = parsed.id;
+        } else if (typeof parsed === "string" && parsed.startsWith("$h")) {
+          const refPayload = body.get(boundPrefix + parsed.slice(2));
+          if (refPayload && typeof refPayload === "string") {
+            const ref = JSON.parse(refPayload) as { id?: string };
+            if (typeof ref.id === "string") {
+              actionId = ref.id;
+            }
+          }
+        }
+      } catch {
+        // ignore parse errors; decodeAction will fail later
+      }
+    }
+  }
+
+  return actionId;
+}
 
 /**
  * @public
@@ -51,13 +156,18 @@ export async function executeServerAction(actionId: string, body: FormData | str
 
   try {
     if (body instanceof FormData) {
+      const formActionId = extractActionIdFromFormData(body);
+      if (formActionId && formActionId !== actionId) {
+        throw new Error(`FormData action id "${formActionId}" does not match header "${actionId}"`);
+      }
+
       // Decode FormData using @lazarv/rsc
       const decodedAction = await decodeAction(body, {
         moduleLoader: serverModuleLoader,
       });
 
       if (typeof decodedAction === "function") {
-        // decodeAction returns a bound function, execute it
+        // decodeAction returns a bound/unbound action from FormData — header id already verified
         return await decodedAction();
       }
 
@@ -89,9 +199,10 @@ export async function executeServerAction(actionId: string, body: FormData | str
  * Handle a server action HTTP request
  *
  * This function handles the full request lifecycle:
- * 1. Extract action ID from header
- * 2. Decode and execute the action
- * 3. Serialize the result to Flight format
+ * 1. Same-origin check (CSRF mitigation)
+ * 2. Extract action ID from header
+ * 3. Decode and execute the action
+ * 4. Serialize the result to Flight format
  *
  * @param request - The HTTP request
  * @returns The HTTP response with Flight-encoded result
@@ -104,14 +215,19 @@ export async function executeServerAction(actionId: string, body: FormData | str
  * }
  * ```
  */
-export async function handleServerAction(request: Request): Promise<Response> {
+export async function handleServerAction(request: Request, options: HandleServerActionOptions = {}): Promise<Response> {
+  const requireSameOrigin = options.requireSameOrigin !== false;
+  if (requireSameOrigin) {
+    const blocked = assertSameOriginActionRequest(request);
+    if (blocked) {
+      return blocked;
+    }
+  }
+
   const actionId = request.headers.get("React-Server-Action");
 
   if (!actionId) {
-    return new Response(JSON.stringify({ error: "Missing React-Server-Action header" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonError(400, "Missing React-Server-Action header");
   }
 
   // Decode action ID (may be URL-encoded)
@@ -119,10 +235,7 @@ export async function handleServerAction(request: Request): Promise<Response> {
 
   // Check if action exists
   if (!getServerAction(decodedActionId)) {
-    return new Response(JSON.stringify({ error: `Server action "${decodedActionId}" not found` }), {
-      status: 404,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonError(404, "Server action not found");
   }
 
   try {
@@ -141,10 +254,7 @@ export async function handleServerAction(request: Request): Promise<Response> {
 
     // Serialize result to Flight stream
     const stream = await renderToFlightStream(result as any, {
-      onError: (error) => {
-        console.error("[@my-react/react-server] Action response error:", error);
-        return error instanceof Error ? error.message : String(error);
-      },
+      onError: (error) => createClientErrorDigest(error, "A"),
     });
 
     return new Response(stream, {
@@ -157,14 +267,18 @@ export async function handleServerAction(request: Request): Promise<Response> {
   } catch (error) {
     console.error("[@my-react/react-server] Server action error:", error);
 
-    // Return error as Flight stream
-    const errorMessage = error instanceof Error ? error.message : String(error);
-
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    return new Response(JSON.stringify({ error: createPublicErrorMessage("Server action failed", error) }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
+}
+
+function jsonError(status: number, error: string): Response {
+  return new Response(JSON.stringify({ error }), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
 }
 
 /**

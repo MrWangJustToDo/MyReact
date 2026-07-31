@@ -91,9 +91,12 @@ export async function createFlightClient(options: FlightClientOptions = {}): Pro
       method: "POST",
       headers: {
         "React-Server-Action": encodeURIComponent(actionId),
+        // Helps same-origin middleware; browsers also send Origin automatically
+        "X-My-React-RSC-Action": "1",
         ...(typeof body === "string" ? { "Content-Type": "text/plain" } : {}),
       },
       body,
+      credentials: "same-origin",
     });
 
     if (!response.ok) {
@@ -219,26 +222,18 @@ export function createServerActionReference(
   actionId: string,
   callServerFn?: (actionId: string, args: unknown[]) => Promise<unknown>
 ): (...args: unknown[]) => Promise<unknown> {
-  // Create a wrapper that lazily resolves callServer
-  // This allows the reference to be created before createFlightClient is called
-  const reference = async (...args: unknown[]): Promise<unknown> => {
+  // Lazily resolve callServer so proxies can be created before createFlightClient runs
+  const callServer = (id: string, args: unknown[]): Promise<unknown> => {
     const resolvedCallServer = callServerFn ?? (typeof globalThis !== "undefined" ? globalThis.__MY_REACT_CALL_SERVER__ : undefined);
 
     if (!resolvedCallServer) {
       throw new Error("[@my-react/react-server] Missing callServer function. Create a FlightClient or pass callServer explicitly.");
     }
 
-    return resolvedCallServer(actionId, args);
+    return resolvedCallServer(id, args);
   };
 
-  // Mark as server reference
-  (reference as any).$$typeof = Symbol.for("react.server.reference");
-  (reference as any).$$id = actionId;
-  (reference as any).$$bound = null;
-  (reference as any)["$$rsc"] = { actionId, callServerFn };
-  (reference as any)["displayName"] = "$$ServerAction";
-
-  return reference;
+  return createServerReference(actionId, callServer);
 }
 
 /**

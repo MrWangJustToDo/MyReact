@@ -15,11 +15,8 @@
     "@my-react/react": "workspace:*",
     "@my-react/react-dom": "workspace:*",
     "express": "catalog:",
-    "framer-motion": "^12.34.4",
     "react": "npm:@my-react/react@*",
-    "react-dom": "npm:@my-react/react-dom@*",
-    "react-router": "catalog:",
-    "react-router-dom": "catalog:"
+    "react-dom": "npm:@my-react/react-dom@*"
   },
   "devDependencies": {
     "@my-react/react-refresh": "workspace:*",

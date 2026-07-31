@@ -36,8 +36,9 @@ export default function Guestbook() {
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="widget">
+      <p className="widget-label">Guestbook</p>
+      <form className="inline-form" onSubmit={handleSubmit}>
         <input
           type="text"
           value={inputValue}
@@ -45,11 +46,11 @@ export default function Guestbook() {
           placeholder="Leave a message"
           disabled={isLoading}
         />
-        <button type="submit" className="btn" disabled={isLoading}>
-          {isLoading ? "Sending..." : "Send"}
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? "…" : "Send"}
         </button>
       </form>
-      <ul className="list">
+      <ul className="plain-list">
         {messages.map((message) => (
           <li key={message.id}>{message.text}</li>
         ))}

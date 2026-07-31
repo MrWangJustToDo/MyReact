@@ -12,7 +12,7 @@ module.exports = [
       "tmp/**",
       "__tests__",
       "bundle",
-      "ui/vite-example",
+      "ui/rsc-example/server.mjs",
       "ui/remix-example/postcss.config.cjs",
       "ui/remix-example/vite.config.ts",
       "packages/myreact-lynx/client",

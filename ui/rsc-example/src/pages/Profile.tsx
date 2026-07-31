@@ -6,12 +6,12 @@ type ProfilePageProps = {
 
 export default function ProfilePage({ id }: ProfilePageProps) {
   return (
-    <div className="page">
+    <section className="page-block">
       <h1>Profile</h1>
-      <p className="muted">Client-only card rendered inside a server page.</p>
-      <div className="card">
-        <ProfileCard userId={id} />
-      </div>
-    </div>
+      <p className="lede narrow">
+        Server page shell with a client island (<code>ProfileCard</code>) for local state.
+      </p>
+      <ProfileCard userId={id} />
+    </section>
   );
 }

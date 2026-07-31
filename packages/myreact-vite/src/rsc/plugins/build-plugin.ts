@@ -7,6 +7,8 @@
 import fs from "node:fs";
 import path from "node:path";
 
+import { workspaceCommonjsInclude } from "../../warning";
+
 import type { RscPluginManager, AssetDeps } from "../manager";
 import type { Plugin, UserConfig, ViteBuilder } from "vite";
 
@@ -47,6 +49,10 @@ function isExternalModule(id: string): boolean {
 
 /**
  * Alias configuration to map react -> @my-react/react
+ *
+ * `@my-react/react/type` is a CJS re-export of the package (`module.exports = require(...)`).
+ * Vite DEV ModuleRunner evaluates that file as ESM → `module is not defined`.
+ * Build is fine (Rollup CJS interop). Alias to the main entry so SSR optimizeDeps covers it.
  */
 const REACT_ALIASES = {
   react: "@my-react/react",
@@ -55,12 +61,44 @@ const REACT_ALIASES = {
   "react-dom": "@my-react/react-dom",
   "react-dom/client": "@my-react/react-dom/client",
   "react-dom/server": "@my-react/react-dom/server",
+  "@my-react/react/type": "@my-react/react",
+  "@my-react/react-dom/type": "@my-react/react-dom",
 };
 
 /**
- * Packages that should NOT be externalized (bundled with output)
+ * Packages that must be processed by Vite (not left as raw Node externals).
+ * `@my-react/*` ships CJS `module.exports` entrypoints — ModuleRunner needs Vite
+ * to transform them, otherwise DEV hits `module is not defined`.
  */
-const NO_EXTERNAL_PACKAGES = ["server-only", "client-only"];
+const SERVER_NO_EXTERNAL_PACKAGES = [
+  "server-only",
+  "client-only",
+  "react",
+  "react-dom",
+  "@my-react/react",
+  "@my-react/react-dom",
+  "@my-react/react-server",
+  "@my-react/react-jsx",
+  "react-compiler-runtime",
+  "rsc-html-stream",
+];
+
+/** Linked CJS packages must be prebundled for DEV SSR ModuleRunner. */
+const SERVER_OPTIMIZE_DEPS_INCLUDE = [
+  "react",
+  "react-dom",
+  "react/jsx-runtime",
+  "react/jsx-dev-runtime",
+  "@my-react/react",
+  "@my-react/react/jsx-runtime",
+  "@my-react/react/jsx-dev-runtime",
+  "@my-react/react-dom",
+  "@my-react/react-dom/client",
+  "@my-react/react-dom/server",
+  "@my-react/react-jsx",
+  "@my-react/react-server",
+  "react-compiler-runtime",
+];
 
 /**
  * Create the RSC build configuration plugin
@@ -98,7 +136,10 @@ export function createBuildPlugin(manager: RscPluginManager, options: BuildPlugi
             rsc: {
               resolve: {
                 conditions: RSC_CONDITIONS,
-                noExternal: NO_EXTERNAL_PACKAGES,
+                noExternal: SERVER_NO_EXTERNAL_PACKAGES,
+              },
+              optimizeDeps: {
+                include: SERVER_OPTIMIZE_DEPS_INCLUDE,
               },
               ...(command === "build"
                 ? {
@@ -116,12 +157,14 @@ export function createBuildPlugin(manager: RscPluginManager, options: BuildPlugi
             },
 
             // SSR environment - renders HTML from RSC stream
-            // SSR externalizes @my-react packages (CJS) - client components bundled as separate entries
             ...(enableSsr
               ? {
                   ssr: {
                     resolve: {
-                      noExternal: NO_EXTERNAL_PACKAGES,
+                      noExternal: SERVER_NO_EXTERNAL_PACKAGES,
+                    },
+                    optimizeDeps: {
+                      include: SERVER_OPTIMIZE_DEPS_INCLUDE,
                     },
                     ...(command === "build"
                       ? {
@@ -145,6 +188,10 @@ export function createBuildPlugin(manager: RscPluginManager, options: BuildPlugi
                 ? {
                     build: {
                       outDir: clientOutDir,
+                      // Workspace CJS entries resolve outside node_modules — expand include only.
+                      commonjsOptions: {
+                        include: workspaceCommonjsInclude,
+                      },
                       rollupOptions: {
                         input: options.entries?.client ? { index: options.entries.client } : undefined,
                       },
@@ -408,7 +455,7 @@ async function orchestrateBuild(builder: ViteBuilder, manager: RscPluginManager,
 
     // Generate SSR client manifest for runtime module loading
     if (clientModules.length > 0) {
-      const ssrClientManifest: Record<string, { id: string; name: string; ssrModule: string }> = {};
+      const ssrClientManifest: Record<string, { id: string; name: string; ssrModule: string; chunks?: string[]; sourceId?: string }> = {};
       const ssrBundle = manager.bundles["ssr"];
 
       if (ssrBundle) {
@@ -424,9 +471,13 @@ async function orchestrateBuild(builder: ViteBuilder, manager: RscPluginManager,
               for (const exportName of meta.exportNames) {
                 const key = `${normalizedId}#${exportName}`;
                 ssrClientManifest[key] = {
-                  id: normalizedId,
+                  // Importable SSR chunk (resolved from dist/ssr/index.js)
+                  id: `./${chunk.fileName}`,
                   name: exportName,
+                  chunks: [],
+                  // Kept for debugging / older loaders
                   ssrModule: chunk.fileName,
+                  sourceId: normalizedId,
                 };
               }
             }
@@ -585,8 +636,9 @@ window.__MY_REACT_RSC_CONFIG__ = {
   // Inject entry script
   const scriptTag = entryScript ? `<script type="module" src="${entryScript}"></script>` : "";
 
-  // Remove any existing script tags that reference src/entry-client
-  html = html.replace(/<script[^>]*src="[^"]*entry-client[^"]*"[^>]*><\/script>/g, "");
+  // Remove source entry script tags (replaced by hashed client build entry)
+  html = html.replace(/<script[^>]*src="[^"]*entry\.(client|browser)[^"]*"[^>]*><\/script>/g, "");
+  html = html.replace(/<script[^>]*src="[^"]*framework\/entry\.browser[^"]*"[^>]*><\/script>/g, "");
 
   // Inject bootstrap script into head (prepend for early initialization)
   if (html.includes("<head>")) {

@@ -2,20 +2,23 @@ type NavProps = {
   active: "home" | "about" | "profile";
 };
 
-const linkClass = (name: NavProps["active"], active: NavProps["active"]) => (name === active ? "nav-link nav-link-active" : "nav-link");
-
 export default function Nav({ active }: NavProps) {
   return (
-    <nav className="nav">
-      <a className={linkClass("home", active)} href="/">
-        Home
+    <header className="topbar">
+      <a className="brand" href="/">
+        MyReact
       </a>
-      <a className={linkClass("about", active)} href="/?tab=about">
-        About
-      </a>
-      <a className={linkClass("profile", active)} href="/?tab=profile">
-        Profile
-      </a>
-    </nav>
+      <nav className="nav" aria-label="Primary">
+        <a className={active === "home" ? "nav-link is-active" : "nav-link"} href="/">
+          Demo
+        </a>
+        <a className={active === "about" ? "nav-link is-active" : "nav-link"} href="/about">
+          About
+        </a>
+        <a className={active === "profile" ? "nav-link is-active" : "nav-link"} href="/profile/guest">
+          Profile
+        </a>
+      </nav>
+    </header>
   );
 }

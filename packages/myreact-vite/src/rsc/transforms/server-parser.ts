@@ -6,7 +6,7 @@
 import { walk } from "estree-walker";
 import { parseAstAsync } from "vite";
 
-import { parseExports, parseExportsAsync } from "../utils/lexer";
+import { asWalkRoot, getNodeRange, parseExports, parseExportsAsync } from "../utils";
 
 import type {
   Node,
@@ -20,7 +20,6 @@ import type {
   ExpressionStatement,
   Literal,
   Identifier,
-  Program,
 } from "estree";
 
 export interface InlineServerAction {
@@ -123,12 +122,6 @@ function getAsyncFunctionBody(node: Node): Node | null {
   return null;
 }
 
-// Extended node type with start/end positions from Vite's parser
-type NodeWithPosition = Node & {
-  start: number;
-  end: number;
-};
-
 /**
  * Find inline "use server" actions in a component file using AST parsing with estree-walker
  * This looks for functions that contain "use server" directive inside their body
@@ -147,20 +140,23 @@ export async function findInlineServerActions(code: string, parseCode?: string):
   const sourceForParse = parseCode ?? code;
 
   try {
-    const ast = (await parseAstAsync(sourceForParse)) as unknown as Program;
+    const ast = asWalkRoot(await parseAstAsync(sourceForParse));
 
     // Use estree-walker to traverse the AST
     walk(ast, {
       enter(node) {
-        const nodeWithPos = node as unknown as NodeWithPosition;
+        const range = getNodeRange(node);
+        if (!range) {
+          return;
+        }
 
         // Handle function declarations
         if (node.type === "FunctionDeclaration") {
           const funcDecl = node as FunctionDeclaration;
           if (funcDecl.async && funcDecl.id && hasUseServerDirective(funcDecl.body)) {
             inlineActions.push({
-              start: nodeWithPos.start,
-              end: nodeWithPos.end,
+              start: range.start,
+              end: range.end,
               name: funcDecl.id.name,
               isAsync: true,
             });
@@ -183,8 +179,8 @@ export async function findInlineServerActions(code: string, parseCode?: string):
 
             if (body && hasUseServerDirective(body)) {
               inlineActions.push({
-                start: nodeWithPos.start,
-                end: nodeWithPos.end,
+                start: range.start,
+                end: range.end,
                 name: identifier.name,
                 isAsync: true,
               });
@@ -201,8 +197,8 @@ export async function findInlineServerActions(code: string, parseCode?: string):
             const funcDecl = exportDecl.declaration as FunctionDeclaration;
             if (funcDecl.async && funcDecl.id && hasUseServerDirective(funcDecl.body)) {
               inlineActions.push({
-                start: nodeWithPos.start,
-                end: nodeWithPos.end,
+                start: range.start,
+                end: range.end,
                 name: funcDecl.id.name,
                 isAsync: true,
               });
@@ -222,8 +218,8 @@ export async function findInlineServerActions(code: string, parseCode?: string):
             const funcDecl = decl as FunctionDeclaration;
             if (funcDecl.async && hasUseServerDirective(funcDecl.body)) {
               inlineActions.push({
-                start: nodeWithPos.start,
-                end: nodeWithPos.end,
+                start: range.start,
+                end: range.end,
                 name: funcDecl.id?.name || "default",
                 isAsync: true,
               });
@@ -235,8 +231,8 @@ export async function findInlineServerActions(code: string, parseCode?: string):
             const body = getAsyncFunctionBody(decl);
             if (body && hasUseServerDirective(body)) {
               inlineActions.push({
-                start: nodeWithPos.start,
-                end: nodeWithPos.end,
+                start: range.start,
+                end: range.end,
                 name: "default",
                 isAsync: true,
               });

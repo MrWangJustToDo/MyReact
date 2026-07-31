@@ -1,9 +1,13 @@
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, json, useLoaderData } from "@remix-run/react";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, json, useLoaderData, Link } from "@remix-run/react";
 
 import { ThemeBody, ThemeHead, ThemeProvider, useTheme } from "~/utils/theme-provider";
 import { getThemeSession } from "~/utils/theme.server";
 
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, LinksFunction } from "@remix-run/node";
+
+import styles from "~/styles/styles.css?url";
+
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const themeSession = await getThemeSession(request);
@@ -13,7 +17,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   });
 };
 
-function App({ children }: { children: React.ReactNode }) {
+function Document({ children }: { children: React.ReactNode }) {
   const data = useLoaderData<typeof loader>();
   const [theme] = useTheme();
 
@@ -27,7 +31,18 @@ function App({ children }: { children: React.ReactNode }) {
         <ThemeHead ssrTheme={Boolean(data.theme)} />
       </head>
       <body>
-        {children}
+        <div className="shell">
+          <header className="top">
+            <Link to="/" className="brand">
+              Remix + @my-react
+            </Link>
+            <nav className="nav">
+              <Link to="/">Home</Link>
+              <Link to="/foo">Loader</Link>
+            </nav>
+          </header>
+          <main>{children}</main>
+        </div>
         <ThemeBody ssrTheme={Boolean(data.theme)} />
         <ScrollRestoration />
         <Scripts />
@@ -41,9 +56,9 @@ export default function AppWithProviders() {
 
   return (
     <ThemeProvider specifiedTheme={data.theme}>
-      <App>
+      <Document>
         <Outlet />
-      </App>
+      </Document>
     </ThemeProvider>
   );
 }

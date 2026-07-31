@@ -2,19 +2,15 @@ export type RouteMatch = { name: "home" } | { name: "about" } | { name: "profile
 
 export const matchRoute = (url: string): RouteMatch => {
   const parsed = new URL(url, "http://localhost");
-  const path = parsed.pathname;
-  const tab = parsed.searchParams.get("tab");
+  const path = parsed.pathname.replace(/\/+$/, "") || "/";
 
-  if (tab === "profile") {
-    return { name: "profile", id: "guest" };
-  }
-
-  if (tab === "about") {
+  if (path === "/about") {
     return { name: "about" };
   }
 
-  if (path === "/" || path === "") {
-    return { name: "home" };
+  const profile = path.match(/^\/profile(?:\/([^/]+))?$/);
+  if (profile) {
+    return { name: "profile", id: profile[1] || "guest" };
   }
 
   return { name: "home" };

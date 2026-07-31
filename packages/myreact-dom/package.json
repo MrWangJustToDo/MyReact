@@ -3,7 +3,7 @@
   "description": "@my-react/react-dom",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.3.29",
+  "version": "0.3.30",
   "main": "index.js",
   "unpkg": "./dist/umd/index.development.js",
   "jsdelivr": "./dist/umd/index.development.js",
@@ -86,12 +86,8 @@
     "react-dom server",
     "react-dom client"
   ],
-  "devDependencies": {
-    "@my-react/react-shared": "^0.3.29",
-    "@my-react/react-reconciler": "^0.3.29"
-  },
   "peerDependencies": {
-    "@my-react/react": ">=0.3.29",
+    "@my-react/react": ">=0.3.30",
     "react-dom": "^17 || ^18 || ^19"
   }
 }

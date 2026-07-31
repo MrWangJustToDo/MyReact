@@ -1,17 +1,138 @@
-html {
-  --background-colour: white;
-
-  background-color: var(--background-colour);
+:root {
+  color-scheme: light;
+  --bg: #f4f6f8;
+  --bg-accent: #e8eef5;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --line: rgba(15, 23, 42, 0.1);
+  --brand: #0d9488;
+  --brand-ink: #fff;
+  --panel: #ffffff;
+  --code: #0b1220;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  line-height: 1.5;
 }
 
 html.dark {
-  --background-colour: black;
+  color-scheme: dark;
+  --bg: #0b1220;
+  --bg-accent: #152033;
+  --ink: #e2e8f0;
+  --muted: #94a3b8;
+  --line: rgba(148, 163, 184, 0.18);
+  --brand: #2dd4bf;
+  --brand-ink: #042f2e;
+  --panel: #111827;
+  --code: #020617;
 }
 
-.dark-component {
-  color: white;
+* {
+  box-sizing: border-box;
 }
 
-.light-component {
-  color: black;
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(900px 420px at 12% -10%, var(--bg-accent), transparent 55%),
+    var(--bg);
+}
+
+a {
+  color: var(--brand);
+  text-decoration: none;
+}
+
+.shell {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  font-size: 1.15rem;
+}
+
+.nav {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.95rem;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1.75rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.panel h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  letter-spacing: -0.04em;
+}
+
+.muted {
+  margin: 0;
+  color: var(--muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+button,
+.ghost {
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button {
+  border: 0;
+  background: var(--brand);
+  color: var(--brand-ink);
+}
+
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  background: transparent;
+}
+
+.badge {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.code {
+  margin: 0;
+  padding: 1rem;
+  border-radius: 12px;
+  background: var(--code);
+  color: #e2e8f0;
+  overflow: auto;
+  font-size: 0.85rem;
 }

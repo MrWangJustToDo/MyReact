@@ -13,6 +13,7 @@ import {
   createScanPlugin,
   createVirtualModulesPlugin,
   createCrossEnvPlugin,
+  createValidateImportsPlugin,
 } from "./plugins";
 import { ClientModuleRegistry, ServerActionRegistry } from "./transforms";
 
@@ -78,6 +79,19 @@ export interface UnifiedRscPluginOptions {
    * Plugin manager instance (for advanced usage)
    */
   manager?: RscPluginManager;
+
+  /**
+   * Enable build-time validation of `server-only` / `client-only` imports
+   * @default true
+   */
+  validateImports?: boolean;
+
+  /**
+   * Install default Connect middleware that calls the RSC entry `handler(Request)`.
+   * Set false when providing your own server (e.g. Cloudflare).
+   * @default true
+   */
+  serverHandler?: boolean;
 }
 
 /**
@@ -121,6 +135,11 @@ export function rsc(options: UnifiedRscPluginOptions = {}): Plugin[] {
   // Store endpoints in manager for use by all plugins
   manager.rscEndpoint = rscEndpoint;
   manager.actionEndpoint = actionEndpoint;
+  manager.entries = {
+    rsc: options.entries?.rsc,
+    ssr: options.entries?.ssr,
+    client: options.entries?.client,
+  };
 
   // Registries for tracking client/server modules
   const clientRegistry = new ClientModuleRegistry();
@@ -159,6 +178,11 @@ export function rsc(options: UnifiedRscPluginOptions = {}): Plugin[] {
   // Cross-environment module loading
   plugins.push(...createCrossEnvPlugin(manager));
 
+  // A14: server-only / client-only boundary validation (default on)
+  if (options.validateImports !== false) {
+    plugins.push(createValidateImportsPlugin());
+  }
+
   // Main transform plugin
   plugins.push(
     createTransformPlugin(
@@ -186,6 +210,7 @@ export function rsc(options: UnifiedRscPluginOptions = {}): Plugin[] {
     createDevServerPlugin({
       rscEndpoint,
       actionEndpoint,
+      serverHandler: options.serverHandler !== false,
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       ssr: ssrConfig,

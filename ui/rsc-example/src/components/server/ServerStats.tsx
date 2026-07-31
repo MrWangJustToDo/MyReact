@@ -10,10 +10,19 @@ async function loadStats() {
 export default async function ServerStats() {
   const stats = await loadStats();
   return (
-    <ul>
-      <li>Active users: {stats.users}</li>
-      <li>Active sessions: {stats.sessions}</li>
-      <li>Build: {stats.build}</li>
+    <ul className="stat-grid">
+      <li>
+        <span>Users</span>
+        <strong>{stats.users}</strong>
+      </li>
+      <li>
+        <span>Sessions</span>
+        <strong>{stats.sessions}</strong>
+      </li>
+      <li>
+        <span>Build</span>
+        <strong>{stats.build}</strong>
+      </li>
     </ul>
   );
 }

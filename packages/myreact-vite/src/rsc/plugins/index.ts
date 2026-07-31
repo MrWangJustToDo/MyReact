@@ -6,7 +6,7 @@
 export { createTransformPlugin } from "./transform-plugin";
 export type { TransformPluginContext } from "./transform-plugin";
 
-export { createDevServerPlugin, injectRSCPayloadIntoHTML } from "./dev-server-plugin";
+export { createDevServerPlugin, injectRSCPayloadIntoHTML, resolveSameOriginPageUrl, importFromEnvironment } from "./dev-server-plugin";
 export type { DevServerPluginOptions } from "./dev-server-plugin";
 
 export { createConditionsPlugin } from "./conditions-plugin";
@@ -25,9 +25,12 @@ export {
   VIRTUAL_CLIENT_REFERENCES,
   VIRTUAL_ASSETS_MANIFEST,
   VIRTUAL_SERVER_REFERENCES,
+  VIRTUAL_SERVER_ACTIONS_INIT,
   VIRTUAL_ENTRY_BROWSER,
   toVirtualId,
   isVirtualId,
 } from "./virtual-modules-plugin";
 
 export { createCrossEnvPlugin } from "./cross-env-plugin";
+
+export { createValidateImportsPlugin } from "./validate-imports-plugin";

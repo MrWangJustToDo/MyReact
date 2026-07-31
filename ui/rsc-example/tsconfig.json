@@ -15,7 +15,17 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@my-react/react": ["../../packages/myreact/dist/types/index.d.ts"],
+      "@my-react/react/*": ["../../packages/myreact/dist/types/*"],
+      "@my-react/react-dom": ["../../packages/myreact-dom/dist/types/index.d.ts"],
+      "@my-react/react-dom/client": ["../../packages/myreact-dom/dist/types/client/index.d.ts"],
+      "@my-react/react-dom/server": ["../../packages/myreact-dom/dist/types/server/index.d.ts"],
+      "@my-react/react-server": ["../../packages/myreact-server/dist/types/index.d.ts"],
+      "@my-react/react-server/*": ["../../packages/myreact-server/dist/types/*"]
+    }
   },
   "include": ["src"]
 }

@@ -5,32 +5,44 @@ async function loadInfo() {
   return {
     version: "0.3.x",
     renderer: "@my-react/react-dom",
-    runtime: "MyReact",
+    flight: "@my-react/react-server + @lazarv/rsc",
+    bundler: "@my-react/react-vite/rsc",
   };
 }
 
 export default function AboutPage() {
   return (
-    <div className="page">
+    <section className="page-block">
       <h1>About</h1>
-      <p className="muted">This page is a server component with async data.</p>
-
-      <div className="card">
-        <Suspense fallback={<p className="loading">Loading metadata...</p>}>
-          <AboutInfo />
-        </Suspense>
-      </div>
-    </div>
+      <p className="lede narrow">Pure server page — no client JS for this tree except shared chrome.</p>
+      <Suspense fallback={<p className="loading">Loading metadata…</p>}>
+        {/* @ts-expect-error async Server Component under React 18 JSX types */}
+        <AboutInfo />
+      </Suspense>
+    </section>
   );
 }
 
 async function AboutInfo() {
   const info = await loadInfo();
   return (
-    <ul>
-      <li>Version: {info.version}</li>
-      <li>Renderer: {info.renderer}</li>
-      <li>Runtime: {info.runtime}</li>
-    </ul>
+    <dl className="meta-list">
+      <div>
+        <dt>Runtime</dt>
+        <dd>{info.version}</dd>
+      </div>
+      <div>
+        <dt>Renderer</dt>
+        <dd>{info.renderer}</dd>
+      </div>
+      <div>
+        <dt>Flight</dt>
+        <dd>{info.flight}</dd>
+      </div>
+      <div>
+        <dt>Bundler</dt>
+        <dd>{info.bundler}</dd>
+      </div>
+    </dl>
   );
 }

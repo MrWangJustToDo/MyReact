@@ -60,6 +60,7 @@ The system SHALL configure Vite dev server for RSC development.
 
 - **WHEN** the dev server starts
 - **THEN** it exposes `/__rsc` endpoint for Flight stream requests
+- **AND** the endpoint invokes configured `entryRsc.renderRsc(url)` only (no arbitrary module path / `component` query)
 
 #### Scenario: Action endpoint
 

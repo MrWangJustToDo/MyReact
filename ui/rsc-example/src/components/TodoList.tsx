@@ -1,12 +1,5 @@
 "use client";
 
-/**
- * TodoList - Client Component with Server Actions
- *
- * This component uses server actions for data mutations.
- * The actions are defined in ../actions/todoActions.ts with "use server".
- */
-
 import { useState, useEffect } from "@my-react/react";
 
 import { addTodo, toggleTodo, deleteTodo, getTodos } from "../actions/todoActions";
@@ -22,7 +15,6 @@ export default function TodoList() {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load initial todos
   useEffect(() => {
     loadTodos();
   }, []);
@@ -61,56 +53,36 @@ export default function TodoList() {
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="widget">
+      <p className="widget-label">Todos</p>
+      <form className="inline-form" onSubmit={handleSubmit}>
         <input
           type="text"
           value={inputValue}
           onChange={(e: { target: { value: string } }) => setInputValue(e.target.value)}
-          placeholder="Add a todo..."
+          placeholder="Add a todo"
           disabled={isLoading}
         />
         <button type="submit" disabled={isLoading}>
-          {isLoading ? "Adding..." : "Add"}
+          {isLoading ? "…" : "Add"}
         </button>
       </form>
 
-      <ul style={{ listStyle: "none", padding: 0, marginTop: "1rem" }}>
+      <ul className="todo-list">
         {todos.map((todo) => (
-          <li
-            key={todo.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "0.5rem 0",
-              borderBottom: "1px solid #eee",
-            }}
-          >
-            <input type="checkbox" checked={todo.completed} onChange={() => handleToggle(todo.id)} />
-            <span
-              style={{
-                flex: 1,
-                marginLeft: "0.5rem",
-                textDecoration: todo.completed ? "line-through" : "none",
-              }}
-            >
-              {todo.text}
-            </span>
-            <button
-              onClick={() => handleDelete(todo.id)}
-              style={{
-                background: "#dc3545",
-                padding: "0.25rem 0.5rem",
-                fontSize: "0.875rem",
-              }}
-            >
+          <li key={todo.id} className={todo.completed ? "is-done" : undefined}>
+            <label>
+              <input type="checkbox" checked={todo.completed} onChange={() => handleToggle(todo.id)} />
+              <span>{todo.text}</span>
+            </label>
+            <button type="button" className="btn-danger" onClick={() => handleDelete(todo.id)}>
               Delete
             </button>
           </li>
         ))}
       </ul>
 
-      {todos.length === 0 && <p style={{ color: "#666", marginTop: "1rem" }}>No todos yet. Add one above!</p>}
+      {todos.length === 0 && <p className="muted">No todos yet.</p>}
     </div>
   );
 }

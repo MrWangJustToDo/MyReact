@@ -8,7 +8,8 @@ const external = (id: string) =>
   (!id.startsWith(".") && !id.startsWith("/") && !id.startsWith("\0") && !id.includes("tslib"));
 
 export const externalReact = (id: string) =>
-  id.endsWith("@my-react/react") ||
+  id === "@my-react/react" ||
+  id.startsWith("@my-react/react/") ||
   id.includes("@my-react/react-dom") ||
   id.includes("@my-react/react-server") ||
   id.includes("@my-react/react-refresh") ||

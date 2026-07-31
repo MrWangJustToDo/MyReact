@@ -37,9 +37,19 @@ export type { ClientReferenceInfo, ServerActionInfo, ParsedExports } from "./tra
 
 // Re-export utils
 export { initLexer, isLexerInitialized, parseExports, parseExportsAsync, generateModuleId, parseModuleId, createReferenceId } from "./utils";
+export { RSC_SSR_ORIGINAL_QUERY, hasRscSsrOriginalQuery, withRscSsrOriginalQuery } from "./utils";
 
 // Re-export plugins for advanced usage
-export { createTransformPlugin, createDevServerPlugin, createConditionsPlugin, createBootstrapPlugin } from "./plugins";
+export {
+  createTransformPlugin,
+  createDevServerPlugin,
+  createConditionsPlugin,
+  createBootstrapPlugin,
+  createValidateImportsPlugin,
+  importFromEnvironment,
+  resolveSameOriginPageUrl,
+  injectRSCPayloadIntoHTML,
+} from "./plugins";
 export type { TransformPluginContext, DevServerPluginOptions, BootstrapPluginOptions } from "./plugins";
 
 // Transform functions (high-level APIs for transforming modules)

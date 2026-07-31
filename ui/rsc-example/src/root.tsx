@@ -13,12 +13,10 @@ type RootProps = {
 export default function Root({ url }: RootProps) {
   const route = matchRoute(url);
 
-  console.log(route);
-
   return (
-    <div className="container">
+    <div className="app">
       <Nav active={route.name} />
-      <Suspense fallback={<p className="loading">Loading page...</p>}>
+      <Suspense fallback={<p className="loading">Loading page…</p>}>
         {route.name === "home" && <HomePage />}
         {route.name === "about" && <AboutPage />}
         {route.name === "profile" && <ProfilePage id={route.id} />}

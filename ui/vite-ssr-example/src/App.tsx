@@ -1,49 +1,33 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-import { createElement, useState } from "react";
+import { useState } from "react";
+
+import reactLogo from "./assets/react.svg";
 import "./App.css";
-import { useRoutes } from "react-router";
 
-const pages = import.meta.glob("./page/*.tsx", { eager: true });
-
-const routes = Object.keys(pages).map((path) => {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-  const name = path.match(/\.\/page\/(.*)\.tsx$/)?.[1]!;
-  return {
-    name,
-    path: name === "Home" ? "/" : `/${name.toLowerCase()}`,
-    // @ts-ignore
-    component: pages[path]!.default as React.ComponentType,
-    // @ts-ignore
-    element: createElement(pages[path]!.default),
-  };
-});
-
+/**
+ * Minimal Vite SSR demo — same surface as the official react-vite template,
+ * plus hydrateRoot / renderToString in entry-client / entry-server.
+ */
 export function App() {
   const [count, setCount] = useState(0);
-
-  const all = useRoutes(routes);
 
   return (
     <>
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          Vite
+        <a href="https://vite.dev" target="_blank" rel="noreferrer">
+          <img src="/vite.svg" className="logo" alt="Vite logo" />
         </a>
-        <span style={{ marginLeft: "10px", marginRight: "10px" }}>+</span>
-        <a href="https://github.com/MrWangJustToDo/MyReact" target="_blank">
-          @my-react
+        <a href="https://github.com/MrWangJustToDo/MyReact" target="_blank" rel="noreferrer">
+          <img src={reactLogo} className="logo react" alt="MyReact logo" />
         </a>
-        <span style={{ marginLeft: "10px", marginRight: "10px" }}>+</span>
-        ssr
       </div>
+      <h1>Vite SSR + @my-react</h1>
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
         </p>
       </div>
-      {all}
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+      <p className="read-the-docs">Server-rendered shell, then client hydrate</p>
     </>
   );
 }

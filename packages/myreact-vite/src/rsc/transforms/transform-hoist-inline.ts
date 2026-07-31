@@ -54,10 +54,14 @@ export function transformHoistInlineDirective(
   walk(ast, {
     enter(node) {
       if (node.type === "ExportAllDeclaration") {
-        this.remove();
+        throw Object.assign(new Error('[@my-react/react-vite] "use server" inline hoist does not support export *'), {
+          pos: (node as NodeWithPos).start,
+        });
       }
       if (node.type === "ExportNamedDeclaration" && !node.declaration) {
-        this.remove();
+        throw Object.assign(new Error('[@my-react/react-vite] "use server" inline hoist does not support re-export declarations'), {
+          pos: (node as NodeWithPos).start,
+        });
       }
     },
   });

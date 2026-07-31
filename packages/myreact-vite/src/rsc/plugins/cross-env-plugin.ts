@@ -9,6 +9,7 @@
 
 import MagicString from "magic-string";
 import path from "node:path";
+import { isRunnableDevEnvironment } from "vite";
 
 import type { RscPluginManager } from "../manager";
 import type { Plugin, TransformResult, ViteDevServer } from "vite";
@@ -41,19 +42,25 @@ export function createCrossEnvPlugin(manager: RscPluginManager): Plugin[] {
       configureServer(viteServer) {
         server = viteServer;
 
-        // Set up global environment runner import function
+        // Prefer ssrLoadModule in DEV (CJS-safe). Keep runner helper for advanced use.
+        globalThis.__MY_REACT_ENVIRONMENT_SSR_LOAD_MODULE__ = async function (id: string): Promise<unknown> {
+          if (!server) {
+            throw new Error(`[@my-react/react-vite] Vite server is not available`);
+          }
+          return server.ssrLoadModule(id);
+        };
+
         globalThis.__MY_REACT_ENVIRONMENT_RUNNER_IMPORT__ = async function (environmentName: string, id: string): Promise<unknown> {
           const environment = server?.environments[environmentName];
           if (!environment) {
             throw new Error(`[@my-react/react-vite] Unknown environment '${environmentName}'`);
           }
 
-          // Check if environment is runnable
-          if (!("runner" in environment) || typeof (environment as any).runner?.import !== "function") {
+          if (!isRunnableDevEnvironment(environment)) {
             throw new Error(`[@my-react/react-vite] Environment '${environmentName}' is not runnable`);
           }
 
-          return (environment as any).runner.import(id);
+          return environment.runner.import(id);
         };
       },
 
@@ -81,15 +88,18 @@ export function createCrossEnvPlugin(manager: RscPluginManager): Plugin[] {
 
           let replacement: string;
 
-          if (this.environment?.mode === "dev" && server) {
-            // Dev mode: use runner import
-            const environment = server.environments[environmentName];
+          if (server && this.environment?.mode !== "build") {
+            // Dev: prefer ssrLoadModule for reliability with CJS deps (same as importFromEnvironment).
+            // ModuleRunner.import throws `module is not defined` on packages like @my-react/react.
+            const environment = server.environments[environmentName] ?? server.environments.ssr;
             if (!environment) {
               this.error(`[@my-react/react-vite] Unknown environment '${environmentName}'`);
               continue;
             }
 
-            const source = getEntrySource(environment.config as { build?: { rollupOptions?: { input?: unknown } } }, entryName);
+            const source =
+              manager.entries[environmentName as keyof typeof manager.entries] ??
+              getEntrySource(environment.config as { build?: { rollupOptions?: { input?: unknown } } }, entryName);
             const resolved = await environment.pluginContainer.resolveId(source);
 
             if (!resolved) {
@@ -97,7 +107,7 @@ export function createCrossEnvPlugin(manager: RscPluginManager): Plugin[] {
               continue;
             }
 
-            replacement = `globalThis.__MY_REACT_ENVIRONMENT_RUNNER_IMPORT__(${JSON.stringify(environmentName)}, ${JSON.stringify(resolved.id)})`;
+            replacement = `globalThis.__MY_REACT_ENVIRONMENT_SSR_LOAD_MODULE__(${JSON.stringify(resolved.id)})`;
           } else {
             // Build mode: emit a marker to be replaced in renderChunk
             const marker = {
@@ -266,9 +276,4 @@ function getEntrySource(config: { build?: { rollupOptions?: { input?: unknown } 
  */
 function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-// Declare the global function type
-declare global {
-  function __MY_REACT_ENVIRONMENT_RUNNER_IMPORT__(environmentName: string, id: string): Promise<unknown>;
 }

@@ -1,3 +1,7 @@
+## Gap tracking
+
+Ongoing comparison vs official `@vitejs/plugin-rsc`: [`packages/myreact-server/RSC.md`](../../../packages/myreact-server/RSC.md).
+
 ## Why
 
 MyReact currently supports SSR but lacks React Server Components (RSC), a key feature that enables components to render exclusively on the server with zero client-side JavaScript. This prevents MyReact from competing with modern frameworks like Next.js 14+ and limits adoption for applications requiring optimal performance and SEO. Implementing RSC will complete MyReact's server rendering story and enable the "use client"/"use server" directive patterns that developers expect.

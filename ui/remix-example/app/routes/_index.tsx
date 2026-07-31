@@ -1,35 +1,30 @@
-import { useNavigate } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 
-import { Test } from "~/components/Test";
-import styles from "~/styles/styles.css?url";
 import { Theme, Themed, useTheme } from "~/utils/theme-provider";
-
-import type { LinksFunction } from "@remix-run/node";
-
-export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 
 export default function Index() {
   const [, setTheme] = useTheme();
-
-  const navigate = useNavigate();
 
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === Theme.LIGHT ? Theme.DARK : Theme.LIGHT));
   };
 
-  console.warn("This is an error message");
-
   return (
-    <>
-      <button onClick={toggleTheme}>Toggle</button>
-      <button style={{ marginLeft: "10px" }} onClick={() => navigate("/foo")}>
-        Go to foo
-      </button>
+    <section className="panel">
+      <h1>Vite React template surface</h1>
+      <p className="muted">Remix route + MyReact hydrate. Theme toggle uses a cookie session.</p>
+      <div className="actions">
+        <button type="button" onClick={toggleTheme}>
+          Toggle theme
+        </button>
+        <Link className="ghost" to="/foo">
+          Async loader demo
+        </Link>
+      </div>
       <Themed
-        dark={<h1 className="dark-component">I&apos;m only seen in dark mode</h1>}
-        light={<h1 className="light-component">I&apos;m only seen in light mode</h1>}
+        dark={<p className="badge">Dark mode active</p>}
+        light={<p className="badge">Light mode active</p>}
       />
-      <Test />
-    </>
+    </section>
   );
 }

@@ -15,6 +15,7 @@ export default function ThemeToggle() {
 
   return (
     <button onClick={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))} className="btn">
+      {/* @ts-expect-error async Server Component under React 18 JSX types */}
       <Suspense>Theme: {theme === "dark" ? <ThemeDark /> : <ThemeLight />}</Suspense>
     </button>
   );

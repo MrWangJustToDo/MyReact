@@ -27,9 +27,11 @@ export function registerServerReference<T extends (...args: unknown[]) => unknow
 
   return registered as T;
 }
-export { handleServerAction, executeServerAction } from "./action-handler";
+export { handleServerAction, executeServerAction, assertSameOriginActionRequest, extractActionIdFromFormData } from "./action-handler";
+export type { HandleServerActionOptions } from "./action-handler";
 export { createFlightServer } from "./flight-server";
 export { createClientManifestResolver, loadServerActionManifest } from "./manifest";
+export { createClientErrorDigest, createPublicErrorMessage } from "../shared/error-digest";
 
 // Re-export types
 export type {

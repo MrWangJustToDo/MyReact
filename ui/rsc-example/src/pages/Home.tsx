@@ -10,57 +10,68 @@ const LazyCom = lazy(() => import("../components/client/LazyCom"));
 
 async function getGreeting() {
   await new Promise((resolve) => setTimeout(resolve, 120));
-  return "Welcome to the MyReact RSC + SSR demo";
+  return "Server Component finished fetching on the server.";
 }
 
 export default function HomePage() {
   return (
-    <div className="page">
+    <>
       <section className="hero">
-        <div className="hero-meta">
-          <span className="hero-pill">RSC + SSR</span>
-          <span>MyReact demo workspace</span>
-        </div>
-        <h1 className="hero-title">RSC + SSR workspace</h1>
-        <p className="muted">Server components render instantly, client components hydrate in place.</p>
+        <p className="eyebrow">React Server Components</p>
+        <h1>MyReact RSC</h1>
+        <p className="lede">One page to exercise Flight streaming, Suspense, client islands, and server actions — without a framework router.</p>
       </section>
 
-      <div className="card">
-        <h2>Server Data + Suspense</h2>
-        <div className="card-grid">
-          <Suspense fallback={<p className="loading">Fetching greeting...</p>}>
+      <section className="feature" aria-labelledby="sc-heading">
+        <div className="feature-copy">
+          <h2 id="sc-heading">Server Components</h2>
+          <p>Async data stays on the server. HTML arrives with the first paint; no client fetch waterfall.</p>
+        </div>
+        <div className="feature-demo">
+          <Suspense fallback={<p className="loading">Fetching greeting…</p>}>
+            {/* @ts-expect-error async Server Component under React 18 JSX types */}
             <Greeting />
           </Suspense>
-          <Suspense fallback={<p className="loading">Loading stats...</p>}>
+          <Suspense fallback={<p className="loading">Loading stats…</p>}>
+            {/* @ts-expect-error async Server Component under React 18 JSX types */}
             <ServerStats />
           </Suspense>
-          <Suspense fallback={<p className="loading">Loading lazy...</p>}>
+          <Suspense fallback={<p className="loading">Loading lazy slot…</p>}>
             <LazyCom />
           </Suspense>
         </div>
-      </div>
+      </section>
 
-      <div className="card">
-        <h2>Client Interop</h2>
-        <p>Client state + effects inside a server page.</p>
-        <ThemeToggle />
-        <Counter initialCount={2} />
-      </div>
+      <section className="feature feature-alt" aria-labelledby="cc-heading">
+        <div className="feature-copy">
+          <h2 id="cc-heading">Client Components</h2>
+          <p>
+            Marked with <code>&quot;use client&quot;</code>. Hydrate only where interactivity is needed.
+          </p>
+        </div>
+        <div className="feature-demo feature-demo-row">
+          <ThemeToggle />
+          <Counter initialCount={2} />
+        </div>
+      </section>
 
-      <div className="card">
-        <h2>Server Actions</h2>
-        <Guestbook />
-      </div>
-
-      <div className="card">
-        <h2>Todo List</h2>
-        <TodoList />
-      </div>
-    </div>
+      <section className="feature" aria-labelledby="sa-heading">
+        <div className="feature-copy">
+          <h2 id="sa-heading">Server Actions</h2>
+          <p>
+            Mutations via <code>&quot;use server&quot;</code> — form POST and client <code>callServer</code> both hit <code>/__rsc_action</code>.
+          </p>
+        </div>
+        <div className="feature-demo feature-demo-stack">
+          <Guestbook />
+          <TodoList />
+        </div>
+      </section>
+    </>
   );
 }
 
 async function Greeting() {
   const greeting = await getGreeting();
-  return <p>{greeting}</p>;
+  return <p className="stat-line">{greeting}</p>;
 }

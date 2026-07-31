@@ -20,23 +20,36 @@ const pkgNameAlias = {
   "@my-react/react-lynx": "myreact-lynx",
 };
 
-const getVersion = (pkgName: string) =>
-  new Promise((a, b) => {
+const getVersion = (pkgName: string): Promise<string | null> =>
+  new Promise((resolvePromise, reject) => {
     const ls = spawn(`pnpm view ${pkgName} version --json`, { shell: true, stdio: "pipe" });
+    let out = "";
     ls.stdout.on("data", (d) => {
-      const res = Buffer.from(d).toString("utf-8");
-      a(JSON.parse(res));
+      out += Buffer.from(d).toString("utf-8");
     });
-    ls.on("error", (e) => b(e));
+    ls.on("close", (code) => {
+      const trimmed = out.trim();
+      if (code !== 0 || !trimmed) {
+        // Not published yet (e.g. 404) — treat as unpublished.
+        resolvePromise(null);
+        return;
+      }
+      try {
+        resolvePromise(JSON.parse(trimmed) as string);
+      } catch (e) {
+        reject(e);
+      }
+    });
+    ls.on("error", (e) => reject(e));
   });
 
-const publish = (pnkName: string, cwd: string) => {
-  return new Promise((a, b) => {
+const publish = (_pkgName: string, cwd: string) => {
+  return new Promise((resolvePromise, reject) => {
     const ls = spawn(`pnpm publish --access public`, { shell: true, stdio: "inherit", cwd });
     ls.on("close", () => {
-      a(true);
+      resolvePromise(true);
     });
-    ls.on("error", (e) => b(e));
+    ls.on("error", (e) => reject(e));
   });
 };
 
@@ -59,7 +72,7 @@ const release = async (pkgName: keyof typeof pkgNameAlias) => {
       console.log(`no need release ${pkgName} @${version}`);
       return;
     } else {
-      console.log(`new version: ${version} of ${pkgName} will release, current is: ${cVersion}`);
+      console.log(`new version: ${version} of ${pkgName} will release, current is: ${cVersion ?? "(unpublished)"}`);
     }
 
     await publish(pkgName, resolve(process.cwd(), path));

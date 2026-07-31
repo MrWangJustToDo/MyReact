@@ -19,6 +19,7 @@ const sharedSsrConfig = {
       "@my-react/react-dom/client",
       "@my-react/react-dom/server",
       "@my-react/react-jsx",
+      "@my-react/react-server",
       "react-compiler-runtime",
     ],
   },
@@ -46,9 +47,9 @@ export default defineConfig({
     // Unified RSC plugin - works for both dev and build
     rsc({
       entries: {
-        rsc: "./src/entry-rsc.tsx",
-        ssr: "./src/entry-ssr.tsx",
-        client: "./src/entry-client.tsx",
+        rsc: "./src/framework/entry.rsc.tsx",
+        ssr: "./src/framework/entry.ssr.tsx",
+        client: "./src/framework/entry.browser.tsx",
       },
       rscEndpoint: "/__rsc",
       actionEndpoint: "/__rsc_action",

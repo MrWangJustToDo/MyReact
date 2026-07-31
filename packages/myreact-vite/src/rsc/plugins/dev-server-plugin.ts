@@ -1,159 +1,109 @@
 /**
  * @file RSC Dev Server Plugin
- * Development server endpoints for RSC streaming and server actions
- * Uses rsc-html-stream for injecting RSC payload into HTML
+ * Thin Connect adapter: convert Node req → Request, call RSC entry handler, pipe Response.
+ * Routing (HTML / Flight / actions) lives in the app's RSC entry (official plugin-rsc style).
  */
 
-import { createElement } from "@my-react/react/type";
-import { renderToFlightStream } from "@my-react/react-server/server";
+import { withRscSsrOriginalQuery } from "../utils/rsc-original";
 
 import type { Plugin, ViteDevServer } from "vite";
+
+/** Max request body size when converting Connect → Fetch Request (bytes) */
+const MAX_REQUEST_BODY_BYTES = 4 * 1024 * 1024;
 
 export interface DevServerPluginOptions {
   rscEndpoint: string;
   actionEndpoint: string;
+  /**
+   * When false, skip installing the default Connect middleware (e.g. Cloudflare).
+   * @default true
+   */
+  serverHandler?: boolean;
   ssr?: {
     entryRsc: string;
-    entrySsr: string;
+    entrySsr?: string;
     indexHtmlPath?: string;
   };
+}
+
+/**
+ * Import a module for RSC/SSR work in DEV.
+ *
+ * Always uses Vite's SSR module graph (`ssrLoadModule`). The `rsc` ModuleRunner
+ * evaluates packages according to `environments.rsc.resolve.noExternal`; raw CJS
+ * entrypoints such as `@my-react/react` (`module.exports`) throw
+ * `module is not defined` when left external.
+ */
+export async function importFromEnvironment(server: ViteDevServer, _environmentName: string, id: string): Promise<Record<string, unknown>> {
+  return server.ssrLoadModule(id);
+}
+
+type RscHandler = (request: Request) => Promise<Response> | Response;
+
+function resolveHandler(mod: Record<string, unknown>): RscHandler | null {
+  const def = mod.default;
+  if (typeof def === "function") {
+    return def as RscHandler;
+  }
+  if (def && typeof def === "object" && typeof (def as { fetch?: unknown }).fetch === "function") {
+    return (def as { fetch: RscHandler }).fetch;
+  }
+  return null;
 }
 
 /**
  * Create the RSC dev server plugin
  */
 export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
-  const { rscEndpoint, actionEndpoint, ssr } = options;
+  const { rscEndpoint, actionEndpoint, ssr, serverHandler = true } = options;
 
   return {
     name: "vite:my-react-rsc-dev-server",
     enforce: "pre",
 
     configureServer(server: ViteDevServer) {
-      if (ssr) {
-        server.middlewares.use(async (req, res, next) => {
-          if (!req.url || req.method !== "GET") {
-            return next();
-          }
-
-          const url = new URL(req.url, `http://${req.headers.host}`);
-          if (url.pathname === rscEndpoint || url.pathname === actionEndpoint) {
-            return next();
-          }
-
-          const accept = req.headers["accept"] || "";
-          if (typeof accept === "string" && !accept.includes("text/html")) {
-            return next();
-          }
-
-          try {
-            const templatePath = ssr.indexHtmlPath ?? "index.html";
-            const html = await server.transformIndexHtml(req.url, await readFileText(server, templatePath));
-            const { injectRSCPayload } = await import("rsc-html-stream/server");
-
-            const origin = `http://${req.headers.host || "localhost:3000"}`;
-            const fullUrl = new URL(req.url, origin).toString();
-
-            // Load RSC entry - client components will be proxied
-            const entryRsc = await server.ssrLoadModule(ssr.entryRsc);
-            // Load SSR entry - uses the module loader which loads with ?rsc-original
-            const entrySsr = await server.ssrLoadModule(ssr.entrySsr);
-
-            const rscStream = await (entryRsc as { renderRsc: (url: string) => Promise<ReadableStream<Uint8Array>> }).renderRsc(fullUrl);
-            const [rscForSsr, rscForClient] = rscStream.tee();
-
-            // SSR module loading - use ?rsc-original to get actual component code
-            const { html: ssrHtml } = await (
-              entrySsr as {
-                renderHTML: (stream: ReadableStream<Uint8Array>, options: { loadModule: (id: string) => Promise<unknown> }) => Promise<{ html: string }>;
-              }
-            ).renderHTML(rscForSsr, {
-              loadModule: (id: string) => server.ssrLoadModule(`${id}?rsc-original`),
-            });
-
-            const htmlWithApp = html.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`);
-
-            const htmlStream = new ReadableStream<Uint8Array>({
-              start(controller) {
-                const encoder = new TextEncoder();
-                controller.enqueue(encoder.encode(htmlWithApp));
-                controller.close();
-              },
-            });
-
-            const mergedStream = htmlStream.pipeThrough(injectRSCPayload(rscForClient));
-
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "text/html");
-
-            const reader = mergedStream.getReader();
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              res.write(Buffer.from(value));
-            }
-            res.end();
-            return;
-          } catch (error) {
-            return next(error as Error);
-          }
-        });
+      if (!serverHandler || !ssr?.entryRsc) {
+        return;
       }
 
-      // RSC endpoint for Flight stream requests (standalone RSC without HTML)
-      server.middlewares.use(rscEndpoint, async (req, res, _next) => {
-        try {
-          // Get the component path from query
-          const url = new URL(req.url || "/", `http://${req.headers.host}`);
-          const componentPath = url.searchParams.get("component");
+      const templatePath = ssr.indexHtmlPath ?? "index.html";
 
-          if (!componentPath) {
-            res.statusCode = 400;
-            res.end(JSON.stringify({ error: "Missing component parameter" }));
-            return;
-          }
-
-          // Import and render the component
-          const module = await server.ssrLoadModule(componentPath);
-          const Component = module.default || module;
-
-          // Get props from request body or query
-          let props = {};
-          if (req.method === "POST") {
-            const body = await readBodyText(req);
-            props = JSON.parse(body);
-          }
-
-          const element = createElement(Component, props);
-          const stream = await renderToFlightStream(element, {
-            onError: (error: unknown) => {
-              console.error("[@my-react/react-vite] RSC render error:", error);
-              return error instanceof Error ? error.message : String(error);
-            },
-          });
-
-          res.setHeader("Content-Type", "text/x-component");
-          res.setHeader("Cache-Control", "no-cache");
-
-          // Pipe the stream to response
-          await pipeStream(stream, res);
-        } catch (error) {
-          console.error("[@my-react/react-vite] RSC endpoint error:", error);
-          res.statusCode = 500;
-          res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }));
+      server.middlewares.use(async (req, res, next) => {
+        if (!req.url) {
+          return next();
         }
-      });
 
-      // Server action endpoint
-      server.middlewares.use(actionEndpoint, async (req, res, next) => {
-        if (req.method !== "POST") {
+        const host = req.headers.host || "localhost";
+        const url = new URL(req.url, `http://${host}`);
+        const isRsc = url.pathname === rscEndpoint;
+        const isAction = url.pathname === actionEndpoint;
+        const accept = req.headers.accept || "";
+        const wantsHtml = req.method === "GET" && typeof accept === "string" && accept.includes("text/html");
+
+        if (!isRsc && !isAction && !wantsHtml) {
           return next();
         }
 
         try {
-          const request = await createFetchRequest(req);
-          const serverModule = await server.ssrLoadModule("@my-react/react-server/server");
-          const response: Response = await serverModule.handleServerAction(request);
+          globalThis.__MY_REACT_RSC_GET_HTML_TEMPLATE__ = async (requestUrl: string) => {
+            const html = await readFileText(server, templatePath);
+            return server.transformIndexHtml(requestUrl, html);
+          };
+
+          globalThis.__MY_REACT_RSC_SSR_LOAD_MODULE__ = (id: string) => server.ssrLoadModule(withRscSsrOriginalQuery(id));
+
+          const entryRsc = await importFromEnvironment(server, "rsc", ssr.entryRsc);
+          const handler = resolveHandler(entryRsc);
+
+          if (!handler) {
+            res.statusCode = 500;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: "RSC entry must default-export handler(Request) or { fetch }" }));
+            return;
+          }
+
+          const request = await createFetchRequest(req, MAX_REQUEST_BODY_BYTES);
+          const response = await handler(request);
 
           res.statusCode = response.status;
           response.headers.forEach((value, key) => {
@@ -166,9 +116,15 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
             res.end();
           }
         } catch (error) {
-          console.error("[@my-react/react-vite] Action endpoint error:", error);
-          res.statusCode = 500;
-          res.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error) }));
+          console.error("[@my-react/react-vite] RSC server handler error:", error);
+          const status = (error as { statusCode?: number }).statusCode === 413 ? 413 : 500;
+          if (!res.headersSent) {
+            res.statusCode = status;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: status === 413 ? "Request body too large" : "RSC request failed" }));
+          } else {
+            res.end();
+          }
         }
       });
     },
@@ -176,31 +132,60 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
 }
 
 /**
- * Helper to read request body as string
+ * Resolve a page URL for renderRsc: same-origin absolute URL, or path starting with `/`.
+ * Rejects protocol-relative URLs, non-http(s), and cross-origin absolute URLs.
  */
-function readBodyText(req: { on: (event: string, cb: (data?: unknown) => void) => void }): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let body = "";
-    req.on("data", (chunk: unknown) => {
-      body += String(chunk);
-    });
-    req.on("end", () => {
-      resolve(body);
-    });
-    req.on("error", reject);
-  });
+export function resolveSameOriginPageUrl(rawUrl: string | null | undefined, hostHeader: string | string[] | undefined): string | null {
+  if (!rawUrl || typeof rawUrl !== "string") {
+    return null;
+  }
+
+  const host = Array.isArray(hostHeader) ? hostHeader[0] : hostHeader;
+  if (!host) {
+    return null;
+  }
+
+  const origin = `http://${host}`;
+
+  try {
+    if (rawUrl.startsWith("/") && !rawUrl.startsWith("//")) {
+      return new URL(rawUrl, origin).toString();
+    }
+
+    const parsed = new URL(rawUrl);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+      return null;
+    }
+    if (parsed.host !== host) {
+      return null;
+    }
+    return parsed.toString();
+  } catch {
+    return null;
+  }
 }
 
 /**
- * Helper to read request body as buffer
+ * Helper to read request body as buffer with a hard size limit
  */
-async function readBodyBuffer(req: NodeJS.ReadableStream): Promise<Uint8Array> {
+async function readBodyBuffer(req: NodeJS.ReadableStream, maxBytes: number): Promise<Uint8Array> {
   const chunks: Uint8Array[] = [];
+  let size = 0;
   return new Promise((resolve, reject) => {
+    let settled = false;
     req.on("data", (chunk: Uint8Array) => {
+      if (settled) return;
+      size += chunk.length;
+      if (size > maxBytes) {
+        settled = true;
+        reject(Object.assign(new Error("Request body too large"), { statusCode: 413 }));
+        return;
+      }
       chunks.push(chunk);
     });
     req.on("end", () => {
+      if (settled) return;
+      settled = true;
       const total = chunks.reduce((sum, buf) => sum + buf.length, 0);
       const merged = new Uint8Array(total);
       let offset = 0;
@@ -210,16 +195,24 @@ async function readBodyBuffer(req: NodeJS.ReadableStream): Promise<Uint8Array> {
       }
       resolve(merged);
     });
-    req.on("error", reject);
+    req.on("error", (err: unknown) => {
+      if (settled) return;
+      settled = true;
+      reject(err);
+    });
   });
 }
 
 /**
  * Convert Node request to Fetch Request
  */
-async function createFetchRequest(req: NodeJS.ReadableStream & { method?: string; url?: string; headers?: Record<string, string | string[] | undefined> }) {
+async function createFetchRequest(
+  req: NodeJS.ReadableStream & { method?: string; url?: string; headers?: Record<string, string | string[] | undefined> },
+  maxBodyBytes: number
+) {
   const method = req.method ?? "GET";
-  const url = new URL(req.url || "/", `http://${req.headers?.host || "localhost"}`).toString();
+  const host = req.headers?.host || "localhost";
+  const url = new URL(req.url || "/", `http://${host}`).toString();
   const headers = new Headers();
 
   if (req.headers) {
@@ -234,13 +227,15 @@ async function createFetchRequest(req: NodeJS.ReadableStream & { method?: string
 
   let body: Uint8Array | undefined;
   if (method !== "GET" && method !== "HEAD") {
-    body = await readBodyBuffer(req);
+    body = await readBodyBuffer(req, maxBodyBytes);
   }
 
   return new Request(url, {
     method,
     headers,
     body: body ? Buffer.from(body) : undefined,
+    // @ts-expect-error Node undici duplex requirement for streaming bodies
+    duplex: body ? "half" : undefined,
   });
 }
 
@@ -263,21 +258,12 @@ async function pipeStream(stream: ReadableStream, res: { write: (data: unknown) 
 
 /**
  * Inject RSC payload into HTML stream using rsc-html-stream
- *
- * This function takes an HTML stream and an RSC stream, and returns
- * a new stream that has the RSC payload injected as script tags.
- *
- * @param htmlStream - The HTML stream from SSR
- * @param rscStream - The RSC Flight stream
- * @param options - Options for injection (e.g., nonce for CSP)
- * @returns A new stream with RSC payload injected
  */
 export async function injectRSCPayloadIntoHTML(
   htmlStream: ReadableStream<Uint8Array>,
   rscStream: ReadableStream<Uint8Array>,
   options?: { nonce?: string }
 ): Promise<ReadableStream<Uint8Array>> {
-  // Dynamically import rsc-html-stream to avoid bundling issues
   const { injectRSCPayload } = await import("rsc-html-stream/server");
   return htmlStream.pipeThrough(injectRSCPayload(rscStream, options));
 }

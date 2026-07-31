@@ -1,52 +1,37 @@
 # RSC Example
 
-This example demonstrates React Server Components (RSC) with MyReact using Vite.
+React Server Components with MyReact + Vite, aligned with `@vitejs/plugin-rsc` conventions.
 
-## What it includes
+## Layout
 
-- RSC endpoint (Flight stream)
-- SSR HTML rendering that consumes the Flight stream
-- Client hydration using the injected Flight stream
-- Server Actions support
-- Multi-page routing (Home/About/Profile)
-- Client navigation that refetches RSC
-- Suspense streaming sections
-
-## Key files
-
-- `src/entry-rsc.tsx` – produces the Flight stream
-- `src/entry-ssr.tsx` – decodes Flight and renders HTML
-- `src/entry-client.tsx` – bootstraps the client
-- `src/main.tsx` – client hydration and fallback CSR
-- `vite.config.ts` – wires SSR + RSC in dev
+| Path | Role |
+| --- | --- |
+| `src/framework/entry.rsc.tsx` | **Request handler** — `default export handler(Request)` routes HTML / `/__rsc` / `/__rsc_action` |
+| `src/framework/entry.ssr.tsx` | Decodes Flight → HTML (`renderHTML`) |
+| `src/framework/entry.browser.tsx` | Client hydrate + client-side navigation |
+| `src/root.tsx`, `pages/`, `components/`, `actions/` | Application / demo UI |
+| `server.mjs` | **Production only** — pure Node, `import(dist/rsc)` + static `dist/client` (no Vite) |
 
 ## Run
 
 ```bash
 pnpm install
-pnpm build
-pnpm dev
+pnpm --filter rsc-example dev
+pnpm --filter rsc-example build
+pnpm --filter rsc-example start
 ```
 
 Open `http://localhost:3000`.
 
-## Production-like server
-
-```bash
-pnpm build
-pnpm start
-```
-
-This starts a custom server using Vite middleware in production mode so RSC + SSR routing still works.
-
 ## Routes
 
-- `/` Home (server data + client widgets)
-- `/about` About (server data)
-- `/profile/:id` Profile (client card)
+- `/` Feature demo (server components, client islands, server actions)
+- `/about` Async server metadata
+- `/profile/:id` Server shell + client profile island
 
 ## Notes
 
-- Client components must include a `"use client"` directive.
-- Server actions must include a `"use server"` directive inside the async function body.
-- SSR uses the real module source by requesting `?rsc-original` to bypass RSC transforms.
+- Client components need `"use client"`.
+- Server actions need `"use server"`.
+- HTML SSR expects `<div id="root"></div>` in `index.html`.
+- Prod `server.mjs` installs a CJS resolve hook so `@my-react/react-dom`'s `require("react")` hits `@my-react/react`.

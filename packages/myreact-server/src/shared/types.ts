@@ -27,6 +27,10 @@ export interface ClientManifestEntry {
   chunks?: string[];
   /** Optional css dependencies */
   css?: string[];
+  /** SSR build chunk filename (e.g. __client_ssr_0.js) */
+  ssrModule?: string;
+  /** Original source module id used in Flight references */
+  sourceId?: string;
 }
 
 /**

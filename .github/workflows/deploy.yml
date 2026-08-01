@@ -23,7 +23,8 @@ jobs:
       - name: setup node version
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          # Rspack (@my-react/react-rspack / rslib) needs Node.js 20.19+ or 22.12+
+          node-version: 20
           cache: "pnpm"
 
       - name: prepare

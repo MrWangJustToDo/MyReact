@@ -71,17 +71,17 @@ export const defaultDispatchMountLatest = (_dispatch: CustomRenderDispatch, _fib
     __DEV__ && enableScopeTreeLog.current && resetLogScope();
   }
 
-  addEffectCallback(invokeEffectListTask);
+  addEffectCallback(_dispatch, invokeEffectListTask);
 
   const renderScheduler = currentScheduler.current;
 
   if (_dispatch.enableConcurrentMode) {
     renderScheduler.macroTask(function flushEffect() {
-      flushEffectCallback();
+      flushEffectCallback(_dispatch);
     });
   } else {
     renderScheduler.microTask(function flushEffect() {
-      flushEffectCallback();
+      flushEffectCallback(_dispatch);
     });
   }
 };

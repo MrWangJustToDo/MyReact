@@ -1,5 +1,5 @@
 import { __my_react_internal__, __my_react_shared__, type SuspenseUpdateQueue } from "@my-react/react/type";
-import { isPromise, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
+import { include, isPromise, merge, remove, STATE_TYPE, UpdateQueueType } from "@my-react/react-shared";
 
 import { defaultDeleteChildEffect, defaultDeleteCurrentEffect } from "../dispatchEffect";
 import { defaultResolveAliveSuspenseFiber } from "../dispatchSuspense";
@@ -143,7 +143,11 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
               field.asyncLoadList.uniDelete(item);
             })
           ).then(() => {
+            if (renderDispatch.isAppUnmounted) return;
+
             const aliveNode = defaultResolveAliveSuspenseFiber(node) || renderDispatch.rootFiber;
+
+            if (!aliveNode || include(aliveNode.state, STATE_TYPE.__unmount__)) return;
 
             aliveNode.state = STATE_TYPE.__triggerSyncForce__;
 
@@ -217,6 +221,8 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
             item._list?.clear();
 
             allFiber.forEach((node: MyReactFiberNode) => {
+              if (renderDispatch.isAppUnmounted || include(node.state, STATE_TYPE.__unmount__)) return;
+
               node.state = STATE_TYPE.__recreate__;
 
               const renderScheduler = currentScheduler.current;

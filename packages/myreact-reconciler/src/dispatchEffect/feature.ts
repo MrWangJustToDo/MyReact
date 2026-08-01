@@ -1,9 +1,13 @@
+import { __my_react_internal__ } from "@my-react/react/type";
 import { ListTree, PATCH_TYPE, include, remove } from "@my-react/react-shared";
 
 import { safeCallWithCurrentFiber } from "../share";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
+import type { UniqueArray } from "@my-react/react-shared";
+
+const { currentScheduler } = __my_react_internal__;
 
 export const defaultGenerateEffectMap = (
   fiber: MyReactFiberNode,
@@ -139,17 +143,38 @@ export const defaultDeleteChildEffect = (renderDispatch: CustomRenderDispatch, f
   }
 };
 
-const effectCallbackList = new ListTree<() => void>();
-
-export const addEffectCallback = (cb: () => void) => {
-  effectCallbackList.push(cb);
+export const addEffectCallback = (renderDispatch: CustomRenderDispatch, cb: () => void) => {
+  renderDispatch.pendingEffectCallbackList.push(cb);
 };
 
-export const flushEffectCallback = () => {
-  effectCallbackList.listToFoot((cb) => {
-    cb();
-  });
-  effectCallbackList.clear();
+const flushDispatchEffectCallback = (renderDispatch: CustomRenderDispatch) => {
+  const list = renderDispatch.pendingEffectCallbackList;
+
+  if (!list.length) return;
+
+  try {
+    list.listToFoot((cb) => {
+      cb();
+    });
+  } finally {
+    list.clear();
+  }
+};
+
+/**
+ * Flush deferred passive-effect tasks for one dispatch, or all registered dispatches when omitted
+ * (compat `flushPassiveEffects`).
+ */
+export const flushEffectCallback = (renderDispatch?: CustomRenderDispatch) => {
+  if (renderDispatch) {
+    flushDispatchEffectCallback(renderDispatch);
+    return;
+  }
+
+  const renderScheduler = currentScheduler.current;
+  const allDispatch = renderScheduler?.dispatchSet as UniqueArray<CustomRenderDispatch> | undefined;
+
+  allDispatch?.getAll?.().forEach(flushDispatchEffectCallback);
 };
 
 export const effect = defaultInvokeEffect;

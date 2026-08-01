@@ -36,8 +36,10 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
       if (currentHookIndex === 0) {
         defaultDeleteChildEffect(renderDispatch, fiber);
         defaultDeleteCurrentEffect(renderDispatch, fiber);
+        // TODO: 功能回归的改动
+        fiber.hookList.clear();
       }
-      return currentHook;
+      // return currentHook;
       // fiber.hookList.clear();
     } else {
       throw new Error(`[@my-react/react] should not have a hookList for current node, this is a bug for @my-react`);

@@ -1,9 +1,8 @@
+import { createManifestModuleLoader } from "@my-react/react-server/client";
+import { createFlightServer } from "@my-react/react-server/server";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
-import { createManifestModuleLoader } from "@my-react/react-server/client";
-import { createFlightServer } from "@my-react/react-server/server";
 
 import type { ClientManifest, ModuleLoader } from "@my-react/react-server/client";
 
@@ -40,8 +39,7 @@ function createDevModuleLoader(options?: { loadModule?: (id: string) => Promise<
       return options.loadModule(id);
     }
 
-    const globalLoader = (globalThis as unknown as { __MY_REACT_RSC_SSR_LOAD_MODULE__?: (id: string) => Promise<unknown> })
-      .__MY_REACT_RSC_SSR_LOAD_MODULE__;
+    const globalLoader = (globalThis as unknown as { __MY_REACT_RSC_SSR_LOAD_MODULE__?: (id: string) => Promise<unknown> }).__MY_REACT_RSC_SSR_LOAD_MODULE__;
     if (typeof globalLoader === "function") {
       return globalLoader(id);
     }

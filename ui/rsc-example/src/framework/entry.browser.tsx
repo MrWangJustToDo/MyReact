@@ -53,7 +53,6 @@ const BrowserRoot = ({ client }: { client: FlightClient }) => {
     const refetch = () => {
       void fetchPayload(client, window.location.href)
         .then((element) => {
-          console.log("element", element);
           startTransition(() => {
             setTree(element);
           });

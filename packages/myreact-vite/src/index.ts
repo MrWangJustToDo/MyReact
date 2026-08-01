@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable import/no-duplicates */
 import { exactRegex, makeIdFiltersToMatchWithQuery } from "@rolldown/pluginutils";
 import { createFilter } from "vite";
@@ -328,7 +329,15 @@ export default function viteReact(opts: Options = {}): Plugin[] {
       build: withMyReactBuildOptions(userConfig),
       optimizeDeps: { include: dependencies },
       resolve: {
-        alias: !opts.reactRouter && !opts.remix && opts.enableResolveAlias ? { react: "@my-react/react", "react-dom": "@my-react/react-dom" } : undefined,
+        alias:
+          !opts.reactRouter && !opts.remix && opts.enableResolveAlias
+            ? {
+                react: "@my-react/react",
+                "react-dom": "@my-react/react-dom",
+                "@my-react/react/type": "@my-react/react",
+                "@my-react/react-dom/type": "@my-react/react-dom",
+              }
+            : undefined,
         dedupe: ["react", "react-dom", "@my-react/react", "@my-react/react-dom"],
       },
     }),

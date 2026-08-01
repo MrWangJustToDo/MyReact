@@ -3,9 +3,9 @@ import { Effect_TYPE, HOOK_TYPE, STATE_TYPE, exclude } from "@my-react/react-sha
 import { getInstanceOwnerFiber, setEffectForInstance } from "../runtimeGenerate";
 
 import type { CustomRenderDispatch } from "../renderDispatch";
+import type { MyReactFiberNode } from "../runtimeFiber";
 import type { InstanceField } from "../runtimeGenerate";
 import type { MyReactHookNode } from "./instance";
-import type { MyReactFiberNode } from "../runtimeFiber";
 
 export const effectHookNode = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, hookNode: MyReactHookNode, field: InstanceField) => {
   const effect = field.effect;
@@ -56,12 +56,22 @@ export const effectHookNode = (renderDispatch: CustomRenderDispatch, fiber: MyRe
         hookNode.cancel && hookNode.cancel();
 
         // ref obj
-        if (hookNode.value && typeof hookNode.value === "object") hookNode.value.current = hookNode.reducer.call(null);
+        if (hookNode.value && typeof hookNode.value === "object") {
+          hookNode.value.current = hookNode.reducer.call(null);
+          hookNode.cancel = function clearImperativeHandleObjectRef() {
+            if (hookNode.value && typeof hookNode.value === "object") {
+              hookNode.value.current = null;
+            }
+          };
+        }
         // ref function
-        if (hookNode.value && typeof hookNode.value === "function") hookNode.value(hookNode.reducer.call(null));
-
-        // TODO
-        // hookNode.cancel =
+        else if (hookNode.value && typeof hookNode.value === "function") {
+          const ref = hookNode.value;
+          ref(hookNode.reducer.call(null));
+          hookNode.cancel = function clearImperativeHandleFunctionRef() {
+            ref(null);
+          };
+        }
 
         hookNode.hasEffect = false;
 

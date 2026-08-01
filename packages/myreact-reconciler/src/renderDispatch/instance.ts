@@ -55,6 +55,8 @@ export class CustomRenderDispatch extends RenderDispatchEvent implements RenderD
 
   pendingSuspenseFiberArray: UniqueArray<MyReactFiberNode> = new UniqueArray<MyReactFiberNode>();
 
+  pendingEffectCallbackList: ListTree<() => void> = new ListTree();
+
   performanceLogTimeLimit?: number;
 
   uniqueIdCount = 0;

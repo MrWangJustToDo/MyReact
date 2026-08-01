@@ -110,11 +110,11 @@ export const ReconcilerDispatchMount = (_dispatch: ReconcilerDispatch, _fiber: M
     __DEV__ && enableScopeTreeLog.current && resetLogScope();
   }
 
-  addEffectCallback(invokeEffectListTask);
+  addEffectCallback(_dispatch, invokeEffectListTask);
 
   const renderScheduler = currentScheduler.current;
 
   renderScheduler.macroTask(function flushEffect() {
-    flushEffectCallback();
+    flushEffectCallback(_dispatch);
   });
 };

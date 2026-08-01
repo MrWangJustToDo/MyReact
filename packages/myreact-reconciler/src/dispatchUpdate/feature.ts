@@ -98,17 +98,17 @@ export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: Li
     __DEV__ && enableScopeTreeLog.current && resetLogScope();
   }
 
-  addEffectCallback(invokeEffectListTask);
+  addEffectCallback(_dispatch, invokeEffectListTask);
 
   const renderScheduler = currentScheduler.current;
 
   if (_dispatch.enableConcurrentMode && !sync) {
     renderScheduler.macroTask(function flushEffect() {
-      flushEffectCallback();
+      flushEffectCallback(_dispatch);
     });
   } else {
     renderScheduler.microTask(function flushEffect() {
-      flushEffectCallback();
+      flushEffectCallback(_dispatch);
     });
   }
 };

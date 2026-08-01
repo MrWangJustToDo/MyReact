@@ -114,7 +114,11 @@ export const processAsyncLoadListOnUpdate = (renderDispatch: CustomRenderDispatc
               field.asyncLoadList.uniDelete(item);
             })
           ).then(() => {
+            if (renderDispatch.isAppUnmounted) return;
+
             const aliveNode = defaultResolveAliveSuspenseFiber(node) || renderDispatch.rootFiber;
+
+            if (!aliveNode || include(aliveNode.state, STATE_TYPE.__unmount__)) return;
 
             aliveNode.state = STATE_TYPE.__triggerSyncForce__;
 
@@ -188,6 +192,8 @@ export const processAsyncLoadListOnUpdate = (renderDispatch: CustomRenderDispatc
             item._list?.clear();
 
             allNode.forEach((node) => {
+              if (renderDispatch.isAppUnmounted || include(node.state, STATE_TYPE.__unmount__)) return;
+
               node.state = STATE_TYPE.__reschedule__;
             });
 

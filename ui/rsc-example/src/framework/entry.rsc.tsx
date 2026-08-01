@@ -90,6 +90,7 @@ async function handleActionEndpoint(request: Request): Promise<Response> {
   }
 
   // Ensure "use server" modules register before handling (A16)
+  // eslint-disable-next-line import/no-unresolved
   await import("virtual:my-react-rsc/server-actions-init");
   return handleServerAction(request);
 }

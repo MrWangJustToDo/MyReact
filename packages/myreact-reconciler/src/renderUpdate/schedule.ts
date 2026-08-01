@@ -20,7 +20,7 @@ const clearLatestUpdateQueue = (fiber: MyReactFiberNode) => {
 };
 
 const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
-  flushEffectCallback();
+  flushEffectCallback(renderDispatch);
 
   const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
 

@@ -50,6 +50,8 @@ type DefaultRenderDispatch = {
 
   pendingSuspenseFiberArray?: UniqueArray<MyReactFiberNode>;
 
+  pendingEffectCallbackList?: ListTree<() => void>;
+
   generateCommitList(_fiber: MyReactFiberNode): void;
 
   pendingCreate(_fiber: MyReactFiberNode): void;

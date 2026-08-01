@@ -68,7 +68,7 @@ function finishUpdateConcurrentFromRoot(renderDispatch: CustomRenderDispatch) {
 
   commitList?.length && renderDispatch.reconcileUpdate(commitList);
 
-  __DEV__ && enableScopeTreeLog.current && setLogScope();
+  __DEV__ && enableScopeTreeLog.current && resetLogScope();
 
   __DEV__ &&
     safeCall(function safeCallAfterDispatchUpdate() {
@@ -82,8 +82,8 @@ function finishUpdateConcurrentFromRoot(renderDispatch: CustomRenderDispatch) {
 }
 
 function checkNextFiberIsSync(renderDispatch: CustomRenderDispatch) {
-  return include(renderDispatch.runtimeFiber.nextWorkingFiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__);
-  // include(renderDispatch.runtimeFiber.nextWorkingFiber.state, STATE_TYPE.__retrigger__)
+  const next = renderDispatch.runtimeFiber.nextWorkingFiber;
+  return !!next && include(next.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerSyncForce__);
 }
 
 function updateConcurrentNextFrame(renderDispatch: CustomRenderDispatch) {
@@ -99,8 +99,9 @@ function updateConcurrentNextFrame(renderDispatch: CustomRenderDispatch) {
     if (hasSync || checkNextFiberIsSync(renderDispatch)) {
       updateSyncFromRoot(renderDispatch);
     } else {
+      // Do not close over prior-slice hasSync — it is always false when yielding.
       renderScheduler.yieldTask(function resumeUpdateConcurrentFromRoot() {
-        if (hasSync || checkNextFiberIsSync(renderDispatch)) {
+        if (checkNextFiberIsSync(renderDispatch)) {
           updateSyncFromRoot(renderDispatch);
         } else {
           updateConcurrentNextFrame(renderDispatch);
@@ -136,7 +137,7 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
       updateSyncFromRoot(renderDispatch);
     } else {
       renderScheduler.yieldTask(function resumeUpdateConcurrentFromRoot() {
-        if (hasSync || checkNextFiberIsSync(renderDispatch)) {
+        if (checkNextFiberIsSync(renderDispatch)) {
           updateSyncFromRoot(renderDispatch);
         } else {
           updateConcurrentNextFrame(renderDispatch);

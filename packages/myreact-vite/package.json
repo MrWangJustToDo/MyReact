@@ -6,6 +6,7 @@
     "dist",
     "static",
     "index.js",
+    "rsc.js",
     "refreshUtils.js"
   ],
   "license": "MIT",
@@ -22,7 +23,7 @@
     "./rsc": {
       "types": "./dist/types/rsc/index.d.ts",
       "import": "./dist/esm/rsc/index.mjs",
-      "require": "./dist/cjs/rsc/index.js"
+      "require": "./rsc.js"
     },
     "./refreshUtils": {
       "require": "./refreshUtils.js"

@@ -1,5 +1,6 @@
 import React from "@my-react/react";
 
+// Runtime/types from MyReact (`./type`); rslib remaps emit to `@my-react/react`.
 export * from "@my-react/react/type";
 export { React };
 

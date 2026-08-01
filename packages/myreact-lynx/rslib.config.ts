@@ -1,5 +1,12 @@
 import { defineConfig } from "@rslib/core";
 
+/**
+ * Remap `@my-react/react/type` → `@my-react/react` in emitted JS.
+ *
+ * In rslib bundleless mode, once a request matches `output.externals`, redirect
+ * is controlled by the externals mapping (not resolve.alias alone).
+ * DTS still needs `scripts/rewrite-react-type.mjs` (tsc does not use externals).
+ */
 export default defineConfig({
   lib: [
     {
@@ -15,9 +22,16 @@ export default defineConfig({
     },
     tsconfigPath: "./tsconfig.build.json",
   },
+  resolve: {
+    alias: {
+      "@my-react/react/type$": "@my-react/react",
+      "@my-react/react/type": "@my-react/react",
+    },
+  },
   output: {
     distPath: { root: "dist" },
     externals: [
+      { "@my-react/react/type": "@my-react/react" },
       "@lynx-js/type-element-api",
       "@lynx-js/types",
       "@lynx-js/react",
@@ -29,6 +43,9 @@ export default defineConfig({
       "@rspack/core",
       "@rsbuild/core",
       "@lynx-js/rspeedy",
+      "@my-react/react",
+      "@my-react/react-refresh",
+      "@my-react/react-refresh-tools",
     ],
   },
 });

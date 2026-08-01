@@ -168,6 +168,13 @@ const myreactServer = () =>
     external: externalReact,
     plugins: withReactTypeAlias(),
   });
+const runPkgScript = (command: string, label: string) => {
+  const result = spawnSync(command, { shell: true, stdio: "inherit" });
+  if (result.status !== 0) {
+    throw new Error(`[build] ${label} failed with exit code ${result.status ?? "unknown"}`);
+  }
+};
+
 const myreactDev = async () => {
   await rollupBuild({
     packageName: "myreact-refresh",
@@ -187,11 +194,11 @@ const myreactDev = async () => {
     external: externalReact,
     plugins: withReactTypeAlias(),
   });
-  spawnSync("cd packages/myreact-rspack && pnpm build", { shell: true, stdio: "inherit" });
+  runPkgScript("cd packages/myreact-rspack && pnpm build", "@my-react/react-rspack");
 };
 
 const myreactLynx = () => {
-  spawnSync("cd packages/myreact-lynx && pnpm build", { shell: true, stdio: "inherit" });
+  runPkgScript("cd packages/myreact-lynx && pnpm build", "@my-react/react-lynx");
 };
 
 const buildPackages = async () => {

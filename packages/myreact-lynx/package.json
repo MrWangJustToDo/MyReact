@@ -62,7 +62,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "rslib build",
+    "build": "rslib build && node scripts/rewrite-react-type.mjs",
     "dev": "rslib build --watch",
     "postinstall": "node scripts/postinstall.js"
   },

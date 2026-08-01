@@ -1,16 +1,24 @@
 /**
- * Built-in allowlist for worklet-loader / worklet-loader-mt (not a plugin option).
+ * Built-in allowlist for worklet-loader / worklet-loader-mt.
  *
  * Loaders exclude most of `node_modules`; these packages still need:
  * - BG JS worklet transform + MT bare `registerWorkletInternal` stitch
  * - `sideEffects: true` so stitches are not tree-shaken
  * - MT side-effect import keep when app code imports them
  *
- * Extend this constant when adding another consumer-facing worklet library.
+ * Users can append more via `pluginMyReactLynx({ includeWorkletPackages })`.
  */
 
 /** Packages that ship consumer-facing untransformed worklets. */
 export const WORKLET_NODE_MODULES_PACKAGES = ["@lynx-js/gesture-runtime", "@lynx-js/motion"] as const;
+
+/**
+ * Merge user packages onto the default allowlist (deduped, order: defaults first).
+ */
+export function resolveWorkletPackages(includeWorkletPackages?: readonly string[]): string[] {
+  const merged = [...WORKLET_NODE_MODULES_PACKAGES, ...(includeWorkletPackages ?? [])];
+  return [...new Set(merged.map((pkg) => pkg.trim()).filter(Boolean))];
+}
 
 /**
  * Webpack `exclude` predicate: skip `node_modules` except worklet packages.

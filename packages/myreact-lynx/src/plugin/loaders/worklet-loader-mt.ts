@@ -25,15 +25,20 @@ import { extractLocalImports, extractRegistrations, extractSharedImports, extrac
 
 import type { Rspack } from "@rsbuild/core";
 
+export type WorkletLoaderMTOptions = {
+  workletPackages?: string[];
+};
+
 function shouldPassThroughOnMT(resourcePath: string): boolean {
   return /[\\/]polyfill[\\/]/.test(resourcePath) || /[\\/](?:shim|polyfill)\.[cm]?js$/.test(resourcePath);
 }
 
-export default function workletLoaderMT(this: Rspack.LoaderContext, source: string): string {
+export default function workletLoaderMT(this: Rspack.LoaderContext<WorkletLoaderMTOptions>, source: string): string {
   this.cacheable(true);
 
+  const { workletPackages = [...WORKLET_NODE_MODULES_PACKAGES] } = this.getOptions?.() ?? {};
   const localImports = extractLocalImports(source);
-  const workletPkgImports = shouldPassThroughOnMT(this.resourcePath) ? "" : extractWorkletPackageSideEffectImports(source, WORKLET_NODE_MODULES_PACKAGES);
+  const workletPkgImports = shouldPassThroughOnMT(this.resourcePath) ? "" : extractWorkletPackageSideEffectImports(source, workletPackages);
 
   // Polyfill/shim: keep as-is (no worklet bodies; may set globals).
   if (shouldPassThroughOnMT(this.resourcePath)) {

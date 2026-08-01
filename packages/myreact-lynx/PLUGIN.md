@@ -76,7 +76,7 @@ Patch order on MT (`reactPatchUpdate`): **ref init → ops → delayed `runOnMai
 
 ### MT worklet-loader stitch
 
-For app sources and allowlisted npm worklet packages (`WORKLET_NODE_MODULES_PACKAGES` in `worklet-packages.ts`):
+For app sources and allowlisted npm worklet packages (defaults + `includeWorkletPackages`):
 
 1. Keep relative imports (graph walk).
 2. Keep allowlisted package imports as side-effect stitches (`import '@lynx-js/motion'`).
@@ -84,9 +84,17 @@ For app sources and allowlisted npm worklet packages (`WORKLET_NODE_MODULES_PACK
 
 **Do not** ship full SWC LEPUS for those npm packages: it gates register with `loadWorkletRuntime() && …`, and `loadWorkletRuntime` returns `false` when `__LoadLepusChunk` is undefined (runtime already bundled in MT entry) → registrations never run.
 
-### Allowlist (internal, not a plugin option)
+### Allowlist (`includeWorkletPackages`)
 
-`gesture-runtime` and `motion` are allowlisted so they:
+Defaults: `@lynx-js/gesture-runtime`, `@lynx-js/motion`. Append more via the plugin option (merged / deduped):
+
+```ts
+pluginMyReactLynx({
+  includeWorkletPackages: ["@acme/worklet-lib"],
+})
+```
+
+Allowlisted packages:
 
 - pass the `node_modules` exclude on worklet loaders;
 - get `sideEffects: true` (packages often declare `sideEffects: false`);
@@ -114,7 +122,7 @@ Passthrough `lynx.SystemInfo` only. Do not hardcode `lynxSdkVersion` — hosts d
 | Same bind error **after HMR** | BG `_wkltId` changed; MT map still old | Architectural limitation — full refresh (not a loader bug). |
 | `delayed runOnMainThread: worklet "…" is not registered` | BG/MT hash mismatch or MT stitch missed file | Thread-defines registered after worklets; or file excluded from MT loader. |
 | `BaseGesture` / `module has no exports` on BG | MT empty stitch leaked into BG module identity | Broad nm allowlist + stripping exports without layer isolation historically. Keep layers + MT-only stitch; don’t process all `@lynx-js/*` as worklets. |
-| Gesture events dropped (dev warning about `wrapCallback`) | `gesture-runtime` not worklet-transformed on BG | Allowlist / loader exclude; ensure package under `WORKLET_NODE_MODULES_PACKAGES`. |
+| Gesture events dropped (dev warning about `wrapCallback`) | `gesture-runtime` not worklet-transformed on BG | Allowlist / loader exclude; ensure package is default-allowlisted or listed in `includeWorkletPackages`. |
 | `getNativeLynx` / microtask blowups | Bound `lynx.queueMicrotask` on `globalThis` | Use polyfill + `installLynxScheduler`; don’t prepend motion’s BG shim that assigns host microtask globally. |
 | iOS indicator / transform no-op | Host inline `transform` / `scaleY` unreliable | Prefer `%` height (or other layout props) for indicators; `styleEffect`+scale still OK for some cases. |
 | `ReferenceError: exports` on native | Missing RuntimeWrapper on BG JS | Wrap all `.js` except `main-thread.js`. |
@@ -133,7 +141,7 @@ Passthrough `lynx.SystemInfo` only. Do not hardcode `lynxSdkVersion` — hosts d
    - BG `_wkltId` set ≈ MT `registerWorkletInternal("main-thread", id, …)` set
    - Prefer **zero** `__workletRuntimeLoaded && registerWorkletInternal` on MT
 4. Confirm allowlisted packages appear under `(myreact:main-thread)/…` when the screen uses them.
-5. For new worklet libraries: extend `WORKLET_NODE_MODULES_PACKAGES` and import that package from app code.
+5. For new worklet libraries: add them to `includeWorkletPackages` and import that package from app code.
 
 ---
 

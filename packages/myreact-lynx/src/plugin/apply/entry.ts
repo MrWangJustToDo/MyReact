@@ -356,7 +356,7 @@ import { fileURLToPath } from "node:url";
 
 import { LAYERS } from "../layers.js";
 import { MyReactCSSConfigPlugin, MyReactMarkMainThreadPlugin, PLUGIN_MARK_MAIN_THREAD } from "../rspack-plugins";
-import { createNodeModulesExceptWorkletPackagesExclude, createWorkletPackagesPathTest } from "../worklet-packages.js";
+import { createNodeModulesExceptWorkletPackagesExclude, createWorkletPackagesPathTest, resolveWorkletPackages } from "../worklet-packages.js";
 
 import type { RsbuildPluginAPI } from "@rsbuild/core";
 
@@ -393,10 +393,18 @@ export interface ApplyEntryOptions {
    * @defaultValue `'3.2'`
    */
   engineVersion?: string;
+
+  /**
+   * Extra npm packages merged onto the default worklet allowlist.
+   *
+   * @defaultValue `[]`
+   */
+  includeWorkletPackages?: string[];
 }
 
 export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}): void {
   const engineVersion = opts.engineVersion ?? "3.2";
+  const workletPackages = resolveWorkletPackages(opts.includeWorkletPackages);
   // Expose LynxTemplatePlugin hooks so other plugins can interact with the Lynx template pipeline.
   const sLynxTemplatePlugin = Symbol.for("LynxTemplatePlugin");
   api.expose(sLynxTemplatePlugin, {
@@ -455,7 +463,7 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
   });
 
   // Apply worklet loaders
-  applyWorkletLoaders(api);
+  applyWorkletLoaders(api, workletPackages);
 
   api.modifyBundlerChain((chain, { environment, isDev, isProd }) => {
     const isRspeedy = api.context.callerName === "rspeedy";
@@ -683,9 +691,9 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
  * Uses `@lynx-js/react/transform`: BG → JS worklet contexts; MT → LEPUS then
  * bare `registerWorkletInternal` extraction (see worklet-loader-mt).
  */
-function applyWorkletLoaders(api: RsbuildPluginAPI): void {
-  const excludeNodeModulesExceptWorkletPkgs = createNodeModulesExceptWorkletPackagesExclude();
-  const workletPkgPathTest = createWorkletPackagesPathTest();
+function applyWorkletLoaders(api: RsbuildPluginAPI, workletPackages: readonly string[]): void {
+  const excludeNodeModulesExceptWorkletPkgs = createNodeModulesExceptWorkletPackagesExclude(workletPackages);
+  const workletPkgPathTest = createWorkletPackagesPathTest(workletPackages);
 
   // Worklet loader (BG layer): runs SWC JS-target transform on BG-layer files
   // to replace 'main thread' functions with context objects.
@@ -792,6 +800,7 @@ function applyWorkletLoaders(api: RsbuildPluginAPI): void {
       .end()
       .use("worklet-loader-mt")
       .loader(path.resolve(_dirname, "../loaders/worklet-loader-mt"))
+      .options({ workletPackages })
       .end();
   });
 }

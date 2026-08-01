@@ -11,7 +11,12 @@
  * import { pluginMyReactLynx } from '@my-react/react-lynx/plugin'
  *
  * export default defineConfig({
- *   plugins: [pluginMyReactLynx()],
+ *   plugins: [
+ *     pluginMyReactLynx({
+ *       // optional: extra npm packages with untransformed worklets
+ *       // includeWorkletPackages: ['@acme/worklet-lib'],
+ *     }),
+ *   ],
  * })
  * ```
  */
@@ -118,6 +123,18 @@ export interface PluginMyReactLynxOptions {
    * @defaultValue `'3.2'`
    */
   engineVersion?: string;
+
+  /**
+   * Extra npm packages that ship untransformed `'main thread'` worklets and
+   * must run through the BG/MT worklet loaders (merged onto the defaults
+   * `@lynx-js/gesture-runtime` and `@lynx-js/motion`).
+   *
+   * App code should import these packages directly so MT registration stitches
+   * stay on the main-thread graph.
+   *
+   * @defaultValue `[]`
+   */
+  includeWorkletPackages?: string[];
 }
 
 const PLUGIN_NAME = "lynx:myreact";
@@ -164,6 +181,7 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
     reactRefresh = true,
     reactDevTool = false,
     engineVersion = "3.2",
+    includeWorkletPackages,
   } = options;
 
   return {
@@ -323,6 +341,7 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
         debugInfoOutside,
         reactRefresh,
         engineVersion,
+        includeWorkletPackages,
       });
 
       applyBackgroundOnly(api);

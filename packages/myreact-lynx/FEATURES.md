@@ -87,7 +87,7 @@ MyReact:    loadTemplate → empty page → BG reconcile → ops
 | `useMainThreadRef` / `MainThreadRef` | ✅ | ✅ | ✅ | |
 | `with { runtime: 'shared' }` | ✅ | ✅ | ✅ | |
 | Worklet HMR without full reload | ❌ stubbed | ◐ | ❌ | Hash/`_wkltId` stale map class of bug |
-| npm worklet package allowlist | ◐ | ✅ `includeWorkletPackages` | ◐ hardcoded | MR: `gesture-runtime` + `motion` only |
+| npm worklet package allowlist | ◐ | ✅ `includeWorkletPackages` | ✅ `includeWorkletPackages` | MR defaults: `gesture-runtime` + `motion`; user packages merge on |
 
 ---
 
@@ -175,7 +175,7 @@ MyReact:    loadTemplate → empty page → BG reconcile → ops
 | Element Templates | ✅ experimental | ✅ (follows IFR) | ❌ |
 | `firstScreenSyncTiming` / SSR | ✅ | ❌ | ❌ |
 | `enableNewGesture` | ✅ default false | hardcoded false | hardcoded true |
-| Worklet package include | ◐ | ✅ `includeWorkletPackages` | hardcoded list |
+| Worklet package include | ◐ | ✅ `includeWorkletPackages` | ✅ merge onto defaults |
 | Compat / shake / extractStr / optimizeBundleSize | ✅ | — | ❌ |
 | React→MyReact aliases | — | — | ✅ |
 

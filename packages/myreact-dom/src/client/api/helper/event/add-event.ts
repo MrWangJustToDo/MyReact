@@ -28,22 +28,22 @@ const syncUpdateEvent = {
   mouseup: true,
 } as const;
 
-const beforeEvent = (event: string) => {
+function beforeEvent(event: string) {
   if (event in syncUpdateEvent) {
     beforeSyncUpdate();
   }
-};
+}
 
-const afterEvent = (event: string) => {
+function afterEvent(event: string) {
   if (event in syncUpdateEvent) {
     afterSyncUpdate();
   }
-};
+}
 
 /**
  * @internal
  */
-export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDispatch["runtimeDom"]["eventMap"], dom: DomElement, key: string) => {
+export function addEventListener(fiber: MyReactFiberNode, eventMap: ClientDomDispatch["runtimeDom"]["eventMap"], dom: DomElement, key: string) {
   const typedElementType = fiber.elementType as string;
 
   const pendingProps = fiber.pendingProps;
@@ -132,4 +132,4 @@ export const addEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDis
   } else {
     dom.addEventListener(nativeName, callback, isCapture);
   }
-};
+}

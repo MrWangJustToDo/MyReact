@@ -3,7 +3,7 @@ import { isServer } from "./env";
 const styleSet = new Set<string>();
 const scriptSet = new Set<string>();
 
-export const preinit = (url: string, options: { as: "style" | "script" }) => {
+export function preinit(url: string, options: { as: "style" | "script" }) {
   if (typeof url !== "string") return;
 
   if (options.as === "style") {
@@ -27,11 +27,13 @@ export const preinit = (url: string, options: { as: "style" | "script" }) => {
       document.head.appendChild(link);
     }
   }
-};
+}
 
-export const preinitModule = (_url: string) => void 0;
+export function preinitModule(_url: string) {
+  void 0;
+}
 
-export const getPreInits = () => {
+export function getPreInits() {
   const styles = Array.from(styleSet)
     .map((url) => `<link rel="preload" href="${url}" as="style" />`)
     .join("");
@@ -43,9 +45,9 @@ export const getPreInits = () => {
   scriptSet.clear();
 
   return styles + scripts;
-};
+}
 
-export const clearPreInits = () => {
+export function clearPreInits() {
   styleSet.clear();
   scriptSet.clear();
-};
+}

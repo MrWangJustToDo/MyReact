@@ -9,7 +9,7 @@ import type { DomElement } from "@my-react-dom-shared";
 /**
  * @internal
  */
-export const removeEventListener = (fiber: MyReactFiberNode, eventMap: ClientDomDispatch["runtimeDom"]["eventMap"], dom: DomElement, key: string) => {
+export function removeEventListener(fiber: MyReactFiberNode, eventMap: ClientDomDispatch["runtimeDom"]["eventMap"], dom: DomElement, key: string) {
   const typedElementType = fiber.elementType as string;
 
   const currentProps = fiber.memoizedProps || {};
@@ -32,4 +32,4 @@ export const removeEventListener = (fiber: MyReactFiberNode, eventMap: ClientDom
   } else {
     dom.removeEventListener(nativeName, callback, isCapture);
   }
-};
+}

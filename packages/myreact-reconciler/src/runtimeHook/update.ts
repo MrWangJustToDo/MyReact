@@ -16,12 +16,12 @@ const { enableDebugLog } = __my_react_shared__;
 
 const { currentHookTreeNode, currentScheduler } = __my_react_internal__;
 
-export const updateHookNode = (
+export function updateHookNode(
   renderDispatch: CustomRenderDispatch,
   { type, value, reducer, deps }: RenderHookParams,
   fiber: MyReactFiberNode,
   isHMR?: boolean
-) => {
+) {
   const renderScheduler = currentScheduler.current;
 
   const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
@@ -292,4 +292,4 @@ export const updateHookNode = (
   }
 
   return currentHook;
-};
+}

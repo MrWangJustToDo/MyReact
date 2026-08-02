@@ -12,7 +12,7 @@ import type { MyReactFiberNode, MyReactFiberNodeDev } from "@my-react/react-reco
 /**
  * @internal
  */
-export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
+export function update(fiber: MyReactFiberNode, isSVG?: boolean) {
   if (include(fiber.patch, PATCH_TYPE.__update__)) {
     if (__DEV__) {
       validDomProps(fiber);
@@ -69,12 +69,12 @@ export const update = (fiber: MyReactFiberNode, isSVG?: boolean) => {
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__update__);
   }
-};
+}
 
 /**
  * @internal
  */
-export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
+export function getSerializeProps(fiber: MyReactFiberNode, isSVG?: boolean) {
   if (include(fiber.type, NODE_TYPE.__plain__)) {
     if (__DEV__) {
       validDomProps(fiber);
@@ -122,4 +122,4 @@ export const getSerializeProps = (fiber: MyReactFiberNode, isSVG?: boolean) => {
     if (arr.length) return arr.reduce((p, c) => `${p} ${c}`);
     return "";
   }
-};
+}

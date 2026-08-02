@@ -14,14 +14,16 @@ type CacheNode = {
 
 const functionCache = new WeakMap<AnyFn, CacheNode>();
 
-const createNode = (): CacheNode => ({
-  primitive: new Map(),
-  object: new WeakMap(),
-});
+function createNode(): CacheNode {
+  return {
+    primitive: new Map(),
+    object: new WeakMap(),
+  };
+}
 
 const EMPTY_OBJECT_KEY = {} as object;
 
-const isStableEmptyObject = (value: unknown): value is object => {
+function isStableEmptyObject(value: unknown): value is object {
   if (!value || typeof value !== "object") {
     return false;
   }
@@ -32,10 +34,10 @@ const isStableEmptyObject = (value: unknown): value is object => {
   }
 
   return Object.keys(value).length === 0 && Object.getOwnPropertySymbols(value).length === 0;
-};
+}
 
-export const cache = <T extends AnyFn>(fn: T): T => {
-  return ((...args: unknown[]) => {
+export function cache<T extends AnyFn>(fn: T): T {
+  return function cachedFn(...args: unknown[]) {
     let node = functionCache.get(fn);
     if (!node) {
       node = createNode();
@@ -81,19 +83,23 @@ export const cache = <T extends AnyFn>(fn: T): T => {
       node.error = error;
       throw error;
     }
-  }) as T;
-};
+  } as T;
+}
 
-export const cacheSignal = () => ({}) as object;
+export function cacheSignal() {
+  return {} as object;
+}
 
 const cacheLazyMap = new Map<Promise<MyReactElementNode>, ReturnType<typeof lazy>>();
 
-export const cacheLazy = (promise: Promise<MyReactElementNode>) => {
+export function cacheLazy(promise: Promise<MyReactElementNode>) {
   const exist = cacheLazyMap.get(promise);
 
   if (exist) return exist;
 
-  const loader = () => promise;
+  const loader = function cacheLazyLoader() {
+    return promise;
+  };
 
   loader["$$rsc"] = promise;
 
@@ -106,4 +112,4 @@ export const cacheLazy = (promise: Promise<MyReactElementNode>) => {
   cacheLazyMap.set(promise, next);
 
   return next;
-};
+}

@@ -13,7 +13,7 @@ const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: ListTree<MyReactFiberNode>, sync?: boolean) => {
+export function defaultDispatchUpdate(_dispatch: CustomRenderDispatch, _list: ListTree<MyReactFiberNode>, sync?: boolean) {
   // TODO maybe need call `insertionEffect` in another function
   beforeSyncUpdate();
 
@@ -111,4 +111,4 @@ export const defaultDispatchUpdate = (_dispatch: CustomRenderDispatch, _list: Li
       flushEffectCallback(_dispatch);
     });
   }
-};
+}

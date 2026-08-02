@@ -38,7 +38,7 @@ export type RenderContainer = Record<string, any> & {
 };
 
 // react-reconciler compat implementation
-export const Reconciler = (_config: any) => {
+export function Reconciler(_config: any) {
   let rendererPackageName = _config.rendererPackageName || "@my-react";
 
   let isRendering = false;
@@ -353,4 +353,4 @@ export const Reconciler = (_config: any) => {
     focusWithin,
     observeVisibleRects,
   };
-};
+}

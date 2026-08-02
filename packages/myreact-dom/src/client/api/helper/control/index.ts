@@ -22,7 +22,7 @@ export const controlElementTag: Record<string, boolean> = {
 /**
  * @internal
  */
-export const updateControlElement = (fiber: MyReactFiberNode) => {
+export function updateControlElement(fiber: MyReactFiberNode) {
   const elementType = fiber.elementType;
 
   switch (elementType) {
@@ -33,12 +33,12 @@ export const updateControlElement = (fiber: MyReactFiberNode) => {
     case "textarea":
       return updateControlTextAreaElement(fiber);
   }
-};
+}
 
 /**
  * @internal
  */
-export const generateOnChangeFun = (fiber: MyReactFiberNode) => {
+export function generateOnChangeFun(fiber: MyReactFiberNode) {
   const elementType = fiber.elementType;
 
   switch (elementType) {
@@ -49,12 +49,12 @@ export const generateOnChangeFun = (fiber: MyReactFiberNode) => {
     case "textarea":
       return generateTextAreaOnChangeFun(fiber);
   }
-};
+}
 
 /**
  * @internal
  */
-export const hasControlledProps = (fiber: MyReactFiberNode) => {
+export function hasControlledProps(fiber: MyReactFiberNode) {
   const elementType = fiber.elementType;
 
   switch (elementType) {
@@ -65,12 +65,12 @@ export const hasControlledProps = (fiber: MyReactFiberNode) => {
     case "textarea":
       return hasControlledTextAreaProps(fiber);
   }
-};
+}
 
 /**
  * @internal
  */
-export const isControlledElement = (fiber: MyReactFiberNode) => {
+export function isControlledElement(fiber: MyReactFiberNode) {
   const elementType = fiber.elementType;
   switch (elementType) {
     case "input":
@@ -80,12 +80,12 @@ export const isControlledElement = (fiber: MyReactFiberNode) => {
     case "textarea":
       return isControlledTextAreaElement(fiber);
   }
-};
+}
 
 /**
  * @internal
  */
-export const isReadonlyElement = (fiber: MyReactFiberNode) => {
+export function isReadonlyElement(fiber: MyReactFiberNode) {
   const elementType = fiber.elementType;
   switch (elementType) {
     case "input":
@@ -95,6 +95,6 @@ export const isReadonlyElement = (fiber: MyReactFiberNode) => {
     case "textarea":
       return isReadonlyTextAreaElement(fiber);
   }
-};
+}
 
 export { initSelect, updateSelect } from "./select";

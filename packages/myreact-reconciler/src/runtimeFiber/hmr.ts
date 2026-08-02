@@ -11,7 +11,7 @@ import type { HMRUpdateQueue, MyReactComponentType } from "@my-react/react/type"
 
 const { currentScheduler } = __my_react_internal__;
 
-export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, forceRefresh?: boolean) => {
+export function hmr(fiber: MyReactFiberNode, nextType: MyReactComponentType, forceRefresh?: boolean) {
   if (__DEV__) {
     if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
@@ -52,7 +52,7 @@ export const hmr = (fiber: MyReactFiberNode, nextType: MyReactComponentType, for
   } else {
     throw new Error(`[@my-react/react] can not try to dev refresh this app in prod env!`);
   }
-};
+}
 
 export function hmrRevert(this: MyReactFiberNode, cb?: () => void) {
   if (include(this.state, STATE_TYPE.__unmount__)) return;

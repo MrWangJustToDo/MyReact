@@ -26,10 +26,10 @@ const knownConfigKeys = [
   "commitMount",
 ];
 
-export const knownConfig = (config: any) => {
+export function knownConfig(config: any) {
   Object.keys(config).forEach((key) => {
     if (!knownConfigKeys.includes(key)) {
       console.warn(`not used config key ${key} with %o value`, config[key]);
     }
   });
-};
+}

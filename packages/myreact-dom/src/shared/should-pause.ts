@@ -3,7 +3,7 @@ import { asyncUpdateTimeLimit, asyncUpdateTimeStep } from "./env";
 /**
  * @internal
  */
-export const shouldPauseAsyncUpdate = () => {
+export function shouldPauseAsyncUpdate() {
   if (!asyncUpdateTimeStep.current) {
     asyncUpdateTimeStep.current = Date.now();
     return false;
@@ -13,8 +13,8 @@ export const shouldPauseAsyncUpdate = () => {
     if (result) asyncUpdateTimeStep.current = null;
     return result;
   }
-};
+}
 
-export const resetPause = () => {
+export function resetPause() {
   asyncUpdateTimeStep.current = Date.now();
-};
+}

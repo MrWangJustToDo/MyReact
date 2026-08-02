@@ -10,7 +10,7 @@ const HMR_FIELD = "__@my-react/hmr__";
 /**
  * @internal
  */
-export const initGlobalHMR = () => {
+export function initGlobalHMR() {
   if (__DEV__ && !isServer && enableHMRForDev.current) {
     if (globalThis[HMR_FIELD]) {
       console.error(
@@ -28,4 +28,4 @@ export const initGlobalHMR = () => {
       }
     }
   }
-};
+}

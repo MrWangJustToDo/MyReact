@@ -21,7 +21,7 @@ let refreshHandler: RefreshHandler | null = null;
 // used for hmr
 export const typeToFibersMap = new MyWeakMap() as WeakMap<MixinMyReactClassComponent | MixinMyReactFunctionComponent, Set<MyReactFiberNode>>;
 
-export const setRefreshHandler = (handler: RefreshHandler) => {
+export function setRefreshHandler(handler: RefreshHandler) {
   if (__DEV__) {
     if (refreshHandler) {
       throw new Error(`[@my-react/react] "refreshHandler" can be only set once`);
@@ -31,9 +31,9 @@ export const setRefreshHandler = (handler: RefreshHandler) => {
 
     refreshHandler = handler;
   }
-};
+}
 
-export const setRefreshTypeMap = (fiber: MyReactFiberNode) => {
+export function setRefreshTypeMap(fiber: MyReactFiberNode) {
   if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
     const elementType = fiber.elementType as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
 
@@ -43,27 +43,27 @@ export const setRefreshTypeMap = (fiber: MyReactFiberNode) => {
 
     typeToFibersMap.set(elementType, exist);
   }
-};
+}
 
-export const getCurrentTypeFromRefresh = (type: MyReactElementType) => {
+export function getCurrentTypeFromRefresh(type: MyReactElementType) {
   return refreshHandler?.(type)?.current || type;
-};
+}
 
-export const getCurrentTypeFromRefreshOnly = (type: MyReactElementType) => {
+export function getCurrentTypeFromRefreshOnly(type: MyReactElementType) {
   return refreshHandler?.(type)?.current;
-};
+}
 
-export const getCurrentFibersFromType = (type: MixinMyReactClassComponent | MixinMyReactFunctionComponent) => {
+export function getCurrentFibersFromType(type: MixinMyReactClassComponent | MixinMyReactFunctionComponent) {
   return typeToFibersMap.get(type);
-};
+}
 
-export const getCurrentDispatchFromType = (type: MixinMyReactClassComponent | MixinMyReactFunctionComponent) => {
+export function getCurrentDispatchFromType(type: MixinMyReactClassComponent | MixinMyReactFunctionComponent) {
   const fibers = getCurrentFibersFromType(type);
 
   return new Set(Array.from(fibers || []).map((fiber) => fiberToDispatchMap.get(fiber)));
-};
+}
 
-export const getCurrentDispatchFromFiber = (fiber: MyReactFiberNode) => {
+export function getCurrentDispatchFromFiber(fiber: MyReactFiberNode) {
   const dispatch = fiberToDispatchMap.get(fiber);
 
   if (dispatch) return dispatch;
@@ -78,9 +78,9 @@ export const getCurrentDispatchFromFiber = (fiber: MyReactFiberNode) => {
 
     parent = parent.parent;
   }
-};
+}
 
-export const getElementFromRefreshIfExist = (element: MyReactElement) => {
+export function getElementFromRefreshIfExist(element: MyReactElement) {
   const elementType = getElementTypeFromType(element.type);
 
   // current element is React component
@@ -94,4 +94,4 @@ export const getElementFromRefreshIfExist = (element: MyReactElement) => {
   }
 
   return element;
-};
+}

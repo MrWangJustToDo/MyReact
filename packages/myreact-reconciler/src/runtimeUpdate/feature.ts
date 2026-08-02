@@ -22,7 +22,7 @@ export enum updateTypeEnum {
   concurrentFromTrigger,
 }
 
-export const triggerFiberUpdateListener = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function triggerFiberUpdateListener(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallPatchToFiberUpdate() {
@@ -36,9 +36,9 @@ export const triggerFiberUpdateListener = (renderDispatch: CustomRenderDispatch,
       renderDispatch.callOnFiberUpdate(fiber);
     },
   });
-};
+}
 
-export const updateLoopSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
+export function updateLoopSyncFromRoot(renderDispatch: CustomRenderDispatch) {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
     renderDispatch.runtimeFiber.retriggerFiber = null;
 
@@ -52,9 +52,9 @@ export const updateLoopSyncFromRoot = (renderDispatch: CustomRenderDispatch) => 
 
     renderDispatch.runtimeFiber.retriggerFiber = null;
   }
-};
+}
 
-export const updateLoopConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) => {
+export function updateLoopConcurrentFromRoot(renderDispatch: CustomRenderDispatch) {
   let hasSync = false;
 
   while (renderDispatch.runtimeFiber.nextWorkingFiber && !renderDispatch.shouldYield()) {
@@ -74,9 +74,9 @@ export const updateLoopConcurrentFromRoot = (renderDispatch: CustomRenderDispatc
   }
 
   return hasSync;
-};
+}
 
-export const processAsyncLoadListOnUpdate = (renderDispatch: CustomRenderDispatch) => {
+export function processAsyncLoadListOnUpdate(renderDispatch: CustomRenderDispatch) {
   while (renderDispatch.pendingSuspenseFiberArray?.length) {
     const allPendingSuspenseFiberArray = renderDispatch.pendingSuspenseFiberArray.getAll();
 
@@ -216,4 +216,4 @@ export const processAsyncLoadListOnUpdate = (renderDispatch: CustomRenderDispatc
       );
     }
   }
-};
+}

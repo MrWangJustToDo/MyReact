@@ -13,15 +13,15 @@ const { enableDebugFiled } = __my_react_shared__;
 
 const { currentRunningFiber, MyReactInternalInstance } = __my_react_internal__;
 
-export const defaultGetContextValue = (fiber?: MyReactFiberNode | null, ContextObject?: ReturnType<typeof createContext> | null) => {
+export function defaultGetContextValue(fiber?: MyReactFiberNode | null, ContextObject?: ReturnType<typeof createContext> | null) {
   if (fiber) {
     return fiber.pendingProps["value"] as Record<string, unknown>;
   } else {
     return ContextObject?.Provider?.["value"] as Record<string, unknown>;
   }
-};
+}
 
-export const defaultGetContextFiber = (fiber: MyReactFiberNode, ContextObject?: ReturnType<typeof createContext> | null) => {
+export function defaultGetContextFiber(fiber: MyReactFiberNode, ContextObject?: ReturnType<typeof createContext> | null) {
   if (fiber?.parent && ContextObject) {
     let parent: MyReactFiberNode | null = fiber.parent;
     while (parent) {
@@ -49,9 +49,9 @@ export const defaultGetContextFiber = (fiber: MyReactFiberNode, ContextObject?: 
   } else {
     return null;
   }
-};
+}
 
-export const defaultReadContext = (Context: ReturnType<typeof createContext>) => {
+export function defaultReadContext(Context: ReturnType<typeof createContext>) {
   const fiber = currentRunningFiber.current;
 
   if (!Context) {
@@ -75,14 +75,14 @@ export const defaultReadContext = (Context: ReturnType<typeof createContext>) =>
   setSubscribeForInstance(fiber.instance, contextFiber);
 
   return defaultGetContextValue(contextFiber, Context);
-};
+}
 
-export const prepareUpdateAllDependence = (
+export function prepareUpdateAllDependence(
   renderDispatch: CustomRenderDispatch,
   fiber: MyReactFiberNode,
   beforeValue: Record<string, unknown>,
   afterValue: Record<string, unknown>
-) => {
+) {
   const consumerList = new Set(fiber?.dependence || []);
 
   consumerList.forEach(function prepareUpdateSingleConsumer(i) {
@@ -144,4 +144,4 @@ export const prepareUpdateAllDependence = (
       renderDispatch.callOnFiberTrigger(fiber, updateState);
     },
   });
-};
+}

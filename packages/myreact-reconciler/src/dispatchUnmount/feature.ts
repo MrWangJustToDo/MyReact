@@ -6,7 +6,7 @@ import { safeCallWithCurrentFiber } from "../share";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-export const defaultGenerateUnmountMap = (fiber: MyReactFiberNode, unmount: MyReactFiberNode, map: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>) => {
+export function defaultGenerateUnmountMap(fiber: MyReactFiberNode, unmount: MyReactFiberNode, map: WeakMap<MyReactFiberNode, ListTree<MyReactFiberNode>>) {
   let list = map.get(fiber);
 
   if (!list) {
@@ -16,9 +16,9 @@ export const defaultGenerateUnmountMap = (fiber: MyReactFiberNode, unmount: MyRe
   }
 
   list.push(unmount);
-};
+}
 
-export const defaultDispatchUnmount = (renderDispatch: CustomRenderDispatch) => {
+export function defaultDispatchUnmount(renderDispatch: CustomRenderDispatch) {
   if (renderDispatch.isAppUnmounted) return;
 
   const rootFiber = renderDispatch.rootFiber;
@@ -26,9 +26,9 @@ export const defaultDispatchUnmount = (renderDispatch: CustomRenderDispatch) => 
   unmountFiber(renderDispatch, rootFiber);
 
   clearContainer(renderDispatch);
-};
+}
 
-export const defaultInvokeUnmountList = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function defaultInvokeUnmountList(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.patch, PATCH_TYPE.__unmount__)) {
     const unmountMap = renderDispatch.runtimeMap.unmountMap;
 
@@ -49,4 +49,4 @@ export const defaultInvokeUnmountList = (renderDispatch: CustomRenderDispatch, f
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__unmount__);
   }
-};
+}

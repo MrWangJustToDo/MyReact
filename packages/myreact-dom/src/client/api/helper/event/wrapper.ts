@@ -9,7 +9,7 @@ type MyReactEvent = Event & {
   isPropagationStopped(): boolean;
 };
 
-export const wrapperFrameworkEvent = (e: Event | MyReactEvent) => {
+export function wrapperFrameworkEvent(e: Event | MyReactEvent) {
   if (!e) return;
 
   if ((e as MyReactEvent)._isMyReactEvent) {
@@ -43,4 +43,4 @@ export const wrapperFrameworkEvent = (e: Event | MyReactEvent) => {
   };
 
   typedE._isMyReactEvent = true;
-};
+}

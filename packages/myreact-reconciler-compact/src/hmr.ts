@@ -5,7 +5,7 @@ const DEV_REFRESH_FIELD = "__@my-react/react-refresh-inject__";
 
 type RefreshRuntime = (dispatch: CustomRenderDispatch) => void;
 
-export const autoSetDevHMR = (dispatch: ReconcilerDispatch) => {
+export function autoSetDevHMR(dispatch: ReconcilerDispatch) {
   if (__DEV__) {
     if (typeof globalThis !== "undefined" && globalThis[DEV_REFRESH_FIELD]) {
       try {
@@ -17,4 +17,4 @@ export const autoSetDevHMR = (dispatch: ReconcilerDispatch) => {
       }
     }
   }
-};
+}

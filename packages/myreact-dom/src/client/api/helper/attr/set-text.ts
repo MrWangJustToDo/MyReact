@@ -6,18 +6,18 @@ import type { DomNode, DomElement } from "@my-react-dom-shared";
 /**
  * @internal
  */
-export const setTextContent = (fiber: MyReactFiberNode) => {
+export function setTextContent(fiber: MyReactFiberNode) {
   if (!fiber.nativeNode) throw new Error("[@my-react/react-dom] update error, dom not exist");
 
   const node = fiber.nativeNode as Text;
 
   node.textContent = fiber.elementType as string;
-};
+}
 
 /**
  * @internal
  */
-export const hydrateTextContent = (fiber: MyReactFiberNode) => {
+export function hydrateTextContent(fiber: MyReactFiberNode) {
   const node = fiber.nativeNode as DomElement | DomNode;
 
   if (node.textContent !== String(fiber.elementType)) {
@@ -30,4 +30,4 @@ export const hydrateTextContent = (fiber: MyReactFiberNode) => {
       node.textContent = fiber.elementType as string;
     }
   }
-};
+}

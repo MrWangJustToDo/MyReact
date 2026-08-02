@@ -9,12 +9,12 @@ import type { UniqueArray } from "@my-react/react-shared";
 
 const { currentScheduler } = __my_react_internal__;
 
-export const defaultGenerateEffectMap = (
+export function defaultGenerateEffectMap(
   fiber: MyReactFiberNode,
   effect: () => void,
   map: WeakMap<MyReactFiberNode, ListTree<() => void>>,
   option?: { stickyToHead?: boolean; stickyToFoot?: boolean }
-) => {
+) {
   let list = map.get(fiber);
 
   if (!list) {
@@ -34,9 +34,9 @@ export const defaultGenerateEffectMap = (
   } else {
     list.push(effect);
   }
-};
+}
 
-export const defaultInvokeEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function defaultInvokeEffect(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.patch, PATCH_TYPE.__effect__)) {
     const effectMap = renderDispatch.runtimeMap.effectMap;
 
@@ -57,9 +57,9 @@ export const defaultInvokeEffect = (renderDispatch: CustomRenderDispatch, fiber:
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__effect__);
   }
-};
+}
 
-export const defaultInvokeLayoutEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function defaultInvokeLayoutEffect(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.patch, PATCH_TYPE.__layoutEffect__)) {
     const layoutEffectMap = renderDispatch.runtimeMap.layoutEffectMap;
 
@@ -80,9 +80,9 @@ export const defaultInvokeLayoutEffect = (renderDispatch: CustomRenderDispatch, 
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__layoutEffect__);
   }
-};
+}
 
-export const defaultInvokeInsertionEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function defaultInvokeInsertionEffect(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.patch, PATCH_TYPE.__insertionEffect__)) {
     const insertionEffectMap = renderDispatch.runtimeMap.insertionEffectMap;
 
@@ -103,9 +103,9 @@ export const defaultInvokeInsertionEffect = (renderDispatch: CustomRenderDispatc
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__insertionEffect__);
   }
-};
+}
 
-export const defaultDeleteCurrentEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function defaultDeleteCurrentEffect(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.patch, PATCH_TYPE.__insertionEffect__)) {
     const insertionEffectMap = renderDispatch.runtimeMap.insertionEffectMap;
 
@@ -129,9 +129,9 @@ export const defaultDeleteCurrentEffect = (renderDispatch: CustomRenderDispatch,
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__effect__);
   }
-};
+}
 
-export const defaultDeleteChildEffect = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function defaultDeleteChildEffect(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   let child = fiber.child;
 
   while (child) {
@@ -141,13 +141,13 @@ export const defaultDeleteChildEffect = (renderDispatch: CustomRenderDispatch, f
 
     child = child.sibling;
   }
-};
+}
 
-export const addEffectCallback = (renderDispatch: CustomRenderDispatch, cb: () => void) => {
+export function addEffectCallback(renderDispatch: CustomRenderDispatch, cb: () => void) {
   renderDispatch.pendingEffectCallbackList.push(cb);
-};
+}
 
-const flushDispatchEffectCallback = (renderDispatch: CustomRenderDispatch) => {
+function flushDispatchEffectCallback(renderDispatch: CustomRenderDispatch) {
   const list = renderDispatch.pendingEffectCallbackList;
 
   if (!list.length) return;
@@ -159,13 +159,13 @@ const flushDispatchEffectCallback = (renderDispatch: CustomRenderDispatch) => {
   } finally {
     list.clear();
   }
-};
+}
 
 /**
  * Flush deferred passive-effect tasks for one dispatch, or all registered dispatches when omitted
  * (compat `flushPassiveEffects`).
  */
-export const flushEffectCallback = (renderDispatch?: CustomRenderDispatch) => {
+export function flushEffectCallback(renderDispatch?: CustomRenderDispatch) {
   if (renderDispatch) {
     flushDispatchEffectCallback(renderDispatch);
     return;
@@ -175,7 +175,7 @@ export const flushEffectCallback = (renderDispatch?: CustomRenderDispatch) => {
   const allDispatch = renderScheduler?.dispatchSet as UniqueArray<CustomRenderDispatch> | undefined;
 
   allDispatch?.getAll?.().forEach(flushDispatchEffectCallback);
-};
+}
 
 export const effect = defaultInvokeEffect;
 

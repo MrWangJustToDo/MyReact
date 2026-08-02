@@ -30,7 +30,7 @@ let lastRenderComponentTimeStep: number | null = null;
 
 let renderCount = 0;
 
-export const processState = (renderDispatch: CustomRenderDispatch, _params: UpdateQueue) => {
+export function processState(renderDispatch: CustomRenderDispatch, _params: UpdateQueue) {
   if (__DEV__ && enableDebugFiled.current) {
     const typedUpdateQueue = _params as UpdateQueueDev;
 
@@ -186,4 +186,4 @@ export const processState = (renderDispatch: CustomRenderDispatch, _params: Upda
 
     prepareUpdateOnFiber(renderDispatch, ownerFiber, isImmediate, isRetrigger);
   }
-};
+}

@@ -6,7 +6,7 @@ import { getInsertBeforeNodeFromSiblingAndParent, getValidParentFiberWithNode } 
 import type { ReconcilerDispatch } from "../dispatch";
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
-const append = (dispatch: ReconcilerDispatch, config: any, fiber: MyReactFiberNode, parentFiberWithNode: MyReactFiberNode | null) => {
+function append(dispatch: ReconcilerDispatch, config: any, fiber: MyReactFiberNode, parentFiberWithNode: MyReactFiberNode | null) {
   if (!fiber) throw new Error("position error, look like a bug for @my-react");
 
   fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
@@ -50,15 +50,15 @@ const append = (dispatch: ReconcilerDispatch, config: any, fiber: MyReactFiberNo
 
     child = child.sibling;
   }
-};
+}
 
-const insertBefore = (
+function insertBefore(
   dispatch: ReconcilerDispatch,
   config: any,
   fiber: MyReactFiberNode,
   beforeFiberWithNode: MyReactFiberNode,
   parentFiberWithNode: MyReactFiberNode | null
-) => {
+) {
   if (!fiber) throw new Error("position error, look like a bug for @my-react");
 
   fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
@@ -111,9 +111,9 @@ const insertBefore = (
 
     child = child.sibling;
   }
-};
+}
 
-export const position = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, _config: any) => {
+export function position(_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, _config: any) {
   if (!include(_fiber.patch, PATCH_TYPE.__position__)) return;
 
   const rootFiber = _dispatch.rootFiber;
@@ -129,4 +129,4 @@ export const position = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode
   }
 
   _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__position__);
-};
+}

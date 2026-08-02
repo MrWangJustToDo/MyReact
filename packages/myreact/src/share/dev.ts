@@ -1,6 +1,6 @@
 import { currentComponentFiber, currentRunningFiber, currentScheduler, currentScopeFiber } from "./env";
 
-export const captureOwnerStack = () => {
+export function captureOwnerStack() {
   if (__DEV__) {
     const scheduler = currentScheduler.current;
 
@@ -10,4 +10,4 @@ export const captureOwnerStack = () => {
       return scheduler.getFiberTree(componentFiber);
     }
   }
-};
+}

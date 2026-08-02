@@ -15,7 +15,7 @@ const triggerState =
   STATE_TYPE.__triggerConcurrentForce__ |
   STATE_TYPE.__retrigger__;
 
-export const processFunction = (fiber: MyReactFiberNode) => {
+export function processFunction(fiber: MyReactFiberNode) {
   currentHookTreeNode.current = fiber.hookList?.head;
 
   currentHookNodeIndex.current = 0;
@@ -96,4 +96,4 @@ export const processFunction = (fiber: MyReactFiberNode) => {
   currentHookTreeNode.current = null;
 
   return children;
-};
+}

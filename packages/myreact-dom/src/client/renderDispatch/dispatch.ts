@@ -16,7 +16,7 @@ import { nextWorkPortal } from "@my-react-dom-client/tools";
 import type { ClientDomDispatch } from "./instance";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-export const clientDispatchFiber = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) => {
+export function clientDispatchFiber(renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.type, NODE_TYPE.__root__)) {
     nextWorkRoot(renderDispatch, fiber);
   } else if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
@@ -36,4 +36,4 @@ export const clientDispatchFiber = (renderDispatch: ClientDomDispatch, fiber: My
   } else {
     nextWorkNormal(renderDispatch, fiber);
   }
-};
+}

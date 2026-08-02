@@ -18,7 +18,7 @@ export type HMR = {
   getCurrentDispatchFromFiber: typeof getCurrentDispatchFromFiber;
 };
 
-export const initHMR = (env: Record<string, any>) => {
+export function initHMR(env: Record<string, any>) {
   if (__DEV__) {
     if (env["hmr"] || env["setRefreshHandler"] || env["currentComponentFiber"] || env["getCurrentFibersFromType"] || env["getCurrentDispatchFromType"]) {
       console.error(`[@my-react/react] current HMR environment is invalid`);
@@ -36,4 +36,4 @@ export const initHMR = (env: Record<string, any>) => {
       console.error(`[@my-react/react] init HMR for current environment failed, ${(e as Error).message}`);
     }
   }
-};
+}

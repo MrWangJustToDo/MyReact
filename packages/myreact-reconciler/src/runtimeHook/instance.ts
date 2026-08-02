@@ -11,7 +11,9 @@ const { MyReactInternalInstance, currentScheduler } = __my_react_internal__;
 
 const { enableSyncFlush } = __my_react_shared__;
 
-const defaultPayLoad = (a: any) => a;
+function defaultPayLoad(a: any) {
+  return a;
+}
 
 export class MyReactHookNode extends MyReactInternalInstance implements RenderHook {
   type: HOOK_TYPE;
@@ -66,7 +68,7 @@ export type HookInstanceField = InstanceField & {
   dispatch: (action: Action) => void;
 };
 
-export const initHookInstance = (hookNode: MyReactHookNode) => {
+export function initHookInstance(hookNode: MyReactHookNode) {
   const field = getInstanceFieldByInstance(hookNode);
 
   if (!field) throw new Error("[@my-react/react] hook instance not found, look like a bug for @my-react");
@@ -76,4 +78,4 @@ export const initHookInstance = (hookNode: MyReactHookNode) => {
   typedField.dispatch = function dispatchAction(action: Action) {
     hookNode._update({ payLoad: action, isForce: false, isSync: enableSyncFlush.current });
   };
-};
+}

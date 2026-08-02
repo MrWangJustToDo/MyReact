@@ -4,7 +4,7 @@ import { NODE_TYPE } from "../share";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-export const defaultResolveScope = (fiber: MyReactFiberNode) => {
+export function defaultResolveScope(fiber: MyReactFiberNode) {
   let parent = fiber.parent;
 
   while (parent) {
@@ -15,4 +15,4 @@ export const defaultResolveScope = (fiber: MyReactFiberNode) => {
   }
 
   return null;
-};
+}

@@ -4,9 +4,7 @@
 // is one-shot; post-seal MT ops are dropped).
 var getExports = (m) => m.exports || m.__proto__.exports;
 
-const isMainThread =
-  (typeof __MAIN_THREAD__ !== "undefined" && __MAIN_THREAD__) ||
-  (typeof globalThis !== "undefined" && globalThis.__MAIN_THREAD_RUNTIME__);
+const isMainThread = (typeof __MAIN_THREAD__ !== "undefined" && __MAIN_THREAD__) || (typeof globalThis !== "undefined" && globalThis.__MAIN_THREAD_RUNTIME__);
 
 const isRefreshComponent = __myreact_refresh_utils__.isReactRefreshBoundary(getExports(module));
 

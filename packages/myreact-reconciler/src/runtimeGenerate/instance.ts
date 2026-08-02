@@ -19,7 +19,7 @@ export type VisibleInstanceField = InstanceField & {
 // support private instance field
 const instanceMap = instanceToInitialFieldMap as Map<MyReactInternalInstance, InstanceField | VisibleInstanceField>;
 
-export const initInstance = (instance: MyReactInternalInstance) => {
+export function initInstance(instance: MyReactInternalInstance) {
   const exist = instanceMap.get(instance);
 
   if (exist) return exist;
@@ -34,9 +34,9 @@ export const initInstance = (instance: MyReactInternalInstance) => {
   instanceMap.set(instance, field);
 
   return field;
-};
+}
 
-export const initVisibleInstance = (instance: MyReactInternalInstance) => {
+export function initVisibleInstance(instance: MyReactInternalInstance) {
   const field = getInstanceFieldByInstance(instance);
 
   if (!field) throw new Error(`[@my-react/react] can not get field for instance, this is a bug for @my-react`);
@@ -44,9 +44,9 @@ export const initVisibleInstance = (instance: MyReactInternalInstance) => {
   const typedField = field as VisibleInstanceField;
 
   typedField.isHidden = false;
-};
+}
 
-export const setOwnerForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode, instanceField?: InstanceField) => {
+export function setOwnerForInstance(instance: MyReactInternalInstance, fiber: MyReactFiberNode, instanceField?: InstanceField) {
   const field = instanceField || instanceMap.get(instance);
 
   instance._reactInternals = fiber;
@@ -55,9 +55,9 @@ export const setOwnerForInstance = (instance: MyReactInternalInstance, fiber: My
   if (!field) return;
 
   field._owner = fiber;
-};
+}
 
-export const setContextForInstance = (instance: MyReactInternalInstance, fiber: MyReactFiberNode | null, instanceField?: InstanceField) => {
+export function setContextForInstance(instance: MyReactInternalInstance, fiber: MyReactFiberNode | null, instanceField?: InstanceField) {
   const field = instanceField || instanceMap.get(instance);
 
   // unmount instance
@@ -68,9 +68,9 @@ export const setContextForInstance = (instance: MyReactInternalInstance, fiber: 
   field._context = fiber;
 
   field._context?._addDependence(instance);
-};
+}
 
-export const setSubscribeForInstance = (instance: MyReactInternalInstance, fiber?: MyReactFiberNode | null, instanceField?: InstanceField) => {
+export function setSubscribeForInstance(instance: MyReactInternalInstance, fiber?: MyReactFiberNode | null, instanceField?: InstanceField) {
   const field = instanceField || instanceMap.get(instance);
 
   // unmount instance
@@ -85,18 +85,18 @@ export const setSubscribeForInstance = (instance: MyReactInternalInstance, fiber
 
     fiber._addDependence(instance);
   }
-};
+}
 
-export const setEffectForInstance = (instance: MyReactInternalInstance, effect: Effect_TYPE, instanceField?: InstanceField) => {
+export function setEffectForInstance(instance: MyReactInternalInstance, effect: Effect_TYPE, instanceField?: InstanceField) {
   const field = instanceField || instanceMap.get(instance);
 
   // unmount instance
   if (!field) return;
 
   field.effect = effect;
-};
+}
 
-export const unmountInstance = (instance: MyReactInternalInstance | null) => {
+export function unmountInstance(instance: MyReactInternalInstance | null) {
   if (!instance || !instance.isMyReactInstance) return;
 
   const field = instanceMap.get(instance);
@@ -116,17 +116,17 @@ export const unmountInstance = (instance: MyReactInternalInstance | null) => {
   });
 
   instanceMap.delete(instance);
-};
+}
 
-export const getInstanceFieldByInstance = (instance: MyReactInternalInstance) => {
+export function getInstanceFieldByInstance(instance: MyReactInternalInstance) {
   const field = instanceMap.get(instance);
 
   if (!field) throw new Error("[@my-react/react] instance not found, look like a bug for @my-react");
 
   return field;
-};
+}
 
-export const getInstanceOwnerFiber = (instance: MyReactInternalInstance | MyReactFiberNode): MyReactFiberNode | null | undefined => {
+export function getInstanceOwnerFiber(instance: MyReactInternalInstance | MyReactFiberNode): MyReactFiberNode | null | undefined {
   const typedInstance = instance as MyReactInternalInstance;
   if (typedInstance.isMyReactInstance) {
     const field = instanceMap.get(typedInstance);
@@ -138,19 +138,19 @@ export const getInstanceOwnerFiber = (instance: MyReactInternalInstance | MyReac
     }
     throw new Error("instance is not a MyReactInternalInstance or MyReactFiberNode");
   }
-};
+}
 
-export const getInstanceContextFiber = (instance: MyReactInternalInstance) => {
+export function getInstanceContextFiber(instance: MyReactInternalInstance) {
   const field = instanceMap.get(instance);
 
   return field?._context;
-};
+}
 
-export const getInstanceEffectState = (instance: MyReactInternalInstance) => {
+export function getInstanceEffectState(instance: MyReactInternalInstance) {
   const field = instanceMap.get(instance);
 
   return field?.effect;
-};
+}
 
 if (__DEV__) {
   Object.defineProperty(MyReactInternalInstanceClass.prototype, "_debugField", {

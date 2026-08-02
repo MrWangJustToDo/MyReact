@@ -7,7 +7,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MyReactElementNode } from "@my-react/react/type";
 
 // TODO use Symbol to avoid conflict
-export const defaultReadPromise = (_promise: PromiseWithState<unknown>) => {
+export function defaultReadPromise(_promise: PromiseWithState<unknown>) {
   if (_promise.status === "fulfilled") {
     return _promise._value;
   } else if (_promise.status === "rejected") {
@@ -15,9 +15,9 @@ export const defaultReadPromise = (_promise: PromiseWithState<unknown>) => {
   } else {
     throw _promise;
   }
-};
+}
 
-export const defaultResolveSuspenseValue = (fiber: MyReactFiberNode): MyReactElementNode => {
+export function defaultResolveSuspenseValue(fiber: MyReactFiberNode): MyReactElementNode {
   let parent = fiber.parent;
 
   while (parent) {
@@ -28,9 +28,9 @@ export const defaultResolveSuspenseValue = (fiber: MyReactFiberNode): MyReactEle
   }
 
   return null;
-};
+}
 
-export const defaultResolveSuspenseFiber = (fiber: MyReactFiberNode): MyReactFiberNode | null => {
+export function defaultResolveSuspenseFiber(fiber: MyReactFiberNode): MyReactFiberNode | null {
   let parent = fiber.parent;
 
   while (parent) {
@@ -41,13 +41,13 @@ export const defaultResolveSuspenseFiber = (fiber: MyReactFiberNode): MyReactFib
   }
 
   return null;
-};
+}
 
-export const defaultResolveAliveSuspenseFiber = (fiber?: MyReactFiberNode | null): MyReactFiberNode | null | undefined => {
+export function defaultResolveAliveSuspenseFiber(fiber?: MyReactFiberNode | null): MyReactFiberNode | null | undefined {
   while (fiber) {
     if (include(fiber.type, NODE_TYPE.__suspense__) && exclude(fiber.state, STATE_TYPE.__unmount__)) {
       return fiber;
     }
     fiber = fiber.parent;
   }
-};
+}

@@ -10,7 +10,7 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 
 const { enableDebugFiled } = __my_react_shared__;
 
-export const clearFiberNode = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function clearFiberNode(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   hookListUnmount(renderDispatch, fiber);
 
   processClassComponentUnmount(renderDispatch, fiber);
@@ -30,4 +30,4 @@ export const clearFiberNode = (renderDispatch: CustomRenderDispatch, fiber: MyRe
 
     typedFiber._debugHookTypes = [];
   }
-};
+}

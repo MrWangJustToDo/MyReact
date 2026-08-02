@@ -11,7 +11,7 @@ import type { createContext, MyReactFunctionComponent } from "@my-react/react/ty
 
 const { currentComponentFiber, MyReactInternalInstance } = __my_react_internal__;
 
-export const processProvider = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function processProvider(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (renderDispatch.isAppMounted) {
     const prevProps = fiber.memoizedProps.value;
 
@@ -21,9 +21,9 @@ export const processProvider = (renderDispatch: CustomRenderDispatch, fiber: MyR
       prepareUpdateAllDependence(renderDispatch, fiber, prevProps, nextProps);
     }
   }
-};
+}
 
-export const processConsumer = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function processConsumer(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Consumer"];
 
   const isUpdate = !!fiber.instance;
@@ -68,4 +68,4 @@ export const processConsumer = (renderDispatch: CustomRenderDispatch, fiber: MyR
   currentComponentFiber.current = null;
 
   return children;
-};
+}

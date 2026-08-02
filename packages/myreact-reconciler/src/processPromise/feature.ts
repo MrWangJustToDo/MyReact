@@ -23,7 +23,7 @@ export type PromiseWithState<T> = Promise<T> & {
 const { enableSuspenseRoot, enableDebugFiled } = __my_react_shared__;
 const { currentScheduler } = __my_react_internal__;
 
-export const loadPromise = async (renderDispatch: CustomRenderDispatch, promise: PromiseWithState<unknown>) => {
+export async function loadPromise(renderDispatch: CustomRenderDispatch, promise: PromiseWithState<unknown>) {
   if (promise.status === "fulfilled" || promise.status === "rejected") return;
 
   try {
@@ -43,9 +43,9 @@ export const loadPromise = async (renderDispatch: CustomRenderDispatch, promise:
       promise._debugResolveTime = promise._debugResolveTime || Date.now();
     }
   }
-};
+}
 
-export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
+export function processPromise(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) {
   defaultDeleteCurrentEffect(renderDispatch, fiber);
 
   if (promise.status === "rejected") {
@@ -121,9 +121,9 @@ export const processPromise = (renderDispatch: CustomRenderDispatch, fiber: MyRe
 
     return null;
   }
-};
+}
 
-export const processSuspensePromise = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) => {
+export function processSuspensePromise(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, promise: PromiseWithState<unknown>) {
   defaultDeleteCurrentEffect(renderDispatch, fiber);
 
   fiber.state = STATE_TYPE.__suspense__;
@@ -178,4 +178,4 @@ export const processSuspensePromise = (renderDispatch: CustomRenderDispatch, fib
     .catch((e) => renderScheduler.dispatchError({ fiber, error: e }));
 
   return null;
-};
+}

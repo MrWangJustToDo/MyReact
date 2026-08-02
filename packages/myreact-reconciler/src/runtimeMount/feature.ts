@@ -13,7 +13,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 const { enableSuspenseRoot } = __my_react_shared__;
 const { currentScheduler } = __my_react_internal__;
 
-export const mountLoopAllFromScheduler = (renderDispatch: CustomRenderDispatch) => {
+export function mountLoopAllFromScheduler(renderDispatch: CustomRenderDispatch) {
   while (renderDispatch.runtimeFiber.nextWorkingFiber) {
     renderDispatch.runtimeFiber.retriggerFiber = null;
 
@@ -27,17 +27,17 @@ export const mountLoopAllFromScheduler = (renderDispatch: CustomRenderDispatch) 
 
     renderDispatch.runtimeFiber.retriggerFiber = null;
   }
-};
+}
 
-export const mountLoopAll = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function mountLoopAll(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   renderDispatch.runtimeFiber.scheduledFiber = fiber;
 
   renderDispatch.runtimeFiber.nextWorkingFiber = fiber;
 
   mountLoopAllFromScheduler(renderDispatch);
-};
+}
 
-export const processAsyncLoadListOnAsyncMount = async (renderDispatch: CustomRenderDispatch) => {
+export async function processAsyncLoadListOnAsyncMount(renderDispatch: CustomRenderDispatch) {
   while (renderDispatch.pendingSuspenseFiberArray.length) {
     const node = renderDispatch.pendingSuspenseFiberArray.uniShift();
 
@@ -103,9 +103,9 @@ export const processAsyncLoadListOnAsyncMount = async (renderDispatch: CustomRen
 
     processAsyncLoadListOnAsyncMount(renderDispatch);
   }
-};
+}
 
-export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDispatch) => {
+export function processAsyncLoadListOnSyncMount(renderDispatch: CustomRenderDispatch) {
   while (renderDispatch.pendingSuspenseFiberArray?.length) {
     const allPendingSuspenseFiberArray = renderDispatch.pendingSuspenseFiberArray.getAll();
 
@@ -248,4 +248,4 @@ export const processAsyncLoadListOnSyncMount = (renderDispatch: CustomRenderDisp
       );
     }
   }
-};
+}

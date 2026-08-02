@@ -7,7 +7,7 @@ import { checkRoot, initServer, startRender, wrapperFunc } from "@my-react-dom-s
 
 import type { LikeJSX } from "@my-react/react/type";
 
-export const renderToStaticMarkup = wrapperFunc((element: LikeJSX) => {
+function renderToStaticMarkupImpl(element: LikeJSX) {
   if (isValidElement(element)) {
     initServer();
 
@@ -29,4 +29,6 @@ export const renderToStaticMarkup = wrapperFunc((element: LikeJSX) => {
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToStaticMarkup' can only render a '@my-react' element`);
   }
-});
+}
+
+export const renderToStaticMarkup = wrapperFunc(renderToStaticMarkupImpl);

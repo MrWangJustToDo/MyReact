@@ -10,25 +10,25 @@ export let syncFlush = false;
 /**
  * @deprecated
  */
-export const beforeSyncFlush = () => {
+export function beforeSyncFlush() {
   syncFlush = true;
-};
+}
 
 /**
  * @deprecated
  */
-export const afterSyncFlush = () => {
+export function afterSyncFlush() {
   syncFlush = false;
-};
+}
 
 const stack = [enableSyncFlush.current];
 
-export const beforeSyncUpdate = () => {
+export function beforeSyncUpdate() {
   stack.push(enableSyncFlush.current);
 
   enableSyncFlush.current = true;
-};
+}
 
-export const afterSyncUpdate = () => {
+export function afterSyncUpdate() {
   enableSyncFlush.current = stack.pop();
-};
+}

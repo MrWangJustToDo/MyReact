@@ -3,7 +3,7 @@ import { enableDebugUpdateQueue, enableFiberForLog, enableValidMyReactElement, i
 
 const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
 
-export const initServer = () => {
+export function initServer() {
   enableFiberForLog.current = false;
 
   enableValidMyReactElement.current = false;
@@ -13,9 +13,9 @@ export const initServer = () => {
   enableScopeTreeLog.current = false;
 
   initScheduler();
-};
+}
 
-export const initClient = () => {
+export function initClient() {
   enableFiberForLog.current = true;
 
   enableValidMyReactElement.current = false;
@@ -27,4 +27,4 @@ export const initClient = () => {
   enableScopeTreeLog.current = true;
 
   initScheduler();
-};
+}

@@ -8,7 +8,7 @@ import type { MyReactFiberNode, MyReactFiberContainer, CustomRenderDispatch } fr
 /**
  * @internal
  */
-export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReactFiberNode, parentItemWithDom: MyReactFiberNode | CustomRenderDispatch) => {
+export function insertBefore(fiber: MyReactFiberNode, beforeFiberWithDom: MyReactFiberNode, parentItemWithDom: MyReactFiberNode | CustomRenderDispatch) {
   if (!fiber) throw new Error("[@my-react/react-dom] position error, look like a bug for @my-react");
 
   fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
@@ -58,4 +58,4 @@ export const insertBefore = (fiber: MyReactFiberNode, beforeFiberWithDom: MyReac
 
     child = child.sibling;
   }
-};
+}

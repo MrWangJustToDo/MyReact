@@ -49,10 +49,10 @@ export const Dispatcher = createRef({
   proxy: null as typeof Dispatch | null,
 });
 
-export const resolveDispatcher = () => {
+export function resolveDispatcher() {
   if (Dispatcher.current?.proxy) {
     return Dispatcher.current.proxy;
   } else {
     return Dispatcher.current;
   }
-};
+}

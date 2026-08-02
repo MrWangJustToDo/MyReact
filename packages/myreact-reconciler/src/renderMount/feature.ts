@@ -22,7 +22,7 @@ function finishMountSync(renderDispatch: CustomRenderDispatch, fiber: MyReactFib
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 }
 
-export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function mountSync(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   __DEV__ &&
     safeCall(function safeCallBeforeDispatchRender() {
       renderDispatch.callOnBeforeDispatchRender(renderDispatch, fiber);
@@ -46,7 +46,7 @@ export const mountSync = (renderDispatch: CustomRenderDispatch, fiber: MyReactFi
     });
 
   globalLoop.current = false;
-};
+}
 
 function finishMountAsync(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   __DEV__ && enableScopeTreeLog.current && setLogScope();
@@ -60,7 +60,7 @@ function finishMountAsync(renderDispatch: CustomRenderDispatch, fiber: MyReactFi
   __DEV__ && enableScopeTreeLog.current && resetLogScope();
 }
 
-export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export async function mountAsync(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   __DEV__ &&
     safeCall(function safeCallBeforeDispatchRender() {
       renderDispatch.callOnBeforeDispatchRender(renderDispatch, fiber);
@@ -84,4 +84,4 @@ export const mountAsync = async (renderDispatch: CustomRenderDispatch, fiber: My
     });
 
   globalLoop.current = false;
-};
+}

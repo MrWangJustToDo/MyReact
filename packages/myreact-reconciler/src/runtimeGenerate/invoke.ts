@@ -21,7 +21,7 @@ const { currentComponentFiber, MyReactInternalInstance } = __my_react_internal__
 
 const { enablePerformanceLog, enableDebugFiled } = __my_react_shared__;
 
-export const nextWorkCommon = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) => {
+export function nextWorkCommon(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode) {
   if (__DEV__ && isPromise(children)) {
     console.error(`[@my-react/react] render function should not return a promise, please check your code`);
   }
@@ -36,9 +36,9 @@ export const nextWorkCommon = (renderDispatch: CustomRenderDispatch, fiber: MyRe
       transformChildrenFiber(renderDispatch, fiber, children);
     },
   });
-};
+}
 
-export const nextWorkNormal = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkNormal(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (
     "children" in fiber.pendingProps ||
     "children" in fiber.memoizedProps ||
@@ -49,9 +49,9 @@ export const nextWorkNormal = (renderDispatch: CustomRenderDispatch, fiber: MyRe
 
     nextWorkCommon(renderDispatch, fiber, children);
   }
-};
+}
 
-export const nextWorkClassComponent = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkClassComponent(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (!fiber.instance) {
     const children = processClassComponentMount(renderDispatch, fiber);
 
@@ -65,15 +65,15 @@ export const nextWorkClassComponent = (renderDispatch: CustomRenderDispatch, fib
 
     if (updated) nextWorkCommon(renderDispatch, fiber, children);
   }
-};
+}
 
-export const nextWorkFunctionComponent = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkFunctionComponent(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const children = processFunction(fiber);
 
   nextWorkCommon(renderDispatch, fiber, children);
-};
+}
 
-export const nextWorkComponent = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkComponent(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.type, NODE_TYPE.__function__)) {
     currentComponentFiber.current = fiber;
 
@@ -87,39 +87,39 @@ export const nextWorkComponent = (renderDispatch: CustomRenderDispatch, fiber: M
 
     currentComponentFiber.current = null;
   }
-};
+}
 
-export const nextWorkLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkLazy(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const children = processLazy(renderDispatch, fiber);
 
   nextWorkCommon(renderDispatch, fiber, children);
-};
+}
 
-export const nextWorkSuspense = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkSuspense(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const children = processSuspense(fiber);
 
   nextWorkCommon(renderDispatch, fiber, children);
-};
+}
 
-export const nextWorkProvider = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkProvider(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   processProvider(renderDispatch, fiber);
 
   nextWorkNormal(renderDispatch, fiber);
-};
+}
 
-export const nextWorkConsumer = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkConsumer(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const children = processConsumer(renderDispatch, fiber);
 
   nextWorkCommon(renderDispatch, fiber, children);
-};
+}
 
-export const nextWorkActivity = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkActivity(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const children = processActivity(fiber);
 
   nextWorkCommon(renderDispatch, fiber, children);
-};
+}
 
-export const nextWorkRoot = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkRoot(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const isUpdate = !!fiber.instance;
 
   fiber.instance = fiber.instance || new MyReactInternalInstance();
@@ -137,13 +137,13 @@ export const nextWorkRoot = (renderDispatch: CustomRenderDispatch, fiber: MyReac
   } else {
     nextWorkNormal(renderDispatch, fiber);
   }
-};
+}
 
-export const runtimeNextWork = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function runtimeNextWork(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   renderDispatch.dispatchFiber(fiber);
-};
+}
 
-export const runtimeNextWorkDev = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function runtimeNextWorkDev(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   safeCallWithCurrentFiber({
     fiber,
     action: function safeCallFiberRunListener() {
@@ -212,4 +212,4 @@ export const runtimeNextWorkDev = (renderDispatch: CustomRenderDispatch, fiber: 
       renderDispatch.callOnAfterFiberRun(fiber);
     },
   });
-};
+}

@@ -4,7 +4,7 @@ import { include } from "@my-react/react-shared";
 import { logOnce } from "./log";
 import { isProperty, isStyle } from "./tools";
 
-const checkValidSelectProps = (fiber: MyReactFiberNode) => {
+function checkValidSelectProps(fiber: MyReactFiberNode) {
   const valuePropNames = ["value", "defaultValue"];
   const props = fiber.pendingProps;
   const value = props[valuePropNames[0]];
@@ -37,9 +37,9 @@ const checkValidSelectProps = (fiber: MyReactFiberNode) => {
       );
     }
   }
-};
+}
 
-const checkValidInoutProps = (fiber: MyReactFiberNode) => {
+function checkValidInoutProps(fiber: MyReactFiberNode) {
   const props = fiber.pendingProps;
   const type = props.type;
   if (typeof type === "function" || typeof type === "symbol" || typeof type === "boolean") {
@@ -51,19 +51,19 @@ const checkValidInoutProps = (fiber: MyReactFiberNode) => {
   if (props.checked !== null && props.checked !== undefined && props.defaultChecked !== null && props.defaultChecked !== undefined) {
     logOnce(fiber, "error", "invalid input checked props", `invalid input props, input element can not contain both "checked" and "defaultChecked" props.`);
   }
-};
+}
 
-const checkValidTextareaProps = (fiber: MyReactFiberNode) => {
+function checkValidTextareaProps(fiber: MyReactFiberNode) {
   const props = fiber.pendingProps;
   if (props.value !== null && props.value !== undefined && props.defaultValue !== null && props.defaultValue !== undefined) {
     logOnce(fiber, "error", "invalid textarea value props", `invalid textarea props, textarea element can not contain both "value" and "defaultValue" props.`);
   }
-};
+}
 
 /**
  * @internal
  */
-export const validDomProps = (fiber: MyReactFiberNode) => {
+export function validDomProps(fiber: MyReactFiberNode) {
   if (include(fiber.type, NODE_TYPE.__plain__)) {
     const props = fiber.pendingProps;
 
@@ -103,4 +103,4 @@ export const validDomProps = (fiber: MyReactFiberNode) => {
       checkValidTextareaProps(fiber);
     }
   }
-};
+}

@@ -35,7 +35,7 @@ function finishUpdateSyncFromRoot(renderDispatch: CustomRenderDispatch) {
     });
 }
 
-export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
+export function updateSyncFromRoot(renderDispatch: CustomRenderDispatch) {
   globalLoop.current = true;
 
   const renderScheduler = currentScheduler.current;
@@ -55,7 +55,7 @@ export const updateSyncFromRoot = (renderDispatch: CustomRenderDispatch) => {
 
     scheduleNext(renderDispatch);
   });
-};
+}
 
 function finishUpdateConcurrentFromRoot(renderDispatch: CustomRenderDispatch) {
   const commitList = renderDispatch.pendingCommitFiberList;
@@ -121,7 +121,7 @@ function updateConcurrentNextFrame(renderDispatch: CustomRenderDispatch) {
   }
 }
 
-export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) => {
+export function updateConcurrentFromRoot(renderDispatch: CustomRenderDispatch) {
   globalLoop.current = true;
 
   const renderScheduler = currentScheduler.current;
@@ -155,4 +155,4 @@ export const updateConcurrentFromRoot = (renderDispatch: CustomRenderDispatch) =
       scheduleNext(renderDispatch);
     });
   }
-};
+}

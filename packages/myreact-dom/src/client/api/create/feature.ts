@@ -26,7 +26,7 @@ import type { ClientDomDispatch, MyReactFiberNodeClientDev } from "@my-react-dom
 /**
  * @internal
  */
-export const create = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, hydrate: boolean): boolean => {
+export function create(renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, hydrate: boolean): boolean {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const parentFiberWithNode = getValidParentFiberWithNode(renderDispatch, fiber);
 
@@ -100,4 +100,4 @@ export const create = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNod
     return re;
   }
   return hydrate;
-};
+}

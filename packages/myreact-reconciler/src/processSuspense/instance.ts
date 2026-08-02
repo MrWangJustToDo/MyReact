@@ -9,7 +9,7 @@ export type SuspenseInstanceField = VisibleInstanceField & {
   asyncLoadList: UniqueArray<ReturnType<typeof lazy> | PromiseWithState<any>>;
 };
 
-export const initSuspenseInstance = (instance: MyReactInternalInstance) => {
+export function initSuspenseInstance(instance: MyReactInternalInstance) {
   const field = getInstanceFieldByInstance(instance);
 
   if (!field) throw new Error(`[@my-react/react] can not get field for instance, this is a bug for @my-react`);
@@ -19,4 +19,4 @@ export const initSuspenseInstance = (instance: MyReactInternalInstance) => {
   typedField.isHidden = false;
 
   typedField.asyncLoadList = new UniqueArray<ReturnType<typeof lazy> | PromiseWithState<any>>();
-};
+}

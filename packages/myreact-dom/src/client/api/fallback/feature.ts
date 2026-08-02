@@ -1,7 +1,7 @@
 /**
  * @internal
  */
-export const fallback = (el?: ChildNode | null) => {
+export function fallback(el?: ChildNode | null) {
   if (el) {
     const sibling = el.nextSibling;
 
@@ -9,4 +9,4 @@ export const fallback = (el?: ChildNode | null) => {
 
     fallback(sibling);
   }
-};
+}

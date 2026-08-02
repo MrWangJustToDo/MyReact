@@ -7,7 +7,7 @@ import { MyReactFiberNode } from "./instance";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactElementNode } from "@my-react/react/type";
 
-export const createFiberNode = (
+export function createFiberNode(
   renderDispatch: CustomRenderDispatch,
   {
     parent,
@@ -18,7 +18,7 @@ export const createFiberNode = (
     type?: "append" | "position";
   },
   element: MyReactElementNode
-) => {
+) {
   const newFiberNode = new MyReactFiberNode(element);
 
   fiberToDispatchMap.set(newFiberNode, renderDispatch);
@@ -58,4 +58,4 @@ export const createFiberNode = (
   }
 
   return newFiberNode;
-};
+}

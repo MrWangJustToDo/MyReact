@@ -42,7 +42,7 @@ const initialRef: CustomRenderDispatch["runtimeRef"] = {
   typeForNativeNode: NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__portal__,
 };
 
-export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootElement: MyReactElementNode, config: any, flag: number) => {
+export function createDispatch(rootNode: any, rootFiber: MyReactFiberRoot, rootElement: MyReactElementNode, config: any, flag: number) {
   class ReconcilerDispatch extends CustomRenderDispatch {
     enableUpdate = true;
 
@@ -202,6 +202,6 @@ export const createDispatch = (rootNode: any, rootFiber: MyReactFiberRoot, rootE
   dispatch.renderMode = flag !== 0 ? "concurrent" : "legacy";
 
   return dispatch;
-};
+}
 
 export type ReconcilerDispatch = ReturnType<typeof createDispatch>;

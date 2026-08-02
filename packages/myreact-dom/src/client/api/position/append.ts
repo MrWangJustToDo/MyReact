@@ -8,7 +8,7 @@ import type { MyReactFiberNode, MyReactFiberContainer, CustomRenderDispatch } fr
 /**
  * @internal
  */
-export const append = (fiber: MyReactFiberNode, parentItemWithDom: MyReactFiberNode | CustomRenderDispatch) => {
+export function append(fiber: MyReactFiberNode, parentItemWithDom: MyReactFiberNode | CustomRenderDispatch) {
   if (!fiber) throw new Error("[@my-react/react-dom] position error, look like a bug for @my-react");
 
   fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
@@ -46,4 +46,4 @@ export const append = (fiber: MyReactFiberNode, parentItemWithDom: MyReactFiberN
 
     child = child.sibling;
   }
-};
+}

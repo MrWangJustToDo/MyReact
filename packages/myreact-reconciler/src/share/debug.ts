@@ -31,7 +31,7 @@ const warnMap = {};
 
 const errorMap = {};
 
-const fiberWarn = (fiber: MyReactFiberNode, ...args) => {
+function fiberWarn(fiber: MyReactFiberNode, ...args) {
   const renderDispatch = getCurrentDispatchFromFiber(fiber);
 
   safeCallWithCurrentFiber({
@@ -40,9 +40,9 @@ const fiberWarn = (fiber: MyReactFiberNode, ...args) => {
       renderDispatch.callOnFiberWarn(fiber, ...args);
     },
   });
-};
+}
 
-const fiberError = (fiber: MyReactFiberNode, ...args) => {
+function fiberError(fiber: MyReactFiberNode, ...args) {
   const renderDispatch = getCurrentDispatchFromFiber(fiber);
 
   safeCallWithCurrentFiber({
@@ -51,7 +51,7 @@ const fiberError = (fiber: MyReactFiberNode, ...args) => {
       renderDispatch.callOnFiberError(fiber, ...args);
     },
   });
-};
+}
 
 // TODO! improve log
 
@@ -63,7 +63,7 @@ let warnFiber: MyReactFiberNode | null = null;
 
 let errorFiber: MyReactFiberNode | null = null;
 
-export const devWarn = (...args) => {
+export function devWarn(...args) {
   const renderScheduler = currentScheduler.current;
 
   const startWithPlain = typeof args[0] === "string";
@@ -87,18 +87,18 @@ export const devWarn = (...args) => {
       originalWarn.call(console, "", ...args, treeLog);
     }
   }
-};
+}
 
-export const devWarnWithFiber = (fiber: MyReactFiberNode, ...args) => {
+export function devWarnWithFiber(fiber: MyReactFiberNode, ...args) {
   warnFiber = fiber;
 
   devWarn(...args);
 
   // TODO
   warnFiber = null;
-};
+}
 
-export const devError = (...args) => {
+export function devError(...args) {
   const renderScheduler = currentScheduler.current;
 
   const startWithPlain = typeof args[0] === "string";
@@ -122,42 +122,42 @@ export const devError = (...args) => {
       originalError.call(console, "", ...args, treeLog);
     }
   }
-};
+}
 
-export const devErrorWithFiber = (fiber: MyReactFiberNode, ...args) => {
+export function devErrorWithFiber(fiber: MyReactFiberNode, ...args) {
   errorFiber = fiber;
 
   devError(...args);
 
   errorFiber = null;
-};
+}
 
-export const setLogScope = () => {
+export function setLogScope() {
   if (__DEV__) {
     console.warn = devWarn;
 
     console.error = devError;
   }
-};
+}
 
-export const resetLogScope = () => {
+export function resetLogScope() {
   if (__DEV__) {
     console.warn = originalWarn;
 
     console.error = originalError;
   }
-};
+}
 
-export const debugWithNode = (fiber: MyReactFiberNode) => {
+export function debugWithNode(fiber: MyReactFiberNode) {
   const mayFiberContainer = fiber as MyReactFiberContainer;
   if (fiber.nativeNode || mayFiberContainer.containerNode) {
     const node = (fiber.nativeNode || mayFiberContainer.containerNode) as any;
     node.__fiber__ = fiber;
     node.__props__ = fiber.pendingProps;
   }
-};
+}
 
-const getTrackDevLog = (fiber: MyReactFiberNode) => {
+function getTrackDevLog(fiber: MyReactFiberNode) {
   if (__DEV__) {
     const typedFiber = fiber as MyReactFiberNodeDev;
     const element = typedFiber._debugElement;
@@ -183,16 +183,16 @@ const getTrackDevLog = (fiber: MyReactFiberNode) => {
   } else {
     return "";
   }
-};
+}
 
-const shouldIncludeLog = (fiber: MyReactFiberNode) => {
+function shouldIncludeLog(fiber: MyReactFiberNode) {
   if (include(fiber.type, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
     return true;
   }
   return false;
-};
+}
 
-const getFiberTagName = (fiber: MyReactFiberNode) => {
+function getFiberTagName(fiber: MyReactFiberNode) {
   const tag: string[] = [];
   if (fiber.type & NODE_TYPE.__memo__) {
     tag.push("memo");
@@ -207,9 +207,9 @@ const getFiberTagName = (fiber: MyReactFiberNode) => {
     tag.push("auto-wrap");
   }
   return tag.join("-");
-};
+}
 
-export const getPlainFiberName = (fiber: MyReactFiberNode) => {
+export function getPlainFiberName(fiber: MyReactFiberNode) {
   const typedFiber = fiber as MyReactFiberNodeDev;
   if (fiber.type & NODE_TYPE.__provider__) {
     const typedElementType = fiber.elementType as ReturnType<typeof createContext>["Provider"];
@@ -265,20 +265,24 @@ export const getPlainFiberName = (fiber: MyReactFiberNode) => {
     return `${name}`;
   }
   return `unknown`;
-};
+}
 
 // TODO
-export const getElementName = (fiber: MyReactFiberNode) => {
+export function getElementName(fiber: MyReactFiberNode) {
   const name = getPlainFiberName(fiber);
   const tag = getFiberTagName(fiber);
   return `<${name}${tag ? ` - (${tag})` : ""} />`;
-};
+}
 
-const getFiberNodeName = (fiber: MyReactFiberNode) => `${getElementName(fiber)} ${getTrackDevLog(fiber)}`;
+function getFiberNodeName(fiber: MyReactFiberNode) {
+  return `${getElementName(fiber)} ${getTrackDevLog(fiber)}`;
+}
 
-const getFiberNodeNameWithFiber = (fiber: MyReactFiberNode) => `%c${getElementName(fiber)}%c (%o)`;
+function getFiberNodeNameWithFiber(fiber: MyReactFiberNode) {
+  return `%c${getElementName(fiber)}%c (%o)`;
+}
 
-export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
+export function getFiberTree(fiber?: MyReactFiberNode | null) {
   if (fiber) {
     const preString = "".padEnd(4) + "at".padEnd(3);
     let res = "";
@@ -299,9 +303,9 @@ export const getFiberTree = (fiber?: MyReactFiberNode | null) => {
     return `\n${res}`;
   }
   return "";
-};
+}
 
-export const getStackTree = (fiber: MyReactFiberNode) => {
+export function getStackTree(fiber: MyReactFiberNode) {
   const preString = "".padEnd(4) + "at".padEnd(3);
   let res = "";
   let temp = fiber;
@@ -310,9 +314,9 @@ export const getStackTree = (fiber: MyReactFiberNode) => {
     temp = temp.parent;
   }
   return `\n${res}`;
-};
+}
 
-export const getFiberTreeWithFiber = (fiber: MyReactFiberNode) => {
+export function getFiberTreeWithFiber(fiber: MyReactFiberNode) {
   const preString = "at".padEnd(3);
   let res = "";
   const arr = [];
@@ -329,12 +333,12 @@ export const getFiberTreeWithFiber = (fiber: MyReactFiberNode) => {
     temp = temp.parent;
   }
   return { str: `${res}`, arr };
-};
+}
 
-export const getHookTree = (
+export function getHookTree(
   treeHookNode: ListTreeNode<MyReactHookNode>,
   errorType: { lastRender: MyReactHookNode["type"]; nextRender: MyReactHookNode["type"] }
-) => {
+) {
   const pre = "".toString().padEnd(3);
   const message = "[@my-react/react] hook for current component has a different state on current render and previous render, this is not a valid usage.";
   const re = "\n" + pre + "Last render:".padEnd(28) + "Next render:".padEnd(10) + "\n" + pre + "-".repeat(44) + "\n";
@@ -346,9 +350,9 @@ export const getHookTree = (
   }
   stack += pre + "^".repeat(44);
   return message + re + stack;
-};
+}
 
-export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: string[]) => {
+export function onceWarnWithKeyAndFiber(fiber: MyReactFiberNode, key: string, ...args: string[]) {
   const renderScheduler = currentScheduler.current;
 
   const tree = renderScheduler.getFiberTree(fiber);
@@ -362,9 +366,9 @@ export const onceWarnWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ..
   devWarn(...args);
 
   warnFiber = null;
-};
+}
 
-export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, ...args: string[]) => {
+export function onceErrorWithKeyAndFiber(fiber: MyReactFiberNode, key: string, ...args: string[]) {
   const renderScheduler = currentScheduler.current;
 
   const tree = renderScheduler.getFiberTree(fiber);
@@ -378,4 +382,4 @@ export const onceErrorWithKeyAndFiber = (fiber: MyReactFiberNode, key: string, .
   devError(...args);
 
   errorFiber = null;
-};
+}

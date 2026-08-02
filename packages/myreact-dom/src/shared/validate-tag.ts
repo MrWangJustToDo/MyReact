@@ -7,7 +7,7 @@ import { logOnce } from "./log";
 /**
  * @internal
  */
-export const validDomTag = (fiber: MyReactFiberNode) => {
+export function validDomTag(fiber: MyReactFiberNode) {
   if (include(fiber.type, NODE_TYPE.__plain__)) {
     const tagName = fiber.elementType as string;
 
@@ -18,4 +18,4 @@ export const validDomTag = (fiber: MyReactFiberNode) => {
       }
     }
   }
-};
+}

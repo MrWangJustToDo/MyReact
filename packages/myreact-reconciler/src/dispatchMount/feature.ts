@@ -12,7 +12,7 @@ const { currentScheduler } = __my_react_internal__;
 const { enableScopeTreeLog } = __my_react_shared__;
 
 // TODO improve
-export const defaultDispatchMountLatest = (_dispatch: CustomRenderDispatch, _fiber: MyReactFiberNode) => {
+export function defaultDispatchMountLatest(_dispatch: CustomRenderDispatch, _fiber: MyReactFiberNode) {
   beforeSyncUpdate();
 
   const _list = generateFiberToListWithAction(_fiber, function invokeUnmountPendingList(_fiber) {
@@ -84,6 +84,6 @@ export const defaultDispatchMountLatest = (_dispatch: CustomRenderDispatch, _fib
       flushEffectCallback(_dispatch);
     });
   }
-};
+}
 
 export const defaultDispatchMount = defaultDispatchMountLatest;

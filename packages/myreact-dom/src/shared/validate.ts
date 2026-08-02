@@ -6,7 +6,7 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 /**
  * @internal
  */
-export const checkRoot = (fiber: MyReactFiberNode) => {
+export function checkRoot(fiber: MyReactFiberNode) {
   if (include(fiber.type, NODE_TYPE.__class__)) return;
 
   if (include(fiber.type, NODE_TYPE.__function__)) return;
@@ -16,4 +16,4 @@ export const checkRoot = (fiber: MyReactFiberNode) => {
   return;
 
   // throw new Error(`[@my-react/react-dom] the root element should be a dynamic node such as 'function' or 'class'`)
-};
+}

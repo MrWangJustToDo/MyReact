@@ -8,7 +8,7 @@ const prefixes = ["Webkit", "Moz", "ms", "O"];
 /**
  * @internal
  */
-export const setStyle = (fiber: MyReactFiberNode, el: HTMLElement, name: string, value?: string | boolean | number | null) => {
+export function setStyle(fiber: MyReactFiberNode, el: HTMLElement, name: string, value?: string | boolean | number | null) {
   const style = el.style;
   if (name.startsWith("-")) {
     style.setProperty(name, String(value));
@@ -27,9 +27,9 @@ export const setStyle = (fiber: MyReactFiberNode, el: HTMLElement, name: string,
       style[name] = String(value);
     }
   }
-};
+}
 
-export const hydrateStyle = (fiber: MyReactFiberNode, el: HTMLElement, name: string, value?: string | boolean | number | null) => {
+export function hydrateStyle(fiber: MyReactFiberNode, el: HTMLElement, name: string, value?: string | boolean | number | null) {
   const style = el.style;
 
   const ignoreWarn = fiber.pendingProps["suppressHydrationWarning"] || !enableHydrateWarn.current;
@@ -93,4 +93,4 @@ export const hydrateStyle = (fiber: MyReactFiberNode, el: HTMLElement, name: str
       }
     }
   }
-};
+}

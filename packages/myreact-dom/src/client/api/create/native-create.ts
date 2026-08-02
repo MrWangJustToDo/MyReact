@@ -8,13 +8,16 @@ import type { DomElement } from "@my-react-dom-shared";
 
 const SVG = "http://www.w3.org/2000/svg";
 
-const getOwnerDocumentFromRootContainer = (rootContainerElement: Element): Document =>
-  (rootContainerElement?.nodeType === Node.DOCUMENT_NODE ? (rootContainerElement as unknown as Document) : rootContainerElement?.ownerDocument) || document;
+function getOwnerDocumentFromRootContainer(rootContainerElement: Element): Document {
+  return (
+    (rootContainerElement?.nodeType === Node.DOCUMENT_NODE ? (rootContainerElement as unknown as Document) : rootContainerElement?.ownerDocument) || document
+  );
+}
 
 /**
  * @internal
  */
-export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean, parentItemWithDom: MyReactFiberNode | CustomRenderDispatch) => {
+export function nativeCreate(fiber: MyReactFiberNode, isSVG: boolean, parentItemWithDom: MyReactFiberNode | CustomRenderDispatch) {
   const maybeContainer = parentItemWithDom as MyReactFiberContainer;
 
   const maybeDispatch = parentItemWithDom as CustomRenderDispatch;
@@ -54,4 +57,4 @@ export const nativeCreate = (fiber: MyReactFiberNode, isSVG: boolean, parentItem
       fiber.nativeNode = ownerDoc.createComment(commentE);
     }
   }
-};
+}

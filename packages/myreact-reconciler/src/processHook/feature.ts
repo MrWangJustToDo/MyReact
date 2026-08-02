@@ -13,7 +13,7 @@ import type { RenderHookParams } from "@my-react/react/type";
 
 const { currentComponentFiber, currentHookNodeIndex } = __my_react_internal__;
 
-const resolveHookValue = (hookNode: MyReactHookNode, field: InstanceField) => {
+function resolveHookValue(hookNode: MyReactHookNode, field: InstanceField) {
   if (hookNode) {
     switch (hookNode.type) {
       case HOOK_TYPE.useState:
@@ -35,9 +35,9 @@ const resolveHookValue = (hookNode: MyReactHookNode, field: InstanceField) => {
         return [hookNode.result.getValue, hookNode.result.setValue];
     }
   }
-};
+}
 
-export const processHook = (renderDispatch: CustomRenderDispatch, { type, reducer, value, deps }: RenderHookParams) => {
+export function processHook(renderDispatch: CustomRenderDispatch, { type, reducer, value, deps }: RenderHookParams) {
   const fiber = currentComponentFiber.current as MyReactFiberNode;
 
   if (!fiber) throw new Error("[@my-react/react] can not use hook outside of component");
@@ -71,4 +71,4 @@ export const processHook = (renderDispatch: CustomRenderDispatch, { type, reduce
   effectHookNode(renderDispatch, fiber, currentHook, field);
 
   return resolveHookValue(currentHook, field);
-};
+}

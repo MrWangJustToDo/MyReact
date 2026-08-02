@@ -39,9 +39,9 @@ export const isSingleTag = makeMap("area,base,br,col,embed,hr,img,input,link,met
 /**
  * @internal
  */
-export const isNativeTag = (type: string) => {
+export function isNativeTag(type: string) {
   if (!isHTMLTag[type] && !isSVGTag[type]) {
     return false;
   }
   return true;
-};
+}

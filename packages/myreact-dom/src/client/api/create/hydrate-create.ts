@@ -9,7 +9,7 @@ import type { DomElement } from "@my-react-dom-shared";
 /**
  * @internal
  */
-export const hydrateCreate = (fiber: MyReactFiberNode, parentItemWithDom: MyReactFiberNode | CustomRenderDispatch, previousDom: ChildNode | null): boolean => {
+export function hydrateCreate(fiber: MyReactFiberNode, parentItemWithDom: MyReactFiberNode | CustomRenderDispatch, previousDom: ChildNode | null): boolean {
   if (include(fiber.type, NODE_TYPE.__text__ | NODE_TYPE.__plain__ | NODE_TYPE.__comment__)) {
     const maybeContainer = parentItemWithDom as MyReactFiberContainer;
 
@@ -29,4 +29,4 @@ export const hydrateCreate = (fiber: MyReactFiberNode, parentItemWithDom: MyReac
   return false;
 
   // throw new Error("[@my-react/react-dom] hydrate error, portal element can not hydrate");
-};
+}

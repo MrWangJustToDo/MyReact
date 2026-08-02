@@ -7,7 +7,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 import type { InstanceField } from "../runtimeGenerate";
 import type { MyReactHookNode } from "./instance";
 
-export const effectHookNode = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, hookNode: MyReactHookNode, field: InstanceField) => {
+export function effectHookNode(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, hookNode: MyReactHookNode, field: InstanceField) {
   const effect = field.effect;
 
   if (hookNode.hasEffect && effect === Effect_TYPE.__initial__) {
@@ -95,4 +95,4 @@ export const effectHookNode = (renderDispatch: CustomRenderDispatch, fiber: MyRe
       });
     }
   }
-};
+}

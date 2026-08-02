@@ -72,8 +72,8 @@ function flushMacroTask() {
   }
 }
 
-export const macroTask = (task: () => void) => {
+export function macroTask(task: () => void) {
   set.add(task);
 
   flushMacroTask();
-};
+}

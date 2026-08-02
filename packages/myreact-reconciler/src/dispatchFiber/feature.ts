@@ -15,7 +15,7 @@ import { NODE_TYPE } from "../share";
 import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-export const defaultDispatchFiber = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function defaultDispatchFiber(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.type, NODE_TYPE.__root__)) {
     // TODO
     nextWorkRoot(renderDispatch, fiber);
@@ -34,4 +34,4 @@ export const defaultDispatchFiber = (renderDispatch: CustomRenderDispatch, fiber
   } else {
     nextWorkNormal(renderDispatch, fiber);
   }
-};
+}

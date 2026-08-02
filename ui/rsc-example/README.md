@@ -4,13 +4,13 @@ React Server Components with MyReact + Vite, aligned with `@vitejs/plugin-rsc` c
 
 ## Layout
 
-| Path | Role |
-| --- | --- |
-| `src/framework/entry.rsc.tsx` | **Request handler** — `default export handler(Request)` routes HTML / `/__rsc` / `/__rsc_action` |
-| `src/framework/entry.ssr.tsx` | Decodes Flight → HTML (`renderHTML`) |
-| `src/framework/entry.browser.tsx` | Client hydrate + client-side navigation |
-| `src/root.tsx`, `pages/`, `components/`, `actions/` | Application / demo UI |
-| `server.mjs` | **Production only** — pure Node, `import(dist/rsc)` + static `dist/client` (no Vite) |
+| Path                                                | Role                                                                                             |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `src/framework/entry.rsc.tsx`                       | **Request handler** — `default export handler(Request)` routes HTML / `/__rsc` / `/__rsc_action` |
+| `src/framework/entry.ssr.tsx`                       | Decodes Flight → HTML (`renderHTML`)                                                             |
+| `src/framework/entry.browser.tsx`                   | Client hydrate + client-side navigation                                                          |
+| `src/root.tsx`, `pages/`, `components/`, `actions/` | Application / demo UI                                                                            |
+| `server.mjs`                                        | **Production only** — pure Node, `import(dist/rsc)` + static `dist/client` (no Vite)             |
 
 ## Run
 

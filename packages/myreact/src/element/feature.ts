@@ -8,7 +8,9 @@ import type { CreateElementConfig, MixinMyReactClassComponent, MixinMyReactFunct
 const defaultObject = { [TYPEKEY]: Context, displayName: "" };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const defaultCompare = <P extends Record<string, unknown>>(oldProps: P, newProps: P) => isNormalEquals(oldProps, newProps);
+function defaultCompare<P extends Record<string, unknown>>(oldProps: P, newProps: P) {
+  return isNormalEquals(oldProps, newProps);
+}
 
 /**
  * @public
@@ -23,7 +25,7 @@ export type ContextObjectType<T, K> = {
 /**
  * @public
  */
-export const createContext = <T = any>(value: T) => {
+export function createContext<T = any>(value: T) {
   const ContextObject: ContextObjectType<typeof ProviderObject, typeof ConsumerObject> = {
     [TYPEKEY]: Context,
     Provider: {} as typeof ProviderObject,
@@ -62,14 +64,14 @@ export const createContext = <T = any>(value: T) => {
   ContextObject.Consumer = ConsumerObject;
 
   return ContextObject;
-};
+}
 
 /**
  * @public
  */
-export const forwardRef = <P extends Record<string, unknown> = any, T extends CreateElementConfig<P>["ref"] = any>(
+export function forwardRef<P extends Record<string, unknown> = any, T extends CreateElementConfig<P>["ref"] = any>(
   render: MixinMyReactFunctionComponentWithRef<P, T>
-) => {
+) {
   const objectType = {
     [TYPEKEY]: ForwardRef,
     render,
@@ -82,7 +84,7 @@ export const forwardRef = <P extends Record<string, unknown> = any, T extends Cr
     defaultProps?: Record<string, unknown>;
     render: MixinMyReactFunctionComponentWithRef<P, T>;
   };
-};
+}
 
 export type ForwardRefType<P extends Record<string, unknown>, T extends CreateElementConfig<P>["ref"]> = {
   [TYPEKEY]: symbol;
@@ -95,10 +97,10 @@ export type ForwardRefType<P extends Record<string, unknown>, T extends CreateEl
 /**
  * @public
  */
-export const memo = <P extends Record<string, unknown> = any>(
+export function memo<P extends Record<string, unknown> = any>(
   render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown },
   compare?: typeof defaultCompare<P>
-) => {
+) {
   const objectType = {
     [TYPEKEY]: Memo,
     render,
@@ -113,7 +115,7 @@ export const memo = <P extends Record<string, unknown> = any>(
     compare?: typeof defaultCompare<P>;
     render: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> | ReturnType<typeof forwardRef<P>> | { [TYPEKEY]: symbol; [p: string]: unknown };
   };
-};
+}
 
 export type MemoType<P extends Record<string, unknown>> = {
   [TYPEKEY]: symbol;
@@ -127,11 +129,11 @@ export type MemoType<P extends Record<string, unknown>> = {
 /**
  * @public
  */
-export const lazy = <P extends Record<string, unknown> = any>(
+export function lazy<P extends Record<string, unknown> = any>(
   loader: () => Promise<
     { default: MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P> } | MixinMyReactFunctionComponent<P> | MixinMyReactClassComponent<P>
   >
-) => {
+) {
   const config = {
     [TYPEKEY]: Lazy,
     loader,
@@ -144,7 +146,7 @@ export const lazy = <P extends Record<string, unknown> = any>(
   assignLazy(config);
 
   return config as LazyType<P>;
-};
+}
 
 export type LazyType<P extends Record<string, unknown>> = {
   [TYPEKEY]: symbol;

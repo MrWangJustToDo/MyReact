@@ -26,7 +26,7 @@ type PipeableStream = {
   pipe: <Writable extends NodeJS.WritableStream>(destination: Writable) => Writable;
 };
 
-export const renderToPipeableStream = wrapperFunc((element: LikeJSX, options?: RenderToPipeableStreamOptions): PipeableStream => {
+function renderToPipeableStreamImpl(element: LikeJSX, options?: RenderToPipeableStreamOptions): PipeableStream {
   if (isValidElement(element)) {
     initServer();
 
@@ -78,4 +78,6 @@ export const renderToPipeableStream = wrapperFunc((element: LikeJSX, options?: R
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToPipeableStream' can only render a '@my-react' element`);
   }
-});
+}
+
+export const renderToPipeableStream = wrapperFunc(renderToPipeableStreamImpl);

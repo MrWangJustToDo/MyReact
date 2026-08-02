@@ -13,13 +13,13 @@ import type { UniqueArray } from "@my-react/react-shared";
 
 const { globalLoop, currentScheduler } = __my_react_internal__;
 
-const clearLatestUpdateQueue = (fiber: MyReactFiberNode) => {
+function clearLatestUpdateQueue(fiber: MyReactFiberNode) {
   const typedFiber = fiber as MyReactFiberNodeDev;
 
   typedFiber._debugLatestUpdateQueue?.clear();
-};
+}
 
-const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
+function scheduleUpdateFromRoot(renderDispatch: CustomRenderDispatch) {
   flushEffectCallback(renderDispatch);
 
   const allLive = renderDispatch.pendingUpdateFiberArray.getAll().filter((f) => exclude(f.state, STATE_TYPE.__unmount__));
@@ -63,9 +63,9 @@ const scheduleUpdateFromRoot = (renderDispatch: CustomRenderDispatch) => {
 
     scheduleNext(renderDispatch);
   }
-};
+}
 
-const scheduleOther = (renderDispatch: CustomRenderDispatch) => {
+function scheduleOther(renderDispatch: CustomRenderDispatch) {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler.dispatchSet || renderScheduler.dispatchSet?.length === 1) return;
@@ -81,9 +81,9 @@ const scheduleOther = (renderDispatch: CustomRenderDispatch) => {
   } else {
     globalLoop.current = false;
   }
-};
+}
 
-export const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
+export function scheduleNext(renderDispatch: CustomRenderDispatch) {
   if (!renderDispatch.isAppUnmounted && !renderDispatch.isAppCrashed && renderDispatch.enableUpdate && renderDispatch.pendingUpdateFiberArray.length) {
     scheduleUpdate(renderDispatch);
     return;
@@ -104,9 +104,9 @@ export const scheduleNext = (renderDispatch: CustomRenderDispatch) => {
   } else {
     globalLoop.current = false;
   }
-};
+}
 
-export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
+export function scheduleUpdate(renderDispatch: CustomRenderDispatch) {
   __my_react_internal__.recentlyCreatedOwnerStacks.current = 0;
 
   if (renderDispatch.isAppUnmounted) {
@@ -115,4 +115,4 @@ export const scheduleUpdate = (renderDispatch: CustomRenderDispatch) => {
   }
 
   scheduleUpdateFromRoot(renderDispatch);
-};
+}

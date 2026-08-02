@@ -10,7 +10,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { currentRunningFiber } = __my_react_internal__;
 
-export const mountToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function mountToNextFiberFromRoot(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
@@ -89,9 +89,9 @@ export const mountToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, f
   }
 
   return null;
-};
+}
 
-export const performToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function performToNextFiberFromRoot(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.state, STATE_TYPE.__unmount__) || renderDispatch.isAppCrashed) return null;
 
   if (__DEV__ && include(fiber.state, STATE_TYPE.__stable__) && fiber.state !== STATE_TYPE.__stable__) {
@@ -170,4 +170,4 @@ export const performToNextFiberFromRoot = (renderDispatch: CustomRenderDispatch,
   }
 
   return null;
-};
+}

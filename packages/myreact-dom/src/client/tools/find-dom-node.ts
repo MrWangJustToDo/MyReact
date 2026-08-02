@@ -8,7 +8,7 @@ import type { DomElement } from "@my-react-dom-shared";
 /**
  * @internal
  */
-export const findDOMFromFiber = (fiber: MyReactFiberNode | null): DomElement | undefined => {
+export function findDOMFromFiber(fiber: MyReactFiberNode | null): DomElement | undefined {
   if (!fiber || include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const mayFiberContainer = fiber as MyReactFiberContainer;
@@ -30,9 +30,9 @@ export const findDOMFromFiber = (fiber: MyReactFiberNode | null): DomElement | u
   }
 
   return;
-};
+}
 
-export const findDOMNode = (instance: MyReactInternalInstance | Element): DomElement | null => {
+export function findDOMNode(instance: MyReactInternalInstance | Element): DomElement | null {
   if (instance instanceof Component) {
     const ownerFiber = getInstanceOwnerFiber(instance);
     return findDOMFromFiber(ownerFiber) || null;
@@ -41,4 +41,4 @@ export const findDOMNode = (instance: MyReactInternalInstance | Element): DomEle
   } else {
     return null;
   }
-};
+}

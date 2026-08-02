@@ -7,7 +7,7 @@ import { checkRoot, initServer, startRender, wrapperFunc } from "@my-react-dom-s
 
 import type { LikeJSX } from "@my-react/react/type";
 
-export const renderToString = wrapperFunc((element: LikeJSX) => {
+function renderToStringImpl(element: LikeJSX) {
   // checkValidElement
   if (isValidElement(element)) {
     initServer();
@@ -30,4 +30,6 @@ export const renderToString = wrapperFunc((element: LikeJSX) => {
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToString' can only render a '@my-react' element`);
   }
-});
+}
+
+export const renderToString = wrapperFunc(renderToStringImpl);

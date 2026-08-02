@@ -7,27 +7,29 @@ type ControlledElement = HTMLInputElement;
 /**
  * @internal
  */
-export const isReadonlyInputElement = (fiber: MyReactFiberNode) =>
-  hasControlledInputProps(fiber) && !fiber.pendingProps.onChange && !fiber.pendingProps.onInput;
+export function isReadonlyInputElement(fiber: MyReactFiberNode) {
+  return hasControlledInputProps(fiber) && !fiber.pendingProps.onChange && !fiber.pendingProps.onInput;
+}
 
 /**
  * @internal
  */
-export const isControlledInputElement = (fiber: MyReactFiberNode) =>
-  hasControlledInputProps(fiber) && (typeof fiber.pendingProps.onChange === "function" || typeof fiber.pendingProps.onInput === "function");
+export function isControlledInputElement(fiber: MyReactFiberNode) {
+  return hasControlledInputProps(fiber) && (typeof fiber.pendingProps.onChange === "function" || typeof fiber.pendingProps.onInput === "function");
+}
 
-const generateEmptyChangeFun = (fiber: MyReactFiberNode) => {
+function generateEmptyChangeFun(fiber: MyReactFiberNode) {
   return () => {
     if (__DEV__) {
       log(fiber, "warn", `current controlled element is a readonly element, please provider a 'onChange' props to make the value update`);
     }
   };
-};
+}
 
 /**
  * @internal
  */
-export const generateInputOnChangeFun = (fiber: MyReactFiberNode) => {
+export function generateInputOnChangeFun(fiber: MyReactFiberNode) {
   const onChange = function onChange(...args: any[]) {
     const originalOnInput = fiber.pendingProps.onInput;
 
@@ -62,12 +64,12 @@ export const generateInputOnChangeFun = (fiber: MyReactFiberNode) => {
   };
 
   return onChange;
-};
+}
 
 /**
  * @internal
  */
-export const hasControlledInputProps = (fiber: MyReactFiberNode) => {
+export function hasControlledInputProps(fiber: MyReactFiberNode) {
   const props = fiber.pendingProps;
 
   const { type } = props;
@@ -75,12 +77,12 @@ export const hasControlledInputProps = (fiber: MyReactFiberNode) => {
   const key = type === "radio" || type === "checkbox" ? "checked" : "value";
 
   return props[key] !== undefined;
-};
+}
 
 /**
  * @internal
  */
-export const updateControlInputElement = (fiber: MyReactFiberNode) => {
+export function updateControlInputElement(fiber: MyReactFiberNode) {
   const pendingProps = fiber.pendingProps;
 
   const memoizedProps = fiber.memoizedProps;
@@ -100,4 +102,4 @@ export const updateControlInputElement = (fiber: MyReactFiberNode) => {
       }
     }
   }
-};
+}

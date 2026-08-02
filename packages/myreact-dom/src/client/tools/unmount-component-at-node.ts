@@ -8,7 +8,7 @@ import type { RenderContainer } from "@my-react-dom-client/mount";
 
 const { currentScheduler, dispatchToListenerMap } = __my_react_internal__;
 
-export const unmountComponentAtNode = (container: RenderContainer) => {
+export function unmountComponentAtNode(container: RenderContainer) {
   const renderDispatch = container.__container__;
 
   const fiber = renderDispatch?.rootFiber;
@@ -29,4 +29,4 @@ export const unmountComponentAtNode = (container: RenderContainer) => {
 
     delete container.__container__;
   });
-};
+}

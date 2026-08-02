@@ -21,7 +21,7 @@ const { currentScheduler } = __my_react_internal__;
 
 const { enableScopeTreeLog } = __my_react_shared__;
 
-export const ReconcilerDispatchMount = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, config: any) => {
+export function ReconcilerDispatchMount(_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, config: any) {
   const pendingCommitFiberArray = [];
 
   beforeSyncUpdate();
@@ -117,4 +117,4 @@ export const ReconcilerDispatchMount = (_dispatch: ReconcilerDispatch, _fiber: M
   renderScheduler.macroTask(function flushEffect() {
     flushEffectCallback(_dispatch);
   });
-};
+}

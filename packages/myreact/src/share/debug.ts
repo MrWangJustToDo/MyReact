@@ -13,7 +13,7 @@ import type {
   MixinMyReactFunctionComponentWithRef,
 } from "../element";
 
-export const getMyReactElementName = (element: MyReactElementNode) => {
+export function getMyReactElementName(element: MyReactElementNode) {
   if (isValidElement(element)) {
     return getMyReactElementTypeName(element.type);
   } else {
@@ -25,9 +25,9 @@ export const getMyReactElementName = (element: MyReactElementNode) => {
     }
     return "text";
   }
-};
+}
 
-export const getMyReactElementTypeName = (type: MyReactElementType) => {
+export function getMyReactElementTypeName(type: MyReactElementType) {
   const typedType = type;
   let name: string | undefined = "";
   if (typeof typedType === "object" && typedType !== null) {
@@ -76,4 +76,4 @@ export const getMyReactElementTypeName = (type: MyReactElementType) => {
       break;
   }
   return name;
-};
+}

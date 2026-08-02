@@ -3,7 +3,7 @@ import { include, PATCH_TYPE, remove } from "@my-react/react-shared";
 
 import type { ReconcilerDispatch } from "../dispatch";
 
-export const update = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, _config: any) => {
+export function update(_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, _config: any) {
   if (!include(_fiber.patch, PATCH_TYPE.__update__)) return;
 
   // const node = config.getPublicInstance(_fiber.nativeNode);
@@ -43,4 +43,4 @@ export const update = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
   _fiber.memoizedProps = _fiber.pendingProps;
 
   _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__update__);
-};
+}

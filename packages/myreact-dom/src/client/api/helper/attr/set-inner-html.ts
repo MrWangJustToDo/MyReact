@@ -6,7 +6,7 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 /**
  * @internal
  */
-export const setInnerHtml = (fiber: MyReactFiberNode) => {
+export function setInnerHtml(fiber: MyReactFiberNode) {
   const node = fiber.nativeNode as DomElement | DomNode;
 
   const dom = node as HTMLElement;
@@ -25,12 +25,12 @@ export const setInnerHtml = (fiber: MyReactFiberNode) => {
     const typedProps = newProps["dangerouslySetInnerHTML"] as Record<string, unknown>;
     dom.innerHTML = typedProps.__html as string;
   }
-};
+}
 
 /**
  * @internal
  */
-export const hydrateInnerHtml = (fiber: MyReactFiberNode) => {
+export function hydrateInnerHtml(fiber: MyReactFiberNode) {
   const props = fiber.pendingProps;
 
   if (props["dangerouslySetInnerHTML"]) {
@@ -50,4 +50,4 @@ export const hydrateInnerHtml = (fiber: MyReactFiberNode) => {
       typedDOM.innerHTML = typedProps.__html as string;
     }
   }
-};
+}

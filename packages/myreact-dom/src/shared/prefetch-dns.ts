@@ -2,7 +2,7 @@ import { isServer } from "./env";
 
 const urlSet = new Set<string>();
 
-export const prefetchDNS = (url: string) => {
+export function prefetchDNS(url: string) {
   if (typeof url !== "string") return;
 
   if (isServer) {
@@ -13,9 +13,9 @@ export const prefetchDNS = (url: string) => {
     link.href = url;
     document.head.appendChild(link);
   }
-};
+}
 
-export const getPrefetchDNS = () => {
+export function getPrefetchDNS() {
   const s = Array.from(urlSet)
     .map((url) => `<link rel="dns-prefetch" href="${url}" />`)
     .join("");
@@ -23,8 +23,8 @@ export const getPrefetchDNS = () => {
   urlSet.clear();
 
   return s;
-};
+}
 
-export const clearPrefetchDNS = () => {
+export function clearPrefetchDNS() {
   urlSet.clear();
-};
+}

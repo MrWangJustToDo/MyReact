@@ -30,25 +30,27 @@ import type {
 /**
  * @public
  */
-export const isValidElement = (element?: MyReactElementNode | any): element is MyReactElement => {
+export function isValidElement(element?: MyReactElementNode | any): element is MyReactElement {
   return (
     typeof element === "object" &&
     !Array.isArray(element) &&
     element !== null &&
     (element?.[TYPEKEY] === Element || element?.[TYPEKEY] === TRANSITIONAL_ELEMENT)
   );
-};
+}
 
 const keysMap: Record<string, boolean> = {};
 
-const checkValidKey = (children: ArrayMyReactElementNode) => {
+function checkValidKey(children: ArrayMyReactElementNode) {
   const obj: Record<string, boolean> = {};
 
   const renderScheduler = currentScheduler.current;
 
   const currentFiber = currentComponentFiber.current;
 
-  const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
+  const validElement = children.filter(function filterValidElement(c) {
+    return isValidElement(c);
+  }) as MyReactElement[];
 
   if (validElement.length) {
     validElement.forEach(function checkSingleElementValidKey(c) {
@@ -76,26 +78,26 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
       }
     });
   }
-};
+}
 
 const optimizes: boolean[] = [];
 
-const pushOptimizes = (optimize: boolean) => {
+function pushOptimizes(optimize: boolean) {
   optimizes.push(enableOptimizeTreeLog.current);
 
   enableOptimizeTreeLog.current = optimize;
-};
+}
 
-const popOptimizes = () => {
+function popOptimizes() {
   enableOptimizeTreeLog.current = optimizes.pop() || false;
-};
+}
 
 // TODO
 /**
  * @internal
  *
  */
-export const checkValidElement = (element: MyReactElementNode) => {
+export function checkValidElement(element: MyReactElementNode) {
   pushOptimizes(false);
 
   if (isValidElement(element)) {
@@ -256,12 +258,12 @@ export const checkValidElement = (element: MyReactElementNode) => {
   }
 
   popOptimizes();
-};
+}
 
 /**
  * @internal
  */
-export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => {
+export function checkArrayChildrenKey(children: ArrayMyReactElementChildren) {
   pushOptimizes(false);
 
   children.forEach(function checkArrayChildKey(child) {
@@ -273,12 +275,12 @@ export const checkArrayChildrenKey = (children: ArrayMyReactElementChildren) => 
   });
 
   popOptimizes();
-};
+}
 
 /**
  * @internal
  */
-export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) => {
+export function checkSingleChildrenKey(children: MaybeArrayMyReactElementNode) {
   pushOptimizes(false);
 
   if (Array.isArray(children)) {
@@ -288,4 +290,4 @@ export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) =
   }
 
   popOptimizes();
-};
+}

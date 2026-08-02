@@ -44,26 +44,26 @@ export const __my_react_dom_internal__ = {
 
 const errorMap = new Map<CustomRenderDispatch, Array<{ value: any; stack: string; source?: MyReactFiberNode }>>();
 
-export const setError = (renderDispatch: CustomRenderDispatch, error: { value: any; stack: string; source?: MyReactFiberNode }) => {
+export function setError(renderDispatch: CustomRenderDispatch, error: { value: any; stack: string; source?: MyReactFiberNode }) {
   const temp = errorMap.get(renderDispatch) || [];
 
   temp.push(error);
 
   errorMap.set(renderDispatch, temp);
-};
+}
 
-export const getError = (renderDispatch: CustomRenderDispatch) => {
+export function getError(renderDispatch: CustomRenderDispatch) {
   return errorMap.get(renderDispatch);
-};
+}
 
-export const clearError = (renderDispatch: CustomRenderDispatch) => {
+export function clearError(renderDispatch: CustomRenderDispatch) {
   errorMap.delete(renderDispatch);
-};
+}
 
 /**
  * @internal
  */
-export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
+export function prepareDevContainer(renderDispatch: ClientDomDispatch) {
   Object.defineProperty(renderDispatch, "__my_react_shared__", { value: __my_react_shared__ });
   Object.defineProperty(renderDispatch, "__my_react_internal__", { value: __my_react_internal__ });
   Object.defineProperty(renderDispatch, "__my_react_dom_shared__", { value: __my_react_dom_shared__ });
@@ -118,59 +118,61 @@ export const prepareDevContainer = (renderDispatch: ClientDomDispatch) => {
     },
     configurable: true,
   });
-};
+}
 
 /**
  * @internal
  */
-export const checkRehydrate = (container: Partial<RenderContainer>) => {
+export function checkRehydrate(container: Partial<RenderContainer>) {
   const rootContainer = container.__container__;
 
   if (rootContainer instanceof ClientDomDispatch) {
     throw new Error(`[@my-react/react-dom] hydrate error, current container have been hydrated`);
   }
-};
+}
 
 /**
  * @internal
  */
-export const patchDOMField = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function patchDOMField(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if ((enableDOMField.current || __DEV__) && include(fiber.type, renderDispatch.runtimeRef.typeForNativeNode)) {
     renderDispatch.pendingLayoutEffect(fiber, function pathDOMFieldOnFiber() {
       debugWithNode(fiber);
     });
   }
-};
+}
 
 const eventArray: string[] = [];
 
 /**
  * @internal
  */
-const logEvent = debounce((eventArray: string[], fiber: MyReactFiberNode) => {
+function logEventImpl(eventArray: string[], fiber: MyReactFiberNode) {
   console.log(`eventFlow: ${eventArray.join(" -> ")} (%o)`, fiber);
-}, 16);
+}
+
+const logEvent = debounce(logEventImpl, 16);
 
 /**
  * @internal
  */
-export const triggerEvent = (eventName: string, fiber: MyReactFiberNode) => {
+export function triggerEvent(eventName: string, fiber: MyReactFiberNode) {
   eventArray.push(eventName);
 
   logEvent(Array.from(eventArray), fiber);
-};
+}
 
 /**
  * @internal
  */
-export const clearEvent = () => {
+export function clearEvent() {
   eventArray.pop();
-};
+}
 
 /**
  * @internal
  */
-export const draw = (node: PlainElement | ContainerElement | string | TextElement | CommentStartElement | CommentEndElement, level = 0) => {
+export function draw(node: PlainElement | ContainerElement | string | TextElement | CommentStartElement | CommentEndElement, level = 0) {
   if (node instanceof PlainElement) {
     const indentation = " ".repeat(level);
     console.log(indentation + node.type);
@@ -184,12 +186,12 @@ export const draw = (node: PlainElement | ContainerElement | string | TextElemen
     const indentation = " ".repeat(level);
     console.log(indentation + "<-- -->");
   }
-};
+}
 
 /**
  * @internal
  */
-export const parse = (node: ContainerElement) => {
+export function parse(node: ContainerElement) {
   if (!isServer) {
     const p = new DOMParser();
 
@@ -197,4 +199,4 @@ export const parse = (node: ContainerElement) => {
 
     console.log(document);
   }
-};
+}

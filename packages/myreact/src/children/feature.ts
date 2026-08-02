@@ -5,19 +5,21 @@ import { mapByJudge } from "./tool";
 import type { MyReactElement, MyReactElementNode, ArrayMyReactElementNode, MaybeArrayMyReactElementNode } from "../element";
 
 // TODO there are still some error for `map`/`toArray` key props
-export const map = (
+export function map(
   arrayLike: MaybeArrayMyReactElementNode,
   action: (child: MyReactElementNode, index: number, children: ArrayMyReactElementNode) => MyReactElementNode,
   context?: any
-) => {
+) {
   if (arrayLike === null || arrayLike === undefined) return arrayLike;
 
   const res: ArrayMyReactElementNode = [];
 
   mapByJudge(
     arrayLike,
-    () => true,
-    (child, index) => {
+    function mapJudge() {
+      return true;
+    },
+    function mapChild(child, index) {
       let r = child;
       if (child === undefined || child === null || typeof child === "boolean") {
         r = null;
@@ -35,15 +37,17 @@ export const map = (
   );
 
   return res;
-};
+}
 
-export const toArray = (arrayLike: MaybeArrayMyReactElementNode): ArrayMyReactElementNode => {
+export function toArray(arrayLike: MaybeArrayMyReactElementNode): ArrayMyReactElementNode {
   const res: ArrayMyReactElementNode = [];
 
   mapByJudge(
     arrayLike,
-    (v) => v !== undefined && v !== null && typeof v !== "boolean",
-    (child, index) => {
+    function toArrayJudge(v) {
+      return v !== undefined && v !== null && typeof v !== "boolean";
+    },
+    function toArrayChild(child, index) {
       if (isValidElement(child)) {
         res.push(cloneElement(child, { key: typeof child === "object" ? (typeof child?.key === "string" ? `${child.key}` : `.${index}`) : null }));
       } else {
@@ -54,19 +58,21 @@ export const toArray = (arrayLike: MaybeArrayMyReactElementNode): ArrayMyReactEl
   );
 
   return res;
-};
+}
 
-export const forEach = (
+export function forEach(
   arrayLike: MaybeArrayMyReactElementNode,
   action: (child: MyReactElementNode, index: number, children: ArrayMyReactElementNode) => MyReactElement,
   context?: any
-) => {
+) {
   if (arrayLike === null || arrayLike === undefined) return;
 
   mapByJudge(
     arrayLike,
-    () => true,
-    (child, index) => {
+    function forEachJudge() {
+      return true;
+    },
+    function forEachChild(child, index) {
       let r = child;
       if (child === undefined || (child === null && typeof child === "boolean")) {
         r = null;
@@ -74,18 +80,18 @@ export const forEach = (
       return action(isValidElement(r) ? cloneElement(r) : r, index, context);
     }
   );
-};
+}
 
-export const count = (arrayLike: MaybeArrayMyReactElementNode): number => {
+export function count(arrayLike: MaybeArrayMyReactElementNode): number {
   if (Array.isArray(arrayLike)) return arrayLike.reduce<number>((p, c) => p + count(c), 0);
 
   return 1;
-};
+}
 
-export const only = (child: MyReactElementNode) => {
+export function only(child: MyReactElementNode) {
   if (isValidElement(child)) return child;
 
   if (typeof child === "string" || typeof child === "number" || typeof child === "boolean") return true;
 
   throw new Error("[@my-react/react] Children.only() expected to receive a single MyReact element child.");
-};
+}

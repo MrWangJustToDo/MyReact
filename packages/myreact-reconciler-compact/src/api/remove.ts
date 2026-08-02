@@ -5,7 +5,7 @@ import { getValidParentFiberWithNode } from "../dispatch-map";
 import type { ReconcilerDispatch } from "../dispatch";
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
 
-export const remove = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, _config: any) => {
+export function remove(_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, _config: any) {
   if (include(_fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (!_fiber.nativeNode) return;
@@ -30,4 +30,4 @@ export const remove = (_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
   } else {
     _config.removeChild?.(parentNode, currentNode, _fiber);
   }
-};
+}

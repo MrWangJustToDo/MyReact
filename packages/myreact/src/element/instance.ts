@@ -173,7 +173,7 @@ export type CreateElementConfig<P extends Record<string, unknown> = any> = {
   __source?: CreateElementProps<P>["_source"];
 };
 
-const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }: CreateElementProps): MyReactElement => {
+function createMyReactElement({ type, key, ref, props, _self, _source, _owner }: CreateElementProps): MyReactElement {
   const element: MyReactElement = {
     [TYPEKEY]: Element,
     type,
@@ -205,7 +205,7 @@ const createMyReactElement = ({ type, key, ref, props, _self, _source, _owner }:
   }
 
   return element;
-};
+}
 
 /**
  * @public

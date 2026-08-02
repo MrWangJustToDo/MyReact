@@ -13,7 +13,7 @@ import type { ServerDomDispatch, LegacyServerStreamDispatch } from "@my-react-do
 /**
  * @internal
  */
-export const create = (_renderDispatch: ServerDomDispatch, fiber: MyReactFiberNode) => {
+export function create(_renderDispatch: ServerDomDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     if (include(fiber.type, NODE_TYPE.__text__)) {
       fiber.nativeNode = new TextElement(escapeHtml(fiber.elementType.toString()));
@@ -63,12 +63,12 @@ export const create = (_renderDispatch: ServerDomDispatch, fiber: MyReactFiberNo
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__create__);
   }
-};
+}
 
 /**
  * @internal
  */
-export const createStartTagWithStream = (renderDispatch: LegacyServerStreamDispatch, fiber: MyReactFiberNode) => {
+export function createStartTagWithStream(renderDispatch: LegacyServerStreamDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const stream = renderDispatch.stream;
 
@@ -136,12 +136,12 @@ export const createStartTagWithStream = (renderDispatch: LegacyServerStreamDispa
       if (isServer) throw new Error("[@my-react/react-dom] createPortal() can not call on the server");
     }
   }
-};
+}
 
 /**
  * @internal
  */
-export const createCloseTagWithStream = (renderDispatch: LegacyServerStreamDispatch, fiber: MyReactFiberNode) => {
+export function createCloseTagWithStream(renderDispatch: LegacyServerStreamDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.patch, PATCH_TYPE.__create__)) {
     const stream = renderDispatch.stream;
     if (include(fiber.type, NODE_TYPE.__plain__)) {
@@ -154,4 +154,4 @@ export const createCloseTagWithStream = (renderDispatch: LegacyServerStreamDispa
       throw new Error("[@my-react/react-dom] unknown close tag for current element");
     }
   }
-};
+}

@@ -5,7 +5,7 @@ import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-re
 /**
  * @internal
  */
-export const getFiberWithNativeDom = (fiber: MyReactFiberNode | null, transform: (f: MyReactFiberNode) => MyReactFiberNode | null): MyReactFiberNode | null => {
+export function getFiberWithNativeDom(fiber: MyReactFiberNode | null, transform: (f: MyReactFiberNode) => MyReactFiberNode | null): MyReactFiberNode | null {
   while (fiber) {
     const maybeContainer = fiber as MyReactFiberContainer;
 
@@ -17,4 +17,4 @@ export const getFiberWithNativeDom = (fiber: MyReactFiberNode | null, transform:
   }
 
   return null;
-};
+}

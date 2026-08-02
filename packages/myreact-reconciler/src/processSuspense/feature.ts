@@ -10,7 +10,7 @@ import type { VisibleInstanceField } from "../runtimeGenerate";
 
 const { MyReactInternalInstance } = __my_react_internal__;
 
-export const processSuspense = (fiber: MyReactFiberNode) => {
+export function processSuspense(fiber: MyReactFiberNode) {
   const isUpdate = !!fiber.instance;
 
   fiber.instance = fiber.instance || new MyReactInternalInstance();
@@ -28,4 +28,4 @@ export const processSuspense = (fiber: MyReactFiberNode) => {
   const children = WrapperBySuspenseScope(instanceField.isHidden ? fiber.pendingProps.fallback : fiber.pendingProps.children);
 
   return children;
-};
+}

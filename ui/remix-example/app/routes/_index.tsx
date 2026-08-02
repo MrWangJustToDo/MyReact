@@ -21,10 +21,7 @@ export default function Index() {
           Async loader demo
         </Link>
       </div>
-      <Themed
-        dark={<p className="badge">Dark mode active</p>}
-        light={<p className="badge">Light mode active</p>}
-      />
+      <Themed dark={<p className="badge">Dark mode active</p>} light={<p className="badge">Light mode active</p>} />
     </section>
   );
 }

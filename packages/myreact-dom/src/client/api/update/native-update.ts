@@ -22,12 +22,14 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 import type { DomElement, DomNode } from "@my-react-dom-shared";
 
-const isFalse = (v: any) => v === null || v === undefined;
+function isFalse(v: any) {
+  return v === null || v === undefined;
+}
 
 /**
  * @internal
  */
-export const nativeUpdate = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, isMount: boolean) => {
+export function nativeUpdate(renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, isMount: boolean) {
   if (!fiber.nativeNode) throw new Error("[@my-react/react-dom] update error, dom not exist");
 
   const node = fiber.nativeNode as DomElement | DomNode;
@@ -88,4 +90,4 @@ export const nativeUpdate = (renderDispatch: ClientDomDispatch, fiber: MyReactFi
 
     setInnerHtml(fiber);
   }
-};
+}

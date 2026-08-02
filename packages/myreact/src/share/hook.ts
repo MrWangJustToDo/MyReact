@@ -7,14 +7,14 @@ import type { Action, Reducer } from "../renderHook";
 
 const defaultDeps: unknown[] = [];
 
-const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
+function defaultReducer(state?: unknown, action?: Action) {
   return typeof action === "function" ? action(state) : action;
-};
+}
 
 /**
  * @public
  */
-export const useStateHook = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) => T)) => void] => {
+export function useStateHook<T = any>(initial: T | (() => T)): [T, (t?: T | ((t: T) => T)) => void] {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -33,12 +33,12 @@ export const useStateHook = <T = any>(initial: T | (() => T)): [T, (t?: T | ((t:
     reducer: defaultReducer,
     deps: defaultDeps,
   }) as [T, (t?: T | ((t: T) => T)) => void];
-};
+}
 
 /**
  * @public
  */
-export const useEffectHook = (action: () => any, deps?: any[]): void => {
+export function useEffectHook(action: () => any, deps?: any[]): void {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -52,12 +52,12 @@ export const useEffectHook = (action: () => any, deps?: any[]): void => {
     reducer: defaultReducer,
     deps,
   }) as void;
-};
+}
 
 /**
  * @public
  */
-export const useLayoutEffectHook = (action: () => any, deps?: any[]): void => {
+export function useLayoutEffectHook(action: () => any, deps?: any[]): void {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -71,12 +71,12 @@ export const useLayoutEffectHook = (action: () => any, deps?: any[]): void => {
     reducer: defaultReducer,
     deps,
   }) as void;
-};
+}
 
 /**
  * @public
  */
-export const useCallbackHook = <T extends (...args: any) => any = (...args: any) => any>(callback: T, deps?: any[]): T => {
+export function useCallbackHook<T extends (...args: any) => any = (...args: any) => any>(callback: T, deps?: any[]): T {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -90,12 +90,12 @@ export const useCallbackHook = <T extends (...args: any) => any = (...args: any)
     reducer: defaultReducer,
     deps,
   }) as T;
-};
+}
 
 /**
  * @public
  */
-export const useMemoHook = <T = any>(action: () => T, deps?: any[]): T => {
+export function useMemoHook<T = any>(action: () => T, deps?: any[]): T {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -109,12 +109,12 @@ export const useMemoHook = <T = any>(action: () => T, deps?: any[]): T => {
     reducer: defaultReducer,
     deps,
   }) as T;
-};
+}
 
 /**
  * @public
  */
-export const useRefHook = <T = any>(value: T): { current: T } => {
+export function useRefHook<T = any>(value: T): { current: T } {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -128,12 +128,12 @@ export const useRefHook = <T = any>(value: T): { current: T } => {
     reducer: defaultReducer,
     deps: defaultDeps,
   }) as { current: T };
-};
+}
 
 /**
  * @public
  */
-export const useFunc = <T = any>(Context: ReturnType<typeof createContext<T>> | Promise<T>): T => {
+export function useFunc<T = any>(Context: ReturnType<typeof createContext<T>> | Promise<T>): T {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -146,12 +146,12 @@ export const useFunc = <T = any>(Context: ReturnType<typeof createContext<T>> | 
   } else {
     return renderScheduler.readContext(Context) as T;
   }
-};
+}
 
 /**
  * @public
  */
-export const useContextHook = <T = any>(Context: ReturnType<typeof createContext<T>>): T => {
+export function useContextHook<T = any>(Context: ReturnType<typeof createContext<T>>): T {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -165,12 +165,12 @@ export const useContextHook = <T = any>(Context: ReturnType<typeof createContext
     reducer: defaultReducer,
     deps: defaultDeps,
   }) as T;
-};
+}
 
 /**
  * @public
  */
-export const useReducerHook = (reducer: Reducer, initialArgs: any, init?: (...args: any) => any) => {
+export function useReducerHook(reducer: Reducer, initialArgs: any, init?: (...args: any) => any) {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -191,12 +191,12 @@ export const useReducerHook = (reducer: Reducer, initialArgs: any, init?: (...ar
     reducer,
     deps: defaultDeps,
   });
-};
+}
 
 /**
  * @public
  */
-export const useImperativeHandleHook = (ref: any, createHandle: Reducer, deps: any[]) => {
+export function useImperativeHandleHook(ref: any, createHandle: Reducer, deps: any[]) {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -210,12 +210,12 @@ export const useImperativeHandleHook = (ref: any, createHandle: Reducer, deps: a
     reducer: createHandle,
     deps,
   });
-};
+}
 
 /**
  * @public
  */
-export const useDebugValueHook = (...args: any[]) => {
+export function useDebugValueHook(...args: any[]) {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -229,12 +229,12 @@ export const useDebugValueHook = (...args: any[]) => {
     reducer: defaultReducer,
     deps: defaultDeps,
   });
-};
+}
 
 /**
  * @public
  */
-export const useSignalHook = <T = any>(initial: T | (() => T)) => {
+export function useSignalHook<T = any>(initial: T | (() => T)) {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -253,13 +253,13 @@ export const useSignalHook = <T = any>(initial: T | (() => T)) => {
     reducer: defaultReducer,
     deps: defaultDeps,
   });
-};
+}
 
 // TODO
 /**
  * @public
  */
-export const useDeferredValueHook = <T = any>(value: T): T => {
+export function useDeferredValueHook<T = any>(value: T): T {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -273,12 +273,12 @@ export const useDeferredValueHook = <T = any>(value: T): T => {
     reducer: defaultReducer,
     deps: defaultDeps,
   }) as T;
-};
+}
 
 /**
  * @public
  */
-export const useIdHook = (): string => {
+export function useIdHook(): string {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -292,12 +292,12 @@ export const useIdHook = (): string => {
     reducer: defaultReducer,
     deps: defaultDeps,
   }) as string;
-};
+}
 
 /**
  * @public
  */
-export const useInsertionEffectHook = (action: () => any, deps: any[]) => {
+export function useInsertionEffectHook(action: () => any, deps: any[]) {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -311,12 +311,12 @@ export const useInsertionEffectHook = (action: () => any, deps: any[]) => {
     reducer: defaultReducer,
     deps,
   });
-};
+}
 
 /**
  * @public
  */
-export const useSyncExternalStoreHook = (subscribe: () => any, getSnapshot: () => any, getServerSnapshot?: () => any) => {
+export function useSyncExternalStoreHook(subscribe: () => any, getSnapshot: () => any, getServerSnapshot?: () => any) {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -330,12 +330,12 @@ export const useSyncExternalStoreHook = (subscribe: () => any, getSnapshot: () =
     reducer: defaultReducer,
     deps: defaultDeps,
   });
-};
+}
 
 /**
  * @public
  */
-export const useTransitionHook = (): [boolean, (cb: () => void) => void] => {
+export function useTransitionHook(): [boolean, (cb: () => void) => void] {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -349,12 +349,12 @@ export const useTransitionHook = (): [boolean, (cb: () => void) => void] => {
     reducer: defaultReducer,
     deps: defaultDeps,
   }) as [boolean, (cb: () => void) => void];
-};
+}
 
 /**
  * @public
  */
-export const useOptimisticHook = <S, A>(passthrough: S, reducer?: (p: S, c: A) => S): [S, (p: A) => void] => {
+export function useOptimisticHook<S, A>(passthrough: S, reducer?: (p: S, c: A) => S): [S, (p: A) => void] {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -368,13 +368,13 @@ export const useOptimisticHook = <S, A>(passthrough: S, reducer?: (p: S, c: A) =
     reducer: defaultReducer,
     deps: defaultDeps,
   }) as [S, (p: A) => void];
-};
+}
 
 /**
  * @public
  */
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export const useEffectEventHook = <T extends Function>(cb: T) => {
+export function useEffectEventHook<T extends Function>(cb: T) {
   const renderScheduler = currentScheduler.current;
 
   if (!renderScheduler)
@@ -388,4 +388,4 @@ export const useEffectEventHook = <T extends Function>(cb: T) => {
     reducer: defaultReducer,
     deps: defaultDeps,
   });
-};
+}

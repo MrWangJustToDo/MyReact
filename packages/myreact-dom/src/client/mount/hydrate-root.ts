@@ -9,7 +9,7 @@ import type { Options } from "./create-root";
 import type { RenderContainer } from "./render";
 import type { LikeJSX } from "@my-react/react/type";
 
-export const hydrateRoot = wrapperFunc((container: Partial<RenderContainer>, element: LikeJSX, _option?: Options) => {
+function hydrateRootImpl(container: Partial<RenderContainer>, element: LikeJSX, _option?: Options) {
   const render = function hydrateRootRender(element: LikeJSX) {
     originalRender(element, container);
   };
@@ -30,4 +30,6 @@ export const hydrateRoot = wrapperFunc((container: Partial<RenderContainer>, ele
     render,
     unmount,
   };
-});
+}
+
+export const hydrateRoot = wrapperFunc(hydrateRootImpl);

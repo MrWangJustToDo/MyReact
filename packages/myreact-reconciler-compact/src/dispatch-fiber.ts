@@ -16,7 +16,7 @@ import { nextWorkPortal } from "./portal";
 import type { ReconcilerDispatch } from "./dispatch";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-export const ReconcilerDispatchFiber = (renderDispatch: ReconcilerDispatch, fiber: MyReactFiberNode) => {
+export function ReconcilerDispatchFiber(renderDispatch: ReconcilerDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.type, NODE_TYPE.__root__)) {
     // TODO
     nextWorkRoot(renderDispatch, fiber);
@@ -37,4 +37,4 @@ export const ReconcilerDispatchFiber = (renderDispatch: ReconcilerDispatch, fibe
   } else {
     nextWorkNormal(renderDispatch, fiber);
   }
-};
+}

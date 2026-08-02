@@ -25,14 +25,16 @@ const { enableScopeTreeLog } = __my_react_shared__;
 
 let currentHydratedNode: ChildNode | null = null;
 
-export const getPreviousHydratedNode = () => currentHydratedNode;
+export function getPreviousHydratedNode() {
+  return currentHydratedNode;
+}
 
 // TODO
 /**
  * @internal
  */
-export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode, _hydrate?: boolean) => {
-  const mountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean): boolean => {
+export const clientDispatchMount = function clientDispatchMount(_dispatch: ClientDomDispatch, _fiber: MyReactFiberNode, _hydrate?: boolean) {
+  const mountCommit = function mountCommit(_fiber: MyReactFiberNode, _hydrate: boolean): boolean {
     const _result = safeCallWithCurrentFiber({
       fiber: _fiber,
       action: function safeCallCreate() {
@@ -89,7 +91,7 @@ export const clientDispatchMount = (_dispatch: ClientDomDispatch, _fiber: MyReac
     }
   };
 
-  const startMountCommit = (_fiber: MyReactFiberNode, _hydrate: boolean) => {
+  const startMountCommit = function startMountCommit(_fiber: MyReactFiberNode, _hydrate: boolean) {
     beforeSyncUpdate();
 
     const _list = generateFiberToListWithAction(_fiber, function invokeUnmountPendingList(_fiber) {

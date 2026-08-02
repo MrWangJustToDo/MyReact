@@ -9,7 +9,7 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 /**
  * @internal
  */
-export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: string, isSVG: boolean, value?: string | boolean | null): void => {
+export function setAttribute(fiber: MyReactFiberNode, el: HTMLElement, name: string, isSVG: boolean, value?: string | boolean | null): void {
   if (isSVG && name.charCodeAt(0) === X_CHAR) {
     if (name.startsWith("xmlns")) {
       if (value === null || value === undefined) {
@@ -84,12 +84,12 @@ export const setAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: str
       }
     }
   }
-};
+}
 
 /**
  * @internal
  */
-export const hydrateAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name: string, isSVG: boolean, value?: string | boolean | null): void => {
+export function hydrateAttribute(fiber: MyReactFiberNode, el: HTMLElement, name: string, isSVG: boolean, value?: string | boolean | null): void {
   const ignoreWarn = fiber.pendingProps["suppressHydrationWarning"] || !enableHydrateWarn.current;
 
   if (name === "download" && value === true) {
@@ -194,4 +194,4 @@ export const hydrateAttribute = (fiber: MyReactFiberNode, el: HTMLElement, name:
       }
     }
   }
-};
+}

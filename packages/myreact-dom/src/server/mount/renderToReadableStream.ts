@@ -22,7 +22,7 @@ type ReactDOMServerReadableStream = ReadableStream & {
   allReady: Promise<void>;
 };
 
-export const renderToReadableStream = wrapperFunc((element: LikeJSX, options?: RenderToReadableStreamOptions): Promise<ReactDOMServerReadableStream> => {
+function renderToReadableStreamImpl(element: LikeJSX, options?: RenderToReadableStreamOptions): Promise<ReactDOMServerReadableStream> {
   if (isValidElement(element)) {
     initServer();
 
@@ -100,4 +100,6 @@ export const renderToReadableStream = wrapperFunc((element: LikeJSX, options?: R
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToReadableStream' can only render a '@my-react' element`);
   }
-});
+}
+
+export const renderToReadableStream = wrapperFunc(renderToReadableStreamImpl);

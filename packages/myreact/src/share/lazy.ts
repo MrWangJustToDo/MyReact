@@ -14,10 +14,10 @@ type LazyPayload<T> = {
 
 type Lazy = ReturnType<typeof lazy>;
 
-const getExport = <T>(moduleResult: { default: T }): T => {
+function getExport<T>(moduleResult: { default: T }): T {
   if (moduleResult?.default) return moduleResult.default;
   return moduleResult as T;
-};
+}
 
 function lazyInitializer<T>(payload: LazyPayload<T>, lazyEle: Lazy): T {
   let throwFun: () => Promise<any> = () => Promise.reject("This error should not be happen, look like a bug for @my-react");
@@ -87,13 +87,15 @@ function lazyInitializer<T>(payload: LazyPayload<T>, lazyEle: Lazy): T {
  * Assigns React-compatible _payload and _init fields to a MyReact lazy element
  * for RSC (React Server Components) flow serialization compatibility.
  */
-export const assignLazy = <P extends Record<string, unknown>>(lazyElement: LazyType<P>) => {
+export function assignLazy<P extends Record<string, unknown>>(lazyElement: LazyType<P>) {
   const payload: LazyPayload<unknown> = {
     _status: Uninitialized,
     _result: lazyElement.loader,
   };
 
-  const init = (payload: LazyPayload<unknown>) => lazyInitializer(payload, lazyElement);
+  function init(payload: LazyPayload<unknown>) {
+    return lazyInitializer(payload, lazyElement);
+  }
 
   Object.assign(lazyElement, {
     _payload: payload,
@@ -104,4 +106,4 @@ export const assignLazy = <P extends Record<string, unknown>>(lazyElement: LazyT
     _payload: LazyPayload<unknown>;
     _init: typeof init;
   };
-};
+}

@@ -9,7 +9,7 @@ import type { DomElement, DomNode } from "@my-react-dom-shared";
 /**
  * @internal
  */
-export const append = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) => {
+export function append(renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.patch, PATCH_TYPE.__append__)) {
     const parentFiberWithNode = getValidParentFiberWithNode(renderDispatch, fiber);
 
@@ -49,4 +49,4 @@ export const append = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNod
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
   }
-};
+}

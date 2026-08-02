@@ -3,55 +3,71 @@ import { kebabCase } from "./kebab-case";
 /**
  * @internal
  */
-export const isInternal = (key: string) => key.startsWith("_");
+export function isInternal(key: string) {
+  return key.startsWith("_");
+}
 
 /**
  * @internal
  */
-export const isKeep = (key: string) => key === "suppressContentEditableWarning" || key === "suppressHydrationWarning";
+export function isKeep(key: string) {
+  return key === "suppressContentEditableWarning" || key === "suppressHydrationWarning";
+}
 
 /**
  * @internal
  */
-export const isChildren = (key: string) => key === "children" || key === "dangerouslySetInnerHTML";
+export function isChildren(key: string) {
+  return key === "children" || key === "dangerouslySetInnerHTML";
+}
 
 /**
  * @internal
  */
-export const isEvent = (key: string) => key.startsWith("on");
+export function isEvent(key: string) {
+  return key.startsWith("on");
+}
 
 /**
  * @internal
  */
-export const isStyle = (key: string) => key === "style";
+export function isStyle(key: string) {
+  return key === "style";
+}
 
 /**
  * @internal
  */
-export const isProperty = (key: string) => !isChildren(key) && !isEvent(key) && !isStyle(key) && !isInternal(key) && !isKeep(key);
+export function isProperty(key: string) {
+  return !isChildren(key) && !isEvent(key) && !isStyle(key) && !isInternal(key) && !isKeep(key);
+}
 
 /**
  * @internal
  */
-export const isNew = (oldProps: Record<string, unknown>, newProps: Record<string, unknown>) => (key: string) => oldProps[key] !== newProps[key];
+export function isNew(oldProps: Record<string, unknown>, newProps: Record<string, unknown>) {
+  return (key: string) => oldProps[key] !== newProps[key];
+}
 
 /**
  * @internal
  */
-export const isGone = (newProps: Record<string, unknown>) => (key: string) => !(key in newProps);
+export function isGone(newProps: Record<string, unknown>) {
+  return (key: string) => !(key in newProps);
+}
 
 /**
  * @internal
  */
-export const makeMap = (src: string) => {
+export function makeMap(src: string) {
   const tags = src.split(",");
   return tags.reduce<Record<string, true>>((p, c) => ((p[c] = true), p), Object.create(null));
-};
+}
 
 /**
  * @internal
  */
-export const generateGetRawAttrKey = (map: string) => {
+export function generateGetRawAttrKey(map: string) {
   const cache: Record<string, string | false> = {};
   const keyMap: Record<string, 1> = {};
   map.split(",").forEach((attrName) => {
@@ -80,13 +96,13 @@ export const generateGetRawAttrKey = (map: string) => {
     }
     return false;
   };
-};
+}
 
 /**
  * @internal
  */
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export const debounce = <T extends Function>(callback: T, time?: number): T => {
+export function debounce<T extends Function>(callback: T, time?: number): T {
   let id = null;
   return ((...args) => {
     clearTimeout(id);
@@ -94,4 +110,4 @@ export const debounce = <T extends Function>(callback: T, time?: number): T => {
       callback.call(null, ...args);
     }, time || 40);
   }) as unknown as T;
-};
+}

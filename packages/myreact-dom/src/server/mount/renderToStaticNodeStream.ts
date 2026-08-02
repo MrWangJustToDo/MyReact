@@ -8,7 +8,7 @@ import { checkRoot, initServer, isServer, startRender, wrapperFunc } from "@my-r
 import type { LikeJSX } from "@my-react/react/type";
 import type { Readable } from "stream";
 
-export const renderToStaticNodeStream = wrapperFunc((element: LikeJSX): Readable => {
+function renderToStaticNodeStreamImpl(element: LikeJSX): Readable {
   if (isValidElement(element)) {
     initServer();
 
@@ -43,4 +43,6 @@ export const renderToStaticNodeStream = wrapperFunc((element: LikeJSX): Readable
   } else {
     throw new Error(`[@my-react/react-dom] 'renderToStaticNodeStream' can only render a '@my-react' element`);
   }
-});
+}
+
+export const renderToStaticNodeStream = wrapperFunc(renderToStaticNodeStreamImpl);

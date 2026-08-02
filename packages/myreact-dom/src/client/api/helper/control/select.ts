@@ -7,25 +7,29 @@ type ControlledElement = HTMLSelectElement;
 /**
  * @internal
  */
-export const isReadonlySelectElement = (fiber: MyReactFiberNode) => hasControlledSelectProps(fiber) && !fiber.pendingProps.onChange;
+export function isReadonlySelectElement(fiber: MyReactFiberNode) {
+  return hasControlledSelectProps(fiber) && !fiber.pendingProps.onChange;
+}
 
 /**
  * @internal
  */
-export const isControlledSelectElement = (fiber: MyReactFiberNode) => hasControlledSelectProps(fiber) && typeof fiber.pendingProps.onChange === "function";
+export function isControlledSelectElement(fiber: MyReactFiberNode) {
+  return hasControlledSelectProps(fiber) && typeof fiber.pendingProps.onChange === "function";
+}
 
-const generateEmptyChangeFun = (fiber: MyReactFiberNode) => {
+function generateEmptyChangeFun(fiber: MyReactFiberNode) {
   return () => {
     if (__DEV__) {
       log(fiber, "warn", `current controlled element is a readonly element, please provider a 'onChange' props to make the value update`);
     }
   };
-};
+}
 
 /**
  * @internal
  */
-export const generateSelectOnChangeFun = (fiber: MyReactFiberNode) => {
+export function generateSelectOnChangeFun(fiber: MyReactFiberNode) {
   const onChange = function onChange(...args: any[]) {
     const originalOnChange = fiber.pendingProps.onChange;
 
@@ -54,23 +58,23 @@ export const generateSelectOnChangeFun = (fiber: MyReactFiberNode) => {
   };
 
   return onChange;
-};
+}
 
 /**
  * @internal
  */
-export const hasControlledSelectProps = (fiber: MyReactFiberNode) => {
+export function hasControlledSelectProps(fiber: MyReactFiberNode) {
   const props = fiber.pendingProps;
 
   const key = "value";
 
   return props[key] !== undefined;
-};
+}
 
 /**
  * @internal
  */
-export const updateControlSelectElement = (fiber: MyReactFiberNode) => {
+export function updateControlSelectElement(fiber: MyReactFiberNode) {
   const pendingProps = fiber.pendingProps;
 
   const memoizedProps = fiber.memoizedProps;
@@ -88,7 +92,7 @@ export const updateControlSelectElement = (fiber: MyReactFiberNode) => {
       }
     }
   }
-};
+}
 
 function updateOptions(node: HTMLSelectElement, multiple: boolean, propValue: string | string[], setDefaultSelected: boolean) {
   const options: HTMLOptionsCollection = node.options;
@@ -132,7 +136,7 @@ function updateOptions(node: HTMLSelectElement, multiple: boolean, propValue: st
   }
 }
 
-export const initSelect = (fiber: MyReactFiberNode) => {
+export function initSelect(fiber: MyReactFiberNode) {
   const element = fiber.nativeNode as HTMLSelectElement;
   const multiple = fiber.pendingProps.multiple;
   const value = fiber.pendingProps.value;
@@ -144,9 +148,9 @@ export const initSelect = (fiber: MyReactFiberNode) => {
   } else if (defaultValue != null) {
     updateOptions(node, !!multiple, defaultValue, true);
   }
-};
+}
 
-export const updateSelect = (fiber: MyReactFiberNode) => {
+export function updateSelect(fiber: MyReactFiberNode) {
   const element = fiber.nativeNode as HTMLSelectElement;
   const multiple = fiber.pendingProps.multiple;
   const value = fiber.pendingProps.value;
@@ -165,4 +169,4 @@ export const updateSelect = (fiber: MyReactFiberNode) => {
       updateOptions(node, !!multiple, multiple ? [] : "", false);
     }
   }
-};
+}

@@ -5,11 +5,11 @@ import { NODE_TYPE } from "../share";
 import type { MyReactFiberNode } from "../runtimeFiber";
 import type { MixinMyReactClassComponent, MyReactComponent } from "@my-react/react/type";
 
-export const isErrorBoundariesInstance = (instance: MyReactComponent, Component: MixinMyReactClassComponent) => {
+export function isErrorBoundariesInstance(instance: MyReactComponent, Component: MixinMyReactClassComponent) {
   return typeof instance.componentDidCatch === "function" || typeof Component.getDerivedStateFromError === "function";
-};
+}
 
-export const isErrorBoundariesComponent = (fiber: MyReactFiberNode) => {
+export function isErrorBoundariesComponent(fiber: MyReactFiberNode) {
   // Do not require __stable__ — a boundary mid-update (inherit/trigger bits) must still catch.
   if (include(fiber.type, NODE_TYPE.__class__) && exclude(fiber.state, STATE_TYPE.__unmount__)) {
     const Component = fiber.elementType;
@@ -22,9 +22,9 @@ export const isErrorBoundariesComponent = (fiber: MyReactFiberNode) => {
   }
 
   return false;
-};
+}
 
-export const defaultResolveErrorBoundaries = (fiber: MyReactFiberNode): MyReactFiberNode | null => {
+export function defaultResolveErrorBoundaries(fiber: MyReactFiberNode): MyReactFiberNode | null {
   let parent = fiber.parent;
   while (parent) {
     if (isErrorBoundariesComponent(parent)) {
@@ -34,4 +34,4 @@ export const defaultResolveErrorBoundaries = (fiber: MyReactFiberNode): MyReactF
   }
 
   return null;
-};
+}

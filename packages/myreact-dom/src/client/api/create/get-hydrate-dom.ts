@@ -7,7 +7,7 @@ import { fallback } from "../fallback";
 
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 
-const isValidHydrateDom = (el: ChildNode) => {
+function isValidHydrateDom(el: ChildNode) {
   if (el.nodeType === Node.COMMENT_NODE) {
     if (el.textContent === commentS || el.textContent === commentE || el.textContent === commentS_ || el.textContent === commentE_) return true;
     return false;
@@ -16,9 +16,9 @@ const isValidHydrateDom = (el: ChildNode) => {
     return false;
   }
   return true;
-};
+}
 
-const getNextHydrateDom = (parentDom: Element, previousDom?: ChildNode | null) => {
+function getNextHydrateDom(parentDom: Element, previousDom?: ChildNode | null) {
   if (previousDom) {
     let el = previousDom.nextSibling;
 
@@ -36,9 +36,9 @@ const getNextHydrateDom = (parentDom: Element, previousDom?: ChildNode | null) =
 
     return el;
   }
-};
+}
 
-const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode | null) => {
+function checkHydrateDom(fiber: MyReactFiberNode, dom?: ChildNode | null) {
   if (!dom) {
     if (enableHydrateWarn.current) {
       log(fiber, "error", `hydrate error, dom not render from server, client: "${getElementName(fiber)}"`);
@@ -85,12 +85,12 @@ const checkHydrateDom = (fiber: MyReactFiberNode, dom?: ChildNode | null) => {
     return dom;
   }
   log(fiber, "error", `hydrate error, unknown node type: ${fiber.type}`);
-};
+}
 
 /**
  * @internal
  */
-export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element, previousDom?: ChildNode | null) => {
+export function getHydrateDom(fiber: MyReactFiberNode, parentDom: Element, previousDom?: ChildNode | null) {
   const dom = getNextHydrateDom(parentDom, previousDom);
 
   const resultDom = checkHydrateDom(fiber, dom);
@@ -104,4 +104,4 @@ export const getHydrateDom = (fiber: MyReactFiberNode, parentDom: Element, previ
   }
 
   return resultDom;
-};
+}

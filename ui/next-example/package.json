@@ -16,7 +16,7 @@
     "@my-react/react-refresh-tools": "workspace:*",
     "autoprefixer": "catalog:",
     "eslint": "catalog:",
-    "next": "^16.2.10",
+    "next": "^16.2.12",
     "postcss": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",

@@ -8,7 +8,7 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "../runtimeFiber";
 
 // unmount current fiber
-export const unmountFiber = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function unmountFiber(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const list = generateFiberToListWithAction(fiber, function invokeUnmountPending(f) {
@@ -18,18 +18,18 @@ export const unmountFiber = (renderDispatch: CustomRenderDispatch, fiber: MyReac
   list.listToFoot(function invokeFiberUnmountList(f) {
     unmountFiberNode(renderDispatch, f);
   });
-};
+}
 
 // unmount current container with safe
-export const unmountContainer = (renderDispatch: CustomRenderDispatch, cb?: () => void) => {
+export function unmountContainer(renderDispatch: CustomRenderDispatch, cb?: () => void) {
   renderDispatch.reconcileUnmount();
 
   cb?.();
 
   if (__DEV__) currentTriggerFiber.current = null;
-};
+}
 
-export const clearContainer = (renderDispatch: CustomRenderDispatch) => {
+export function clearContainer(renderDispatch: CustomRenderDispatch) {
   renderDispatch.pendingCommitFiberPatch = PATCH_TYPE.__initial__;
   renderDispatch.pendingUpdateFiberArray?.clear();
   renderDispatch.pendingSuspenseFiberArray?.clear();
@@ -37,4 +37,4 @@ export const clearContainer = (renderDispatch: CustomRenderDispatch) => {
   renderDispatch.resetUpdateFlowRuntimeFiber();
   renderDispatch.isAppMounted = false;
   renderDispatch.isAppUnmounted = true;
-};
+}

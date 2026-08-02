@@ -9,7 +9,7 @@ import type { RenderHookParams } from "../renderHook";
 import type { UpdateQueue } from "../renderQueue";
 import type { RenderScheduler } from "./interface";
 
-const createNotImplementedError = (methodName: string): Error => {
+function createNotImplementedError(methodName: string): Error {
   return new Error(
     `[@my-react/react] "${methodName}" is not implemented. This usually means:
   1. You have multiple versions of @my-react/react installed - run "npm ls @my-react/react" or "pnpm why @my-react/react" to check
@@ -18,7 +18,7 @@ const createNotImplementedError = (methodName: string): Error => {
 
 Please ensure you have a single version of @my-react/react and that your renderer is properly configured.`
   );
-};
+}
 
 export class Scheduler implements RenderScheduler {
   hasInit = false;

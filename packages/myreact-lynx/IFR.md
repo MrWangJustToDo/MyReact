@@ -51,29 +51,29 @@ phase: hydrated
 
 ## 2. File map (where to look)
 
-| Concern | File |
-| --- | --- |
-| Compile flag / `isIfrMainThread()` | `src/shared/ifr.ts` |
-| Stash `root.render` / `runIfrRender` | `src/background/render/renderer.ts` |
-| Local apply during sync mount | `src/background/render/local-ops-applier.ts` |
-| Flush: local vs Lepus; DROP after seal | `src/background/render/flush.ts` |
-| `renderPage` / `reactPatchUpdate` wiring | `src/main-thread/entry.ts` |
-| Record / seal / intercept / teardown | `src/main-thread/ifr.ts` |
-| Op frame lengths for reconcile | `src/shared/op-arity.ts` |
-| MT worklet emit (IFR keeps JS + shared + register) | `src/plugin/loaders/worklet-loader-mt.ts` |
-| BG worklet emit (JS only) | `src/plugin/loaders/worklet-loader.ts` |
-| Refresh BG-only | `src/plugin/apply/refresh.ts`, `jsx-dev-runtime.js`, `client/` |
-| Plugin option | `src/plugin/rsbuild.ts` (`enableIFR` → `__MY_REACT_LYNX_IFR__`) |
+| Concern                                            | File                                                            |
+| -------------------------------------------------- | --------------------------------------------------------------- |
+| Compile flag / `isIfrMainThread()`                 | `src/shared/ifr.ts`                                             |
+| Stash `root.render` / `runIfrRender`               | `src/background/render/renderer.ts`                             |
+| Local apply during sync mount                      | `src/background/render/local-ops-applier.ts`                    |
+| Flush: local vs Lepus; DROP after seal             | `src/background/render/flush.ts`                                |
+| `renderPage` / `reactPatchUpdate` wiring           | `src/main-thread/entry.ts`                                      |
+| Record / seal / intercept / teardown               | `src/main-thread/ifr.ts`                                        |
+| Op frame lengths for reconcile                     | `src/shared/op-arity.ts`                                        |
+| MT worklet emit (IFR keeps JS + shared + register) | `src/plugin/loaders/worklet-loader-mt.ts`                       |
+| BG worklet emit (JS only)                          | `src/plugin/loaders/worklet-loader.ts`                          |
+| Refresh BG-only                                    | `src/plugin/apply/refresh.ts`, `jsx-dev-runtime.js`, `client/`  |
+| Plugin option                                      | `src/plugin/rsbuild.ts` (`enableIFR` → `__MY_REACT_LYNX_IFR__`) |
 
 ---
 
 ## 3. Flush paths (easy to confuse)
 
-| Situation | What happens |
-| --- | --- |
+| Situation                              | What happens                                                                                                          |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | IFR sync mount (`localOpsApplier` set) | **Sync** `doFlush`: `workletRefInitValues` → `recordAndApply(ops)` → delayed `runOnMainThread`. No `callLepusMethod`. |
-| After `sealIfrSnapshot` on MT | `__MY_REACT_LYNX_IFR_DROP_MT_OPS__` → drain & drop (Suspense must not extend hydrate stream). |
-| Normal BG | microtask `scheduleFlush` → `reactPatchUpdate` payload. |
+| After `sealIfrSnapshot` on MT          | `__MY_REACT_LYNX_IFR_DROP_MT_OPS__` → drain & drop (Suspense must not extend hydrate stream).                         |
+| Normal BG                              | microtask `scheduleFlush` → `reactPatchUpdate` payload.                                                               |
 
 Ordering on MT patch apply must stay: **ref init → ops → delayed worklets** (official ReactLynx order). Local IFR path mirrors that.
 
@@ -81,10 +81,10 @@ Ordering on MT patch apply must stay: **ref init → ops → delayed worklets** 
 
 ## 4. Worklet loader: BG vs MT/IFR
 
-| | BG `worklet-loader` | MT IFR `worklet-loader-mt` | MT non-IFR |
-| --- | --- | --- | --- |
-| No `'main thread'` | pass-through | pass-through (keep exports) | strip to imports |
-| Has `'main thread'` | `target: JS` only | `JS` (keep exports) **+** re-attach `with { runtime:'shared' }` imports **+** bare `registerWorkletInternal` | LEPUS stitch only |
+|                     | BG `worklet-loader` | MT IFR `worklet-loader-mt`                                                                                   | MT non-IFR        |
+| ------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------- |
+| No `'main thread'`  | pass-through        | pass-through (keep exports)                                                                                  | strip to imports  |
+| Has `'main thread'` | `target: JS` only   | `JS` (keep exports) **+** re-attach `with { runtime:'shared' }` imports **+** bare `registerWorkletInternal` | LEPUS stitch only |
 
 **Why shared imports on MT/IFR:** JS transform stubs worklet bodies and drops those imports; registration bodies still call `motionValue` / `animate` / ….  
 **Why keep exports:** package re-exports (`PanGesture`, `useMotionValueRefEvent`) must not become “module has no exports”.
@@ -103,18 +103,18 @@ Ordering on MT patch apply must stay: **ref init → ops → delayed worklets** 
 
 ## 6. Dev logs (`__DEV__`)
 
-| Log / warn | Meaning |
-| --- | --- |
-| `[IFR] Main Thread root.render stashed` | MT stash OK; waiting for `renderPage`. |
-| `[IFR] Main Thread sync mount sealed — awaiting BG hydrate` | Snapshot sealed. |
-| `Background root.render` | BG mount started. |
-| `[IFR] hydrate skip identical batch N` | Batch matched; no apply. |
-| `[IFR] hydration complete` | All recorded batches consumed. |
-| `[IFR] hydration structural mismatch — tearing down…` | Fallback: IFR tree cleared, BG ops win. |
-| `[IFR] Dropping Main Thread ops after first-screen snapshot` | Post-seal MT update ignored (often Suspense). |
-| `motionValue is not defined` | MT registration missing shared import (loader bug / stale build). |
-| `module has no exports` (`PanGesture` / motion re-exports) | MT stitch stripped exports (IFR must keep JS exports). |
-| `runOnMainThread timed out` | Often follow-on after MT worklet throw / stale `_wkltId` after HMR. |
+| Log / warn                                                   | Meaning                                                             |
+| ------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `[IFR] Main Thread root.render stashed`                      | MT stash OK; waiting for `renderPage`.                              |
+| `[IFR] Main Thread sync mount sealed — awaiting BG hydrate`  | Snapshot sealed.                                                    |
+| `Background root.render`                                     | BG mount started.                                                   |
+| `[IFR] hydrate skip identical batch N`                       | Batch matched; no apply.                                            |
+| `[IFR] hydration complete`                                   | All recorded batches consumed.                                      |
+| `[IFR] hydration structural mismatch — tearing down…`        | Fallback: IFR tree cleared, BG ops win.                             |
+| `[IFR] Dropping Main Thread ops after first-screen snapshot` | Post-seal MT update ignored (often Suspense).                       |
+| `motionValue is not defined`                                 | MT registration missing shared import (loader bug / stale build).   |
+| `module has no exports` (`PanGesture` / motion re-exports)   | MT stitch stripped exports (IFR must keep JS exports).              |
+| `runOnMainThread timed out`                                  | Often follow-on after MT worklet throw / stale `_wkltId` after HMR. |
 
 ---
 
@@ -143,12 +143,12 @@ Ordering on MT patch apply must stay: **ref init → ops → delayed worklets** 
 
 IFR makes the reconciler run on **both** threads, but the on-disk layout stays entry-oriented:
 
-| Directory | Role (IFR off) | Role (IFR on) |
-| --- | --- | --- |
-| `src/background/` | Sole reconciler + flush + public API | Same modules also execute on MT during sync mount |
-| `src/main-thread/` | PAPI `applyOps` + worklet register | + `ifr.ts` record / seal / hydrate |
-| `src/shared/` | op protocol, patch payload | + `ifr.ts` compile-time helpers |
-| `src/plugin/` | dual entries, worklet stitch | MT loader adds IFR JS+shared+register branch |
+| Directory          | Role (IFR off)                       | Role (IFR on)                                     |
+| ------------------ | ------------------------------------ | ------------------------------------------------- |
+| `src/background/`  | Sole reconciler + flush + public API | Same modules also execute on MT during sync mount |
+| `src/main-thread/` | PAPI `applyOps` + worklet register   | + `ifr.ts` record / seal / hydrate                |
+| `src/shared/`      | op protocol, patch payload           | + `ifr.ts` compile-time helpers                   |
+| `src/plugin/`      | dual entries, worklet stitch         | MT loader adds IFR JS+shared+register branch      |
 
 **Naming debt (acceptable for now):** `background/render/{renderer,flush,local-ops-applier}` is not “BG-only” when IFR is on — treat it as **shared reconciler / flush**, living under `background/` because that is still the package’s primary runtime and `exports["."]`.
 
@@ -165,17 +165,17 @@ Do **not** split public exports solely for IFR — dual-entry packaging must sta
 
 Default is **off**. Compile define: `__MY_REACT_LYNX_IFR__ = false`. Off-path must match pre-IFR behavior.
 
-| Gate | Off behavior |
-| --- | --- |
-| `isIfrEnabled()` / `isIfrMainThread()` | always false |
-| `render()` on MT | early `return` (no stash, no container) |
-| `__MY_REACT_LYNX_RUN_IFR_RENDER__` | not registered |
-| `renderPage` IFR block | skipped → empty page + `__FlushElementTree` only |
-| `interceptPatchUpdate` | not called |
-| `localOpsApplier` | stays `null` → flush only via `callLepusMethod` |
-| `__MY_REACT_LYNX_IFR_DROP_MT_OPS__` | never sealed/set true |
-| `worklet-loader-mt` | LEPUS **stitch** path only (no IFR JS keep-body) |
-| React Refresh | unchanged (BG `issuerLayer` only; independent of IFR) |
+| Gate                                   | Off behavior                                          |
+| -------------------------------------- | ----------------------------------------------------- |
+| `isIfrEnabled()` / `isIfrMainThread()` | always false                                          |
+| `render()` on MT                       | early `return` (no stash, no container)               |
+| `__MY_REACT_LYNX_RUN_IFR_RENDER__`     | not registered                                        |
+| `renderPage` IFR block                 | skipped → empty page + `__FlushElementTree` only      |
+| `interceptPatchUpdate`                 | not called                                            |
+| `localOpsApplier`                      | stays `null` → flush only via `callLepusMethod`       |
+| `__MY_REACT_LYNX_IFR_DROP_MT_OPS__`    | never sealed/set true                                 |
+| `worklet-loader-mt`                    | LEPUS **stitch** path only (no IFR JS keep-body)      |
+| React Refresh                          | unchanged (BG `issuerLayer` only; independent of IFR) |
 
 **Residual when off (intentionally tiny):**
 

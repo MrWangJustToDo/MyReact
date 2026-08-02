@@ -37,7 +37,7 @@ if (!Object.prototype.hasOwnProperty.call(Component.prototype, "_reactInternals"
   });
 }
 
-const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
+function processComponentStateFromProps(fiber: MyReactFiberNode) {
   const Component = fiber.elementType;
 
   const typedComponent = Component as MixinMyReactClassComponent;
@@ -64,9 +64,9 @@ const processComponentStateFromProps = (fiber: MyReactFiberNode) => {
       fiber.pendingState = newState;
     }
   }
-};
+}
 
-const processComponentInstanceOnMount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+function processComponentInstanceOnMount(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const Component = fiber.elementType;
 
   const typedComponent = Component as MixinMyReactClassComponent;
@@ -110,9 +110,9 @@ const processComponentInstanceOnMount = (renderDispatch: CustomRenderDispatch, f
   setContextForInstance(instance, providerFiber);
 
   fiber.pendingState = instance.state;
-};
+}
 
-const processComponentFiberOnUpdate = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+function processComponentFiberOnUpdate(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   safeCallWithCurrentFiber({
@@ -123,9 +123,9 @@ const processComponentFiberOnUpdate = (renderDispatch: CustomRenderDispatch, fib
   });
 
   setOwnerForInstance(typedInstance, fiber);
-};
+}
 
-const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
+function processComponentRenderOnMountAndUpdate(fiber: MyReactFiberNode) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   const children = safeCallWithCurrentFiber({
@@ -136,9 +136,9 @@ const processComponentRenderOnMountAndUpdate = (fiber: MyReactFiberNode) => {
   });
 
   return children;
-};
+}
 
-const processComponentDidMountOnMount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+function processComponentDidMountOnMount(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   const effect = getInstanceEffectState(typedInstance);
@@ -154,9 +154,9 @@ const processComponentDidMountOnMount = (renderDispatch: CustomRenderDispatch, f
       mountClassInstance(typedInstance);
     });
   }
-};
+}
 
-const processComponentContextOnUpdate = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+function processComponentContextOnUpdate(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const Component = fiber.elementType;
 
   const typedComponent = Component as MixinMyReactClassComponent;
@@ -181,9 +181,9 @@ const processComponentContextOnUpdate = (renderDispatch: CustomRenderDispatch, f
       return context;
     }
   }
-};
+}
 
-const processComponentPropsAndContextOnActive = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+function processComponentPropsAndContextOnActive(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const props = Object.assign({}, fiber.pendingProps);
 
   const context = processComponentContextOnUpdate(renderDispatch, fiber);
@@ -193,12 +193,12 @@ const processComponentPropsAndContextOnActive = (renderDispatch: CustomRenderDis
   typedInstance.props = props;
 
   typedInstance.context = context;
-};
+}
 
-const processComponentShouldUpdateOnUpdate = (
+function processComponentShouldUpdateOnUpdate(
   fiber: MyReactFiberNode,
   { nextState, nextProps, nextContext }: { nextState: unknown; nextProps: unknown; nextContext: unknown }
-) => {
+) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   // if (include(fiber.state, STATE_TYPE.__triggerSync__ | STATE_TYPE.__triggerConcurrent__)) return true;
@@ -213,9 +213,9 @@ const processComponentShouldUpdateOnUpdate = (
   }
 
   return true;
-};
+}
 
-const processComponentGetSnapshotOnUpdate = (fiber: MyReactFiberNode, { baseState, baseProps }: { baseState: unknown; baseProps: unknown }) => {
+function processComponentGetSnapshotOnUpdate(fiber: MyReactFiberNode, { baseState, baseProps }: { baseState: unknown; baseProps: unknown }) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedInstance.getSnapshotBeforeUpdate) {
@@ -228,9 +228,9 @@ const processComponentGetSnapshotOnUpdate = (fiber: MyReactFiberNode, { baseStat
   }
 
   return null;
-};
+}
 
-const processComponentDidUpdateOnUpdate = (
+function processComponentDidUpdateOnUpdate(
   renderDispatch: CustomRenderDispatch,
   fiber: MyReactFiberNode,
   {
@@ -242,7 +242,7 @@ const processComponentDidUpdateOnUpdate = (
     baseProps: unknown;
     snapshot: unknown;
   }
-) => {
+) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   const effect = getInstanceEffectState(typedInstance);
@@ -256,12 +256,12 @@ const processComponentDidUpdateOnUpdate = (
       typedInstance.componentDidUpdate?.(baseProps, baseState, snapshot);
     });
   }
-};
+}
 
 /**
  * @deprecated
  */
-const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
+function processComponentWillMountOnMount(fiber: MyReactFiberNode) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   let hasLegacyLifeFunction = false;
@@ -297,12 +297,12 @@ const processComponentWillMountOnMount = (fiber: MyReactFiberNode) => {
   }
 
   return hasLegacyLifeFunction;
-};
+}
 
 /**
  * @deprecated
  */
-const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
+function processComponentWillReceiveProps(fiber: MyReactFiberNode) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   let hasLegacyLifeFunction = false;
@@ -353,12 +353,12 @@ const processComponentWillReceiveProps = (fiber: MyReactFiberNode) => {
   }
 
   return hasLegacyLifeFunction;
-};
+}
 
 /**
  * @deprecated
  */
-const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextState }: { nextProps: unknown; nextState: unknown }) => {
+function processComponentWillUpdate(fiber: MyReactFiberNode, { nextProps, nextState }: { nextProps: unknown; nextState: unknown }) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (typedInstance.UNSAFE_componentWillUpdate) {
@@ -389,9 +389,9 @@ const processComponentWillUpdate = (fiber: MyReactFiberNode, { nextProps, nextSt
       onceWarnWithKeyAndFiber(fiber, "componentWillUpdate", `[@my-react/react] current component have legacy lifeCycle function 'componentWillUpdate'`);
     }
   }
-};
+}
 
-export const processClassComponentMount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function processClassComponentMount(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   processComponentInstanceOnMount(renderDispatch, fiber);
 
   processComponentStateFromProps(fiber);
@@ -408,10 +408,10 @@ export const processClassComponentMount = (renderDispatch: CustomRenderDispatch,
   processComponentDidMountOnMount(renderDispatch, fiber);
 
   return children;
-};
+}
 
 // TODO
-export const processClassComponentActive = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function processClassComponentActive(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   processComponentFiberOnUpdate(renderDispatch, fiber);
 
   processComponentPropsAndContextOnActive(renderDispatch, fiber);
@@ -421,10 +421,10 @@ export const processClassComponentActive = (renderDispatch: CustomRenderDispatch
   processComponentDidMountOnMount(renderDispatch, fiber);
 
   return children;
-};
+}
 
 // TODO
-const classComponentUpdateImpl = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+function classComponentUpdateImpl(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   processComponentFiberOnUpdate(renderDispatch, fiber);
 
   processComponentStateFromProps(fiber);
@@ -483,24 +483,24 @@ const classComponentUpdateImpl = (renderDispatch: CustomRenderDispatch, fiber: M
   } else {
     return { updated: false };
   }
-};
+}
 
-export const syncComponentStateToFiber = (fiber: MyReactFiberNode) => {
+export function syncComponentStateToFiber(fiber: MyReactFiberNode) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   // sync pendingState
   fiber.pendingState = Object.assign({}, typedInstance.state);
-};
+}
 
-export const processClassComponentUpdate = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function processClassComponentUpdate(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const res = classComponentUpdateImpl(renderDispatch, fiber);
 
   syncComponentStateToFiber(fiber);
 
   return res;
-};
+}
 
-export const processClassComponentUnmount = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function processClassComponentUnmount(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   if (!typedInstance) return;
@@ -522,4 +522,4 @@ export const processClassComponentUnmount = (renderDispatch: CustomRenderDispatc
       }
     },
   });
-};
+}

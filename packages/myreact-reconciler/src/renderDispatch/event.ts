@@ -62,7 +62,7 @@ type Listeners = {
   afterCommitUnmount: Set<(renderDispatch: CustomRenderDispatch) => void>;
 };
 
-const getInitialListeners = (): Listeners => {
+function getInitialListeners(): Listeners {
   return __DEV__
     ? {
         fiberInitial: new Set(),
@@ -119,29 +119,33 @@ const getInitialListeners = (): Listeners => {
         beforeCommitUnmount: new Set(),
         afterCommitUnmount: new Set(),
       };
-};
+}
 
-const getInitialMap = (): RenderDispatch["runtimeMap"] => ({
-  effectMap: new MyWeakMap(),
+function getInitialMap(): RenderDispatch["runtimeMap"] {
+  return {
+    effectMap: new MyWeakMap(),
 
-  layoutEffectMap: new MyWeakMap(),
+    layoutEffectMap: new MyWeakMap(),
 
-  insertionEffectMap: new MyWeakMap(),
+    insertionEffectMap: new MyWeakMap(),
 
-  unmountMap: new MyWeakMap(),
+    unmountMap: new MyWeakMap(),
 
-  triggerCallbackMap: new MyWeakMap(),
-});
+    triggerCallbackMap: new MyWeakMap(),
+  };
+}
 
-const getInitialFiber = (): RenderDispatch["runtimeFiber"] => ({
-  scheduledFiber: null,
+function getInitialFiber(): RenderDispatch["runtimeFiber"] {
+  return {
+    scheduledFiber: null,
 
-  errorCatchFiber: null,
+    errorCatchFiber: null,
 
-  nextWorkingFiber: null,
+    nextWorkingFiber: null,
 
-  retriggerFiber: null,
-});
+    retriggerFiber: null,
+  };
+}
 
 const initialRef: RenderDispatch["runtimeRef"] = {
   typeForRef: NODE_TYPE.__plain__ | NODE_TYPE.__class__,

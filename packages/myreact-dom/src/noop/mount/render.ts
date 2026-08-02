@@ -11,7 +11,7 @@ import type { LikeJSX } from "@my-react/react/type";
 
 // !only used for test
 
-export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
+export function legacyNoopRender(element: LikeJSX): ContainerElement | null {
   if (__DEV__ && isValidElement(element)) {
     const container = new ContainerElement();
 
@@ -36,9 +36,9 @@ export const legacyNoopRender = (element: LikeJSX): ContainerElement | null => {
 
     return container;
   }
-};
+}
 
-export const latestNoopRender = async (element: LikeJSX): Promise<ContainerElement | null> => {
+export async function latestNoopRender(element: LikeJSX): Promise<ContainerElement | null> {
   if (__DEV__ && isValidElement(element)) {
     const container = new ContainerElement();
 
@@ -63,4 +63,4 @@ export const latestNoopRender = async (element: LikeJSX): Promise<ContainerEleme
 
     return container;
   }
-};
+}

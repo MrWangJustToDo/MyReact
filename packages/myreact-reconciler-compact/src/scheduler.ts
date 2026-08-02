@@ -6,7 +6,7 @@ const { enableDebugFiled, enableScopeTreeLog } = __my_react_shared__;
 /**
  * @internal
  */
-export const prepareScheduler = () => {
+export function prepareScheduler() {
   enableDebugFiled.current = true;
 
   enableScopeTreeLog.current = true;
@@ -16,4 +16,4 @@ export const prepareScheduler = () => {
   enableValidMyReactElement.current = false;
 
   initScheduler();
-};
+}

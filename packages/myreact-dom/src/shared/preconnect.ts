@@ -2,7 +2,7 @@ import { isServer } from "./env";
 
 const urlSet = new Set<string>();
 
-export const preconnect = (url: string) => {
+export function preconnect(url: string) {
   if (typeof url !== "string") return;
 
   if (isServer) {
@@ -13,9 +13,9 @@ export const preconnect = (url: string) => {
     link.href = url;
     document.head.appendChild(link);
   }
-};
+}
 
-export const getPreConnects = () => {
+export function getPreConnects() {
   const s = Array.from(urlSet)
     .map((url) => `<link rel="preconnect" href="${url}" />`)
     .join("");
@@ -23,8 +23,8 @@ export const getPreConnects = () => {
   urlSet.clear();
 
   return s;
-};
+}
 
-export const clearPreConnects = () => {
+export function clearPreConnects() {
   urlSet.clear();
-};
+}

@@ -16,11 +16,13 @@ export type Options = {
 /**
  * @internal
  */
-export const onceLogNewEntry = once((entry) => {
+function onceLogNewEntryImpl(entry: string) {
   console.log(`[@my-react/react-dom] you are using new entry function '${entry}'`);
-});
+}
 
-export const createRoot = wrapperFunc((container: Partial<RenderContainer>, _option?: Options) => {
+export const onceLogNewEntry = once(onceLogNewEntryImpl);
+
+function createRootImpl(container: Partial<RenderContainer>, _option?: Options) {
   if (__DEV__ && !container) {
     throw new Error("[@my-react/react-dom] the `createRoot` function must be called with a container element.");
   }
@@ -41,4 +43,6 @@ export const createRoot = wrapperFunc((container: Partial<RenderContainer>, _opt
     render,
     unmount,
   };
-});
+}
+
+export const createRoot = wrapperFunc(createRootImpl);

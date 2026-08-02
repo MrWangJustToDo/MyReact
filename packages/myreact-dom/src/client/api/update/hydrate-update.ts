@@ -15,24 +15,24 @@ const domContentHydrate = hydrateTextContent;
 
 const domPropsHydrate = hydrateAttribute;
 
-const domStyleHydrate = (fiber: MyReactFiberNode, _key: string, value: Record<string, unknown>) => {
+function domStyleHydrate(fiber: MyReactFiberNode, _key: string, value: Record<string, unknown>) {
   const node = fiber.nativeNode as HTMLElement;
 
   Object.keys(value).forEach((styleName) => hydrateStyle(fiber, node, styleName, value[styleName] as string | number | null | undefined));
-};
+}
 
-const domEventHydrate = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, key: string) => {
+function domEventHydrate(renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, key: string) {
   const node = fiber.nativeNode;
 
   addEventListener(fiber, renderDispatch.runtimeDom.eventMap, node as DomElement, key);
-};
+}
 
 const domInnerHTMLHydrate = hydrateInnerHtml;
 
 /**
  * @internal
  */
-export const hydrateUpdate = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) => {
+export function hydrateUpdate(renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) {
   const node = fiber.nativeNode as DomElement | DomNode;
 
   if (node) {
@@ -79,4 +79,4 @@ export const hydrateUpdate = (renderDispatch: ClientDomDispatch, fiber: MyReactF
   fiber.patch = remove(fiber.patch, PATCH_TYPE.__append__);
 
   fiber.patch = remove(fiber.patch, PATCH_TYPE.__position__);
-};
+}

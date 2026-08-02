@@ -12,7 +12,7 @@ import { nativeUpdate } from "./native-update";
 /**
  * @internal
  */
-export const update = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, hydrate: boolean) => {
+export function update(renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode, hydrate: boolean) {
   if (include(fiber.patch, PATCH_TYPE.__update__)) {
     if (__DEV__) validDomProps(fiber);
 
@@ -64,4 +64,4 @@ export const update = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNod
 
     fiber.patch = remove(fiber.patch, PATCH_TYPE.__update__);
   }
-};
+}

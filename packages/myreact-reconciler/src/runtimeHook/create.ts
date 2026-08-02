@@ -18,13 +18,15 @@ const { enableDebugLog, enableDebugFiled } = __my_react_shared__;
 
 const { currentHookTreeNode, currentHookNodeIndex } = __my_react_internal__;
 
-const defaultReducer: Reducer = (state?: unknown, action?: Action) => {
+function defaultReducer(state?: unknown, action?: Action) {
   return typeof action === "function" ? action(state) : action;
-};
+}
 
-const defaultOptimisticReducer = (state: any) => state;
+function defaultOptimisticReducer(state: any) {
+  return state;
+}
 
-export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) => {
+export function createHookNode(renderDispatch: CustomRenderDispatch, { type, value, reducer, deps }: RenderHookParams, fiber: MyReactFiberNode) {
   const currentHook = currentHookTreeNode.current?.value as MyReactHookNode;
 
   const currentHookIndex = currentHookNodeIndex.current;
@@ -266,4 +268,4 @@ export const createHookNode = (renderDispatch: CustomRenderDispatch, { type, val
   currentHookTreeNode.current = currentHookTreeNode.current?.next;
 
   return hookNode;
-};
+}

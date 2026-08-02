@@ -25,11 +25,11 @@ export type UpdateState = {
 };
 
 // TODO 整合
-export const processClassComponentUpdateQueueLatest = (
+export function processClassComponentUpdateQueueLatest(
   renderDispatch: CustomRenderDispatch,
   fiber: MyReactFiberNode,
   enableTaskPriority?: boolean
-): UpdateState => {
+): UpdateState {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (exclude(fiber.type, NODE_TYPE.__class__)) throw new Error("[@my-react/react] current fiber is not a class component, look like a bug for @my-react");
@@ -292,9 +292,9 @@ export const processClassComponentUpdateQueueLatest = (
       callback: invokeCallbackArray,
     };
   }
-};
+}
 
-export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode): UpdateState => {
+export function processClassComponentUpdateQueueLegacy(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode): UpdateState {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (exclude(fiber.type, NODE_TYPE.__class__)) throw new Error("[@my-react/react] current fiber is not a class component, look like a bug for @my-react");
@@ -438,13 +438,13 @@ export const processClassComponentUpdateQueueLegacy = (renderDispatch: CustomRen
     isRetrigger,
     callback: invokeCallbackArray,
   };
-};
+}
 
-export const processFunctionComponentUpdateQueueLatest = (
+export function processFunctionComponentUpdateQueueLatest(
   renderDispatch: CustomRenderDispatch,
   fiber: MyReactFiberNode,
   enableTaskPriority?: boolean
-): UpdateState => {
+): UpdateState {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (exclude(fiber.type, NODE_TYPE.__function__)) {
@@ -746,9 +746,9 @@ export const processFunctionComponentUpdateQueueLatest = (
       callback: invokeCallbackArray,
     };
   }
-};
+}
 
-export const processFunctionComponentUpdateQueueLegacy = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode): UpdateState => {
+export function processFunctionComponentUpdateQueueLegacy(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode): UpdateState {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (exclude(fiber.type, NODE_TYPE.__function__)) {
@@ -913,9 +913,9 @@ export const processFunctionComponentUpdateQueueLegacy = (renderDispatch: Custom
     isRetrigger,
     callback: invokeCallbackArray,
   };
-};
+}
 
-export const processNormalComponentUpdateLatest = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode): UpdateState => {
+export function processNormalComponentUpdateLatest(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode): UpdateState {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const allQueue = fiber.updateQueue;
@@ -999,9 +999,9 @@ export const processNormalComponentUpdateLatest = (renderDispatch: CustomRenderD
     isRetrigger,
     callback: invokeCallbackArray,
   };
-};
+}
 
-export const processNormalComponentUpdateLegacy = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode): UpdateState => {
+export function processNormalComponentUpdateLegacy(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode): UpdateState {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const allQueue = fiber.updateQueue;
@@ -1089,12 +1089,12 @@ export const processNormalComponentUpdateLegacy = (renderDispatch: CustomRenderD
     isRetrigger,
     callback: invokeCallbackArray,
   };
-};
+}
 
 /**
  * @deprecated
  */
-export const syncFiberStateToComponent = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, callback?: () => void) => {
+export function syncFiberStateToComponent(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, callback?: () => void) {
   const typedInstance = fiber.instance as MyReactComponent;
 
   const typedPendingState = fiber.pendingState;
@@ -1102,15 +1102,15 @@ export const syncFiberStateToComponent = (renderDispatch: CustomRenderDispatch, 
   typedInstance.state = Object.assign({}, typedInstance.state, typedPendingState);
 
   callback && renderDispatch.pendingLayoutEffect(fiber, callback, { stickyToFoot: true });
-};
+}
 
 /**
  * @deprecated
  */
-export const syncFlushComponentQueue = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function syncFlushComponentQueue(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const { needUpdate, callback } = processClassComponentUpdateQueueLatest(renderDispatch, fiber);
 
   needUpdate && syncFiberStateToComponent(renderDispatch, fiber, callback);
 
   syncComponentStateToFiber(fiber);
-};
+}

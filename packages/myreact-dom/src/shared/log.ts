@@ -8,7 +8,7 @@ const { enableOptimizeTreeLog } = __my_react_shared__;
 /**
  * @internal
  */
-export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: any) => {
+export function log(fiber: MyReactFiberNode, level: "warn" | "error", ...rest: any) {
   if (__DEV__) {
     const last = enableOptimizeTreeLog.current;
 
@@ -29,14 +29,14 @@ export const log = (fiber: MyReactFiberNode, level: "warn" | "error", ...rest: a
   if (level === "error") {
     console.error(`[@my-react/react-dom]`, ...rest);
   }
-};
+}
 
 const onceMap: Record<string, boolean> = {};
 
 /**
  * @internal
  */
-export const logOnce = (fiber: MyReactFiberNode, level: "warn" | "error", key: string, ...rest: string[]) => {
+export function logOnce(fiber: MyReactFiberNode, level: "warn" | "error", key: string, ...rest: string[]) {
   if (__DEV__) {
     if (level === "warn") {
       onceWarnWithKeyAndFiber(fiber, key, `[@my-react/react-dom]`, ...rest);
@@ -55,4 +55,4 @@ export const logOnce = (fiber: MyReactFiberNode, level: "warn" | "error", key: s
 
     console.error(`[@my-react/react-dom]`, ...rest);
   }
-};
+}

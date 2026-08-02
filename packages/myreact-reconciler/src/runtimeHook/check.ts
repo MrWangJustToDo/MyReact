@@ -2,7 +2,7 @@ import { HOOK_TYPE } from "@my-react/react-shared";
 
 import type { MyReactHookNode } from "./instance";
 
-export const checkHookValid = (hookNode: MyReactHookNode) => {
+export function checkHookValid(hookNode: MyReactHookNode) {
   if (
     hookNode.type === HOOK_TYPE.useMemo ||
     hookNode.type === HOOK_TYPE.useEffect ||
@@ -39,4 +39,4 @@ export const checkHookValid = (hookNode: MyReactHookNode) => {
       throw new Error(`[@my-react/react] ${HOOK_TYPE[hookNode.type]} initial error`);
     }
   }
-};
+}

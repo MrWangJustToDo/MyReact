@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 
 import { useAppContext } from "../components/App.js";
+
 import { useEffectEvent } from "./use-event.js";
 
 import type { PasteEvent } from "@opentui/core";

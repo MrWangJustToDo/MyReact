@@ -10,15 +10,15 @@ import type { MyReactElementNode, MaybeArrayMyReactElementNode, ArrayMyReactElem
 
 const { enableDebugFiled } = __my_react_shared__;
 
-const getIsSameTypeNode = (newChild: MyReactElementNode, draftFiber?: MyReactFiberNode) => {
+function getIsSameTypeNode(newChild: MyReactElementNode, draftFiber?: MyReactFiberNode) {
   if (!draftFiber) return false;
 
   const result = checkIsSameType(draftFiber, newChild);
 
   return result;
-};
+}
 
-const getExistingChildren = (parentFiber: MyReactFiberNode) => {
+function getExistingChildren(parentFiber: MyReactFiberNode) {
   const existingChildrenMap = new Map<string | number, ListTree<MyReactFiberNode>>();
 
   const existingChildrenArray: MyReactFiberNode[] = [];
@@ -44,40 +44,36 @@ const getExistingChildren = (parentFiber: MyReactFiberNode) => {
   }
 
   return { existingChildrenMap, existingChildrenArray };
-};
+}
 
 const dynamicFragmentProps = { wrap: true };
 
-const createFragmentWithInitial = (
+function createFragmentWithInitial(
   renderDispatch: CustomRenderDispatch,
   newChild: ArrayMyReactElementChildren,
   parentFiber: MyReactFiberNode
-): MyReactFiberNode => {
+): MyReactFiberNode {
   // TODO make there are not a element
   const newElement = createElement(Fragment, dynamicFragmentProps, newChild as MaybeArrayMyReactElementNode);
 
   const newFiber = createFiberNode(renderDispatch, { parent: parentFiber }, newElement);
 
   return newFiber;
-};
+}
 
-const createFragmentWithUpdate = (
+function createFragmentWithUpdate(
   renderDispatch: CustomRenderDispatch,
   newChild: ArrayMyReactElementChildren,
   parentFiber: MyReactFiberNode
-): MyReactFiberNode => {
+): MyReactFiberNode {
   const newElement = createElement(Fragment, dynamicFragmentProps, newChild as MaybeArrayMyReactElementNode);
 
   const newFiber = createFiberNode(renderDispatch, { parent: parentFiber, type: "position" }, newElement);
 
   return newFiber;
-};
+}
 
-const deleteIfNeed = (
-  renderDispatch: CustomRenderDispatch,
-  parentFiber: MyReactFiberNode,
-  existingChildren: Map<string | number, ListTree<MyReactFiberNode>>
-) => {
+function deleteIfNeed(renderDispatch: CustomRenderDispatch, parentFiber: MyReactFiberNode, existingChildren: Map<string | number, ListTree<MyReactFiberNode>>) {
   if (existingChildren.size) {
     existingChildren.forEach(function forEachInvokePendingUnmountList(list) {
       list.listToFoot(function invokePendingUnmountList(f) {
@@ -85,16 +81,16 @@ const deleteIfNeed = (
       });
     });
   }
-};
+}
 
-const getNewFiberWithUpdate = (
+function getNewFiberWithUpdate(
   renderDispatch: CustomRenderDispatch,
   newChild: MaybeArrayMyReactElementNode,
   parentFiber: MyReactFiberNode,
   existingChildren: Map<string | number, ListTree<MyReactFiberNode>>,
   prevFiberChild: MyReactFiberNode | null,
   index: number
-): MyReactFiberNode => {
+): MyReactFiberNode {
   if (Array.isArray(newChild)) {
     const draftList = existingChildren.get(index);
 
@@ -136,21 +132,17 @@ const getNewFiberWithUpdate = (
 
     return createFiberNode(renderDispatch, { parent: parentFiber, prevFiber: draftFiber, type: "position" }, newChild);
   }
-};
+}
 
-const getNewFiberWithInitial = (
-  renderDispatch: CustomRenderDispatch,
-  newChild: MaybeArrayMyReactElementNode,
-  parentFiber: MyReactFiberNode
-): MyReactFiberNode => {
+function getNewFiberWithInitial(renderDispatch: CustomRenderDispatch, newChild: MaybeArrayMyReactElementNode, parentFiber: MyReactFiberNode): MyReactFiberNode {
   // wrapper array child item as a Fragment fiber node, so all of the children will be a fiber node
   // and could be add to the child list
   if (Array.isArray(newChild)) return createFragmentWithInitial(renderDispatch, newChild, parentFiber);
 
   return createFiberNode(renderDispatch, { parent: parentFiber }, newChild as MyReactElementNode);
-};
+}
 
-export const transformChildrenFiber = (renderDispatch: CustomRenderDispatch, parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode): void => {
+export function transformChildrenFiber(renderDispatch: CustomRenderDispatch, parentFiber: MyReactFiberNode, children: MaybeArrayMyReactElementNode): void {
   const isUpdate = exclude(parentFiber.state, STATE_TYPE.__create__);
 
   const isHMR = include(parentFiber.state, STATE_TYPE.__hmr__);
@@ -244,4 +236,4 @@ export const transformChildrenFiber = (renderDispatch: CustomRenderDispatch, par
       if (__DEV__ && enableDebugFiled.current) typedParentFiber._debugRenderChildrenCurrent.push(children);
     }
   }
-};
+}

@@ -15,14 +15,19 @@ import type {
 } from "@my-react/react/type";
 
 // @ts-ignore
-const createTask = __DEV__ && console.createTask ? console.createTask : () => null;
+const createTask =
+  __DEV__ && console.createTask
+    ? console.createTask
+    : function createNullTask() {
+        return null;
+      };
 
-const getOwner = () => {
+function getOwner() {
   if (__DEV__) {
     return __my_react_internal__.currentComponentFiber.current;
   }
   return null;
-};
+}
 
 function getTaskName(type: any) {
   if (type === Fragment) {
@@ -47,7 +52,9 @@ const ownerStackLimit = 1e4;
 const ownerStackTraceLimit = 10;
 
 function UnknownOwner() {
-  return (() => Error("react-stack-top-frame"))();
+  return (function createUnknownOwnerFrame() {
+    return Error("react-stack-top-frame");
+  })();
 }
 const createFakeCallStack = {
   react_stack_bottom_frame: function (callStackForError: any) {
@@ -157,13 +164,13 @@ function MyReactElementJSX(
 /**
  * @public
  */
-export const jsx = (
+export function jsx(
   type: MyReactElementType,
   config: Props,
   maybeKey: string | null,
   source: CreateElementProps["_source"],
   self: CreateElementProps["_self"]
-) => {
+) {
   const props: Props = {};
 
   let key: string | null = null;
@@ -192,7 +199,7 @@ export const jsx = (
   if (type && (typeof type === "function" || typeof type === "object")) {
     const typedType = type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
 
-    Object.keys(typedType?.defaultProps || {}).forEach((key) => {
+    Object.keys(typedType?.defaultProps || {}).forEach(function applyDefaultProps(key) {
       props[key] = props[key] === undefined ? typedType.defaultProps?.[key] : props[key];
     });
   }
@@ -218,19 +225,19 @@ export const jsx = (
   }
 
   return element;
-};
+}
 
 /**
  * @public
  */
-export const jsxDEV = (
+export function jsxDEV(
   type: MyReactElementType,
   config: Props,
   maybeKey: string | null,
   isStaticChildren: boolean,
   source: CreateElementProps["_source"],
   self: CreateElementProps["_self"]
-) => {
+) {
   const trackActualOwner = __DEV__ && __my_react_internal__.recentlyCreatedOwnerStacks.current++ < ownerStackLimit;
   let debugStackDEV: any = false;
 
@@ -276,7 +283,7 @@ export const jsxDEV = (
   if (type && (typeof type === "function" || typeof type === "object")) {
     const typedType = type as MixinMyReactClassComponent | MixinMyReactFunctionComponent;
 
-    Object.keys(typedType?.defaultProps || {}).forEach((key) => {
+    Object.keys(typedType?.defaultProps || {}).forEach(function applyDefaultProps(key) {
       props[key] = props[key] === undefined ? typedType.defaultProps?.[key] : props[key];
     });
   }
@@ -337,15 +344,15 @@ export const jsxDEV = (
   checkValidElement(element);
 
   return element;
-};
+}
 
 /**
  * @public
  */
-export const jsxs = (type: MyReactElementType, config: Props, key: string | null, source: CreateElementProps["_source"], self: CreateElementProps["_self"]) => {
+export function jsxs(type: MyReactElementType, config: Props, key: string | null, source: CreateElementProps["_source"], self: CreateElementProps["_self"]) {
   if (__DEV__) {
     return jsxDEV(type, config, key, true, source, self);
   } else {
     return jsx(type, config, key, source, self);
   }
-};
+}

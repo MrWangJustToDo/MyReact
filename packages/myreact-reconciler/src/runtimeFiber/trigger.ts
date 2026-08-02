@@ -20,7 +20,7 @@ import type { TriggerUpdateQueue } from "@my-react/react/type";
 
 const { currentScheduler } = __my_react_internal__;
 
-const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, _isImmediate: boolean, _isRetrigger: boolean) => {
+function processUpdateOnFiber(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, _isImmediate: boolean, _isRetrigger: boolean) {
   const renderScheduler = currentScheduler.current;
 
   const flag = renderDispatch.enableConcurrentMode;
@@ -95,9 +95,9 @@ const processUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyRea
       }
     }
   }
-};
+}
 
-export const prepareUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, isImmediate: boolean, isRetrigger: boolean) => {
+export function prepareUpdateOnFiber(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, isImmediate: boolean, isRetrigger: boolean) {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const renderScheduler = currentScheduler.current;
@@ -109,13 +109,13 @@ export const prepareUpdateOnFiber = (renderDispatch: CustomRenderDispatch, fiber
       processUpdateOnFiber(renderDispatch, fiber, isImmediate, isRetrigger);
     });
   }
-};
+}
 
 const SyncState = merge(STATE_TYPE.__triggerSyncForce__, STATE_TYPE.__triggerSync__);
 
 const ForceState = merge(STATE_TYPE.__triggerSyncForce__, STATE_TYPE.__triggerConcurrentForce__);
 
-export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE, callback?: () => void) => {
+export function triggerUpdateOnFiber(fiber: MyReactFiberNode, state?: STATE_TYPE, callback?: () => void) {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const renderScheduler = currentScheduler.current;
@@ -129,4 +129,4 @@ export const triggerUpdateOnFiber = (fiber: MyReactFiberNode, state?: STATE_TYPE
   };
 
   renderScheduler.dispatchState(updater);
-};
+}

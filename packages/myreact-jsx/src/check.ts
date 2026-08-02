@@ -42,14 +42,16 @@ export function isValidElement(element?: MyReactElementNode | any): element is M
 
 const keysMap: Record<string, boolean> = {};
 
-const checkValidKey = (children: ArrayMyReactElementNode) => {
+function checkValidKey(children: ArrayMyReactElementNode) {
   const obj: Record<string, boolean> = {};
 
   const renderScheduler = currentScheduler.current;
 
   const currentFiber = currentComponentFiber.current;
 
-  const validElement = children.filter((c) => isValidElement(c)) as MyReactElement[];
+  const validElement = children.filter(function filterValidElement(c) {
+    return isValidElement(c);
+  }) as MyReactElement[];
 
   if (validElement.length) {
     validElement.forEach(function checkSingleElementValidKey(c) {
@@ -77,24 +79,24 @@ const checkValidKey = (children: ArrayMyReactElementNode) => {
       }
     });
   }
-};
+}
 
 const optimizes: boolean[] = [];
 
-const pushOptimizes = (optimize: boolean) => {
+function pushOptimizes(optimize: boolean) {
   optimizes.push(enableOptimizeTreeLog.current);
 
   enableOptimizeTreeLog.current = optimize;
-};
+}
 
-const popOptimizes = () => {
+function popOptimizes() {
   enableOptimizeTreeLog.current = optimizes.pop() || false;
-};
+}
 
 /**
  * @internal
  */
-export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) => {
+export function checkSingleChildrenKey(children: MaybeArrayMyReactElementNode) {
   pushOptimizes(false);
 
   if (Array.isArray(children)) {
@@ -104,19 +106,19 @@ export const checkSingleChildrenKey = (children: MaybeArrayMyReactElementNode) =
   }
 
   popOptimizes();
-};
+}
 
 /**
  * @internal
  */
-export const checkArrayChildrenKey = (children: MyReactElementNode[]) => {
+export function checkArrayChildrenKey(children: MyReactElementNode[]) {
   children.forEach(checkSingleChildrenKey);
-};
+}
 
 /**
  * @internal
  */
-export const checkValidElement = (element: MyReactElementNode) => {
+export function checkValidElement(element: MyReactElementNode) {
   pushOptimizes(false);
 
   if (isValidElement(element)) {
@@ -277,4 +279,4 @@ export const checkValidElement = (element: MyReactElementNode) => {
   }
 
   popOptimizes();
-};
+}

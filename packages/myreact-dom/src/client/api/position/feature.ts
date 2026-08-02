@@ -12,7 +12,7 @@ import type { ClientDomDispatch } from "@my-react-dom-client/renderDispatch";
 /**
  * @internal
  */
-export const position = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) => {
+export function position(renderDispatch: ClientDomDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.patch, PATCH_TYPE.__position__)) {
     const rootFiber = renderDispatch.rootFiber;
 
@@ -27,4 +27,4 @@ export const position = (renderDispatch: ClientDomDispatch, fiber: MyReactFiberN
       append(fiber, parentFiberWithNode || renderDispatch);
     }
   }
-};
+}

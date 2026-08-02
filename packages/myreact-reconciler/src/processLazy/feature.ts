@@ -13,7 +13,7 @@ import type { LazyUpdateQueue, MixinMyReactFunctionComponent, lazy } from "@my-r
 const { enableSuspenseRoot, enableDebugFiled } = __my_react_shared__;
 const { currentScheduler } = __my_react_internal__;
 
-export const loadLazy = async (renderDispatch: CustomRenderDispatch, typedElementType: ReturnType<typeof lazy>) => {
+export async function loadLazy(renderDispatch: CustomRenderDispatch, typedElementType: ReturnType<typeof lazy>) {
   if (typedElementType._loaded) return;
 
   try {
@@ -41,9 +41,9 @@ export const loadLazy = async (renderDispatch: CustomRenderDispatch, typedElemen
       typedElementType._debugResolveTime = typedElementType._debugResolveTime || Date.now();
     }
   }
-};
+}
 
-export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function processLazy(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const typedElementType = fiber.elementType as ReturnType<typeof lazy>;
 
   if (typedElementType._error) {
@@ -116,4 +116,4 @@ export const processLazy = (renderDispatch: CustomRenderDispatch, fiber: MyReact
 
     return null;
   }
-};
+}

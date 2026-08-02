@@ -9,7 +9,7 @@ import type { UpdateQueue, RenderHookParams, createContext } from "@my-react/rea
 
 const { currentRunningFiber, currentScheduler } = __my_react_internal__;
 
-const dispatchHook = (params: RenderHookParams) => {
+function dispatchHook(params: RenderHookParams) {
   const fiber = currentRunningFiber.current as MyReactFiberNode;
 
   if (!fiber) {
@@ -25,9 +25,9 @@ const dispatchHook = (params: RenderHookParams) => {
   }
 
   return dispatch.dispatchHook(params);
-};
+}
 
-const dispatchState = (_params: UpdateQueue) => {
+function dispatchState(_params: UpdateQueue) {
   const trigger = _params.trigger;
 
   const fiber = trigger._reactInternals || trigger;
@@ -45,9 +45,9 @@ const dispatchState = (_params: UpdateQueue) => {
   }
 
   return dispatch.dispatchState(_params);
-};
+}
 
-const dispatchError = (_params: { fiber?: MyReactFiberNode; error?: Error }) => {
+function dispatchError(_params: { fiber?: MyReactFiberNode; error?: Error }) {
   const fiber = _params.fiber || (currentRunningFiber.current as MyReactFiberNode);
 
   if (!fiber) {
@@ -64,9 +64,9 @@ const dispatchError = (_params: { fiber?: MyReactFiberNode; error?: Error }) => 
   }
 
   return dispatch.dispatchError(_params);
-};
+}
 
-const dispatchPromise = (_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }) => {
+function dispatchPromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }) {
   const fiber = _params.fiber || (currentRunningFiber.current as MyReactFiberNode);
 
   if (!fiber) {
@@ -82,9 +82,9 @@ const dispatchPromise = (_params: { fiber?: MyReactFiberNode; promise?: Promise<
   }
 
   return dispatch.dispatchPromise(_params);
-};
+}
 
-const dispatchSuspensePromise = (_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }) => {
+function dispatchSuspensePromise(_params: { fiber?: MyReactFiberNode; promise?: Promise<unknown> }) {
   const fiber = _params.fiber || (currentRunningFiber.current as MyReactFiberNode);
 
   if (!fiber) {
@@ -100,9 +100,9 @@ const dispatchSuspensePromise = (_params: { fiber?: MyReactFiberNode; promise?: 
   }
 
   return dispatch.dispatchSuspensePromise(_params);
-};
+}
 
-const readContext = (_params: ReturnType<typeof createContext>): unknown => {
+function readContext(_params: ReturnType<typeof createContext>): unknown {
   const fiber = currentRunningFiber.current as MyReactFiberNode;
 
   if (!fiber) {
@@ -118,9 +118,9 @@ const readContext = (_params: ReturnType<typeof createContext>): unknown => {
   }
 
   return dispatch.readContext(_params);
-};
+}
 
-const readPromise = (_params: Promise<unknown>): unknown => {
+function readPromise(_params: Promise<unknown>): unknown {
   const fiber = currentRunningFiber.current as MyReactFiberNode;
 
   if (!fiber) {
@@ -136,9 +136,9 @@ const readPromise = (_params: Promise<unknown>): unknown => {
   }
 
   return dispatch.readPromise(_params);
-};
+}
 
-const getFiberTree = (fiber: MyReactFiberNode): string => {
+function getFiberTree(fiber: MyReactFiberNode): string {
   const dispatch = getCurrentDispatchFromFiber(fiber);
 
   if (dispatch) {
@@ -146,9 +146,9 @@ const getFiberTree = (fiber: MyReactFiberNode): string => {
   } else {
     return getFiberTreeImpl(fiber);
   }
-};
+}
 
-export const initScheduler = () => {
+export function initScheduler() {
   const scheduler = currentScheduler.current;
 
   if (scheduler.hasInit) return;
@@ -170,4 +170,4 @@ export const initScheduler = () => {
   scheduler.dispatchPromise = dispatchPromise;
 
   scheduler.dispatchSuspensePromise = dispatchSuspensePromise;
-};
+}

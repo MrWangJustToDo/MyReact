@@ -14,7 +14,7 @@ const { currentScheduler } = __my_react_internal__;
 
 const { enableLegacyLifeCycle, enablePerformanceLog } = __my_react_shared__;
 
-const throwHydrateError = (renderDispatch: ClientDomDispatch) => {
+function throwHydrateError(renderDispatch: ClientDomDispatch) {
   const errorArray = getError(renderDispatch);
 
   if (!errorArray) return;
@@ -30,9 +30,9 @@ const throwHydrateError = (renderDispatch: ClientDomDispatch) => {
   }
 
   clearError(renderDispatch);
-};
+}
 
-const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: () => void) => {
+function hydrateSync(element: MyReactElement, container: RenderContainer, cb?: () => void) {
   const fiber = new MyReactFiberNode(element);
 
   const renderDispatch = new ClientDomDispatch(container, fiber, element);
@@ -72,9 +72,9 @@ const hydrateSync = (element: MyReactElement, container: RenderContainer, cb?: (
   throwHydrateError(renderDispatch);
 
   delete renderDispatch.isHydrateRender;
-};
+}
 
-const hydrateAsync = async (element: MyReactElement, container: RenderContainer, cb?: () => void) => {
+async function hydrateAsync(element: MyReactElement, container: RenderContainer, cb?: () => void) {
   const fiber = new MyReactFiberNode(element);
 
   const renderDispatch = new ClientDomDispatch(container, fiber, element);
@@ -114,12 +114,12 @@ const hydrateAsync = async (element: MyReactElement, container: RenderContainer,
   throwHydrateError(renderDispatch);
 
   delete renderDispatch.isHydrateRender;
-};
+}
 
 /**
  * @internal
  */
-export const internalHydrate = (element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) => {
+export function internalHydrate(element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) {
   if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'hydrate' can only render a '@my-react' element`);
 
   initClient();
@@ -150,8 +150,10 @@ export const internalHydrate = (element: LikeJSX, container: Partial<RenderConta
   } else {
     hydrateSync(element, container as RenderContainer, cb);
   }
-};
+}
 
-export const hydrate = wrapperFunc((element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) => {
+function hydrateImpl(element: LikeJSX, container: Partial<RenderContainer>, cb?: () => void) {
   internalHydrate(element, container, cb);
-});
+}
+
+export const hydrate = wrapperFunc(hydrateImpl);

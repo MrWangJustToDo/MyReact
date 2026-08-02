@@ -7,7 +7,7 @@ import type { MyReactFiberNode, MyReactFiberNodeDev } from "../runtimeFiber";
 
 const { enableDebugFiled } = __my_react_shared__;
 
-export const defaultGenerateStrict = (fiber: MyReactFiberNode): boolean => {
+export function defaultGenerateStrict(fiber: MyReactFiberNode): boolean {
   if (__DEV__) {
     const parent = fiber.parent;
 
@@ -34,4 +34,4 @@ export const defaultGenerateStrict = (fiber: MyReactFiberNode): boolean => {
   }
 
   return false;
-};
+}

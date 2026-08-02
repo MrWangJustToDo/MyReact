@@ -1,7 +1,7 @@
 /**
  * @internal
  */
-export const getNativeEventName = (eventName: string, tagName: string, props: Record<string, unknown>) => {
+export function getNativeEventName(eventName: string, tagName: string, props: Record<string, unknown>) {
   let isCapture = false;
 
   let nativeName = eventName;
@@ -39,4 +39,4 @@ export const getNativeEventName = (eventName: string, tagName: string, props: Re
   }
 
   return { nativeName, isCapture };
-};
+}

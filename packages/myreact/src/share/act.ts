@@ -1,15 +1,15 @@
 import { startTransition } from "./transition";
 
-export const act = (cb: () => void) => {
+export function act(cb: () => void) {
   const abort = new AbortController();
 
-  const promise = new Promise<void>((res) => {
+  const promise = new Promise<void>(function actPromise(res) {
     if (abort.signal.aborted) {
       res();
       return;
     }
 
-    const onAbort = () => {
+    const onAbort = function onAbort() {
       abort.signal.removeEventListener("abort", onAbort);
       res();
     };
@@ -17,15 +17,17 @@ export const act = (cb: () => void) => {
     abort.signal.addEventListener("abort", onAbort);
   });
 
-  const wrapperCB = async () => {
+  const wrapperCB = async function actWrapper() {
     try {
       await cb();
     } finally {
-      startTransition(() => abort.abort());
+      startTransition(function abortAct() {
+        abort.abort();
+      });
     }
   };
 
   startTransition(wrapperCB);
 
   return promise;
-};
+}

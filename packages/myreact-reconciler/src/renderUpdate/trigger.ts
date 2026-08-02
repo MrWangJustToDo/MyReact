@@ -16,7 +16,7 @@ import type { ComponentUpdateQueue, MixinMyReactClassComponent, MyReactComponent
 
 const { globalLoop, currentScheduler, currentError } = __my_react_internal__;
 
-export const applyTriggerFiberCb = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function applyTriggerFiberCb(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const cbArray = renderDispatch.runtimeMap.triggerCallbackMap.get(fiber);
 
   if (include(fiber.type, NODE_TYPE.__class__)) {
@@ -30,13 +30,13 @@ export const applyTriggerFiberCb = (renderDispatch: CustomRenderDispatch, fiber:
   }
 
   renderDispatch.runtimeMap.triggerCallbackMap.delete(fiber);
-};
+}
 
 /**
  * only used for dev HMR
  * only invoke on the errorCatchFiber
  */
-export const triggerRevert = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, cb?: () => void) => {
+export function triggerRevert(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, cb?: () => void) {
   if (__DEV__) {
     if (!isErrorBoundariesComponent(fiber)) return;
 
@@ -52,9 +52,9 @@ export const triggerRevert = (renderDispatch: CustomRenderDispatch, fiber: MyRea
   } else {
     console.error(`[@my-react/react] can not call revert on prod mode`);
   }
-};
+}
 
-export const triggerUpdate = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) => {
+export function triggerUpdate(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, state?: STATE_TYPE, cb?: () => void) {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   const renderScheduler = currentScheduler.current;
@@ -118,12 +118,12 @@ export const triggerUpdate = (renderDispatch: CustomRenderDispatch, fiber: MyRea
   globalLoop.current = true;
 
   scheduleUpdate(renderDispatch);
-};
+}
 
 // TODO: error flow
 // currently only work render flow
 // commit flow not work as expected
-export const triggerError = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, error: Error, cb?: () => void) => {
+export function triggerError(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode, error: Error, cb?: () => void) {
   const renderScheduler = currentScheduler.current;
 
   const errorBoundariesFiber = renderDispatch.resolveErrorBoundaries(fiber);
@@ -215,4 +215,4 @@ export const triggerError = (renderDispatch: CustomRenderDispatch, fiber: MyReac
       throw error;
     }
   }
-};
+}

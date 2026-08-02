@@ -1,4 +1,4 @@
-export const createControlPromise = <T = void>() => {
+export function createControlPromise<T = void>() {
   let resolve: (value: T) => void;
   let reject: (reason: Error) => void;
   const promise = new Promise<T>((res, rej) => {
@@ -6,4 +6,4 @@ export const createControlPromise = <T = void>() => {
     reject = rej;
   });
   return { promise, resolve: resolve!, reject: reject! };
-};
+}

@@ -1,6 +1,6 @@
 import type { MyReactFiberNode } from "./instance";
 
-export const checkIsMyReactFiberNode = (fiber: unknown): fiber is MyReactFiberNode => {
+export function checkIsMyReactFiberNode(fiber: unknown): fiber is MyReactFiberNode {
   return (
     fiber &&
     typeof fiber === "object" &&
@@ -9,4 +9,4 @@ export const checkIsMyReactFiberNode = (fiber: unknown): fiber is MyReactFiberNo
     Object.prototype.hasOwnProperty.call(fiber.constructor.prototype, "isMyReactFiberNode") &&
     fiber.constructor.prototype.isMyReactFiberNode
   );
-};
+}

@@ -5,7 +5,7 @@ import { log } from "@my-react-dom-shared";
 import type { MyReactFiberNode } from "@my-react/react-reconciler";
 import type { DomNode } from "@my-react-dom-shared";
 
-const clearFiberDom = (fiber: MyReactFiberNode) => {
+function clearFiberDom(fiber: MyReactFiberNode) {
   if (fiber.nativeNode) {
     const dom = fiber.nativeNode as DomNode;
     try {
@@ -14,13 +14,13 @@ const clearFiberDom = (fiber: MyReactFiberNode) => {
       log(fiber, "error", `error for remove dom`, e);
     }
   }
-};
+}
 
 /**
  * @internal
  */
-export const clearNode = (fiber: MyReactFiberNode) => {
+export function clearNode(fiber: MyReactFiberNode) {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   clearFiberDom(fiber);
-};
+}

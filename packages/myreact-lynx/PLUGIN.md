@@ -30,13 +30,13 @@ pluginMyReactLynx.setup
 
 `applyEntry` also wires:
 
-| Piece | Role |
-| --- | --- |
-| BG entry | user app + `dist/background/entry.js` |
-| MT entry | `dist/main-thread/entry.js` + `@lynx-js/react/worklet-runtime` + user imports |
-| Layers | `LAYERS.BACKGROUND` / `LAYERS.MAIN_THREAD` on entries |
-| Worklet loaders | BG JS transform / MT registration stitch (`issuerLayer`) |
-| Template plugins | LynxTemplatePlugin, RuntimeWrapper, mark-main-thread |
+| Piece            | Role                                                                          |
+| ---------------- | ----------------------------------------------------------------------------- |
+| BG entry         | user app + `dist/background/entry.js`                                         |
+| MT entry         | `dist/main-thread/entry.js` + `@lynx-js/react/worklet-runtime` + user imports |
+| Layers           | `LAYERS.BACKGROUND` / `LAYERS.MAIN_THREAD` on entries                         |
+| Worklet loaders  | BG JS transform / MT registration stitch (`issuerLayer`)                      |
+| Template plugins | LynxTemplatePlugin, RuntimeWrapper, mark-main-thread                          |
 
 Rspack 2 enables **module layers by default** (no `experiments.layers`). Same file path becomes two modules, e.g. `(myreact:background)/…` vs `(myreact:main-thread)/…`.
 
@@ -93,7 +93,7 @@ Default **`false`**. Vue-style **true mount** (not Snapshot, not `renderToString
 ```ts
 pluginMyReactLynx({
   enableIFR: true,
-})
+});
 ```
 
 **Full sequence, file map, flush/worklet pitfalls, and debug checklist:** see **[IFR.md](./IFR.md)**.
@@ -114,7 +114,7 @@ Defaults: `@lynx-js/gesture-runtime`, `@lynx-js/motion`. Append more via the plu
 ```ts
 pluginMyReactLynx({
   includeWorkletPackages: ["@acme/worklet-lib"],
-})
+});
 ```
 
 Allowlisted packages:
@@ -139,20 +139,20 @@ Passthrough `lynx.SystemInfo` only. Do not hardcode `lynxSdkVersion` — hosts d
 
 ## 4. Common issues → cause → fix
 
-| Symptom | Likely cause | What to check / do |
-| --- | --- | --- |
-| `.bind is not a function` / `reading 'bind'` (cold start) | Worklet id missing from `_workletMap` | MT missed bare `registerWorkletInternal`; package not on MT graph; or full LEPUS guard skipped register. Rebuild plugin; confirm app imports `@lynx-js/gesture-runtime` / `@lynx-js/motion`; hard refresh. |
-| Same bind error **after HMR** | BG `_wkltId` changed; MT map still old | Architectural limitation — full refresh (not a loader bug). |
-| `delayed runOnMainThread: worklet "…" is not registered` | BG/MT hash mismatch or MT stitch missed file | Thread-defines registered after worklets; or file excluded from MT loader. |
-| `BaseGesture` / `module has no exports` on BG | MT empty stitch leaked into BG module identity | Broad nm allowlist + stripping exports without layer isolation historically. Keep layers + MT-only stitch; don’t process all `@lynx-js/*` as worklets. |
-| Gesture events dropped (dev warning about `wrapCallback`) | `gesture-runtime` not worklet-transformed on BG | Allowlist / loader exclude; ensure package is default-allowlisted or listed in `includeWorkletPackages`. |
-| `getNativeLynx` / microtask blowups | Bound `lynx.queueMicrotask` on `globalThis` | Use polyfill + `installLynxScheduler`; don’t prepend motion’s BG shim that assigns host microtask globally. |
-| iOS indicator / transform no-op | Host inline `transform` / `scaleY` unreliable | Prefer `%` height (or other layout props) for indicators; `styleEffect`+scale still OK for some cases. |
-| `ReferenceError: exports` on native | Missing RuntimeWrapper on BG JS | Wrap all `.js` except `main-thread.js`. |
-| `__JS__ is not defined` | Prebuilt `@lynx-js/react/internal` | Alias to `shims/lynx-react-internal`. |
-| Lazy chunk / CSS / empty `lepusCode` | Dynamic import / chunk naming / MT async | See long notes in `src/plugin/apply/entry.ts` (Issues 1–10). |
-| JSX namespace error for `main-thread:…` | SWC `throwIfNamespace` | Keep `false` in plugin SWC config. |
-| Worklets “work in web, fail on iOS” | Bundle stale / HMR / host style APIs | Rebuild `@my-react/react-lynx`, restart `dev:lynx`, hard refresh device. |
+| Symptom                                                   | Likely cause                                    | What to check / do                                                                                                                                                                                         |
+| --------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.bind is not a function` / `reading 'bind'` (cold start) | Worklet id missing from `_workletMap`           | MT missed bare `registerWorkletInternal`; package not on MT graph; or full LEPUS guard skipped register. Rebuild plugin; confirm app imports `@lynx-js/gesture-runtime` / `@lynx-js/motion`; hard refresh. |
+| Same bind error **after HMR**                             | BG `_wkltId` changed; MT map still old          | Architectural limitation — full refresh (not a loader bug).                                                                                                                                                |
+| `delayed runOnMainThread: worklet "…" is not registered`  | BG/MT hash mismatch or MT stitch missed file    | Thread-defines registered after worklets; or file excluded from MT loader.                                                                                                                                 |
+| `BaseGesture` / `module has no exports` on BG             | MT empty stitch leaked into BG module identity  | Broad nm allowlist + stripping exports without layer isolation historically. Keep layers + MT-only stitch; don’t process all `@lynx-js/*` as worklets.                                                     |
+| Gesture events dropped (dev warning about `wrapCallback`) | `gesture-runtime` not worklet-transformed on BG | Allowlist / loader exclude; ensure package is default-allowlisted or listed in `includeWorkletPackages`.                                                                                                   |
+| `getNativeLynx` / microtask blowups                       | Bound `lynx.queueMicrotask` on `globalThis`     | Use polyfill + `installLynxScheduler`; don’t prepend motion’s BG shim that assigns host microtask globally.                                                                                                |
+| iOS indicator / transform no-op                           | Host inline `transform` / `scaleY` unreliable   | Prefer `%` height (or other layout props) for indicators; `styleEffect`+scale still OK for some cases.                                                                                                     |
+| `ReferenceError: exports` on native                       | Missing RuntimeWrapper on BG JS                 | Wrap all `.js` except `main-thread.js`.                                                                                                                                                                    |
+| `__JS__ is not defined`                                   | Prebuilt `@lynx-js/react/internal`              | Alias to `shims/lynx-react-internal`.                                                                                                                                                                      |
+| Lazy chunk / CSS / empty `lepusCode`                      | Dynamic import / chunk naming / MT async        | See long notes in `src/plugin/apply/entry.ts` (Issues 1–10).                                                                                                                                               |
+| JSX namespace error for `main-thread:…`                   | SWC `throwIfNamespace`                          | Keep `false` in plugin SWC config.                                                                                                                                                                         |
+| Worklets “work in web, fail on iOS”                       | Bundle stale / HMR / host style APIs            | Rebuild `@my-react/react-lynx`, restart `dev:lynx`, hard refresh device.                                                                                                                                   |
 
 ---
 
@@ -170,31 +170,31 @@ Passthrough `lynx.SystemInfo` only. Do not hardcode `lynxSdkVersion` — hosts d
 
 ## 6. File map
 
-| Path | Responsibility |
-| --- | --- |
-| `src/plugin/rsbuild.ts` | Plugin options, aliases, SWC, setup order |
-| `src/plugin/layers.ts` | Layer name constants + layering notes |
-| `src/plugin/apply/entry.ts` | Dual entries, template, worklet loader rules; historical lazy-load issues |
-| `src/plugin/apply/css.ts` | CSS extract / MT ignore-css |
-| `src/plugin/apply/refresh.ts` | HMR refresh rules |
-| `IFR.md` | IFR runtime / debug map |
-| `src/plugin/rspack-plugins/` | Rspack plugins (mark-main-thread, css-config, refresh) |
-| `src/plugin/worklet-packages.ts` | Builtin allowlist + exclude / sideEffects helpers |
-| `src/plugin/loaders/worklet-loader.ts` | BG SWC target=`JS` |
-| `src/plugin/loaders/worklet-loader-mt.ts` | MT stitch + bare register |
-| `src/plugin/loaders/worklet-utils.ts` | Import / registration extractors |
-| `src/plugin/loaders/thread-defines-loader.ts` | `__BACKGROUND__` / `__MAIN_THREAD__` |
-| `src/main-thread/entry.ts` | MT bootstrap, patch order |
-| `src/background/entry.ts` | BG bootstrap, polyfill, loadLazyBundle |
-| `src/background/index.ts` | Public API barrel |
-| `src/background/render/` | Reconciler, shadow tree, ops flush |
-| `src/background/worklet/` | MainThreadRef, runOnMainThread / runOnBackground |
-| `src/background/first-screen/` | First-screen patch phase (not IFR); end flush in `render/flush.ts` |
-| `src/background/data/` | initData / globalProps / data processors / lynx API |
-| `src/background/gesture/` | Gesture serialize + `useGesture` |
-| `src/background/lazy/` | loadLazyBundle / dynamic import |
-| `src/shared/lynx-globals-polyfill.ts` | Safe `queueMicrotask` |
-| `src/background/render/install-lynx-scheduler.ts` | Framework microTask via host |
-| `src/shims/lynx-react-internal.ts` | Alias target for `@lynx-js/react/internal` |
+| Path                                              | Responsibility                                                            |
+| ------------------------------------------------- | ------------------------------------------------------------------------- |
+| `src/plugin/rsbuild.ts`                           | Plugin options, aliases, SWC, setup order                                 |
+| `src/plugin/layers.ts`                            | Layer name constants + layering notes                                     |
+| `src/plugin/apply/entry.ts`                       | Dual entries, template, worklet loader rules; historical lazy-load issues |
+| `src/plugin/apply/css.ts`                         | CSS extract / MT ignore-css                                               |
+| `src/plugin/apply/refresh.ts`                     | HMR refresh rules                                                         |
+| `IFR.md`                                          | IFR runtime / debug map                                                   |
+| `src/plugin/rspack-plugins/`                      | Rspack plugins (mark-main-thread, css-config, refresh)                    |
+| `src/plugin/worklet-packages.ts`                  | Builtin allowlist + exclude / sideEffects helpers                         |
+| `src/plugin/loaders/worklet-loader.ts`            | BG SWC target=`JS`                                                        |
+| `src/plugin/loaders/worklet-loader-mt.ts`         | MT stitch + bare register                                                 |
+| `src/plugin/loaders/worklet-utils.ts`             | Import / registration extractors                                          |
+| `src/plugin/loaders/thread-defines-loader.ts`     | `__BACKGROUND__` / `__MAIN_THREAD__`                                      |
+| `src/main-thread/entry.ts`                        | MT bootstrap, patch order                                                 |
+| `src/background/entry.ts`                         | BG bootstrap, polyfill, loadLazyBundle                                    |
+| `src/background/index.ts`                         | Public API barrel                                                         |
+| `src/background/render/`                          | Reconciler, shadow tree, ops flush                                        |
+| `src/background/worklet/`                         | MainThreadRef, runOnMainThread / runOnBackground                          |
+| `src/background/first-screen/`                    | First-screen patch phase (not IFR); end flush in `render/flush.ts`        |
+| `src/background/data/`                            | initData / globalProps / data processors / lynx API                       |
+| `src/background/gesture/`                         | Gesture serialize + `useGesture`                                          |
+| `src/background/lazy/`                            | loadLazyBundle / dynamic import                                           |
+| `src/shared/lynx-globals-polyfill.ts`             | Safe `queueMicrotask`                                                     |
+| `src/background/render/install-lynx-scheduler.ts` | Framework microTask via host                                              |
+| `src/shims/lynx-react-internal.ts`                | Alias target for `@lynx-js/react/internal`                                |
 
 Longer lazy-loading narratives live in the file header of `src/plugin/apply/entry.ts`.

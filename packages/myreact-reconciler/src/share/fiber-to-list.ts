@@ -2,7 +2,7 @@ import { include, ListTree, STATE_TYPE } from "@my-react/react-shared";
 
 import type { MyReactFiberNode } from "../runtimeFiber";
 
-export const generateFiberToMountList = (fiber: MyReactFiberNode) => {
+export function generateFiberToMountList(fiber: MyReactFiberNode) {
   const listTree = new ListTree<MyReactFiberNode>();
 
   const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
@@ -36,7 +36,7 @@ export const generateFiberToMountList = (fiber: MyReactFiberNode) => {
   }
 
   return listTree;
-};
+}
 
 export const generateFiberToUnmountList = generateFiberToMountList;
 
@@ -44,7 +44,7 @@ export const generateFiberToUnmountList = generateFiberToMountList;
  *
  * @param action listToFoot action for performance
  */
-export const generateFiberToListWithAction = (fiber: MyReactFiberNode, action: (fiber: MyReactFiberNode) => void) => {
+export function generateFiberToListWithAction(fiber: MyReactFiberNode, action: (fiber: MyReactFiberNode) => void) {
   const listTree = new ListTree<MyReactFiberNode>();
 
   const getNext = (fiber: MyReactFiberNode, root: MyReactFiberNode) => {
@@ -82,4 +82,4 @@ export const generateFiberToListWithAction = (fiber: MyReactFiberNode, action: (
   }
 
   return listTree;
-};
+}

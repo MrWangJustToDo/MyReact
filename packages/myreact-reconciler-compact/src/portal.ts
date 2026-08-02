@@ -5,13 +5,13 @@ import { Portal } from "@my-react/react-shared";
 import type { RenderContainer } from "./feature";
 import type { MyReactFiberNode, MyReactFiberContainer, CustomRenderDispatch } from "@my-react/react-reconciler";
 
-export const createPortal = (_element: MyReactElementNode, _container: RenderContainer) => {
+export function createPortal(_element: MyReactElementNode, _container: RenderContainer) {
   const portal = createElement(Portal, { container: _container }, _element);
 
   return portal;
-};
+}
 
-export const nextWorkPortal = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function nextWorkPortal(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   const typedFiber = fiber as MyReactFiberContainer;
 
   nextWorkNormal(renderDispatch, fiber);
@@ -27,4 +27,4 @@ export const nextWorkPortal = (renderDispatch: CustomRenderDispatch, fiber: MyRe
       child = child.sibling;
     }
   }
-};
+}

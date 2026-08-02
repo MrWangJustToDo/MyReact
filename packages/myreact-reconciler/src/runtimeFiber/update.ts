@@ -6,7 +6,7 @@ import type { CustomRenderDispatch } from "../renderDispatch";
 import type { MyReactFiberNode } from "./instance";
 import type { MyReactElement, MyReactElementNode, memo } from "@my-react/react/type";
 
-export const updateFiberNode = (
+export function updateFiberNode(
   renderDispatch: CustomRenderDispatch,
   {
     fiber,
@@ -18,7 +18,7 @@ export const updateFiberNode = (
     prevFiber: MyReactFiberNode;
   },
   nextElement: MyReactElementNode
-) => {
+) {
   const prevElementType = fiber.elementType;
 
   const prevProps = fiber.memoizedProps;
@@ -92,4 +92,4 @@ export const updateFiberNode = (
   // }
 
   return fiber;
-};
+}

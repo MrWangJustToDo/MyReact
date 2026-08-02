@@ -12,7 +12,7 @@ import type { MyReactFiberNodeDev } from "./interface";
 
 const { enableDebugFiled } = __my_react_shared__;
 
-export const unmountFiberNode = (renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) => {
+export function unmountFiberNode(renderDispatch: CustomRenderDispatch, fiber: MyReactFiberNode) {
   if (include(fiber.state, STATE_TYPE.__unmount__)) return;
 
   hookListUnmount(renderDispatch, fiber);
@@ -94,4 +94,4 @@ export const unmountFiberNode = (renderDispatch: CustomRenderDispatch, fiber: My
 
     delete typedFiber._debugUpdateQueue;
   }
-};
+}

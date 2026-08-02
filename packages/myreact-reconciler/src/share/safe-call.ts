@@ -6,7 +6,7 @@ import type { MyReactFiberNode } from "../runtimeFiber";
 
 const { currentRunningFiber, currentScheduler, currentScopeFiber, currentError, currentCallingFiber } = __my_react_internal__;
 
-export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
+export function safeCall<T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K {
   try {
     return action?.call?.(null, ...args);
   } catch (e) {
@@ -18,12 +18,12 @@ export const safeCall = <T extends any[] = any[], K = any>(action: (...args: T) 
 
     renderScheduler.dispatchError({ fiber, error: currentError.current });
   }
-};
+}
 
-export const safeCallWithCurrentFiber = <T extends any[] = any[], K = any>(
+export function safeCallWithCurrentFiber<T extends any[] = any[], K = any>(
   { action, fiber, fallback }: { action: (...args: T) => K; fiber: MyReactFiberNode; fallback?: () => K },
   ...args: T
-): K => {
+): K {
   currentCallingFiber.push(fiber);
 
   try {
@@ -41,18 +41,18 @@ export const safeCallWithCurrentFiber = <T extends any[] = any[], K = any>(
   } finally {
     currentCallingFiber.pop();
   }
-};
+}
 
-export const callWithFiber = <T extends any[] = any[], K = any>({ action, fiber }: { action: (...args: T) => K; fiber: MyReactFiberNode }, ...args: T): K => {
+export function callWithFiber<T extends any[] = any[], K = any>({ action, fiber }: { action: (...args: T) => K; fiber: MyReactFiberNode }, ...args: T): K {
   currentScopeFiber.current = fiber;
   try {
     return action?.call?.(null, ...args);
   } finally {
     currentScopeFiber.current = null;
   }
-};
+}
 
-export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K => {
+export function safeCallWithSync<T extends any[] = any[], K = any>(action: (...args: T) => K, ...args: T): K {
   try {
     beforeSyncUpdate();
 
@@ -68,4 +68,4 @@ export const safeCallWithSync = <T extends any[] = any[], K = any>(action: (...a
   } finally {
     afterSyncUpdate();
   }
-};
+}

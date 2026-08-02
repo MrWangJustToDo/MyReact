@@ -44,7 +44,7 @@ VueLynx IFR (v0.5+, `enableIFR`): MT runs full Vue inside `renderPage`, then BG 
 
 **Rationale:** Best first-frame fidelity and one semantic model; cost is MT bundle size (acceptable behind `enableIFR`).
 
-### Decision 2: Delayed ops flush stays; IFR plugs in *before* it
+### Decision 2: Delayed ops flush stays; IFR plugs in _before_ it
 
 **Choice:** Do **not** replace `scheduleFlush` with IFR. Sequence:
 
@@ -79,14 +79,14 @@ VueLynx IFR (v0.5+, `enableIFR`): MT runs full Vue inside `renderPage`, then BG 
 
 ## Risks / Trade-offs
 
-| Risk | Mitigation |
-| --- | --- |
-| MT bundle size / Lepus startup | Opt-in only; document measurement; ET later |
-| First BG flush double-creates or flickers | Mandatory hydrate intercept before enabling demos |
-| Async `React.lazy` on IFR path hangs / incomplete frame | Require sync-resolvable lazy (`loadLazyBundleSync` / sync-then) or Suspense fallback for IFR first screen |
-| Worklet/gesture double-bind | Single handoff through `endFirstScreen` → `onFirstScreenPatchFinished`; audit SET_WORKLET_EVENT / gestures |
-| MT loader strips component bodies today | IFR build path must keep app + reconciler on MT (loader/layer fork) |
-| Side effects / network on MT mount | Provide `isIfrMainThread()` (or define) and docs to gate fetches |
+| Risk                                                    | Mitigation                                                                                                 |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| MT bundle size / Lepus startup                          | Opt-in only; document measurement; ET later                                                                |
+| First BG flush double-creates or flickers               | Mandatory hydrate intercept before enabling demos                                                          |
+| Async `React.lazy` on IFR path hangs / incomplete frame | Require sync-resolvable lazy (`loadLazyBundleSync` / sync-then) or Suspense fallback for IFR first screen  |
+| Worklet/gesture double-bind                             | Single handoff through `endFirstScreen` → `onFirstScreenPatchFinished`; audit SET_WORKLET_EVENT / gestures |
+| MT loader strips component bodies today                 | IFR build path must keep app + reconciler on MT (loader/layer fork)                                        |
+| Side effects / network on MT mount                      | Provide `isIfrMainThread()` (or define) and docs to gate fetches                                           |
 
 ## Migration Plan
 

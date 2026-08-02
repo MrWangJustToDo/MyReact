@@ -4,7 +4,7 @@ export const DISPATCH_FIELD = "__@my-react/dispatch__";
 
 export const DEV_TOOL_FIELD = "__@my-react/react-devtool-inject__";
 
-export const addGlobalDispatch = (dispatch: CustomRenderDispatch) => {
+export function addGlobalDispatch(dispatch: CustomRenderDispatch) {
   if (typeof globalThis !== "undefined") {
     if (Array.isArray(globalThis[DISPATCH_FIELD])) {
       globalThis[DISPATCH_FIELD] = globalThis[DISPATCH_FIELD].filter((i) => i !== dispatch);
@@ -14,9 +14,9 @@ export const addGlobalDispatch = (dispatch: CustomRenderDispatch) => {
       globalThis[DISPATCH_FIELD] = [dispatch];
     }
   }
-};
+}
 
-export const autoSetDevTools = (dispatch: CustomRenderDispatch) => {
+export function autoSetDevTools(dispatch: CustomRenderDispatch) {
   addGlobalDispatch(dispatch);
 
   if (typeof globalThis !== "undefined" && globalThis[DEV_TOOL_FIELD]) {
@@ -28,12 +28,12 @@ export const autoSetDevTools = (dispatch: CustomRenderDispatch) => {
       void 0;
     }
   }
-};
+}
 
-export const delGlobalDispatch = (dispatch: CustomRenderDispatch) => {
+export function delGlobalDispatch(dispatch: CustomRenderDispatch) {
   if (typeof globalThis !== "undefined") {
     if (Array.isArray(globalThis[DISPATCH_FIELD])) {
       globalThis[DISPATCH_FIELD] = globalThis[DISPATCH_FIELD].filter((i) => i !== dispatch);
     }
   }
-};
+}

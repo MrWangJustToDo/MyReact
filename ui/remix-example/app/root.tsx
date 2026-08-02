@@ -1,11 +1,10 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration, json, useLoaderData, Link } from "@remix-run/react";
 
+import styles from "~/styles/styles.css?url";
 import { ThemeBody, ThemeHead, ThemeProvider, useTheme } from "~/utils/theme-provider";
 import { getThemeSession } from "~/utils/theme.server";
 
 import type { LoaderFunctionArgs, LinksFunction } from "@remix-run/node";
-
-import styles from "~/styles/styles.css?url";
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: styles }];
 

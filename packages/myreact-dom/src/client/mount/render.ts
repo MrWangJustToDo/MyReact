@@ -20,7 +20,7 @@ const { enableLegacyLifeCycle, enablePerformanceLog } = __my_react_shared__;
 /**
  * @internal
  */
-export const onceLog = once(() => {
+function onceLogImpl() {
   if (window?.__MY_REACT_DEVTOOL_RUNTIME__ || window?.["__@my-react/react-devtool-inject__"]) return;
 
   console.log(
@@ -28,33 +28,41 @@ export const onceLog = once(() => {
     "color: white;background-color: rgba(10, 190, 235, 0.8); border-radius: 2px; padding: 2px 5px",
     ""
   );
-});
+}
+
+export const onceLog = once(onceLogImpl);
 
 /**
  * @internal
  */
-export const onceLogPerformanceWarn = once(() => {
+function onceLogPerformanceWarnImpl() {
   console.log("[@my-react/react] performance warning log have been enabled!");
-});
+}
+
+export const onceLogPerformanceWarn = once(onceLogPerformanceWarnImpl);
 
 /**
  * @internal
  */
-export const onceLogConcurrentMode = once(() => {
+function onceLogConcurrentModeImpl() {
   console.log("[@my-react/react] concurrent mode have been enabled!");
-});
+}
+
+export const onceLogConcurrentMode = once(onceLogConcurrentModeImpl);
 
 /**
  * @internal
  */
-export const onceLogLegacyLifeCycleMode = once(() => {
+function onceLogLegacyLifeCycleModeImpl() {
   console.log("[@my-react/react] legacy 'UNSAFE' lifeCycle have been enabled!");
-});
+}
+
+export const onceLogLegacyLifeCycleMode = once(onceLogLegacyLifeCycleModeImpl);
 
 /**
  * @internal
  */
-export const internalRender = (element: LikeJSX, container: RenderContainer, cb?: () => void) => {
+export function internalRender(element: LikeJSX, container: RenderContainer, cb?: () => void) {
   initClient();
 
   onceLog();
@@ -114,9 +122,9 @@ export const internalRender = (element: LikeJSX, container: RenderContainer, cb?
   delete renderDispatch.isClientRender;
 
   return renderDispatch;
-};
+}
 
-export const render = wrapperFunc((element: LikeJSX, _container: Partial<RenderContainer>, cb?: () => void) => {
+function renderImpl(element: LikeJSX, _container: Partial<RenderContainer>, cb?: () => void) {
   if (!isValidElement(element)) throw new Error(`[@my-react/react-dom] 'render' can only render a '@my-react' element`);
 
   const container = _container as RenderContainer;
@@ -134,7 +142,7 @@ export const render = wrapperFunc((element: LikeJSX, _container: Partial<RenderC
 
       delGlobalDispatch(renderContainer);
 
-      render(element, container, cb);
+      renderImpl(element, container, cb);
 
       return;
     }
@@ -152,4 +160,6 @@ export const render = wrapperFunc((element: LikeJSX, _container: Partial<RenderC
   }
 
   internalRender(element, container, cb);
-});
+}
+
+export const render = wrapperFunc(renderImpl);

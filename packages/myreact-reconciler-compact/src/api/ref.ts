@@ -6,7 +6,7 @@ import type { MyReactFiberNode } from "@my-react/react-reconciler";
 /**
  * @internal
  */
-export const setRef = (_fiber: MyReactFiberNode, config: any) => {
+export function setRef(_fiber: MyReactFiberNode, config: any) {
   if (include(_fiber.patch, PATCH_TYPE.__ref__)) {
     const cleanUp = () => {
       // const refPrevious = _fiber.refPrevious;
@@ -78,12 +78,12 @@ export const setRef = (_fiber: MyReactFiberNode, config: any) => {
 
     _fiber.patch = remove(_fiber.patch, PATCH_TYPE.__ref__);
   }
-};
+}
 
 /**
  * @internal
  */
-export const unsetRef = (_fiber: MyReactFiberNode) => {
+export function unsetRef(_fiber: MyReactFiberNode) {
   if (include(_fiber.state, STATE_TYPE.__unmount__)) return;
 
   if (_fiber.ref && include(_fiber.type, NODE_TYPE.__plain__ | NODE_TYPE.__class__)) {
@@ -103,4 +103,4 @@ export const unsetRef = (_fiber: MyReactFiberNode) => {
       });
     }
   }
-};
+}

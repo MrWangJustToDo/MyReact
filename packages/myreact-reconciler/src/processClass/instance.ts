@@ -6,7 +6,7 @@ export type ClassInstanceField = InstanceField & {
   isMounted: boolean;
 };
 
-export const initClassInstance = (instance: MyReactComponent) => {
+export function initClassInstance(instance: MyReactComponent) {
   const field = getInstanceFieldByInstance(instance);
 
   if (!field) throw new Error(`[@my-react/react] can not find instance field for component, look like a bug for @my-react`);
@@ -14,9 +14,9 @@ export const initClassInstance = (instance: MyReactComponent) => {
   const typedField = field as ClassInstanceField;
 
   typedField.isMounted = false;
-};
+}
 
-export const mountClassInstance = (instance: MyReactComponent) => {
+export function mountClassInstance(instance: MyReactComponent) {
   const field = getInstanceFieldByInstance(instance);
 
   if (!field) throw new Error(`[@my-react/react] can not find instance field for component, look like a bug for @my-react`);
@@ -24,12 +24,12 @@ export const mountClassInstance = (instance: MyReactComponent) => {
   const typedField = field as ClassInstanceField;
 
   typedField.isMounted = true;
-};
+}
 
-export const getClassInstanceFieldByInstance = (instance: MyReactComponent) => {
+export function getClassInstanceFieldByInstance(instance: MyReactComponent) {
   const field = getInstanceFieldByInstance(instance);
 
   if (!field) throw new Error(`[@my-react/react] can not find instance field for component, look like a bug for @my-react`);
 
   return field as ClassInstanceField;
-};
+}

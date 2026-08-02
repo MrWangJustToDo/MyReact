@@ -7,13 +7,13 @@
 
 图例：
 
-| 级别 | 含义 |
-| --- | --- |
-| Critical | 可直接导致任意代码执行 / 任意模块加载 |
-| High | 可绕过安全边界、伪造敏感参数、跨站触发 mutation |
-| Medium | 正确性破坏、可利用的混淆、信息泄露或拒绝服务 |
-| Low | 边缘 case、脆弱假设、质量问题 |
-| Info | 设计债 / 与官方差距（已知），需知悉风险 |
+| 级别     | 含义                                            |
+| -------- | ----------------------------------------------- |
+| Critical | 可直接导致任意代码执行 / 任意模块加载           |
+| High     | 可绕过安全边界、伪造敏感参数、跨站触发 mutation |
+| Medium   | 正确性破坏、可利用的混淆、信息泄露或拒绝服务    |
+| Low      | 边缘 case、脆弱假设、质量问题                   |
+| Info     | 设计债 / 与官方差距（已知），需知悉风险         |
 
 ---
 
@@ -21,30 +21,30 @@
 
 源码审查（含二次交叉核对）。**已修复：A1、A2、A4–A10（部分）、A14–A20**。仍开放：**A3** 及低优先级项。
 
-| # | 级别 | 标题 | 状态 |
-| --- | --- | --- | --- |
-| A1 | Critical | `/__rsc?component=` 任意 `ssrLoadModule` | **fixed** (2026-07-31) → 仅 `renderRsc(url)` |
-| A2 | High | Server Action 无 Origin / CSRF 防护 | **fixed** (2026-07-31) → `assertSameOriginActionRequest` |
-| A3 | High | 内联 `"use server"` 闭包绑定明文 `.bind`（无加密） | open |
-| A4 | High | FormData `decodeAction` 与 Header actionId 可不一致 | **fixed** (2026-07-31) → FormData id 必须匹配 Header |
-| A5 | Medium | `onError` / 404 把内部错误与 actionId 回给客户端 | **fixed** (2026-07-31) → opaque digest |
-| A6 | Medium | 未解析 `$L…` Flight 引用被静默变成 `() => null` | **fixed** → lazarv lazy→MyReact lazy；裸 `$L\d+` reject（非 hang） |
-| A7 | Medium | `createServerActionReference` 未走 `createServerReference` | **fixed** (2026-07-31) |
-| A8 | Medium | 文件级 `"use server"` 未强制 async（`rejectNonAsyncFunction: false`） | **fixed** (2026-07-31) |
-| A9 | Medium | `transform-hoist-inline` 静默删除 `export *` / re-export | **fixed** (2026-07-31) → 编译报错 |
-| A10 | Medium | 请求体无大小限制（DoS） | **partial** — `/__rsc` 64KB；action 4MB |
-| A11 | Low | Action ID 可预测 + 404 枚举 | open（404 文案已脱敏） |
-| A12 | Low | SSR 仅精确替换 `<div id="root"></div>` | open |
-| A13 | Low | `hashActionId` / `referenceKey` 32-bit 哈希碰撞 | open |
-| A14 | Info | `validateImports` 仅有类型字段、未实现 | **fixed** (2026-07-31) → `createValidateImportsPlugin`，默认开启 |
-| A15 | Info |「生产」`server.mjs` 仍起 Vite，复用 middleware 风险面 | **fixed** (2026-07-31) → 纯 Node `import(dist/rsc)` + 静态 `dist/client`；entry 导出 `handler(Request)` |
-| A16 | High | `/__rsc_action` 未预加载 `server-actions-init`，registry 竞态 | **fixed** (2026-07-31) |
-| A17 | High | `conditions-plugin` 全局注入 `react-server`（污染 client/ssr） | **fixed** (2026-07-31) → 仅 `rsc` env + `runner.import` |
-| A18 | Medium | 公开 `?rsc-original` 可跳过全部 RSC transform | **fixed** (2026-07-31) → 内部 query + 仅 SSR |
-| A19 | Medium | 默认 `module-loader` 信任 Flight `metadata.id` 动态 import | **fixed** (2026-07-31) → 协议拒绝 + manifest 门禁 |
-| A20 | Medium | `use*` 启发式误伤合法服务端助手函数 | **fixed** (2026-07-31) → 仅已知 hooks 白名单 |
-| A21 | Low | `server.mjs` `path.join(CLIENT_DIR, pathname)` 绝对路径拼接失效 | **fixed** (2026-07-31) → 前缀校验 + 相对路径 |
-| A22 | Low | HTML middleware 过宽（凡 `Accept: text/html` 的 GET 都走 RSC SSR） | open |
+| #   | 级别     | 标题                                                                  | 状态                                                                                                    |
+| --- | -------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| A1  | Critical | `/__rsc?component=` 任意 `ssrLoadModule`                              | **fixed** (2026-07-31) → 仅 `renderRsc(url)`                                                            |
+| A2  | High     | Server Action 无 Origin / CSRF 防护                                   | **fixed** (2026-07-31) → `assertSameOriginActionRequest`                                                |
+| A3  | High     | 内联 `"use server"` 闭包绑定明文 `.bind`（无加密）                    | open                                                                                                    |
+| A4  | High     | FormData `decodeAction` 与 Header actionId 可不一致                   | **fixed** (2026-07-31) → FormData id 必须匹配 Header                                                    |
+| A5  | Medium   | `onError` / 404 把内部错误与 actionId 回给客户端                      | **fixed** (2026-07-31) → opaque digest                                                                  |
+| A6  | Medium   | 未解析 `$L…` Flight 引用被静默变成 `() => null`                       | **fixed** → lazarv lazy→MyReact lazy；裸 `$L\d+` reject（非 hang）                                      |
+| A7  | Medium   | `createServerActionReference` 未走 `createServerReference`            | **fixed** (2026-07-31)                                                                                  |
+| A8  | Medium   | 文件级 `"use server"` 未强制 async（`rejectNonAsyncFunction: false`） | **fixed** (2026-07-31)                                                                                  |
+| A9  | Medium   | `transform-hoist-inline` 静默删除 `export *` / re-export              | **fixed** (2026-07-31) → 编译报错                                                                       |
+| A10 | Medium   | 请求体无大小限制（DoS）                                               | **partial** — `/__rsc` 64KB；action 4MB                                                                 |
+| A11 | Low      | Action ID 可预测 + 404 枚举                                           | open（404 文案已脱敏）                                                                                  |
+| A12 | Low      | SSR 仅精确替换 `<div id="root"></div>`                                | open                                                                                                    |
+| A13 | Low      | `hashActionId` / `referenceKey` 32-bit 哈希碰撞                       | open                                                                                                    |
+| A14 | Info     | `validateImports` 仅有类型字段、未实现                                | **fixed** (2026-07-31) → `createValidateImportsPlugin`，默认开启                                        |
+| A15 | Info     | 「生产」`server.mjs` 仍起 Vite，复用 middleware 风险面                | **fixed** (2026-07-31) → 纯 Node `import(dist/rsc)` + 静态 `dist/client`；entry 导出 `handler(Request)` |
+| A16 | High     | `/__rsc_action` 未预加载 `server-actions-init`，registry 竞态         | **fixed** (2026-07-31)                                                                                  |
+| A17 | High     | `conditions-plugin` 全局注入 `react-server`（污染 client/ssr）        | **fixed** (2026-07-31) → 仅 `rsc` env + `runner.import`                                                 |
+| A18 | Medium   | 公开 `?rsc-original` 可跳过全部 RSC transform                         | **fixed** (2026-07-31) → 内部 query + 仅 SSR                                                            |
+| A19 | Medium   | 默认 `module-loader` 信任 Flight `metadata.id` 动态 import            | **fixed** (2026-07-31) → 协议拒绝 + manifest 门禁                                                       |
+| A20 | Medium   | `use*` 启发式误伤合法服务端助手函数                                   | **fixed** (2026-07-31) → 仅已知 hooks 白名单                                                            |
+| A21 | Low      | `server.mjs` `path.join(CLIENT_DIR, pathname)` 绝对路径拼接失效       | **fixed** (2026-07-31) → 前缀校验 + 相对路径                                                            |
+| A22 | Low      | HTML middleware 过宽（凡 `Accept: text/html` 的 GET 都走 RSC SSR）    | open                                                                                                    |
 
 ---
 
@@ -110,9 +110,10 @@
 
 ### A6 — 未解析 `$L…` 静默变 `null` 组件 — **FIXED（suspend）**
 
-**修复**：  
-- `@lazarv/rsc` 的 `createLazyWrapper`（**function** + `_init`/`_payload`）会转成 MyReact `lazy(loader)`（含 throw-thenable 重试）。  
-- 仍落到裸字符串 `$L<number>` 时 **reject**（不再 `() => null`，也不再 forever-pending）。  
+**修复**：
+
+- `@lazarv/rsc` 的 `createLazyWrapper`（**function** + `_init`/`_payload`）会转成 MyReact `lazy(loader)`（含 throw-thenable 重试）。
+- 仍落到裸字符串 `$L<number>` 时 **reject**（不再 `() => null`，也不再 forever-pending）。
 - 示例 SC 对 CC 使用静态 import，避免 `React.lazy()` 绕出未绑定 chunk id。
 
 ---
@@ -222,12 +223,12 @@ ID = `` `${moduleId}#${name}` ``（常含源文件路径）。便于枚举（配
 
 ## 相对「看起来正常」的点
 
-| 项 | 说明 |
-| --- | --- |
-| Guestbook 文本渲染 | `{message.text}` 走 React 文本子节点，非 `dangerouslySetInnerHTML`，存储型 XSS 风险低 |
-| Action 必须先 registry | `getServerAction` 未命中则 404，不能直接调任意函数名（但仍可调**所有已注册** action；且见 A16 冷启动） |
-| `registerServerReference` 双写 | 同时写入 `@lazarv/rsc` 与本地 `serverActionRegistry`，方向正确 |
-| HTML SSR 主路径 | `entryRsc.renderRsc` + tee + `injectRSCPayload` 结构合理；`/__rsc` 已与之对齐（A1） |
+| 项                             | 说明                                                                                                   |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| Guestbook 文本渲染             | `{message.text}` 走 React 文本子节点，非 `dangerouslySetInnerHTML`，存储型 XSS 风险低                  |
+| Action 必须先 registry         | `getServerAction` 未命中则 404，不能直接调任意函数名（但仍可调**所有已注册** action；且见 A16 冷启动） |
+| `registerServerReference` 双写 | 同时写入 `@lazarv/rsc` 与本地 `serverActionRegistry`，方向正确                                         |
+| HTML SSR 主路径                | `entryRsc.renderRsc` + tee + `injectRSCPayload` 结构合理；`/__rsc` 已与之对齐（A1）                    |
 
 ---
 
@@ -241,7 +242,7 @@ ID = `` `${moduleId}#${name}` ``（常含源文件路径）。便于枚举（配
 - [x] **A10**（部分）`/__rsc` 64KB + action 4MB body 限制
 - [x] **A5** 生产错误响应与 digest 脱敏
 - [x] **A7** 统一 `createServerReference`
-- [x] **A8 / A9** transform 与 React 约定对齐（async + export* 报错）
+- [x] **A8 / A9** transform 与 React 约定对齐（async + export\* 报错）
 - [x] **A6** 未解析 `$L` → MyReact lazy / Suspense pending（不再 `() => null`）
 - [x] **A18 / A19** 收紧 `rsc-original` 与 module loader
 - [x] **A20** `use*` 启发式白名单
@@ -255,14 +256,14 @@ ID = `` `${moduleId}#${name}` ``（常含源文件路径）。便于枚举（配
 
 ## 变更日志
 
-| 日期 | 变更 |
-| --- | --- |
-| 2026-07-31 | 初版审计：A1–A15 |
-| 2026-07-31 | **A1 fixed**：`/__rsc` → `renderRsc(url)` + 同源 URL；example client 改 `?url=` |
-| 2026-07-31 | 合并二次审查：A4 升为 High；新增 A16–A22 |
-| 2026-07-31 | **A2/A4/A16/A17 fixed**；A10 partial；action 404 脱敏 |
-| 2026-07-31 | **A5/A7/A8/A9 fixed**；A6 wontfix 保持现状 |
-| 2026-08-01 | **A6 fixed**：lazarv function lazy → MyReact lazy；裸 `$L\d+` Suspense pending |
-| 2026-07-31 | **A18/A19/A20 fixed** |
-| 2026-07-31 | **A14 fixed**：`validateImports` 插件默认开启 |
+| 日期       | 变更                                                                                |
+| ---------- | ----------------------------------------------------------------------------------- |
+| 2026-07-31 | 初版审计：A1–A15                                                                    |
+| 2026-07-31 | **A1 fixed**：`/__rsc` → `renderRsc(url)` + 同源 URL；example client 改 `?url=`     |
+| 2026-07-31 | 合并二次审查：A4 升为 High；新增 A16–A22                                            |
+| 2026-07-31 | **A2/A4/A16/A17 fixed**；A10 partial；action 404 脱敏                               |
+| 2026-07-31 | **A5/A7/A8/A9 fixed**；A6 wontfix 保持现状                                          |
+| 2026-08-01 | **A6 fixed**：lazarv function lazy → MyReact lazy；裸 `$L\d+` Suspense pending      |
+| 2026-07-31 | **A18/A19/A20 fixed**                                                               |
+| 2026-07-31 | **A14 fixed**：`validateImports` 插件默认开启                                       |
 | 2026-07-31 | **A15/A21 fixed**：handler(Request) + 纯 Node prod server；example `src/framework/` |

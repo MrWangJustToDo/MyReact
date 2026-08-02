@@ -8,11 +8,11 @@ import type { ServerDomDispatch, LegacyServerStreamDispatch, LatestServerStreamD
 /**
  * @internal
  */
-export const startRender = (
+export function startRender(
   renderDispatch: ClientDomDispatch | ServerDomDispatch | LegacyServerStreamDispatch | NoopLegacyRenderDispatch,
   fiber: MyReactFiberNode,
   hydrate = false
-) => {
+) {
   const startTime = Date.now();
 
   mountSync(renderDispatch, fiber);
@@ -26,16 +26,16 @@ export const startRender = (
   } else {
     renderDispatch.renderTime = endTime - startTime;
   }
-};
+}
 
 /**
  * @internal
  */
-export const startRenderAsync = async (
+export async function startRenderAsync(
   renderDispatch: ClientDomDispatch | ServerDomDispatch | LatestServerStreamDispatch | NoopLatestRenderDispatch,
   fiber: MyReactFiberNode,
   hydrate = false
-) => {
+) {
   const startTime = Date.now();
 
   await mountAsync(renderDispatch, fiber);
@@ -49,4 +49,4 @@ export const startRenderAsync = async (
   } else {
     renderDispatch.renderTime = endTime - startTime;
   }
-};
+}

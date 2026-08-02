@@ -1,11 +1,12 @@
 import createReconciler from "@my-react/react-reconciler-compact";
 import { ConcurrentRoot } from "@my-react/react-reconciler-compact/constants";
 
+import { isIfrEnabled, isIfrMainThread } from "../../shared/ifr.js";
 import { registerDataProcessors } from "../data/data-processor.js";
 
-import { scheduleFirstScreenPatchEnd } from "./flush.js";
+import { flushSyncNow, scheduleFirstScreenPatchEnd } from "./flush.js";
 import { hostConfig } from "./reconciler.js";
-import { createPageRoot, type ShadowElement } from "./shadow-element.js";
+import { createPageRoot, ShadowElement, type ShadowElement as ShadowElementType } from "./shadow-element.js";
 
 import type { DataProcessorDefinition } from "../data/data-processor.js";
 import type { NodesRef } from "@lynx-js/types";
@@ -14,8 +15,12 @@ import type { ReactNode } from "react";
 export const reconciler = createReconciler(hostConfig);
 
 let rootContainer: ReturnType<typeof reconciler.createContainer> | null = null;
-let pageRoot: ShadowElement | null = null;
+let pageRoot: ShadowElementType | null = null;
 let initialRenderPending = true;
+
+/** Stashed by `root.render` on Main Thread when IFR is enabled; consumed in `runIfrRender`. */
+let ifrPendingElement: ReactNode | null = null;
+let ifrMounting = false;
 
 if (__DEVTOOL__) {
   const wsUrl = typeof __DEVTOOL__ === "object" ? __DEVTOOL__.wsUrl : "ws://localhost:3002/ws";
@@ -30,10 +35,7 @@ if (__DEVTOOL__) {
   };
 
   const tryInjectDevTools = () => {
-    const init =
-      globalThis["__MY_REACT_DEVTOOL_NODE__" as keyof typeof globalThis] ||
-      globalThis["__MY_REACT_DEVTOOL_BUNDLE__" as keyof typeof globalThis] ||
-      globalThis["__MY_REACT_DEVTOOL_BUNDLE_WS__" as keyof typeof globalThis];
+    const init = globalThis.__MY_REACT_DEVTOOL_NODE__ || globalThis.__MY_REACT_DEVTOOL_BUNDLE__ || globalThis.__MY_REACT_DEVTOOL_BUNDLE_WS__;
 
     if (init) {
       typedReconciler.injectIntoDevToolsAuto(devToolsConfig.wsUrl, {
@@ -45,20 +47,12 @@ if (__DEVTOOL__) {
   };
 
   if (!tryInjectDevTools()) {
-    (globalThis as Record<string, unknown>).__MY_REACT_LYNX_DEVTOOLS_CONFIG__ = devToolsConfig;
-    (globalThis as Record<string, unknown>).__MY_REACT_LYNX_INJECT_DEVTOOLS__ = tryInjectDevTools;
+    globalThis.__MY_REACT_LYNX_DEVTOOLS_CONFIG__ = devToolsConfig;
+    globalThis.__MY_REACT_LYNX_INJECT_DEVTOOLS__ = tryInjectDevTools;
   }
 }
 
-/**
- * Render a React element to the Lynx page root.
- * This is the main entry point for MyReact Lynx apps.
- *
- * Only executes on the background thread. On the main thread (when worklet
- * transform is enabled and user code is bundled there), this is a no-op
- * to prevent double-rendering and errors from calling Lepus methods.
- */
-export function render(element: React.ReactNode) {
+function ensureContainer(): void {
   if (!pageRoot) {
     pageRoot = createPageRoot();
     rootContainer = reconciler.createContainer(
@@ -75,12 +69,85 @@ export function render(element: React.ReactNode) {
       null
     );
   }
+}
+
+/**
+ * Render a React element to the Lynx page root.
+ *
+ * - Background: normal reconcile → ops → scheduleFlush
+ * - Main Thread + IFR: stash element for `runIfrRender()` inside `renderPage`
+ * - Main Thread without IFR: no-op (worklet stitches only)
+ *
+ * @see packages/myreact-lynx/IFR.md
+ */
+export function render(element: React.ReactNode) {
+  if (isIfrMainThread() && !ifrMounting) {
+    ifrPendingElement = element;
+    if (__DEV__) {
+      console.log("[@my-react/react-lynx][IFR] Main Thread root.render stashed (sync mount in renderPage)");
+    }
+    return;
+  }
+
+  if (typeof __MAIN_THREAD__ !== "undefined" && __MAIN_THREAD__ && !isIfrEnabled()) {
+    return;
+  }
+
+  if (__DEV__ && typeof __BACKGROUND__ !== "undefined" && __BACKGROUND__) {
+    console.log("[@my-react/react-lynx] Background root.render");
+  }
+
+  ensureContainer();
   reconciler.updateContainer(element as ReactNode, rootContainer, null, () => {
     if (initialRenderPending) {
       initialRenderPending = false;
       scheduleFirstScreenPatchEnd();
     }
   });
+}
+
+/**
+ * Sync Main Thread IFR mount. Called from `renderPage` after `__CreatePage`.
+ * Returns true when a pending `root.render` was mounted.
+ *
+ * @internal
+ */
+export function runIfrRender(): boolean {
+  if (!isIfrEnabled() || !isIfrMainThread()) {
+    return false;
+  }
+  if (ifrPendingElement == null) {
+    return false;
+  }
+
+  const element = ifrPendingElement;
+  ifrMounting = true;
+  ShadowElement.nextId = 2;
+  initialRenderPending = true;
+  // Fresh container per renderPage (hot reload / re-entry).
+  pageRoot = null;
+  rootContainer = null;
+
+  try {
+    ensureContainer();
+    const syncReconciler = reconciler as typeof reconciler & {
+      updateContainerSync?: typeof reconciler.updateContainer;
+    };
+    const update = syncReconciler.updateContainerSync ?? reconciler.updateContainer;
+    reconciler.flushSync(() => {
+      update(element, rootContainer, null, () => {
+        if (initialRenderPending) {
+          initialRenderPending = false;
+          // IFR handoff end is still driven by BG's first-screen patch meta.
+        }
+      });
+    });
+    // Drain any ops that were scheduled during sync mount.
+    flushSyncNow();
+    return true;
+  } finally {
+    ifrMounting = false;
+  }
 }
 
 /**
@@ -141,3 +208,9 @@ export const root: Root = {
 export const createPortal = reconciler.createPortal as unknown as (element: ReactNode, container: NodesRef) => React.ReactPortal;
 
 export const flushSync = reconciler.flushSync;
+
+// IFR: expose sync mount to main-thread/entry without a static import cycle
+// that would pull the reconciler into non-IFR MT bundles.
+if (typeof __MAIN_THREAD__ !== "undefined" && __MAIN_THREAD__ && isIfrEnabled()) {
+  globalThis.__MY_REACT_LYNX_RUN_IFR_RENDER__ = runIfrRender;
+}

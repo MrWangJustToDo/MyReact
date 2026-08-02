@@ -16,6 +16,7 @@
     "readme.md",
     "PLUGIN.md",
     "FEATURES.md",
+    "IFR.md",
     "jsx-runtime.d.ts",
     "jsx-runtime.js",
     "jsx-namespace.d.ts",

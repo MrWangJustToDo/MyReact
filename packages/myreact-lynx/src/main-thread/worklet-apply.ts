@@ -4,6 +4,7 @@
  * Handles SET_WORKLET_EVENT, SET_MT_REF, and INIT_MT_REF operations.
  */
 
+import { getLynxWorkletImpl } from "../shared/lynx-worklet-impl.js";
 import { onWorkletCtxUpdate, retainWorkletCtx, type WorkletLike } from "../shared/worklet-bindings.js";
 
 import { elements } from "./element-registry.js";
@@ -17,27 +18,6 @@ const elementWorkletEvents = new Map<number, Map<string, Record<string, unknown>
 
 function workletEventKey(eventType: string, eventName: string): string {
   return `${eventType}:${eventName}`;
-}
-
-// ---------------------------------------------------------------------------
-// Internal helper
-// ---------------------------------------------------------------------------
-
-interface WorkletRefImpl {
-  _workletRefMap?: Record<number, { current: unknown; _wvid: number }>;
-  updateWorkletRef(ref: unknown, el: LynxElement): void;
-}
-
-interface LynxWorkletImpl {
-  _refImpl?: WorkletRefImpl;
-}
-
-/** Access globalThis.lynxWorkletImpl._refImpl, encapsulating the null check chain */
-function getWorkletImpl(): LynxWorkletImpl | undefined {
-  if (typeof globalThis !== "undefined" && "lynxWorkletImpl" in (globalThis as Record<string, unknown>)) {
-    return (globalThis as Record<string, unknown>)["lynxWorkletImpl"] as LynxWorkletImpl;
-  }
-  return undefined;
 }
 
 // ---------------------------------------------------------------------------
@@ -93,7 +73,7 @@ export function applySetMtRef(id: number, refImpl: unknown): void {
   }
 
   // Store in workletRefMap so worklet-runtime can resolve _wvid -> element.
-  const impl = getWorkletImpl();
+  const impl = getLynxWorkletImpl();
   if (!impl?._refImpl) {
     if (__DEV__) {
       throw new Error("[@my-react/react-lynx] SET_MT_REF: lynxWorkletImpl._refImpl unavailable");
@@ -114,7 +94,7 @@ export function applySetMtRef(id: number, refImpl: unknown): void {
       _wvid: ref._wvid,
     };
   }
-  impl._refImpl.updateWorkletRef(refImpl, el);
+  impl._refImpl.updateWorkletRef(refImpl as never, el as never);
 }
 
 /** INIT_MT_REF: register a value-only MainThreadRef in the worklet ref map */
@@ -122,7 +102,7 @@ export function applyInitMtRef(wvid: number, initValue: unknown): void {
   // Value-only refs (e.g. useMainThreadRef<number>(0)) are NOT bound to
   // elements, so they never go through SET_MT_REF. Without this, worklet
   // functions that access them get undefined from _workletRefMap lookup.
-  const impl = getWorkletImpl();
+  const impl = getLynxWorkletImpl();
   if (impl?._refImpl) {
     const refMap = impl._refImpl._workletRefMap;
     if (refMap && !(wvid in refMap)) {

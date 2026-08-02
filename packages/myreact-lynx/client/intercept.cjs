@@ -1,16 +1,17 @@
-// this file used for hmr setup
+// HMR webpack intercept — layer remapping + $RefreshReg$ wrapping.
+// React Refresh *updates* (forceUpdate / performReactRefresh) stay on Background
+// (`applyRefresh` issuerLayer + jsx-dev-runtime BG-only inject). This file only
+// keeps module-id remapping / noop refresh globals working when MT loads chunks.
 __webpack_require__.i.push(function (options) {
   if (
-    // This means this is in main-thread
+    // This means this is in main-thread (no Refresh helpers installed)
     !globalThis.$RefreshHelpers$ &&
     // Loading a module of background layer in main-thread, we replace the layer with the main-thread.
     options.id.includes("($BACKGROUND_LAYER$)")
   ) {
-    // We may serialize the snapshot from background to main-thread.
-    // The `(react:background)` layer in the module id cannot be found in the main-thread.
-    // Thus we replace it here to make HMR work.
-    //
-    // Maybe it is better to run chunk loading on main thread.
+    // Hot-update / chunk ids may still carry the Background layer tag.
+    // Remap to the Main Thread module so require does not miss the factory.
+    // This does NOT run React Refresh on MT — only resolves the correct module.
     options.id = options.id.replace(
       `($BACKGROUND_LAYER$)`, // This is replaced by ReactRefreshWebpackPlugin
       "($MAIN_THREAD_LAYER$)" // This is replaced by ReactRefreshWebpackPlugin

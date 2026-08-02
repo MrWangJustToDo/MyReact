@@ -135,6 +135,18 @@ export interface PluginMyReactLynxOptions {
    * @defaultValue `[]`
    */
   includeWorkletPackages?: string[];
+
+  /**
+   * Instant First-Frame Rendering (Vue-style true mount).
+   * When enabled, Main Thread `renderPage` sync-mounts the app before Background
+   * starts. Increases Main Thread bundle size. Prefer sync initial data; gate
+   * network with `isIfrMainThread()`.
+   *
+   * Default off. Element Templates are not included (separate follow-up).
+   *
+   * @defaultValue false
+   */
+  enableIFR?: boolean;
 }
 
 const PLUGIN_NAME = "lynx:myreact";
@@ -182,6 +194,7 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
     reactDevTool = false,
     engineVersion = "3.2",
     includeWorkletPackages,
+    enableIFR = false,
   } = options;
 
   return {
@@ -221,6 +234,7 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
               __HMR__: enableRefresh,
               __DEVTOOL__: typeof reactDevTool === "boolean" ? reactDevTool : JSON.stringify(reactDevTool),
               __MY_REACT_LYNX_AUTO_PIXEL_UNIT__: JSON.stringify(autoPixelUnit),
+              __MY_REACT_LYNX_IFR__: JSON.stringify(enableIFR),
             },
           },
           tools: {
@@ -342,6 +356,7 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
         reactRefresh,
         engineVersion,
         includeWorkletPackages,
+        enableIFR,
       });
 
       applyBackgroundOnly(api);

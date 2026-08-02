@@ -25,12 +25,10 @@ declare var lynxCoreInject:
   | null
   | undefined;
 
-const g = globalThis as Record<string, unknown>;
-
 // Set runtime thread identification globals
 // These can be used for runtime checks when compile-time defines aren't available
-g["__BACKGROUND_RUNTIME__"] = true;
-g["__MAIN_THREAD_RUNTIME__"] = false;
+globalThis.__BACKGROUND_RUNTIME__ = true;
+globalThis.__MAIN_THREAD_RUNTIME__ = false;
 
 // Register loadLazyBundle on lynx global BEFORE any chunk loading happens
 // This is required for React.lazy() with dynamic imports to work
@@ -48,8 +46,8 @@ if (typeof lynxCoreInject !== "undefined" && lynxCoreInject?.tt) {
 }
 
 // Fallback: some older Lynx SDKs call globalThis.publishEvent directly
-g["publishEvent"] = publishEvent;
+globalThis.publishEvent = publishEvent;
 
-g["updatePage"] = function (_data: unknown): void {
+globalThis.updatePage = function (_data: unknown): void {
   // no-op: MyReact handles data updates on Background Thread
 };

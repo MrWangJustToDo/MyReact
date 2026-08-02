@@ -400,11 +400,19 @@ export interface ApplyEntryOptions {
    * @defaultValue `[]`
    */
   includeWorkletPackages?: string[];
+
+  /**
+   * Instant First-Frame Rendering — keep app/reconciler on Main Thread.
+   *
+   * @defaultValue false
+   */
+  enableIFR?: boolean;
 }
 
 export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}): void {
   const engineVersion = opts.engineVersion ?? "3.2";
   const workletPackages = resolveWorkletPackages(opts.includeWorkletPackages);
+  const enableIFR = opts.enableIFR ?? false;
   // Expose LynxTemplatePlugin hooks so other plugins can interact with the Lynx template pipeline.
   const sLynxTemplatePlugin = Symbol.for("LynxTemplatePlugin");
   api.expose(sLynxTemplatePlugin, {
@@ -463,7 +471,7 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
   });
 
   // Apply worklet loaders
-  applyWorkletLoaders(api, workletPackages);
+  applyWorkletLoaders(api, workletPackages, enableIFR);
 
   api.modifyBundlerChain((chain, { environment, isDev, isProd }) => {
     const isRspeedy = api.context.callerName === "rspeedy";
@@ -691,7 +699,7 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
  * Uses `@lynx-js/react/transform`: BG → JS worklet contexts; MT → LEPUS then
  * bare `registerWorkletInternal` extraction (see worklet-loader-mt).
  */
-function applyWorkletLoaders(api: RsbuildPluginAPI, workletPackages: readonly string[]): void {
+function applyWorkletLoaders(api: RsbuildPluginAPI, workletPackages: readonly string[], enableIFR: boolean): void {
   const excludeNodeModulesExceptWorkletPkgs = createNodeModulesExceptWorkletPackagesExclude(workletPackages);
   const workletPkgPathTest = createWorkletPackagesPathTest(workletPackages);
 
@@ -800,7 +808,7 @@ function applyWorkletLoaders(api: RsbuildPluginAPI, workletPackages: readonly st
       .end()
       .use("worklet-loader-mt")
       .loader(path.resolve(_dirname, "../loaders/worklet-loader-mt"))
-      .options({ workletPackages })
+      .options({ workletPackages, enableIFR })
       .end();
   });
 }

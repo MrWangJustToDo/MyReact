@@ -15,21 +15,14 @@ interface RegistryState {
 // The consumer bundle can materialize multiple event-registry module instances
 // (for example via separate background/main-thread graphs). Store the state
 // on globalThis so register() and publishEvent() still see the same handlers.
-const REGISTRY_STATE_KEY = "__REACT_LYNX_EVENT_REGISTRY__";
-
-type RegistryGlobal = typeof globalThis & {
-  __REACT_LYNX_EVENT_REGISTRY__?: RegistryState;
-};
-
 function getRegistryState(): RegistryState {
-  const g = globalThis as RegistryGlobal;
-  let state = g[REGISTRY_STATE_KEY];
+  let state = globalThis.__REACT_LYNX_EVENT_REGISTRY__;
   if (!state) {
     state = {
       signCounter: 0,
       handlers: new Map<string, (data: unknown) => void>(),
     };
-    Object.defineProperty(g, REGISTRY_STATE_KEY, {
+    Object.defineProperty(globalThis, "__REACT_LYNX_EVENT_REGISTRY__", {
       value: state,
       configurable: true,
       enumerable: false,

@@ -13,9 +13,8 @@
 import { __my_react_internal__, __my_react_scheduler__ } from "@my-react/react/type";
 
 function lynxMicroTask(task: () => void): void {
-  const lynxHost = globalThis.lynx as { queueMicrotask?: (fn: () => void) => void } | undefined;
-  if (typeof lynxHost?.queueMicrotask === "function") {
-    lynxHost.queueMicrotask(task);
+  if (typeof lynx !== "undefined" && typeof lynx.queueMicrotask === "function") {
+    lynx.queueMicrotask(task);
     return;
   }
 

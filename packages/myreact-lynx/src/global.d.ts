@@ -1,4 +1,5 @@
 import type { ElementRef } from "@lynx-js/type-element-api";
+import type { SystemInfo as LynxSystemInfo } from "@lynx-js/types";
 import { Lynx } from "@lynx-js/types";
 
 declare global {
@@ -32,11 +33,10 @@ declare global {
   const __MAIN_THREAD__: boolean;
 
   /**
-   * Runtime thread identification (set by entry files).
-   * Use these when you need runtime checks instead of compile-time.
+   * Compile-time: `pluginMyReactLynx({ enableIFR: true })`.
+   * Instant First-Frame Rendering (MT sync mount). Not first-screen patch meta.
    */
-  const __BACKGROUND_RUNTIME__: boolean;
-  const __MAIN_THREAD_RUNTIME__: boolean;
+  const __MY_REACT_LYNX_IFR__: boolean;
 
   const __DEVTOOL__:
     | boolean
@@ -44,12 +44,57 @@ declare global {
         wsUrl?: string;
       };
 
-  interface GlobalThis {
-    __MY_REACT_LYNX_PATCH_METHOD__?: string;
-  }
-
   /** Alias for ElementRef — keeps ops-apply.ts changes minimal. */
   type LynxElement = ElementRef;
+
+  interface MyReactLynxEventRegistryState {
+    signCounter: number;
+    handlers: Map<string, (data: unknown) => void>;
+  }
+
+  /**
+   * Runtime globals we assign (use `var` so they exist on `typeof globalThis`,
+   * matching Lynx’s `declare var SystemInfo` / `lynxWorkletImpl` style).
+   * Do not redeclare host globals (`lynxWorkletImpl`, `SystemInfo`).
+   */
+  var __BACKGROUND_RUNTIME__: boolean;
+  var __MAIN_THREAD_RUNTIME__: boolean;
+  var __MY_REACT_LYNX_PATCH_METHOD__: string | undefined;
+  var __MY_REACT_LYNX_IFR_DROP_MT_OPS__: boolean | undefined;
+  var __MY_REACT_LYNX_RUN_IFR_RENDER__: (() => boolean) | undefined;
+  var __MY_REACT_LYNX_AUTO_PIXEL_UNIT__: boolean | undefined;
+  var __MY_REACT_LYNX_DEVTOOLS_CONFIG__:
+    | {
+        wsUrl: string;
+        rendererPackageName: string;
+      }
+    | undefined;
+  var __MY_REACT_LYNX_INJECT_DEVTOOLS__: (() => boolean) | undefined;
+  var __MY_REACT_DEVTOOL_NODE__: unknown;
+  var __MY_REACT_DEVTOOL_BUNDLE__: unknown;
+  var __MY_REACT_DEVTOOL_BUNDLE_WS__: unknown;
+  var __REACT_LYNX_EVENT_REGISTRY__: MyReactLynxEventRegistryState | undefined;
+  var __MYREACT_LYNX_SCOPE_REGISTRY__: Record<string, string> | undefined;
+
+  var processData: ((data: unknown, processorName?: string) => unknown) | undefined;
+  var renderPage: ((data: unknown) => void) | undefined;
+  var updatePage: ((data: unknown) => void) | undefined;
+  var updateGlobalProps: ((data: unknown) => void) | undefined;
+  var reactPatchUpdate: ((payload: { data: string }) => void) | undefined;
+  var updateMTRefInitValue: ((payload: { data: string }) => void) | undefined;
+  var processEvalResult: (<T>(result: T | undefined, schema: string) => T | undefined) | undefined;
+  var publishEvent: ((sign: string, data: unknown) => void) | undefined;
+  var runOnBackground: ((...args: unknown[]) => unknown) | undefined;
+
+  var $RefreshReg$: ((type: unknown, id: string) => void) | undefined;
+  var $RefreshSig$: (() => (type: unknown) => unknown) | undefined;
+  var $RefreshRuntime$:
+    | {
+        register: (type: unknown, id: string) => void;
+        createSignatureFunctionForTransform: () => (type: unknown) => unknown;
+      }
+    | undefined;
+  var $RefreshHelpers$: unknown;
 
   /**
    * Override @lynx-js/type-element-api's __SetCSSId to accept an array.
@@ -86,7 +131,7 @@ declare global {
 
 declare module "@lynx-js/types" {
   export interface Lynx {
-    SystemInfo?: Record<string, unknown>;
+    SystemInfo?: LynxSystemInfo;
 
     /** InitData passed from native side, used by useInitData */
     __initData: Record<string, unknown>;

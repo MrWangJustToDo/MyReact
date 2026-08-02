@@ -2,7 +2,12 @@
  * React Refresh (HMR) integration for MyReact Lynx.
  *
  * Applies the refresh loader and plugin to enable hot module replacement
- * for React components in the Lynx dual-thread architecture.
+ * for React components on the **Background** layer only.
+ *
+ * Main Thread must not `forceUpdate` / `performReactRefresh`:
+ * - Non-IFR MT has no app reconciler.
+ * - IFR MT is a one-shot first-screen mount; post-seal ops are dropped.
+ * HMR re-render is always driven from Background → ops → MT apply.
  */
 
 import { createRequire } from "node:module";

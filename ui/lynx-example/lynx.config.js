@@ -15,6 +15,8 @@ export default defineConfig({
       enableCSSSelector: true,
       enableCSSInheritance: true,
       enableCSSInlineVariables: true,
+      // // Instant First-Frame (Vue-style MT sync mount). Debug: packages/myreact-lynx/IFR.md
+      enableIFR: true,
       // SEE https://github.com/MrWangJustToDo/myreact-devtools
       // use pnpm run dev:web to debug lynx app
       // reactDevTool: true,

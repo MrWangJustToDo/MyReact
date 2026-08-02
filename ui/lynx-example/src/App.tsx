@@ -72,6 +72,7 @@ export const App = ({ onOpen }: AppProps) => {
   }, [cardRef]);
 
   useEffect(() => {
+    // Framework also logs `[@my-react/react-lynx] Background root.render` in __DEV__.
     console.log("[Background Thread] App mounted");
   }, []);
 

@@ -23,7 +23,7 @@ const DIMENSIONLESS = new Set(["flex", "flexGrow", "flexShrink", "flexOrder", "o
 const isPlainObject = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
 
 const normalizeStyle = (style: Record<string, unknown>) => {
-  const autoPixelUnit = (globalThis as any).__MY_REACT_LYNX_AUTO_PIXEL_UNIT__ ?? true;
+  const autoPixelUnit = globalThis.__MY_REACT_LYNX_AUTO_PIXEL_UNIT__ ?? true;
   const output: Record<string, unknown> = {};
 
   Object.keys(style).forEach((key) => {

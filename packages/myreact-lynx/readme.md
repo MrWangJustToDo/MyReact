@@ -5,7 +5,8 @@ MyReact renderer for Lynx dual-thread architecture (Background reconciler + Main
 ## Docs
 
 - **[FEATURES.md](./FEATURES.md)** — feature matrix vs ReactLynx (full set) and VueLynx
-- **[PLUGIN.md](./PLUGIN.md)** — plugin pipeline, key invariants (layers / worklets), common failures and causes.
+- **[PLUGIN.md](./PLUGIN.md)** — plugin pipeline, key invariants (layers / worklets), common failures and causes
+- **[IFR.md](./IFR.md)** — Instant First-Frame sequence, file map, flush/worklet/HMR notes, debug checklist
 
 ## Package layout
 

@@ -43,6 +43,7 @@ export { loadWorkletRuntime, runWorkletCtx } from "@lynx-js/react/worklet-runtim
 
 export { reconciler, render, root, createPortal, flushSync, type Root } from "./render/renderer.js";
 export { markFirstScreenPatchComplete } from "./first-screen/first-screen-patch.js";
+export { isIfrEnabled, isIfrMainThread } from "../shared/ifr.js";
 export { useMainThreadRef, MainThreadRef } from "./worklet/main-thread-ref.js";
 export { runOnBackground } from "./worklet/run-on-background.js";
 export { transformToWorklet } from "./worklet/transform-to-worklet.js";

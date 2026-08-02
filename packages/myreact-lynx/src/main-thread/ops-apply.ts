@@ -9,7 +9,7 @@
 import { OP } from "../shared/op.js";
 
 import { cleanupElementState } from "./element-cleanup.js";
-import { elements, pageUniqueId, setPageUniqueId } from "./element-registry.js";
+import { clearElementParent, elementParent, elements, pageUniqueId, setElementParent, setPageUniqueId } from "./element-registry.js";
 import { applySetGesture, resetGestureState } from "./gesture-apply.js";
 import {
   createListElement,
@@ -132,6 +132,7 @@ export function applyOps(ops: unknown[]): void {
             const anchor = elements.get(anchorId);
             if (anchor) __InsertElementBefore(parent, child, anchor);
           }
+          setElementParent(childId, parentId);
         }
         break;
       }
@@ -142,12 +143,20 @@ export function applyOps(ops: unknown[]): void {
         const parent = elements.get(parentId);
         const child = elements.get(childId);
         if (parent && child) {
-          if (isListParent(parentId)) {
-            removeListItem(parentId, childId);
-          } else {
-            __RemoveElement(parent, child);
+          try {
+            if (isListParent(parentId)) {
+              removeListItem(parentId, childId);
+            } else {
+              __RemoveElement(parent, child);
+            }
+          } catch (err) {
+            // Web PAPI throws NotFoundError when parent/child diverged (e.g. stale IFR tree).
+            if (__DEV__) {
+              console.warn(`[@my-react/react-lynx] REMOVE skipped id=${childId} from parent=${parentId}`, err);
+            }
           }
         }
+        clearElementParent(childId);
         cleanupElementState(childId);
         break;
       }
@@ -265,6 +274,7 @@ export { elements };
 /** Reset module state – for testing only. */
 export function resetMainThreadState(): void {
   elements.clear();
+  elementParent.clear();
   setPageUniqueId(1);
   resetListState();
   resetWorkletState();

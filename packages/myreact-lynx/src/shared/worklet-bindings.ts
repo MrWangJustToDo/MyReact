@@ -1,9 +1,10 @@
 /**
  * Thin wrappers around worklet-runtime lifecycle hooks.
  *
- * Avoids importing from `@lynx-js/react/worklet-runtime/bindings` which may
- * differ across published @lynx-js/react versions.
+ * Uses the host `lynxWorkletImpl` global (typed by `@lynx-js/react` worklet-runtime).
  */
+
+import { getLynxWorkletImpl } from "./lynx-worklet-impl.js";
 
 export type WorkletLike = {
   _execId?: number;
@@ -12,26 +13,19 @@ export type WorkletLike = {
 
 export function retainWorkletCtx(worklet: WorkletLike): void {
   if (worklet._execId !== undefined) {
-    const impl = (globalThis as Record<string, unknown>)["lynxWorkletImpl"] as
-      | { _jsFunctionLifecycleManager?: { addRef: (id: number, ctx: unknown) => void } }
-      | undefined;
-    impl?._jsFunctionLifecycleManager?.addRef(worklet._execId, worklet);
+    getLynxWorkletImpl()?._jsFunctionLifecycleManager?.addRef(worklet._execId, worklet);
   }
 }
 
 export function onWorkletCtxUpdate(worklet: WorkletLike, oldWorklet: WorkletLike | null | undefined, isFirstScreen: boolean, element: LynxElement): void {
-  const impl = (globalThis as Record<string, unknown>)["lynxWorkletImpl"] as
-    | {
-        _hydrateCtx?: (next: WorkletLike, prev: WorkletLike) => void;
-        _eventDelayImpl?: { runDelayedWorklet: (w: WorkletLike, el: LynxElement) => void };
-      }
-    | undefined;
+  const impl = getLynxWorkletImpl();
 
-  if (isFirstScreen && oldWorklet) {
-    impl?._hydrateCtx?.(worklet, oldWorklet);
+  if (isFirstScreen && oldWorklet && impl?._hydrateCtx) {
+    // Host typings require Worklet; runtime only needs {_wkltId,_execId,…}.
+    impl._hydrateCtx(worklet as never, oldWorklet as never);
   }
   if (isFirstScreen) {
-    impl?._eventDelayImpl?.runDelayedWorklet(worklet, element);
+    impl?._eventDelayImpl?.runDelayedWorklet(worklet as never, element as never);
   }
 }
 
@@ -43,13 +37,7 @@ export function onWorkletCtxUpdate(worklet: WorkletLike, oldWorklet: WorkletLike
  * @internal
  */
 export function onFirstScreenPatchFinished(): void {
-  const impl = (globalThis as Record<string, unknown>)["lynxWorkletImpl"] as
-    | {
-        _runOnBackgroundDelayImpl?: { runDelayedBackgroundFunctions?: () => void };
-        _refImpl?: { clearFirstScreenWorkletRefMap?: () => void };
-        _eventDelayImpl?: { clearDelayedWorklets?: () => void };
-      }
-    | undefined;
+  const impl = getLynxWorkletImpl();
 
   impl?._runOnBackgroundDelayImpl?.runDelayedBackgroundFunctions?.();
   impl?._refImpl?.clearFirstScreenWorkletRefMap?.();

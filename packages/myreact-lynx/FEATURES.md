@@ -31,13 +31,25 @@ Interactive demos for supported APIs: [`ui/lynx-example`](../../ui/lynx-example)
 | --- | --- | --- |
 | **ReactLynx** | Compile-time **Snapshot** (default). BG commits become snapshot patches. Optional alternate backend: **Element Template** (`experimental_useElementTemplate` → `__CreateElementTemplate`). | **IFR always** on default path: MT `renderPage` → `renderMainThread()` builds real FiberElements before BG runs (`snapshot/lifecycle/render.ts`: “Implements the IFR…”). |
 | **VueLynx** | BG **ShadowElement** + flat **ops** → MT `ops-apply`. Optional **Element Templates** as `INSTANTIATE_TEMPLATE` ops (JS `create()` skeleton — **not** the same as ReactLynx’s `__CreateElementTemplate` PAPI). | **IFR opt-in** (`enableIFR: true`): MT carries full Vue + app; `runIfrRender()` inside `renderPage`. Default off → empty page until BG ops (same shape as MyReact). |
-| **MyReact Lynx** | BG **ShadowElement** + ops (Vue-like). Worklet SWC forces `snapshot: false`. | **No IFR**: `renderPage` only `__CreatePage` + flush. Content waits for BG `reactPatchUpdate`. |
+| **MyReact Lynx** | BG **ShadowElement** + ops (Vue-like). Worklet SWC forces `snapshot: false`. | **IFR opt-in** (`enableIFR`, default **false**): MT sync `root.render` true mount + BG hydrate intercept. Off → empty page until BG ops (legacy). |
 
 ```
 ReactLynx:  loadTemplate → MT Snapshot/ET tree (real UI) → BG hydrate → patches
 VueLynx:    loadTemplate → [IFR?] MT Vue mount : empty page → BG ops (+ IFR hydrate intercept)
-MyReact:    loadTemplate → empty page → BG reconcile → ops
+MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR hydrate) → scheduleFlush
 ```
+
+**Glossary (do not conflate):**
+
+| Term | Meaning |
+| --- | --- |
+| **IFR** | Real UI in MT `renderPage` before Background (`enableIFR`) |
+| **First-screen patch meta** | `isFirstScreen` / `endFirstScreen` — BG→MT worklet hydrate / handoff |
+| **Delayed ops flush** | `scheduleFlush` microtask batching (orthogonal; kept after IFR) |
+
+**Id stability (IFR):** Both threads must render the same deterministic first screen (same route/data). MT records ops; BG batches reconcile (skip / value-patch / structural teardown fallback). Post-seal MT Suspense updates are dropped.
+
+**Debug map:** [IFR.md](./IFR.md) (sequence, phases, flush/worklet/HMR, checklist).
 
 ---
 
@@ -58,13 +70,13 @@ MyReact:    loadTemplate → empty page → BG reconcile → ops
 
 | Feature | ReactLynx | VueLynx | MyReact | Notes |
 | --- | :---: | :---: | :---: | --- |
-| IFR (real UI before BG) | ✅ | ✅ opt-in | ❌ | RL: Snapshot `renderMainThread`. VL: `enableIFR` (default **false**). MR: empty root only |
+| IFR (real UI before BG) | ✅ | ✅ opt-in | ✅ opt-in | RL: Snapshot. VL/MR: `enableIFR` (default **false**). MR: Vue-style true mount |
 | Compiled Snapshot / JSX→snapshot | ✅ **default** | ❌ | ❌ | MR/VL deliberately ops-based |
-| Element Templates | ◐ experimental | ✅ opt-in | ❌ | **Different impls** — see below |
-| First-screen hydrate / handoff | ✅ | ✅ with IFR | ❌ | VL: `interceptPatchUpdate` skips/patches BG replay |
-| First-screen worklet lifecycle flags | ✅ | ◐ | ✅ | MR: `isFirstScreen` / `endFirstScreen` patch meta. VL: `_isFirstScreen` on worklet handles; no BG patch meta API like MR |
+| Element Templates | ◐ experimental | ✅ opt-in | ❌ | **Deferred** for MR (follow-up after IFR) |
+| First-screen hydrate / handoff | ✅ | ✅ with IFR | ✅ with IFR | MR: Vue-style ops-stream hydrate; teardown only on structural mismatch |
+| First-screen worklet lifecycle flags | ✅ | ◐ | ✅ | MR: `isFirstScreen` / `endFirstScreen` patch meta (≠ IFR) |
 | `firstScreenSyncTiming` + `markFirstScreenSyncReady` | ✅ | ❌ | ❌ | RL: `immediately` \| `jsReady` \| `manual` |
-| `isIfrMainThread()` | — | ✅ | ❌ | Gate network on MT IFR mount |
+| `isIfrMainThread()` | — | ✅ | ✅ | Gate network on MT IFR mount |
 | SSR (`enableSSR` / opcodes) | ✅ | ❌ | ❌ | |
 
 **Element Templates are not interchangeable**
@@ -171,8 +183,8 @@ MyReact:    loadTemplate → empty page → BG reconcile → ops
 | Option | ReactLynx | VueLynx | MyReact |
 | --- | :---: | :---: | :---: |
 | CSS engine flags | ✅ rich | ✅ | ✅ |
-| IFR toggle | — (Snapshot IFR always) | ✅ `enableIFR` | ❌ |
-| Element Templates | ✅ experimental | ✅ (follows IFR) | ❌ |
+| IFR toggle | — (Snapshot IFR always) | ✅ `enableIFR` | ✅ `enableIFR` (default false) |
+| Element Templates | ✅ experimental | ✅ (follows IFR) | ❌ deferred |
 | `firstScreenSyncTiming` / SSR | ✅ | ❌ | ❌ |
 | `enableNewGesture` | ✅ default false | hardcoded false | hardcoded true |
 | Worklet package include | ◐ | ✅ `includeWorkletPackages` | ✅ merge onto defaults |
@@ -186,7 +198,7 @@ MyReact:    loadTemplate → empty page → BG reconcile → ops
 1. **List recycle**: MyReact is **not** ahead of Vue — both use **noop** `enqueueComponent`. Only ReactLynx has a real recycle map.  
 2. **Gestures**: ReactLynx has the full pipeline but **defaults `enableNewGesture: false`**; MyReact forces **true** and re-exports the runtime. Vue has **no** gesture-runtime integration.  
 3. **Element Templates**: Vue ✅ and React ◐ are **different mechanisms**; do not treat as the same feature.  
-4. **IFR**: ReactLynx = always (Snapshot). VueLynx = opt-in 0.5. MyReact = none (first-screen **patch flags ≠ IFR**).  
+4. **IFR**: ReactLynx = always (Snapshot). VueLynx = opt-in since 0.5. MyReact = opt-in `enableIFR` (true mount); first-screen **patch flags ≠ IFR**.  
 5. **initData**: MyReact ≈ ReactLynx API surface; Vue only stubs `processData`.  
 6. Package version: MyReact Lynx is **0.0.9**.
 
@@ -207,7 +219,7 @@ MyReact:    loadTemplate → empty page → BG reconcile → ops
 ```
 ReactLynx 0.123 = Snapshot IFR (default) + optional ET backend + fullest Lynx React surface
 VueLynx   0.5.1 = Ops + opt-in IFR/ET − gesture API − initData − real list recycle
-MyReact   0.0.9 = Ops + gestures/initData − IFR/Snapshot/ET − real list recycle
+MyReact   0.0.9 = Ops + gestures/initData + opt-in IFR − Snapshot/ET − real list recycle
 ```
 
 Refresh:

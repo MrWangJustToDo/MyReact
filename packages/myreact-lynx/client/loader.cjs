@@ -4,6 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
+// Appended only to BACKGROUND-layer modules (see src/plugin/apply/refresh.ts).
 const LOADER_RUNTIME = fs.readFileSync(path.resolve(__dirname, "./loader-internal.cjs"), "utf-8");
 
 const RefreshHotLoader = function RefreshHotLoader(source, inputSourceMap) {

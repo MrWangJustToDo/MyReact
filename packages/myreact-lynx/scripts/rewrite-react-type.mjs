@@ -7,6 +7,7 @@ import { readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// eslint-disable-next-line no-undef
 const ROOT = fileURLToPath(new URL("../dist", import.meta.url));
 const FROM = /@my-react\/react\/type/g;
 const TO = "@my-react/react";

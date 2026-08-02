@@ -15,21 +15,14 @@
  * 7. Main thread uses scope in `__SetCSSId(el, 0, scope)`
  */
 
-const REGISTRY_KEY = "__MYREACT_LYNX_SCOPE_REGISTRY__";
-
-type RegistryGlobal = typeof globalThis & {
-  [REGISTRY_KEY]?: Record<string, string>;
-};
-
 /**
  * Get the scope registry (moduleId -> bundleUrl map).
  */
 function getRegistry(): Record<string, string> {
-  const g = globalThis as RegistryGlobal;
-  if (!g[REGISTRY_KEY]) {
-    g[REGISTRY_KEY] = {};
+  if (!globalThis.__MYREACT_LYNX_SCOPE_REGISTRY__) {
+    globalThis.__MYREACT_LYNX_SCOPE_REGISTRY__ = {};
   }
-  return g[REGISTRY_KEY];
+  return globalThis.__MYREACT_LYNX_SCOPE_REGISTRY__;
 }
 
 /**

@@ -12,17 +12,14 @@
  * - `background/render/install-lynx-scheduler.ts`: framework `microTask` via `lynx.queueMicrotask`
  */
 
-type MicrotaskFn = (callback: () => void) => void;
-
 /** Install a Promise-based `globalThis.queueMicrotask` when missing. */
 export function ensureQueueMicrotask(): void {
-  const g = globalThis as typeof globalThis & { queueMicrotask?: MicrotaskFn };
-  if (typeof g.queueMicrotask === "function") {
+  if (typeof globalThis.queueMicrotask === "function") {
     return;
   }
 
   const resolved = Promise.resolve();
-  g.queueMicrotask = (fn: () => void) => {
+  globalThis.queueMicrotask = (fn: () => void) => {
     resolved.then(fn).catch((err: unknown) => {
       setTimeout(() => {
         throw err;

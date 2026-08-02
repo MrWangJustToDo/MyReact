@@ -14,7 +14,7 @@ Order matters — especially thread-defines vs worklet loaders.
 pluginMyReactLynx.setup
 ├── modifyRsbuildConfig
 │   ├── source.include (compile nm JS + @lynx-js JSX when unset)
-│   ├── defines: __DEV__ / __HMR__ / __DEVTOOL__ / auto-pixel
+│   ├── defines: __DEV__ / __HMR__ / __DEVTOOL__ / auto-pixel / __MY_REACT_LYNX_IFR__
 │   └── SWC JSX (importSource=@my-react/react-lynx, throwIfNamespace:false)
 ├── modifyBundlerChain
 │   ├── alias @my-react/react-lynx, @lynx-js/react/internal → shim
@@ -80,9 +80,32 @@ For app sources and allowlisted npm worklet packages (defaults + `includeWorklet
 
 1. Keep relative imports (graph walk).
 2. Keep allowlisted package imports as side-effect stitches (`import '@lynx-js/motion'`).
-3. Run SWC LEPUS transform, then emit **bare** `registerWorkletInternal(...)` only.
+3. Run SWC LEPUS transform, then emit **bare** `registerWorkletInternal(...)` plus `with { runtime: 'shared' }` imports (`!!builtin:swc-loader!…`).
 
 **Do not** ship full SWC LEPUS for those npm packages: it gates register with `loadWorkletRuntime() && …`, and `loadWorkletRuntime` returns `false` when `__LoadLepusChunk` is undefined (runtime already bundled in MT entry) → registrations never run.
+
+**IFR + `'main thread'` modules:** emit JS worklet transform (keeps exports) **and** re-attach `with { runtime: 'shared' }` imports from LEPUS before `registerWorkletInternal`. Omitting shared imports causes `motionValue is not defined`; stitching away exports breaks package re-exports (`useMotionValueRefEvent` / `PanGesture`).
+
+### Instant First-Frame (`enableIFR`)
+
+Default **`false`**. Vue-style **true mount** (not Snapshot, not `renderToString`).
+
+```ts
+pluginMyReactLynx({
+  enableIFR: true,
+})
+```
+
+**Full sequence, file map, flush/worklet pitfalls, and debug checklist:** see **[IFR.md](./IFR.md)**.
+
+Summary when on:
+
+1. MT keeps app + reconciler; module-scope `root.render` stashes for `renderPage`.
+2. Sync mount → `recordAndApply` → **seal**; BG batches **hydrate** (skip / value patch / mismatch teardown).
+3. Post-seal MT ops dropped; Refresh **BG only**.
+4. Constraints: same first-screen route/data on both threads; `isIfrMainThread()` for network opt-out.
+
+**Not IFR:** `isFirstScreen` / `endFirstScreen` (worklet handoff meta).
 
 ### Allowlist (`includeWorkletPackages`)
 
@@ -154,6 +177,7 @@ Passthrough `lynx.SystemInfo` only. Do not hardcode `lynxSdkVersion` — hosts d
 | `src/plugin/apply/entry.ts` | Dual entries, template, worklet loader rules; historical lazy-load issues |
 | `src/plugin/apply/css.ts` | CSS extract / MT ignore-css |
 | `src/plugin/apply/refresh.ts` | HMR refresh rules |
+| `IFR.md` | IFR runtime / debug map |
 | `src/plugin/rspack-plugins/` | Rspack plugins (mark-main-thread, css-config, refresh) |
 | `src/plugin/worklet-packages.ts` | Builtin allowlist + exclude / sideEffects helpers |
 | `src/plugin/loaders/worklet-loader.ts` | BG SWC target=`JS` |

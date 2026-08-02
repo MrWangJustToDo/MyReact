@@ -1,12 +1,18 @@
 // MyReact Lynx HMR Loader Runtime
-// Appended to each module by the loader
+// Appended to each module by the loader (BG issuerLayer only — see apply/refresh.ts).
+// Defense-in-depth: never force a React refresh from Main Thread (IFR sync mount
+// is one-shot; post-seal MT ops are dropped).
 var getExports = (m) => m.exports || m.__proto__.exports;
+
+const isMainThread =
+  (typeof __MAIN_THREAD__ !== "undefined" && __MAIN_THREAD__) ||
+  (typeof globalThis !== "undefined" && globalThis.__MAIN_THREAD_RUNTIME__);
 
 const isRefreshComponent = __myreact_refresh_utils__.isReactRefreshBoundary(getExports(module));
 
 const moduleHot = module.hot;
 
-if (moduleHot) {
+if (moduleHot && !isMainThread) {
   const currentExports = getExports(module);
 
   const previousHotModuleExports = moduleHot.data && moduleHot.data.moduleExports;

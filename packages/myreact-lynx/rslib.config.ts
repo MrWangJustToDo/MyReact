@@ -46,6 +46,20 @@ export default defineConfig({
       "@my-react/react",
       "@my-react/react-refresh",
       "@my-react/react-refresh-tools",
+      // In bundleless mode every request is externalized by default. Returning
+      // `false` from the externals matcher opts a dependency back into the
+      // bundle, inlining its code (and its own relative imports) into dist.
+      ({ request, contextInfo }, callback) => {
+        if (
+          request === "@my-react/react-reconciler-compact" ||
+          request?.startsWith("@my-react/react-reconciler-compact/") ||
+          contextInfo?.issuer?.includes("node_modules/@my-react/react-reconciler-compact")
+        ) {
+          callback(undefined, false);
+          return;
+        }
+        callback();
+      },
     ],
   },
 });

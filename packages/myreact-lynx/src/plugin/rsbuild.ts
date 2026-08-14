@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /**
  * @packageDocumentation
  *
@@ -22,6 +23,8 @@
  */
 
 import { ChunkLoadingWebpackPlugin } from "@lynx-js/chunk-loading-webpack-plugin";
+import { createRequire } from "node:module";
+import nodePath from "node:path";
 
 import { applyCSS } from "./apply/css.js";
 import { applyEntry } from "./apply/entry.js";
@@ -163,8 +166,17 @@ const PLUGIN_NAME = "lynx:myreact";
  * Note: We use `$` suffix for exact matching to avoid accidentally aliasing
  * other packages like `@lynx-js/react`. The `$` means "end of string" in
  * rspack/webpack alias matching.
+ *
+ * The *values* are resolved to absolute file paths (see {@link resolveAliasTarget})
+ * instead of bare package specifiers. A bare package name would be re-resolved by
+ * the bundler from the file that imports `@lynx-js/react` / `react` — and for
+ * prebuilt or workspace packages (e.g. files under `node_modules/.pnpm` or a
+ * monorepo `packages` directory) that issuer cannot always reach `@my-react`,
+ * which produces:
+ *
+ *   Cannot find module '@lynx-js/react' for matched aliased key '@lynx-js/react'
  */
-const REACT_ALIASES: Record<string, string> = {
+const REACT_ALIASES_SOURCE: Record<string, string> = {
   react$: "@my-react/react",
   "@lynx-js/react$": "@my-react/react-lynx",
   "@lynx-js/react/jsx-runtime": "@my-react/react-lynx/jsx-runtime",
@@ -175,6 +187,79 @@ const REACT_ALIASES: Record<string, string> = {
   "react/jsx-runtime$": "@my-react/react-lynx/jsx-runtime",
   "react/jsx-dev-runtime$": "@my-react/react-lynx/jsx-dev-runtime",
 };
+
+/** Known file layout of each `@my-react/*` package, keyed by package name. */
+const REACT_ALIAS_FILE_LAYOUT: Record<string, Record<string, string>> = {
+  "@my-react/react": {
+    ".": "index.js",
+    "./jsx-runtime": "jsx-runtime.js",
+    "./jsx-dev-runtime": "jsx-dev-runtime.js",
+  },
+  "@my-react/react-lynx": {
+    ".": "dist/background/index.js",
+    "./jsx-runtime": "jsx-runtime.js",
+    "./jsx-dev-runtime": "jsx-dev-runtime.js",
+  },
+  "@my-react/react-dom": {
+    ".": "index.js",
+    "./client": "client.js",
+    "./server": "server.js",
+  },
+};
+
+/**
+ * Locate the absolute directory of a `@my-react/*` package using the plugin's own
+ * install location (`createRequire(import.meta.url)`), so the result never depends
+ * on the node_modules layout of whichever file happens to import the aliased name.
+ */
+function resolvePackageDir(pkgName: string): string | undefined {
+  try {
+    const require = createRequire(import.meta.url);
+    return nodePath.dirname(require.resolve(`${pkgName}/package.json`));
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Split a package specifier into `[packageName, subpath]` where `subpath` is
+ * `"."` for the package root, or a relative path like `"./jsx-runtime"`.
+ * Handles scoped packages (`@scope/name/...`) whose name contains a slash.
+ */
+function splitPackageSpecifier(specifier: string): [string, string] {
+  const isScoped = specifier.startsWith("@");
+  const firstSlash = specifier.indexOf("/");
+  if (isScoped) {
+    // For `@scope/name` the package name is `@scope/name`; the subpath starts
+    // after the *second* slash.
+    const secondSlash = specifier.indexOf("/", firstSlash + 1);
+    if (secondSlash === -1) return [specifier, "."];
+    return [specifier.slice(0, secondSlash), `./${specifier.slice(secondSlash + 1)}`];
+  }
+  if (firstSlash === -1) return [specifier, "."];
+  return [specifier.slice(0, firstSlash), `./${specifier.slice(firstSlash + 1)}`];
+}
+
+/**
+ * Turn a bare package specifier (e.g. `@my-react/react-lynx/jsx-runtime`) into an
+ * absolute file path. Falls back to the bare specifier when the package cannot be
+ * located from the plugin's install location.
+ */
+function resolveAliasTarget(specifier: string): string {
+  const [pkgName, subpath] = splitPackageSpecifier(specifier);
+  const dir = resolvePackageDir(pkgName);
+  const relativeFile = dir ? REACT_ALIAS_FILE_LAYOUT[pkgName]?.[subpath] : undefined;
+  return dir && relativeFile ? nodePath.join(dir, relativeFile) : specifier;
+}
+
+/** Build the resolved (absolute path) React → MyReact alias map. */
+function resolveReactAliases(): Record<string, string> {
+  const aliases: Record<string, string> = {};
+  for (const [from, to] of Object.entries(REACT_ALIASES_SOURCE)) {
+    aliases[from] = resolveAliasTarget(to);
+  }
+  return aliases;
+}
 
 /**
  * Create rsbuild / rspeedy plugin for MyReact-Lynx dual-thread rendering.
@@ -196,6 +281,12 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
     includeWorkletPackages,
     enableIFR = false,
   } = options;
+
+  const reactAliases = enableReactAlias ? resolveReactAliases() : undefined;
+  const reactLynxDir = resolvePackageDir("@my-react/react-lynx");
+  const lynxReactInternalAlias = reactLynxDir
+    ? nodePath.join(reactLynxDir, "dist/shims/lynx-react-internal.js")
+    : "@my-react/react-lynx/shims/lynx-react-internal";
 
   return {
     name: PLUGIN_NAME,
@@ -307,12 +398,14 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
 
         // Redirect @lynx-js/react/internal to our shim which provides
         // MyReact-compatible implementations of loadLazyBundle etc.
-        chain.resolve.alias.set("@lynx-js/react/internal$", "@my-react/react-lynx/shims/lynx-react-internal");
+        // Use an absolute path (from the plugin's own install location) so the
+        // shim resolves even when the issuing file cannot reach `@my-react/*`.
+        chain.resolve.alias.set("@lynx-js/react/internal$", lynxReactInternalAlias);
 
         // Apply React → MyReact aliases if enabled
         // This allows existing React code to work with MyReact
-        if (enableReactAlias) {
-          for (const [from, to] of Object.entries(REACT_ALIASES)) {
+        if (reactAliases) {
+          for (const [from, to] of Object.entries(reactAliases)) {
             chain.resolve.alias.set(from, to);
           }
         }

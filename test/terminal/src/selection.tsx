@@ -521,4 +521,4 @@ const Selection = forwardRef<SelectionReference, SelectionProperties>(({ useStat
   );
 });
 
-export const test = () => render(<Selection />, { selectionStyle, trackSelection: true });
+export const test = () => render(<Selection useStaticRender />, { selectionStyle, trackSelection: true });

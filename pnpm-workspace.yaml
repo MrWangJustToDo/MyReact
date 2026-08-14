@@ -5,10 +5,10 @@ packages:
   - "site/*"
   - "site/!lib"
 
-# Keep Lynx / Rspeedy / myreact-rspack on one @rspack/core (matches @rsbuild/core 2.0.11).
-# Otherwise rsdoctor's peer pulls @rspack/core@2.1.3 into a parallel rspeedy graph.
+# Keep Lynx / Rspeedy / myreact-rspack on one @rspack/core (matches @rsbuild/core 2.1.7).
+# Otherwise rsdoctor's peer pulls a parallel @rspack/core into the rspeedy graph.
 overrides:
-  "@rspack/core": "2.0.8"
+  "@rspack/core": "2.1.7"
 
 catalog:
   "@canvas-ui/react": ^2.0.0

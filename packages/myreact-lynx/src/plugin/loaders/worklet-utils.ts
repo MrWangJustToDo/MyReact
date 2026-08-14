@@ -32,84 +32,92 @@ function isCodeModuleSpecifier(specifier: string): boolean {
 }
 
 /**
- * Strip `//` and `/* *\/` comments while preserving string/template literals,
- * so regex-based import extraction cannot pick up commented-out imports.
+ * Build a byte mask where position `i` is `1` if `source[i]` sits inside a
+ * string/template literal or a comment. Import-extraction regexes run against
+ * the raw source and must not overlap any masked position, so import-looking
+ * text inside string literals (e.g. diff fixtures) is never picked up.
  */
-export function stripComments(source: string): string {
-  let result = "";
+export function buildNonCodeMask(source: string): Uint8Array {
+  const mask = new Uint8Array(source.length);
   let i = 0;
+
+  const mark = (from: number, to: number) => {
+    for (let j = from; j < to && j < mask.length; j++) mask[j] = 1;
+  };
 
   while (i < source.length) {
     const ch = source[i] as string;
     const next = source[i + 1];
 
-    // String / template literals — copy through with escapes.
+    // String / template literals (escapes handled; ${...} scanned to `).
     if (ch === '"' || ch === "'" || ch === "`") {
       const quote = ch;
-      result += quote;
+      const start = i;
       i += 1;
       while (i < source.length) {
         const c = source[i] as string;
         if (c === "\\") {
-          result += c + (source[i + 1] ?? "");
           i += 2;
           continue;
         }
-        result += c;
         i += 1;
         if (c === quote) {
           break;
         }
-        // Template literals may contain ${...}; keep scanning until closing `.
-        // Nested braces/strings inside ${} are rare for import lines; we only
-        // need not to treat `//` inside templates as comments, which this does.
       }
+      mark(start, i);
       continue;
     }
 
     // Line comment
     if (ch === "/" && next === "/") {
+      const start = i;
       i += 2;
       while (i < source.length && source[i] !== "\n") {
         i += 1;
       }
+      mark(start, i);
       continue;
     }
 
     // Block comment
     if (ch === "/" && next === "*") {
+      const start = i;
       i += 2;
       while (i < source.length && !(source[i] === "*" && source[i + 1] === "/")) {
-        // Keep newlines so line-oriented tools still see structure
-        if (source[i] === "\n") {
-          result += "\n";
-        }
         i += 1;
       }
-      i += 2; // skip */
+      i += 2;
+      mark(start, i);
       continue;
     }
 
-    result += ch;
     i += 1;
   }
 
-  return result;
+  return mask;
+}
+
+function isCodePosition(mask: Uint8Array, index: number): boolean {
+  return mask[index] !== 1;
 }
 
 export function extractLocalImports(source: string): string {
-  const code = stripComments(source);
+  const mask = buildNonCodeMask(source);
   const specifiers = new Set<string>();
 
   // Match 'from' clause with relative specifier: from './foo' or from "../bar"
   // but skip lines that contain `with {` (shared runtime imports).
   const fromRe = /from\s+['"](\.[^'"]+)['"]/g;
   let match: RegExpExecArray | null;
-  while ((match = fromRe.exec(code)) !== null) {
+  while ((match = fromRe.exec(source)) !== null) {
+    if (!isCodePosition(mask, match.index)) {
+      continue;
+    }
     // Check if this import has `with {` attribute (shared runtime import)
-    const lineStart = code.lastIndexOf("\n", match.index) + 1;
-    const lineEnd = code.indexOf("\n", match.index);
-    const line = code.slice(lineStart, lineEnd === -1 ? undefined : lineEnd);
+    const lineStart = source.lastIndexOf("\n", match.index) + 1;
+    const lineEnd = source.indexOf("\n", match.index);
+    const line = source.slice(lineStart, lineEnd === -1 ? undefined : lineEnd);
     if (/with\s*\{/.test(line)) {
       continue;
     }
@@ -121,7 +129,10 @@ export function extractLocalImports(source: string): string {
 
   // Match bare side-effect imports: import './foo' or import "../bar"
   const bareRe = /import\s+['"](\.[^'"]+)['"]/g;
-  while ((match = bareRe.exec(code)) !== null) {
+  while ((match = bareRe.exec(source)) !== null) {
+    if (!isCodePosition(mask, match.index)) {
+      continue;
+    }
     const specifier = match[1] as string;
     if (isCodeModuleSpecifier(specifier)) {
       specifiers.add(specifier);
@@ -142,12 +153,15 @@ export function extractLocalImports(source: string): string {
  * Prefer this over MT entry force-entry. Skips `import type`.
  */
 export function extractWorkletPackageSideEffectImports(source: string, packages: readonly string[]): string {
-  const code = stripComments(source);
+  const mask = buildNonCodeMask(source);
   const wanted = new Set(packages);
   const found = new Set<string>();
   const re = /(?:^|[^\w.$])import\s+(?!type\b)(?:[^'";]+?\s+from\s+)?['"]([^'"]+)['"]/gm;
   let match: RegExpExecArray | null;
-  while ((match = re.exec(code)) !== null) {
+  while ((match = re.exec(source)) !== null) {
+    if (!isCodePosition(mask, match.index)) {
+      continue;
+    }
     const spec = match[1] as string;
     if (wanted.has(spec)) {
       found.add(spec);
@@ -171,14 +185,17 @@ export function extractWorkletPackageSideEffectImports(source: string, packages:
  * is available as regular JS on the MT layer.
  */
 export function extractSharedImports(source: string): string {
-  const code = stripComments(source);
+  const mask = buildNonCodeMask(source);
   // Match import statements containing `with { runtime: 'shared' }`.
   // SWC may reformat across multiple lines, so we use [\s\S]*? for the
   // attribute block.
   const re = /import\s+(.+?)\s+from\s+(['"])([^'"]+)\2\s*with\s*\{[\s\S]*?runtime:\s*['"]shared['"][\s\S]*?\}\s*;?/g;
   const imports: string[] = [];
   let match: RegExpExecArray | null;
-  while ((match = re.exec(code)) !== null) {
+  while ((match = re.exec(source)) !== null) {
+    if (!isCodePosition(mask, match.index)) {
+      continue;
+    }
     const specifiers = match[1] as string;
     const quote = match[2] as string;
     const modulePath = match[3] as string;

@@ -3,7 +3,7 @@
   "description": "MyReact renderer for Lynx dual-thread architecture",
   "author": "MrWangJustToDo",
   "license": "MIT",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "type": "module",
   "main": "./dist/background/index.js",
   "types": "./dist/background/index.d.ts",

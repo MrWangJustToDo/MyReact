@@ -52,6 +52,10 @@ declare global {
     handlers: Map<string, (data: unknown) => void>;
   }
 
+  interface MyReactLynxListLifecycleState {
+    handlers: Map<number, Map<string, (data: unknown) => void>>;
+  }
+
   /**
    * Runtime globals we assign (use `var` so they exist on `typeof globalThis`,
    * matching Lynx’s `declare var SystemInfo` / `lynxWorkletImpl` style).
@@ -74,6 +78,7 @@ declare global {
   var __MY_REACT_DEVTOOL_BUNDLE__: unknown;
   var __MY_REACT_DEVTOOL_BUNDLE_WS__: unknown;
   var __REACT_LYNX_EVENT_REGISTRY__: MyReactLynxEventRegistryState | undefined;
+  var __REACT_LYNX_LIST_LIFECYCLE__: MyReactLynxListLifecycleState | undefined;
   var __MYREACT_LYNX_SCOPE_REGISTRY__: Record<string, string> | undefined;
 
   var processData: ((data: unknown, processorName?: string) => unknown) | undefined;

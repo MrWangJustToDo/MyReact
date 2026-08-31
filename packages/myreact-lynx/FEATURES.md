@@ -148,6 +148,7 @@ MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR
 | Native `<list>` / `<list-item>`                 |        ✅        |         ✅         |         ✅         | `__CreateList` + `componentAtIndex`                  |
 | `item-key` / `reuse-identifier`                 |        ✅        |         ✅         |         ✅         | platform-info attrs                                  |
 | Cell **recycle pool** (`enqueueComponent` real) | ✅ `gRecycleMap` | ◐ **noop** enqueue | ◐ **noop** enqueue | VL/MR attach callbacks but `enqueueComponent = noop` |
+| `onRecycleComponent` / `onComponentAtIndex`     |        ✅        |         ❌         |      ◐ via MT→BG   | MR dispatches lifecycle events; real pool still noop |
 | `defer` / DeferredListItem compile              |        ✅        | ❌ / undocumented  | ❌ / undocumented  | RL-only                                              |
 
 ---
@@ -210,7 +211,7 @@ MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR
 | -------- | -------------------------------------------------------------------------- |
 | P0       | **IFR** (Snapshot path and/or Vue-style MT sync render)                    |
 | P0       | Decide ET strategy (RL PAPI vs Vue `INSTANTIATE_TEMPLATE`) if pursuing IFR |
-| P1       | List **recycle pool** (replace noop `enqueueComponent`)                    |
+| P1       | List **recycle pool** (replace noop `enqueueComponent`) — MT→BG lifecycle transport (onRecycleComponent/onComponentAtIndex) landed |
 | P1       | SSR / `firstScreenSyncTiming` if host needs it                             |
 | P2       | Standalone lazy bundle / `fetchBundle`                                     |
 | P2       | DevTools + testing-library                                                 |

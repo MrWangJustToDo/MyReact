@@ -13,6 +13,7 @@
  */
 
 import { elements, pageUniqueId } from "./element-registry.js";
+import { dispatchListLifecycle } from "./list-lifecycle.js";
 
 // ---------------------------------------------------------------------------
 // State
@@ -56,6 +57,13 @@ const listItemPlatformInfo = new Map<number, Record<string, unknown>>();
 
 /** bgIds whose platform info changed since last flush */
 const dirtyPlatformInfo = new Set<number>();
+
+/**
+ * Reverse map: native <list-item> `LynxElement` → Background element id.
+ * Lets `enqueueComponent` (which receives only the native element from the
+ * native list) resolve the bgId needed to dispatch the recycle callback.
+ */
+const mtElementToBgId = new Map<LynxElement, number>();
 
 // ---------------------------------------------------------------------------
 // Diff (exported for unit tests)
@@ -144,12 +152,9 @@ export function diffListItems(oldItems: ListItemEntry[], newItems: ListItemEntry
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-/** No-op: MyReact manages all items; recycle pool not implemented yet. */
-function enqueueComponentNoop(): void {}
-
 function createListCallbacks(bgId: number): {
   componentAtIndex: (list: LynxElement, listID: number, cellIndex: number, operationID: number) => number | undefined;
-  enqueueComponent: (...args: unknown[]) => void;
+  enqueueComponent: (element?: LynxElement) => void;
   componentAtIndexes: (list: LynxElement, listID: number, cellIndexes: number[], operationIDs: number[]) => void;
 } {
   const componentAtIndex = (list: LynxElement, listID: number, cellIndex: number, operationID: number): number | undefined => {
@@ -158,6 +163,14 @@ function createListCallbacks(bgId: number): {
     const item = items[cellIndex]!.el;
     __AppendElement(list, item);
     const sign = __GetElementUniqueID(item);
+    // Notify the Background Thread that this cell is about to be mounted, so
+    // an `onComponentAtIndex` prop handler can run.
+    dispatchListLifecycle(items[cellIndex]!.bgId, "onComponentAtIndex", {
+      listID,
+      cellIndex,
+      operationID,
+      sign,
+    });
     __FlushElementTree(item, {
       triggerLayout: true,
       operationID,
@@ -167,7 +180,18 @@ function createListCallbacks(bgId: number): {
     return sign;
   };
 
-  const enqueueComponent = enqueueComponentNoop;
+  const enqueueComponent = (element?: LynxElement) => {
+    // Native called us because `element` scrolled out of the viewport and can
+    // be recycled. Forward to the Background Thread so an `onRecycleComponent`
+    // prop handler can run on the owning <list-item>.
+    if (!element) return;
+    const itemBgId = mtElementToBgId.get(element);
+    if (itemBgId === undefined) return;
+    dispatchListLifecycle(itemBgId, "onRecycleComponent", {
+      listID: bgId,
+      sign: __GetElementUniqueID(element),
+    });
+  };
 
   const componentAtIndexes = (list: LynxElement, listID: number, cellIndexes: number[], operationIDs: number[]): void => {
     const items = listItems.get(bgId);
@@ -182,6 +206,12 @@ function createListCallbacks(bgId: number): {
       const item = items[cellIndex]!.el;
       __AppendElement(list, item);
       const sign = __GetElementUniqueID(item);
+      dispatchListLifecycle(items[cellIndex]!.bgId, "onComponentAtIndex", {
+        listID: bgId,
+        cellIndex,
+        operationID: operationIDs[j],
+        sign,
+      });
       elementIDs.push(sign);
     }
     __FlushElementTree(list, {
@@ -246,6 +276,7 @@ export function insertListItem(parentId: number, child: LynxElement, childId: nu
   }
 
   const entry: ListItemEntry = { el: child, bgId: childId };
+  mtElementToBgId.set(child, childId);
   if (anchorId === -1) {
     items.push(entry);
   } else {
@@ -261,7 +292,9 @@ export function removeListItem(parentId: number, childId: number): void {
   if (!items) return;
   const idx = items.findIndex((entry) => entry.bgId === childId);
   if (idx === -1) return;
+  const entry = items[idx]!;
   items.splice(idx, 1);
+  mtElementToBgId.delete(entry.el);
   itemKeyMap.delete(childId);
   listItemPlatformInfo.delete(childId);
   dirtyPlatformInfo.delete(childId);
@@ -270,6 +303,10 @@ export function removeListItem(parentId: number, childId: number): void {
 /** REMOVE case: drop tracking state when a <list> element itself is removed */
 export function removeListElement(id: number): void {
   listElementIds.delete(id);
+  const items = listItems.get(id);
+  if (items) {
+    for (const entry of items) mtElementToBgId.delete(entry.el);
+  }
   listItems.delete(id);
   lastFlushed.delete(id);
 }
@@ -342,4 +379,5 @@ export function resetListState(): void {
   itemKeyMap.clear();
   listItemPlatformInfo.clear();
   dirtyPlatformInfo.clear();
+  mtElementToBgId.clear();
 }

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { OP } from "../../shared/op.js";
 import { retainWorkletCtx, type WorkletLike } from "../../shared/worklet-bindings.js";
@@ -7,6 +8,7 @@ import { registerWorkletCtx } from "../worklet/run-on-background.js";
 
 import { register, unregister, updateHandler } from "./event-registry.js";
 import { scheduleFlush } from "./flush.js";
+import { registerListLifecycle, unregisterListLifecycle } from "./list-lifecycle.js";
 import { pushOp } from "./ops.js";
 import { ShadowElement } from "./shadow-element.js";
 
@@ -73,6 +75,14 @@ const parseEventProp = (key: string): EventSpec | null => {
 // Track the sign registered for each (element, propKey) so we can unregister
 // on prop removal / update.
 const elementEventSigns = new Map<number, Map<string, string>>();
+
+/**
+ * List-item props that are routed Main Thread → Background Thread via the
+ * list lifecycle channel (not bound with native __AddEvent). `onAppear` /
+ * `onDisappear` remain ordinary native event binds; these two are synthesized
+ * by the JS list executor rather than the native engine.
+ */
+const LIST_LIFECYCLE_PROPS = new Set(["onRecycleComponent", "onComponentAtIndex"]);
 
 const diffProps = (prev: Props, next: Props) => {
   const propChanges: Record<string, unknown> = {};
@@ -156,6 +166,7 @@ const cleanupElementEvents = (elementId: number): void => {
     unregister(sign);
   }
   elementEventSigns.delete(elementId);
+  unregisterListLifecycle(elementId);
 };
 
 const helpRemove = (parent: ShadowElement, child: ShadowElement) => {
@@ -267,6 +278,15 @@ const applyProps = (instance: ShadowElement, props: Props) => {
       const className = value as string | undefined;
       instance.class = className;
       pushOp(OP.SET_CLASS, instance.id, className || "");
+      return;
+    } else if (LIST_LIFECYCLE_PROPS.has(key)) {
+      // Rendered recursively to the Main Thread list executor, which forwards
+      // recycle / component-at-index callbacks back to the handler here.
+      if (typeof value === "function") {
+        registerListLifecycle(instance.id, key, value as (data: unknown) => void);
+      } else {
+        unregisterListLifecycle(instance.id, key);
+      }
       return;
     } else if (key.startsWith("main-thread-") || key.startsWith("main-thread:")) {
       applyWorklet(instance, key, value);

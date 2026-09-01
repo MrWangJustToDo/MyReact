@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "hash": "163948f690c74ab26187",
+  "hash": "aa4cd57478c90df0c242",
   "publicPath": "/MyReact/client/",
   "outputPath": "/home/runner/work/MyReact/MyReact/ui/ssr-example/dist/server",
   "assetsByChunkName": {
@@ -84,7 +84,7 @@
     {
       "type": "asset",
       "name": "app.js",
-      "size": 289972,
+      "size": 289946,
       "emitted": false,
       "comparedForEmit": false,
       "cached": true,

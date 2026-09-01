@@ -20,6 +20,7 @@ import { cleanupElementState } from "./element-cleanup.js";
 import { clearElementParent, elementParent, elements } from "./element-registry.js";
 import { resetGestureState } from "./gesture-apply.js";
 import { isListParent, removeListItem, resetListState } from "./list-apply.js";
+import { resetListItemTemplates } from "./list-item-template.js";
 import { applyOps } from "./ops-apply.js";
 import { resetWorkletState } from "./worklet-apply.js";
 
@@ -297,6 +298,8 @@ export function teardownIfrTree(): void {
   }
 
   resetListState();
+
+  resetListItemTemplates();
   resetWorkletState();
   resetGestureState();
   elementParent.clear();

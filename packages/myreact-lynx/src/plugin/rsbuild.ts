@@ -150,6 +150,19 @@ export interface PluginMyReactLynxOptions {
    * @defaultValue false
    */
   enableIFR?: boolean;
+
+  /**
+   * List-item content recycle (experimental, opt-in).
+   * Defer <list-item> descendant content to componentAtIndex and reuse
+   * materialized cells on scroll-back, instead of eagerly creating every cell.
+   *
+   * NOTE: opt-in because deferred first-screen list rendering is not yet
+   * validated against IFR / all native list configs. Not compatible with the
+   * eager IFR list mount path. Mutually exclusive with `enableIFR` (plugin throws if both are true).
+   *
+   * @defaultValue false
+   */
+  listRecycle?: boolean;
 }
 
 const PLUGIN_NAME = "lynx:myreact";
@@ -280,7 +293,16 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
     engineVersion = "3.2",
     includeWorkletPackages,
     enableIFR = false,
+    listRecycle = false,
   } = options;
+
+  if (enableIFR && listRecycle) {
+    throw new Error(
+      "[@my-react/react-lynx] `listRecycle` is incompatible with `enableIFR`. " +
+        "Deferred list-item content breaks IFR first-screen paint and hydrate matching. " +
+        "Disable one of them."
+    );
+  }
 
   const reactAliases = enableReactAlias ? resolveReactAliases() : undefined;
   const reactLynxDir = resolvePackageDir("@my-react/react-lynx");
@@ -326,6 +348,7 @@ export function pluginMyReactLynx(options: PluginMyReactLynxOptions = {}): Rsbui
               __DEVTOOL__: typeof reactDevTool === "boolean" ? reactDevTool : JSON.stringify(reactDevTool),
               __MY_REACT_LYNX_AUTO_PIXEL_UNIT__: JSON.stringify(autoPixelUnit),
               __MY_REACT_LYNX_IFR__: JSON.stringify(enableIFR),
+              __MY_REACT_LYNX_LIST_RECYCLE__: JSON.stringify(listRecycle),
             },
           },
           tools: {

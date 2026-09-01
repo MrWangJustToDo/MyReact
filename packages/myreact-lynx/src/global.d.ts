@@ -38,6 +38,12 @@ declare global {
    */
   const __MY_REACT_LYNX_IFR__: boolean;
 
+  /**
+   * Compile-time: `pluginMyReactLynx({ listRecycle: true })`.
+   * Defer <list-item> content to componentAtIndex and reuse materialized cells.
+   */
+  const __MY_REACT_LYNX_LIST_RECYCLE__: boolean;
+
   const __DEVTOOL__:
     | boolean
     | {

@@ -120,11 +120,12 @@ Ordering on MT patch apply must stay: **ref init → ops → delayed worklets** 
 
 ## 7. Constraints & common pitfalls
 
-1. **Same first screen on MT + BG** (route / init data). Prefer sync data; gate fetches with `isIfrMainThread()`.
-2. **Batch granularity:** MT sync flush may record multiple batches; BG microtask may coalesce → mismatch → teardown (expected fallback, possible flash).
-3. Navigating to Motion/Gesture after home is **not** IFR first-screen; those pages rely on BG ops + MT worklet registrations.
-4. Rebuild `@my-react/react-lynx` after loader/runtime changes; restart rspeedy; hard refresh device/simulator.
-5. Element Templates are **not** part of IFR yet.
+1. **`listRecycle` vs IFR:** `pluginMyReactLynx({ listRecycle: true })` must **not** be combined with `enableIFR: true`. Deferred list-item templates strip descendant CREATE/INSERT from the IFR-recorded ops stream, so first paint shows empty cells until `componentAtIndex`, and BG hydrate often hits structural mismatch / teardown. The plugin throws if both options are set; runtime also no-ops deferral when `__MY_REACT_LYNX_IFR__` is true.
+2. **Same first screen on MT + BG** (route / init data). Prefer sync data; gate fetches with `isIfrMainThread()`.
+3. **Batch granularity:** MT sync flush may record multiple batches; BG microtask may coalesce → mismatch → teardown (expected fallback, possible flash).
+4. Navigating to Motion/Gesture after home is **not** IFR first-screen; those pages rely on BG ops + MT worklet registrations.
+5. Rebuild `@my-react/react-lynx` after loader/runtime changes; restart rspeedy; hard refresh device/simulator.
+6. Element Templates are **not** part of IFR yet.
 
 ---
 

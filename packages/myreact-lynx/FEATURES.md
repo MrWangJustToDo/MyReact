@@ -196,7 +196,7 @@ MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR
 
 ## Corrected takeaways (vs earlier draft)
 
-1. **List recycle**: MyReact is **not** ahead of Vue — both use **noop** `enqueueComponent`. Only ReactLynx has a real recycle map.
+1. **List recycle**: MyReact is **not** ahead of Vue — both use **noop** `enqueueComponent`. Only ReactLynx has a real recycle map. MyReact now has an **experimental** deferred-content pool (`listRecycle`): BG captures each `<list-item>`'s content as a template and MT lazily materializes it at `componentAtIndex`, reusing the materialized cell on scroll-back. Still noop for a *real cross-item wrapper pool*, and mutually exclusive with enableIFR; not validated for IFR coexistence.
 2. **Gestures**: ReactLynx has the full pipeline but **defaults `enableNewGesture: false`**; MyReact forces **true** and re-exports the runtime. Vue has **no** gesture-runtime integration.
 3. **Element Templates**: Vue ✅ and React ◐ are **different mechanisms**; do not treat as the same feature.
 4. **IFR**: ReactLynx = always (Snapshot). VueLynx = opt-in since 0.5. MyReact = opt-in `enableIFR` (true mount); first-screen **patch flags ≠ IFR**.
@@ -211,7 +211,7 @@ MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR
 | -------- | -------------------------------------------------------------------------- |
 | P0       | **IFR** (Snapshot path and/or Vue-style MT sync render)                    |
 | P0       | Decide ET strategy (RL PAPI vs Vue `INSTANTIATE_TEMPLATE`) if pursuing IFR |
-| P1       | List **recycle pool** (replace noop `enqueueComponent`) — MT→BG lifecycle transport (onRecycleComponent/onComponentAtIndex) landed |
+| P1       | List **recycle pool** (replace noop `enqueueComponent`) — MT→BG lifecycle transport (onRecycleComponent/onComponentAtIndex) landed; **experimental deferred-content pool** (`listRecycle` opt-in: templates + lazy materialize + per-item self-reuse) landed but not IFR-validated, descendant interactivity not-yet-supported |
 | P1       | SSR / `firstScreenSyncTiming` if host needs it                             |
 | P2       | Standalone lazy bundle / `fetchBundle`                                     |
 | P2       | DevTools + testing-library                                                 |
@@ -220,7 +220,7 @@ MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR
 ```
 ReactLynx 0.123 = Snapshot IFR (default) + optional ET backend + fullest Lynx React surface
 VueLynx   0.5.1 = Ops + opt-in IFR/ET − gesture API − initData − real list recycle
-MyReact   0.0.9 = Ops + gestures/initData + opt-in IFR − Snapshot/ET − real list recycle
+MyReact   0.0.9 = Ops + gestures/initData + opt-in IFR + experimental listRecycle pool − Snapshot/ET − real cross-item recycle
 ```
 
 Refresh:

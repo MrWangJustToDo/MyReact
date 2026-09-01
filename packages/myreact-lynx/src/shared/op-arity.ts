@@ -21,6 +21,8 @@ export const OP_ARITY: Record<OpCode, number> = {
   [OP.SET_MT_REF]: 2,
   [OP.INIT_MT_REF]: 2,
   [OP.SET_GESTURE]: 2,
+  [OP.SET_LIST_ITEM_TEMPLATE]: 3, // itemId, reuseIdentifier, contentOps[]
+  [OP.CLEAR_LIST_ITEM_TEMPLATE]: 1, // itemId
 };
 
 /**

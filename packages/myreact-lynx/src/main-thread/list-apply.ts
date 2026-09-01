@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 /**
  * List element management for the Main Thread ops executor.
  *
@@ -13,7 +14,28 @@
  */
 
 import { elements, pageUniqueId } from "./element-registry.js";
+import { clearListItemTemplate, getListItemTemplate, materializeTemplate, resetListItemTemplates } from "./list-item-template.js";
 import { dispatchListLifecycle } from "./list-lifecycle.js";
+
+/**
+ * Compile-time/runtime flag: when on, list-item content is materialized lazily
+ * at componentAtIndex time (from the deferred template) instead of eagerly on
+ * first flush, and materialized cells are re-used on scroll-back.
+ */
+const listRecycleEnabled = (): boolean => {
+  // IFR sync mount records a deferred op stream that cannot hydrate cleanly
+  // against BG batches and leaves first-screen list cells empty — refuse both.
+  if (typeof __MY_REACT_LYNX_IFR__ !== "undefined" && __MY_REACT_LYNX_IFR__) {
+    return false;
+  }
+  if (typeof __MY_REACT_LYNX_LIST_RECYCLE__ !== "undefined") {
+    return __MY_REACT_LYNX_LIST_RECYCLE__;
+  }
+  return false;
+};
+
+/** Cache of materialized content roots (top-level children), keyed by list-item bgId. */
+const materializedRoot = new Map<number, LynxElement[]>();
 
 // ---------------------------------------------------------------------------
 // State
@@ -160,12 +182,25 @@ function createListCallbacks(bgId: number): {
   const componentAtIndex = (list: LynxElement, listID: number, cellIndex: number, operationID: number): number | undefined => {
     const items = listItems.get(bgId);
     if (!items || cellIndex < 0 || cellIndex >= items.length) return undefined;
-    const item = items[cellIndex]!.el;
+    const entry = items[cellIndex]!;
+    const item = entry.el;
+    const itemId = entry.bgId;
+
+    if (listRecycleEnabled()) {
+      // Lazy: only materialize the deferred content the first time this cell
+      // is requested, then reuse it on scroll-back.
+      const template = getListItemTemplate(itemId);
+      if (template && !materializedRoot.has(itemId)) {
+        const roots = materializeTemplate(template, item);
+        if (roots.length > 0) materializedRoot.set(itemId, roots);
+      }
+    }
+
     __AppendElement(list, item);
     const sign = __GetElementUniqueID(item);
     // Notify the Background Thread that this cell is about to be mounted, so
     // an `onComponentAtIndex` prop handler can run.
-    dispatchListLifecycle(items[cellIndex]!.bgId, "onComponentAtIndex", {
+    dispatchListLifecycle(itemId, "onComponentAtIndex", {
       listID,
       cellIndex,
       operationID,
@@ -203,10 +238,21 @@ function createListCallbacks(bgId: number): {
         elementIDs.push(-1);
         continue;
       }
-      const item = items[cellIndex]!.el;
+      const entry = items[cellIndex]!;
+      const item = entry.el;
+      const itemId = entry.bgId;
+
+      if (listRecycleEnabled()) {
+        const template = getListItemTemplate(itemId);
+        if (template && !materializedRoot.has(itemId)) {
+          const roots = materializeTemplate(template, item);
+          if (roots.length > 0) materializedRoot.set(itemId, roots);
+        }
+      }
+
       __AppendElement(list, item);
       const sign = __GetElementUniqueID(item);
-      dispatchListLifecycle(items[cellIndex]!.bgId, "onComponentAtIndex", {
+      dispatchListLifecycle(itemId, "onComponentAtIndex", {
         listID: bgId,
         cellIndex,
         operationID: operationIDs[j],
@@ -295,6 +341,8 @@ export function removeListItem(parentId: number, childId: number): void {
   const entry = items[idx]!;
   items.splice(idx, 1);
   mtElementToBgId.delete(entry.el);
+  materializedRoot.delete(childId);
+  clearListItemTemplate(childId);
   itemKeyMap.delete(childId);
   listItemPlatformInfo.delete(childId);
   dirtyPlatformInfo.delete(childId);
@@ -371,6 +419,36 @@ export function flushListUpdates(): void {
   }
 }
 
+/**
+ * Drop previously materialized content for a list-item (e.g. after a template
+ * update). Removes native children from the wrapper and clears the cache so the
+ * next componentAtIndex rematerializes. If the cell is already on-screen, also
+ * rematerialize immediately so the UI does not stay stale until scroll.
+ */
+export function invalidateListItemContent(itemId: number): void {
+  const roots = materializedRoot.get(itemId);
+  const wasMaterialized = roots != null && roots.length > 0;
+  const wrapper = elements.get(itemId);
+  if (wrapper && roots) {
+    for (const root of roots) {
+      try {
+        __RemoveElement(wrapper, root);
+      } catch {
+        /* ignore — wrapper may already have been detached */
+      }
+    }
+  }
+  materializedRoot.delete(itemId);
+
+  // Only rebuild immediately when the cell was already on-screen / materialized.
+  // Otherwise keep deferred until the next componentAtIndex.
+  if (!wasMaterialized || !listRecycleEnabled() || !wrapper) return;
+  const template = getListItemTemplate(itemId);
+  if (!template) return;
+  const next = materializeTemplate(template, wrapper);
+  if (next.length > 0) materializedRoot.set(itemId, next);
+}
+
 /** Reset all list state — for testing only. */
 export function resetListState(): void {
   listItems.clear();
@@ -380,4 +458,6 @@ export function resetListState(): void {
   listItemPlatformInfo.clear();
   dirtyPlatformInfo.clear();
   mtElementToBgId.clear();
+  materializedRoot.clear();
+  resetListItemTemplates();
 }

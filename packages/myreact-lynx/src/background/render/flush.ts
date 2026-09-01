@@ -16,6 +16,7 @@ import { buildFirstScreenPatchMeta, markFirstScreenPatchComplete } from "../firs
 import { resetDelayedRunOnMainThread, takeDelayedRunOnMainThreadData } from "../worklet/delayed-run-on-main-thread.js";
 import { takeWorkletRefInitValuePatch } from "../worklet/worklet-ref-pool.js";
 
+import { deferListItemContent } from "./deferred-list-item.js";
 import { getLocalOpsApplier } from "./local-ops-applier.js";
 import { takeOps } from "./ops.js";
 
@@ -67,7 +68,9 @@ const doFlush = () => {
   // Take ref inits into the SAME patch as ops + delayed worklets so MT
   // applies them in order (separate callLepusMethod can race).
   const workletRefInitValues = takeWorkletRefInitValuePatch();
-  const ops = takeOps();
+  const rawOps = takeOps();
+  // Deferred list-item content capture (recycle pool). No-op when disabled.
+  const ops = deferListItemContent(rawOps);
   const delayedRunOnMainThreadData = takeDelayedRunOnMainThreadData();
   const { isFirstScreen, endFirstScreen } = buildFirstScreenPatchMeta();
 

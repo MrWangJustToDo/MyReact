@@ -14,6 +14,8 @@ export const OP = {
   SET_MT_REF: 12,
   INIT_MT_REF: 13,
   SET_GESTURE: 14,
+  SET_LIST_ITEM_TEMPLATE: 15,
+  CLEAR_LIST_ITEM_TEMPLATE: 16,
 } as const;
 
 export type OpCode = (typeof OP)[keyof typeof OP];

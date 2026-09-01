@@ -20,7 +20,9 @@ import {
   removeListItem,
   resetListState,
   setPlatformInfoProp,
+  invalidateListItemContent,
 } from "./list-apply.js";
+import { clearListItemTemplate, resetListItemTemplates, setListItemTemplate } from "./list-item-template.js";
 import { applyInitMtRef, applySetMtRef, applySetWorkletEvent, resetWorkletState } from "./worklet-apply.js";
 
 /**
@@ -257,6 +259,23 @@ export function applyOps(ops: unknown[]): void {
         break;
       }
 
+      case OP.SET_LIST_ITEM_TEMPLATE: {
+        // itemId, reuseIdentifier, contentOps[]
+        const itemId = ops[i++] as number;
+        const reuseIdentifier = ops[i++] as string;
+        const contentOps = ops[i++] as unknown[];
+        setListItemTemplate(itemId, reuseIdentifier, contentOps);
+        invalidateListItemContent(itemId);
+        break;
+      }
+
+      case OP.CLEAR_LIST_ITEM_TEMPLATE: {
+        const itemId = ops[i++] as number;
+        clearListItemTemplate(itemId);
+        invalidateListItemContent(itemId);
+        break;
+      }
+
       default:
         throw new Error(`[@my-react/react-lynx] Unknown op code ${code} at buffer index ${i - 1}`);
     }
@@ -277,6 +296,7 @@ export function resetMainThreadState(): void {
   elementParent.clear();
   setPageUniqueId(1);
   resetListState();
+  resetListItemTemplates();
   resetWorkletState();
   resetGestureState();
 }

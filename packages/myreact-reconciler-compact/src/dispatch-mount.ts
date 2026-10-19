@@ -55,6 +55,9 @@ export function ReconcilerDispatchMount(_dispatch: ReconcilerDispatch, _fiber: M
     });
   });
 
+  // React resets the host container after mutations and before refs / layout effects
+  config.resetAfterCommit?.(_dispatch.rootNode);
+
   _list.listToFoot(function invokeSetRefList(_fiber) {
     safeCallWithCurrentFiber({
       fiber: _fiber,

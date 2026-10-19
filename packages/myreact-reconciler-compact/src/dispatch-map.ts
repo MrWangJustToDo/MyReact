@@ -86,6 +86,27 @@ export function getValidParentFiberWithNode(_dispatch: ReconcilerDispatch, _fibe
   return parentFiberWithNode;
 }
 
+/**
+ * The host container a fiber lives in, matching React's `getRootHostContainer`:
+ * the host container of the nearest portal above it, or the root container.
+ */
+export function getHostContainer(_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode) {
+  let parent = _fiber.parent;
+
+  while (parent) {
+    // The committed container wins, `pendingProps.container` covers nodes created before the portal commits
+    const containerNode = (parent as MyReactFiberContainer).containerNode;
+
+    if (containerNode) return containerNode;
+
+    if (include(parent.type, NODE_TYPE.__portal__)) return parent.pendingProps["container"];
+
+    parent = parent.parent;
+  }
+
+  return _dispatch.rootNode;
+}
+
 function findFiberWithNodeFromFiber(fiber: MyReactFiberNode | null): MyReactFiberNode | null {
   if (!fiber || include(fiber.state, STATE_TYPE.__unmount__)) return null;
 

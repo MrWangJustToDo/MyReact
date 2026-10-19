@@ -1,6 +1,6 @@
 import { include, STATE_TYPE } from "@my-react/react-shared";
 
-import { getValidParentFiberWithNode } from "../dispatch-map";
+import { getHostContainer, getValidParentFiberWithNode } from "../dispatch-map";
 
 import type { ReconcilerDispatch } from "../dispatch";
 import type { MyReactFiberNode, MyReactFiberContainer } from "@my-react/react-reconciler";
@@ -17,17 +17,15 @@ export function remove(_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
   // const parentNode = config.getPublicInstance(parentFiberWithNode?.nativeNode || mayFiberContainer?.containerNode);
   const parentNode = parentFiberWithNode?.nativeNode || maybeContainer?.containerNode;
 
-  // const rootNode = config.getPublicInstance(this.rootNode);
-  const rootNode = _dispatch.rootNode;
-
   // const currentNode = config.getPublicInstance(_fiber.nativeNode);
   const currentNode = _fiber.nativeNode;
 
   const isContainer = !parentNode || (parentNode && parentNode === maybeContainer?.containerNode);
 
   if (isContainer) {
-    _config.removeChildFromContainer?.(rootNode, currentNode, _fiber);
+    // The host container is determined by the portal hierarchy, even while the portal itself unmounts
+    _config.removeChildFromContainer?.(getHostContainer(_dispatch, _fiber), currentNode);
   } else {
-    _config.removeChild?.(parentNode, currentNode, _fiber);
+    _config.removeChild?.(parentNode, currentNode);
   }
 }

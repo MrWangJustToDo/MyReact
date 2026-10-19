@@ -33,12 +33,12 @@ function append(dispatch: ReconcilerDispatch, config: any, fiber: MyReactFiberNo
 
     if (isContainer) {
       if (config.appendChildToContainer) {
-        config.appendChildToContainer?.(rootNode, childNode, fiber);
+        config.appendChildToContainer?.(parentNode || rootNode, childNode);
       } else {
-        config.appendChild?.(rootNode, childNode, fiber);
+        config.appendChild?.(parentNode || rootNode, childNode);
       }
     } else {
-      config.appendChild?.(parentNode, childNode, fiber);
+      config.appendChild?.(parentNode, childNode);
     }
     return;
   }
@@ -93,12 +93,12 @@ function insertBefore(
 
     if (isContainer) {
       if (config.insertInContainerBefore) {
-        config.insertInContainerBefore?.(rootNode, childNode, beforeNode, fiber);
+        config.insertInContainerBefore?.(parentNode || rootNode, childNode, beforeNode);
       } else {
-        config.insertBefore?.(rootNode, childNode, beforeNode, fiber);
+        config.insertBefore?.(parentNode || rootNode, childNode, beforeNode);
       }
     } else {
-      config.insertBefore?.(parentNode, childNode, beforeNode, fiber);
+      config.insertBefore?.(parentNode, childNode, beforeNode);
     }
 
     return;

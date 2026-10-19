@@ -94,6 +94,9 @@ export function ReconcilerDispatchUpdate(_dispatch: ReconcilerDispatch, _list: L
     }
   });
 
+  // React resets the host container after mutations and before refs / layout effects
+  config.resetAfterCommit?.(_dispatch.rootNode);
+
   _list.listToFoot(function invokeSetRefList(_fiber) {
     if (exclude(_fiber.state, STATE_TYPE.__unmount__) && !_dispatch.isAppUnmounted) {
       safeCallWithCurrentFiber({

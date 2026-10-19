@@ -109,8 +109,6 @@ export function createDispatch(rootNode: any, rootFiber: MyReactFiberRoot, rootE
       safeCall(function safeCallAfterCommit() {
         instance.afterCommit?.();
       });
-
-      config.resetAfterCommit?.(rootNode);
     }
 
     reconcileUpdate(_list: ListTree<MyReactFiberNode>, sync?: boolean): void {
@@ -135,8 +133,6 @@ export function createDispatch(rootNode: any, rootFiber: MyReactFiberRoot, rootE
       safeCall(function safeCallAfterUpdate() {
         instance.afterUpdate?.();
       });
-
-      config.resetAfterCommit?.(rootNode);
     }
 
     patchToFiberInitial(_fiber: MyReactFiberNode): void {

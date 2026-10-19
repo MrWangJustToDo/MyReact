@@ -36,22 +36,22 @@ export function append(_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
   if (isRender) {
     if (isContainer) {
       if (_config.appendChildToContainer) {
-        _config.appendChildToContainer?.(parentNode || rootNode, currentNode, _fiber);
+        _config.appendChildToContainer?.(parentNode || rootNode, currentNode);
       } else {
-        _config.appendInitialChild?.(parentNode || rootNode, currentNode, _fiber);
+        _config.appendInitialChild?.(parentNode || rootNode, currentNode);
       }
     } else {
-      _config.appendInitialChild?.(parentNode, currentNode, _fiber);
+      _config.appendInitialChild?.(parentNode, currentNode);
     }
   } else {
     if (isContainer) {
       if (_config.appendChildToContainer) {
-        _config.appendChildToContainer?.(parentNode || rootNode, currentNode, _fiber);
+        _config.appendChildToContainer?.(parentNode || rootNode, currentNode);
       } else {
-        _config.appendChild?.(parentNode || rootNode, currentNode, _fiber);
+        _config.appendChild?.(parentNode || rootNode, currentNode);
       }
     } else {
-      _config.appendChild?.(parentNode, currentNode, _fiber);
+      _config.appendChild?.(parentNode, currentNode);
     }
   }
 

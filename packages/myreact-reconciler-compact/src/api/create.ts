@@ -1,6 +1,8 @@
 import { NODE_TYPE } from "@my-react/react-reconciler";
 import { include, PATCH_TYPE, remove } from "@my-react/react-shared";
 
+import { getHostContainer } from "../dispatch-map";
+
 import type { ReconcilerDispatch } from "../dispatch";
 import type { MyReactFiberContainer, MyReactFiberNode } from "@my-react/react-reconciler";
 
@@ -11,8 +13,8 @@ export function create(_dispatch: ReconcilerDispatch, _fiber: MyReactFiberNode, 
 
   const props = _fiber.pendingProps;
 
-  // const rootContainerInstance = config.getPublicInstance(rootNode);
-  const rootContainerInstance = _dispatch.rootNode;
+  // React's `rootContainerInstance` is the host container the node lives in (portal container included)
+  const rootContainerInstance = getHostContainer(_dispatch, _fiber);
 
   const hostContext = _dispatch.runtimeDom.hostContextMap.get(_fiber.parent || _fiber);
 

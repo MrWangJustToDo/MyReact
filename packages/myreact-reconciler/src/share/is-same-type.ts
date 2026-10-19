@@ -18,6 +18,10 @@ export function checkIsSameType(p: MyReactFiberNode | MyReactElementNode, elemen
     const { nodeType, elementType } = getTypeFromElementNode(element);
     if (p.type === nodeType) {
       if (isValidElement(element)) {
+        // React recreates a portal fiber when its container changes
+        if (include(nodeType, NODE_TYPE.__portal__)) {
+          return Object.is(p.pendingProps?.["container"], (element as MyReactElement).props?.["container"]);
+        }
         if (__DEV__ && enableHMRForDev.current && include(nodeType, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
           // type error
           return Object.is(getCurrentTypeFromRefresh((p as MyReactFiberNode).elementType), getCurrentTypeFromRefresh(elementType));
@@ -37,6 +41,10 @@ export function checkIsSameType(p: MyReactFiberNode | MyReactElementNode, elemen
       if (isValidElement(element)) {
         const typedExistElement = p as MyReactElement;
         const typedIncomingElement = element as MyReactElement;
+        // React recreates a portal fiber when its container changes
+        if (include(existElementType.nodeType, NODE_TYPE.__portal__) && isValidElement(p)) {
+          return Object.is(typedExistElement.props?.["container"], typedIncomingElement.props?.["container"]);
+        }
         if (__DEV__ && enableHMRForDev.current && include(existElementType.nodeType, NODE_TYPE.__class__ | NODE_TYPE.__function__)) {
           return Object.is(getCurrentTypeFromRefresh(typedIncomingElement.type), getCurrentTypeFromRefresh(typedExistElement.type));
         } else {

@@ -54,7 +54,7 @@ export type ElementProps<T extends ConstructorRepresentation, P = InstanceType<T
 export type ThreeElement<T extends ConstructorRepresentation> = Mutable<Overwrite<ElementProps<T>, Omit<InstanceProps<InstanceType<T>, T>, "object">>>;
 
 export type ThreeToJSXElements<T extends Record<string, any>> = {
-  [K in keyof T & string as Uncapitalize<K>]: T[K] extends ConstructorRepresentation ? ThreeElement<T[K]> : never;
+  [K in keyof T & string as T[K] extends ConstructorRepresentation ? Uncapitalize<K> : never]: ThreeElement<T[K]>;
 };
 
 type ThreeExports = typeof THREE;

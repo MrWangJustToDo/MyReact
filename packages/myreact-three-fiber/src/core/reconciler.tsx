@@ -7,7 +7,7 @@ import Reconciler from "@my-react/react-reconciler-compact";
 import { ContinuousEventPriority, DiscreteEventPriority, DefaultEventPriority, NoEventPriority } from "@my-react/react-reconciler-compact/constants";
 import * as React from "react";
 
-import { removeInteractivity, type EventHandlers } from "./events";
+import { swapInteractivity, removeInteractivity, type EventHandlers } from "./events";
 import { diffProps, applyProps, invalidateInstance, attach, detach, prepare, isObject3D, findInitialRoot, getInstanceProps } from "./utils";
 
 import type { Fiber } from "./its-fine";
@@ -123,11 +123,6 @@ function createReconciler<
   return reconciler as any;
 }
 
-export interface Root {
-  fiber: ReactReconciler.FiberRoot;
-  store: RootStore;
-}
-
 export type AttachFnType<O = any> = (parent: any, self: O) => () => void;
 export type AttachType<O = any> = string | AttachFnType<O>;
 
@@ -230,7 +225,7 @@ function validateInstance(type: string, props: HostConfig["props"]): void {
   if (props.args !== undefined && !Array.isArray(props.args)) throw new Error("R3F: The args prop must be an array!");
 }
 
-function createInstance(type: string, props: HostConfig["props"], root: RootStore): HostConfig["instance"] {
+function createInstance(type: string, props: HostConfig["props"], rootContainerInstance: RootStore): HostConfig["instance"] {
   // Remove three* prefix from elements if native element not present
   type = toPascalCase(type) in catalogue ? type : type.replace(PREFIX_REGEX, "");
 
@@ -239,7 +234,7 @@ function createInstance(type: string, props: HostConfig["props"], root: RootStor
   // Regenerate the R3F instance for primitives to simulate a new object
   if (type === "primitive" && props.object?.__r3f) delete props.object.__r3f;
 
-  return prepare(props.object, root, type, props);
+  return prepare(props.object, rootContainerInstance, type, props);
 }
 
 function hideInstance(instance: HostConfig["instance"]): void {
@@ -379,8 +374,11 @@ function disposeOnIdle(object: any) {
   }
 }
 
-function removeChild(parent: HostConfig["instance"], child: HostConfig["instance"] | HostConfig["textInstance"], dispose?: boolean) {
+function removeChildInstance(parent: HostConfig["instance"], child: HostConfig["instance"] | HostConfig["textInstance"], dispose?: boolean) {
   if (!child) return;
+
+  // Unlinking clears the parent, which invalidateInstance checks, so remember it
+  const wasLinked = !!child.parent;
 
   // Unlink instances
   child.parent = null;
@@ -388,11 +386,13 @@ function removeChild(parent: HostConfig["instance"], child: HostConfig["instance
   if (childIndex !== -1) parent.children.splice(childIndex, 1);
 
   // Eagerly tear down tree
-  if (child.props.attach) {
-    detach(parent, child);
-  } else if (isObject3D(child.object) && isObject3D(parent.object)) {
-    parent.object.remove(child.object);
-    removeInteractivity(findInitialRoot(child), child.object);
+  if (child.object) {
+    if (child.props.attach) {
+      detach(parent, child);
+    } else if (isObject3D(child.object) && isObject3D(parent.object)) {
+      parent.object.remove(child.object);
+      removeInteractivity(findInitialRoot(child), child.object);
+    }
   }
 
   // Allow objects to bail out of unmount disposal with dispose={null}
@@ -401,12 +401,12 @@ function removeChild(parent: HostConfig["instance"], child: HostConfig["instance
   // Recursively remove instance children
   for (let i = child.children.length - 1; i >= 0; i--) {
     const node = child.children[i];
-    removeChild(child, node, shouldDispose);
+    removeChildInstance(child, node, shouldDispose);
   }
   child.children.length = 0;
 
   // Unlink instance object
-  delete child.object.__r3f;
+  if (child.object) delete child.object.__r3f;
 
   // Dispose object whenever the reconciler feels like it.
   // Never dispose of primitives because their state may be kept outside of React!
@@ -414,25 +414,25 @@ function removeChild(parent: HostConfig["instance"], child: HostConfig["instance
   //   - has a dispose method
   //   - cannot be a <primitive object={...} />
   //   - cannot be a THREE.Scene, because three has broken its own API
-  if (shouldDispose && child.type !== "primitive" && child.object.type !== "Scene") {
+  if (child.object && shouldDispose && child.type !== "primitive" && child.object.type !== "Scene") {
     disposeOnIdle(child.object);
   }
 
   // Tree was updated, request a frame for top-level instance
-  if (dispose === undefined) invalidateInstance(child);
+  if (dispose === undefined && wasLinked) {
+    const state = child.root?.getState?.();
+    if (state && state.internal.frames === 0) state.invalidate();
+  }
 }
 
 function setFiberRef(fiber: Fiber, publicInstance: HostConfig["publicInstance"]): void {
-  for (const _fiber of [fiber, fiber.alternate]) {
-    if (_fiber !== null) {
-      if (typeof _fiber?.ref === "function") {
-        _fiber.refCleanup?.();
-        const cleanup = _fiber.ref(publicInstance);
-        if (typeof cleanup === "function") _fiber.refCleanup = cleanup;
-      } else if (_fiber?.ref) {
-        _fiber.ref.current = publicInstance;
-      }
-    }
+  // MyReact has a single fiber tree, there is no `alternate` to update
+  if (typeof fiber?.ref === "function") {
+    fiber.refCleanup?.();
+    const cleanup = fiber.ref(publicInstance);
+    if (typeof cleanup === "function") fiber.refCleanup = cleanup;
+  } else if (fiber?.ref) {
+    fiber.ref.current = publicInstance;
   }
 }
 
@@ -489,9 +489,12 @@ function swapReconstructedInstances(): void {
       const target = catalogue[toPascalCase(instance.type)];
 
       // Create object
+      const prevObject = instance.object;
       instance.object = instance.props.object ?? new target(...(instance.props.args ?? []));
       instance.object.__r3f = instance;
       setFiberRef(fiber, instance.object);
+      // Transfer hover, capture and raycast registration to the new object
+      swapInteractivity(findInitialRoot(instance), prevObject, instance.object);
 
       // Set initial props
       applyProps(instance.object, instance.props);
@@ -545,7 +548,7 @@ export const reconciler = /* @__PURE__ */ createReconciler<
   supportsPersistence: false,
   supportsHydration: false,
   createInstance,
-  removeChild,
+  removeChild: removeChildInstance,
   appendChild,
   appendInitialChild: appendChild,
   insertBefore,
@@ -559,7 +562,7 @@ export const reconciler = /* @__PURE__ */ createReconciler<
     const scene = (container.getState().scene as unknown as Instance<THREE.Scene>["object"]).__r3f;
     if (!child || !scene) return;
 
-    removeChild(scene, child);
+    removeChildInstance(scene, child);
   },
   insertInContainerBefore(container, child, beforeChild) {
     const scene = (container.getState().scene as unknown as Instance<THREE.Scene>["object"]).__r3f;
@@ -583,7 +586,7 @@ export const reconciler = /* @__PURE__ */ createReconciler<
     // Reconstruct instance if args were changed
     else if (newProps.args?.some((value, index) => value !== oldProps.args?.[index])) reconstruct = true;
 
-    // Reconstruct when args or <primitive object={...} have changes
+    // Reconstruct when args or <primitive object={...}> have changes
     if (reconstruct) {
       reconstructed.push([instance, getInstanceProps(newProps), fiber]);
     } else {
@@ -606,8 +609,6 @@ export const reconciler = /* @__PURE__ */ createReconciler<
   getPublicInstance: (instance) => instance?.object!,
   prepareForCommit: () => null,
   preparePortalMount: (container) => prepare(container.getState().scene, container, "", {}),
-  // Reconstructed instances are swapped once all mutations are committed,
-  // before layout effects run so refs point to the new objects
   resetAfterCommit: flushReconstructedInstances,
   shouldSetTextContent: () => false,
   clearContainer: () => false,

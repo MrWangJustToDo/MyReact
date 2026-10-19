@@ -126,6 +126,49 @@ function releaseInternalPointerCapture(
   }
 }
 
+/** This function transfers all interactivity state from one object instance to another. Used when swapping instances due to reconstruction. */
+export function swapInteractivity(store: RootStore, object: THREE.Object3D, newObject: THREE.Object3D) {
+  const { internal } = store.getState();
+
+  for (let i = 0; i < internal.interaction.length; i++) {
+    if (internal.interaction[i] === object) internal.interaction[i] = newObject;
+  }
+
+  for (let i = 0; i < internal.initialHits.length; i++) {
+    if (internal.initialHits[i] === object) internal.initialHits[i] = newObject;
+  }
+
+  internal.hovered.forEach((value, key) => {
+    if (value.eventObject === object || value.object === object) {
+      internal.hovered.delete(key);
+      const next = {
+        ...value,
+        eventObject: value.eventObject === object ? newObject : value.eventObject,
+        object: value.object === object ? newObject : value.object,
+      };
+      internal.hovered.set(makeId(next), next);
+    }
+  });
+
+  // A capture is keyed by its eventObject, but it also carries the intersection that is replayed into
+  // every subsequent event. Both must follow the new instance, or the capture resolves to the discarded object.
+  internal.capturedMap.forEach((captures) => {
+    for (const [key, captureData] of Array.from(captures)) {
+      const { intersection } = captureData;
+      if (key !== object && intersection.object !== object && intersection.eventObject !== object) continue;
+      if (key === object) captures.delete(key);
+      captures.set(key === object ? newObject : key, {
+        ...captureData,
+        intersection: {
+          ...intersection,
+          object: intersection.object === object ? newObject : intersection.object,
+          eventObject: intersection.eventObject === object ? newObject : intersection.eventObject,
+        },
+      });
+    }
+  });
+}
+
 export function removeInteractivity(store: RootStore, object: THREE.Object3D) {
   const { internal } = store.getState();
   // Removes every trace of an object from the data store

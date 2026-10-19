@@ -68,6 +68,7 @@ function CanvasImpl({
   React.useImperativeHandle(forwardRef, () => canvasRef.current);
 
   const handlePointerMissed = useMutableCallback(onPointerMissed);
+  const pointerMissed = React.useCallback((event: MouseEvent) => handlePointerMissed.current?.(event), [handlePointerMissed]);
   const [block, setBlock] = React.useState<SetBlock>(false);
   const [error, setError] = React.useState<any>(false);
 
@@ -99,8 +100,8 @@ function CanvasImpl({
           raycaster,
           camera,
           size: containerRect,
-          // Pass mutable reference to onPointerMissed so it's free to update
-          onPointerMissed: (...args) => handlePointerMissed.current?.(...args),
+          // Forwards to the latest onPointerMissed, so a new callback does not update the store
+          onPointerMissed: pointerMissed,
           onCreated: (state) => {
             // Connect to event source
             state.events.connect?.(eventSource ? (isRef(eventSource) ? eventSource.current : eventSource) : divRef.current);
@@ -127,7 +128,8 @@ function CanvasImpl({
           </Bridge>
         );
       }
-      run();
+      // A renderer factory that fails reaches the nearest error boundary instead of an unhandled rejection
+      run().catch(setError);
     }
   });
 

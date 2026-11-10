@@ -48,6 +48,8 @@ type ModuleLoaderOptions = {
    * resolves through the manifest then imports the mapped chunk id.
    */
   allowDynamicImport?: boolean;
+  /** Which environment is loading the module; defaults to `ssr` outside a browser. */
+  mode?: "client" | "ssr";
 };
 
 /**
@@ -57,7 +59,7 @@ export function assertSafeClientModuleId(id: string): void {
   if (!id || typeof id !== "string") {
     throw new Error("[@my-react/react-server] Invalid client module id");
   }
-  if (/^(https?:|data:|blob:|file:|node:|\/\/)/i.test(id.trim())) {
+  if (/^(https?:|data:|blob:|file:|node:|javascript:|vbscript:|\/\/)/i.test(id.trim())) {
     throw new Error(`[@my-react/react-server] Refusing to import unsafe module id: ${id}`);
   }
 }
@@ -184,6 +186,7 @@ export function createManifestModuleLoader(manifest: ClientManifest, options?: O
 
 function createModuleLoaderWithOptions(options: ModuleLoaderOptions): ModuleLoader {
   const { manifest, resolveModuleId, loadModule, requireManifestEntry = Boolean(manifest), allowDynamicImport = false } = options;
+  const environmentMode = options.mode ?? (typeof window === "undefined" ? "ssr" : "client");
 
   function resolveEntry(metadata: ClientReferenceMetadata): ClientManifestEntry | undefined {
     if (!manifest) {
@@ -194,7 +197,9 @@ function createModuleLoaderWithOptions(options: ModuleLoaderOptions): ModuleLoad
   }
 
   function resolveImportId(metadata: ClientReferenceMetadata, entry?: ClientManifestEntry): string {
-    if (entry?.ssrModule) {
+    // `ssrModule` is relative to the SSR bundle. Using it in the browser sends
+    // the browser to a source-path URL that does not exist in production.
+    if (environmentMode === "ssr" && entry?.ssrModule) {
       return entry.ssrModule.startsWith(".") ? entry.ssrModule : `./${entry.ssrModule}`;
     }
     const baseId = entry?.id ?? metadata.id;

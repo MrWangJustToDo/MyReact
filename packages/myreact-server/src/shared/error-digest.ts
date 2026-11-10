@@ -41,3 +41,23 @@ export function createPublicErrorMessage(fallback: string, error?: unknown): str
   }
   return fallback;
 }
+
+/**
+ * Remove server-only details from an Error before the Flight serializer writes
+ * its `E` row. `@lazarv/rsc` always serializes `error.message` / `error.stack`
+ * even when `onError` returns a digest, so returning a digest alone is not
+ * enough to keep secrets out of the client payload.
+ *
+ * In development the original message is intentionally preserved.
+ *
+ * @public
+ */
+export function sanitizeErrorForClient(error: unknown, digest: string): void {
+  if (isDev() || !(error instanceof Error)) {
+    return;
+  }
+
+  error.message = digest;
+  error.stack = "";
+  (error as Error & { digest?: string }).digest = digest;
+}

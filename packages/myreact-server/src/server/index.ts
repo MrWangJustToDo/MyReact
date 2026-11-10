@@ -19,11 +19,20 @@ export { getServerAction, serverActionRegistry, isServerReference, getServerRefe
  * 2. Our serverActionRegistry (for handleServerAction to find and execute)
  */
 export function registerServerReference<T extends (...args: unknown[]) => unknown>(action: T, id: string, name: string): T {
+  // Accept both the @lazarv convention (`moduleId` + `exportName`) and the
+  // Vite transform convention (`moduleId#exportName` + `exportName`).
+  // @lazarv appends `#name` itself, so passing an already-qualified id would
+  // produce `moduleId#name#name` and break actions passed as Flight props.
+  const hashIndex = id.lastIndexOf("#");
+  const moduleId = hashIndex === -1 ? id : id.slice(0, hashIndex);
+  const exportName = hashIndex === -1 ? name : id.slice(hashIndex + 1) || name;
+  const fullId = `${moduleId}#${exportName}`;
+
   // Register with @lazarv/rsc for Flight serialization
-  const registered = rscRegisterServerReference(action, id, name);
+  const registered = rscRegisterServerReference(action, moduleId, exportName);
 
   // Also register in our serverActionRegistry for handleServerAction
-  serverActionRegistry.set(id, registered);
+  serverActionRegistry.set(fullId, registered);
 
   return registered as T;
 }

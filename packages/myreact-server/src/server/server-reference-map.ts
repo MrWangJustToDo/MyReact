@@ -26,7 +26,8 @@ export function getServerAction(actionId: string): Function | undefined {
  * Check if a value is a server reference
  */
 export function isServerReference(value: unknown): value is ServerReference {
-  return typeof value === "object" && value !== null && (value as ServerReference).$$typeof === SERVER_REFERENCE_SYMBOL;
+  // @lazarv registers server references as callable functions, not plain objects.
+  return (typeof value === "function" || (typeof value === "object" && value !== null)) && (value as ServerReference).$$typeof === SERVER_REFERENCE_SYMBOL;
 }
 
 /**
@@ -34,10 +35,13 @@ export function isServerReference(value: unknown): value is ServerReference {
  * Get server reference metadata from a value
  */
 export function getServerReferenceMetadata(value: ServerReference): ServerReferenceMetadata {
+  const id = value.$$id ?? "";
+  const hashIndex = id.lastIndexOf("#");
+
   return {
-    id: value.$$id,
-    name: value.$$name,
-    bound: value.$$bound !== undefined,
+    id,
+    name: value.$$name ?? (hashIndex === -1 ? "default" : id.slice(hashIndex + 1)),
+    bound: Array.isArray(value.$$bound) && value.$$bound.length > 0,
   };
 }
 

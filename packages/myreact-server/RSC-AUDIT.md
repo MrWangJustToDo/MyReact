@@ -19,7 +19,7 @@
 
 ## 摘要
 
-源码审查（含二次交叉核对）。**已修复：A1、A2、A4–A10（部分）、A14–A20**。仍开放：**A3** 及低优先级项。
+源码审查（含二次交叉核对）。**已修复：A1、A2、A4–A10（部分）、A12、A14–A18、A20–A22**。仍开放：**A3、A19（默认 loader 仍可 opt-in 动态 import）** 及低优先级项。
 
 | #   | 级别     | 标题                                                                  | 状态                                                                                                    |
 | --- | -------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -27,24 +27,24 @@
 | A2  | High     | Server Action 无 Origin / CSRF 防护                                   | **fixed** (2026-07-31) → `assertSameOriginActionRequest`                                                |
 | A3  | High     | 内联 `"use server"` 闭包绑定明文 `.bind`（无加密）                    | open                                                                                                    |
 | A4  | High     | FormData `decodeAction` 与 Header actionId 可不一致                   | **fixed** (2026-07-31) → FormData id 必须匹配 Header                                                    |
-| A5  | Medium   | `onError` / 404 把内部错误与 actionId 回给客户端                      | **fixed** (2026-07-31) → opaque digest                                                                  |
-| A6  | Medium   | 未解析 `$L…` Flight 引用被静默变成 `() => null`                       | **fixed** → lazarv lazy→MyReact lazy；裸 `$L\d+` reject（非 hang）                                      |
-| A7  | Medium   | `createServerActionReference` 未走 `createServerReference`            | **fixed** (2026-07-31)                                                                                  |
+| A5  | Medium   | `onError` / 404 把内部错误与 actionId 回给客户端                      | **fixed** → digest + 序列化前清洗 error.message/stack                                                   |
+| A6  | Medium   | 未解析 `$L…` Flight 引用被静默变成 `() => null`                       | **fixed** → lazy reject；chunk 晚到 / 未知 `$L` 均 reject                                               |
+| A7  | Medium   | `createServerActionReference` 未走 `createServerReference`            | **fixed** → server reference id 归一化为 `moduleId#name`                                                |
 | A8  | Medium   | 文件级 `"use server"` 未强制 async（`rejectNonAsyncFunction: false`） | **fixed** (2026-07-31)                                                                                  |
 | A9  | Medium   | `transform-hoist-inline` 静默删除 `export *` / re-export              | **fixed** (2026-07-31) → 编译报错                                                                       |
 | A10 | Medium   | 请求体无大小限制（DoS）                                               | **partial** — `/__rsc` 64KB；action 4MB                                                                 |
 | A11 | Low      | Action ID 可预测 + 404 枚举                                           | open（404 文案已脱敏）                                                                                  |
-| A12 | Low      | SSR 仅精确替换 `<div id="root"></div>`                                | open                                                                                                    |
+| A12 | Low      | SSR 仅精确替换 `<div id="root"></div>`                                | **fixed** → marker 校验 + replacer 函数                                                                 |
 | A13 | Low      | `hashActionId` / `referenceKey` 32-bit 哈希碰撞                       | open                                                                                                    |
 | A14 | Info     | `validateImports` 仅有类型字段、未实现                                | **fixed** (2026-07-31) → `createValidateImportsPlugin`，默认开启                                        |
 | A15 | Info     | 「生产」`server.mjs` 仍起 Vite，复用 middleware 风险面                | **fixed** (2026-07-31) → 纯 Node `import(dist/rsc)` + 静态 `dist/client`；entry 导出 `handler(Request)` |
 | A16 | High     | `/__rsc_action` 未预加载 `server-actions-init`，registry 竞态         | **fixed** (2026-07-31)                                                                                  |
 | A17 | High     | `conditions-plugin` 全局注入 `react-server`（污染 client/ssr）        | **fixed** (2026-07-31) → 仅 `rsc` env + `runner.import`                                                 |
 | A18 | Medium   | 公开 `?rsc-original` 可跳过全部 RSC transform                         | **fixed** (2026-07-31) → 内部 query + 仅 SSR                                                            |
-| A19 | Medium   | 默认 `module-loader` 信任 Flight `metadata.id` 动态 import            | **fixed** (2026-07-31) → 协议拒绝 + manifest 门禁                                                       |
+| A19 | Medium   | 默认 `module-loader` 信任 Flight `metadata.id` 动态 import            | **partial** → manifest loader 门禁；默认 loader 仍 `allowDynamicImport: true`                           |
 | A20 | Medium   | `use*` 启发式误伤合法服务端助手函数                                   | **fixed** (2026-07-31) → 仅已知 hooks 白名单                                                            |
 | A21 | Low      | `server.mjs` `path.join(CLIENT_DIR, pathname)` 绝对路径拼接失效       | **fixed** (2026-07-31) → 前缀校验 + 相对路径                                                            |
-| A22 | Low      | HTML middleware 过宽（凡 `Accept: text/html` 的 GET 都走 RSC SSR）    | open                                                                                                    |
+| A22 | Low      | HTML middleware 过宽（凡 `Accept: text/html` 的 GET 都走 RSC SSR）    | **fixed** → Vite 内部路径 / `__inspect` 交回 Vite                                                       |
 
 ---
 
@@ -108,7 +108,7 @@
 
 ---
 
-### A6 — 未解析 `$L…` 静默变 `null` 组件 — **FIXED（suspend）**
+### A6 — 未解析 `$L…` 静默变 `null` 组件 — **FIXED（reject）**
 
 **修复**：
 
@@ -189,13 +189,14 @@ ID = `` `${moduleId}#${name}` ``（常含源文件路径）。便于枚举（配
 
 ---
 
-### A19 — 默认 module loader 信任 `metadata.id` — **FIXED**
+### A19 — 默认 module loader 信任 `metadata.id` — **PARTIAL**
 
 **修复（2026-07-31）**：
 
 - `assertSafeClientModuleId`：拒绝 `http(s):` / `data:` / `blob:` / `file:` / `node:` / `//`
-- `createManifestModuleLoader`：默认要求 manifest 命中
+- `createManifestModuleLoader`：默认要求 manifest 命中；`ssrModule` 仅在 SSR 模式使用
 - 无 entry 且禁止动态 import 时抛错
+- 仍开放：`createModuleLoader` 默认 `allowDynamicImport: true`（dev 需要；生产应由调用方显式关闭）
 
 ---
 
@@ -243,13 +244,14 @@ ID = `` `${moduleId}#${name}` ``（常含源文件路径）。便于枚举（配
 - [x] **A5** 生产错误响应与 digest 脱敏
 - [x] **A7** 统一 `createServerReference`
 - [x] **A8 / A9** transform 与 React 约定对齐（async + export\* 报错）
-- [x] **A6** 未解析 `$L` → MyReact lazy / Suspense pending（不再 `() => null`）
-- [x] **A18 / A19** 收紧 `rsc-original` 与 module loader
+- [x] **A6** 未解析 `$L` → MyReact lazy / Suspense pending（chunk 晚到 / 未知 `$L` 均 reject）
+- [x] **A18 / A19（部分）** 收紧 `rsc-original` 与 module loader
 - [x] **A20** `use*` 启发式白名单
+- [x] **A12 / A22** SSR marker 校验 + Vite 内部路径放行
 - [x] **A14** `validateImports`（server-only / client-only）
 - [x] **A15** 生产纯 Node runner（handler + `import(dist/rsc)`）
 - [ ] **A3** 加密闭包（对齐官方）
-- [ ] **A11–A13 / A22** 低优先级 DX
+- [ ] **A11 / A13** 低优先级 DX
 - [ ] 为关键路径补最小回归测试或手工 checklist
 
 ---

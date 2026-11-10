@@ -279,7 +279,11 @@ export async function handleServerAction(request: Request, options: HandleServer
  */
 async function flightErrorResponse(error: unknown, status: number): Promise<Response> {
   const digest = createClientErrorDigest(error, "A");
-  const thrown = error instanceof Error ? error : new Error(createPublicErrorMessage("Server action failed", error));
+
+  // Do not throw the original error here: @lazarv/rsc serializes error.message
+  // and error.stack into the Flight `E` row. A sanitized Error keeps internal
+  // details out of the client payload while still rejecting on the client.
+  const thrown = new Error(createPublicErrorMessage("Server action failed", error));
   (thrown as Error & { digest?: string }).digest = digest;
 
   function ActionErrorBoundary(): never {

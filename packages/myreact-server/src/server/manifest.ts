@@ -13,21 +13,23 @@ export function createClientManifestResolver(manifest: ClientManifest): ModuleRe
         return null;
       }
 
-      const key = `${reference.$$id}#${reference.$$name}`;
+      // @lazarv stores the export name in `$$id` (`moduleId#exportName`) and
+      // does not populate `$$name` on registered references. Derive both parts
+      // so manifest keys such as `/src/Foo.tsx#default` match correctly.
+      const fullId = reference.$$id;
+      const hashIndex = fullId.lastIndexOf("#");
+      const moduleId = hashIndex === -1 ? fullId : fullId.slice(0, hashIndex);
+      const exportName = reference.$$name || (hashIndex === -1 ? "default" : fullId.slice(hashIndex + 1));
+      const key = `${moduleId}#${exportName}`;
       const entry = manifest[key];
 
       if (!entry) {
-        return {
-          id: reference.$$id,
-          name: reference.$$name,
-          chunks: [],
-          css: [],
-        };
+        throw new Error(`[@my-react/react-server] Client reference not in manifest: ${key}`);
       }
 
       return {
         id: entry.id,
-        name: entry.name,
+        name: entry.name || exportName,
         chunks: entry.chunks ?? [],
         css: entry.css ?? [],
       };

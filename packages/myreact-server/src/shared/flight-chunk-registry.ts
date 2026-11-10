@@ -83,6 +83,8 @@ export function attachFlightChunkRegistry(
       });
   };
 
+  let finished = false;
+
   const scanIRows = async () => {
     const reader = forScan.getReader();
     const decoder = new TextDecoder();
@@ -145,6 +147,7 @@ export function attachFlightChunkRegistry(
       }
       return;
     } finally {
+      finished = true;
       try {
         reader.releaseLock();
       } catch {
@@ -165,7 +168,12 @@ export function attachFlightChunkRegistry(
   return {
     stream: forDecode,
     registry: {
-      waitForChunk: (id: number) => ensure(id).promise,
+      waitForChunk: (id: number) => {
+        if (finished && !entries.has(id)) {
+          return Promise.reject(new Error(`[@my-react/react-server] Flight stream ended before module chunk $${id} was requested`));
+        }
+        return ensure(id).promise;
+      },
     },
   };
 }

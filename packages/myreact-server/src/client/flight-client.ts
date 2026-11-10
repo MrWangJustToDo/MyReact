@@ -103,14 +103,16 @@ export async function createFlightClient(options: FlightClientOptions = {}): Pro
 
     const contentType = response.headers.get("Content-Type") || "";
 
-    // Flight action results (success or encoded error) — same normalize path as createFromStream
-    if (contentType.includes("text/x-component") && response.body) {
-      return decodeFlightStream(response.body, moduleLoader, callServer);
+    // A failed action is encoded as a Flight error stream with status >= 400.
+    // Decoding it would resolve to an element that only throws during render,
+    // so `await action()` would appear successful. Reject the call instead.
+    if (!response.ok) {
+      throw new Error(`[@my-react/react-server] Server action failed (${response.status} ${response.statusText})`);
     }
 
-    if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`[@my-react/react-server] Server action failed: ${error}`);
+    // Flight action results — same normalize path as createFromStream
+    if (contentType.includes("text/x-component") && response.body) {
+      return decodeFlightStream(response.body, moduleLoader, callServer);
     }
 
     throw new Error(`[@my-react/react-server] Server action returned unexpected Content-Type: ${contentType || "(empty)"}`);
@@ -132,6 +134,9 @@ export async function createFlightClient(options: FlightClientOptions = {}): Pro
    */
   function createFromFetchInternal(responsePromise: Promise<Response>): Promise<unknown> {
     return Promise.resolve(responsePromise).then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`[@my-react/react-server] Flight request failed (${response.status} ${response.statusText})`);
+      }
       if (!response.body) {
         throw new Error("[@my-react/react-server] Missing response body for Flight fetch");
       }

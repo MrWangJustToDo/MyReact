@@ -13,7 +13,7 @@
  * ```typescript
  * import { createFlightClient } from "@my-react/react-server/client";
  *
- * const client = createFlightClient();
+ * const client = await createFlightClient();
  * client.hydrate(container, response.body);
  * ```
  */

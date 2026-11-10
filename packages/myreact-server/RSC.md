@@ -15,7 +15,7 @@
 | —    | 不适用（架构选择不同）                          |
 
 相关内部设计：[`openspec/changes/implement-rsc/`](../../openspec/changes/implement-rsc/)。  
-**已实现路径的漏洞/错误审计**：[RSC-AUDIT.md](./RSC-AUDIT.md)（多数 High/Medium 已修；A6 suspend 已修；A3 闭包加密仍开）。
+**已实现路径的漏洞/错误审计**：[RSC-AUDIT.md](./RSC-AUDIT.md)（多数 High/Medium 已修；A6 reject 已修；A3 闭包加密、A19 默认 loader 动态 import 仍开）。
 
 ---
 
@@ -103,22 +103,22 @@ rsc env:  SC tree ──renderToReadableStream──► Flight
 
 ### 3.3 Vite 插件体验 / Dev & Build
 
-| 能力                                   |  Official   |                       MyReact                        | 备注 / 追踪                                       |
-| -------------------------------------- | :---------: | :--------------------------------------------------: | ------------------------------------------------- | ------- | --- |
-| `rsc({ entries })` 统一插件            |     ✅      |            ✅ `@my-react/react-vite/rsc`             | 根 README 仍写 `react({ rsc: true })`（文档过时） |
-| 默认 serverHandler 中间件              |     ✅      |     ◐ 自建 `/__rsc` + `/__rsc_action` + HTML SSR     | 路径可配；行为更「示例级」                        |
-| HTML + Flight 注入                     |     ✅      |           ✅ `rsc-html-stream` + bootstrap           |                                                   |
-| SC / CC HMR                            |     ✅      |      ✅ Phase 1 SC（`rsc:update`）+ CC Refresh       | Phase 2 边界级未做                                |
-| `loadModuleDevProxy`（跨 runtime RPC） |     ✅      |                          ❌                          | Cloudflare 等；P2                                 |
-| `defineEncryptionKey`                  |     ✅      |                          ❌                          | P1（与闭包绑定安全相关）                          |
-| `rscCssTransform` / `loadCss()`        |     ✅      |                          ❌                          | P1                                                |
-| Production 纯 Node 跑 dist             | ✅ 生态成熟 | ✅ `handler(Request)` + `server.mjs` import dist/rsc |                                                   |
-| Multi-env 产物目录                     |     ✅      |                     ✅ `dist/rsc                     | ssr                                               | client` |     |
-| 浏览器内跑 RSC（browser-mode）         |     ✅      |                          ❌                          | P3                                                |
-| no-ssr（仅 Flight + client）           |     ✅      |                          ❌                          | P2                                                |
-| SSG / PPR 示例级能力                   |     ✅      |                          ❌                          | P2                                                |
-| React Router RSC 集成                  | ✅ example  |                          ❌                          | P3                                                |
-| E2E（Playwright）矩阵                  |     ✅      |                          ❌                          | P0 质量保障                                       |
+| 能力                                   |  Official   |                       MyReact                        | 备注 / 追踪                |
+| -------------------------------------- | :---------: | :--------------------------------------------------: | -------------------------- | ------- | --- |
+| `rsc({ entries })` 统一插件            |     ✅      |            ✅ `@my-react/react-vite/rsc`             | README 已同步该 API        |
+| 默认 serverHandler 中间件              |     ✅      |     ◐ 自建 `/__rsc` + `/__rsc_action` + HTML SSR     | 路径可配；行为更「示例级」 |
+| HTML + Flight 注入                     |     ✅      |           ✅ `rsc-html-stream` + bootstrap           |                            |
+| SC / CC HMR                            |     ✅      |      ✅ Phase 1 SC（`rsc:update`）+ CC Refresh       | Phase 2 边界级未做         |
+| `loadModuleDevProxy`（跨 runtime RPC） |     ✅      |                          ❌                          | Cloudflare 等；P2          |
+| `defineEncryptionKey`                  |     ✅      |                          ❌                          | P1（与闭包绑定安全相关）   |
+| `rscCssTransform` / `loadCss()`        |     ✅      |                          ❌                          | P1                         |
+| Production 纯 Node 跑 dist             | ✅ 生态成熟 | ✅ `handler(Request)` + `server.mjs` import dist/rsc |                            |
+| Multi-env 产物目录                     |     ✅      |                     ✅ `dist/rsc                     | ssr                        | client` |     |
+| 浏览器内跑 RSC（browser-mode）         |     ✅      |                          ❌                          | P3                         |
+| no-ssr（仅 Flight + client）           |     ✅      |                          ❌                          | P2                         |
+| SSG / PPR 示例级能力                   |     ✅      |                          ❌                          | P2                         |
+| React Router RSC 集成                  | ✅ example  |                          ❌                          | P3                         |
+| E2E（Playwright）矩阵                  |     ✅      |                          ❌                          | P0 质量保障                |
 
 ### 3.4 框架层（官方不做 / MyReact 自有）
 

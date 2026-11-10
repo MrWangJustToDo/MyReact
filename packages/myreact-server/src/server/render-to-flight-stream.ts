@@ -1,6 +1,6 @@
 import { renderToReadableStream } from "@lazarv/rsc/server";
 
-import { createClientErrorDigest } from "../shared/error-digest";
+import { createClientErrorDigest, sanitizeErrorForClient } from "../shared/error-digest";
 
 import { createClientManifestResolver } from "./manifest";
 
@@ -50,16 +50,21 @@ export async function renderToFlightStream(element: MyReactElementNode, options:
   const stream = renderToReadableStream(element, {
     moduleResolver,
     onError: (error: unknown) => {
+      let digest: string | void;
+
       // Call user-provided error handler
       if (options.onError) {
-        const digest = options.onError(error);
-        if (digest) {
-          return digest;
-        }
+        digest = options.onError(error);
       }
 
       // Default: opaque digest in production; message in __DEV__
-      return createClientErrorDigest(error, "R");
+      const resolvedDigest = digest || createClientErrorDigest(error, "R");
+
+      // @lazarv/rsc serializes the original error message/stack in the `E` row,
+      // even when we return a digest. Scrub it in production.
+      sanitizeErrorForClient(error, resolvedDigest);
+
+      return resolvedDigest;
     },
     signal: options.signal,
     identifierPrefix: options.identifierPrefix,

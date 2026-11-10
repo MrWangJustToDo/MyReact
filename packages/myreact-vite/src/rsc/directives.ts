@@ -4,22 +4,107 @@
  */
 
 /**
- * Pattern to detect "use client" directive at the top of a file
- * Matches: 'use client', "use client", `use client`
- */
-const USE_CLIENT_PATTERN = /^[\s\r\n]*(['"`])use client\1[\s]*;?/;
-
-/**
- * Pattern to detect "use server" directive at the top of a file
- * Matches: 'use server', "use server", `use server`
- */
-const USE_SERVER_PATTERN = /^[\s\r\n]*(['"`])use server\1[\s]*;?/;
-
-/**
  * Pattern to detect "use server" directive inside a function body
  * This is for inline server actions
  */
 const USE_SERVER_INLINE_PATTERN = /['"`]use server['"`][\s]*;?/;
+
+function skipTrivia(code: string, start: number): number {
+  let index = start;
+
+  while (index < code.length) {
+    const char = code[index];
+
+    if (char === " " || char === "\t" || char === "\r" || char === "\n" || char === "\uFEFF") {
+      index++;
+      continue;
+    }
+
+    if (char === "/" && code[index + 1] === "/") {
+      const newline = code.indexOf("\n", index + 2);
+      index = newline === -1 ? code.length : newline + 1;
+      continue;
+    }
+
+    if (char === "/" && code[index + 1] === "*") {
+      const end = code.indexOf("*/", index + 2);
+      index = end === -1 ? code.length : end + 2;
+      continue;
+    }
+
+    break;
+  }
+
+  return index;
+}
+
+/**
+ * Read the JavaScript directive prologue. Directives are not required to be
+ * the first statement: `"use strict"; "use client";` is valid and both are
+ * directives. A simple regex anchored at the file start only sees the first one.
+ */
+function readPrologueDirectives(code: string): string[] {
+  const directives: string[] = [];
+  let index = 0;
+
+  // Shebang is allowed before the directive prologue.
+  if (code.startsWith("#!")) {
+    const newline = code.indexOf("\n");
+    if (newline === -1) return directives;
+    index = newline + 1;
+  }
+
+  while (index < code.length) {
+    index = skipTrivia(code, index);
+    if (index >= code.length) break;
+
+    const quote = code[index];
+    if (quote !== '"' && quote !== "'" && quote !== "`") break;
+
+    index++;
+    let value = "";
+    let closed = false;
+
+    while (index < code.length) {
+      const char = code[index++];
+
+      if (char === "\\") {
+        value += code[index++] ?? "";
+        continue;
+      }
+
+      if (char === quote) {
+        closed = true;
+        break;
+      }
+
+      // Template literals with substitutions are expressions, not directives.
+      if (quote === "`" && char === "$" && code[index] === "{") {
+        break;
+      }
+
+      value += char;
+    }
+
+    if (!closed) break;
+
+    let after = index;
+    while (after < code.length && (code[after] === " " || code[after] === "\t")) after++;
+    if (code[after] === ";") after++;
+
+    const next = code[after];
+    // A directive statement ends at a newline, a comment, a block end, or EOF.
+    // Anything else means this string literal was part of an expression.
+    if (next !== undefined && next !== "\n" && next !== "\r" && next !== "/" && next !== "}") {
+      break;
+    }
+
+    directives.push(value);
+    index = after;
+  }
+
+  return directives;
+}
 
 export interface DirectiveInfo {
   /**
@@ -51,9 +136,7 @@ export interface DirectiveInfo {
  * ```
  */
 export function detectUseClientDirective(code: string): boolean {
-  // Strip leading comments (single-line and multi-line) before checking
-  const codeWithoutComments = stripLeadingComments(code);
-  return USE_CLIENT_PATTERN.test(codeWithoutComments);
+  return readPrologueDirectives(code).includes("use client");
 }
 
 /**
@@ -69,9 +152,7 @@ export function detectUseClientDirective(code: string): boolean {
  * ```
  */
 export function detectUseServerDirective(code: string): boolean {
-  // Strip leading comments (single-line and multi-line) before checking
-  const codeWithoutComments = stripLeadingComments(code);
-  return USE_SERVER_PATTERN.test(codeWithoutComments);
+  return readPrologueDirectives(code).includes("use server");
 }
 
 /**
@@ -116,48 +197,6 @@ export function detectDirectives(code: string): DirectiveInfo {
 }
 
 /**
- * Strips leading comments from code for directive detection
- * Handles both single-line (//) and multi-line comments
- */
-function stripLeadingComments(code: string): string {
-  let result = code;
-
-  // Remove leading whitespace
-  result = result.trimStart();
-
-  // Pattern for comments at the start
-  const singleLineComment = /^\/\/[^\n]*\n?/;
-  const multiLineComment = /^\/\*[\s\S]*?\*\//;
-
-  // Keep stripping comments until we hit actual code
-  let changed = true;
-  while (changed) {
-    changed = false;
-
-    // Strip whitespace
-    const trimmed = result.trimStart();
-    if (trimmed !== result) {
-      result = trimmed;
-      changed = true;
-    }
-
-    // Strip single-line comment
-    if (singleLineComment.test(result)) {
-      result = result.replace(singleLineComment, "");
-      changed = true;
-    }
-
-    // Strip multi-line comment
-    if (multiLineComment.test(result)) {
-      result = result.replace(multiLineComment, "");
-      changed = true;
-    }
-  }
-
-  return result;
-}
-
-/**
  * Check if a file extension indicates it might contain RSC directives
  */
 export function isRscEligibleFile(filename: string): boolean {
@@ -175,27 +214,20 @@ export function extractDirective(code: string): {
   directive: "use client" | "use server" | null;
   codeWithoutDirective: string;
 } {
-  const codeWithoutComments = stripLeadingComments(code);
+  const directives = readPrologueDirectives(code);
 
-  if (USE_CLIENT_PATTERN.test(codeWithoutComments)) {
-    const match = codeWithoutComments.match(USE_CLIENT_PATTERN);
-    if (match) {
-      // Keep the original code structure but we know it's a client module
-      return {
-        directive: "use client",
-        codeWithoutDirective: code, // Keep original for now
-      };
-    }
+  if (directives.includes("use client")) {
+    return {
+      directive: "use client",
+      codeWithoutDirective: code, // Keep original for now
+    };
   }
 
-  if (USE_SERVER_PATTERN.test(codeWithoutComments)) {
-    const match = codeWithoutComments.match(USE_SERVER_PATTERN);
-    if (match) {
-      return {
-        directive: "use server",
-        codeWithoutDirective: code, // Keep original for now
-      };
-    }
+  if (directives.includes("use server")) {
+    return {
+      directive: "use server",
+      codeWithoutDirective: code, // Keep original for now
+    };
   }
 
   return {

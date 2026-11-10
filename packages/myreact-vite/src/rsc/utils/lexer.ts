@@ -33,7 +33,7 @@ export function isLexerInitialized(): boolean {
  * @param code - Source code to parse
  * @returns Array of export specifiers
  */
-export function parseExports(code: string): ExportSpecifier[] {
+export function parseExports(code: string): readonly ExportSpecifier[] {
   try {
     const [, exports] = parse(code);
     return exports;
@@ -50,7 +50,7 @@ export function parseExports(code: string): ExportSpecifier[] {
  * @param code - Source code to parse
  * @returns Array of export specifiers
  */
-export async function parseExportsAsync(code: string): Promise<ExportSpecifier[]> {
+export async function parseExportsAsync(code: string): Promise<readonly ExportSpecifier[]> {
   await initLexer();
   return parseExports(code);
 }

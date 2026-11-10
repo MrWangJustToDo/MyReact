@@ -26,12 +26,7 @@ export async function renderRsc(url: string) {
   const Root = module.default || module;
 
   const element = createElement(Root, { url });
-  return renderToFlightStream(element, {
-    onError: (error) => {
-      console.error("[@my-react/rsc-example] RSC render error:", error);
-      return error instanceof Error ? error.message : String(error);
-    },
-  });
+  return renderToFlightStream(element);
 }
 
 async function handleRscEndpoint(request: Request): Promise<Response> {
@@ -108,7 +103,13 @@ async function handleHtml(request: Request): Promise<Response> {
     const [rscForSsr, rscForBrowser] = rscStream.tee();
     const ssrEntry = await import.meta.viteRsc.loadModule<{ renderHTML: typeof RenderHTML }>("ssr", "index");
     const { html: ssrHtml } = await ssrEntry.renderHTML(rscForSsr);
-    htmlWithApp = shell.replace('<div id="root"></div>', `<div id="root">${ssrHtml}</div>`);
+    const rootMarker = '<div id="root"></div>';
+    if (!shell.includes(rootMarker)) {
+      throw new Error(`[@my-react/rsc-example] HTML shell is missing the SSR root marker: ${rootMarker}`);
+    }
+    // Use a replacer function: a string replacement would interpret `$&` /
+    // `$'` in server-rendered HTML and corrupt the page.
+    htmlWithApp = shell.replace(rootMarker, () => `<div id="root">${ssrHtml}</div>`);
     streamForClient = rscForBrowser;
   } else {
     // No-SSR: keep empty #root; browser createRoot consumes the injected Flight stream

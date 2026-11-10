@@ -42,7 +42,11 @@ export { parseModuleExports, parseModuleExportsSync };
  * @returns The transformed code
  */
 export async function transformClientModule(code: string, moduleId: string, registry?: ClientModuleRegistry): Promise<TransformResult> {
-  const { exports, hasDefaultExport } = await parseModuleExports(code);
+  const { exports, hasDefaultExport, hasExportAll } = await parseModuleExports(code);
+
+  if (hasExportAll) {
+    throw new Error(`[@my-react/react-vite] "use client" module cannot use "export *": ${moduleId}`);
+  }
 
   if (registry) {
     registry.register(moduleId, {
@@ -65,7 +69,11 @@ export async function transformClientModule(code: string, moduleId: string, regi
  * Note: Requires es-module-lexer to be pre-initialized via initLexer()
  */
 export function transformClientModuleSync(code: string, moduleId: string, registry?: ClientModuleRegistry): TransformResult {
-  const { exports, hasDefaultExport } = parseModuleExportsSync(code);
+  const { exports, hasDefaultExport, hasExportAll } = parseModuleExportsSync(code);
+
+  if (hasExportAll) {
+    throw new Error(`[@my-react/react-vite] "use client" module cannot use "export *": ${moduleId}`);
+  }
 
   if (registry) {
     registry.register(moduleId, {

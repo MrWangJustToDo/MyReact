@@ -791,8 +791,8 @@ importers:
         specifier: ^3.1.0
         version: 3.1.0
       rsc-html-stream:
-        specifier: ^0.0.7
-        version: 0.0.7
+        specifier: ^0.0.8
+        version: 0.0.8
       vite:
         specifier: ^4.2.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
         version: 7.3.1(@types/node@22.19.15)(jiti@2.6.1)(sass@1.98.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.2)
@@ -1349,7 +1349,7 @@ importers:
         version: 9.39.4(jiti@1.21.7)
       next:
         specifier: ^16.2.12
-        version: 16.2.12(@babel/core@7.29.0)(babel-plugin-react-compiler@1.0.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.98.0)
+        version: 16.2.12(babel-plugin-react-compiler@1.0.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.98.0)
       postcss:
         specifier: 'catalog:'
         version: 8.5.8
@@ -1456,8 +1456,8 @@ importers:
         specifier: 'catalog:'
         version: 1.0.0(react@packages+myreact)
       rsc-html-stream:
-        specifier: ^0.0.7
-        version: 0.0.7
+        specifier: ^0.0.8
+        version: 0.0.8
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -10870,8 +10870,8 @@ packages:
       typescript:
         optional: true
 
-  rsc-html-stream@0.0.7:
-    resolution: {integrity: sha512-v9+fuY7usTgvXdNl8JmfXCvSsQbq2YMd60kOeeMIqCJFZ69fViuIxztHei7v5mlMMa2h3SqS+v44Gu9i9xANZA==}
+  rsc-html-stream@0.0.8:
+    resolution: {integrity: sha512-5wSLqZmmxqVYV/70Ueq2XMw0NRPeTeUlUCxA+CEdDqE/IGDXG8EOUOjENzC3WYwWkeYSAI8ZrWbpIhPRK4UuRw==}
 
   rslog@2.2.0:
     resolution: {integrity: sha512-aTYPzpoq1NrQYB8uK3mXEZgXoLva5lqMfnFNrPLZALsIx7vD1Q+HTp+fuu2aRHV3PJTg63ARDZ8MT0Lth4SoNg==}
@@ -21715,7 +21715,7 @@ snapshots:
 
   next-tick@1.1.0: {}
 
-  next@16.2.12(@babel/core@7.29.0)(babel-plugin-react-compiler@1.0.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.98.0):
+  next@16.2.12(babel-plugin-react-compiler@1.0.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(sass@1.98.0):
     dependencies:
       '@next/env': 16.2.12
       '@swc/helpers': 0.5.15
@@ -21724,7 +21724,7 @@ snapshots:
       postcss: 8.4.31
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
-      styled-jsx: 5.1.6(@babel/core@7.29.0)(react@18.3.1)
+      styled-jsx: 5.1.6(react@18.3.1)
     optionalDependencies:
       '@next/swc-darwin-arm64': 16.2.12
       '@next/swc-darwin-x64': 16.2.12
@@ -23267,7 +23267,7 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  rsc-html-stream@0.0.7: {}
+  rsc-html-stream@0.0.8: {}
 
   rslog@2.2.0: {}
 
@@ -23969,12 +23969,10 @@ snapshots:
     dependencies:
       inline-style-parser: 0.1.1
 
-  styled-jsx@5.1.6(@babel/core@7.29.0)(react@18.3.1):
+  styled-jsx@5.1.6(react@18.3.1):
     dependencies:
       client-only: 0.0.1
       react: 18.3.1
-    optionalDependencies:
-      '@babel/core': 7.29.0
 
   stylehacks@7.0.8(postcss@8.5.8):
     dependencies:

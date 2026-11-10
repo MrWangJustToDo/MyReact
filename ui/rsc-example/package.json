@@ -24,7 +24,7 @@
     "@types/node": "catalog:",
     "babel-plugin-react-compiler": "catalog:",
     "react-compiler-runtime": "catalog:",
-    "rsc-html-stream": "^0.0.7",
+    "rsc-html-stream": "^0.0.8",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vite-plugin-inspect": "^11.3.3"

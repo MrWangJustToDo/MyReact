@@ -106,17 +106,19 @@ pnpm add @my-react/react-server
 ```ts
 // vite.config.ts
 import react from "@my-react/react-vite";
+import { rsc } from "@my-react/react-vite/rsc";
 
 export default defineConfig({
   plugins: [
-    react({
-      rsc: true,
-      rscEndpoint: "/__rsc",
-      rscActionEndpoint: "/__rsc_action",
-      ssr: {
-        entryRsc: "/src/entry-rsc.tsx",
-        entrySsr: "/src/entry-ssr.tsx",
+    react(),
+    rsc({
+      entries: {
+        rsc: "./src/entry-rsc.tsx",
+        ssr: "./src/entry-ssr.tsx",
+        client: "./src/entry-client.tsx",
       },
+      rscEndpoint: "/__rsc",
+      actionEndpoint: "/__rsc_action",
     }),
   ],
 });

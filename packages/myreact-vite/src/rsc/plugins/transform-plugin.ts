@@ -93,7 +93,7 @@ async function findInvalidServerHook(code: string): Promise<string | null> {
  * Create the RSC transform plugin
  */
 export function createTransformPlugin(options: RscPluginOptions, context: TransformPluginContext): Plugin {
-  const include = options.include ?? /\.[tj]sx?$/;
+  const include = options.include ?? /\.[cm]?[jt]sx?$/;
   // Workspace packages ship as source/CJS under packages/* — never treat them as app SCs.
   const exclude =
     options.exclude ??
@@ -180,9 +180,24 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
 
       // Check for "use client" directive
       if (detectUseClientDirective(code)) {
+        // React does not allow inline "use server" actions inside a client
+        // module: the function body (and its server-only imports) would be
+        // bundled into the browser. Fail loudly instead of silently shipping it.
+        const inlineServerActions = await findInlineServerActions(parseCode);
+        if (inlineServerActions.length > 0) {
+          throw new Error(
+            `[@my-react/react-vite] Inline "use server" is not allowed inside a "use client" module: ${filepath}. ` +
+              `Move the action to a separate "use server" file.`
+          );
+        }
+
         context.clientModules.add(moduleId);
 
-        const { exports, hasDefaultExport } = await parseModuleExports(parseCode);
+        const { exports, hasDefaultExport, hasExportAll } = await parseModuleExports(parseCode);
+
+        if (hasExportAll) {
+          throw new Error(`[@my-react/react-vite] "use client" module cannot use "export *": ${filepath}`);
+        }
 
         // Register with manager if available
         if (manager) {
@@ -367,7 +382,11 @@ export function createTransformPlugin(options: RscPluginOptions, context: Transf
  * Transform a "use client" module into a client reference proxy
  */
 async function transformClientModule(code: string, moduleId: string, registry: ClientModuleRegistry): Promise<TransformResult> {
-  const { exports, hasDefaultExport } = await parseModuleExports(code);
+  const { exports, hasDefaultExport, hasExportAll } = await parseModuleExports(code);
+
+  if (hasExportAll) {
+    throw new Error(`[@my-react/react-vite] "use client" module cannot use "export *": ${moduleId}`);
+  }
 
   registry.register(moduleId, {
     moduleId,
@@ -481,11 +500,13 @@ async function transformInlineServerActions(
 }
 
 async function getParseCode(code: string, filepath: string): Promise<string> {
-  if (!/\.[tj]sx?$/.test(filepath)) {
+  if (!/\.[cm]?[jt]sx?$/.test(filepath)) {
     return code;
   }
 
-  const loader = filepath.endsWith(".tsx") ? "tsx" : filepath.endsWith(".ts") ? "ts" : filepath.endsWith(".jsx") ? "jsx" : "js";
+  const extension = filepath.slice(filepath.lastIndexOf("."));
+  const loader =
+    extension === ".tsx" ? "tsx" : extension === ".ts" || extension === ".mts" || extension === ".cts" ? "ts" : extension === ".jsx" ? "jsx" : "js";
 
   const result = await transformWithEsbuild(code, filepath, {
     loader,

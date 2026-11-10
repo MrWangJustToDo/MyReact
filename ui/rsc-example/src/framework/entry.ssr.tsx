@@ -82,6 +82,7 @@ export async function renderHTML(
     moduleLoader = manifest
       ? createManifestModuleLoader(manifest, {
           allowDynamicImport: false,
+          mode: "ssr",
           // Relative chunk ids must resolve from this SSR entry, not from @my-react/react-server
           loadModule: async (id) => {
             if (id.startsWith("./") || id.startsWith("../")) {

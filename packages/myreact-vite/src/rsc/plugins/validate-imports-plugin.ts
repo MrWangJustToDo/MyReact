@@ -35,7 +35,8 @@ export function createValidateImportsPlugin(): Plugin {
         }
 
         const envName = this.environment?.name ?? "";
-        const invalid = (source === "client-only" && envName === "rsc") || (source === "server-only" && envName !== "rsc");
+        // `ssr` is also a server environment: `server-only` is valid there.
+        const invalid = (source === "client-only" && envName === "rsc") || (source === "server-only" && envName === "client");
 
         return {
           id: `${invalid ? INVALID_PREFIX : VALID_PREFIX}${source}`,

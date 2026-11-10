@@ -70,7 +70,7 @@ function isSafeClientPath(pathname) {
 }
 
 async function tryServeStatic(req, res, pathname) {
-  if (pathname === "/" || !pathname.includes(".")) {
+  if (pathname === "/") {
     return false;
   }
 
@@ -89,6 +89,10 @@ async function tryServeStatic(req, res, pathname) {
   res.setHeader("Content-Type", contentType(filePath));
   if (pathname.startsWith("/assets/")) {
     res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+  }
+  if (req.method === "HEAD") {
+    res.end();
+    return true;
   }
   fs.createReadStream(filePath).pipe(res);
   return true;
@@ -138,8 +142,21 @@ async function toFetchRequest(req) {
 async function pipeWebResponse(response, res) {
   res.statusCode = response.status;
   response.headers.forEach((value, key) => {
-    res.setHeader(key, value);
+    // Set-Cookie must be appended one-by-one; Headers.forEach joins them.
+    if (key.toLowerCase() !== "set-cookie") {
+      res.setHeader(key, value);
+    }
   });
+
+  const setCookies =
+    typeof response.headers.getSetCookie === "function"
+      ? response.headers.getSetCookie()
+      : response.headers.get("set-cookie")
+        ? [response.headers.get("set-cookie")]
+        : [];
+  if (setCookies.length > 0) {
+    res.setHeader("Set-Cookie", setCookies);
+  }
 
   if (!response.body) {
     res.end();

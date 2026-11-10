@@ -32,7 +32,7 @@ export interface BuildPluginOptions {
 /**
  * Default resolve conditions for RSC environment
  */
-const RSC_CONDITIONS = ["react-server", "node", "import"];
+const RSC_CONDITIONS = ["react-server", "module", "node", "development|production", "import"];
 
 /**
  * Patterns for packages that should be externalized in RSC/SSR builds

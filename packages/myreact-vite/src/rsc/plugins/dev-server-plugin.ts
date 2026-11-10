@@ -96,7 +96,11 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
         const accept = req.headers.accept || "";
         const wantsHtml = req.method === "GET" && typeof accept === "string" && accept.includes("text/html");
 
-        if (!isRsc && !isAction && !wantsHtml) {
+        // Vite internals and inspection UIs also request HTML; let Vite handle them.
+        const isViteInternal =
+          url.pathname.startsWith("/@") || url.pathname.startsWith("/node_modules/") || (url.pathname.startsWith("/__") && !isRsc && !isAction);
+
+        if (isViteInternal || (!isRsc && !isAction && !wantsHtml)) {
           return next();
         }
 
@@ -137,6 +141,12 @@ export function createDevServerPlugin(options: DevServerPluginOptions): Plugin {
           console.error("[@my-react/react-vite] RSC server handler error:", error);
           const status = (error as { statusCode?: number }).statusCode === 413 ? 413 : 500;
           if (!res.headersSent) {
+            // For page navigations, hand the error to Vite so its error overlay
+            // and stack-frame handling stay available. RSC/action requests keep
+            // the structured JSON error.
+            if (wantsHtml) {
+              return next(error as Error);
+            }
             res.statusCode = status;
             res.setHeader("Content-Type", "application/json");
             res.end(JSON.stringify({ error: status === 413 ? "Request body too large" : "RSC request failed" }));

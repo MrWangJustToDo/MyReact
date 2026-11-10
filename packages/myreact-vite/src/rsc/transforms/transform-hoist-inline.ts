@@ -87,8 +87,11 @@ export function transformHoistInlineDirective(
         tinyAssert(scope, "Missing scope information");
 
         const declName = node.type === "FunctionDeclaration" && node.id ? node.id.name : undefined;
+        const isExportDefault = parent?.type === "ExportDefaultDeclaration";
         const originalName =
-          declName || (parent?.type === "VariableDeclarator" && parent.id.type === "Identifier" && parent.id.name) || "anonymous_server_function";
+          declName ||
+          (parent?.type === "VariableDeclarator" && parent.id.type === "Identifier" && parent.id.name) ||
+          (isExportDefault ? "default" : "anonymous_server_function");
 
         const bindVars = [...scope.references].filter((ref) => {
           if (ref === declName) {
@@ -130,11 +133,12 @@ export function transformHoistInlineDirective(
           const bindArgs = options.encode ? options.encode("[" + bindVars.join(", ") + "]") : bindVars.join(", ");
           newCode = `${newCode}.bind(null, ${bindArgs})`;
         }
-        if (declName) {
-          newCode = `const ${declName} = ${newCode};`;
-          if (parent?.type === "ExportDefaultDeclaration") {
+        if (declName || isExportDefault) {
+          const bindingName = declName ?? `$$hoist_default_${names.length}`;
+          newCode = `const ${bindingName} = ${newCode};`;
+          if (isExportDefault) {
             output.remove((parent as NodeWithPos).start ?? 0, (node as NodeWithPos).start ?? 0);
-            newCode = `${newCode}\nexport default ${declName};`;
+            newCode = `${newCode}\nexport default ${bindingName};`;
           }
         }
         output.appendLeft((node as NodeWithPos).start ?? 0, newCode);

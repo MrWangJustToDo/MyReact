@@ -106,17 +106,15 @@ function hasUseServerDirective(body: Node | null | undefined): boolean {
 }
 
 /**
- * Get the body of an async function for directive checking
+ * Get the body of a function for directive checking
  */
-function getAsyncFunctionBody(node: Node): Node | null {
+function getFunctionBody(node: Node): Node | null {
   if (node.type === "FunctionDeclaration" || node.type === "FunctionExpression") {
-    const func = node as FunctionDeclaration | FunctionExpression;
-    return func.async ? func.body : null;
+    return (node as FunctionDeclaration | FunctionExpression).body;
   }
 
   if (node.type === "ArrowFunctionExpression") {
-    const arrow = node as ArrowFunctionExpression;
-    return arrow.async ? arrow.body : null;
+    return (node as ArrowFunctionExpression).body;
   }
 
   return null;
@@ -153,12 +151,12 @@ export async function findInlineServerActions(code: string, parseCode?: string):
         // Handle function declarations
         if (node.type === "FunctionDeclaration") {
           const funcDecl = node as FunctionDeclaration;
-          if (funcDecl.async && funcDecl.id && hasUseServerDirective(funcDecl.body)) {
+          if (funcDecl.id && hasUseServerDirective(funcDecl.body)) {
             inlineActions.push({
               start: range.start,
               end: range.end,
               name: funcDecl.id.name,
-              isAsync: true,
+              isAsync: !!funcDecl.async,
             });
             // Skip children since we found what we need
             this.skip();
@@ -175,14 +173,14 @@ export async function findInlineServerActions(code: string, parseCode?: string):
 
             const init = declarator.init;
             const identifier = declarator.id as Identifier;
-            const body = getAsyncFunctionBody(init);
+            const body = getFunctionBody(init);
 
             if (body && hasUseServerDirective(body)) {
               inlineActions.push({
                 start: range.start,
                 end: range.end,
                 name: identifier.name,
-                isAsync: true,
+                isAsync: !!(init as FunctionExpression | ArrowFunctionExpression).async,
               });
             }
           }
@@ -195,12 +193,12 @@ export async function findInlineServerActions(code: string, parseCode?: string):
           const exportDecl = node as ExportNamedDeclaration;
           if (exportDecl.declaration?.type === "FunctionDeclaration") {
             const funcDecl = exportDecl.declaration as FunctionDeclaration;
-            if (funcDecl.async && funcDecl.id && hasUseServerDirective(funcDecl.body)) {
+            if (funcDecl.id && hasUseServerDirective(funcDecl.body)) {
               inlineActions.push({
                 start: range.start,
                 end: range.end,
                 name: funcDecl.id.name,
-                isAsync: true,
+                isAsync: !!funcDecl.async,
               });
             }
           }
@@ -216,25 +214,25 @@ export async function findInlineServerActions(code: string, parseCode?: string):
           // export default async function() { "use server"; ... }
           if (decl.type === "FunctionDeclaration") {
             const funcDecl = decl as FunctionDeclaration;
-            if (funcDecl.async && hasUseServerDirective(funcDecl.body)) {
+            if (hasUseServerDirective(funcDecl.body)) {
               inlineActions.push({
                 start: range.start,
                 end: range.end,
                 name: funcDecl.id?.name || "default",
-                isAsync: true,
+                isAsync: !!funcDecl.async,
               });
             }
           }
 
           // export default async () => { "use server"; ... }
           if (decl.type === "ArrowFunctionExpression" || decl.type === "FunctionExpression") {
-            const body = getAsyncFunctionBody(decl);
+            const body = getFunctionBody(decl);
             if (body && hasUseServerDirective(body)) {
               inlineActions.push({
                 start: range.start,
                 end: range.end,
                 name: "default",
-                isAsync: true,
+                isAsync: !!(decl as ArrowFunctionExpression | FunctionExpression).async,
               });
             }
           }

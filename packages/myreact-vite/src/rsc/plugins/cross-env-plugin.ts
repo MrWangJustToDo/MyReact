@@ -234,13 +234,12 @@ export function createCrossEnvPlugin(manager: RscPluginManager): Plugin[] {
               // const clientOutDir = manager.config.environments?.client?.build.outDir ?? "dist/client";
               const base = manager.config.base ?? "/";
 
-              // Find the client entry chunk
+              // Prefer the real client entry emitted by the client build.
+              // `${entryName}.js` is only a fallback for non-hashed builds.
+              const bootstrapContent = manager.buildAssetsManifest?.bootstrapScriptContent;
               const entryFileName = `${entryName}.js`;
               const entryUrl = `${base}${entryFileName}`;
-
-              // Generate bootstrap script content
-              const bootstrapContent = `import(${JSON.stringify(entryUrl)})`;
-              const replacement = JSON.stringify(bootstrapContent);
+              const replacement = JSON.stringify(bootstrapContent || `import(${JSON.stringify(entryUrl)})`);
               s.update(start, end, replacement);
             } catch {
               continue;

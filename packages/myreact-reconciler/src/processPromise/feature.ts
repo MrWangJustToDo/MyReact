@@ -14,6 +14,10 @@ export type PromiseWithState<T> = Promise<T> & {
   status?: "fulfilled" | "rejected" | "pending";
   _value?: T;
   _reason?: any;
+  /** React 19 / @lazarv/rsc thenable shape */
+  value?: T;
+  /** React 19 / @lazarv/rsc thenable shape */
+  reason?: any;
   _loading?: boolean;
   _list?: Set<MyReactFiberNode>;
   _debugCreateTime?: number;

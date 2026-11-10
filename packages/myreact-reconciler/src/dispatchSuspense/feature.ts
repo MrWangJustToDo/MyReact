@@ -9,9 +9,11 @@ import type { MyReactElementNode } from "@my-react/react/type";
 // TODO use Symbol to avoid conflict
 export function defaultReadPromise(_promise: PromiseWithState<unknown>) {
   if (_promise.status === "fulfilled") {
-    return _promise._value;
+    // @lazarv/rsc and React 19 thenables expose `value`; MyReact's internal
+    // promises use `_value`. Support both shapes.
+    return _promise._value !== undefined ? _promise._value : _promise.value;
   } else if (_promise.status === "rejected") {
-    throw _promise._reason;
+    throw _promise._reason !== undefined ? _promise._reason : _promise.reason;
   } else {
     throw _promise;
   }

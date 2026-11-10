@@ -90,7 +90,7 @@ export function cacheSignal() {
   return {} as object;
 }
 
-const cacheLazyMap = new Map<Promise<MyReactElementNode>, ReturnType<typeof lazy>>();
+const cacheLazyMap = new WeakMap<Promise<MyReactElementNode>, ReturnType<typeof lazy>>();
 
 export function cacheLazy(promise: Promise<MyReactElementNode>) {
   const exist = cacheLazyMap.get(promise);

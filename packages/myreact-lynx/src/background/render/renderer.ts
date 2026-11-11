@@ -23,7 +23,13 @@ let ifrPendingElement: ReactNode | null = null;
 let ifrMounting = false;
 
 if (__DEVTOOL__) {
-  const wsUrl = typeof __DEVTOOL__ === "object" ? __DEVTOOL__.wsUrl : "ws://localhost:3002/ws";
+  const DEFAULT_DEVTOOL_WS_URL = "ws://localhost:3002/ws";
+  const configuredWsUrl = typeof __DEVTOOL__ === "object" && __DEVTOOL__ ? __DEVTOOL__.wsUrl : undefined;
+  // `reactDevTool: {}` / `true` both enable devtools; only an explicit wsUrl
+  // overrides the default. Passing `undefined` to LynxWebSocketModule causes
+  // Android to throw "Expected URL scheme 'http' or 'https' but no colon".
+  const rawWsUrl = configuredWsUrl?.trim() || DEFAULT_DEVTOOL_WS_URL;
+  const wsUrl = /^[a-z][a-z0-9+.-]*:\/\//i.test(rawWsUrl) ? rawWsUrl : `ws://${rawWsUrl}`;
 
   const devToolsConfig = {
     wsUrl,

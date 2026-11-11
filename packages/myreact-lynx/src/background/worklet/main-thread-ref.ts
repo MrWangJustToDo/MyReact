@@ -12,9 +12,8 @@
 
 import { useMemo } from "@my-react/react";
 
+import { allocateWorkletRefId, resetWorkletRefIdState } from "./worklet-ref-id.js";
 import { addWorkletRefInitValue } from "./worklet-ref-pool.js";
-
-let lastIdBG = 0;
 
 /**
  * A `MainThreadRef` is a ref that can only be accessed on the main thread.
@@ -50,7 +49,7 @@ export class MainThreadRef<T = unknown> {
   constructor(initValue: T) {
     this._initValue = initValue;
     this._type = "main-thread";
-    this._wvid = ++lastIdBG;
+    this._wvid = allocateWorkletRefId();
 
     addWorkletRefInitValue(this._wvid, initValue);
 
@@ -147,5 +146,5 @@ export function useMainThreadRef<T>(initValue?: T): MainThreadRef<T | undefined>
 
 /** Reset module state — for testing only. */
 export function resetMainThreadRefState(): void {
-  lastIdBG = 0;
+  resetWorkletRefIdState();
 }

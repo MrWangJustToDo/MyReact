@@ -192,6 +192,7 @@ const PLUGIN_NAME = "lynx:myreact";
 const REACT_ALIASES_SOURCE: Record<string, string> = {
   react$: "@my-react/react",
   "@lynx-js/react$": "@my-react/react-lynx",
+  "@lynx-js/react/compat$": "@my-react/react-lynx/compat",
   "@lynx-js/react/jsx-runtime": "@my-react/react-lynx/jsx-runtime",
   "@lynx-js/react/jsx-dev-runtime": "@my-react/react-lynx/jsx-dev-runtime",
   "react-dom$": "@my-react/react-dom",
@@ -210,8 +211,10 @@ const REACT_ALIAS_FILE_LAYOUT: Record<string, Record<string, string>> = {
   },
   "@my-react/react-lynx": {
     ".": "dist/background/index.js",
+    "./compat": "dist/compat.js",
     "./jsx-runtime": "jsx-runtime.js",
     "./jsx-dev-runtime": "jsx-dev-runtime.js",
+    "./mt": "dist/main-thread/index.js",
   },
   "@my-react/react-dom": {
     ".": "index.js",

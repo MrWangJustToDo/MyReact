@@ -98,7 +98,7 @@ export function applyCSS(api: RsbuildPluginAPI, options: ApplyCSSOptions): void 
         const mainThreadLayerRule = chain.module
           .rule(`${ruleName}:${LAYERS.MAIN_THREAD}`)
           .test(parentRuleEntries.test!)
-          .merge(ruleEntries)
+          .merge(ruleEntries as unknown as Parameters<ReturnType<typeof chain.module.rule>["merge"]>[0])
           .issuerLayer(LAYERS.MAIN_THREAD);
 
         if (parentRuleEntries.dependency !== undefined) {

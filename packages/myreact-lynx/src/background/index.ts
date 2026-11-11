@@ -41,8 +41,18 @@ export {
 // Worklet SWC transform (runtimePkg) and packages like `@lynx-js/motion` import these.
 export { loadWorkletRuntime, runWorkletCtx } from "@lynx-js/react/worklet-runtime/bindings";
 
+export {
+  captureMainThreadObject,
+  defineMainThreadObjectType,
+  MainThreadObjectHandle,
+  useMainThreadObject,
+  type MainThreadObjectType,
+  type MainThreadObjectTypeDefinition,
+} from "./worklet/main-thread-object.js";
+
 export { reconciler, render, root, createPortal, flushSync, type Root } from "./render/renderer.js";
 export { markFirstScreenPatchComplete } from "./first-screen/first-screen-patch.js";
+export { markFirstScreenSyncReady } from "./first-screen/first-screen-sync.js";
 export { isIfrEnabled, isIfrMainThread } from "../shared/ifr.js";
 export { useMainThreadRef, MainThreadRef } from "./worklet/main-thread-ref.js";
 export { runOnBackground } from "./worklet/run-on-background.js";

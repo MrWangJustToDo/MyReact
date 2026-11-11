@@ -495,8 +495,10 @@ export function applyEntry(api: RsbuildPluginAPI, opts: ApplyEntryOptions = {}):
     // Collect all main-thread filenames to mark with lynx:main-thread
     const mainThreadFilenames: string[] = [];
 
-    // Resolve worklet-runtime from @lynx-js/react (reuse existing impl).
-    const workletRuntimePath = require.resolve("@lynx-js/react/worklet-runtime");
+    // Resolve the upstream worklet runtime init entry. ReactLynx 0.128+
+    // removed the prebuilt `/worklet-runtime` entry; the runtime must be
+    // initialized from `/worklet-runtime/init` on the Main Thread.
+    const workletRuntimePath = require.resolve("@lynx-js/react/worklet-runtime/init");
 
     // Resolve entry paths relative to package dist
     const entryBackgroundPath = path.resolve(myReactLynxRoot, "dist/background/entry.js");
@@ -779,6 +781,19 @@ function applyWorkletLoaders(api: RsbuildPluginAPI, workletPackages: readonly st
     const mainThreadPkgDir = path.resolve(myReactLynxRoot, "dist/main-thread");
     const backgroundPkgDir = path.resolve(myReactLynxRoot, "dist/background");
     const sharedPkgDir = path.resolve(myReactLynxRoot, "dist/shared");
+
+    // Worklet-only MT entry: keep root-package imports (including the worklet
+    // transform's injected `captureMainThreadObject`) out of the background
+    // barrel.  IFR is excluded: it intentionally runs a main-thread root and
+    // still needs the background renderer on MT.
+    if (!enableIFR) {
+      const mainThreadRuntimeEntry = path.resolve(myReactLynxRoot, "dist/main-thread/index.js");
+      chain.module
+        .rule("myreact:mt-entry-alias")
+        .issuerLayer(LAYERS.MAIN_THREAD)
+        .resolve.alias.set("@lynx-js/react$", mainThreadRuntimeEntry)
+        .set("@my-react/react-lynx$", mainThreadRuntimeEntry);
+    }
 
     // Auto chunk name loader for MT layer too
     chain.module

@@ -37,7 +37,7 @@ reactPatchUpdate  (entry.ts)
     │  interceptPatchUpdate(ops)   ← main-thread/ifr.ts
     │     identical batch  → skip apply (dev: hydrate skip)
     │     value diffs      → apply patch ops only
-    │     structural miss  → teardown IFR tree + full apply BG (fallback)
+    │     structural miss  → keep MT tree, collect all BG batches, rebuild once at endFirstScreen (fallback)
     │  delayedRunOnMainThread
     │  endFirstScreen → onFirstScreenPatchFinished
     ▼
@@ -103,18 +103,18 @@ Ordering on MT patch apply must stay: **ref init → ops → delayed worklets** 
 
 ## 6. Dev logs (`__DEV__`)
 
-| Log / warn                                                   | Meaning                                                             |
-| ------------------------------------------------------------ | ------------------------------------------------------------------- |
-| `[IFR] Main Thread root.render stashed`                      | MT stash OK; waiting for `renderPage`.                              |
-| `[IFR] Main Thread sync mount sealed — awaiting BG hydrate`  | Snapshot sealed.                                                    |
-| `Background root.render`                                     | BG mount started.                                                   |
-| `[IFR] hydrate skip identical batch N`                       | Batch matched; no apply.                                            |
-| `[IFR] hydration complete`                                   | All recorded batches consumed.                                      |
-| `[IFR] hydration structural mismatch — tearing down…`        | Fallback: IFR tree cleared, BG ops win.                             |
-| `[IFR] Dropping Main Thread ops after first-screen snapshot` | Post-seal MT update ignored (often Suspense).                       |
-| `motionValue is not defined`                                 | MT registration missing shared import (loader bug / stale build).   |
-| `module has no exports` (`PanGesture` / motion re-exports)   | MT stitch stripped exports (IFR must keep JS exports).              |
-| `runOnMainThread timed out`                                  | Often follow-on after MT worklet throw / stale `_wkltId` after HMR. |
+| Log / warn                                                   | Meaning                                                                                                 |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `[IFR] Main Thread root.render stashed`                      | MT stash OK; waiting for `renderPage`.                                                                  |
+| `[IFR] Main Thread sync mount sealed — awaiting BG hydrate`  | Snapshot sealed.                                                                                        |
+| `Background root.render`                                     | BG mount started.                                                                                       |
+| `[IFR] hydrate skip identical batch N`                       | Batch matched; no apply.                                                                                |
+| `[IFR] hydration complete`                                   | All recorded batches consumed.                                                                          |
+| `[IFR] hydration structural mismatch — collecting…`          | Fallback: MT tree remains visible; all BG batches are collected, then applied once at `endFirstScreen`. |
+| `[IFR] Dropping Main Thread ops after first-screen snapshot` | Post-seal MT update ignored (often Suspense).                                                           |
+| `motionValue is not defined`                                 | MT registration missing shared import (loader bug / stale build).                                       |
+| `module has no exports` (`PanGesture` / motion re-exports)   | MT stitch stripped exports (IFR must keep JS exports).                                                  |
+| `runOnMainThread timed out`                                  | Often follow-on after MT worklet throw / stale `_wkltId` after HMR.                                     |
 
 ---
 
@@ -122,7 +122,7 @@ Ordering on MT patch apply must stay: **ref init → ops → delayed worklets** 
 
 1. **`listRecycle` vs IFR:** `pluginMyReactLynx({ listRecycle: true })` must **not** be combined with `enableIFR: true`. Deferred list-item templates strip descendant CREATE/INSERT from the IFR-recorded ops stream, so first paint shows empty cells until `componentAtIndex`, and BG hydrate often hits structural mismatch / teardown. The plugin throws if both options are set; runtime also no-ops deferral when `__MY_REACT_LYNX_IFR__` is true.
 2. **Same first screen on MT + BG** (route / init data). Prefer sync data; gate fetches with `isIfrMainThread()`.
-3. **Batch granularity:** MT sync flush may record multiple batches; BG microtask may coalesce → mismatch → teardown (expected fallback, possible flash).
+3. **Batch granularity:** MT sync flush may record multiple batches; BG microtask may coalesce → mismatch. The fallback keeps the MT tree, collects every BG first-screen batch, then tears down and applies the complete BG stream once at `endFirstScreen` (avoids a blank page from applying a single partial batch).
 4. Navigating to Motion/Gesture after home is **not** IFR first-screen; those pages rely on BG ops + MT worklet registrations.
 5. Rebuild `@my-react/react-lynx` after loader/runtime changes; restart rspeedy; hard refresh device/simulator.
 6. Element Templates are **not** part of IFR yet.
@@ -143,6 +143,8 @@ Ordering on MT patch apply must stay: **ref init → ops → delayed worklets** 
 ## 9. Package layout (no forced restructure)
 
 IFR makes the reconciler run on **both** threads, but the on-disk layout stays entry-oriented:
+
+**Entry isolation:** when IFR is off, the MT layer aliases `@lynx-js/react` / `@my-react/react-lynx` to `@my-react/react-lynx/mt` (`dist/main-thread/index.js`, worklet-only). IFR deliberately skips that alias because the reconciler is shared on both threads; see `PLUGIN.md` § Main-thread entry isolation.
 
 | Directory          | Role (IFR off)                       | Role (IFR on)                                     |
 | ------------------ | ------------------------------------ | ------------------------------------------------- |

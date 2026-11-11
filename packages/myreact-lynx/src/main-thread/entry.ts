@@ -19,11 +19,11 @@ import { registerLocalOpsApplier } from "../background/render/local-ops-applier.
 import { isIfrEnabled } from "../shared/ifr.js";
 import { getLynxWorkletImpl } from "../shared/lynx-worklet-impl.js";
 import { parsePatchPayload, type DelayedRunOnMainThreadPayload } from "../shared/patch-payload.js";
-import { onFirstScreenPatchFinished } from "../shared/worklet-bindings.js";
+import { onFirstScreenPatchFinished, registerMainThreadObjectTypesFromPatch } from "../shared/worklet-bindings.js";
 
 import { elements, setPageUniqueId } from "./element-registry.js";
 import { resetFirstScreenPatchState, setFirstScreenPatch } from "./first-screen-flag.js";
-import { beginIfrSession, interceptPatchUpdate, recordAndApply, resetIfrState, sealIfrSnapshot } from "./ifr.js";
+import { beginIfrSession, finishIfrHydration, interceptPatchUpdate, recordAndApply, resetIfrState, sealIfrSnapshot } from "./ifr.js";
 import { loadLazyBundleOnMainThread } from "./load-lazy-bundle.js";
 import { applyOps, resetMainThreadState } from "./ops-apply.js";
 import { runOnBackground } from "./run-on-background.js";
@@ -32,13 +32,14 @@ import { runOnBackground } from "./run-on-background.js";
 let legacyFirstScreenPatchPending = true;
 
 /** Seed MainThreadRefs before ops / delayed worklets access them. */
-function applyWorkletRefInitValues(patch: [number, unknown][] | undefined): void {
+function applyWorkletRefInitValues(patch: ([number, unknown] | [number, unknown, string] | [number, unknown, string, unknown])[] | undefined): void {
   if (!patch?.length) {
     return;
   }
+  registerMainThreadObjectTypesFromPatch(patch);
   const update = getLynxWorkletImpl()?._refImpl?.updateWorkletRefInitValueChanges;
   if (update) {
-    update(patch);
+    update(patch as never);
     return;
   }
   if (__DEV__) {
@@ -122,8 +123,9 @@ if (typeof lynx !== "undefined" && lynx.SystemInfo) {
 // as a bare identifier (the SWC transform generates `runOnBackground(_jsFnK)`).
 globalThis.runOnBackground = runOnBackground;
 
-// The worklet-runtime (from @lynx-js/react) is bundled into this
-// main-thread entry by the myreact-lynx plugin — it provides:
+// The worklet-runtime (from @lynx-js/react) is imported by the
+// myreact-lynx plugin through `@lynx-js/react/worklet-runtime/init` into this
+// main-thread entry — it provides:
 //   globalThis.runWorklet, globalThis.registerWorkletInternal,
 //   globalThis.lynxWorkletImpl (with Element class, Animation, etc.)
 
@@ -234,6 +236,11 @@ globalThis.reactPatchUpdate = function ({ data }: { data: string }): void {
       applyOps(payload.ops);
     }
   }
+
+  // Rebuild once after all first-screen BG batches have been collected, before
+  // delayed worklets run against the final tree.  A non-first-screen patch is
+  // also a safe point if the host omitted `endFirstScreen`.
+  if (isIfrEnabled() && (endFirstScreen || !isFirstScreen)) finishIfrHydration();
 
   // After elements + SET_MT_REF are applied — same point as official ReactLynx.
   runDelayedRunOnMainThreadData(payload.delayedRunOnMainThreadData);

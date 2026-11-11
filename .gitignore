@@ -18,3 +18,4 @@ packages/myreact-lynx/client/dev-runtime.js
 .agents/sessions
 .agents/usage
 .agents/media
+.agents/logs

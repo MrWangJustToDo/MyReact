@@ -10,7 +10,7 @@ import { createContext, useState, createElement } from "@my-react/react";
 import { useLynxGlobalEventListener } from "./use-lynx-global-event-listener";
 
 import type React from "@my-react/react";
-import type { ReactNode, Consumer, FC } from "react";
+import type { ReactNode, Consumer, ConsumerProps, FC } from "react";
 
 /**
  * The interface you can extend so that the `useGlobalProps` returning value can be customized.
@@ -29,6 +29,27 @@ import type { ReactNode, Consumer, FC } from "react";
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface GlobalProps {}
+
+function isGlobalPropsEventMode(): boolean {
+  // MyReact previously always used the event path. Hosts that do not inject
+  // `__runtime_configs__` (including the Lynx web simulator) must keep that
+  // behavior; only an explicit `reactive` opts into the full-render fallback.
+  const mode = typeof lynx === "undefined" ? undefined : lynx.__runtime_configs__?.globalPropsMode;
+  return mode === undefined ? true : mode === "event";
+}
+
+function readGlobalProps(): GlobalProps {
+  return (typeof lynx === "undefined" ? {} : lynx.__globalProps) as GlobalProps;
+}
+
+function warnGlobalPropsMode(): void {
+  if (typeof __DEV__ !== "undefined" && __DEV__ && (typeof __LEPUS__ === "undefined" || !__LEPUS__)) {
+    console.warn(
+      "[@my-react/react-lynx] No need to use GlobalPropsProvider/Consumer/useGlobalProps when 'globalPropsMode' is not 'event'; " +
+        "updates are triggered by a full re-render. Set 'globalPropsMode' to 'event' to enable optimized updates."
+    );
+  }
+}
 
 type Getter<T> = {
   [key in keyof T]: () => T[key];
@@ -90,6 +111,25 @@ function factory<Data>(
 
 const _GlobalProps = factory<GlobalProps>("__globalProps", "onGlobalPropsChanged");
 
+const FallbackProvider: FC<{ children?: ReactNode }> = ({ children }) => {
+  warnGlobalPropsMode();
+  return children ?? null;
+};
+
+const FallbackConsumer = (({ children }: ConsumerProps<GlobalProps>) => {
+  warnGlobalPropsMode();
+  return children(readGlobalProps());
+}) as unknown as Consumer<GlobalProps>;
+
+function useFallbackGlobalProps(): GlobalProps {
+  warnGlobalPropsMode();
+  return readGlobalProps();
+}
+
+function useFallbackGlobalPropsChanged(callback: (data: GlobalProps) => void): void {
+  useLynxGlobalEventListener("onGlobalPropsChanged", callback);
+}
+
 /**
  * The Provider Component that provides `globalProps`.
  * You must wrap your JSX inside it.
@@ -115,7 +155,7 @@ const _GlobalProps = factory<GlobalProps>("__globalProps", "onGlobalPropsChanged
  *
  * @public
  */
-export const GlobalPropsProvider: FC<{ children?: ReactNode }> = _GlobalProps.Provider();
+export const GlobalPropsProvider: FC<{ children?: ReactNode }> = isGlobalPropsEventMode() ? _GlobalProps.Provider() : FallbackProvider;
 
 /**
  * The Consumer Component that provides `globalProps`.
@@ -123,7 +163,7 @@ export const GlobalPropsProvider: FC<{ children?: ReactNode }> = _GlobalProps.Pr
  *
  * @public
  */
-export const GlobalPropsConsumer: Consumer<GlobalProps> = _GlobalProps.Consumer();
+export const GlobalPropsConsumer: Consumer<GlobalProps> = isGlobalPropsEventMode() ? _GlobalProps.Consumer() : FallbackConsumer;
 
 /**
  * A React Hook for you to get `lynx.__globalProps`.
@@ -140,7 +180,7 @@ export const GlobalPropsConsumer: Consumer<GlobalProps> = _GlobalProps.Consumer(
  *
  * @public
  */
-export const useGlobalProps: () => GlobalProps = _GlobalProps.use();
+export const useGlobalProps: () => GlobalProps = isGlobalPropsEventMode() ? _GlobalProps.use() : useFallbackGlobalProps;
 
 /**
  * A React Hook for you to get notified when `globalProps` changed.
@@ -158,4 +198,6 @@ export const useGlobalProps: () => GlobalProps = _GlobalProps.use();
  *
  * @public
  */
-export const useGlobalPropsChanged: (callback: (data: GlobalProps) => void) => void = _GlobalProps.useChanged();
+export const useGlobalPropsChanged: (callback: (data: GlobalProps) => void) => void = isGlobalPropsEventMode()
+  ? _GlobalProps.useChanged()
+  : useFallbackGlobalPropsChanged;

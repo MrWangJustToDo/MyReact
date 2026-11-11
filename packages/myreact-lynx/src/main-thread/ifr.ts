@@ -34,6 +34,17 @@ let batchCursor = 0;
 let inSyncRender = false;
 let warnedPostSeal = false;
 
+/**
+ * Structural-mismatch fallback.  Keep the MT tree visible while all BG
+ * first-screen batches are collected, then tear down once and apply the whole
+ * BG stream.  Applying only the mismatching batch after teardown can leave the
+ * page blank when the BG flush was split into several batches.
+ */
+let fallbackActive = false;
+let fallbackRecordedBatches: unknown[][] = [];
+/** Every Background first-screen batch, from batch 0, for a clean rebuild. */
+let backgroundBatches: unknown[][] = [];
+
 /** Value ops: trailing arg may differ; identity args must match. */
 const VALUE_OP: Record<number, "patch" | "always"> = {
   [OP.SET_PROP]: "patch",
@@ -84,6 +95,9 @@ export function beginIfrSession(): void {
   recordedBatches = [];
   batchCursor = 0;
   warnedPostSeal = false;
+  fallbackActive = false;
+  fallbackRecordedBatches = [];
+  backgroundBatches = [];
   setDropMtOpsFlag(false);
 }
 
@@ -137,10 +151,19 @@ export function isIfrSyncRender(): boolean {
 export function interceptPatchUpdate(ops: unknown[]): boolean {
   if (phase !== "rendered") return false;
 
+  if (ops.length > 0) backgroundBatches.push(ops.slice());
+
+  if (fallbackActive) {
+    // Keep collecting the rest of the Background first-screen stream; finish in
+    // `finishIfrHydration()` so teardown + apply happen exactly once.
+    return true;
+  }
+
   if (batchCursor >= recordedBatches.length) {
     phase = "hydrated";
     setDropMtOpsFlag(true);
     recordedBatches = [];
+    backgroundBatches = [];
     batchCursor = 0;
     return false;
   }
@@ -164,17 +187,41 @@ export function interceptPatchUpdate(ops: unknown[]): boolean {
 
   if (__DEV__) {
     console.warn(
-      "[@my-react/react-lynx][IFR] hydration structural mismatch — tearing down IFR tree and applying Background batch. " +
+      "[@my-react/react-lynx][IFR] hydration structural mismatch — collecting Background batches, then rebuilding once. " +
+        `recorded batch ${batchCursor}/${recordedBatches.length} (${recorded.length} ops), incoming ${ops.length} ops. ` +
         "First-screen code should be deterministic and the same on both threads (initial route/data)."
     );
   }
-  teardownIfrTree();
-  phase = "hydrated";
+
+  // Keep the MT tree on screen until `finishIfrHydration()`.  `backgroundBatches`
+  // already contains every BG batch from 0, so the rebuild uses the complete
+  // Background stream rather than mixing MT and BG element IDs.
+  fallbackActive = true;
+  fallbackRecordedBatches = recordedBatches;
   setDropMtOpsFlag(true);
+  return true;
+}
+
+/**
+ * Finish a structural-mismatch fallback after the Background marked
+ * `endFirstScreen`.  No-op for the normal hydrate path.
+ */
+export function finishIfrHydration(): void {
+  if (!fallbackActive) return;
+
+  const recorded = fallbackRecordedBatches;
+  const ops = backgroundBatches.flat();
+
+  fallbackActive = false;
+  fallbackRecordedBatches = [];
+  backgroundBatches = [];
   recordedBatches = [];
   batchCursor = 0;
-  applyOps(ops);
-  return true;
+  phase = "hydrated";
+  setDropMtOpsFlag(true);
+
+  teardownIfrTree(recorded);
+  if (ops.length > 0) applyOps(ops);
 }
 
 function advanceCursor(): void {
@@ -183,6 +230,7 @@ function advanceCursor(): void {
     phase = "hydrated";
     setDropMtOpsFlag(true);
     recordedBatches = [];
+    backgroundBatches = [];
     batchCursor = 0;
     if (__DEV__) {
       console.log("[@my-react/react-lynx][IFR] hydration complete");
@@ -233,12 +281,12 @@ function reconcileBatch(recorded: unknown[], incoming: unknown[]): unknown[] | n
 }
 
 /** Remove IFR-created elements; leave page root. */
-export function teardownIfrTree(): void {
+export function teardownIfrTree(batches: unknown[][] = recordedBatches): void {
   const page = elements.get(PAGE_ROOT_ID);
   const createdIds = new Set<number>();
   const rootChildIds = new Set<number>();
 
-  for (const batch of recordedBatches) {
+  for (const batch of batches) {
     let i = 0;
     while (i < batch.length) {
       const len = getOpFrameLength(batch, i);
@@ -312,5 +360,8 @@ export function resetIfrState(): void {
   batchCursor = 0;
   inSyncRender = false;
   warnedPostSeal = false;
+  fallbackActive = false;
+  fallbackRecordedBatches = [];
+  backgroundBatches = [];
   setDropMtOpsFlag(false);
 }

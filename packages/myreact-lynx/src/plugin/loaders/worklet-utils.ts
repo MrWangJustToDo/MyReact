@@ -207,32 +207,33 @@ export function extractSharedImports(source: string): string {
 }
 
 /**
- * Extract registerWorkletInternal(...) calls from LEPUS output.
+ * Extract worklet registrations from LEPUS output.
  *
- * The LEPUS output contains:
+ * ReactLynx <= 0.127 emitted:
  * - import { loadWorkletRuntime } from "..."
- * - var loadWorkletRuntime = __loadWorkletRuntime;
- * - worklet object declarations
  * - loadWorkletRuntime(...) && registerWorkletInternal(type, hash, fn);
  *
- * Emit bare `registerWorkletInternal(...)` only — drop the
- * `loadWorkletRuntime(...) &&` guard from full LEPUS (see worklet-loader-mt).
- * Uses bracket-depth counting for nested braces in function bodies.
+ * ReactLynx 0.128+ emits the registration import from
+ * `<runtime>/worklet-runtime/init` and calls the aliased helper directly:
+ * - import { registerWorklet as __registerWorklet } from "..."
+ * - __registerWorklet(type, hash, fn);
+ *
+ * Emit a bare `registerWorkletInternal(...)` call in both cases. The MT entry
+ * imports the runtime init module, which installs the global registrar; this
+ * also drops the legacy `loadWorkletRuntime(...) &&` guard.
+ * Uses bracket-depth counting for nested parentheses in function bodies.
  */
 export function extractRegistrations(lepusCode: string): string {
   const registrations: string[] = [];
-  const marker = "registerWorkletInternal(";
-  let searchFrom = 0;
+  const markerRe = /(?:__registerWorklet|registerWorkletInternal|registerWorklet)\s*\(/g;
+  let match: RegExpExecArray | null;
 
-  while (true) {
-    const idx = lepusCode.indexOf(marker, searchFrom);
-    if (idx === -1) {
-      break;
-    }
-
-    // Find the end of the registerWorkletInternal(...) call using bracket counting
+  while ((match = markerRe.exec(lepusCode)) !== null) {
+    const start = match.index;
+    const open = lepusCode.indexOf("(", start);
     let depth = 0;
-    let i = idx + marker.length - 1; // position of the opening '('
+    let i = open;
+
     for (; i < lepusCode.length; i += 1) {
       if (lepusCode[i] === "(") {
         depth += 1;
@@ -244,14 +245,14 @@ export function extractRegistrations(lepusCode: string): string {
       }
     }
 
-    // Extract the full call including trailing semicolon
     let end = i + 1;
     if (end < lepusCode.length && lepusCode[end] === ";") {
       end += 1;
     }
 
-    registrations.push(lepusCode.slice(idx, end));
-    searchFrom = end;
+    const call = lepusCode.slice(start, end).replace(/^(?:__registerWorklet|registerWorkletInternal|registerWorklet)\s*\(/, "registerWorkletInternal(");
+    registrations.push(call);
+    markerRe.lastIndex = end;
   }
 
   return registrations.join("\n");

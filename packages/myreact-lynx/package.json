@@ -33,6 +33,10 @@
       "types": "./dist/background/index.d.ts",
       "import": "./dist/background/index.js"
     },
+    "./compat": {
+      "types": "./dist/compat.d.ts",
+      "import": "./dist/compat.js"
+    },
     "./jsx-runtime": {
       "import": "./jsx-runtime.js",
       "types": "./jsx-runtime.d.ts"
@@ -48,6 +52,10 @@
     "./main-thread": {
       "types": "./dist/main-thread/entry.d.ts",
       "import": "./dist/main-thread/entry.js"
+    },
+    "./mt": {
+      "types": "./dist/main-thread/index.d.ts",
+      "import": "./dist/main-thread/index.js"
     },
     "./plugin": {
       "types": "./dist/plugin/index.d.ts",
@@ -68,22 +76,22 @@
     "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
-    "@lynx-js/chunk-loading-webpack-plugin": "^0.4.0",
-    "@lynx-js/css-extract-webpack-plugin": "^0.10.0",
+    "@lynx-js/chunk-loading-webpack-plugin": "^0.4.3",
+    "@lynx-js/css-extract-webpack-plugin": "^0.11.2",
     "@lynx-js/gesture-runtime": "^2.1.3",
-    "@lynx-js/react": "^0.122.1",
-    "@lynx-js/runtime-wrapper-webpack-plugin": "^0.2.3",
-    "@lynx-js/template-webpack-plugin": "^0.14.1",
-    "@lynx-js/webpack-dev-transport": "^0.3.0",
+    "@lynx-js/react": "^0.129.2",
+    "@lynx-js/runtime-wrapper-webpack-plugin": "^0.2.6",
+    "@lynx-js/template-webpack-plugin": "^0.16.7",
+    "@lynx-js/webpack-dev-transport": "^0.4.1",
     "@my-react/react-refresh": "^0.3.30",
     "@my-react/react-refresh-tools": "^0.0.41"
   },
   "devDependencies": {
-    "@lynx-js/type-element-api": "0.0.8",
-    "@lynx-js/types": "4.0.0",
-    "@rsbuild/core": "2.1.7",
-    "@rslib/core": "^0.23.2",
-    "@rspack/core": "2.1.7",
+    "@lynx-js/type-element-api": "0.0.12",
+    "@lynx-js/types": "4.4.2",
+    "@rsbuild/core": "2.2.9",
+    "@rslib/core": "1.0.2",
+    "@rspack/core": "2.2.7",
     "@types/react": "catalog:"
   },
   "peerDependencies": {

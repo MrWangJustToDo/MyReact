@@ -12,6 +12,7 @@
 import { __my_react_scheduler__ } from "@my-react/react/type";
 
 import { getLynxWorkletImpl } from "../../shared/lynx-worklet-impl.js";
+import { registerMainThreadObjectTypesFromPatch } from "../../shared/worklet-bindings.js";
 import { buildFirstScreenPatchMeta, markFirstScreenPatchComplete } from "../first-screen/first-screen-patch.js";
 import { resetDelayedRunOnMainThread, takeDelayedRunOnMainThreadData } from "../worklet/delayed-run-on-main-thread.js";
 import { takeWorkletRefInitValuePatch } from "../worklet/worklet-ref-pool.js";
@@ -96,7 +97,8 @@ const doFlush = () => {
   if (localApply) {
     const workletImpl = getLynxWorkletImpl();
     if (workletRefInitValues.length > 0) {
-      workletImpl?._refImpl?.updateWorkletRefInitValueChanges?.(workletRefInitValues);
+      registerMainThreadObjectTypesFromPatch(workletRefInitValues);
+      workletImpl?._refImpl?.updateWorkletRefInitValueChanges?.(workletRefInitValues as never);
     }
     if (ops.length > 0) {
       localApply(ops);

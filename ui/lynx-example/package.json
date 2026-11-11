@@ -11,18 +11,18 @@
   },
   "dependencies": {
     "@lynx-js/gesture-runtime": "2.1.3",
-    "@lynx-js/motion": "0.0.3",
-    "@lynx-js/react": "0.123.2",
+    "@lynx-js/motion": "0.0.8",
+    "@lynx-js/react": "0.129.2",
     "@my-react/react": "workspace:*",
     "@my-react/react-lynx": "workspace:*"
   },
   "devDependencies": {
-    "@lynx-js/qrcode-rsbuild-plugin": "0.6.0",
-    "@lynx-js/rspeedy": "0.16.2",
-    "@lynx-js/types": "4.1.0",
-    "@rsbuild/core": "2.1.7",
+    "@lynx-js/qrcode-rsbuild-plugin": "0.7.3",
+    "@lynx-js/rspeedy": "0.18.5",
+    "@lynx-js/types": "4.4.2",
+    "@rsbuild/core": "2.2.9",
     "@rsbuild/plugin-node-polyfill": "1.4.6",
-    "@rspack/core": "2.1.7",
+    "@rspack/core": "2.2.7",
     "@types/react": "catalog:",
     "socket.io-client": "^4.8.3"
   }

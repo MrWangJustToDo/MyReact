@@ -27,7 +27,10 @@ export default function workletLoader(this: Rspack.LoaderContext, source: string
   const resourcePath = this.resourcePath;
   const filename = resourcePath;
 
-  // JS target — replaces worklet functions with context objects
+  // JS target — replaces worklet functions with context objects.
+  // runtimePkg stays aligned with upstream: LEPUS output imports
+  // `registerWorklet` from `<runtimePkg>/worklet-runtime/init`, while the JS
+  // target only emits `_wkltId` markers.
   // IMPORTANT: snapshot: false disables ReactLynx's JSX snapshot transformation
   // which generates ReactLynx-specific code (__DynamicPartSlot, etc.)
   // MyReact uses standard React JSX rendering, so we only need the worklet transform.
@@ -48,7 +51,7 @@ export default function workletLoader(this: Rspack.LoaderContext, source: string
     worklet: {
       target: "JS",
       filename,
-      runtimePkg: "@my-react/react-lynx",
+      runtimePkg: "@lynx-js/react",
     },
   });
 

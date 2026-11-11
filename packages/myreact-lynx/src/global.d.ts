@@ -150,6 +150,11 @@ declare module "@lynx-js/types" {
     /** Global props, used by useGlobalProps */
     __globalProps: Record<string, unknown>;
 
+    /** Host runtime configuration (ReactLynx 0.129+). */
+    __runtime_configs__?: {
+      globalPropsMode?: "reactive" | "event";
+    };
+
     getNativeApp():
       | {
           createJSObjectDestructionObserver?(callback: () => void): unknown;

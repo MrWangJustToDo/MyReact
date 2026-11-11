@@ -9,7 +9,11 @@ export interface DelayedRunOnMainThreadPayload {
   resolveId: number;
 }
 
-export type WorkletRefInitValuePatch = [id: number, value: unknown][];
+export type WorkletRefInitValuePatch = (
+  | [id: number, value: unknown]
+  | [id: number, value: unknown, type: string]
+  | [id: number, value: unknown, type: string, create: unknown]
+)[];
 
 export interface PatchPayload {
   ops: unknown[];

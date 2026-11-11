@@ -11,11 +11,12 @@ Careful comparison of **ReactLynx** (official full set), **VueLynx**, and **MyRe
 
 ## Source pins (re-audited)
 
-| Tree         | Path                         | Commit                 | Package version                  |
-| ------------ | ---------------------------- | ---------------------- | -------------------------------- |
-| ReactLynx    | `tmp/lynx-family-lynx-stack` | `c1136da` (2026-07-30) | `@lynx-js/react` **0.123.1**     |
-| VueLynx      | `tmp/Huxpro-vue-lynx`        | `c17c3f7` (2026-07-30) | `vue-lynx` **0.5.1**             |
-| MyReact Lynx | `packages/myreact-lynx`      | workspace              | `@my-react/react-lynx` **0.0.9** |
+| Tree         | Path                    | Version / audit          | Package version                            |
+| ------------ | ----------------------- | ------------------------ | ------------------------------------------ |
+| ReactLynx    | npm `@lynx-js/react`    | **0.129.2** (2026-11-06) | `@lynx-js/react` **0.129.2**               |
+| Toolchain    | npm `@lynx-js/rspeedy`  | **0.18.5**               | Rsbuild 2.2.9 / Rspack 2.2.7 / Rslib 1.0.2 |
+| VueLynx      | npm `vue-lynx`          | **0.5.1** (2026-07)      | `vue-lynx` **0.5.1**                       |
+| MyReact Lynx | `packages/myreact-lynx` | workspace                | `@my-react/react-lynx` **0.0.10**          |
 
 Evidence is from these trees’ runtime + plugin source (not docs alone).
 
@@ -68,16 +69,16 @@ MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR
 
 ## 2. Instant First-Frame & templates
 
-| Feature                                              |   ReactLynx    |   VueLynx   |   MyReact   | Notes                                                                          |
-| ---------------------------------------------------- | :------------: | :---------: | :---------: | ------------------------------------------------------------------------------ |
-| IFR (real UI before BG)                              |       ✅       |  ✅ opt-in  |  ✅ opt-in  | RL: Snapshot. VL/MR: `enableIFR` (default **false**). MR: Vue-style true mount |
-| Compiled Snapshot / JSX→snapshot                     | ✅ **default** |     ❌      |     ❌      | MR/VL deliberately ops-based                                                   |
-| Element Templates                                    | ◐ experimental |  ✅ opt-in  |     ❌      | **Deferred** for MR (follow-up after IFR)                                      |
-| First-screen hydrate / handoff                       |       ✅       | ✅ with IFR | ✅ with IFR | MR: Vue-style ops-stream hydrate; teardown only on structural mismatch         |
-| First-screen worklet lifecycle flags                 |       ✅       |      ◐      |     ✅      | MR: `isFirstScreen` / `endFirstScreen` patch meta (≠ IFR)                      |
-| `firstScreenSyncTiming` + `markFirstScreenSyncReady` |       ✅       |     ❌      |     ❌      | RL: `immediately` \| `jsReady` \| `manual`                                     |
-| `isIfrMainThread()`                                  |       —        |     ✅      |     ✅      | Gate network on MT IFR mount                                                   |
-| SSR (`enableSSR` / opcodes)                          |       ✅       |     ❌      |     ❌      |                                                                                |
+| Feature                                              |   ReactLynx    |   VueLynx   |   MyReact   | Notes                                                                                                       |
+| ---------------------------------------------------- | :------------: | :---------: | :---------: | ----------------------------------------------------------------------------------------------------------- |
+| IFR (real UI before BG)                              |       ✅       |  ✅ opt-in  |  ✅ opt-in  | RL: Snapshot. VL/MR: `enableIFR` (default **false**). MR: Vue-style true mount                              |
+| Compiled Snapshot / JSX→snapshot                     | ✅ **default** |     ❌      |     ❌      | MR/VL deliberately ops-based                                                                                |
+| Element Templates                                    | ◐ experimental |  ✅ opt-in  |     ❌      | **Deferred** for MR (follow-up after IFR)                                                                   |
+| First-screen hydrate / handoff                       |       ✅       | ✅ with IFR | ✅ with IFR | MR: Vue-style ops-stream hydrate; teardown only on structural mismatch                                      |
+| First-screen worklet lifecycle flags                 |       ✅       |      ◐      |     ✅      | MR: `isFirstScreen` / `endFirstScreen` patch meta (≠ IFR)                                                   |
+| `firstScreenSyncTiming` + `markFirstScreenSyncReady` |       ✅       |     ❌      |     ❌      | RL: `immediately` \| `jsReady` \| `manual`; MR exports a compatibility no-op, manual timing not implemented |
+| `isIfrMainThread()`                                  |       —        |     ✅      |     ✅      | Gate network on MT IFR mount                                                                                |
+| SSR (`enableSSR` / opcodes)                          |       ✅       |     ❌      |     ❌      |                                                                                                             |
 
 **Element Templates are not interchangeable**
 
@@ -91,15 +92,16 @@ MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR
 
 ## 3. Main Thread Script / worklets
 
-| Feature                              | ReactLynx  |           VueLynx           |           MyReact           | Notes                                                             |
-| ------------------------------------ | :--------: | :-------------------------: | :-------------------------: | ----------------------------------------------------------------- |
-| `'main thread'` + SWC worklet        |     ✅     |             ✅              |             ✅              |                                                                   |
-| `runOnMainThread`                    |     ✅     |             ✅              |             ✅              |                                                                   |
-| `runOnBackground`                    |     ✅     |             ✅              |             ✅              |                                                                   |
-| `useMainThreadRef` / `MainThreadRef` |     ✅     |             ✅              |             ✅              |                                                                   |
-| `with { runtime: 'shared' }`         |     ✅     |             ✅              |             ✅              |                                                                   |
-| Worklet HMR without full reload      | ❌ stubbed |              ◐              |             ❌              | Hash/`_wkltId` stale map class of bug                             |
-| npm worklet package allowlist        |     ◐      | ✅ `includeWorkletPackages` | ✅ `includeWorkletPackages` | MR defaults: `gesture-runtime` + `motion`; user packages merge on |
+| Feature                                                                   | ReactLynx  |           VueLynx           |           MyReact           | Notes                                                                                          |
+| ------------------------------------------------------------------------- | :--------: | :-------------------------: | :-------------------------: | ---------------------------------------------------------------------------------------------- |
+| `'main thread'` + SWC worklet                                             |     ✅     |             ✅              |             ✅              |                                                                                                |
+| `runOnMainThread`                                                         |     ✅     |             ✅              |             ✅              |                                                                                                |
+| `runOnBackground`                                                         |     ✅     |             ✅              |             ✅              |                                                                                                |
+| `useMainThreadRef` / `MainThreadRef`                                      |     ✅     |             ✅              |             ✅              |                                                                                                |
+| `MainThreadObject` (`useMainThreadObject` / `defineMainThreadObjectType`) |     ✅     |              —              |             ✅              | RL 0.127+; handle wire format `_wvid/_initValue/_type`, factory descriptor re-registered on MT |
+| `with { runtime: 'shared' }`                                              |     ✅     |             ✅              |             ✅              |                                                                                                |
+| Worklet HMR without full reload                                           | ❌ stubbed |              ◐              |             ❌              | Hash/`_wkltId` stale map class of bug                                                          |
+| npm worklet package allowlist                                             |     ◐      | ✅ `includeWorkletPackages` | ✅ `includeWorkletPackages` | MR defaults: `gesture-runtime` + `motion`; user packages merge on                              |
 
 ---
 
@@ -148,21 +150,21 @@ MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR
 | Native `<list>` / `<list-item>`                 |        ✅        |         ✅         |         ✅         | `__CreateList` + `componentAtIndex`                  |
 | `item-key` / `reuse-identifier`                 |        ✅        |         ✅         |         ✅         | platform-info attrs                                  |
 | Cell **recycle pool** (`enqueueComponent` real) | ✅ `gRecycleMap` | ◐ **noop** enqueue | ◐ **noop** enqueue | VL/MR attach callbacks but `enqueueComponent = noop` |
-| `onRecycleComponent` / `onComponentAtIndex`     |        ✅        |         ❌         |      ◐ via MT→BG   | MR dispatches lifecycle events; real pool still noop |
+| `onRecycleComponent` / `onComponentAtIndex`     |        ✅        |         ❌         |    ◐ via MT→BG     | MR dispatches lifecycle events; real pool still noop |
 | `defer` / DeferredListItem compile              |        ✅        | ❌ / undocumented  | ❌ / undocumented  | RL-only                                              |
 
 ---
 
 ## 8. Data & app APIs
 
-| Feature                                     | ReactLynx |          VueLynx           |     MyReact     | Notes                            |
-| ------------------------------------------- | :-------: | :------------------------: | :-------------: | -------------------------------- |
-| `processData` Lepus hook                    |    ✅     |     ◐ passthrough stub     |       ✅        | VL comment: “no data processors” |
-| `registerDataProcessors` / named processors |    ✅     |             ❌             |       ✅        |                                  |
-| `useInitData` / `useInitDataChanged`        |    ✅     |             ❌             |       ✅        |                                  |
-| `withInitDataInState`                       |    ✅     |             —              |       ✅        |                                  |
-| `useGlobalProps` / changed                  |    ✅     |             ❌             |       ✅        |                                  |
-| Framework ecosystem                         |   React   | Vue Router / Pinia / Query | React + MyReact |                                  |
+| Feature                                     | ReactLynx |          VueLynx           |     MyReact     | Notes                                                                   |
+| ------------------------------------------- | :-------: | :------------------------: | :-------------: | ----------------------------------------------------------------------- |
+| `processData` Lepus hook                    |    ✅     |     ◐ passthrough stub     |       ✅        | VL comment: “no data processors”                                        |
+| `registerDataProcessors` / named processors |    ✅     |             ❌             |       ✅        |                                                                         |
+| `useInitData` / `useInitDataChanged`        |    ✅     |             ❌             |       ✅        |                                                                         |
+| `withInitDataInState`                       |    ✅     |             —              |       ✅        |                                                                         |
+| `useGlobalProps` / changed                  |    ✅     |             ❌             |       ✅        | 0.129.2 event/reactive `globalPropsMode`; unset keeps legacy event mode |
+| Framework ecosystem                         |   React   | Vue Router / Pinia / Query | React + MyReact |                                                                         |
 
 ---
 
@@ -182,7 +184,7 @@ MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR
 ## 10. Plugin options (high-signal)
 
 | Option                                           |        ReactLynx        |           VueLynx           |            MyReact             |
-| ------------------------------------------------ | :---------------------: | :-------------------------: | :----------------------------: |
+| ------------------------------------------------ | :---------------------: | :-------------------------: | :----------------------------: | -------------------------------- |
 | CSS engine flags                                 |         ✅ rich         |             ✅              |               ✅               |
 | IFR toggle                                       | — (Snapshot IFR always) |       ✅ `enableIFR`        | ✅ `enableIFR` (default false) |
 | Element Templates                                |     ✅ experimental     |      ✅ (follows IFR)       |          ❌ deferred           |
@@ -190,32 +192,32 @@ MyReact:    loadTemplate → [IFR?] MT sync mount : empty page → BG ops (+ IFR
 | `enableNewGesture`                               |    ✅ default false     |       hardcoded false       |         hardcoded true         |
 | Worklet package include                          |            ◐            | ✅ `includeWorkletPackages` |     ✅ merge onto defaults     |
 | Compat / shake / extractStr / optimizeBundleSize |           ✅            |              —              |               ❌               |
-| React→MyReact aliases                            |            —            |              —              |               ✅               |
+| React→MyReact aliases                            |            —            |              —              |               ✅               | includes `@lynx-js/react/compat` |
 
 ---
 
 ## Corrected takeaways (vs earlier draft)
 
-1. **List recycle**: MyReact is **not** ahead of Vue — both use **noop** `enqueueComponent`. Only ReactLynx has a real recycle map. MyReact now has an **experimental** deferred-content pool (`listRecycle`): BG captures each `<list-item>`'s content as a template and MT lazily materializes it at `componentAtIndex`, reusing the materialized cell on scroll-back. Still noop for a *real cross-item wrapper pool*, and mutually exclusive with enableIFR; not validated for IFR coexistence.
+1. **List recycle**: MyReact is **not** ahead of Vue — both use **noop** `enqueueComponent`. Only ReactLynx has a real recycle map. MyReact now has an **experimental** deferred-content pool (`listRecycle`): BG captures each `<list-item>`'s content as a template and MT lazily materializes it at `componentAtIndex`, reusing the materialized cell on scroll-back. Still noop for a _real cross-item wrapper pool_, and mutually exclusive with enableIFR; not validated for IFR coexistence.
 2. **Gestures**: ReactLynx has the full pipeline but **defaults `enableNewGesture: false`**; MyReact forces **true** and re-exports the runtime. Vue has **no** gesture-runtime integration.
 3. **Element Templates**: Vue ✅ and React ◐ are **different mechanisms**; do not treat as the same feature.
 4. **IFR**: ReactLynx = always (Snapshot). VueLynx = opt-in since 0.5. MyReact = opt-in `enableIFR` (true mount); first-screen **patch flags ≠ IFR**.
 5. **initData**: MyReact ≈ ReactLynx API surface; Vue only stubs `processData`.
-6. Package version: MyReact Lynx is **0.0.9**.
+6. Package version: MyReact Lynx is **0.0.10**; upstream pin is **@lynx-js/react 0.129.2**.
 
 ---
 
 ## Gaps vs ReactLynx (MyReact priority)
 
-| Priority | Gap                                                                        |
-| -------- | -------------------------------------------------------------------------- |
-| P0       | **IFR** (Snapshot path and/or Vue-style MT sync render)                    |
-| P0       | Decide ET strategy (RL PAPI vs Vue `INSTANTIATE_TEMPLATE`) if pursuing IFR |
+| Priority | Gap                                                                                                                                                                                                                                                                                                                            |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| P0       | **IFR** (Snapshot path and/or Vue-style MT sync render)                                                                                                                                                                                                                                                                        |
+| P0       | Decide ET strategy (RL PAPI vs Vue `INSTANTIATE_TEMPLATE`) if pursuing IFR                                                                                                                                                                                                                                                     |
 | P1       | List **recycle pool** (replace noop `enqueueComponent`) — MT→BG lifecycle transport (onRecycleComponent/onComponentAtIndex) landed; **experimental deferred-content pool** (`listRecycle` opt-in: templates + lazy materialize + per-item self-reuse) landed but not IFR-validated, descendant interactivity not-yet-supported |
-| P1       | SSR / `firstScreenSyncTiming` if host needs it                             |
-| P2       | Standalone lazy bundle / `fetchBundle`                                     |
-| P2       | DevTools + testing-library                                                 |
-| P3       | Worklet HMR (unsolved in all three)                                        |
+| P1       | SSR / `firstScreenSyncTiming` if host needs it                                                                                                                                                                                                                                                                                 |
+| P2       | Standalone lazy bundle / `fetchBundle`                                                                                                                                                                                                                                                                                         |
+| P2       | DevTools + testing-library                                                                                                                                                                                                                                                                                                     |
+| P3       | Worklet HMR (unsolved in all three)                                                                                                                                                                                                                                                                                            |
 
 ```
 ReactLynx 0.123 = Snapshot IFR (default) + optional ET backend + fullest Lynx React surface

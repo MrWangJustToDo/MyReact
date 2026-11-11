@@ -23,10 +23,10 @@
     "dev": "rslib -w"
   },
   "dependencies": {
-    "@rslib/core": "^0.23.2"
+    "@rslib/core": "1.0.2"
   },
   "devDependencies": {
-    "@rspack/core": "2.1.7"
+    "@rspack/core": "2.2.7"
   },
   "peerDependencies": {
     "@rspack/core": "^2.0.0",

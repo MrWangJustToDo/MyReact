@@ -43,3 +43,31 @@ export function onFirstScreenPatchFinished(): void {
   impl?._refImpl?.clearFirstScreenWorkletRefMap?.();
   impl?._eventDelayImpl?.clearDelayedWorklets?.();
 }
+
+/**
+ * Register MainThreadObject factory descriptors carried by a ref-init patch.
+ * Must run on the main thread before `updateWorkletRefInitValueChanges`.
+ *
+ * @internal
+ */
+export function registerMainThreadObjectTypesFromPatch(
+  patch: readonly ([number, unknown] | [number, unknown, string] | [number, unknown, string, unknown])[] | undefined
+): void {
+  if (!patch?.length) {
+    return;
+  }
+  const register = getLynxWorkletImpl()?._refImpl?.registerMainThreadObjectType;
+  if (!register) {
+    return;
+  }
+  for (const entry of patch) {
+    if (entry.length < 4) {
+      continue;
+    }
+    const [, , type, create] = entry;
+    if (type === undefined || typeof create !== "object" || create === null || !("_wkltId" in create)) {
+      continue;
+    }
+    register(type, create as never);
+  }
+}

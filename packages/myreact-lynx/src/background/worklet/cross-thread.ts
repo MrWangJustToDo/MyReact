@@ -69,7 +69,7 @@ function dispatchRunOnMainThreadEvent(data: RunWorkletCtxData): void {
  * await animate(0.5) // executes on Main Thread
  * ```
  */
-export function runOnMainThread<R, Fn extends (...args: unknown[]) => R>(fn: Fn): (...args: Parameters<Fn>) => Promise<R> {
+export function runOnMainThread<R, Args extends unknown[]>(fn: (...args: Args) => R): (...args: Args) => Promise<R> {
   const worklet = fn as unknown as Worklet;
 
   // Validate worklet context structure
@@ -93,7 +93,7 @@ export function runOnMainThread<R, Fn extends (...args: unknown[]) => R>(fn: Fn)
 
   registerWorkletCtx(worklet);
 
-  return async (...params: Parameters<Fn>): Promise<R> => {
+  return async (...params: Args): Promise<R> => {
     return new Promise((resolve, reject) => {
       // Validate worklet is still registered (may become stale after HMR)
       if (__DEV__) {
